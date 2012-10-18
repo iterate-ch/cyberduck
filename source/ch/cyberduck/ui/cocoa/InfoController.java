@@ -23,6 +23,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionAdapter;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
@@ -30,12 +31,13 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.Distribution;
-import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.FileDescriptor;
+import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -91,6 +93,8 @@ public class InfoController extends ToolbarWindowController {
      * Selected files
      */
     private List<Path> files = Collections.emptyList();
+
+    private FileDescriptor descriptor = FileDescriptorFactory.get();
 
     private Path getSelected() {
         for(Path file : files) {
@@ -767,7 +771,7 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void tableColumnClicked(NSTableView view, NSTableColumn c) {
-                ;
+                //
             }
 
             @Override
@@ -1016,7 +1020,7 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void tableColumnClicked(NSTableView view, NSTableColumn c) {
-                ;
+                //
             }
 
             @Override
@@ -1651,7 +1655,7 @@ public class InfoController extends ToolbarWindowController {
                 checksumField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
             }
             else {
-                this.updateField(kindField, file.kind(), TRUNCATE_MIDDLE_ATTRIBUTES);
+                this.updateField(kindField, descriptor.getKind(file), TRUNCATE_MIDDLE_ATTRIBUTES);
             }
             // Timestamps
             if(count > 1) {
@@ -1968,7 +1972,7 @@ public class InfoController extends ToolbarWindowController {
                 if(file.attributes().isFile()) {
                     if(file instanceof S3Path) {
                         final S3Path s3 = (S3Path) file;
-                        final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
+                        final DescriptiveUrl url = s3.toSignedUrl();
                         if(StringUtils.isNotBlank(url.getUrl())) {
                             s3PublicUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(url.getUrl())
@@ -1978,7 +1982,7 @@ public class InfoController extends ToolbarWindowController {
                         if(StringUtils.isNotBlank(url.getHelp())) {
                             s3PublicUrlValidityField.setStringValue(url.getHelp());
                         }
-                        final AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
+                        final DescriptiveUrl torrent = s3.toTorrentUrl();
                         if(StringUtils.isNotBlank(torrent.getUrl())) {
                             s3torrentUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(torrent.getUrl())
@@ -2159,7 +2163,7 @@ public class InfoController extends ToolbarWindowController {
             else {
                 for(Path file : files) {
                     if(file.attributes().isFile()) {
-                        final CloudPath.DescriptiveUrl url = file.toAuthenticatedUrl();
+                        final DescriptiveUrl url = file.toAuthenticatedUrl();
                         if(StringUtils.isNotBlank(url.getUrl())) {
                             aclUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(url.getUrl())
@@ -2563,7 +2567,7 @@ public class InfoController extends ToolbarWindowController {
                         }
                         else {
                             distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                            for(AbstractPath.DescriptiveUrl url : distribution.getCnameURL(file)) {
+                            for(DescriptiveUrl url : distribution.getCnameURL(file)) {
                                 distributionCnameUrlField.setAttributedStringValue(
                                         HyperlinkAttributedStringFactory.create(url.getUrl())
                                 );

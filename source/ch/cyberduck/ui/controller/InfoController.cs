@@ -55,6 +55,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
         private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
+        private readonly FileDescriptor descriptor = FileDescriptorFactory.get();
 
         private InfoController(BrowserController controller, IList<Path> files)
         {
@@ -461,7 +462,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (file.attributes().isFile())
                         {
-                            AbstractPath.DescriptiveUrl url = file.toAuthenticatedUrl();
+                            DescriptiveUrl url = file.toAuthenticatedUrl();
 
                             if (Utils.IsNotBlank(url.getUrl()))
                             {
@@ -1059,7 +1060,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    View.Kind = file.kind();
+                    View.Kind = descriptor.getKind(file);
                     if (-1 == file.attributes().getModificationDate())
                     {
                         View.Modified = Locale.localizedString("Unknown");
@@ -1155,7 +1156,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (file is S3Path)
                         {
                             S3Path s3 = (S3Path) file;
-                            AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
+                            DescriptiveUrl url = s3.toSignedUrl();
                             if (null != url)
                             {
                                 View.S3PublicUrl = url.getUrl();
@@ -1163,7 +1164,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 View.S3PublicUrlTooltip = url.getUrl();
                                 View.S3PublicUrlValidity = url.getHelp();
                             }
-                            AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
+                            DescriptiveUrl torrent = s3.toTorrentUrl();
                             if (null != torrent)
                             {
                                 View.S3TorrentUrl = torrent.getUrl();
@@ -1973,11 +1974,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         _view.DistributionCname = string.Join(" ", cnames);
-                        ICollection<AbstractPath.DescriptiveUrl> urls
+                        ICollection<DescriptiveUrl> urls
                             =
-                            Utils.ConvertFromJavaList<AbstractPath.DescriptiveUrl>(
+                            Utils.ConvertFromJavaList<DescriptiveUrl>(
                                 _distribution.getCnameURL(file));
-                        foreach (AbstractPath.DescriptiveUrl url in urls)
+                        foreach (DescriptiveUrl url in urls)
                         {
                             _view.DistributionCnameUrl = url.getUrl();
                             _view.DistributionCnameUrlEnabled = true;
