@@ -692,7 +692,7 @@ public class MainController extends BundleController implements NSApplication.De
                         if(bookmark.getUuid().equals(selected)) {
                             String parent = destination;
                             if(bookmark.equals(mount)) {
-                                ; // Use current working directory of browser for destination
+                                // Use current working directory of browser for destination
                             }
                             else {
                                 // No mounted browser
@@ -944,7 +944,7 @@ public class MainController extends BundleController implements NSApplication.De
                             }
                         }
                         catch(UnknownHostException e) {
-                            ; //Ignore
+                            //Ignore
                         }
                     }
                     invoke(new DefaultMainAction() {
@@ -957,7 +957,7 @@ public class MainController extends BundleController implements NSApplication.De
 
                 @Override
                 public void serviceLost(String servicename) {
-                    ;
+                    //
                 }
             });
         }
@@ -1096,7 +1096,7 @@ public class MainController extends BundleController implements NSApplication.De
 
                         @Override
                         protected void rename(Local next, Host bookmark) {
-                            ; // Bookmarks in application bundle should not attempt to be renamed to UUID
+                            // Bookmarks in application bundle should not attempt to be renamed to UUID
                         }
                     };
                     defaults.load();
