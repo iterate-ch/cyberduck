@@ -49,7 +49,7 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	return (*env)->NewStringUTF(env, unichars);
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_editor_LaunchServicesApplicationFinder_findForType(
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplicationFinder_findForType(
 										JNIEnv *env,
 										jobject this,
                                         jstring extension)
@@ -72,7 +72,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_editor_LaunchServicesApplicatio
 }
 
 
-JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_editor_LaunchServicesApplicationFinder_findAllForType(
+JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplicationFinder_findAllForType(
 										JNIEnv *env,
 										jobject this,
                                         jstring extension)
