@@ -35,6 +35,8 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.FileDescriptor;
+import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -91,6 +93,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public static final String EXTENSION_COLUMN = "EXTENSION";
     // virtual column to implement quick look
     protected static final String LOCAL_COLUMN = "LOCAL";
+
+    private FileDescriptor descriptor = FileDescriptorFactory.get();
 
     /**
      * Container for all paths currently being listed in the background
@@ -239,7 +243,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             if(identifier.equals(KIND_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        item.kind(),
+                        descriptor.getKind(item),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(EXTENSION_COLUMN)) {

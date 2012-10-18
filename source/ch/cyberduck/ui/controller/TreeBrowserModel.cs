@@ -31,6 +31,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BrowserController _controller;
         private readonly List<AbstractPath> _isLoadingListingInBackground = new List<AbstractPath>();
         private readonly string _unknown = Locale.localizedString("Unknown");
+        private readonly FileDescriptor descriptor = FileDescriptorFactory.get();
 
         public TreeBrowserModel(BrowserController controller)
         {
@@ -161,7 +162,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetKind(Path path)
         {
-            return path.kind();
+            return descriptor.getKind(path);
         }
 
         public bool GetActive(Path path)
