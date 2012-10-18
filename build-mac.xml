@@ -509,5 +509,15 @@
             <param name="app.runtime.system.min" value="10.6.6"/>
         </antcall>
         <antcall target="distribution-mas"/>
+        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/mas"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg.md5"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/mas"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
     </target>
 </project>
