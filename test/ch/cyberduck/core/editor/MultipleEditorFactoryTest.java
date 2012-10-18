@@ -14,8 +14,8 @@ public class MultipleEditorFactoryTest extends AbstractTestCase {
 
     @BeforeClass
     public static void register() {
-        MultipleEditorFactory.register();
         LaunchServicesApplicationFinder.register();
+        MultipleEditorFactory.register();
     }
 
     @Test(expected = FactoryException.class)
@@ -23,5 +23,4 @@ public class MultipleEditorFactoryTest extends AbstractTestCase {
         MultipleEditorFactory f = new MultipleEditorFactory();
         f.create();
     }
-
 }
