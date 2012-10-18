@@ -40,7 +40,6 @@ import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.Configurable;
 import org.apache.commons.net.ftp.FTPClientConfig;
@@ -319,19 +318,10 @@ public class FTPSession extends SSLSession {
         }
     }
 
-    private ProtocolCommandListener listener = new ProtocolCommandListener() {
+    private final ProtocolCommandListener listener = new LoggingProtocolCommandListener() {
         @Override
-        public void protocolCommandSent(ProtocolCommandEvent event) {
-            String message = StringUtils.chomp(event.getMessage());
-            if(message.startsWith("PASS")) {
-                message = "PASS ********";
-            }
-            FTPSession.this.log(true, message);
-        }
-
-        @Override
-        public void protocolReplyReceived(ProtocolCommandEvent event) {
-            FTPSession.this.log(false, StringUtils.chomp(event.getMessage()));
+        public void log(boolean request, String event) {
+            FTPSession.this.log(request, event);
         }
     };
 
@@ -566,4 +556,5 @@ public class FTPSession extends SSLSession {
     public boolean isUnixPermissionsSupported() {
         return true;
     }
+
 }
