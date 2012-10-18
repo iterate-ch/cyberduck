@@ -644,7 +644,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 }
                 this.getLocal().setPath(Preferences.instance().getProperty("tmp.dir"), proposal);
             }
-            this.getLocal().touch(true);
+            this.getLocal().touch();
             TransferOptions options = new TransferOptions();
             options.closeSession = false;
             try {
@@ -988,8 +988,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param credentials Include username
      * @return Null if there is a encoding failure
      */
-    public String toURL(boolean credentials) {
-        // Do not use java.net.URL because it doesn't know about custom protocols!
+    public String toURL(final boolean credentials) {
+        // Do not use java.net.URL because it doesn't know about custom protocols
         return String.format("%s%s", this.getHost().toURL(credentials), encode(this.getAbsolute()));
     }
 
@@ -1006,7 +1006,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return The HTTP accessible URL of this path including the default path
      *         prepended from the bookmark
      */
-    protected String toHttpURL(String uri) {
+    protected String toHttpURL(final String uri) {
         try {
             return new URI(uri + this.getWebPath(this.getAbsolute())).normalize().toString();
         }
