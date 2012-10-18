@@ -33,7 +33,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         Transfer t = new DownloadTransfer(new NullPath("t", Path.FILE_TYPE));
 //        t.size = 4L;
 //        t.transferred = 3L;
@@ -47,7 +47,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testSerializeComplete() throws Exception {
+    public void testSerializeComplete() {
         Transfer t = new DownloadTransfer(new NullPath("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
@@ -82,7 +82,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testChildren() throws Exception {
+    public void testChildren() {
         final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
             @Override
             protected AttributedList<Path> list(AttributedList<Path> children) {
@@ -92,6 +92,24 @@ public class DownloadTransferTest extends AbstractTestCase {
         };
         Transfer t = new DownloadTransfer(root);
         assertEquals(Collections.singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
+    }
+
+    @Test
+    public void testDownloadPath() {
+        final NullPath root = new NullPath("/t", Path.FILE_TYPE);
+        assertNull(root.getLocal());
+        Transfer t = new DownloadTransfer(root);
+        assertNotNull(root.getLocal());
+    }
+
+    @Test
+    public void testCustomDownloadPath() {
+        final NullPath root = new NullPath("/t", Path.FILE_TYPE);
+        final NullLocal l = new NullLocal(null, "n");
+        root.setLocal(l);
+        assertNotNull(root.getLocal());
+        Transfer t = new DownloadTransfer(root);
+        assertEquals(l, root.getLocal());
     }
 
     @Test

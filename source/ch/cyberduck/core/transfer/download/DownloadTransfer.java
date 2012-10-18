@@ -53,16 +53,22 @@ public class DownloadTransfer extends Transfer {
     private DownloadRegexFilter filter
             = new DownloadRegexFilter();
 
-    public DownloadTransfer(Path root) {
+    public DownloadTransfer(final Path root) {
         this(Collections.singletonList(root));
     }
 
-    public DownloadTransfer(List<Path> roots) {
+    public DownloadTransfer(final List<Path> roots) {
         super(new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
+        for(Path download : roots) {
+            if(null == download.getLocal()) {
+                // No custom download path set
+                download.setLocal(LocalFactory.createLocal(session.getHost().getDownloadFolder(), this.getName()));
+            }
+        }
     }
 
-    public <T> DownloadTransfer(T dict, Session s) {
+    public <T> DownloadTransfer(final T dict, final Session s) {
         super(dict, s, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }
