@@ -3435,14 +3435,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param selected  Selected files in browser
      */
     public void setWorkdir(final Path directory, final List<Path> selected) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set working directory to %s", directory.getAbsolute()));
-        }
         if(null == directory) {
             // Clear the browser view if no working directory is given
             this.workdir = null;
             this.reloadData(false);
             return;
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set working directory to %s", directory.getAbsolute()));
         }
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
