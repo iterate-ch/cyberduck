@@ -2865,11 +2865,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 return this.session;
             }
         }
-        final Host h = new Host(this.session.getHost().<NSDictionary>getAsDictionary());
-        // Copy credentials of the browser
-        h.getCredentials().setPassword(this.session.getHost().getCredentials().getPassword());
-        h.getCredentials().setSaved(false);
-        return SessionFactory.createSession(h);
+        return SessionFactory.createSession(session.getHost());
     }
 
     /**

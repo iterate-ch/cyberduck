@@ -2279,11 +2279,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     return _session;
                 }
             }
-            Host h = new Host(_session.getHost().getAsDictionary());
-            // Copy credentials of the browser
-            h.getCredentials().setPassword(_session.getHost().getCredentials().getPassword());
-            Session session = SessionFactory.createSession(h);
-            return session;
+            return SessionFactory.createSession(_session.getHost());
         }
 
         /// <summary>
