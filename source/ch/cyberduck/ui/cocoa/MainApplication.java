@@ -30,6 +30,7 @@ import ch.cyberduck.core.aquaticprime.Receipt;
 import ch.cyberduck.core.editor.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.editor.MultipleEditorFactory;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
@@ -107,6 +108,7 @@ public final class MainApplication {
                 SystemConfigurationReachability.register();
                 UserDefaultsDateFormatter.register();
                 LaunchServicesApplicationFinder.register();
+                LaunchServicesFileDescriptor.register();
                 LaunchServicesQuarantineService.register();
                 LaunchServicesSchemeHandler.register();
                 WorkspaceIconService.register();
