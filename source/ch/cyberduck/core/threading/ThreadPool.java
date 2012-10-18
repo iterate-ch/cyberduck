@@ -46,42 +46,21 @@ public class ThreadPool {
         }
     }
 
-    private final ThreadFactory threadFactory = new ThreadFactory() {
-        private int threadCount = 1;
+    private final ThreadFactory threadFactory
+            = new NamedThreadFactory();
 
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r);
-            thread.setName("background-" + threadCount++);
-            return thread;
-        }
-    };
-
-    /**
-     * Thread pool
-     */
-    private static ExecutorService pool;
-
-    private ExecutorService getExecutorService() {
-        if(null == pool || pool.isShutdown()) {
-            pool = Executors.newCachedThreadPool(threadFactory);
-        }
-        return pool;
-    }
-
-    private ExecutorService getExecutor() {
-        return this.getExecutorService();
-    }
+    private final ExecutorService pool
+            = Executors.newCachedThreadPool(threadFactory);
 
     public void shutdown() {
-        this.getExecutorService().shutdownNow();
+        pool.shutdownNow();
     }
 
     /**
      * @param command Action to run in its own executor thread
      */
     public void execute(final Runnable command) {
-        this.getExecutor().execute(command);
+        pool.execute(command);
     }
 
     /**
@@ -89,6 +68,6 @@ public class ThreadPool {
      * @return Future result
      */
     public <T> Future<T> execute(final Callable<T> command) {
-        return this.getExecutor().submit(command);
+        return pool.submit(command);
     }
 }
