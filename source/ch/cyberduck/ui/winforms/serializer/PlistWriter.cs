@@ -75,18 +75,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Serializer
         {
             HostWriterFactory.addFactory(Factory.NATIVE_PLATFORM, new HostFactory());
             TransferWriterFactory.addFactory(Factory.NATIVE_PLATFORM, new TransferFactory());
-            ProtocolWriterFactory.addFactory(Factory.NATIVE_PLATFORM, new ProtocolFactory());
         }
 
         private class HostFactory : HostWriterFactory
-        {
-            protected override object create()
-            {
-                return new PlistWriter();
-            }
-        }
-
-        private class ProtocolFactory : ProtocolWriterFactory
         {
             protected override object create()
             {

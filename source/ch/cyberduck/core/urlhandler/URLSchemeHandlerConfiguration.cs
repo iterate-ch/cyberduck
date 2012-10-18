@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,16 +15,17 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using org.apache.log4j;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Core.Urlhandler
 {
     internal class URLSchemeHandlerConfiguration
     {
-        private static readonly Logger Logger = Logger.getLogger(typeof(URLSchemeHandlerConfiguration).FullName);
+        private static readonly Logger Logger = Logger.getLogger(typeof (URLSchemeHandlerConfiguration).FullName);
 
         private static readonly URLSchemeHandlerConfiguration instance = new URLSchemeHandlerConfiguration();
 
@@ -92,7 +93,7 @@ namespace Ch.Cyberduck.Core
                 RegistryKey command = sftpClass.OpenSubKey(@"shell\open\command");
                 if (null != command)
                 {
-                    var value = (string)command.GetValue(String.Empty);
+                    var value = (string) command.GetValue(String.Empty);
                     return (null != value && value.Contains("Cyberduck"));
                 }
             }

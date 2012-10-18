@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.Local;
+using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Serializer;
@@ -39,10 +40,11 @@ using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.serializer;
+using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui;
 using org.apache.log4j;
-using org.apache.log4j.helpers;
 using org.apache.log4j.xml;
+using Object = java.lang.Object;
 using Path = System.IO.Path;
 using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 using ThreadPool = ch.cyberduck.core.threading.ThreadPool;
@@ -187,7 +189,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PlistDeserializer.Register();
             HostPlistReader.Register();
             TransferPlistReader.Register();
-            ProtocolPlistReader.Register();
+            ProfilePlistReader.Register();
             TcpReachability.Register();
             GrowlImpl.Register();
             TreePathReference.Register();
@@ -209,7 +211,9 @@ namespace Ch.Cyberduck.Ui.Controller
             // we do not save the log file in the roaming profile
             var fileName = Path.Combine(Preferences.instance().getProperty("application.support.path"), "cyberduck.log");
 
-            DOMConfigurator.configure(DOMConfigurator.instancehelper_getClass(new DOMConfigurator()).getClassLoader().getResource(Preferences.instance().getProperty("logging.config")));
+            DOMConfigurator.configure(
+                Object.instancehelper_getClass(new DOMConfigurator()).getClassLoader().getResource(
+                    Preferences.instance().getProperty("logging.config")));
             Logger root = Logger.getRootLogger();
             root.removeAllAppenders();
 
@@ -278,7 +282,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else if ("cyberduckprofile".Equals(f.getExtension()))
                     {
-                        Protocol profile = (Protocol) ProtocolReaderFactory.get().read(f);
+                        Protocol profile = (Protocol) ProfileReaderFactory.get().read(f);
                         if (null == profile)
                         {
                             return;
@@ -529,7 +533,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     new FilezillaBookmarkCollection(),
                     new WinScpBookmarkCollection(),
                     new SmartFtpBookmarkCollection(),
-                    new FlashFxp4BookmarkCollection(),
+                    new FlashFxp4UserBookmarkCollection(),
                     new FlashFxp4CommonBookmarkCollection(),
                     new FlashFxp3BookmarkCollection(),
                     new WsFtpBookmarkCollection(),

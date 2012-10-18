@@ -191,7 +191,7 @@
     <Compile Include="core\local\LocalImpl.cs" />
     <Compile Include="core\local\Win32FileDescriptor.cs" />
     <Compile Include="core\local\WindowsApplicationLauncher.cs" />
-    <Compile Include="core\URLSchemeHandlerConfiguration.cs" />
+    <Compile Include="core\urlhandler\URLSchemeHandlerConfiguration.cs" />
     <Compile Include="core\collections\IndexedLinkedList.cs" />
     <Compile Include="core\collections\LRUCache.cs" />
     <Compile Include="core\Commands.cs" />
@@ -258,7 +258,7 @@
       <DependentUpon>GotoPromptForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\winforms\serializer\HostPlistReader.cs" />
-    <Compile Include="ui\winforms\serializer\ProtocolPlistReader.cs" />
+    <Compile Include="ui\winforms\serializer\ProfilePlistReader.cs" />
     <Compile Include="ui\winforms\UpdateForm.cs">
       <SubType>Form</SubType>
     </Compile>
