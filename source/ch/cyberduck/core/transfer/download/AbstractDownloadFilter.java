@@ -103,8 +103,7 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
             final QuarantineService quarantine = QuarantineServiceFactory.get();
             if(options.quarantine) {
                 // Set quarantine attributes
-                quarantine.setQuarantine(file.getLocal(),
-                        file.getHost().toURL(), file.toURL());
+                quarantine.setQuarantine(file.getLocal(), file.getHost().toURL(), file.toURL());
             }
             if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
                 // Set quarantine attributes
