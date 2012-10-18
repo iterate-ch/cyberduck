@@ -32,6 +32,7 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
@@ -1426,12 +1427,12 @@ public class S3Path extends CloudPath {
             if(hostname.startsWith(container)) {
                 url.append(hostname);
                 if(!this.isContainer()) {
-                    url.append(DELIMITER).append(encode(this.getKey()));
+                    url.append(DELIMITER).append(URIEncoder.encode(this.getKey()));
                 }
             }
             else {
                 url.append(this.getSession().getHost().getHostname());
-                url.append(encode(this.getAbsolute()));
+                url.append(URIEncoder.encode(this.getAbsolute()));
             }
         }
         return url.toString();
