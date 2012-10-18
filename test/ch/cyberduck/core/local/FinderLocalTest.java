@@ -84,4 +84,24 @@ public class FinderLocalTest extends AbstractTestCase {
             }
         }, 10);
     }
+
+    @Test
+    public void testTouch() {
+        Local l = new FinderLocal(System.getProperty("java.io.tmpdir") + "/p/", UUID.randomUUID().toString());
+        l.touch();
+        assertTrue(l.exists());
+        l.touch();
+        assertTrue(l.exists());
+        l.delete();
+    }
+
+    @Test
+    public void testMkdir() {
+        Local l = new FinderLocal(System.getProperty("java.io.tmpdir") + "/p/", UUID.randomUUID().toString());
+        l.mkdir();
+        assertTrue(l.exists());
+        l.mkdir();
+        assertTrue(l.exists());
+        l.delete();
+    }
 }
