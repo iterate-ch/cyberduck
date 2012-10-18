@@ -47,7 +47,16 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.*;
+import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3BucketLoggingStatus;
+import org.jets3t.service.model.S3BucketVersioningStatus;
+import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.S3WebsiteConfig;
+import org.jets3t.service.model.StorageBucket;
+import org.jets3t.service.model.StorageBucketLoggingStatus;
+import org.jets3t.service.model.StorageObject;
+import org.jets3t.service.model.StorageOwner;
+import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.OAuth2Credentials;
@@ -955,41 +964,6 @@ public class S3Session extends CloudSession {
             users.add(0, user);
         }
         return users;
-    }
-
-    /**
-     * @param container Bucket name
-     * @return ACL with full control permission for owner of the bucket
-     */
-    protected Acl getPrivateAcl(String container) {
-        for(final StorageBucket bucket : buckets.values()) {
-            if(bucket.getName().equals(container)) {
-                StorageOwner owner = bucket.getOwner();
-                if(null == owner) {
-                    log.warn(String.format("Owner not known for container %s", container));
-                    continue;
-                }
-                return new Acl(new Acl.CanonicalUser(owner.getId()),
-                        new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()));
-            }
-        }
-        log.warn(String.format("No such container:%s", container));
-        return new Acl();
-    }
-
-    /**
-     * @param container Bucket name
-     * @param readable  Enable read permission for anonymous users
-     * @return ACL with full control permission for owner of the bucket plus the read and write permissions
-     *         for anonymous users if enabled.
-     */
-    protected Acl getUploadAcl(String container, boolean readable) {
-        final Acl acl = this.getPrivateAcl(container);
-        if(readable) {
-            acl.addAll(new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier()),
-                    new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()));
-        }
-        return acl;
     }
 
     /**

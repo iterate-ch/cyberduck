@@ -332,18 +332,6 @@ public class GSSession extends S3Session implements DistributionConfiguration {
     }
 
     @Override
-    public Acl getUploadAcl(String container, boolean readable) {
-        final Acl acl = new Acl();
-        // No need to add owner to ACL, Google Storage  will fill in the correct owner automatically
-        if(readable) {
-            acl.addAll(new Acl.GroupUser("AllUsers"),
-                    new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()));
-        }
-        // Write permission cannot be applied to objects.
-        return acl;
-    }
-
-    @Override
     public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
         List<Acl.Role> roles = new ArrayList<Acl.Role>(Arrays.asList(
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),

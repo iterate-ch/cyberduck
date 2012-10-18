@@ -24,11 +24,11 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginControllerFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.StreamListener;
@@ -559,67 +559,23 @@ public class S3Path extends CloudPath {
     }
 
     private StorageObject createObjectDetails() throws IOException {
-        StorageObject object = new StorageObject(this.getKey());
+        final StorageObject object = new StorageObject(this.getKey());
+        final String container = this.getContainerName();
         object.setContentType(this.getLocal().getMimeType());
         if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-            try {
-                this.getSession().message(MessageFormat.format(
-                        Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
-                object.setMd5Hash(ServiceUtils.computeMD5Hash(this.getLocal().getInputStream()));
-            }
-            catch(NoSuchAlgorithmException e) {
-                log.error(e.getMessage());
-            }
+            this.getSession().message(MessageFormat.format(
+                    Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
+            object.setMd5Hash(ServiceUtils.fromHex(this.getLocal().attributes().getChecksum()));
         }
-        Acl acl = Acl.EMPTY;
-        final String container = this.getContainerName();
-        if(this.exists()) {
-            // Do not overwrite ACL for existing file.
-            if(this.attributes().getAcl().equals(Acl.EMPTY)) {
-                this.readAcl();
-            }
-            acl = this.attributes().getAcl();
-        }
-        else {
-            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                Permission perm = Permission.EMPTY;
-                if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                    if(this.attributes().isFile()) {
-                        perm = new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                    }
-                    if(this.attributes().isDirectory()) {
-                        perm = new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                    }
-                }
-                else {
-                    if(this.getLocal().exists()) {
-                        // Read permissions from local file
-                        perm = this.getLocal().attributes().getPermission();
-                    }
-                }
-                if(perm.equals(Permission.EMPTY)) {
-                    log.debug("Skip writing empty permissions for:" + this.toString());
-                }
-                else {
-                    acl = this.getSession().getUploadAcl(container,
-                            perm.getOtherPermissions()[Permission.READ]
-                    );
-                }
-            }
-        }
+        Acl acl = this.attributes().getAcl();
         if(Acl.EMPTY.equals(acl)) {
-            // Owner gets FULL_CONTROL. No one else has access rights (default).
-            object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
-        }
-        else if(acl.equals(this.getSession().getPrivateAcl(container))) {
-            // Owner gets FULL_CONTROL. No one else has access rights (default).
-            object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
-        }
-        else if(acl.equals(this.getSession().getUploadAcl(container, true))) {
-            // Owner gets FULL_CONTROL and the anonymous principal is granted READ access
-            object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
+            if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
+                object.setAcl(this.getSession().getPublicCannedReadAcl());
+            }
+            else {
+                // Owner gets FULL_CONTROL. No one else has access rights (default).
+                object.setAcl(this.getSession().getPrivateCannedAcl());
+            }
         }
         else {
             object.setAcl(this.convert(acl));
@@ -634,22 +590,22 @@ public class S3Path extends CloudPath {
         // Default metadata for new files
         for(String m : Preferences.instance().getList("s3.metadata.default")) {
             if(StringUtils.isBlank(m)) {
-                log.warn("Invalid header " + m);
+                log.warn(String.format("Invalid header %s", m));
                 continue;
             }
             if(!m.contains("=")) {
-                log.warn("Invalid header " + m);
+                log.warn(String.format("Invalid header %s", m));
                 continue;
             }
             int split = m.indexOf('=');
             String name = m.substring(0, split);
             if(StringUtils.isBlank(name)) {
-                log.warn("Missing key in " + m);
+                log.warn(String.format("Missing key in header %s", m));
                 continue;
             }
             String value = m.substring(split + 1);
             if(StringUtils.isEmpty(value)) {
-                log.warn("Missing value in " + m);
+                log.warn(String.format("Missing value in header %s", m));
                 continue;
             }
             object.addMetadata(name, value);
