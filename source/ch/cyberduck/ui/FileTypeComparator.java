@@ -20,6 +20,8 @@ package ch.cyberduck.ui;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.FileDescriptor;
+import ch.cyberduck.core.local.FileDescriptorFactory;
 
 import java.text.Collator;
 import java.util.Locale;
@@ -32,6 +34,8 @@ public class FileTypeComparator extends BrowserComparator {
 
     private Collator impl = Collator.getInstance(Locale.getDefault());
 
+    private FileDescriptor descriptor = FileDescriptorFactory.get();
+
     public FileTypeComparator(boolean ascending) {
         super(ascending, new FilenameComparator(ascending));
     }
@@ -41,9 +45,9 @@ public class FileTypeComparator extends BrowserComparator {
         if((p1.attributes().isDirectory() && p2.attributes().isDirectory())
                 || p1.attributes().isFile() && p2.attributes().isFile()) {
             if(ascending) {
-                return impl.compare(p1.kind(), p2.kind());
+                return impl.compare(descriptor.getKind(p1), descriptor.getKind(p2));
             }
-            return -impl.compare(p1.kind(), p2.kind());
+            return -impl.compare(descriptor.getKind(p1), descriptor.getKind(p2));
         }
         if(p1.attributes().isFile()) {
             return ascending ? 1 : -1;
