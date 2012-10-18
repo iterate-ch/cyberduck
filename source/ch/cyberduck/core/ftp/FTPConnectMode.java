@@ -48,5 +48,6 @@ public class FTPConnectMode {
      * Private so no-one else can instantiate this class
      */
     private FTPConnectMode() {
+        //
     }
 }
