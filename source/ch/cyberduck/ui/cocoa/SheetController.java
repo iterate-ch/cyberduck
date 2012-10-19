@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSPanel;
 import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.foundation.NSThread;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.log4j.Logger;
@@ -146,22 +147,28 @@ public abstract class SheetController extends WindowController implements SheetC
     public void beginSheet() {
         synchronized(parent.window()) {
             this.signal = new CountDownLatch(1);
-            invoke(new ControllerMainAction(this) {
-                @Override
-                public void run() {
-                    //Invoke again on main thread
-                    beginSheetImpl();
+            if(NSThread.isMainThread()) {
+                // No need to call invoke on main thread
+                this.beginSheetImpl();
+            }
+            else {
+                invoke(new ControllerMainAction(this) {
+                    @Override
+                    public void run() {
+                        //Invoke again on main thread
+                        beginSheetImpl();
+                    }
+                }, true);
+                if(log.isDebugEnabled()) {
+                    log.debug("Await sheet dismiss");
                 }
-            }, true);
-            if(log.isDebugEnabled()) {
-                log.debug("Await sheet dismiss");
-            }
-            // Synchronize on parent controller. Only display one sheet at once.
-            try {
-                this.signal.await();
-            }
-            catch(InterruptedException e) {
-                log.error(String.format("Error waiting for sheet dismiss: %s", e.getMessage()));
+                // Synchronize on parent controller. Only display one sheet at once.
+                try {
+                    this.signal.await();
+                }
+                catch(InterruptedException e) {
+                    log.error(String.format("Error waiting for sheet dismiss: %s", e.getMessage()));
+                }
             }
         }
     }

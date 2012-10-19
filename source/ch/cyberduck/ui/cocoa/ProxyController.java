@@ -100,7 +100,7 @@ public class ProxyController extends AbstractController {
         }
         if(NSThread.isMainThread()) {
             if(log.isDebugEnabled()) {
-                log.debug("Already on main thread. Invoke " + runnable + " directly.");
+                log.debug(String.format("Already on main thread. Invoke %s directly.", runnable));
             }
             runnable.run();
             return;
