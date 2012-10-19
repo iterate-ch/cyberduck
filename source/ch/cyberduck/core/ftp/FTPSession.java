@@ -26,7 +26,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProxyFactory;
@@ -456,7 +455,7 @@ public class FTPSession extends SSLSession {
     @Override
     public Path workdir() throws IOException {
         final String directory = this.getClient().printWorkingDirectory();
-        return PathFactory.createPath(this, directory,
+        return new FTPPath(this, directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 

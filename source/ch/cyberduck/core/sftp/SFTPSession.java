@@ -26,7 +26,6 @@ import ch.cyberduck.core.HostnameConfiguratorFactory;
 import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Resolver;
@@ -61,7 +60,7 @@ import ch.ethz.ssh2.crypto.PEMDecryptException;
  * @version $Id$
  */
 public class SFTPSession extends Session {
-    private static Logger log = Logger.getLogger(SFTPSession.class);
+    private static final Logger log = Logger.getLogger(SFTPSession.class);
 
     private Connection connection;
 
@@ -430,7 +429,7 @@ public class SFTPSession extends Session {
     public Path workdir() throws IOException {
         // "." as referring to the current directory
         final String directory = this.sftp().canonicalPath(".");
-        return PathFactory.createPath(this, directory,
+        return new SFTPPath(this, directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 
