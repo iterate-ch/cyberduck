@@ -43,7 +43,7 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
 
     private static final long serialVersionUID = -3145592458663362423L;
 
-    protected static abstract class AbstractHandler extends DefaultHandler {
+    protected abstract static class AbstractHandler extends DefaultHandler {
         private StringBuilder currentText = null;
 
         @Override
