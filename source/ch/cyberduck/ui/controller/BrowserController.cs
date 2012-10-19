@@ -507,7 +507,10 @@ namespace Ch.Cyberduck.Ui.Controller
             Path p = SelectedPath;
             if (null != p)
             {
-                return Utils.OpenWithListForExtension(p.getLocal().getExtension());
+                if(p.attributes().isFile())
+                {
+                    return EditorFactory.instance().getEditors(p.getName());
+                }
             }
             return new List<KeyValuePair<string, string>>();
         }
@@ -2049,7 +2052,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (IsEditable(selected))
                 {
-                    Application app = EditorFactory.instance().getEditor(selected.getLocal());
+                    Application app = EditorFactory.instance().getEditor(selected.getName());
                     string editCommand = app != null ? app.getIdentifier() : null;
                     if (Utils.IsNotBlank(editCommand))
                     {
