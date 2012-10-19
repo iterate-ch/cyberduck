@@ -22,7 +22,6 @@ import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyControllerFactory;
 import ch.cyberduck.core.HostnameConfiguratorFactory;
 import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
