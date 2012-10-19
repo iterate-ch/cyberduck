@@ -216,11 +216,6 @@ namespace Ch.Cyberduck.core.editor
             return Utils.IsNotBlank(application.getIdentifier()) && File.Exists(application.getIdentifier());
         }
 
-        public bool isOpen(Application application)
-        {
-            return false;
-        }
-
         /// <summary>
         /// Return with Explorer registered application by file's extension (for editing)
         /// </summary>
