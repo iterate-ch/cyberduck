@@ -466,7 +466,8 @@ public abstract class Preferences {
         /**
          * While downloading, update the icon of the downloaded file as a progress indicator
          */
-        defaults.put("queue.download.updateIcon", String.valueOf(true));
+        defaults.put("queue.download.icon.update", String.valueOf(true));
+        defaults.put("queue.download.icon.threshold", String.valueOf(TransferStatus.MEGA * 5));
 
         /**
          * Default synchronize action selected in the sync dialog

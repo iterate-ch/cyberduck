@@ -764,47 +764,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                 this.getName()));
 
-        // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
-        // overhead when transferring a large amount of files
-        final boolean updateIcon = this.attributes().getSize() > TransferStatus.MEGA * 5;
-
-        final Local local = this.getLocal();
-        // Set the first progress icon
-        final IconService icon = IconServiceFactory.get();
-        if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
-            icon.setProgress(local, 0);
-        }
-        final StreamListener listener = new StreamListener() {
-            int step = 0;
-
-            @Override
-            public void bytesSent(long bytes) {
-                l.bytesSent(bytes);
-            }
-
-            @Override
-            public void bytesReceived(long bytes) {
-                if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
-                    if(-1 == bytes) {
-                        // Remove custom icon if complete. The Finder will display the default
-                        // icon for this filetype
-                        icon.setProgress(local, -1);
-                    }
-                    else {
-                        l.bytesReceived(bytes);
-                        if(updateIcon) {
-                            int fraction = (int) (status.getCurrent() / attributes().getSize() * 10);
-                            // An integer between 0 and 9
-                            if(fraction > step) {
-                                // Another 10 percent of the file has been transferred
-                                icon.setProgress(local, ++step);
-                            }
-                        }
-                    }
-                }
-            }
-        };
-        this.transfer(new ThrottledInputStream(in, throttle), out, listener, -1, status);
+        this.transfer(new ThrottledInputStream(in, throttle), out, l, -1, status);
     }
 
     /**
