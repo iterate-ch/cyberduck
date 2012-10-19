@@ -55,9 +55,4 @@ public interface Controller {
      * @param wait     Block calling thread
      */
     void invoke(final MainAction runnable, final boolean wait);
-
-    /**
-     * @return True if is thread zero
-     */
-    boolean isMainThread();
 }

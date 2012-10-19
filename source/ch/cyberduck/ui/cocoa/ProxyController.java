@@ -98,7 +98,7 @@ public class ProxyController extends AbstractController {
         if(!runnable.isValid()) {
             return;
         }
-        if(this.isMainThread()) {
+        if(NSThread.isMainThread()) {
             if(log.isDebugEnabled()) {
                 log.debug("Already on main thread. Invoke " + runnable + " directly.");
             }
@@ -117,13 +117,5 @@ public class ProxyController extends AbstractController {
                 log.error("Exception running task on main thread:" + e.getMessage(), e);
             }
         }
-    }
-
-    /**
-     * @return True if the current thread is not a background worker thread
-     */
-    @Override
-    public boolean isMainThread() {
-        return NSThread.isMainThread();
     }
 }

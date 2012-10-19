@@ -91,11 +91,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 //catch silently                
             }
         }
-
-        public override bool isMainThread()
-        {
-            return !View.InvokeRequired;
-        }
     }
 
     public class AsyncDelegateBackgroundAction : AbstractBackgroundAction

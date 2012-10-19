@@ -35,11 +35,6 @@ namespace Ch.Cyberduck.Ui.Controller
             _mainControl.BeginInvoke(new Invoker(mainAction.run));
         }
 
-        public override bool isMainThread()
-        {
-            return false;
-        }
-
         private delegate void Invoker();
     }
 }
