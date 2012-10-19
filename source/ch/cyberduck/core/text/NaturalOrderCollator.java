@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.text;
 
 /*
  * @(#)OSXCollator.java  

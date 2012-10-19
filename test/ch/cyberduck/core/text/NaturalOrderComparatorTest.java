@@ -1,11 +1,13 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.text;
+
+import ch.cyberduck.core.text.NaturalOrderComparator;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NaturalOrderComparatorTest {
 

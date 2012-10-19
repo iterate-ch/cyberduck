@@ -19,7 +19,7 @@ package ch.cyberduck.ui;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.NaturalOrderComparator;
+import ch.cyberduck.core.text.NaturalOrderComparator;
 import ch.cyberduck.core.Path;
 
 import java.util.Comparator;

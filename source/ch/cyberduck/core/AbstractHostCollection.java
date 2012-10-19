@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.text.NaturalOrderComparator;
 
 import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
