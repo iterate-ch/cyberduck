@@ -116,7 +116,9 @@ public final class BandwidthThrottle {
      *                       (not milliseconds!)
      */
     public void setRate(float bytesPerSecond) {
-        log.debug("setRate:" + bytesPerSecond);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set rate to %s bytes per second", bytesPerSecond));
+        }
         if(bytesPerSecond < 0) {
             rate = UNLIMITED;
         }
@@ -175,7 +177,7 @@ public final class BandwidthThrottle {
      * @return the number of bytes the sender is expected to send, which
      *         is always greater than one and less than or equal to desired
      */
-    synchronized public int request(int desired) {
+    public synchronized int request(int desired) {
         if(UNLIMITED == rate) {
             return desired;
         }
@@ -189,7 +191,7 @@ public final class BandwidthThrottle {
      * Waits until data is _availableBytes.
      */
     private void waitForBandwidth() {
-        for(; ; ) {
+        while(true) {
             long now = System.currentTimeMillis();
             updateWindow(now);
             if(availableBytes != 0) {
