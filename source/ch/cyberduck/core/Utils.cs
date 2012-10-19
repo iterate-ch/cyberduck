@@ -22,8 +22,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
-using ch.cyberduck.core.editor;
-using ch.cyberduck.core.local;
 using java.nio.charset;
 using java.util;
 using org.apache.log4j;
@@ -82,11 +80,6 @@ namespace Ch.Cyberduck.Core
             return !IsBlank(value);
         }
 
-        public static string ReplaceNewlines(string blockOfText, string replaceWith)
-        {
-            return blockOfText.Replace("\r\n", replaceWith).Replace("\n", replaceWith).Replace("\r", replaceWith);
-        }
-
         /// <summary>
         /// Get file extension. Ignores OS specific special characters. Includes the dot if available.
         /// </summary>
@@ -96,15 +89,13 @@ namespace Ch.Cyberduck.Core
         {
             if (IsNotBlank(filename))
             {
-                try
+                //see http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html
+                string extension = FilenameUtils.getExtension(filename);
+                if (Utils.IsBlank(extension))
                 {
-                    String ext = LocalFactory.createLocal(filename).getExtension();
-                    return "." + ext;
+                    return String.Empty;
                 }
-                catch (Exception e)
-                {
-                    Log.error(string.Format("Exception while getting file extension for {0}", filename), e);
-                }
+                return "." + extension;
             }
             return String.Empty;
         }
