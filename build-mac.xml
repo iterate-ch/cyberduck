@@ -58,7 +58,8 @@
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${home}/codesign-requirement.txt"/>
     <property name="codesign.requirement" value="${home}/codesign-requirement.bin"/>
-    <property name="codesign.arg" value="--requirements ${codesign.requirement}"/>
+    <property name="codesign.arg" value=""/>
+    <!--<property name="codesign.arg" value="- -requirements ${codesign.requirement}"/>-->
     <!--<property name="codesign.arg" value="- -entitlements ${codesign.entitlements}"/>-->
 
     <property name="installer.certificate" value="3rd Party Mac Developer Installer: David Kocher"/>
