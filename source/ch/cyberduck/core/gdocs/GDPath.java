@@ -527,8 +527,7 @@ public class GDPath extends Path {
     @Override
     public OutputStream write(final TransferStatus status) throws IOException {
         try {
-            final String mime = this.getLocal().getMimeType();
-
+            final String type = new MappingMimeTypeService().getMime(getName());
             DocumentListEntry document;
             if(this.exists()) {
                 // First, fetch entry using the resourceId
@@ -567,7 +566,7 @@ public class GDPath extends Path {
                 session = this.getSession().getClient().createInsertRequest(new URL(feed.toString()));
             }
             // Initialize a resumable media upload request.
-            session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_TYPE, mime);
+            session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_TYPE, type);
             session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_LENGTH, Long.toString(status.getLength()));
             final URL location;
             try {
@@ -580,14 +579,14 @@ public class GDPath extends Path {
             }
             final Service.GDataRequest request;
             request = this.getSession().getClient().createRequest(Service.GDataRequest.RequestType.UPDATE,
-                    location, new ContentType(mime));
+                    location, new ContentType(type));
             request.setHeader("Content-Length", String.valueOf(status.getLength()));
             if(this.exists()) {
                 if(status.isResume()) {
                     // Querying the status of an incomplete upload
                     Service.GDataRequest update = this.getSession().getClient().createRequest(
                             Service.GDataRequest.RequestType.UPDATE,
-                            location, new ContentType(mime));
+                            location, new ContentType(type));
                     // If your request is terminated prior to receiving an entry response from the server or
                     // if you receive an HTTP 503 response from the server, you can query the
                     // current status of the upload by issuing an empty PUT request on the unique upload URI
@@ -714,10 +713,11 @@ public class GDPath extends Path {
      * @return True for image formats supported by OCR
      */
     protected boolean isOcrSupported() {
-        return this.getMimeType().equals("application/pdf")
-                || this.getMimeType().equals("image/png")
-                || this.getMimeType().equals("image/jpeg")
-                || this.getMimeType().endsWith("image/gif");
+        final MappingMimeTypeService s = new MappingMimeTypeService();
+        return s.getMime(this.getName()).equals("application/pdf")
+                || s.getMime(this.getName()).equals("image/png")
+                || s.getMime(this.getName()).equals("image/jpeg")
+                || s.getMime(this.getName()).endsWith("image/gif");
     }
 
     /**
@@ -865,17 +865,6 @@ public class GDPath extends Path {
         }
         while(pager.getEntries().size() > 0);
         return children;
-    }
-
-    @Override
-    public String getMimeType() {
-        if(attributes().isFile()) {
-            final String exportFormat = getExportFormat(this.getDocumentType());
-            if(StringUtils.isNotEmpty(exportFormat)) {
-                return new MappingMimeTypeService().getMime(exportFormat);
-            }
-        }
-        return super.getMimeType();
     }
 
     @Override

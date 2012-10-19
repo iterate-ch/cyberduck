@@ -19,20 +19,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginControllerFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.StreamListener;
-import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
@@ -535,7 +522,8 @@ public class S3Path extends CloudPath {
 
     private StorageObject createObjectDetails() throws IOException {
         final StorageObject object = new StorageObject(this.getKey());
-        object.setContentType(this.getLocal().getMimeType());
+        final String type = new MappingMimeTypeService().getMime(getName());
+        object.setContentType(type);
         if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
             this.getSession().message(MessageFormat.format(
                     Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
@@ -850,8 +838,9 @@ public class S3Path extends CloudPath {
         DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override
             public StorageObject call(AbstractHttpEntity entity) throws IOException {
+                final String type = new MappingMimeTypeService().getMime(getName());
                 try {
-                    entity.setContentType(new BasicHeader(HttpHeaders.CONTENT_TYPE, getLocal().getMimeType()));
+                    entity.setContentType(new BasicHeader(HttpHeaders.CONTENT_TYPE, type));
                     getSession().getClient().putObjectWithRequestEntityImpl(getContainerName(), part, entity, requestParams);
                 }
                 catch(ServiceException e) {

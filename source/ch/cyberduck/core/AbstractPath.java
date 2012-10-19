@@ -173,10 +173,6 @@ public abstract class AbstractPath {
         return extension;
     }
 
-    public String getMimeType() {
-        return new MappingMimeTypeService().getMime(this.getName().toLowerCase());
-    }
-
     /**
      * @param parent The parent directory
      * @param name   The relative filename
