@@ -59,7 +59,7 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
  * @version $Id$
  */
 public class CFSession extends CloudSession implements DistributionConfiguration {
-    private static Logger log = Logger.getLogger(CFSession.class);
+    private static final Logger log = Logger.getLogger(CFSession.class);
 
     private FilesClient client;
 

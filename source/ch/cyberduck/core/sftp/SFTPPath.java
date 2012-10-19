@@ -53,7 +53,7 @@ import ch.ethz.ssh2.SFTPv3FileHandle;
  * @version $Id$
  */
 public class SFTPPath extends Path {
-    private static Logger log = Logger.getLogger(SFTPPath.class);
+    private static final Logger log = Logger.getLogger(SFTPPath.class);
 
     private final SFTPSession session;
 

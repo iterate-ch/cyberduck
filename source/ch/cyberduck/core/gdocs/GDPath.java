@@ -84,7 +84,7 @@ import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.ServiceException;
 
 public class GDPath extends Path {
-    private static Logger log = Logger.getLogger(GDPath.class);
+    private static final Logger log = Logger.getLogger(GDPath.class);
 
     private final GDSession session;
 

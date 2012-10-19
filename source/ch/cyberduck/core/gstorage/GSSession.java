@@ -79,7 +79,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class GSSession extends S3Session implements DistributionConfiguration {
-    private static Logger log = Logger.getLogger(GSSession.class);
+    private static final Logger log = Logger.getLogger(GSSession.class);
 
     /**
      * Cache distribution status result.

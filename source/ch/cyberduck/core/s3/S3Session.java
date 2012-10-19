@@ -90,7 +90,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class S3Session extends CloudSession {
-    private static Logger log = Logger.getLogger(S3Session.class);
+    private static final Logger log = Logger.getLogger(S3Session.class);
 
     private RequestEntityRestStorageService client;
 
@@ -123,7 +123,7 @@ public class S3Session extends CloudSession {
 
         @Override
         protected void initializeProxy() {
-            ; // Client already configured
+            // Client already configured
         }
 
         @Override
