@@ -61,7 +61,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class FTPPath extends Path {
-    private static Logger log = Logger.getLogger(FTPPath.class);
+    private static final Logger log = Logger.getLogger(FTPPath.class);
 
     private final FTPSession session;
 

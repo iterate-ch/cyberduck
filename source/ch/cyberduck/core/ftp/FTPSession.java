@@ -63,7 +63,7 @@ import java.util.TimeZone;
  * @version $Id$
  */
 public class FTPSession extends SSLSession {
-    private static Logger log = Logger.getLogger(FTPSession.class);
+    private static final Logger log = Logger.getLogger(FTPSession.class);
 
     private FTPClient client;
 
