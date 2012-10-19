@@ -46,11 +46,6 @@ public class WatchEditorTest extends AbstractTestCase {
             public void invoke(final MainAction runnable, final boolean wait) {
                 //
             }
-
-            @Override
-            public boolean isMainThread() {
-                return true;
-            }
         }, new Application("com.apple.TextEdit", null), new NullPath("t", Path.FILE_TYPE));
         assertEquals(new Application("com.apple.TextEdit", null), ((AbstractEditor) e).getApplication());
         assertEquals(new NullPath("t", Path.FILE_TYPE), ((AbstractEditor) e).getEdited());
