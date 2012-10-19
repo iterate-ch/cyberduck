@@ -21,7 +21,6 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
@@ -363,7 +362,7 @@ public class FTPPath extends Path {
                 continue;
             }
             for(String name : file.keySet()) {
-                final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(),
+                final Path parsed = new FTPPath(this.getSession(), this.getAbsolute(),
                         StringUtils.removeStart(name, this.getAbsolute() + Path.DELIMITER), FILE_TYPE);
                 parsed.setParent(this);
                 // size       -- Size in octets
@@ -479,7 +478,7 @@ public class FTPPath extends Path {
             if(name.equals(".") || name.equals("..")) {
                 continue;
             }
-            final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(),
+            final Path parsed = new FTPPath(this.getSession(), this.getAbsolute(),
                     StringUtils.removeStart(name, this.getAbsolute() + Path.DELIMITER),
                     f.getType() == FTPFile.DIRECTORY_TYPE ? DIRECTORY_TYPE : FILE_TYPE);
             parsed.setParent(this);

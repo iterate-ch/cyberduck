@@ -22,7 +22,6 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cdn.Distribution;
@@ -213,7 +212,7 @@ public class CFPath extends CloudPath {
                     do {
                         list = this.getSession().getClient().listContainersInfo(limit, marker);
                         for(FilesContainerInfo container : list) {
-                            Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), container.getName(),
+                            Path p = new CFPath(this.getSession(), this.getAbsolute(), container.getName(),
                                     VOLUME_TYPE | DIRECTORY_TYPE);
                             p.attributes().setSize(container.getTotalSize());
                             p.attributes().setOwner(this.getSession().getClient().getUserName());
@@ -233,7 +232,7 @@ public class CFPath extends CloudPath {
                         list = this.getSession().getClient().listObjectsStartingWith(this.getContainerName(),
                                 this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                         for(FilesObject object : list) {
-                            final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
+                            final Path file = new CFPath(this.getSession(), this.getContainerName(), object.getName(),
                                     "application/directory".equals(object.getMimeType()) ? DIRECTORY_TYPE : FILE_TYPE);
                             file.setParent(this);
                             if(file.attributes().isFile()) {
@@ -611,7 +610,7 @@ public class CFPath extends CloudPath {
                 if(!this.getSession().isConnected()) {
                     break;
                 }
-                i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
+                i.copy(new CFPath(this.getSession(), copy.getAbsolute(),
                         i.getName(), i.attributes().getType()), status);
             }
         }

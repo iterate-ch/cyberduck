@@ -22,7 +22,6 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -185,12 +184,10 @@ public class DAVPath extends HttpPath {
                 for(final DavResource resource : resources) {
                     // Try to parse as RFC 2396
                     final URI uri = resource.getHref();
-                    DAVPath p = (DAVPath) PathFactory.createPath(this.getSession(), uri.getPath(),
+                    DAVPath p = new DAVPath(this.getSession(), uri.getPath(),
                             resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
                     p.setParent(this);
-
                     p.readAttributes(resource);
-
                     children.add(p);
                 }
             }
