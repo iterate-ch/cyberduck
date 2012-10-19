@@ -19,8 +19,8 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.io.FileWatcher;
-import ch.cyberduck.core.io.FileWatcherListener;
+import ch.cyberduck.core.local.FileWatcher;
+import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;

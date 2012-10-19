@@ -1,4 +1,4 @@
-package ch.cyberduck.core.io;
+package ch.cyberduck.core.local;
 
 /*
  *  Copyright (c) 2009 David Kocher. All rights reserved.
@@ -18,8 +18,6 @@ package ch.cyberduck.core.io;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 
@@ -51,14 +49,13 @@ public class FileWatcher {
 
     public FileWatcher(final Local file) {
         this.file = file;
+        this.monitor = WatchService.newWatchService();
     }
 
-    /**
-     *
-     */
     public void register() {
-        log.debug("register:" + file);
-        monitor = WatchService.newWatchService();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Register file %s", file));
+        }
         final WatchableFile watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
         try {
             watchable.register(monitor, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
