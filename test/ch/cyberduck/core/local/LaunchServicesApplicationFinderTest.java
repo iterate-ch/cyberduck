@@ -41,7 +41,7 @@ public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
     @Test
     public void testFindAll() throws Exception {
         ApplicationFinder f = ApplicationFinderFactory.get();
-        final List<Application> applications = f.findAll(new NullLocal(null, "file.txt"));
+        final List<Application> applications = f.findAll("file.txt");
         assertFalse(applications.isEmpty());
         assertTrue(applications.contains(new Application("com.apple.TextEdit", "Preview")));
         assertTrue(applications.contains(new Application("com.macromates.textmate", "TextMate")));
@@ -50,6 +50,6 @@ public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
     @Test
     public void testFind() throws Exception {
         ApplicationFinder f = ApplicationFinderFactory.get();
-        assertEquals(new Application("com.apple.Preview", "Preview"), f.find(new NullLocal(null, "file.png")));
+        assertEquals(new Application("com.apple.Preview", "Preview"), f.find("file.png"));
     }
 }

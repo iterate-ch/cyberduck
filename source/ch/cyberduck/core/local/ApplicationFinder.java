@@ -26,20 +26,29 @@ import java.util.List;
 public interface ApplicationFinder {
 
     /**
+     * @param filename File name
      * @return All of the application bundle identifiers that are capable of handling
      *         the specified content type in the specified roles.
      */
-    List<Application> findAll(Local file);
+    List<Application> findAll(String filename);
 
     /**
      * Find application for file type.
      *
-     * @param file File
+     * @param filename File name
      * @return Absolute path to installed application
      */
-    Application find(Local file);
+    Application find(String filename);
 
+    /**
+     * @param application Application description
+     * @return True if path to the applicaiton is found
+     */
     boolean isInstalled(Application application);
 
-    Application find(String application);
+    /**
+     * @param application Identifier
+     * @return Application name
+     */
+    Application getDescription(String application);
 }

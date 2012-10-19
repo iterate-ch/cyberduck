@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
@@ -51,13 +51,13 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
             // and menu:updateItem:atIndex:shouldCancel: is not called.
             return new NSInteger(-1);
         }
-        final Local file = this.getSelectedFile();
+        final Path file = this.getEditable();
         final int count;
         if(null == file) {
             count = EditorFactory.instance().getEditors().size();
         }
         else {
-            count = EditorFactory.instance().getEditors(file).size();
+            count = EditorFactory.instance().getEditors(file.getName()).size();
         }
         if(0 == count) {
             return new NSInteger(1);
@@ -65,7 +65,7 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         return new NSInteger(count);
     }
 
-    protected abstract Local getSelectedFile();
+    protected abstract Path getEditable();
 
     /**
      * Caching last selected extension to build menu.
@@ -74,7 +74,7 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
      */
     @Override
     protected boolean isPopulated() {
-        final Local selected = this.getSelectedFile();
+        final Path selected = this.getEditable();
         if(selected != null && ObjectUtils.equals(extension, selected.getExtension())) {
             return true;
         }
@@ -89,13 +89,13 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        final Local selected = this.getSelectedFile();
+        final Path selected = this.getEditable();
         final List<Application> editors;
         if(null == selected) {
             editors = EditorFactory.instance().getEditors();
         }
         else {
-            editors = EditorFactory.instance().getEditors(selected);
+            editors = EditorFactory.instance().getEditors(selected.getName());
         }
         if(editors.size() == 0) {
             item.setTitle(Locale.localizedString("No external editor available"));
@@ -105,7 +105,7 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         item.setRepresentedObject(identifier);
         final String editor = editors.get(index.intValue()).getName();
         item.setTitle(editor);
-        if(null != selected && identifier.equalsIgnoreCase(EditorFactory.instance().getEditor(selected).getIdentifier())) {
+        if(null != selected && identifier.equalsIgnoreCase(EditorFactory.instance().getEditor(selected.getName()).getIdentifier())) {
             setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
         }
         else {

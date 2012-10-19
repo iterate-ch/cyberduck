@@ -1,7 +1,6 @@
 package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
@@ -26,12 +25,8 @@ public class WatchEditorFactoryTest extends AbstractTestCase {
     @Test
     public void testGetEditor() throws Exception {
         assertEquals("TextEdit", EditorFactory.instance().getDefaultEditor().getName());
-        assertEquals("TextEdit", EditorFactory.instance().getEditor(
-                new NullLocal(null, "f.txt")
-        ).getName());
-        assertEquals("Preview", EditorFactory.instance().getEditor(
-                new NullLocal(null, "f.png")
-        ).getName());
+        assertEquals("TextEdit", EditorFactory.instance().getEditor("f.txt").getName());
+        assertEquals("Preview", EditorFactory.instance().getEditor("f.png").getName());
     }
 
     @Test
@@ -45,14 +40,8 @@ public class WatchEditorFactoryTest extends AbstractTestCase {
         final List<Application> e = EditorFactory.instance().getEditors();
         assertFalse(e.isEmpty());
         assertTrue(e.contains(new Application("com.apple.TextEdit", null)));
-        assertFalse(EditorFactory.instance().getEditors(
-                new NullLocal(null, "f.txt")
-        ).isEmpty());
-        assertTrue(EditorFactory.instance().getEditors(
-                new NullLocal(null, "f.txt")
-        ).contains(new Application("com.apple.TextEdit", null)));
-        assertTrue(EditorFactory.instance().getEditors(
-                new NullLocal(null, "f.txt")
-        ).contains(new Application("com.macromates.textmate", null)));
+        assertFalse(EditorFactory.instance().getEditors("f.txt").isEmpty());
+        assertTrue(EditorFactory.instance().getEditors("f.txt").contains(new Application("com.apple.TextEdit", null)));
+        assertTrue(EditorFactory.instance().getEditors("f.txt").contains(new Application("com.macromates.textmate", null)));
     }
 }

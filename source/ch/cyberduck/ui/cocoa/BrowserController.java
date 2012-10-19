@@ -576,8 +576,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.editMenu = editMenu;
         this.editMenuDelegate = new EditMenuDelegate() {
             @Override
-            protected Local getSelectedFile() {
-                return BrowserController.this.getSelectedFile();
+            protected Path getEditable() {
+                final Path selected = BrowserController.this.getSelectedPath();
+                if(isEditable(selected)) {
+                    return selected;
+                }
+                return null;
             }
 
             @Override
@@ -586,17 +590,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
         };
         this.editMenu.setDelegate(editMenuDelegate.id());
-    }
-
-    protected Local getSelectedFile() {
-        final Path selected = this.getSelectedPath();
-        if(null == selected) {
-            return null;
-        }
-        if(selected.attributes().isFile()) {
-            return selected.getLocal();
-        }
-        return null;
     }
 
     @Outlet
@@ -2546,7 +2539,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param selected File
      * @return True if the selected path is editable (not a directory and no known binary file)
      */
-    private boolean isEditable(final Path selected) {
+    protected boolean isEditable(final Path selected) {
         if(this.getSession().getHost().getCredentials().isAnonymousLogin()) {
             return false;
         }
@@ -4130,7 +4123,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         return false;
                     }
                     // Choose editor for selected file
-                    if(null == EditorFactory.instance().getEditor(s.getLocal())) {
+                    if(null == EditorFactory.instance().getEditor(s.getName())) {
                         return false;
                     }
                 }
@@ -4318,7 +4311,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(null != selected) {
                 if(this.isEditable(selected)) {
                     // Choose editor for selected file
-                    editor = EditorFactory.instance().getEditor(selected.getLocal());
+                    editor = EditorFactory.instance().getEditor(selected.getName());
                 }
             }
             if(null == editor) {

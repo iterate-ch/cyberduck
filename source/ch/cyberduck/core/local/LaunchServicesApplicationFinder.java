@@ -113,19 +113,19 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
     });
 
     @Override
-    public List<Application> findAll(final Local file) {
-        final String extension = file.getExtension();
+    public List<Application> findAll(final String filename) {
+        final String extension = FilenameUtils.getExtension(filename);
         if(StringUtils.isEmpty(extension)) {
             return Collections.emptyList();
         }
         if(!defaultApplicationListCache.containsKey(extension)) {
             final List<Application> applications = new ArrayList<Application>();
             for(String identifier : this.findAllForType(extension)) {
-                applications.add(this.find(identifier));
+                applications.add(this.getDescription(identifier));
             }
             // Because of the different API used the default opening application may not be included
             // in the above list returned. Always add the default application anyway.
-            final Application defaultApplication = this.find(file);
+            final Application defaultApplication = this.find(filename);
             if(null != defaultApplication) {
                 if(!applications.contains(defaultApplication)) {
                     applications.add(defaultApplication);
@@ -140,12 +140,13 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
     /**
      * The default application for this file as set by the launch services
      *
+     * @param filename Filename
      * @return The bundle identifier of the default application to open the
      *         file of this type or null if unknown
      */
     @Override
-    public Application find(final Local file) {
-        final String extension = file.getExtension();
+    public Application find(final String filename) {
+        final String extension = FilenameUtils.getExtension(filename);
         if(!defaultApplicationCache.containsKey(extension)) {
             if(StringUtils.isEmpty(extension)) {
                 return null;
@@ -161,7 +162,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                     defaultApplicationCache.put(extension, null);
                 }
                 else {
-                    defaultApplicationCache.put(extension, this.find(bundle.bundleIdentifier()));
+                    defaultApplicationCache.put(extension, this.getDescription(bundle.bundleIdentifier()));
                 }
             }
         }
@@ -175,7 +176,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      * @return Application human readable name
      */
     @Override
-    public Application find(final String bundleIdentifier) {
+    public Application getDescription(final String bundleIdentifier) {
         if(!applicationNameCache.containsKey(bundleIdentifier)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Find application for %s", bundleIdentifier));

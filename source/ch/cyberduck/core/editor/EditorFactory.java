@@ -25,7 +25,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
@@ -87,7 +86,7 @@ public abstract class EditorFactory extends Factory<Editor> {
      * @return New editor instance for the given file type.
      */
     public Editor create(final Controller c, final Path path) {
-        return this.create(c, this.getEditor(path.getLocal()), path);
+        return this.create(c, this.getEditor(path.getName()), path);
     }
 
     /**
@@ -105,22 +104,22 @@ public abstract class EditorFactory extends Factory<Editor> {
      *         Preferences or com.apple.TextEdit if not installed.
      */
     public Application getDefaultEditor() {
-        return ApplicationFinderFactory.get().find(
+        return ApplicationFinderFactory.get().getDescription(
                 Preferences.instance().getProperty("editor.bundleIdentifier"));
     }
 
     /**
-     * @param file File to find editor for
-     * @return The bundle identifier of the application for this file or null if no
+     *
+     * @param filename@return The bundle identifier of the application for this file or null if no
      *         suitable and installed editor is found.
      */
-    public Application getEditor(final Local file) {
+    public Application getEditor(final String filename) {
         if(Preferences.instance().getBoolean("editor.alwaysUseDefault")) {
             return this.getDefaultEditor();
         }
         final ApplicationFinder finder = ApplicationFinderFactory.get();
         // The default application set by launch services to open files of the given type
-        final Application editor = finder.find(file);
+        final Application editor = finder.find(filename);
         if(null == editor) {
             // Use default editor if not applicable application found which handles this file type
             return this.getDefaultEditor();
@@ -130,16 +129,16 @@ public abstract class EditorFactory extends Factory<Editor> {
     }
 
     /**
-     * @param file File to find suitable editors
-     * @return Installed applications suitable to edit the given file type. Does always include
+     *
+     * @param filename@return Installed applications suitable to edit the given file type. Does always include
      *         the default editor set in the Preferences
      */
-    public List<Application> getEditors(final Local file) {
+    public List<Application> getEditors(final String filename) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find installed editors for file %s", file));
+            log.debug(String.format("Find installed editors for file %s", filename));
         }
         final List<Application> editors = new ArrayList<Application>(
-                ApplicationFinderFactory.get().findAll(file));
+                ApplicationFinderFactory.get().findAll(filename));
         // Add the application set as the default editor in the Preferences to be always
         // included in the list of available editors.
         final Application defaultEditor = this.getDefaultEditor();

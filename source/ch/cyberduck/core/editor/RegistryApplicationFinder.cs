@@ -45,7 +45,7 @@ namespace Ch.Cyberduck.core.editor
             new LRUCache<string, IList<Application>>(100);
 
         //vormals GetApplicationNameForExe
-        public Application find(string application)
+        public Application getDescription(string application)
         {
             if (applicationNameCache.ContainsKey(application))
             {
@@ -101,30 +101,31 @@ namespace Ch.Cyberduck.core.editor
             return applicationNameCache[application];
         }
 
-        public Application find(Local file)
+        public Application find(String filename)
         {
-            //see http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html
-            string strExt = Utils.GetSafeExtension(file.getName());
-            Application app;
-            Log.debug(string.Format("GetRegisteredDefaultApplication for filename {0}", file.getName()));
-
-            if (defaultApplicationCache.TryGetValue(strExt, out app))
+            string extension = Utils.GetSafeExtension(filename);
+            if (Utils.IsBlank(extension))
             {
-                Log.debug(string.Format("Return cached default application {0} for extension {1}", app, strExt));
+                return null;
+            }
+            Application app;
+            Log.debug(string.Format("GetRegisteredDefaultApplication for filename {0}", filename));
+            if (defaultApplicationCache.TryGetValue(extension, out app))
+            {
+                Log.debug(string.Format("Return cached default application {0} for extension {1}", app, extension));
                 return app;
             }
-
-            String exe = GetExplorerRegisteredApplication(file.getName());
+            String exe = GetExplorerRegisteredApplication(extension);
             if (null != exe)
             {
-                defaultApplicationCache.Add(strExt, find(exe));
+                defaultApplicationCache.Add(extension, find(exe));
             }
             else
             {
                 try
                 {
                     string strProgID;
-                    using (var extSubKey = Registry.ClassesRoot.OpenSubKey(strExt))
+                    using (var extSubKey = Registry.ClassesRoot.OpenSubKey(extension))
                     {
                         if (null != extSubKey)
                         {
@@ -147,29 +148,26 @@ namespace Ch.Cyberduck.core.editor
                                 }
                             }
                         }
-                        defaultApplicationCache.Add(strExt, find(exe));
+                        defaultApplicationCache.Add(extension, find(exe));
                     }
                 }
                 catch (Exception)
                 {
-                    Log.error(string.Format("Exception while finding application for {0}", file.getName()));
+                    Log.error(string.Format("Exception while finding application for {0}", filename));
                 }
             }
-            return defaultApplicationCache[strExt];
+            return defaultApplicationCache[extension];
         }
 
-        public List findAll(Local file)
+        public List findAll(String filename)
         {
             IList<String> progs = new List<string>();
             List<Application> map = new List<Application>();
-            String extension = file.getExtension();
-
+            string extension = Utils.GetSafeExtension(filename);
             if (Utils.IsBlank(extension))
             {
                 return Utils.ConvertToJavaList(map);
             }
-            if (!extension.StartsWith(".")) extension = "." + extension;
-
             if (!defaultApplicationListCache.ContainsKey(extension))
             {
                 using (RegistryKey clsExt = Registry.ClassesRoot.OpenSubKey(extension))
@@ -224,15 +222,13 @@ namespace Ch.Cyberduck.core.editor
         /// <returns></returns>
         /// <see cref="http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html"/>
         /// <see cref="http://msdn.microsoft.com/en-us/library/cc144154%28VS.85%29.aspx"/>
-        private string GetExplorerRegisteredApplication(string filename)
+        private string GetExplorerRegisteredApplication(string extension)
         {
             string command = null;
-            string strExt = Utils.GetSafeExtension(filename);
-
             try
             {
-                strExt = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\" + strExt;
-                using (RegistryKey oApplication = Registry.CurrentUser.OpenSubKey(strExt))
+                extension = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\" + extension;
+                using (RegistryKey oApplication = Registry.CurrentUser.OpenSubKey(extension))
                 {
                     if (null != oApplication)
                     {

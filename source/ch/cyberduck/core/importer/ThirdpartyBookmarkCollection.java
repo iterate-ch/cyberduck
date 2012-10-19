@@ -42,7 +42,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     @Override
     public String getName() {
-        return ApplicationFinderFactory.get().find(this.getBundleIdentifier()).getName();
+        return ApplicationFinderFactory.get().getDescription(this.getBundleIdentifier()).getName();
     }
 
     @Override
