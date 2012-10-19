@@ -106,7 +106,7 @@ namespace Ch.Cyberduck.core.editor
             //see http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html
             string strExt = Utils.GetSafeExtension(file.getName());
             Application app;
-            Log.debug(string.Format("GetRegisteredDefaultApplication for filname {0}", file.getName()));
+            Log.debug(string.Format("GetRegisteredDefaultApplication for filename {0}", file.getName()));
 
             if (defaultApplicationCache.TryGetValue(strExt, out app))
             {
