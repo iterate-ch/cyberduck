@@ -61,14 +61,10 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     }
 
     /**
-     * @param menu
-     * @param item
-     * @param index
      * @param cancel Set to YES if, due to some user action, the menu no longer needs to be
      *               displayed before all the menu items have been updated. You can ignore this flag, return YES,
      *               and continue; or you can save your work (to save time the next time your delegate is called)
      *               and return NO to stop the updating.
-     * @return
      */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         if(log.isTraceEnabled()) {
@@ -81,9 +77,6 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
         return !cancel;
     }
 
-    /**
-     * @return
-     */
     protected abstract Selector getDefaultAction();
 
     /**
@@ -114,8 +107,6 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     }
 
     /**
-     * @param menu
-     * @param event
      * @return True if this menu has an item that has registerd a keyboard shortcut
      *         equivalent to the event characters.
      */
@@ -125,7 +116,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
             return false;
         }
         if((event.modifierFlags() & this.getModifierMask()) == this.getModifierMask()) {
-            return event.charactersIgnoringModifiers().toLowerCase().equals(this.getKeyEquivalent());
+            return event.charactersIgnoringModifiers().equalsIgnoreCase(this.getKeyEquivalent());
         }
         return false;
     }
@@ -165,7 +156,6 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     /**
      * Validate menu item
      *
-     * @param item
      * @return False if menu item should be disabled.
      */
     public boolean validateMenuItem(NSMenuItem item) {
