@@ -434,7 +434,7 @@ public class FTPPath extends Path {
                         parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
                     }
                     if(facts.containsKey("charset")) {
-                        if(!facts.get("charset").toLowerCase().equals(this.getSession().getEncoding().toLowerCase())) {
+                        if(!facts.get("charset").equalsIgnoreCase(this.getSession().getEncoding())) {
                             log.error("Incompatible charset " + facts.get("charset")
                                     + " but session is configured with "
                                     + this.getSession().getEncoding());
