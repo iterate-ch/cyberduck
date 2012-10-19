@@ -24,6 +24,7 @@ using System.Linq;
 using Microsoft.Win32;
 using java.nio.charset;
 using java.util;
+using FilenameUtils = org.apache.commons.io.FilenameUtils;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core
