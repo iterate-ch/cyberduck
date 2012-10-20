@@ -58,4 +58,55 @@ public class CredentialsTest extends AbstractTestCase {
         assertTrue(c.validate(Protocol.WEBDAV));
         assertTrue(c.validate(Protocol.SFTP));
     }
+
+    @Test
+    public void testLoginReasonable() {
+        Credentials credentials = new Credentials("guest", "changeme");
+        assertTrue(credentials.validate(Protocol.FTP));
+    }
+
+    @Test
+    public void testLoginWithoutUsername() {
+        Credentials credentials = new Credentials(null,
+                Preferences.instance().getProperty("connection.login.anon.pass"));
+        assertFalse(credentials.validate(Protocol.FTP));
+    }
+
+    @Test
+    public void testLoginWithoutPass() {
+        Credentials credentials = new Credentials("guest", null);
+        assertFalse(credentials.validate(Protocol.FTP));
+    }
+
+    @Test
+    public void testLoginWithoutEmptyPass() {
+        Credentials credentials = new Credentials("guest", "");
+        assertTrue(credentials.validate(Protocol.FTP));
+    }
+
+    @Test
+    public void testLoginAnonymous1() {
+        Credentials credentials = new Credentials(Preferences.instance().getProperty("connection.login.anon.name"),
+                Preferences.instance().getProperty("connection.login.anon.pass"));
+        assertTrue(credentials.validate(Protocol.FTP));
+    }
+
+    @Test
+    public void testLoginAnonymous2() {
+        Credentials credentials = new Credentials(Preferences.instance().getProperty("connection.login.anon.name"),
+                null);
+        assertTrue(credentials.validate(Protocol.FTP));
+    }
+
+    /**
+     * http://trac.cyberduck.ch/ticket/1204
+     */
+    @Test
+    public void testLogin1204() {
+        Credentials credentials = new Credentials("cyberduck.login",
+                "1seCret");
+        assertTrue(credentials.validate(Protocol.FTP));
+        assertEquals("cyberduck.login", credentials.getUsername());
+        assertEquals("1seCret", credentials.getPassword());
+    }
 }
