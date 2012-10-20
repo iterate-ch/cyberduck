@@ -22,6 +22,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
+import ch.cyberduck.core.serializer.Writer;
 
 import org.apache.log4j.Logger;
 
@@ -44,6 +45,8 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     private static final long serialVersionUID = -675342412129904735L;
 
+    private final Writer<Host> writer = HostWriterFactory.get();
+
     /**
      * @return Singleton instance
      */
@@ -56,12 +59,12 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
      *
      * @param f Parent directory to look for bookmarks
      */
-    public FolderBookmarkCollection(Local f) {
+    public FolderBookmarkCollection(final Local f) {
         super(f);
     }
 
     @Override
-    public void collectionItemAdded(Host bookmark) {
+    public void collectionItemAdded(final Host bookmark) {
         if(this.isLocked()) {
             log.debug("Do not notify changes of locked collection");
             return;
@@ -71,8 +74,8 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         super.collectionItemAdded(bookmark);
     }
 
-    protected void save(Host bookmark) {
-        HostWriterFactory.get().write(bookmark, this.getFile(bookmark));
+    private void save(final Host bookmark) {
+        writer.write(bookmark, this.getFile(bookmark));
     }
 
     @Override
@@ -91,7 +94,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     /**
      * Update index of bookmark positions
      */
-    protected void index() {
+    private void index() {
         for(int i = 0; i < this.size(); i++) {
             Preferences.instance().setProperty(PREFIX + this.get(i).getUuid(), i);
         }
@@ -108,7 +111,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
      * @param c Existing collection
      */
     @Override
-    protected void load(Collection<Host> c) {
+    protected void load(final Collection<Host> c) {
         super.load(c);
         // Create index for imported collection
         this.index();
