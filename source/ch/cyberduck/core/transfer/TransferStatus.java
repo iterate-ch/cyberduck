@@ -101,7 +101,7 @@ public class TransferStatus {
         this.current = current;
     }
 
-    public void addCurrent(long transferred) {
+    public void addCurrent(final long transferred) {
         this.current += transferred;
     }
 
