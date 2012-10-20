@@ -6,8 +6,7 @@ import ch.cyberduck.core.local.LocalFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -23,11 +22,13 @@ public class ReceiptTest extends AbstractTestCase {
     public void testVerify() throws Exception {
         Receipt r = new Receipt(LocalFactory.createLocal("/Applications/Cyberduck.app/Contents/_MASReceipt/receipt"));
         assertTrue(r.verify());
+        assertEquals("040ccee30d02", r.getName());
     }
 
     @Test
     public void testVerifyFailure() throws Exception {
         Receipt r = new Receipt(LocalFactory.createLocal("/Applications/Cyberduck.app/Contents/Info.plist"));
         assertFalse(r.verify());
+        assertEquals("Unknown", r.getName());
     }
 }
