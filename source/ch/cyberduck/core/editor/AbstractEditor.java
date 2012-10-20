@@ -31,7 +31,6 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
@@ -160,12 +159,7 @@ public abstract class AbstractEditor implements Editor {
                 final TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 options.quarantine = false;
-                download.start(new TransferPrompt() {
-                    @Override
-                    public TransferAction prompt() {
-                        return TransferAction.ACTION_OVERWRITE;
-                    }
-                }, options);
+                download.start(null, options);
                 if(download.isComplete()) {
                     edited.getSession().message(MessageFormat.format(
                             Locale.localizedString("Compute MD5 hash of {0}", "Status"), edited.getName()));
@@ -224,12 +218,7 @@ public abstract class AbstractEditor implements Editor {
                         return TransferAction.ACTION_OVERWRITE;
                     }
                 };
-                upload.start(new TransferPrompt() {
-                    @Override
-                    public TransferAction prompt() {
-                        return TransferAction.ACTION_OVERWRITE;
-                    }
-                }, options);
+                upload.start(null, options);
                 if(upload.isComplete()) {
                     if(isClosed()) {
                         delete();
