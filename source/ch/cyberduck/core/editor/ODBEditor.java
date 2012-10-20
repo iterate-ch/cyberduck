@@ -33,15 +33,7 @@ public class ODBEditor extends BrowserBackgroundEditor {
 
     public ODBEditor(Controller c, Application application, final Path path) {
         super(c, application, path);
-    }
-
-    private static boolean JNI_LOADED = false;
-
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("ODBEdit");
-        }
-        return JNI_LOADED;
+        Native.load("ODBEdit");
     }
 
     /**
@@ -49,9 +41,6 @@ public class ODBEditor extends BrowserBackgroundEditor {
      */
     @Override
     public void edit() {
-        if(!loadNative()) {
-            return;
-        }
         if(!this.edit(this.getEdited().getLocal().getAbsolute(), this.getEdited().toURL(), this.getApplication().getIdentifier())) {
             log.warn(String.format("Edit failed for %s", this.getEdited().getLocal().getAbsolute()));
         }

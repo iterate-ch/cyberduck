@@ -24,11 +24,12 @@ package ch.cyberduck.core.editor;
 public interface Editor {
 
     /**
-     * Open file in editor
+     * Download file and open in editor
      */
-    void edit();
-
     void open();
 
+    /**
+     * Upload saved changes
+     */
     void save();
 }

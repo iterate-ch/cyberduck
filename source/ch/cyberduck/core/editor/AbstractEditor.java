@@ -155,7 +155,8 @@ public abstract class AbstractEditor implements Editor {
             @Override
             public void run() {
                 // Delete any existing file which might be used by a watch editor already
-                edited.getLocal().trash();
+                final Local local = edited.getLocal();
+                local.trash();
                 final TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 options.quarantine = false;
@@ -168,18 +169,19 @@ public abstract class AbstractEditor implements Editor {
                 if(download.isComplete()) {
                     edited.getSession().message(MessageFormat.format(
                             Locale.localizedString("Compute MD5 hash of {0}", "Status"), edited.getName()));
-                    checksum = edited.getLocal().attributes().getChecksum();
+                    checksum = local.attributes().getChecksum();
                 }
             }
 
             @Override
             public void cleanup() {
                 if(download.isComplete()) {
-                    final Permission permissions = edited.getLocal().attributes().getPermission();
+                    final Local local = edited.getLocal();
+                    final Permission permissions = local.attributes().getPermission();
                     // Update local permissions to make sure the file is readable and writable for editing.
                     permissions.getOwnerPermissions()[Permission.READ] = true;
                     permissions.getOwnerPermissions()[Permission.WRITE] = true;
-                    edited.getLocal().writeUnixPermission(permissions);
+                    local.writeUnixPermission(permissions);
                     // Important, should always be run on the main thread; otherwise applescript crashes
                     AbstractEditor.this.edit();
                 }
@@ -190,6 +192,11 @@ public abstract class AbstractEditor implements Editor {
         }
         this.open(background);
     }
+
+    /**
+     * Watch for changes in external editor
+     */
+    protected abstract void edit();
 
     /**
      * Upload changes to server if checksum of local file has changed since last edit.
