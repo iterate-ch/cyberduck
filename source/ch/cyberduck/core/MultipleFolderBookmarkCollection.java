@@ -27,10 +27,10 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollection> implements EditableCollection {
+public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkCollection> implements EditableCollection {
     private static Logger log = Logger.getLogger(FolderBookmarkCollection.class);
 
-    private static final MultipleBookmarkCollection EMPTY = new MultipleBookmarkCollection(null) {
+    private static final MultipleFolderBookmarkCollection EMPTY = new MultipleFolderBookmarkCollection(null) {
         private static final long serialVersionUID = 5741322275377145083L;
 
         @Override
@@ -40,15 +40,15 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
     };
     private static final long serialVersionUID = -6318679625583371126L;
 
-    public static MultipleBookmarkCollection empty() {
+    public static MultipleFolderBookmarkCollection empty() {
         return EMPTY;
     }
 
-    private static final MultipleBookmarkCollection DEFAULT_COLLECTION = new MultipleBookmarkCollection(
+    private static final MultipleFolderBookmarkCollection DEFAULT_COLLECTION = new MultipleFolderBookmarkCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Bookmarks")
     );
 
-    public static MultipleBookmarkCollection defaultCollection() {
+    public static MultipleFolderBookmarkCollection defaultCollection() {
         return DEFAULT_COLLECTION;
     }
 
@@ -59,7 +59,7 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
      *
      * @param f Parent directory to look for bookmarks
      */
-    public MultipleBookmarkCollection(Local f) {
+    public MultipleFolderBookmarkCollection(Local f) {
         this.folder = f;
         this.folder.mkdir();
         this.load();
@@ -92,7 +92,6 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
         }
         return false;
     }
-
 
     @Override
     public boolean allowsAdd() {
