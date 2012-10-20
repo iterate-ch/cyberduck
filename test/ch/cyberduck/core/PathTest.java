@@ -181,4 +181,15 @@ public class PathTest extends AbstractTestCase {
         assertTrue(status.isCanceled());
         assertEquals(32768L, status.getCurrent());
     }
+
+    @Test
+    public void testSymlink() {
+        Path p = new NullPath("t", Path.FILE_TYPE);
+        assertFalse(p.attributes().isSymbolicLink());
+        assertNull(p.getSymlinkTarget());
+        p.attributes().setType(Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
+        assertTrue(p.attributes().isSymbolicLink());
+        p.setSymlinkTarget("s");
+        assertEquals("/s", p.getSymlinkTarget().getAbsolute());
+    }
 }
