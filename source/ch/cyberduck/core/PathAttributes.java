@@ -168,7 +168,7 @@ public class PathAttributes extends Attributes implements Serializable {
             dict.setStringForKey(versionId, "Version");
         }
         dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
-        return dict.<T>getSerialized();
+        return dict.getSerialized();
     }
 
     /**
