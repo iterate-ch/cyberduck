@@ -18,10 +18,18 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.io.output.NullOutputStream;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.io.IOException;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+
+import static org.junit.Assert.*;
 
 public class PathTest extends AbstractTestCase {
 
@@ -99,5 +107,78 @@ public class PathTest extends AbstractTestCase {
     @Test
     public void test972() throws Exception {
         assertEquals("//home/path", Path.normalize("//home/path"));
+    }
+
+    @Test
+    public void testTransfer() throws Exception {
+        Path p = new NullPath("/t", Path.FILE_TYPE);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(432768L);
+        p.transfer(new NullInputStream(status.getLength()), new NullOutputStream(),
+                new StreamListener() {
+                    long sent;
+                    long received;
+
+                    @Override
+                    public void bytesSent(long bytes) {
+                        assertTrue(bytes > 0L);
+                        assertTrue(bytes <= 32768L);
+                        sent += bytes;
+                        assertTrue(sent == received);
+                    }
+
+                    @Override
+                    public void bytesReceived(long bytes) {
+                        assertTrue(bytes > 0L);
+                        assertTrue(bytes <= 32768L);
+                        received += bytes;
+                        assertTrue(received > sent);
+                    }
+                }, -1, status);
+        assertTrue(status.isComplete());
+        assertTrue(status.getCurrent() == status.getLength());
+    }
+
+    @Test
+    public void testTransferInterrupt() throws Exception {
+        final Path p = new NullPath("/t", Path.FILE_TYPE);
+        final TransferStatus status = new TransferStatus();
+        final CyclicBarrier lock = new CyclicBarrier(2);
+        status.setLength(432768L);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    p.transfer(new NullInputStream(status.getLength()), new NullOutputStream(),
+                            new StreamListener() {
+                                @Override
+                                public void bytesSent(long bytes) {
+                                    //
+                                }
+
+                                @Override
+                                public void bytesReceived(long bytes) {
+                                    try {
+                                        lock.await();
+                                    }
+                                    catch(InterruptedException e) {
+                                        fail(e.getMessage());
+                                    }
+                                    catch(BrokenBarrierException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, -1, status);
+                }
+                catch(IOException e) {
+                    fail(e.getMessage());
+                }
+            }
+        }).start();
+        lock.await();
+        status.setCanceled();
+        assertFalse(status.isComplete());
+        assertTrue(status.isCanceled());
+        assertEquals(32768L, status.getCurrent());
     }
 }

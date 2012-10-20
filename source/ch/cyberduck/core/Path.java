@@ -24,8 +24,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
-import ch.cyberduck.core.local.IconService;
-import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -779,34 +777,37 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @throws ConnectionCanceledException When transfer is interrupted by user setting the
      *                                     status flag to cancel.
      */
-    private void transfer(final InputStream in, final OutputStream out,
-                          final StreamListener listener, final long limit, final TransferStatus status) throws IOException {
+    protected void transfer(final InputStream in, final OutputStream out,
+                            final StreamListener listener, final long limit,
+                            final TransferStatus status) throws IOException {
         final BufferedInputStream bi = new BufferedInputStream(in);
         final BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
-            byte[] chunk = new byte[CHUNKSIZE];
+            final byte[] chunk = new byte[CHUNKSIZE];
             long bytesTransferred = 0;
             while(!status.isCanceled()) {
-                int read = bi.read(chunk, 0, CHUNKSIZE);
-                listener.bytesReceived(read);
+                final int read = bi.read(chunk, 0, CHUNKSIZE);
                 if(-1 == read) {
                     log.debug("End of file reached");
                     // End of file
                     status.setComplete();
                     break;
                 }
-                bo.write(chunk, 0, read);
-                listener.bytesSent(read);
-                status.addCurrent(read);
-                bytesTransferred += read;
-                if(limit == bytesTransferred) {
-                    log.debug("Limit reached reading from stream:" + limit);
-                    // Part reached
-                    if(0 == bi.available()) {
-                        // End of file
-                        status.setComplete();
+                else {
+                    listener.bytesReceived(read);
+                    bo.write(chunk, 0, read);
+                    listener.bytesSent(read);
+                    status.addCurrent(read);
+                    bytesTransferred += read;
+                    if(limit == bytesTransferred) {
+                        log.debug("Limit reached reading from stream:" + limit);
+                        // Part reached
+                        if(0 == bi.available()) {
+                            // End of file
+                            status.setComplete();
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
