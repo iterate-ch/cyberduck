@@ -48,20 +48,12 @@ public class Donation extends AbstractLicense {
         }
     }
 
-    private static boolean JNI_LOADED = false;
-
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("Prime");
-        }
-        return JNI_LOADED;
-    }
-
     /**
      * @param file The license key file.
      */
     public Donation(Local file) {
         super(file);
+        Native.load("Prime");
     }
 
     /**
@@ -69,9 +61,6 @@ public class Donation extends AbstractLicense {
      */
     @Override
     public boolean verify() {
-        if(!Donation.loadNative()) {
-            return false;
-        }
         final boolean valid = this.verify(this.getFile().getAbsolute());
         if(valid) {
             if(log.isInfoEnabled()) {
@@ -88,9 +77,6 @@ public class Donation extends AbstractLicense {
 
     @Override
     public String getValue(String property) {
-        if(!Donation.loadNative()) {
-            return null;
-        }
         return this.getValue(this.getFile().getAbsolute(), property);
     }
 
