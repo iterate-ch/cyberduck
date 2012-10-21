@@ -570,7 +570,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 protected void fireDidTransferPath(Path path) {
                     if(dock) {
                         Editor editor = EditorFactory.instance().create(controller, path);
-                        editor.edit();
+                        editor.open();
                     }
                     super.fireDidTransferPath(path);
                 }
