@@ -124,9 +124,9 @@ public class FinderLocal extends Local {
 
     @Override
     public Local getVolume() {
-        for(Local parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
+        for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
             if(parent.getParent().getAbsolute().equals("/Volumes")) {
-                return parent;
+                return (Local) parent;
             }
         }
         return super.getVolume();
@@ -335,7 +335,7 @@ public class FinderLocal extends Local {
 
     @Override
     public AbstractPath getSymlinkTarget() {
-        return new FinderLocal(this.getParent(),
+        return new FinderLocal(this.getParent().getAbsolute(),
                 NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(this.getAbsolute(), null));
     }
 
