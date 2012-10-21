@@ -58,6 +58,9 @@ public class DownloadTransfer extends Transfer {
     private final IconService icon
             = IconServiceFactory.get();
 
+    private final ApplicationLauncher launcher
+            = ApplicationLauncherFactory.get();
+
     public DownloadTransfer(final Path root) {
         this(Collections.singletonList(root));
     }
@@ -226,11 +229,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     protected void fireTransferDidEnd() {
-        if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
-            final ApplicationLauncher launcher = ApplicationLauncherFactory.get();
-            if(this.shouldOpenWhenComplete()) {
-                launcher.open(this.getRoot().getLocal());
-            }
+        if(this.isComplete()) {
             launcher.bounce(this.getRoot().getLocal());
         }
         super.fireTransferDidEnd();

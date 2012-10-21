@@ -3,6 +3,8 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.ApplicationLauncher;
+import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
@@ -20,6 +22,10 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractDownloadFilter.class);
 
     private SymlinkResolver symlinkResolver;
+
+    private final QuarantineService quarantine
+            = QuarantineServiceFactory.get();
+    private final ApplicationLauncher launcher = ApplicationLauncherFactory.get();
 
     public AbstractDownloadFilter(final SymlinkResolver symlinkResolver) {
         this.symlinkResolver = symlinkResolver;
@@ -100,7 +106,6 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            final QuarantineService quarantine = QuarantineServiceFactory.get();
             if(options.quarantine) {
                 // Set quarantine attributes
                 quarantine.setQuarantine(file.getLocal(), file.getHost().toURL(), file.toURL());
@@ -109,6 +114,10 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
                 // Set quarantine attributes
                 quarantine.setWhereFrom(file.getLocal(), file.toURL());
             }
+            if(options.open) {
+                launcher.open(file.getLocal());
+            }
+            launcher.bounce(file.getLocal());
         }
         if(!status.isCanceled()) {
             if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
