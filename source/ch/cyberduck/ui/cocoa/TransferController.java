@@ -940,7 +940,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
             item.setToolTip(Locale.localizedString(TOOLBAR_CLEAN_UP));
-            item.setImage(IconCache.iconNamed("cleanAll.tiff"));
+            item.setImage(IconCache.iconNamed("cleanall.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("clearButtonClicked:"));
             return item;
