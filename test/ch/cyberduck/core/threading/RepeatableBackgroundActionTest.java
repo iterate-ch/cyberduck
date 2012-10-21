@@ -18,21 +18,24 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 
 import org.junit.Test;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class RepeatableBackgroundActionTest {
+public class RepeatableBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testGetExceptions() throws Exception {
@@ -54,5 +57,29 @@ public class RepeatableBackgroundActionTest {
         a.error(new BackgroundException(new Host("t"), null, null, null));
         assertTrue(a.hasFailed());
         assertEquals(1, a.getExceptions().size());
+    }
+
+    @Test
+    public void testFilter() throws Exception {
+        RepeatableBackgroundAction a = new RepeatableBackgroundAction() {
+            @Override
+            protected List<Session> getSessions() {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public void run() {
+                //
+            }
+        };
+        a.error(new BackgroundException(new Host("t"), null, null, new SocketException("")));
+        assertTrue(a.hasFailed());
+        assertEquals(1, a.getExceptions().size());
+//        a.error(new BackgroundException(new Host("t"), null, null, new SocketException("")));
+//        assertTrue(a.hasFailed());
+//        assertEquals(1, a.getExceptions().size());
+        a.error(new BackgroundException(new Host("t"), null, null, new UnknownHostException("")));
+        assertTrue(a.hasFailed());
+        assertEquals(2, a.getExceptions().size());
     }
 }
