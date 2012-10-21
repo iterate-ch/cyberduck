@@ -20,6 +20,7 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Ssl;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;

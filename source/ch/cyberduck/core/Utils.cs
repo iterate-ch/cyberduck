@@ -22,9 +22,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
+using ch.cyberduck.core.local;
 using java.nio.charset;
 using java.util;
-using FilenameUtils = org.apache.commons.io.FilenameUtils;
+using org.apache.commons.io;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core
@@ -92,7 +93,7 @@ namespace Ch.Cyberduck.Core
             {
                 //see http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html
                 string extension = FilenameUtils.getExtension(filename);
-                if (Utils.IsBlank(extension))
+                if (IsBlank(extension))
                 {
                     return String.Empty;
                 }

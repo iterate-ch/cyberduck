@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using ch.cyberduck.ui;
+using Application = ch.cyberduck.core.local.Application;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -39,7 +40,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
     public delegate void EditWithHandler(String exe);
 
-    public delegate IList<KeyValuePair<string, string>> EditorsHandler();
+    public delegate IList<Application> EditorsHandler();
 
     public delegate IList<string> ArchivesHandler();
 

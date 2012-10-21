@@ -37,7 +37,7 @@ namespace Ch.Cyberduck.Core.Editor
         {
         }
 
-        public override void edit()
+        protected override void edit()
         {
             Path path = getEdited();
             Application application = getApplication();

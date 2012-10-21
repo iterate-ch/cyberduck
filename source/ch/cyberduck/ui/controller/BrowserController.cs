@@ -502,17 +502,17 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private IList<KeyValuePair<string, string>> View_GetEditorsForSelection()
+        private IList<Application> View_GetEditorsForSelection()
         {
             Path p = SelectedPath;
             if (null != p)
             {
-                if(p.attributes().isFile())
+                if (p.attributes().isFile())
                 {
-                    return EditorFactory.instance().getEditors(p.getName());
+                    return Utils.ConvertFromJavaList<Application>(EditorFactory.instance().getEditors(p.getName()), null);
                 }
             }
-            return new List<KeyValuePair<string, string>>();
+            return new List<Application>();
         }
 
         private bool View_ValidateNewBrowser()

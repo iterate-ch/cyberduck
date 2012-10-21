@@ -41,6 +41,7 @@ using ch.cyberduck.ui;
 using org.apache.commons.io;
 using org.apache.commons.lang;
 using org.apache.log4j;
+using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
 
@@ -1010,19 +1011,20 @@ namespace Ch.Cyberduck.Ui.Winforms
                 vistaMenu1.SetImage(item, IconCache.ResizeImage(editToolStripSplitButton.Image, new Size(16, 16)));
                 SetShortcutText(item, editWithToolStripMenuItem, null);
             }
-            IList<KeyValuePair<string, string>> editors = GetEditorsForSelection();
+            IList<Application> editors = GetEditorsForSelection();
             if (editors.Count > 0)
             {
                 mainItem.MenuItems.Add("-");
             }
-            foreach (KeyValuePair<string, string> pair in editors)
+            foreach (Application app in editors)
             {
-                MenuItem item = mainItem.MenuItems.Add(pair.Key);
-                item.Tag = pair.Value;
+                MenuItem item = mainItem.MenuItems.Add(app.getName());
+                item.Tag = app.getIdentifier();
                 item.Click += delegate { EditEvent(item.Tag as String); };
                 vistaMenu1.UpdateParent(mainItem);
                 vistaMenu1.SetImage(item,
-                                    IconCache.Instance.ExtractIconFromExecutable(pair.Value, IconCache.IconSize.Small));
+                                    IconCache.Instance.ExtractIconFromExecutable(app.getIdentifier(),
+                                                                                 IconCache.IconSize.Small));
             }
         }
 
@@ -1041,11 +1043,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void OnEditorActionMenuOpening(object sender, EventArgs e)
         {
             editorMenuStrip.Items.Clear();
-            foreach (KeyValuePair<string, string> pair in GetEditorsForSelection())
+            foreach (Application app in GetEditorsForSelection())
             {
-                ToolStripItem item = new ToolStripMenuItem(pair.Key);
-                item.Tag = pair.Value;
-                item.Image = IconCache.Instance.ExtractIconFromExecutable(pair.Value, IconCache.IconSize.Small);
+                ToolStripItem item = new ToolStripMenuItem(app.getName());
+                item.Tag = app.getIdentifier();
+                item.Image = IconCache.Instance.ExtractIconFromExecutable(app.getIdentifier(), IconCache.IconSize.Small);
                 item.Click += (o, args) => EditEvent(item.Tag as String);
                 editorMenuStrip.Items.Add(item);
             }

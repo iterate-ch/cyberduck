@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,9 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
-using Ch.Cyberduck.Core;
 using java.lang;
 using java.util;
 using org.apache.log4j;
@@ -26,7 +26,7 @@ using Exception = System.Exception;
 using String = System.String;
 using X509Certificate = java.security.cert.X509Certificate;
 
-namespace ch.cyberduck.core
+namespace Ch.Cyberduck.Core.Ssl
 {
     internal class HostnameVerifier
     {
@@ -50,7 +50,7 @@ namespace ch.cyberduck.core
         /// <returns></returns>
         ///todo We should get rid of the java certificate parameter. Means to find an easy way to get the subjectAltNames (see http://www.java2s.com/Open-Source/CSharp/2.6.4-mono-.net-core/System.Net/System/Net/ServicePointManager.cs.htm)        
         public static bool CheckServerIdentity(X509Certificate javaCert,
-                                                X509Certificate2 cert, string targetHost)
+                                               X509Certificate2 cert, string targetHost)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace ch.cyberduck.core
 
                 */
 
-                java.util.Collection ext = javaCert.getSubjectAlternativeNames();
+                Collection ext = javaCert.getSubjectAlternativeNames();
                 // subjectAltName
                 if (null != ext && ext.size() > 0)
                 {
