@@ -31,8 +31,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
-import ch.cyberduck.core.editor.Editor;
-import ch.cyberduck.core.editor.EditorFactory;
+import ch.cyberduck.core.editor.WatchEditor;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.FileDescriptor;
@@ -40,8 +39,6 @@ import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.ui.PathPasteboard;
@@ -565,26 +562,15 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             // kTemporaryFolderType
             final boolean dock = destination.equals(LocalFactory.createLocal("~/Library/Caches/TemporaryItems"));
-            final DownloadTransfer transfer = new DownloadTransfer(pasteboard.copy(controller.getTransferSession())) {
-                @Override
-                protected void fireDidTransferPath(Path path) {
-                    if(dock) {
-                        Editor editor = EditorFactory.instance().create(controller, path);
-                        editor.open();
-                    }
-                    super.fireDidTransferPath(path);
-                }
-            };
             if(dock) {
-                // Drag to application icon in dock.
-                controller.transfer(transfer, true, new TransferPrompt() {
-                    @Override
-                    public TransferAction prompt() {
-                        return TransferAction.ACTION_OVERWRITE;
-                    }
-                });
+                for(Path p : pasteboard) {
+                    // Drag to application icon in dock.
+                    WatchEditor editor = new WatchEditor(controller, null, p);
+                    editor.watch();
+                }
             }
             else {
+                final DownloadTransfer transfer = new DownloadTransfer(pasteboard.copy(controller.getTransferSession()));
                 controller.transfer(transfer);
             }
             pasteboard.clear();
