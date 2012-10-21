@@ -65,6 +65,10 @@ public class FinderLocal extends Local {
         LocalFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
 
+    static {
+        Native.load("Local");
+    }
+
     private static class Factory extends LocalFactory {
         @Override
         protected Local create() {
@@ -94,12 +98,7 @@ public class FinderLocal extends Local {
 
     @Override
     public void setPath(final String name) {
-        if(loadNative()) {
-            super.setPath(this.resolveAlias(stringByExpandingTildeInPath(name)));
-        }
-        else {
-            super.setPath(stringByExpandingTildeInPath(name));
-        }
+        super.setPath(this.resolveAlias(stringByExpandingTildeInPath(name)));
     }
 
     @Override
@@ -125,9 +124,9 @@ public class FinderLocal extends Local {
 
     @Override
     public Local getVolume() {
-        for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
+        for(Local parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
             if(parent.getParent().getAbsolute().equals("/Volumes")) {
-                return (Local) parent;
+                return parent;
             }
         }
         return super.getVolume();
@@ -161,23 +160,11 @@ public class FinderLocal extends Local {
 
     @Override
     public void symlink(String target) {
-        if(!loadNative()) {
-            return;
-        }
         final boolean success = NSFileManager.defaultManager().createSymbolicLinkAtPath_pathContent(
                 this.getAbsolute(), target);
         if(!success) {
             log.error("File attribute changed failed:" + this.getAbsolute());
         }
-    }
-
-    private static boolean JNI_LOADED = false;
-
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("Local");
-        }
-        return JNI_LOADED;
     }
 
     /**
@@ -251,9 +238,6 @@ public class FinderLocal extends Local {
 
         @Override
         public long getSize() {
-            if(!loadNative()) {
-                return super.getSize();
-            }
             if(this.isDirectory()) {
                 return -1;
             }
@@ -267,9 +251,6 @@ public class FinderLocal extends Local {
 
         @Override
         public Permission getPermission() {
-            if(!loadNative()) {
-                return Permission.EMPTY;
-            }
             try {
                 NSObject object = this.getNativeAttribute(NSFileManager.NSFilePosixPermissions);
                 if(null == object) {
@@ -291,9 +272,6 @@ public class FinderLocal extends Local {
          */
         @Override
         public long getCreationDate() {
-            if(!loadNative()) {
-                return super.getCreationDate();
-            }
             NSObject object = this.getNativeAttribute(NSFileManager.NSFileCreationDate);
             if(null == object) {
                 return -1;
@@ -308,9 +286,6 @@ public class FinderLocal extends Local {
 
         @Override
         public String getOwner() {
-            if(!loadNative()) {
-                return super.getOwner();
-            }
             NSObject object = this.getNativeAttribute(NSFileManager.NSFileOwnerAccountName);
             if(null == object) {
                 return super.getOwner();
@@ -320,9 +295,6 @@ public class FinderLocal extends Local {
 
         @Override
         public String getGroup() {
-            if(!loadNative()) {
-                return super.getGroup();
-            }
             NSObject object = this.getNativeAttribute(NSFileManager.NSFileGroupOwnerAccountName);
             if(null == object) {
                 return super.getGroup();
@@ -349,9 +321,6 @@ public class FinderLocal extends Local {
 
         @Override
         public boolean isSymbolicLink() {
-            if(!loadNative()) {
-                return super.isSymbolicLink();
-            }
             return NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(getAbsolute(), null) != null;
         }
     }
@@ -366,10 +335,7 @@ public class FinderLocal extends Local {
 
     @Override
     public AbstractPath getSymlinkTarget() {
-        if(!loadNative()) {
-            return super.getSymlinkTarget();
-        }
-        return LocalFactory.createLocal((Local) this.getParent(),
+        return new FinderLocal(this.getParent(),
                 NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(this.getAbsolute(), null));
     }
 
