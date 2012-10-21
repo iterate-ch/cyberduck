@@ -144,11 +144,6 @@ public abstract class AbstractEditor implements Editor {
                 public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
                     return getAction();
                 }
-
-                @Override
-                protected boolean shouldOpenWhenComplete() {
-                    return false;
-                }
             };
 
             @Override
@@ -159,6 +154,7 @@ public abstract class AbstractEditor implements Editor {
                 final TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 options.quarantine = false;
+                options.open = false;
                 download.start(null, options);
                 if(download.isComplete()) {
                     edited.getSession().message(MessageFormat.format(
