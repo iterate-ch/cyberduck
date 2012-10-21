@@ -46,6 +46,9 @@ public final class TransferOptions {
     public boolean quarantine =
             Preferences.instance().getBoolean("queue.download.quarantine");
 
+    public boolean open =
+            Preferences.instance().getBoolean("queue.postProcessItemWhenComplete");
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
