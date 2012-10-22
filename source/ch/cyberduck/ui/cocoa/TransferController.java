@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.Transfer;
@@ -981,7 +982,11 @@ public final class TransferController extends WindowController implements NSTool
             if(log.isDebugEnabled()) {
                 log.debug("Paste download transfer from pasteboard");
             }
-            this.addTransfer(new DownloadTransfer(pasteboard.copy()));
+            final List<Path> downloads = pasteboard.copy();
+            for(Path download : downloads) {
+                download.setLocal(LocalFactory.createLocal(download.getHost().getDownloadFolder(), download.getName()));
+            }
+            this.addTransfer(new DownloadTransfer(downloads));
             pasteboard.clear();
         }
     }

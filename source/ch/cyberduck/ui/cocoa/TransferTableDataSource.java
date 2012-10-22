@@ -23,6 +23,7 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.transfer.NullTransferFilter;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCollection;
@@ -210,7 +211,11 @@ public class TransferTableDataSource extends ListDataSource {
             if(pasteboard.isEmpty()) {
                 continue;
             }
-            TransferCollection.defaultCollection().add(row.intValue(), new DownloadTransfer(pasteboard.copy()));
+            final List<Path> downloads = pasteboard.copy();
+            for(Path download : downloads) {
+                download.setLocal(LocalFactory.createLocal(download.getHost().getDownloadFolder(), download.getName()));
+            }
+            TransferCollection.defaultCollection().add(row.intValue(), new DownloadTransfer(downloads));
             view.reloadData();
             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             view.scrollRowToVisible(row);

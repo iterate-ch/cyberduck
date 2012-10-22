@@ -65,12 +65,6 @@ public class DownloadTransfer extends Transfer {
     public DownloadTransfer(final List<Path> roots) {
         super(new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
-        for(Path download : roots) {
-            if(null == download.getLocal()) {
-                // No custom download path set
-                download.setLocal(LocalFactory.createLocal(session.getHost().getDownloadFolder(), this.getName()));
-            }
-        }
     }
 
     public <T> DownloadTransfer(final T dict, final Session s) {
