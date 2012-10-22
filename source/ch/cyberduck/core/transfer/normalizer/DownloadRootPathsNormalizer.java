@@ -2,13 +2,11 @@ package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,8 +20,6 @@ public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<Pat
     public List<Path> normalize(final List<Path> roots) {
         final List<Path> normalized = new Collection<Path>();
         for(final Path download : roots) {
-            download.getSession().message(
-                    MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), download.getName()));
             boolean duplicate = false;
             for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
                 Path n = iter.next();
