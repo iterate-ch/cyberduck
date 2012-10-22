@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class QuickLookFactory extends Factory<QuickLookInterface> {
+public abstract class QuickLookFactory extends Factory<QuickLook> {
 
     /**
      * Registered factories
@@ -38,7 +38,7 @@ public abstract class QuickLookFactory extends Factory<QuickLookInterface> {
         factories.put(platform, f);
     }
 
-    public static QuickLookInterface instance() {
+    public static QuickLook get() {
         if(factories.containsKey(VERSION_PLATFORM)) {
             return factories.get(VERSION_PLATFORM).create();
         }
@@ -70,5 +70,5 @@ public abstract class QuickLookFactory extends Factory<QuickLookInterface> {
     }
 
     @Override
-    protected abstract QuickLookInterface create();
+    protected abstract QuickLook create();
 }

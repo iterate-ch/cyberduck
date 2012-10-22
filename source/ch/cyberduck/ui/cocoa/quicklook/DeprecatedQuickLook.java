@@ -39,7 +39,7 @@ public final class DeprecatedQuickLook extends AbstractQuickLook {
 
     private static class Factory extends QuickLookFactory {
         @Override
-        protected QuickLookInterface create() {
+        protected QuickLook create() {
             return new DeprecatedQuickLook();
         }
     }

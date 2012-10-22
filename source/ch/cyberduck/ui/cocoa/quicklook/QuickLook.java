@@ -25,7 +25,7 @@ import ch.cyberduck.core.local.Local;
 /**
  * @version $Id$
  */
-public interface QuickLookInterface {
+public interface QuickLook {
 
     /**
      * Does not open QuickLook panel but only changes the selection.

@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public final class QuartzQuickLook extends AbstractQuickLook {
+public final class QuartzQuickLook implements QuickLook {
 
     public static void register() {
         if(!Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
@@ -42,7 +42,7 @@ public final class QuartzQuickLook extends AbstractQuickLook {
 
     private static class Factory extends QuickLookFactory {
         @Override
-        protected QuickLookInterface create() {
+        protected QuickLook create() {
             return new QuartzQuickLook();
         }
     }
@@ -65,7 +65,6 @@ public final class QuartzQuickLook extends AbstractQuickLook {
                 }
             });
         }
-        super.select(files);
     }
 
     private QLPreviewPanelDataSource model = new QLPreviewPanelDataSource() {
@@ -99,7 +98,6 @@ public final class QuartzQuickLook extends AbstractQuickLook {
     @Override
     public void willBeginQuickLook() {
         panel.setDataSource(this.model.id());
-        super.willBeginQuickLook();
     }
 
     @Override
@@ -121,6 +119,5 @@ public final class QuartzQuickLook extends AbstractQuickLook {
     @Override
     public void didEndQuickLook() {
         panel.setDataSource(null);
-        super.didEndQuickLook();
     }
 }

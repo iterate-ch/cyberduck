@@ -65,6 +65,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
+import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -143,6 +144,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             controller._updateBrowserColumns(controller.browserOutlineView);
         }
     }
+
+    private QuickLook quicklook = QuickLookFactory.get();
 
     private NSToolbar toolbar;
 
@@ -928,9 +931,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             BrowserController.this.addListener(new WindowListener() {
                 @Override
                 public void windowWillClose() {
-                    if(QuickLookFactory.instance().isAvailable()) {
-                        if(QuickLookFactory.instance().isOpen()) {
-                            QuickLookFactory.instance().close();
+                    if(quicklook.isAvailable()) {
+                        if(quicklook.isOpen()) {
+                            quicklook.close();
                         }
                     }
                 }
@@ -951,9 +954,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
 
         public void spaceKeyPressed(final ID sender) {
-            if(QuickLookFactory.instance().isAvailable()) {
-                if(QuickLookFactory.instance().isOpen()) {
-                    QuickLookFactory.instance().close();
+            if(quicklook.isAvailable()) {
+                if(quicklook.isOpen()) {
+                    quicklook.close();
                 }
                 else {
                     this.updateQuickLookSelection(BrowserController.this.getSelectedPaths());
@@ -962,7 +965,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
 
         private void updateQuickLookSelection(final List<Path> selected) {
-            if(QuickLookFactory.instance().isAvailable()) {
+            if(quicklook.isAvailable()) {
                 final Collection<Path> downloads = new Collection<Path>();
                 for(Path path : selected) {
                     if(!path.attributes().isFile()) {
@@ -995,9 +998,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 previews.add(download.getLocal());
                             }
                             // Change files in Quick Look
-                            QuickLookFactory.instance().select(previews);
+                            quicklook.select(previews);
                             // Open Quick Look Preview Panel
-                            QuickLookFactory.instance().open();
+                            quicklook.open();
                             // Revert status label
                             BrowserController.this.updateStatusLabel();
                             // Restore the focus to our window to demo the selection changing, scrolling
@@ -1051,7 +1054,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 selected.add(file);
             }
             setSelectedPaths(selected);
-            if(QuickLookFactory.instance().isOpen()) {
+            if(quicklook.isOpen()) {
                 this.updateQuickLookSelection(BrowserController.this.selected);
             }
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
@@ -1135,7 +1138,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     @Override
     public void beginPreviewPanelControl(QLPreviewPanel panel) {
-        QuickLookFactory.instance().willBeginQuickLook();
+        quicklook.willBeginQuickLook();
     }
 
     /**
@@ -1147,7 +1150,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     @Override
     public void endPreviewPanelControl(QLPreviewPanel panel) {
-        QuickLookFactory.instance().didEndQuickLook();
+        quicklook.didEndQuickLook();
     }
 
     // setting appearance attributes()
@@ -2215,8 +2218,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     // ----------------------------------------------------------
 
     public void quicklookButtonClicked(final ID sender) {
-        if(QuickLookFactory.instance().isOpen()) {
-            QuickLookFactory.instance().close();
+        if(quicklook.isOpen()) {
+            quicklook.close();
         }
         else {
             final AbstractBrowserTableDelegate delegate = this.getSelectedBrowserDelegate();
@@ -4141,7 +4144,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return this.isMounted() || this.isBookmarks();
         }
         else if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && QuickLookFactory.instance().isAvailable() && this.getSelectionCount() > 0;
+            return this.isBrowser() && this.isMounted() && quicklook.isAvailable() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("openBrowserButtonClicked:"))) {
             return this.isMounted();
@@ -4599,7 +4602,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else if(itemIdentifier.equals(TOOLBAR_QUICKLOOK)) {
             item.setLabel(Locale.localizedString(TOOLBAR_QUICKLOOK));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_QUICKLOOK));
-            if(QuickLookFactory.instance().isAvailable()) {
+            if(quicklook.isAvailable()) {
                 quicklookButton = NSButton.buttonWithFrame(new NSRect(29, 23));
                 quicklookButton.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                 quicklookButton.setImage(IconCache.iconNamed("NSQuickLookTemplate"));
