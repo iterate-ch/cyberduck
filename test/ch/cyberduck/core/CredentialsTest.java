@@ -39,7 +39,7 @@ public class CredentialsTest extends AbstractTestCase {
     @Test
     public void testDefault() throws Exception {
         Credentials c = new DefaultCredentials();
-        assertEquals(System.getProperty("user.name"), c.getUsername());
+        assertEquals(null, c.getUsername());
         assertEquals(null, c.getPassword());
     }
 
