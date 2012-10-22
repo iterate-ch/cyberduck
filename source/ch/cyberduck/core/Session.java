@@ -66,7 +66,7 @@ public abstract class Session implements TranscriptListener {
         }
     };
 
-    private UseragentProvider ua = new PreferencesUseragentProvider();
+    private UseragentProvider ua;
 
     private boolean unsecurewarning =
             Preferences.instance().getBoolean("connection.unsecure.warning");
@@ -88,8 +88,14 @@ public abstract class Session implements TranscriptListener {
      */
     private boolean opening;
 
+    /**
+     * Delegating CloudFront requests.
+     */
+    private DistributionConfiguration cf;
+
     protected Session(Host h) {
         this.host = h;
+        this.ua = new PreferencesUseragentProvider();
     }
 
     /**
@@ -752,11 +758,6 @@ public abstract class Session implements TranscriptListener {
     public AnalyticsProvider analytics() {
         return new QloudstatAnalyticsProvider();
     }
-
-    /**
-     * Delegating CloudFront requests.
-     */
-    private DistributionConfiguration cf;
 
     public DistributionConfiguration cdn() {
         if(null == cf) {
