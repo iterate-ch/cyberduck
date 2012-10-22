@@ -53,8 +53,7 @@ public class Credentials {
      * Default credentials from Preferences
      */
     public Credentials() {
-        this(Preferences.instance().getProperty("connection.login.name"), null,
-                Preferences.instance().getBoolean("connection.login.useKeychain"));
+        this(null, null, Preferences.instance().getBoolean("connection.login.useKeychain"));
     }
 
     /**

@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -73,17 +74,7 @@ public final class Host implements Serializable {
     /**
      * The credentials to authenticate with for the CDN
      */
-    private Credentials cdnCredentials = new Credentials(null, null) {
-        @Override
-        public String getUsernamePlaceholder() {
-            return Protocol.S3_SSL.getUsernamePlaceholder();
-        }
-
-        @Override
-        public String getPasswordPlaceholder() {
-            return Protocol.S3_SSL.getPasswordPlaceholder();
-        }
-    };
+    private Credentials cdnCredentials = new CDNCredentials();
 
     /**
      * Unique identifier
@@ -509,13 +500,6 @@ public final class Host implements Serializable {
     }
 
     /**
-     * @param cdnCredentials Credentials to modify CDN configuration
-     */
-    public void setCdnCredentials(Credentials cdnCredentials) {
-        this.cdnCredentials = cdnCredentials;
-    }
-
-    /**
      * @param protocol The protocol to use or null to use the default protocol for this port number
      */
     public void setProtocol(final Protocol protocol) {
@@ -873,7 +857,24 @@ public final class Host implements Serializable {
         return this.getUuid().hashCode();
     }
 
+    private static final class CDNCredentials extends Credentials {
+        @Override
+        public String getUsernamePlaceholder() {
+            return Locale.localizedString("Access Key ID", "S3");
+        }
+
+        @Override
+        public String getPasswordPlaceholder() {
+            return Locale.localizedString("Secret Access Key", "S3");
+        }
+    }
+
     private final class HostCredentials extends Credentials {
+
+        public HostCredentials() {
+            super(Preferences.instance().getProperty("connection.login.name"), null);
+        }
+
         @Override
         public String getUsernamePlaceholder() {
             return getProtocol().getUsernamePlaceholder();
@@ -884,4 +885,6 @@ public final class Host implements Serializable {
             return getProtocol().getPasswordPlaceholder();
         }
     }
+
+
 }

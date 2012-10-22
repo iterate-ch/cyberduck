@@ -203,7 +203,7 @@ public class ConnectionController extends SheetController {
         final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
         pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
         if(StringUtils.isNotEmpty(hostField.stringValue())) {
-            final Credentials credentials = new Credentials(null, null);
+            final Credentials credentials = new Credentials();
             CredentialsConfiguratorFactory.get(protocol).configure(credentials, hostField.stringValue());
             if(credentials.isPublicKeyAuthentication()) {
                 // No previously manually selected key
