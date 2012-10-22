@@ -74,7 +74,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         super.collectionItemAdded(bookmark);
     }
 
-    private void save(final Host bookmark) {
+    protected void save(final Host bookmark) {
         writer.write(bookmark, this.getFile(bookmark));
     }
 
