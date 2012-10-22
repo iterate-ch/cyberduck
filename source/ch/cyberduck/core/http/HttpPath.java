@@ -19,10 +19,11 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
@@ -67,16 +68,7 @@ public abstract class HttpPath extends Path {
         }
     }
 
-    private final ThreadFactory factory = new ThreadFactory() {
-        private int threadCount = 1;
-
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r);
-            thread.setName("http-" + threadCount++);
-            return thread;
-        }
-    };
+    private final ThreadFactory factory = new NamedThreadFactory("http");
 
     /**
      * @param command Callable writing entity to stream and returning checksum

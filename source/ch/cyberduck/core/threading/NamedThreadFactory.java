@@ -21,16 +21,26 @@ package ch.cyberduck.core.threading;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NamedThreadFactory implements ThreadFactory {
 
     private int threadCount = 1;
 
+    private String name;
+
+    public NamedThreadFactory() {
+        this("background");
+    }
+
+    public NamedThreadFactory(String name) {
+        this.name = name;
+    }
+
     @Override
     public Thread newThread(Runnable r) {
         Thread thread = new Thread(r);
-        thread.setName(String.format("background-%d", threadCount++));
+        thread.setName(String.format("%s-%d", name, threadCount++));
         return thread;
     }
 }

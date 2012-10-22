@@ -28,6 +28,7 @@ import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -637,16 +638,7 @@ public class S3Path extends CloudPath {
                                  final TransferStatus status, final StorageObject object)
             throws IOException, ServiceException {
 
-        final ThreadFactory threadFactory = new ThreadFactory() {
-            private int threadCount = 1;
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName("multipart-" + threadCount++);
-                return thread;
-            }
-        };
+        final ThreadFactory threadFactory = new NamedThreadFactory("multipart");
 
         MultipartUpload multipart = null;
         if(status.isResume()) {
