@@ -23,10 +23,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -54,154 +51,6 @@ public abstract class Local extends AbstractPath {
      * Absolute path in local file system
      */
     private String path;
-
-    /**
-     *
-     */
-    public class LocalPermission extends Permission {
-        @Override
-        public boolean isReadable() {
-            return new File(path).canRead();
-        }
-
-        @Override
-        public boolean isWritable() {
-            return new File(path).canWrite();
-        }
-
-        @Override
-        public boolean isExecutable() {
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            return Locale.localizedString("Unknown");
-        }
-    }
-
-    /**
-     *
-     */
-    public class LocalAttributes extends Attributes {
-        @Override
-        public long getModificationDate() {
-            return new File(path).lastModified();
-        }
-
-        /**
-         * @return The modification date instead.
-         */
-        @Override
-        public long getCreationDate() {
-            return this.getModificationDate();
-        }
-
-        /**
-         * @return The modification date instead.
-         */
-        @Override
-        public long getAccessedDate() {
-            return this.getModificationDate();
-        }
-
-        /**
-         * This is only returning the correct result if the file already exists.
-         *
-         * @return File type
-         * @see Local#exists()
-         */
-        @Override
-        public int getType() {
-            final int t = this.isFile() ? FILE_TYPE : DIRECTORY_TYPE;
-            if(this.isSymbolicLink()) {
-                return t | SYMBOLIC_LINK_TYPE;
-            }
-            return t;
-        }
-
-        @Override
-        public long getSize() {
-            if(this.isDirectory()) {
-                return -1;
-            }
-            return new File(path).length();
-        }
-
-        @Override
-        public Permission getPermission() {
-            return new LocalPermission();
-        }
-
-        @Override
-        public boolean isVolume() {
-            return null == new File(path).getParent();
-        }
-
-        /**
-         * This is only returning the correct result if the file already exists.
-         *
-         * @see Local#exists()
-         */
-        @Override
-        public boolean isDirectory() {
-            return new File(path).isDirectory();
-        }
-
-        /**
-         * This is only returning the correct result if the file already exists.
-         *
-         * @see Local#exists()
-         */
-        @Override
-        public boolean isFile() {
-            return new File(path).isFile();
-        }
-
-        /**
-         * Checks whether a given file is a symbolic link.
-         * <p/>
-         * <p>It doesn't really test for symbolic links but whether the
-         * canonical and absolute paths of the file are identical - this
-         * may lead to false positives on some platforms.</p>
-         *
-         * @return true if the file is a symbolic link.
-         */
-        @Override
-        public boolean isSymbolicLink() {
-            if(!Local.this.exists()) {
-                return false;
-            }
-            // For a link that actually points to something (either a file or a directory),
-            // the absolute path is the path through the link, whereas the canonical path
-            // is the path the link references.
-            try {
-                return !new File(path).getAbsolutePath().equals(new File(path).getCanonicalPath());
-            }
-            catch(IOException e) {
-                return false;
-            }
-        }
-
-        /**
-         * Calculate the MD5 sum as Hex-encoded string
-         *
-         * @return Null if failure
-         */
-        @Override
-        public String getChecksum() {
-            if(this.isFile()) {
-                try {
-                    return new MD5ChecksumCompute().compute(Local.this.getInputStream());
-                }
-                catch(FileNotFoundException e) {
-                    log.error(e.getMessage());
-                    return null;
-                }
-            }
-            return null;
-        }
-    }
 
     /**
      * @param parent Parent directory
@@ -241,7 +90,7 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public Attributes attributes() {
-        return new LocalAttributes();
+        return new LocalAttributes(this.getAbsolute());
     }
 
     @Override
