@@ -22,7 +22,7 @@ public class ReceiptTest extends AbstractTestCase {
     public void testVerify() throws Exception {
         Receipt r = new Receipt(LocalFactory.createLocal("/Applications/Cyberduck.app/Contents/_MASReceipt/receipt"));
         assertTrue(r.verify());
-        assertEquals("040ccee30d02", r.getName());
+        assertEquals("c42c030b8670", r.getName());
     }
 
     @Test
