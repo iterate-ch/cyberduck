@@ -3,19 +3,17 @@ package ch.cyberduck.core;
 import java.security.cert.X509Certificate;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NullKeychain extends AbstractKeychain {
 
     public static void register() {
-        KeychainFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends KeychainFactory {
-        @Override
-        protected AbstractKeychain create() {
-            return new NullKeychain();
-        }
+        KeychainFactory.addFactory(Factory.NATIVE_PLATFORM, new KeychainFactory() {
+            @Override
+            protected AbstractKeychain create() {
+                return new NullKeychain();
+            }
+        });
     }
 
     @Override
