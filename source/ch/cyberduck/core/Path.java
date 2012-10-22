@@ -579,15 +579,16 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     @Override
     public AbstractPath getSymlinkTarget() {
-        if(this.attributes().isSymbolicLink()) {
+        final PathAttributes attributes = this.attributes();
+        if(attributes.isSymbolicLink()) {
             // Symbolic link target may be an absolute or relative path
             if(symlink.startsWith(String.valueOf(DELIMITER))) {
                 return PathFactory.createPath(this.getSession(), symlink,
-                        this.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
+                        attributes.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
             }
             else {
                 return PathFactory.createPath(this.getSession(), this.getParent().getAbsolute(), symlink,
-                        this.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
+                        attributes.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
             }
         }
         return null;
