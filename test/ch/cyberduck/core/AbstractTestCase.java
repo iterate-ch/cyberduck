@@ -79,7 +79,7 @@ public class AbstractTestCase {
 
     @Before
     public void preferences() {
-        Preferences.instance().setProperty("application.support.path", ".");
+        Preferences.instance().setProperty("application.support.path", System.getProperty("java.io.tmpdir"));
     }
 
     @After
