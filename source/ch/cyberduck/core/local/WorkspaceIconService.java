@@ -45,8 +45,6 @@ public final class WorkspaceIconService implements IconService {
         //
     }
 
-    private static final Object lock = new Object();
-
     @Override
     public boolean setIcon(final Local file, final String image) {
         final NSImage icon;
@@ -61,7 +59,7 @@ public final class WorkspaceIconService implements IconService {
     }
 
     protected boolean setIcon(final Local file, final NSImage icon) {
-        synchronized(lock) {
+        synchronized(NSWorkspace.class) {
             // Specify 0 if you want to generate icons in all available icon representation formats
             return NSWorkspace.sharedWorkspace().setIcon_forFile_options(icon, file.getAbsolute(), new NSUInteger(0));
         }

@@ -45,11 +45,9 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
         //
     }
 
-    private static final Object workspace = new Object();
-
     @Override
     public boolean open(final Local file) {
-        synchronized(workspace) {
+        synchronized(NSWorkspace.class) {
             if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute())) {
                 log.warn(String.format("Error opening file %s", file.getAbsolute()));
                 return false;
@@ -60,7 +58,7 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
 
     @Override
     public boolean open(final Local file, final Application application) {
-        synchronized(workspace) {
+        synchronized(NSWorkspace.class) {
             if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute(),
                     NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier()))) {
                 log.warn(String.format("Error opening file %s with application %s", file.getAbsolute(), application));
@@ -81,7 +79,7 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
      */
     @Override
     public void bounce(final Local file) {
-        synchronized(workspace) {
+        synchronized(NSWorkspace.class) {
             NSDistributedNotificationCenter.defaultCenter().postNotification(
                     NSNotification.notificationWithName("com.apple.DownloadFileFinished", file.getAbsolute())
             );
