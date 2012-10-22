@@ -26,15 +26,21 @@ public class RendezvousResponderTest extends AbstractTestCase {
     public void testInit() throws Exception {
         Rendezvous r = RendezvousFactory.instance();
         final CountDownLatch wait = new CountDownLatch(1);
+        final AssertionError[] failure = new AssertionError[1];
         r.addListener(new RendezvousListener() {
             @Override
             public void serviceResolved(final String identifier, final Host host) {
-                assertNotNull(host);
                 try {
-                    assertEquals(String.format("%s.", InetAddress.getLocalHost().getHostName()), host.getHostname());
+                    try {
+                        assertNotNull(host);
+                        assertEquals(String.format("%s.", InetAddress.getLocalHost().getHostName()), host.getHostname());
+                    }
+                    catch(UnknownHostException e) {
+                        fail();
+                    }
                 }
-                catch(UnknownHostException e) {
-                    fail();
+                catch(AssertionError error) {
+                    failure[0] = error;
                 }
                 finally {
                     wait.countDown();
@@ -48,6 +54,7 @@ public class RendezvousResponderTest extends AbstractTestCase {
         });
         r.init();
         wait.await();
+        assertNull(failure[0].getMessage(), failure[0]);
         r.quit();
     }
 }
