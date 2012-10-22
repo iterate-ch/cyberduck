@@ -606,7 +606,7 @@ public abstract class Session implements TranscriptListener {
         // Configuring proxy if any
         ProxyFactory.get().configure(host);
 
-        final Resolver resolver = this.getResolver();
+        final Resolver resolver = new Resolver(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()));
         this.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
                 host.getHostname()));
 
@@ -615,10 +615,6 @@ public abstract class Session implements TranscriptListener {
         // The IP address could successfully be determined
         this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
-    }
-
-    protected Resolver getResolver() {
-        return new Resolver(host.getHostname(true));
     }
 
     /**
@@ -762,7 +758,7 @@ public abstract class Session implements TranscriptListener {
     public DistributionConfiguration cdn() {
         if(null == cf) {
             cf = new CloudFrontDistributionConfiguration(LoginControllerFactory.instance(this),
-                    host.getCdnCredentials(),
+                    new DefaultCDNCredentialsIdentityConfiguration(host).getUserCredentials(null),
                     new ErrorListener() {
                         @Override
                         public void error(BackgroundException exception) {

@@ -28,7 +28,6 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Resolver;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
@@ -170,11 +169,6 @@ public class SFTPSession extends Session {
         // Make sure subsystem is available
         this.sftp();
         this.fireConnectionDidOpenEvent();
-    }
-
-    @Override
-    protected Resolver getResolver() {
-        return new Resolver(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()));
     }
 
     @Override

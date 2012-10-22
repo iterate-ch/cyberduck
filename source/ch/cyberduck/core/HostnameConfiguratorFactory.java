@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.sftp.OpenSSHHostnameConfigurator;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class HostnameConfiguratorFactory {
 
@@ -43,7 +43,7 @@ public final class HostnameConfiguratorFactory {
     private static final class NullHostnameConfigurator implements HostnameConfigurator {
         @Override
         public String lookup(String alias) {
-            return null;
+            return alias;
         }
     }
 }
