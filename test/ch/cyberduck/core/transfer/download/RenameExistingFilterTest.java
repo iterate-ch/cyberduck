@@ -7,6 +7,7 @@ import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 
@@ -24,6 +25,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @BeforeClass
     public static void register() {
         UserDefaultsDateFormatter.register();
+        WorkspaceApplicationLauncher.register();
     }
 
     @Test

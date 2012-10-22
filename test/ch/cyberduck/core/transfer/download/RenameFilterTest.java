@@ -5,8 +5,10 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotSame;
@@ -15,6 +17,11 @@ import static org.junit.Assert.assertNotSame;
  * @version $Id$
  */
 public class RenameFilterTest extends AbstractTestCase {
+
+    @BeforeClass
+    public static void register() {
+        WorkspaceApplicationLauncher.register();
+    }
 
     @Test
     public void testPrepare() throws Exception {

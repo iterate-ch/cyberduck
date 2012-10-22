@@ -9,6 +9,7 @@ import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -18,7 +19,9 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -30,6 +33,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @BeforeClass
     public static void register() {
         NSObjectPathReference.register();
+        WorkspaceApplicationLauncher.register();
     }
 
     @Test
@@ -94,12 +98,14 @@ public class DownloadTransferTest extends AbstractTestCase {
         assertEquals(Collections.singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testDownloadPath() {
         final NullPath root = new NullPath("/t", Path.FILE_TYPE);
         assertNull(root.getLocal());
-        Transfer t = new DownloadTransfer(root);
-        assertNotNull(root.getLocal());
+        List<Path> roots = new ArrayList<Path>();
+        roots.add(root);
+        roots.add(root);
+        Transfer t = new DownloadTransfer(roots);
     }
 
     @Test
