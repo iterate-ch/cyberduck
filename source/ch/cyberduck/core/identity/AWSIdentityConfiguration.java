@@ -7,6 +7,7 @@ import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
@@ -42,7 +43,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
      */
     private ErrorListener listener;
 
-    private PreferencesUseragentProvider ua;
+    private UseragentProvider ua;
 
     /**
      * Prefix in preferences
@@ -52,6 +53,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     public AWSIdentityConfiguration(final Host host, final ErrorListener listener) {
         this.host = host;
         this.listener = listener;
+        this.ua = new PreferencesUseragentProvider();
     }
 
     @Override
