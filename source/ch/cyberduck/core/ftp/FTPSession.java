@@ -19,7 +19,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
@@ -406,7 +405,7 @@ public class FTPSession extends SSLSession {
      * @throws IOException I/O failure
      */
     @Override
-    protected void warn(LoginController login, Credentials credentials) throws IOException {
+    protected void warn(final LoginController login, final Credentials credentials) throws IOException {
         Host host = this.getHost();
         if(this.isUnsecureswitch()
                 && !credentials.isAnonymousLogin()
@@ -424,9 +423,6 @@ public class FTPSession extends SSLSession {
             catch(LoginCanceledException e) {
                 // Protocol switch
                 host.setProtocol(Protocol.FTP_TLS);
-                if(BookmarkCollection.defaultCollection().contains(host)) {
-                    BookmarkCollection.defaultCollection().collectionItemChanged(host);
-                }
                 // Reconfigure client for TLS
                 this.configure(this.getClient());
                 this.getClient().execAUTH();

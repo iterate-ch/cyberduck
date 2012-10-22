@@ -112,6 +112,9 @@ public abstract class AbstractLoginController implements LoginController {
             log.debug(String.format("Login success to host %s as %s", host.getHostname(), host.getCredentials().getUsername()));
         }
         KeychainFactory.get().save(host);
+        if(BookmarkCollection.defaultCollection().contains(host)) {
+            BookmarkCollection.defaultCollection().collectionItemChanged(host);
+        }
     }
 
     @Override

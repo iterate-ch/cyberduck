@@ -209,12 +209,6 @@ public abstract class Session implements TranscriptListener {
     protected void prompt(LoginController controller) throws IOException {
         String username = host.getCredentials().getUsername();
         controller.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
-        if(!StringUtils.equals(username, host.getCredentials().getUsername())) {
-            // Changed login credentials
-            if(BookmarkCollection.defaultCollection().contains(host)) {
-                BookmarkCollection.defaultCollection().collectionItemChanged(host);
-            }
-        }
     }
 
     public boolean isUnsecurewarning() {
@@ -261,7 +255,7 @@ public abstract class Session implements TranscriptListener {
      * @param credentials Login credentials
      * @throws ConnectionCanceledException If connection should be dropped
      */
-    protected void warn(LoginController login, Credentials credentials) throws IOException {
+    protected void warn(final LoginController login, final Credentials credentials) throws IOException {
         if(this.isUnsecurewarning()
                 && !host.getProtocol().isSecure()
                 && !credentials.isAnonymousLogin()
@@ -784,15 +778,6 @@ public abstract class Session implements TranscriptListener {
                         }
                     }
             ) {
-
-                @Override
-                protected void fireConnectionDidOpenEvent() {
-                    // Save CloudFront access credentials to bookmark
-                    if(BookmarkCollection.defaultCollection().contains(Session.this.getHost())) {
-                        BookmarkCollection.defaultCollection().collectionItemChanged(Session.this.getHost());
-                    }
-                    super.fireConnectionDidOpenEvent();
-                }
 
                 /**
                  * @return Service name of the CDN

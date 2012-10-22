@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
@@ -278,15 +277,8 @@ public class SFTPSession extends Session {
                         return this.loginUsingPublicKeyAuthentication(controller, credentials);
                     }
                 }
-                final boolean success = this.getClient().authenticateWithPublicKey(credentials.getUsername(),
+                return this.getClient().authenticateWithPublicKey(credentials.getUsername(),
                         privatekey.toCharArray(), credentials.getPassword());
-                if(success) {
-                    if(BookmarkCollection.defaultCollection().contains(host)) {
-                        // Save private key in bookmark
-                        BookmarkCollection.defaultCollection().collectionItemChanged(host);
-                    }
-                }
-                return success;
             }
         }
         return false;
