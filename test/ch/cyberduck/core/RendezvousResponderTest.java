@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -53,7 +54,7 @@ public class RendezvousResponderTest extends AbstractTestCase {
             }
         });
         r.init();
-        wait.await();
+        wait.await(5L, TimeUnit.SECONDS);
         assertNull(failure[0].getMessage(), failure[0]);
         r.quit();
     }
