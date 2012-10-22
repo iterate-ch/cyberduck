@@ -25,7 +25,9 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
 
     private final QuarantineService quarantine
             = QuarantineServiceFactory.get();
-    private final ApplicationLauncher launcher = ApplicationLauncherFactory.get();
+
+    private final ApplicationLauncher launcher
+            = ApplicationLauncherFactory.get();
 
     public AbstractDownloadFilter(final SymlinkResolver symlinkResolver) {
         this.symlinkResolver = symlinkResolver;
