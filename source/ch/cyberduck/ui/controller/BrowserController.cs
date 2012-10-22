@@ -1431,14 +1431,7 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (Path selected in SelectedPaths)
             {
                 Path path = PathFactory.createPath(session, selected.getAsDictionary());
-                if (null == downloadFolder)
-                {
-                    path.setLocal(null);
-                }
-                else
-                {
-                    path.setLocal(LocalFactory.createLocal(downloadFolder, path.getName()));
-                }
+                path.setLocal(LocalFactory.createLocal(downloadFolder, path.getName()));
                 roots.add(path);
             }
             Transfer q = new DownloadTransfer(roots);
