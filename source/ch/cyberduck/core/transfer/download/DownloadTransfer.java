@@ -55,9 +55,6 @@ public class DownloadTransfer extends Transfer {
     private DownloadRegexFilter filter
             = new DownloadRegexFilter();
 
-    private final IconService icon
-            = IconServiceFactory.get();
-
     private final ApplicationLauncher launcher
             = ApplicationLauncherFactory.get();
 
@@ -189,33 +186,36 @@ public class DownloadTransfer extends Transfer {
             status.setComplete();
         }
         else if(file.attributes().isFile()) {
-            final boolean icon = Preferences.instance().getBoolean("queue.download.icon.update");
-            // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
-            // overhead when transferring a large amount of files
-            final boolean threshold
-                    = file.attributes().getSize() > Preferences.instance().getLong("queue.download.icon.threshold");
-            // Set the first progress icon
-            this.icon.setProgress(local, 0);
+            final IconService icon = IconServiceFactory.get();
+            // No icon update if disabled
+            final boolean update
+                    = Preferences.instance().getBoolean("queue.download.icon.update");
+            if(update) {
+                icon.setProgress(local, 0);
+            }
             file.download(this.getBandwidth(), new AbstractStreamListener() {
+                // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
+                // overhead when transferring a large amount of files
+                private final boolean threshold
+                        = file.attributes().getSize() > Preferences.instance().getLong("queue.download.icon.threshold");
+
+                // An integer between 0 and 9
                 private int step = 0;
 
                 @Override
                 public void bytesReceived(long bytes) {
                     transferred += bytes;
-                    if(icon) {
-                        if(-1 == bytes) {
+                    if(update) {
+                        if(status.getLength() == status.getCurrent()) {
                             // Remove custom icon if complete. The Finder will display the default
                             // icon for this filetype
-                            DownloadTransfer.this.icon.setProgress(local, -1);
+                            icon.setProgress(local, -1);
                         }
-                        else {
-                            if(threshold) {
-                                int fraction = (int) (status.getCurrent() / file.attributes().getSize() * 10);
-                                // An integer between 0 and 9
-                                if(fraction > step) {
-                                    // Another 10 percent of the file has been transferred
-                                    DownloadTransfer.this.icon.setProgress(local, ++step);
-                                }
+                        else if(threshold) {
+                            int fraction = (int) (status.getCurrent() / file.attributes().getSize() * 10);
+                            if(fraction > step) {
+                                // Another 10 percent of the file has been transferred
+                                icon.setProgress(local, ++step);
                             }
                         }
                     }
@@ -261,4 +261,5 @@ public class DownloadTransfer extends Transfer {
     public String getImage() {
         return "transfer-download.tiff";
     }
+
 }
