@@ -489,7 +489,7 @@ public final class TransferController extends WindowController implements NSTool
 
             @Override
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-                ;
+                //
             }
 
             @Override
@@ -571,7 +571,6 @@ public final class TransferController extends WindowController implements NSTool
      *
      */
     private void updateSelection() {
-        log.debug("updateSelection");
         this.updateLabels();
         this.updateIcon();
         this.updateBandwidthPopup();
@@ -582,7 +581,6 @@ public final class TransferController extends WindowController implements NSTool
      *
      */
     private void updateLabels() {
-        log.debug("updateLabels");
         final int selected = transferTable.numberOfSelectedRows().intValue();
         if(1 == selected) {
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
@@ -609,7 +607,6 @@ public final class TransferController extends WindowController implements NSTool
      *
      */
     private void updateIcon() {
-        log.debug("updateIcon");
         final int selected = transferTable.numberOfSelectedRows().intValue();
         if(1 != selected) {
             iconView.setImage(null);
@@ -629,7 +626,6 @@ public final class TransferController extends WindowController implements NSTool
      *
      */
     private void updateBandwidthPopup() {
-        log.debug("updateBandwidthPopup");
         final int selected = transferTable.numberOfSelectedRows().intValue();
         bandwidthPopup.setEnabled(selected > 0);
         NSIndexSet set = transferTable.selectedRowIndexes();
@@ -978,10 +974,12 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void paste(final ID sender) {
-        log.debug("paste");
         for(PathPasteboard pasteboard : PathPasteboard.allPasteboards()) {
             if(pasteboard.isEmpty()) {
                 continue;
+            }
+            if(log.isDebugEnabled()) {
+                log.debug("Paste download transfer from pasteboard");
             }
             this.addTransfer(new DownloadTransfer(pasteboard.copy()));
             pasteboard.clear();
