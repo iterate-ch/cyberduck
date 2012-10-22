@@ -21,9 +21,7 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -55,7 +53,7 @@ public abstract class RendezvousFactory extends Factory<Rendezvous> {
         return rendezvous;
     }
 
-    private static final class DisabledRendezvous implements Rendezvous {
+    private static final class DisabledRendezvous extends AbstractRendezvous {
         @Override
         public void init() {
             //
@@ -64,41 +62,6 @@ public abstract class RendezvousFactory extends Factory<Rendezvous> {
         @Override
         public void quit() {
             //
-        }
-
-        @Override
-        public void addListener(RendezvousListener listener) {
-            //
-        }
-
-        @Override
-        public void removeListener(RendezvousListener listener) {
-            //
-        }
-
-        @Override
-        public int numberOfServices() {
-            return 0;
-        }
-
-        @Override
-        public Host getService(int index) {
-            return null;
-        }
-
-        @Override
-        public Iterator<Host> iterator() {
-            return Collections.<Host>emptyList().iterator();
-        }
-
-        @Override
-        public String getDisplayedName(int index) {
-            return null;
-        }
-
-        @Override
-        public String getDisplayedName(String identifier) {
-            return null;
         }
     }
 }

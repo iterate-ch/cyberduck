@@ -87,20 +87,20 @@ public abstract class AbstractRendezvous implements Rendezvous {
     private RendezvousListener notifier = new RendezvousListener() {
         @Override
         public void serviceResolved(final String identifier, final Host host) {
-            log.info("Service resolved:" + host);
-            RendezvousListener[] l = listeners.toArray(
-                    new RendezvousListener[listeners.size()]);
-            for(RendezvousListener listener : l) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Service resolved with identifier %s with %s", identifier, host));
+            }
+            for(RendezvousListener listener : listeners) {
                 listener.serviceResolved(identifier, host);
             }
         }
 
         @Override
         public void serviceLost(final String servicename) {
-            log.info("Service lost:" + servicename);
-            RendezvousListener[] l = listeners.toArray(
-                    new RendezvousListener[listeners.size()]);
-            for(RendezvousListener listener : l) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Service with name %s lost", servicename));
+            }
+            for(RendezvousListener listener : listeners) {
                 listener.serviceLost(servicename);
             }
         }
@@ -214,14 +214,18 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * @param host     Bookmark
      */
     protected void add(String fullname, Host host) {
-        log.debug("add:" + fullname);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Add resolved host %s for full name %s", host, fullname));
+        }
         if(null == this.services.put(fullname, host)) {
             this.notifier.serviceResolved(fullname, host);
         }
     }
 
     protected void remove(String identifier) {
-        log.debug("remove:" + identifier);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Remove host with identifier %s", identifier));
+        }
         if(null == services.remove(identifier)) {
             return;
         }

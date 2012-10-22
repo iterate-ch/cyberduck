@@ -26,29 +26,32 @@ import java.util.Iterator;
 /**
  * @version $Id$
  */
-public final class RendezvousCollection extends AbstractHostCollection {
+public final class RendezvousCollection extends AbstractHostCollection implements RendezvousListener {
     private static final long serialVersionUID = 6468881403370416829L;
 
     private static final RendezvousCollection RENDEZVOUS_COLLECTION
             = new RendezvousCollection();
 
-    private RendezvousCollection() {
-        RendezvousFactory.instance().addListener(new RendezvousListener() {
-            @Override
-            public void serviceResolved(String identifier, Host host) {
-                RendezvousCollection.this.collectionItemAdded(host);
-            }
+    public static RendezvousCollection defaultCollection() {
+        return RENDEZVOUS_COLLECTION;
+    }
 
-            @Override
-            public void serviceLost(String servicename) {
-                RendezvousCollection.this.collectionItemRemoved(null);
-            }
-        });
+    private final Rendezvous rendezvous;
+
+    private RendezvousCollection() {
+        rendezvous = RendezvousFactory.instance();
+        rendezvous.addListener(this);
         this.load();
     }
 
-    public static RendezvousCollection defaultCollection() {
-        return RENDEZVOUS_COLLECTION;
+    @Override
+    public void serviceResolved(String identifier, Host host) {
+        this.collectionItemAdded(host);
+    }
+
+    @Override
+    public void serviceLost(String servicename) {
+        this.collectionItemRemoved(null);
     }
 
     @Override
@@ -58,12 +61,12 @@ public final class RendezvousCollection extends AbstractHostCollection {
 
     @Override
     public Host get(int row) {
-        return RendezvousFactory.instance().getService(row);
+        return rendezvous.getService(row);
     }
 
     @Override
     public int size() {
-        return RendezvousFactory.instance().numberOfServices();
+        return rendezvous.numberOfServices();
     }
 
     @Override
@@ -83,7 +86,7 @@ public final class RendezvousCollection extends AbstractHostCollection {
 
     @Override
     public Iterator<Host> iterator() {
-        return RendezvousFactory.instance().iterator();
+        return rendezvous.iterator();
     }
 
     @Override
