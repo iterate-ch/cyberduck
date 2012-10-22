@@ -35,15 +35,15 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testSerialize() {
         Transfer t = new DownloadTransfer(new NullPath("t", Path.FILE_TYPE));
-//        t.size = 4L;
-//        t.transferred = 3L;
+        t.addSize(4L);
+        t.addTransferred(3L);
         final DownloadTransfer serialized = new DownloadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
-//        assertEquals(4L, serialized.getSize());
-//        assertEquals(3L, serialized.getTransferred());
-//        assertFalse(serialized.isComplete());
+        assertEquals(4L, serialized.getSize());
+        assertEquals(3L, serialized.getTransferred());
+        assertFalse(serialized.isComplete());
     }
 
     @Test
@@ -117,6 +117,5 @@ public class DownloadTransferTest extends AbstractTestCase {
         final NullPath parent = new NullPath("t", Path.FILE_TYPE);
         Transfer t = new DownloadTransfer(parent);
         t.setSelected(null, false);
-//        t.transfer();
     }
 }

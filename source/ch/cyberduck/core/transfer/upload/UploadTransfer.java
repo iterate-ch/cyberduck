@@ -226,7 +226,7 @@ public class UploadTransfer extends Transfer {
             file.upload(this.getBandwidth(), new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
-                    transferred += bytes;
+                    addTransferred(bytes);
                 }
             }, status);
             if(status.isComplete()) {

@@ -48,14 +48,14 @@ public class CopyTransferTest extends AbstractTestCase {
     @Test
     public void testSerialize() throws Exception {
         Transfer t = new CopyTransfer(Collections.<Path, Path>singletonMap(new NullPath("t", Path.FILE_TYPE), new NullPath("d", Path.FILE_TYPE)));
-//        t.size = 4L;
-//        t.transferred = 3L;
+        t.addSize(4L);
+        t.addTransferred(3L);
         final CopyTransfer serialized = new CopyTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
-//        assertEquals(4L, serialized.getSize());
-//        assertEquals(3L, serialized.getTransferred());
+        assertEquals(4L, serialized.getSize());
+        assertEquals(3L, serialized.getTransferred());
     }
 
     @Test

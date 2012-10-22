@@ -198,7 +198,7 @@ public class DownloadTransfer extends Transfer {
 
                 @Override
                 public void bytesReceived(long bytes) {
-                    transferred += bytes;
+                    addTransferred(bytes);
                     if(update) {
                         if(status.getLength() == status.getCurrent()) {
                             // Remove custom icon if complete. The Finder will display the default

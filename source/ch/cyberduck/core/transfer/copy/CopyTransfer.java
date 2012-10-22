@@ -138,12 +138,12 @@ public class CopyTransfer extends Transfer {
             source.copy(destination, this.getBandwidth(), new AbstractStreamListener() {
                 @Override
                 public void bytesReceived(long bytes) {
-                    transferred += bytes;
+                    addTransferred(bytes);
                 }
 
                 @Override
                 public void bytesSent(long bytes) {
-                    transferred += bytes;
+                    addTransferred(bytes);
                 }
             }, status);
         }

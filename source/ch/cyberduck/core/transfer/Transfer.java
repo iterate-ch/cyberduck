@@ -71,7 +71,7 @@ public abstract class Transfer implements Serializable {
     /**
      * The number bytes already transferred of the files in the <code>queue</code>
      */
-    protected long transferred = 0;
+    private long transferred = 0;
 
     /**
      * The transfer has been canceled and should
@@ -569,9 +569,9 @@ public abstract class Transfer implements Serializable {
             session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
             s = filter.prepare(p);
             // Add transfer length to total bytes
-            size += s.getLength();
+            this.addSize(s.getLength());
             // Add skipped bytes
-            transferred += s.getCurrent();
+            this.addTransferred(s.getCurrent());
         }
         else {
             // Empty transfer status for files not accepted by filter
@@ -755,10 +755,18 @@ public abstract class Transfer implements Serializable {
         return size;
     }
 
+    public void addSize(final long bytes) {
+        size += bytes;
+    }
+
     /**
      * @return The number of bytes transferred of all files.
      */
     public long getTransferred() {
         return transferred;
+    }
+
+    public void addTransferred(final long bytes) {
+        transferred += bytes;
     }
 }
