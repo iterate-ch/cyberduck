@@ -18,14 +18,18 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @version $Id$
  */
 public class NamedThreadFactory implements ThreadFactory {
+    private static final Logger log = Logger.getLogger(NamedThreadFactory.class);
 
-    private int threadCount = 1;
+    final AtomicInteger threadNumber = new AtomicInteger(1);
 
     private String name;
 
@@ -40,7 +44,15 @@ public class NamedThreadFactory implements ThreadFactory {
     @Override
     public Thread newThread(Runnable r) {
         Thread thread = new Thread(r);
-        thread.setName(String.format("%s-%d", name, threadCount++));
+        thread.setName(String.format("%s-%d", name, threadNumber.getAndIncrement()));
+        thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                // Swallow the exception
+                log.error(String.format("Thread %s has thrown uncaught exception:%s",
+                        t.getName(), e.getMessage()), e);
+            }
+        });
         return thread;
     }
 }
