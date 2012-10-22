@@ -31,6 +31,8 @@ import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.local.RevealService;
+import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -85,8 +87,10 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
      */
     private Local mountpoint;
 
+    private RevealService reveal = RevealServiceFactory.get();
+
     private FuseFilesystem() {
-        ;
+        //
     }
 
     private boolean isAvailable() {
@@ -207,7 +211,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             unmount = new CountDownLatch(1);
             try {
                 Local folder = LocalFactory.createLocal(mountpoint, session.home().getAbsolute());
-                folder.reveal();
+                reveal.reveal(folder);
             }
             catch(IOException e) {
                 log.warn(e.getMessage());

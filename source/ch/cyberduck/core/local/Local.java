@@ -309,13 +309,6 @@ public abstract class Local extends AbstractPath {
      */
     public abstract void trash();
 
-    /**
-     * Reveal file in file system
-     *
-     * @return True if file could be selected
-     */
-    public abstract boolean reveal();
-
     @Override
     public AttributedList<Local> list() {
         final AttributedList<Local> children = new AttributedList<Local>();

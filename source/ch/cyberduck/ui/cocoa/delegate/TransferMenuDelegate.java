@@ -19,8 +19,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.local.RevealService;
+import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
@@ -36,10 +37,9 @@ import java.util.List;
  */
 public class TransferMenuDelegate extends AbstractMenuDelegate {
 
-    /**
-     *
-     */
     private List<Path> roots;
+
+    private RevealService reveal = RevealServiceFactory.get();
 
     public TransferMenuDelegate(List<Path> roots) {
         this.roots = roots;
@@ -75,8 +75,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
     }
 
     public void reveal(final NSMenuItem sender) {
-        Local l = LocalFactory.createLocal(sender.representedObject());
-        l.reveal();
+        reveal.reveal(LocalFactory.createLocal(sender.representedObject()));
     }
 
     @Override

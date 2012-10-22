@@ -30,6 +30,8 @@ import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.local.RevealService;
+import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
@@ -65,8 +67,10 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
 
     private Session session;
 
+    private RevealService reveal = RevealServiceFactory.get();
+
     private KfsFilesystem() {
-        ;
+        //
     }
 
     /**
@@ -546,7 +550,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 try {
                     Path workdir = session.home();
                     Local folder = LocalFactory.createLocal(new File(delegate.options.mountpoint, workdir.getAbsolute()));
-                    folder.reveal();
+                    reveal.reveal(folder);
                 }
                 catch(IOException e) {
                     log.warn(e.getMessage());

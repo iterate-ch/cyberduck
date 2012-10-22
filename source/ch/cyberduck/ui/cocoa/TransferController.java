@@ -29,8 +29,9 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.local.RevealService;
+import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.Transfer;
@@ -85,6 +86,8 @@ public final class TransferController extends WindowController implements NSTool
     private static TransferController instance = null;
 
     private NSToolbar toolbar;
+
+    private RevealService reveal = RevealServiceFactory.get();
 
     @Override
     public void awakeFromNib() {
@@ -1063,10 +1066,7 @@ public final class TransferController extends WindowController implements NSTool
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
             for(Path i : transfer.getRoots()) {
-                Local l = i.getLocal();
-                if(l.reveal()) {
-                    break;
-                }
+                reveal.reveal(i.getLocal());
             }
         }
     }

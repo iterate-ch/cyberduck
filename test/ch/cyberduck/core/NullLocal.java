@@ -17,11 +17,6 @@ public class NullLocal extends Local {
     }
 
     @Override
-    public boolean reveal() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void writeUnixPermission(final Permission permission) {
         throw new UnsupportedOperationException();
     }
