@@ -1421,7 +1421,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="downloads"></param>
         public void Download(IList<Path> downloads)
         {
-            Download(downloads, null);
+            Download(downloads, _session.getHost().getDownloadFolder());
         }
 
         public void Download(IList<Path> downloads, Local downloadFolder)

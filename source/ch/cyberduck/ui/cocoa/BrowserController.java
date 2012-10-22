@@ -2752,7 +2752,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param downloads Paths to transfer
      */
     public void download(List<Path> downloads) {
-        this.download(downloads, null);
+        this.download(downloads, session.getHost().getDownloadFolder());
     }
 
     /**
@@ -2764,12 +2764,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final List<Path> roots = new Collection<Path>();
         for(Path selected : downloads) {
             Path path = PathFactory.createPath(session, selected.getAsDictionary());
-            if(null == downloadfolder) {
-                path.setLocal(null);
-            }
-            else {
-                path.setLocal(LocalFactory.createLocal(downloadfolder, path.getName()));
-            }
+            path.setLocal(LocalFactory.createLocal(downloadfolder, path.getName()));
             roots.add(path);
         }
         final Transfer transfer = new DownloadTransfer(roots);
