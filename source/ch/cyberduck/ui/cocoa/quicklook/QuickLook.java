@@ -19,8 +19,9 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.local.Local;
+
+import java.util.List;
 
 /**
  * @version $Id$
@@ -32,7 +33,7 @@ public interface QuickLook {
      *
      * @param files Display these files in QuickLook panel
      */
-    void select(Collection<Local> files);
+    void select(List<Local> files);
 
     /**
      * @return QuickLook implementation found.

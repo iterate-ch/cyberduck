@@ -1,7 +1,8 @@
 package ch.cyberduck.ui.cocoa.quicklook;
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.local.Local;
+
+import java.util.List;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -28,7 +29,7 @@ import ch.cyberduck.core.local.Local;
 public abstract class AbstractQuickLook implements QuickLook {
 
     @Override
-    public void select(final Collection<Local> files) {
+    public void select(final List<Local> files) {
         //
     }
 

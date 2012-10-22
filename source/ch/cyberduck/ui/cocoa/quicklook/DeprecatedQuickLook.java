@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.local.Local;
 
@@ -56,7 +55,7 @@ public final class DeprecatedQuickLook extends AbstractQuickLook {
      * @param files Selected files
      */
     @Override
-    public void select(Collection<Local> files) {
+    public void select(List<Local> files) {
         final List<String> paths = new ArrayList<String>();
         for(Local file : files) {
             paths.add(file.getAbsolute());

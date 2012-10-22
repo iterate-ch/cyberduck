@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
@@ -49,8 +48,14 @@ public final class QuartzQuickLook implements QuickLook {
 
     private List<QLPreviewItem> previews = new ArrayList<QLPreviewItem>();
 
+    private final QLPreviewPanel panel;
+
+    private QuartzQuickLook() {
+        panel = QLPreviewPanel.sharedPreviewPanel();
+    }
+
     @Override
-    public void select(final Collection<Local> files) {
+    public void select(final List<Local> files) {
         previews.clear();
         for(final Local selected : files) {
             previews.add(new QLPreviewItem() {
@@ -78,12 +83,6 @@ public final class QuartzQuickLook implements QuickLook {
             return previews.get(index).id();
         }
     };
-
-    final QLPreviewPanel panel;
-
-    private QuartzQuickLook() {
-        panel = QLPreviewPanel.sharedPreviewPanel();
-    }
 
     @Override
     public boolean isAvailable() {
