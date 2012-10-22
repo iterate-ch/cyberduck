@@ -19,6 +19,7 @@ package ch.cyberduck.core.synchronization;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 
 import org.apache.log4j.Logger;
 
@@ -33,18 +34,19 @@ public class ChecksumComparisonService implements ComparisonService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare checksum for %s", p.getAbsolute()));
         }
-        if(p.attributes().isFile()) {
-            if(null == p.attributes().getChecksum()) {
+        final PathAttributes attributes = p.attributes();
+        if(attributes.isFile()) {
+            if(null == attributes.getChecksum()) {
                 if(p.getSession().isChecksumSupported()) {
                     p.readChecksum();
                 }
             }
-            if(null == p.attributes().getChecksum()) {
+            if(null == attributes.getChecksum()) {
                 log.warn("No checksum available for comparison:" + p);
                 return Comparison.UNEQUAL;
             }
             //fist make sure both files are larger than 0 bytes
-            if(p.attributes().getChecksum().equals(p.getLocal().attributes().getChecksum())) {
+            if(attributes.getChecksum().equals(p.getLocal().attributes().getChecksum())) {
                 return Comparison.EQUAL;
             }
         }

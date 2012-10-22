@@ -19,6 +19,7 @@ package ch.cyberduck.core.synchronization;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 
 import org.apache.log4j.Logger;
 
@@ -33,21 +34,22 @@ public class SizeComparisonService implements ComparisonService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare size for %s", p.getAbsolute()));
         }
-        if(p.attributes().isFile()) {
-            if(p.attributes().getSize() == -1) {
+        final PathAttributes attributes = p.attributes();
+        if(attributes.isFile()) {
+            if(attributes.getSize() == -1) {
                 p.readSize();
             }
             //fist make sure both files are larger than 0 bytes
-            if(p.attributes().getSize() == 0 && p.getLocal().attributes().getSize() == 0) {
+            if(attributes.getSize() == 0 && p.getLocal().attributes().getSize() == 0) {
                 return Comparison.EQUAL;
             }
-            if(p.attributes().getSize() == 0) {
+            if(attributes.getSize() == 0) {
                 return Comparison.LOCAL_NEWER;
             }
             if(p.getLocal().attributes().getSize() == 0) {
                 return Comparison.REMOTE_NEWER;
             }
-            if(p.attributes().getSize() == p.getLocal().attributes().getSize()) {
+            if(attributes.getSize() == p.getLocal().attributes().getSize()) {
                 return Comparison.EQUAL;
             }
         }

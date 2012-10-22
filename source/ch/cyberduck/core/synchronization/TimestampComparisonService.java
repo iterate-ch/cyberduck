@@ -19,6 +19,7 @@ package ch.cyberduck.core.synchronization;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.date.CalendarService;
 import ch.cyberduck.core.date.Instant;
 
@@ -39,17 +40,18 @@ public class TimestampComparisonService implements ComparisonService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare timestamp for %s", p.getAbsolute()));
         }
-        if(-1 == p.attributes().getModificationDate()) {
+        final PathAttributes attributes = p.attributes();
+        if(-1 == attributes.getModificationDate()) {
             if(p.getSession().isReadTimestampSupported()) {
                 // Make sure we have a UTC timestamp
                 p.readTimestamp();
             }
         }
-        if(-1 == p.attributes().getModificationDate()) {
+        if(-1 == attributes.getModificationDate()) {
             log.warn("No modification date available for comparison:" + p);
             return Comparison.UNEQUAL;
         }
-        final Calendar remote = calendarService.asDate(p.attributes().getModificationDate(), Instant.SECOND);
+        final Calendar remote = calendarService.asDate(attributes.getModificationDate(), Instant.SECOND);
         final Calendar local = calendarService.asDate(p.getLocal().attributes().getModificationDate(), Instant.SECOND);
         if(local.before(remote)) {
             return Comparison.REMOTE_NEWER;
