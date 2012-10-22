@@ -392,7 +392,9 @@ public class BookmarkTableDataSource extends ListDataSource {
     public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info,
                                                           NSInteger row, NSUInteger operation) {
         NSPasteboard draggingPasteboard = info.draggingPasteboard();
-        log.debug("tableViewAcceptDrop:" + row);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Accept drop at row %s", row));
+        }
         view.deselectAll(null);
         final AbstractHostCollection source = this.getSource();
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
@@ -513,6 +515,9 @@ public class BookmarkTableDataSource extends ListDataSource {
      */
     @Override
     public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Drop finished with operation %s", operation));
+        }
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             controller.deleteBookmarkButtonClicked(null);
         }
@@ -531,7 +536,6 @@ public class BookmarkTableDataSource extends ListDataSource {
      */
     @Override
     public NSUInteger draggingSourceOperationMaskForLocal(boolean local) {
-        log.debug("draggingSourceOperationMaskForLocal:" + local);
         if(local) {
             return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
         }
@@ -574,7 +578,9 @@ public class BookmarkTableDataSource extends ListDataSource {
      */
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
-        log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Query promised files dropped dat destination %s", dropDestination.path()));
+        }
         final NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != dropDestination) {
             final HostPasteboard pasteboard = HostPasteboard.getPasteboard();
