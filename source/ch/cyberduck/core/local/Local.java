@@ -257,7 +257,7 @@ public abstract class Local extends AbstractPath {
         try {
             final File file = new File(path);
             if(!file.getParentFile().mkdirs()) {
-                log.warn(String.format("Create directory %s failed", path));
+                log.debug(String.format("Create directory %s failed", path));
             }
             if(!file.createNewFile()) {
                 log.warn(String.format("Create file %s failed", path));
@@ -276,7 +276,7 @@ public abstract class Local extends AbstractPath {
     @Override
     public void mkdir() {
         if(!new File(path).mkdirs()) {
-            log.warn(String.format("Create directory %s failed", path));
+            log.debug(String.format("Create directory %s failed", path));
         }
     }
 
