@@ -26,5 +26,6 @@ public class DonationTest extends AbstractTestCase {
         assertFalse(r.verify());
         f.touch();
         assertFalse(r.verify());
+        f.delete();
     }
 }
