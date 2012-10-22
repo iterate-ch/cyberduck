@@ -121,7 +121,7 @@ public abstract class Session implements TranscriptListener {
                 if(!this.isConnected()) {
                     if(StringUtils.isBlank(host.getHostname())) {
                         if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
-                            log.warn("No hostname configured:" + host);
+                            log.warn(String.format("No default hostname configured for protocol %s", host.getProtocol()));
                             throw new ConnectionCanceledException();
                         }
                         // If hostname is missing update with default
@@ -158,7 +158,7 @@ public abstract class Session implements TranscriptListener {
                 throw e;
             }
             catch(SSLHandshakeException e) {
-                log.error("SSL Handshake failed: " + e.getMessage());
+                log.error(String.format("SSL Handshake failed for host %s: %s", host, e.getMessage()));
                 if(e.getCause() instanceof sun.security.validator.ValidatorException) {
                     throw e;
                 }
@@ -313,7 +313,7 @@ public abstract class Session implements TranscriptListener {
             return directory;
         }
         catch(IOException e) {
-            log.warn("Connection failed:" + e.getMessage());
+            log.warn(String.format("Connection failed to host %s:%s", host, e.getMessage()));
             return null;
         }
         finally {
@@ -594,7 +594,9 @@ public abstract class Session implements TranscriptListener {
      * @see ConnectionListener
      */
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
-        log.debug("connectionWillOpen");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Connection will open to %s", host));
+        }
         ConnectionListener[] l = connectionListeners.toArray(new ConnectionListener[connectionListeners.size()]);
         for(ConnectionListener listener : l) {
             listener.connectionWillOpen();
@@ -624,7 +626,9 @@ public abstract class Session implements TranscriptListener {
      * @see ConnectionListener
      */
     protected void fireConnectionDidOpenEvent() {
-        log.debug("connectionDidOpen");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Connection did open to %s", host));
+        }
         // Update last accessed timestamp
         host.setTimestamp(new Date());
         // Update status flag
@@ -646,7 +650,9 @@ public abstract class Session implements TranscriptListener {
      * @see ConnectionListener
      */
     protected void fireConnectionWillCloseEvent() {
-        log.debug("connectionWillClose");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Connection will close to %s", host));
+        }
         this.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                 host.getHostname()));
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
@@ -660,14 +666,14 @@ public abstract class Session implements TranscriptListener {
      * @see ConnectionListener
      */
     protected void fireConnectionDidCloseEvent() {
-        log.debug("connectionDidClose");
-
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Connection did close to %s", host));
+        }
         this.cdn().clear();
 
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionDidClose();
         }
-
         // Update status flag
         opening = false;
     }
