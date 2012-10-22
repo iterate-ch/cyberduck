@@ -43,7 +43,7 @@ public class NamedThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable r) {
-        Thread thread = new Thread(r);
+        final Thread thread = new Thread(r);
         thread.setName(String.format("%s-%d", name, threadNumber.getAndIncrement()));
         thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
