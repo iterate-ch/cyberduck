@@ -48,12 +48,15 @@ public class Donation extends AbstractLicense {
         }
     }
 
+    static {
+        Native.load("Prime");
+    }
+
     /**
      * @param file The license key file.
      */
     public Donation(Local file) {
         super(file);
-        Native.load("Prime");
     }
 
     /**
