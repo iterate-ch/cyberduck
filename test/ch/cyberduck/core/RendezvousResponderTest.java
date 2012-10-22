@@ -55,7 +55,9 @@ public class RendezvousResponderTest extends AbstractTestCase {
         });
         r.init();
         wait.await(5L, TimeUnit.SECONDS);
-        assertNull(failure[0].getMessage(), failure[0]);
+        if(failure[0] != null) {
+            fail(failure[0].getMessage());
+        }
         r.quit();
     }
 }
