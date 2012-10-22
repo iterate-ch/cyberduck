@@ -88,11 +88,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     private PathAttributes attributes;
 
-    /**
-     *
-     */
-    private static final int CHUNKSIZE = Preferences.instance().getInteger("connection.chunksize");
-
     protected <T> Path(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         String pathObj = dict.stringForKey("Remote");
@@ -783,10 +778,11 @@ public abstract class Path extends AbstractPath implements Serializable {
         final BufferedInputStream bi = new BufferedInputStream(in);
         final BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
-            final byte[] chunk = new byte[CHUNKSIZE];
+            final int chunksize = Preferences.instance().getInteger("connection.chunksize");
+            final byte[] chunk = new byte[chunksize];
             long bytesTransferred = 0;
             while(!status.isCanceled()) {
-                final int read = bi.read(chunk, 0, CHUNKSIZE);
+                final int read = bi.read(chunk, 0, chunksize);
                 if(-1 == read) {
                     log.debug("End of file reached");
                     // End of file
@@ -913,7 +909,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return Null if there is a encoding failure
      */
     public String toURL(final boolean credentials) {
-        // Do not use java.net.URL because it doesn't know about custom protocols
         return String.format("%s%s", this.getHost().toURL(credentials), URIEncoder.encode(this.getAbsolute()));
     }
 
