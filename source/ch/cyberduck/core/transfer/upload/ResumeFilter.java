@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -20,14 +21,15 @@ public class ResumeFilter extends AbstractUploadFilter {
     public TransferStatus prepare(final Path file) {
         final TransferStatus status = super.prepare(file);
         if(file.getSession().isUploadResumable()) {
-            if(file.attributes().isFile()) {
+            final PathAttributes attributes = file.attributes();
+            if(attributes.isFile()) {
                 if(file.exists()) {
                     // Do not trust cached value which is from last directory listing
                     // and possibly outdated. Fix #3284.
                     file.readSize();
-                    if(file.attributes().getSize() > 0) {
+                    if(attributes.getSize() > 0) {
                         status.setResume(true);
-                        status.setCurrent(file.attributes().getSize());
+                        status.setCurrent(attributes.getSize());
                     }
                 }
             }

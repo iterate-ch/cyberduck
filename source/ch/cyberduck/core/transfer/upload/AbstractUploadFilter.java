@@ -2,7 +2,9 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -26,13 +28,14 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
 
     @Override
     public boolean accept(final Path file) {
-        if(file.attributes().isDirectory()) {
+        final PathAttributes attributes = file.attributes();
+        if(attributes.isDirectory()) {
             // Do not attempt to create a directory that already exists
             if(file.exists()) {
                 return false;
             }
         }
-        if(file.attributes().isFile()) {
+        if(attributes.isFile()) {
             if(!file.getLocal().exists()) {
                 // Local file is no more here
                 return false;
@@ -48,6 +51,7 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
 
     @Override
     public TransferStatus prepare(final Path file) {
+        final PathAttributes attributes = file.attributes();
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
             if(file.exists()) {
                 // Do not overwrite permissions for existing file.
@@ -62,18 +66,18 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
             else {
                 if(file.getSession().isUnixPermissionsSupported()) {
                     if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        if(file.attributes().isFile()) {
-                            file.attributes().setPermission(new Permission(
+                        if(attributes.isFile()) {
+                            attributes.setPermission(new Permission(
                                     Preferences.instance().getInteger("queue.upload.permissions.file.default")));
                         }
-                        else if(file.attributes().isDirectory()) {
-                            file.attributes().setPermission(new Permission(
+                        else if(attributes.isDirectory()) {
+                            attributes.setPermission(new Permission(
                                     Preferences.instance().getInteger("queue.upload.permissions.folder.default")));
                         }
                     }
                     else {
                         // Read permissions from local file
-                        file.attributes().setPermission(file.getLocal().attributes().getPermission());
+                        attributes.setPermission(file.getLocal().attributes().getPermission());
                     }
                 }
                 if(file.getSession().isAclSupported()) {
@@ -82,7 +86,7 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
             }
         }
         final TransferStatus status = new TransferStatus();
-        if(file.attributes().isFile()) {
+        if(attributes.isFile()) {
             if(file.getLocal().attributes().isSymbolicLink()) {
                 if(symlinkResolver.resolve(file)) {
                     // No file size increase for symbolic link to be created on the server
@@ -98,7 +102,7 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
                 status.setLength(file.getLocal().attributes().getSize());
             }
         }
-        if(file.attributes().isDirectory()) {
+        if(attributes.isDirectory()) {
             if(!file.exists()) {
                 file.getSession().cache().put(file.getReference(), AttributedList.<Path>emptyList());
             }
@@ -123,9 +127,10 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
             if(file.getSession().isWriteTimestampSupported()) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     // Read timestamps from local file
-                    file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
-                            file.getLocal().attributes().getModificationDate(),
-                            file.getLocal().attributes().getAccessedDate());
+                    final Attributes attributes = file.getLocal().attributes();
+                    file.writeTimestamp(attributes.getCreationDate(),
+                            attributes.getModificationDate(),
+                            attributes.getAccessedDate());
                 }
             }
         }
