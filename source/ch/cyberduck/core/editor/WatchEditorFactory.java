@@ -21,6 +21,8 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
+import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.ui.Controller;
 
 import java.util.ArrayList;
@@ -36,10 +38,39 @@ public class WatchEditorFactory extends EditorFactory {
         EditorFactory.addFactory(WatchEditorFactory.NATIVE_PLATFORM, new WatchEditorFactory());
     }
 
+    private final ApplicationFinder finder = ApplicationFinderFactory.get();
+
     protected WatchEditorFactory() {
-        editors.add(new Application("de.codingmonkeys.SubEthaEdit", "SubEthaEdit"));
-        editors.add(new Application("com.apple.TextEdit", "TextEdit"));
-        editors.add(new Application("com.apple.Xcode", "Xcode"));
+        this.add(new Application("com.apple.TextEdit", "TextEdit"));
+        this.add(new Application("com.apple.Xcode", "Xcode"));
+        this.add(new Application("com.apple.dt.Xcode", "Xcode"));
+        this.add(new Application("de.codingmonkeys.SubEthaEdit", "SubEthaEdit"));
+        this.add(new Application("com.barebones.bbedit", "BBEdit"));
+        this.add(new Application("com.barebones.textwrangler", "TextWrangler"));
+        this.add(new Application("com.macromates.textmate", "TextMate"));
+        this.add(new Application("com.transtex.texeditplus", "Tex-Edit Plus"));
+        this.add(new Application("jp.co.artman21.JeditX", "Jedit X"));
+        this.add(new Application("net.mimikaki.mi", "mi"));
+        this.add(new Application("org.smultron.Smultron", "Smultron"));
+        this.add(new Application("org.fraise.Fraise", "Fraise"));
+        this.add(new Application("com.aynimac.CotEditor", "CotEditor"));
+        this.add(new Application("com.macrabbit.cssedit", "CSSEdit"));
+        this.add(new Application("com.talacia.Tag", "Tag"));
+        this.add(new Application("org.skti.skEdit", "skEdit"));
+        this.add(new Application("com.cgerdes.ji", "JarInspector"));
+        this.add(new Application("com.optima.PageSpinner", "PageSpinner"));
+        this.add(new Application("com.hogbaysoftware.WriteRoom", "WriteRoom"));
+        this.add(new Application("org.vim.MacVim", "MacVim"));
+        this.add(new Application("com.forgedit.ForgEdit", "ForgEdit"));
+        this.add(new Application("com.tacosw.TacoHTMLEdit", "Taco HTML Edit"));
+        this.add(new Application("com.macrabbit.Espresso", "Espresso"));
+        this.add(new Application("net.experiya.ScinteX", "ScinteX"));
+    }
+
+    private void add(Application application) {
+        if(finder.isInstalled(application)) {
+            editors.add(application);
+        }
     }
 
     @Override
