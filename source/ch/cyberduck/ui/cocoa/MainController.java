@@ -286,6 +286,9 @@ public class MainController extends BundleController implements NSApplication.De
                 for(BrowserController controller : b) {
                     if(controller.window().isKeyWindow()) {
                         final Path selected = controller.getSelectedPath();
+                        if(null == selected) {
+                            return null;
+                        }
                         if(controller.isEditable(selected)) {
                             return selected;
                         }

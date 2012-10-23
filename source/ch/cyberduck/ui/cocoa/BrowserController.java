@@ -581,6 +581,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             protected Path getEditable() {
                 final Path selected = BrowserController.this.getSelectedPath();
+                if(null == selected) {
+                    return null;
+                }
                 if(isEditable(selected)) {
                     return selected;
                 }
