@@ -1899,7 +1899,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     _infoController.DetachDistributionHandlers();
                     Session session = BrowserController.getSession();
                     _view.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                                            session.cdn().toString(_deliveryMethod));
+                                                            session.cdn().getName(_deliveryMethod));
                     Path file = _infoController.SelectedPath;
                     _view.Distribution = _distribution.isEnabled();
                     _view.DistributionStatus = _distribution.getStatus();
