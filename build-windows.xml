@@ -215,7 +215,7 @@
     <target name="package" depends="dll, build">
         <loadfile property="changes" srcFile="${www.update}/changelog.txt"/>
 
-        <property name="buildpath" location="${build.deploy}"/>
+        <property name="buildpath" value="${configuration}/${architecture}"/>
         <property name="absbuild" location="${build}"/>
 
         <copy file="${www.update}/version.xml" todir="${build}" overwrite="true"/>
@@ -298,7 +298,7 @@
             <arg value="${setup}/cyberduck.nsi"/>
         </exec>
         <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
-            <arg line='sign /r "StartCom" /t http://timestamp.globalsign.com/scripts/timestamp.dll "${setup.file}"'/>
+            <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${setup.file}"'/>
         </exec>
     </target>
 </project>
