@@ -61,4 +61,9 @@ public class Application {
     public int hashCode() {
         return identifier != null ? identifier.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return this.getIdentifier();
+    }
 }
