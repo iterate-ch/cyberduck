@@ -18,9 +18,7 @@
 
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using org.apache.commons.io;
@@ -88,7 +86,7 @@ namespace Ch.Cyberduck.Core.Local
         {
             if (null == info)
             {
-                info = new FileInfoAttributes(this);
+                info = new FileInfoAttributes(getAbsolute());
             }
             return info;
         }
@@ -101,17 +99,6 @@ namespace Ch.Cyberduck.Core.Local
         public override void trash()
         {
             delete();
-        }
-
-        public override bool reveal()
-        {
-            if (exists())
-            {
-                //select first file downloaded. We could just open the containing folder alternatively.
-                return ApplicationLauncherFactory.get().open(new Application("explorer.exe", null),
-                                                             "/select, " + getAbsolute());
-            }
-            return false;
         }
 
         public override void setPath(string parent, string name)
@@ -213,12 +200,9 @@ namespace Ch.Cyberduck.Core.Local
 
         private class FileInfoAttributes : LocalAttributes
         {
-            private ch.cyberduck.core.local.Local file;
-
-            public FileInfoAttributes(ch.cyberduck.core.local.Local l)
-                : base(l)
+            public FileInfoAttributes(String path)
+                : base(path)
             {
-                file = l;
             }
         }
     }

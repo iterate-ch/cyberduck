@@ -446,11 +446,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 for (int i = 0; i < transfer.getRoots().size(); i++)
                 {
                     Path path = (Path) transfer.getRoots().get(i);
-                    Local l = path.getLocal();
-                    if (l.reveal())
-                    {
-                        break;
-                    }
+                    RevealServiceFactory.get().reveal(path.getLocal());
                 }
             }
         }

@@ -2578,6 +2578,7 @@ source/ch/cyberduck/core/editor/RegistryApplicationFinder.cs -text
 source/ch/cyberduck/core/editor/WatchEditor.cs -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
+source/ch/cyberduck/core/local/ExplorerRevealService.cs -text
 source/ch/cyberduck/core/local/LocalImpl.cs -text
 source/ch/cyberduck/core/local/Win32FileDescriptor.cs -text
 source/ch/cyberduck/core/local/WindowsApplicationLauncher.cs -text

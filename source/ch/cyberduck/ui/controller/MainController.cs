@@ -204,6 +204,7 @@ namespace Ch.Cyberduck.Ui.Controller
             EditorFactory.register();
             WindowsApplicationLauncher.register();
             Win32FileDescriptor.Register();
+            ExplorerRevealService.Register();
         }
 
         private static void ConfigureLogging()
