@@ -105,8 +105,8 @@ public interface DistributionConfiguration {
     /**
      * List available distribution methods for this CDN.
      *
-     * @return The supported protocols
      * @param container Origin
+     * @return The supported protocols
      */
     List<Distribution.Method> getMethods(String container);
 
@@ -127,13 +127,13 @@ public interface DistributionConfiguration {
      *
      * @return Localized description
      */
-    String toString();
+    String getName();
 
     /**
      * @param method Distribution method
      * @return CDN name
      */
-    String toString(Distribution.Method method);
+    String getName(Distribution.Method method);
 
     /**
      * Clear any cached distribution information.

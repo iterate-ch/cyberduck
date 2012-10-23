@@ -782,9 +782,9 @@ public abstract class Session implements TranscriptListener {
                 /**
                  * @return Service name of the CDN
                  */
-                public String toString() {
+                public String getName() {
                     if(this.isCDNSupported()) {
-                        return super.toString();
+                        return super.getName();
                     }
                     return Locale.localizedString("None");
                 }

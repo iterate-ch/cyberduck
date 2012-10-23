@@ -1269,7 +1269,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             Session session = _controller.getSession();
             View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                                   session.cdn().toString());
+                                                   session.cdn().getName());
             methods = new List<KeyValuePair<string, Distribution.Method>>();
             List list = session.cdn().getMethods(SelectedPath.getContainerName());
             for (int i = 0; i < list.size(); i++)

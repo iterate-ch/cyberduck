@@ -417,13 +417,13 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         return Arrays.asList(Distribution.DOWNLOAD);
     }
 
-    public String toString() {
+    public String getName() {
         return Locale.localizedString("Akamai", "Mosso");
     }
 
     @Override
-    public String toString(Distribution.Method method) {
-        return this.toString();
+    public String getName(Distribution.Method method) {
+        return this.getName();
     }
 
     @Override

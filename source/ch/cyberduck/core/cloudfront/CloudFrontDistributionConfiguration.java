@@ -172,7 +172,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     protected void prompt(LoginController controller) throws LoginCanceledException {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         controller.check(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
-                host.getCredentials()), this.toString(), null, true, false, false);
+                host.getCredentials()), this.getName(), null, true, false, false);
     }
 
     @Override
@@ -198,13 +198,13 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     }
 
     @Override
-    public String toString() {
+    public String getName() {
         return Locale.localizedString("Amazon CloudFront", "S3");
     }
 
     @Override
-    public String toString(Distribution.Method method) {
-        return this.toString();
+    public String getName(Distribution.Method method) {
+        return this.getName();
     }
 
     @Override

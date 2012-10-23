@@ -1066,11 +1066,11 @@ public class S3Session extends CloudSession {
         }
 
         @Override
-        public String toString(Distribution.Method method) {
+        public String getName(Distribution.Method method) {
             if(method.equals(Distribution.WEBSITE)) {
                 return method.toString();
             }
-            return super.toString(method);
+            return super.getName(method);
         }
 
         @Override

@@ -1807,7 +1807,7 @@ public class InfoController extends ToolbarWindowController {
 
         Session session = controller.getSession();
         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                session.cdn().toString()));
+                session.cdn().getName()));
         distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("None"));
         for(Distribution.Method method : session.cdn().getMethods(this.getSelected().getContainerName())) {
             distributionDeliveryPopup.addItemWithTitle(method.toString());
@@ -2504,7 +2504,7 @@ public class InfoController extends ToolbarWindowController {
                     try {
                         final Session session = controller.getSession();
                         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                session.cdn().toString(distribution.getMethod())));
+                                session.cdn().getName(distribution.getMethod())));
                         distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                         distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
 

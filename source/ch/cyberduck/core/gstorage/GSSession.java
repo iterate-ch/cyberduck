@@ -411,7 +411,7 @@ public class GSSession extends S3Session implements DistributionConfiguration {
     }
 
     @Override
-    public String toString(Distribution.Method method) {
+    public String getName(Distribution.Method method) {
         return method.toString();
     }
 
@@ -487,7 +487,7 @@ public class GSSession extends S3Session implements DistributionConfiguration {
     }
 
     @Override
-    public String toString() {
+    public String getName() {
         return Locale.localizedString("Website Configuration", "S3");
     }
 
