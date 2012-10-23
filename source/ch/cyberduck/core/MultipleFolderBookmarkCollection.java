@@ -62,7 +62,6 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
     public MultipleFolderBookmarkCollection(Local f) {
         this.folder = f;
         this.folder.mkdir();
-        this.load();
     }
 
     @Override
