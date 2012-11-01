@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
@@ -100,15 +99,6 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public long getSize() {
-        final long size = _delegateDownload.getSize() + _delegateUpload.getSize();
-        if(0 == size) {
-            return super.getSize();
-        }
-        return size;
-    }
-
-    @Override
     public boolean isResumable() {
         return _delegateDownload.isResumable() && _delegateUpload.isResumable();
     }
@@ -120,11 +110,7 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public long getTransferred() {
-        final long transferred = _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
-        if(0 == transferred) {
-            return super.getTransferred();
-        }
-        return transferred;
+        return _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
     }
 
     private TransferAction action = TransferAction.forName(
@@ -257,14 +243,6 @@ public class SyncTransfer extends Transfer {
         }
         if(parent.getLocal().exists()) {
             children.addAll(_delegateUpload.children(parent));
-        }
-        for(Path child : children) {
-            if(child.getSession().isReadTimestampSupported()) {
-                if(child instanceof FTPPath) {
-                    // Make sure we have a UTC timestamp
-                    child.readTimestamp();
-                }
-            }
         }
         return new AttributedList<Path>(children);
     }
