@@ -131,6 +131,12 @@ public class DownloadTransfer extends Transfer {
                             continue;
                         }
                     }
+                    if(download.getLocal().attributes().isFile()) {
+                        if(download.getLocal().attributes().getSize() == 0) {
+                            // Dragging a file to the local volume creates the file already
+                            continue;
+                        }
+                    }
                     // Prompt user to choose a filter
                     final TransferAction result = prompt.prompt();
                     return this.filter(prompt, result);
