@@ -785,7 +785,9 @@ public abstract class Path extends AbstractPath implements Serializable {
             while(!status.isCanceled()) {
                 final int read = bi.read(chunk, 0, chunksize);
                 if(-1 == read) {
-                    log.debug("End of file reached");
+                    if(log.isDebugEnabled()) {
+                        log.debug("End of file reached");
+                    }
                     // End of file
                     status.setComplete();
                     break;
@@ -797,7 +799,9 @@ public abstract class Path extends AbstractPath implements Serializable {
                     listener.bytesSent(read);
                     bytesTransferred += read;
                     if(limit == bytesTransferred) {
-                        log.debug("Limit reached reading from stream:" + limit);
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Limit %d reached reading from stream", limit));
+                        }
                         // Part reached
                         if(0 == bi.available()) {
                             // End of file
