@@ -791,10 +791,10 @@ public abstract class Path extends AbstractPath implements Serializable {
                     break;
                 }
                 else {
+                    status.addCurrent(read);
                     listener.bytesReceived(read);
                     bo.write(chunk, 0, read);
                     listener.bytesSent(read);
-                    status.addCurrent(read);
                     bytesTransferred += read;
                     if(limit == bytesTransferred) {
                         log.debug("Limit reached reading from stream:" + limit);
