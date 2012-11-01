@@ -18,24 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.editor.WatchEditor;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
+import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -553,11 +543,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 promisedDragNames.addObject(NSString.stringWithString(p.getLocal().getName()));
             }
             if(pasteboard.size() == 1) {
+                final Local file = pasteboard.get(0).getLocal();
                 if(pasteboard.get(0).attributes().isFile()) {
-                    pasteboard.get(0).getLocal().touch();
+                    file.touch();
+                    IconServiceFactory.get().setProgress(file, 0);
                 }
                 if(pasteboard.get(0).attributes().isDirectory()) {
-                    pasteboard.get(0).getLocal().mkdir();
+                    file.mkdir();
                 }
             }
             // kTemporaryFolderType
