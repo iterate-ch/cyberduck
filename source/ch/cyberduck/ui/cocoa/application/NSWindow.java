@@ -29,7 +29,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.foundation.*;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :119</i>
 public abstract class NSWindow extends NSResponder {
@@ -139,8 +143,18 @@ public abstract class NSWindow extends NSResponder {
 
     /// enum values
     public static interface NSWindowCollectionBehavior {
+        public static final int NSWindowCollectionBehaviorManaged = 1 << 2; // participates in spaces, exposé.  Default behavior if windowLevel == NSNormalWindowLevel
+        public static final int NSWindowCollectionBehaviorTransient = 1 << 3; // floats in spaces, hidden by exposé.  Default behavior if windowLevel != NSNormalWindowLevel
+        public static final int NSWindowCollectionBehaviorStationary = 1 << 4; // unaffected by exposé.  Stays visible and stationary, like desktop window
+
+        public static final int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5; // default behavior if windowLevel == NSNormalWindowLevel
+        public static final int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;  // default behavior if windowLevel != NSNormalWindowLevel
+
         public static final int NSWindowNumberListAllApplications = 1 << 0;
         public static final int NSWindowNumberListAllSpaces = 1 << 4;
+
+        public static final int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7; // the frontmost window with this collection behavior will be the fullscreen window.
+        public static final int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;  // windows with this collection behavior can be shown with the fullscreen window.
     }
 
     /// enum values
@@ -235,6 +249,7 @@ public abstract class NSWindow extends NSResponder {
          * @param notification
          */
         public void windowDidBecomeKey(NSNotification notification);
+
         public void windowDidBecomeMain(NSNotification notification);
 
         /**
@@ -245,6 +260,7 @@ public abstract class NSWindow extends NSResponder {
          * @param notification
          */
         public void windowDidResignKey(NSNotification notification);
+
         public void windowDidResignMain(NSNotification notification);
     }
 
@@ -1221,11 +1237,13 @@ public abstract class NSWindow extends NSResponder {
      * <i>native declaration : :478</i>
      */
     public abstract void discardCachedImage();
+
     /**
      * <i>native declaration : :480</i><br>
      * Conversion Error : NSSize
      */
     public abstract NSSize minSize();
+
     /**
      * <i>native declaration : :481</i><br>
      * Conversion Error : NSSize
