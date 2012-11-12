@@ -11,6 +11,7 @@ Changelog. Last modified: $Date$
 - [Feature] Gatekeeper support (10.8) (#6888)
 - [Feature] One click setup for analytics with Qloudstat (S3, CloudFront, Cloudfiles, Google Storage)
 - [Feature] Bucket location in South America (São Paulo) Region (S3)
+- [Feature] Bucket location in Asia Pacific (Sydney) Region (S3)
 - [Feature] Multi-Object Delete (S3)
 - [Feature] Interoperability with HP Cloud (Openstack)
 - [Feature] Interoperability with Lunacloud Storage (S3)

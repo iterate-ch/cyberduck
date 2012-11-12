@@ -445,6 +445,7 @@ public abstract class Protocol {
                     "us-west-1",
                     "us-west-2",
                     "ap-southeast-1",
+                    "ap-southeast-2",
                     "ap-northeast-1",
                     "sa-east-1",
                     "s3-us-gov-west-1",
