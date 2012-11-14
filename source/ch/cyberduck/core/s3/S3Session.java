@@ -19,19 +19,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.ErrorListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginControllerFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -59,16 +47,7 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.S3BucketLoggingStatus;
-import org.jets3t.service.model.S3BucketVersioningStatus;
-import org.jets3t.service.model.S3Object;
-import org.jets3t.service.model.S3WebsiteConfig;
-import org.jets3t.service.model.StorageBucket;
-import org.jets3t.service.model.StorageBucketLoggingStatus;
-import org.jets3t.service.model.StorageObject;
-import org.jets3t.service.model.StorageOwner;
-import org.jets3t.service.model.WebsiteConfig;
+import org.jets3t.service.model.*;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.OAuth2Credentials;
@@ -977,28 +956,19 @@ public class S3Session extends CloudSession {
      * @param bucket Bucket name
      * @return Website distribution hostname
      */
-    protected String getWebsiteEndpoint(String bucket) {
+    protected String getWebsiteEndpoint(final String bucket) {
         // Geographical location
         final String location = this.getLocation(bucket);
         // US Standard
-        String endpoint = "s3-website-us-east-1.amazonaws.com";
-        if(S3Bucket.LOCATION_EUROPE.equals(location)) {
+        final String endpoint;
+        if(null == location || "US".equals(location)) {
+            endpoint = "s3-website-us-east-1.amazonaws.com";
+        }
+        else if(S3Bucket.LOCATION_EUROPE.equals(location)) {
             endpoint = "s3-website-eu-west-1.amazonaws.com";
         }
-        else if(S3Bucket.LOCATION_US_WEST_NORTHERN_CALIFORNIA.equals(location)) {
-            endpoint = "s3-website-us-west-1.amazonaws.com";
-        }
-        else if(S3Bucket.LOCATION_US_WEST_OREGON.equals(location)) {
-            endpoint = "s3-website-us-west-2.amazonaws.com";
-        }
-        else if(S3Bucket.LOCATION_ASIA_PACIFIC_SINGAPORE.equals(location)) {
-            endpoint = "s3-website-ap-southeast-1.amazonaws.com";
-        }
-        else if(S3Bucket.LOCATION_ASIA_PACIFIC_TOKYO.equals(location)) {
-            endpoint = "s3-website-ap-northeast-1.amazonaws.com";
-        }
-        else if(S3Bucket.LOCATION_SOUTH_AMERICA_EAST.equals(location)) {
-            endpoint = "s3-website-sa-east-1.amazonaws.com";
+        else {
+            endpoint = String.format("s3-website-%s.amazonaws.com", location);
         }
         return String.format("%s.%s", bucket, endpoint);
     }
