@@ -133,13 +133,6 @@ public class TransferStatus {
     }
 
     /**
-     * @return True if selected for inclusion in transfer prompt
-     */
-    public Boolean getSelected() {
-        return selected;
-    }
-
-    /**
      * Mark this path with an append flag when transferred
      *
      * @param resume If false, the current status is cleared
