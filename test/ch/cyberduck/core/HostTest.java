@@ -272,7 +272,7 @@ public class HostTest extends AbstractTestCase {
     @Test
     public void testDownloadFolder() {
         Host host = new Host("localhost");
-        assertEquals("~/Desktop", host.getDownloadFolder().getAbbreviatedPath());
+        assertTrue("~/Desktop".equals(host.getDownloadFolder().getAbbreviatedPath()) || "~/Downloads".equals(host.getDownloadFolder().getAbbreviatedPath()));
         host.setDownloadFolder(LocalFactory.createLocal("/t"));
         assertEquals("/t", host.getDownloadFolder().getAbbreviatedPath());
     }
