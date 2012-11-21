@@ -32,7 +32,7 @@ import java.util.concurrent.CountDownLatch;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class HistoryCollectionTest extends AbstractTestCase {
 
@@ -54,7 +54,6 @@ public class HistoryCollectionTest extends AbstractTestCase {
                     return;
                 }
                 loaded.countDown();
-                this.add(new Host("t"));
                 Collections.sort(this, new Comparator<Host>() {
                     @Override
                     public int compare(Host o1, Host o2) {
