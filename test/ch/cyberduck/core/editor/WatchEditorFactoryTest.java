@@ -42,6 +42,6 @@ public class WatchEditorFactoryTest extends AbstractTestCase {
         assertTrue(e.contains(new Application("com.apple.TextEdit", null)));
         assertFalse(EditorFactory.instance().getEditors("f.txt").isEmpty());
         assertTrue(EditorFactory.instance().getEditors("f.txt").contains(new Application("com.apple.TextEdit", null)));
-        assertTrue(EditorFactory.instance().getEditors("f.txt").contains(new Application("com.macromates.textmate", null)));
+//        assertTrue(EditorFactory.instance().getEditors("f.txt").contains(new Application("com.macromates.textmate", null)));
     }
 }
