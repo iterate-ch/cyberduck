@@ -49,8 +49,6 @@ public class Speedometer {
      */
     private long last = 0L;
 
-    private boolean overall = false;
-
     /**
      * Formatter for remaining time
      */
@@ -63,9 +61,7 @@ public class Speedometer {
             final long differential = transferred - last;
             // Remember for next iteration
             last = transferred;
-            if(!overall) {
-                timestamp = System.currentTimeMillis();
-            }
+            timestamp = System.currentTimeMillis();
             // The throughput is usually measured in bits per second
             return (double) differential / elapsed;
         }
@@ -83,7 +79,7 @@ public class Speedometer {
             if(size > 0 || speed > 0) {
                 b.append(" (");
                 if(size > 0) {
-                    b.append(size == 0 ? 0 : (int) ((double) transferred / size * 100));
+                    b.append((int) ((double) transferred / size * 100));
                     b.append("%");
                 }
                 if(speed > 0) {
