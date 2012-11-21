@@ -301,13 +301,13 @@ public abstract class TransferPromptController extends SheetController implement
                 final String identifier = column.identifier();
                 final Path path = browserModel.lookup(new NSObjectPathReference(item));
                 if(identifier.equals(TransferPromptModel.INCLUDE_COLUMN)) {
-                    cell.setEnabled(!transfer.isSkipped(path));
+                    cell.setEnabled(!transfer.isSkipped(path) && !getAction().equals(TransferAction.ACTION_SKIP));
                 }
                 if(identifier.equals(TransferPromptModel.FILENAME_COLUMN)) {
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCache.instance().iconForPath(path, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(!transfer.isSelected(path)) {
+                    if(transfer.isSkipped(path) || !transfer.isSelected(path) || getAction().equals(TransferAction.ACTION_SKIP)) {
                         Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {
