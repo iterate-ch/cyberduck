@@ -144,6 +144,7 @@ public class PathTest extends AbstractTestCase {
         final Path p = new NullPath("/t", Path.FILE_TYPE);
         final TransferStatus status = new TransferStatus();
         final CyclicBarrier lock = new CyclicBarrier(2);
+        final CyclicBarrier exit = new CyclicBarrier(2);
         status.setLength(432768L);
         new Thread(new Runnable() {
             @Override
@@ -160,23 +161,25 @@ public class PathTest extends AbstractTestCase {
                                 public void bytesReceived(long bytes) {
                                     try {
                                         lock.await();
+                                        exit.await();
                                     }
                                     catch(InterruptedException e) {
                                         fail(e.getMessage());
                                     }
                                     catch(BrokenBarrierException e) {
-                                        e.printStackTrace();
+                                        fail(e.getMessage());
                                     }
                                 }
                             }, -1, status);
                 }
                 catch(IOException e) {
-                    fail(e.getMessage());
+                    assertTrue(e instanceof ConnectionCanceledException);
                 }
             }
         }).start();
         lock.await();
         status.setCanceled();
+        exit.await();
         assertFalse(status.isComplete());
         assertTrue(status.isCanceled());
         assertEquals(32768L, status.getCurrent());
