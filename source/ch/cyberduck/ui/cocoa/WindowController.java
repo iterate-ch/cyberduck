@@ -131,22 +131,34 @@ public abstract class WindowController extends BundleController implements NSWin
 
     @Override
     public void windowDidBecomeKey(NSNotification notification) {
-        ;
+        //
     }
 
     @Override
     public void windowDidResignKey(NSNotification notification) {
-        ;
+        //
     }
 
     @Override
     public void windowDidBecomeMain(NSNotification notification) {
-        ;
+        //
     }
 
     @Override
     public void windowDidResignMain(NSNotification notification) {
-        ;
+        //
+    }
+
+    public void windowWillEnterFullScreen(NSNotification notification) {
+        //
+    }
+
+    public void windowWillExitFullScreen(NSNotification notification) {
+        //
+    }
+
+    public void windowDidFailToEnterFullScreen(NSWindow window) {
+        log.error("Error entering full screen");
     }
 
     /**
@@ -277,7 +289,7 @@ public abstract class WindowController extends BundleController implements NSWin
         this.alert(sheet, new SheetCallback() {
             @Override
             public void callback(final int returncode) {
-                ;
+                //
             }
         });
     }
