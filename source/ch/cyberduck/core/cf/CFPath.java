@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.rackspacecloud.client.cloudfiles.FilesContainerInfo;
+import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
 import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
 import com.rackspacecloud.client.cloudfiles.FilesObject;
 import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
@@ -517,44 +518,52 @@ public class CFPath extends CloudPath {
 
     @Override
     public void readMetadata() {
-        if(this.attributes().isFile()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                    this.getName()));
 
+            if(this.attributes().isFile()) {
                 final FilesObjectMetaData meta
                         = this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getKey());
                 this.attributes().setMetadata(meta.getMetaData());
             }
-            catch(HttpException e) {
-                this.error("Cannot read file attributes", e);
+            if(this.attributes().isVolume()) {
+                final FilesContainerMetaData meta
+                        = this.getSession().getClient().getContainerMetaData(this.getContainerName());
+                this.attributes().setMetadata(meta.getMetaData());
             }
-            catch(IOException e) {
-                this.error("Cannot read file attributes", e);
-            }
+        }
+        catch(HttpException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
         }
     }
 
     @Override
     public void writeMetadata(final Map<String, String> meta) {
-        if(this.attributes().isFile()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                    this.getName()));
 
+            if(this.attributes().isFile()) {
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), this.getKey(), meta);
             }
-            catch(HttpException e) {
-                this.error("Cannot write file attributes", e);
+            else if(this.attributes().isVolume()) {
+                this.getSession().getClient().updateContainerMetadata(this.getContainerName(), meta);
             }
-            catch(IOException e) {
-                this.error("Cannot write file attributes", e);
-            }
-            finally {
-                this.attributes().clear(false, false, false, true);
-            }
+        }
+        catch(HttpException e) {
+            this.error("Cannot write file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot write file attributes", e);
+        }
+        finally {
+            this.attributes().clear(false, false, false, true);
         }
     }
 

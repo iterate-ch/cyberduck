@@ -51,6 +51,7 @@ import java.util.Map;
 
 import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
+import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
 import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
@@ -272,8 +273,8 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     @Override
-    public void write(boolean enabled, String origin, Distribution.Method method,
-                      String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) {
+    public void write(final boolean enabled, final String origin, final Distribution.Method method,
+                      final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) {
         try {
             this.check();
             if(enabled) {
@@ -281,6 +282,9 @@ public class CFSession extends CloudSession implements DistributionConfiguration
             }
             else {
                 this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), "CDN"));
+            }
+            if(StringUtils.isNotBlank(defaultRootObject)) {
+                this.getClient().updateContainerMetadata(origin, Collections.singletonMap("Web-Index", defaultRootObject));
             }
             cdnRequest = true;
             try {
@@ -308,7 +312,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     @Override
-    public Distribution read(String origin, final Distribution.Method method) {
+    public Distribution read(final String origin, final Distribution.Method method) {
         if(!distributionStatus.containsKey(origin)) {
             try {
                 this.check();
@@ -327,6 +331,10 @@ public class CFSession extends CloudSession implements DistributionConfiguration
                         return ".CDN_ACCESS_LOGS";
                     }
                 };
+                final FilesContainerMetaData metadata = this.getClient().getContainerMetaData(origin);
+                if(metadata.getMetaData().containsKey("Web-Index")) {
+                    distribution.setDefaultRootObject(metadata.getMetaData().get("Web-Index"));
+                }
                 distribution.setContainers(Collections.singletonList(".CDN_ACCESS_LOGS"));
                 distributionStatus.put(origin, distribution);
             }
@@ -386,7 +394,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
 
     @Override
     public boolean isDefaultRootSupported(Distribution.Method method) {
-        return false;
+        return true;
     }
 
     @Override
