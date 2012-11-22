@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.date.PeriodFormatter;
 import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.formatter.SizeFormatter;
@@ -50,10 +51,19 @@ public class Speedometer {
     private long last = 0L;
 
     /**
+     * Show overall transfer speed or per interval
+     */
+    private boolean overall = Preferences.instance().getBoolean("speedometer.overall");
+
+    /**
      * Formatter for remaining time
      */
     private PeriodFormatter periodFormatter = new RemainingPeriodFormatter();
 
+    /**
+     * @param transferred Bytes transferred
+     * @return Differential by time
+     */
     protected double getSpeed(final long transferred) {
         // Number of seconds data was actually transferred
         final long elapsed = System.currentTimeMillis() - timestamp;
@@ -61,13 +71,21 @@ public class Speedometer {
             final long differential = transferred - last;
             // Remember for next iteration
             last = transferred;
-            timestamp = System.currentTimeMillis();
+            if(!overall) {
+                timestamp = System.currentTimeMillis();
+            }
             // The throughput is usually measured in bits per second
             return (double) differential / elapsed;
         }
         return 0L;
     }
 
+    /**
+     * @param running     Show speed and progress in percent
+     * @param size        Transfer length
+     * @param transferred Current
+     * @return 500.0 KB (500,000 bytes) of 1.0 MB (50%, 500.0 KB/sec, 2 seconds remaining)
+     */
     public String getProgress(final boolean running, final long size, final long transferred) {
         final StringBuilder b = new StringBuilder(
                 MessageFormat.format(Locale.localizedString("{0} of {1}"),

@@ -463,6 +463,8 @@ public abstract class Preferences {
          */
         defaults.put("queue.download.bandwidth.bytes", String.valueOf(-1));
 
+        defaults.put("speedometer.overall", String.valueOf(true));
+
         /**
          * While downloading, update the icon of the downloaded file as a progress indicator
          */
