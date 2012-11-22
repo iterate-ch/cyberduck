@@ -26,7 +26,7 @@ public class SpeedometerTest extends AbstractTestCase {
         Thread.sleep(1000L);
         assertEquals("1 B of 5 B (20%, 1 B/sec, 5 seconds remaining)", m.getProgress(true, 5L, 1L));
         Thread.sleep(1000L);
-        assertEquals("4 B of 5 B (80%, 3 B/sec, 1 seconds remaining)", m.getProgress(true, 5L, 4L));
+        assertEquals("4 B of 5 B (80%, 2 B/sec, 1 seconds remaining)", m.getProgress(true, 5L, 4L));
     }
 
     @Test
