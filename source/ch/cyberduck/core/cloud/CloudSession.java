@@ -136,8 +136,6 @@ public abstract class CloudSession extends HttpSession {
         return Collections.emptyList();
     }
 
-    ;
-
     /**
      * @return List of algorithms. Empty list
      *         no encryption options are available.
