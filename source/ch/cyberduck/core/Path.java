@@ -36,7 +36,6 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -54,6 +53,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import com.ibm.icu.text.Normalizer;
 
@@ -617,18 +617,9 @@ public abstract class Path extends AbstractPath implements Serializable {
     @Override
     public void touch() {
         if(this.attributes().isFile()) {
-            int no = 0;
-            final String filename = this.getLocal().getName();
-            this.setLocal(LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), filename));
-            while(this.getLocal().exists()) {
-                no++;
-                String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
-                if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                    proposal += "." + FilenameUtils.getExtension(filename);
-                }
-                this.getLocal().setPath(Preferences.instance().getProperty("tmp.dir"), proposal);
-            }
-            this.getLocal().touch();
+            final Local temp = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), UUID.randomUUID().toString());
+            temp.touch();
+            this.setLocal(temp);
             TransferOptions options = new TransferOptions();
             options.closeSession = false;
             try {
@@ -641,7 +632,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 }, options);
             }
             finally {
-                this.getLocal().delete();
+                temp.delete();
                 this.setLocal(null);
             }
         }
