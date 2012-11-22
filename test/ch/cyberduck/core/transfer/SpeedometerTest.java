@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id$
@@ -33,10 +34,12 @@ public class SpeedometerTest extends AbstractTestCase {
         Speedometer m = new Speedometer();
         assertEquals("0 B of 1.0 MB (0%)", m.getProgress(true, 1000000L, 0L));
         Thread.sleep(1000L);
-        assertEquals("500.0 KB (500,000 bytes) of 1.0 MB (50%, 500.0 KB/sec, 2 seconds remaining)",
-                m.getProgress(true, 1000000L, 1000000L / 2));
+        final String progress = m.getProgress(true, 1000000L, 1000000L / 2);
+        assertTrue(progress,
+                progress.matches("500.0 KB \\(500,000 bytes\\) of 1.0 MB \\(50%, \\d{3}.\\d KB/sec, 2 seconds remaining\\)"));
         Thread.sleep(1000L);
-        assertEquals("900.0 KB (900,000 bytes) of 1.0 MB (90%, 400.0 KB/sec, 1 seconds remaining)",
-                m.getProgress(true, 1000000L, 900000L));
+        final String progress1 = m.getProgress(true, 1000000L, 900000L);
+        assertTrue(progress1,
+                progress1.matches("900.0 KB \\(900,000 bytes\\) of 1.0 MB \\(90%, \\d{3}.\\d KB/sec, 1 seconds remaining\\)"));
     }
 }
