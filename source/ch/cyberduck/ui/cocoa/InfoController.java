@@ -19,17 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.ConnectionAdapter;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
@@ -2053,6 +2043,7 @@ public class InfoController extends ToolbarWindowController {
                             if(null != credentials) {
                                 bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                                         controller.getSession().analytics().getSetup(controller.getSession().getHost().getProtocol(),
+                                                controller.getSession().getHost().getProtocol().getScheme(),
                                                 selected.getContainerName(), credentials)
                                 ));
                             }
@@ -2533,7 +2524,8 @@ public class InfoController extends ToolbarWindowController {
                             distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
                             if(credentials != null) {
                                 distributionAnalyticsSetupUrlField.setAttributedStringValue(
-                                        HyperlinkAttributedStringFactory.create(session.analytics().getSetup(session.cdn().getProtocol(), container, credentials)));
+                                        HyperlinkAttributedStringFactory.create(session.analytics().getSetup(session.cdn().getProtocol(),
+                                                distribution.getMethod().getScheme(), container, credentials)));
                             }
                         }
 
