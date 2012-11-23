@@ -20,6 +20,7 @@ package ch.cyberduck.core.cdn;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -133,9 +134,11 @@ public class Distribution {
     public static abstract class Method {
         public abstract String toString();
 
-        public abstract String getProtocol();
+        public abstract Scheme getScheme();
 
-        public abstract int getDefaultPort();
+        public int getDefaultPort() {
+            return this.getScheme().getPort();
+        }
 
         public abstract String getContext();
 
@@ -168,13 +171,8 @@ public class Distribution {
         }
 
         @Override
-        public String getProtocol() {
-            return "http://";
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 80;
+        public Scheme getScheme() {
+            return Scheme.http;
         }
 
         @Override
@@ -192,13 +190,8 @@ public class Distribution {
         }
 
         @Override
-        public String getProtocol() {
-            return "http://";
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 80;
+        public Scheme getScheme() {
+            return Scheme.http;
         }
 
         @Override
@@ -213,13 +206,8 @@ public class Distribution {
         }
 
         @Override
-        public String getProtocol() {
-            return "http://";
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 80;
+        public Scheme getScheme() {
+            return Scheme.http;
         }
 
         @Override
@@ -234,13 +222,8 @@ public class Distribution {
         }
 
         @Override
-        public String getProtocol() {
-            return "http://";
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 80;
+        public Scheme getScheme() {
+            return Scheme.http;
         }
 
         @Override
@@ -255,13 +238,8 @@ public class Distribution {
         }
 
         @Override
-        public String getProtocol() {
-            return "rtmp://";
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 1935;
+        public Scheme getScheme() {
+            return Scheme.rtmp;
         }
 
         @Override
@@ -449,7 +427,7 @@ public class Distribution {
      * @return Origin URL of specific file.
      */
     public String getOrigin(Path file) {
-        StringBuilder url = new StringBuilder().append(this.getMethod().getProtocol()).append(this.getOrigin());
+        StringBuilder url = new StringBuilder().append(String.format("%s://%s", this.getMethod().getScheme(), this.getOrigin()));
         if(!file.isContainer()) {
             url.append(Path.DELIMITER).append(URIEncoder.encode(file.getKey()));
         }
@@ -591,7 +569,7 @@ public class Distribution {
 
     private String getCnameURL(String cname, Path file) {
         StringBuilder b = new StringBuilder();
-        b.append(this.getMethod().getProtocol()).append(cname).append(this.getMethod().getContext());
+        b.append(String.format("%s://%s", this.getMethod().getScheme(), cname)).append(this.getMethod().getContext());
         if(StringUtils.isNotEmpty(file.getKey())) {
             b.append(Path.DELIMITER).append(URIEncoder.encode(file.getKey()));
         }

@@ -1064,7 +1064,7 @@ public class S3Session extends CloudSession {
             if(method.equals(Distribution.WEBSITE)) {
                 final String bucket = S3Session.this.getContainerForHostname(origin);
                 // Website Endpoint URL
-                final String url = method.getProtocol() + S3Session.this.getWebsiteEndpoint(bucket);
+                final String url = String.format("%s://%s", method.getScheme(), S3Session.this.getWebsiteEndpoint(bucket));
                 if(!distributionStatus.get(method).containsKey(origin)) {
                     try {
                         S3Session.this.check();

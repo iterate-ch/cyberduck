@@ -428,7 +428,7 @@ public class GSSession extends S3Session implements DistributionConfiguration {
     @Override
     public Distribution read(String origin, Distribution.Method method) {
         // Website Endpoint URL
-        final String url = method.getProtocol() + this.getWebsiteEndpoint(origin);
+        final String url = String.format("%s://%s", method.getScheme(), this.getWebsiteEndpoint(origin));
         if(!distributionStatus.containsKey(origin)) {
             try {
                 this.check();

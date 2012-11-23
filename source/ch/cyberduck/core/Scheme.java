@@ -77,11 +77,20 @@ public enum Scheme {
         public int getPort() {
             return 443;
         }
-    }
+    },
+    rtmp {
+        @Override
+        public boolean isSecure() {
+            return false;
+        }
 
-    ;
+        @Override
+        public int getPort() {
+            return 1935;
+        }
+    };
 
     public abstract boolean isSecure();
-    
+
     public abstract int getPort();
 }
