@@ -63,17 +63,7 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -1370,7 +1360,7 @@ public class S3Path extends CloudPath {
      * @param scheme Protocol
      * @return URL to be displayed in browser
      */
-    private String toURL(String scheme) {
+    private String toURL(final String scheme) {
         StringBuilder url = new StringBuilder(scheme);
         url.append("://");
         if(this.isRoot()) {
@@ -1382,7 +1372,7 @@ public class S3Path extends CloudPath {
             if(hostname.startsWith(container)) {
                 url.append(hostname);
                 if(!this.isContainer()) {
-                    url.append(DELIMITER).append(URIEncoder.encode(this.getKey()));
+                    url.append(URIEncoder.encode(this.getKey()));
                 }
             }
             else {
@@ -1407,7 +1397,7 @@ public class S3Path extends CloudPath {
      * @param seconds Expire after seconds elapsed
      * @return Temporary URL to be displayed in browser
      */
-    protected DescriptiveUrl toSignedUrl(int seconds) {
+    protected DescriptiveUrl toSignedUrl(final int seconds) {
         Calendar expiry = Calendar.getInstance();
         expiry.add(Calendar.SECOND, seconds);
         return new DescriptiveUrl(this.createSignedUrl(seconds),
@@ -1425,7 +1415,7 @@ public class S3Path extends CloudPath {
      * @param expiry Validity of URL
      * @return Temporary URL to be displayed in browser
      */
-    private String createSignedUrl(int expiry) {
+    private String createSignedUrl(final int expiry) {
         if(this.attributes().isFile()) {
             try {
                 if(this.getSession().getHost().getCredentials().isAnonymousLogin()) {
