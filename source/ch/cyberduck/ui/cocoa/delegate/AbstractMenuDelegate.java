@@ -38,14 +38,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     /**
      * Menu needs revalidation
      */
-    private boolean update;
-
-    /**
-     *
-     */
-    public AbstractMenuDelegate() {
-        this.setNeedsUpdate(true);
-    }
+    private boolean update = true;
 
     /**
      * Called to let you update a menu item before it is displayed. If your
