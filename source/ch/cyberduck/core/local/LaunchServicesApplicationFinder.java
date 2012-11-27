@@ -39,7 +39,7 @@ import java.util.Map;
  * @version $Id$
  */
 public final class LaunchServicesApplicationFinder implements ApplicationFinder {
-    private static final Logger log = Logger.getLogger(ApplicationFinder.class);
+    private static final Logger log = Logger.getLogger(LaunchServicesApplicationFinder.class);
 
     public static void register() {
         ApplicationFinderFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
@@ -185,21 +185,21 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                 final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
                 String name = null;
                 if(StringUtils.isNotBlank(path)) {
-                    NSBundle app = NSBundle.bundleWithPath(path);
+                    final NSBundle app = NSBundle.bundleWithPath(path);
                     if(null == app) {
-                        log.error("Loading bundle failed:" + path);
+                        log.error(String.format("Loading bundle %s failed", path));
                     }
                     else {
                         NSDictionary dict = app.infoDictionary();
                         if(null == dict) {
-                            log.error("Loading application dictionary failed:" + path);
+                            log.error(String.format("Loading application dictionary for bundle %s failed", path));
                             applicationNameCache.put(bundleIdentifier, null);
                             return null;
                         }
                         else {
                             final NSObject bundlename = dict.objectForKey("CFBundleName");
                             if(null == bundlename) {
-                                log.warn(String.format("No CFBundleName for %s", bundleIdentifier));
+                                log.warn(String.format("No CFBundleName in bundle %s", path));
                             }
                             else {
                                 name = bundlename.toString();
@@ -207,6 +207,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                         }
                     }
                     if(null == name) {
+                        log.warn(String.format("Failed to determine bundle name for %s", path));
                         name = FilenameUtils.removeExtension(LocalFactory.createLocal(path).getDisplayName());
                     }
                 }
