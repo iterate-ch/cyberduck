@@ -21,37 +21,11 @@
 #import <FinderLocal.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
-
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
-{
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
-    if (javaString == NULL) {
-        return nil;	
-    }                   
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
-}
-
-jstring convertToJString(JNIEnv *env, NSString *nsString)
-{
-	if(nsString == nil) {
-		return NULL;
-	}
-	const char *unichars = [nsString UTF8String];
-
-	return (*env)->NewStringUTF(env, unichars);
-}
+#import <JavaNativeFoundation/JNFString.h>
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAlias(JNIEnv *env, jobject this, jstring absolute)
 {
-    NSString *path = convertToNSString(env, absolute);
+    NSString *path = JNFJavaToNSString(env, absolute);
     NSString *resolvedPath = nil;
 
     CFURLRef url = CFURLCreateWithFileSystemPath
@@ -80,5 +54,5 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAlias(
     {
         resolvedPath = [NSString stringWithString:path];
     }
-	return convertToJString(env, resolvedPath);
+	return JNFNSToJavaString(env, resolvedPath);
 }

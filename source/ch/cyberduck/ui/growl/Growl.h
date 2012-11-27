@@ -38,21 +38,3 @@ extern "C" {
 }
 #endif
 #endif
-
-#import <Cocoa/Cocoa.h>
-#import <Growl/Growl.h>
-
-static id instance;
-
-@interface Growl : NSObject<GrowlApplicationBridgeDelegate> {
-
-}
-
-+ (id)defaultInstance;
-
-- (void)registerGrowl;
-- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImageName:(NSString *) image;
-- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image;
-- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description;
-
-@end

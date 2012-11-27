@@ -89,19 +89,3 @@ JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative
 }
 #endif
 #endif
-
-#import <Security/Security.h>
-#import <SecurityInterface/SFCertificateTrustPanel.h>
-#import <SecurityInterface/SFChooseIdentityPanel.h>
-
-#import "EMKeychainProxy.h"
-#import "EMKeychainItem.h"
-
-SecCertificateRef CreateCertificateFromData(JNIEnv *env, jbyteArray jCertificate);
-NSArray* CreateCertificatesFromData(JNIEnv * env, jobjectArray jCertificateChain);
-
-OSStatus CreateSSLClientPolicy(SecPolicyRef* policy);
-OSStatus CreatePolicy(const CSSM_OID* policy_OID,
-                      void* option_data,
-                      size_t option_length,
-                      SecPolicyRef* policy);

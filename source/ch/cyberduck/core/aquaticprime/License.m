@@ -18,33 +18,7 @@
 
 #import "License.h"
 #import "AquaticPrime.h"
-
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
-{
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
-    
-    if (javaString == NULL) {
-        return nil; 
-    }                   
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
-}
-
-jstring convertToJString(JNIEnv *env, NSString *nsString)
-{
-    if(nsString == nil) {
-        return NULL;
-    }
-    const char *unichars = [nsString UTF8String];
-    return (*env)->NewStringUTF(env, unichars);
-}
+#import <JavaNativeFoundation/JNFString.h>
 
 /*
  * Class:     ch_cyberduck_core_aquaticprime_Donation
@@ -58,7 +32,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_aquaticprime_Donation_verify(J
     // Instantiate AquaticPrime
     AquaticPrime *p = [AquaticPrime aquaticPrimeWithKey:key];
 	
-    return [p verifyLicenseFile:convertToNSString(env, license)];
+    return [p verifyLicenseFile:JNFJavaToNSString(env, license)];
 }
 
 /*
@@ -73,5 +47,5 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_aquaticprime_Donation_getValue(
     // Instantiate AquaticPrime
     AquaticPrime *p = [AquaticPrime aquaticPrimeWithKey:key];
 
-    return convertToJString(env, [[p dictionaryForLicenseFile:convertToNSString(env, license)] valueForKey:convertToNSString(env, property)]);
+    return JNFNSToJavaString(env, [[p dictionaryForLicenseFile:JNFJavaToNSString(env, license)] valueForKey:JNFJavaToNSString(env, property)]);
 }

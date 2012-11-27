@@ -17,34 +17,21 @@
  */
 
 #import "Editor.h"
+#import <Cocoa/Cocoa.h>
+#import <JavaNativeFoundation/JNFString.h>
+#import "ODBEditor.h"
 
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
+@interface Editor : NSObject
 {
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
-	
-    if (javaString == NULL) {
-        return nil;	
-    }                   
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
+	jclass		editorClass;
+	jobject		editorObject;
+	JNIEnv*		env;
 }
 
-jstring convertToJString(JNIEnv *env, NSString *nsString) 
-{
-	if(nsString == nil) {
-		return NULL;
-	}
-	const char *unichars = [nsString UTF8String];
-	
-	return (*env)->NewStringUTF(env, unichars);
-}
+- (id)init:(JNIEnv*)env withEditorClass:(jclass)editorClass withEditorObject:(jobject)editorObject;
+- (BOOL)odbEdit:(id) sender path:(NSString *)path url:(NSString *)url withEditor:(NSString *)editor;
+
+@end
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_editor_ODBEditor_edit(
 										JNIEnv *env, 
@@ -56,7 +43,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_editor_ODBEditor_edit(
 	Editor *editor = [[Editor alloc] init: env
 						  withEditorClass: (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this)) 
 						 withEditorObject: (*env)->NewGlobalRef(env, this)];
-	if([editor odbEdit:nil path:convertToNSString(env, local) url:convertToNSString(env, url) withEditor:convertToNSString(env, bundleIdentifier)]) {
+	if([editor odbEdit:nil path:JNFJavaToNSString(env, local) url:JNFJavaToNSString(env, url) withEditor:JNFJavaToNSString(env, bundleIdentifier)]) {
 	    return true;
 	}
 	return false;

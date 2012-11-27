@@ -18,35 +18,18 @@
  */
 
 #import "SystemConfigurationReachability.h"
-
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
-{
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
-	
-    if (javaString == NULL) {
-        return nil;	
-    }                   
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
-}
+#import <JavaNativeFoundation/JNFString.h>
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationReachability_isReachable
   (JNIEnv *env, jobject this, jstring urlString)
 {
-	return [Host isReachable:convertToNSString(env, urlString)];
+	return [Host isReachable:JNFJavaToNSString(env, urlString)];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_SystemConfigurationReachability_diagnose
   (JNIEnv *env, jobject this, jstring urlString)
 {
-	[Host diagnose:convertToNSString(env, urlString)];
+	[Host diagnose:JNFJavaToNSString(env, urlString)];
 }
 
 @implementation Host

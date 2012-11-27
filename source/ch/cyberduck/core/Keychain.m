@@ -17,39 +17,38 @@
  */
 
 #import "Keychain.h"
+#import <Security/Security.h>
+#import <SecurityInterface/SFCertificateTrustPanel.h>
+#import <SecurityInterface/SFChooseIdentityPanel.h>
+#import <JavaNativeFoundation/JNFString.h>
 
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
-{
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
-    if (javaString == NULL) {
-        return nil; 
-    }                   
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
-}
+#import "EMKeychainProxy.h"
+#import "EMKeychainItem.h"
+
+SecCertificateRef CreateCertificateFromData(JNIEnv *env, jbyteArray jCertificate);
+NSArray* CreateCertificatesFromData(JNIEnv * env, jobjectArray jCertificateChain);
+
+OSStatus CreateSSLClientPolicy(SecPolicyRef* policy);
+OSStatus CreatePolicy(const CSSM_OID* policy_OID,
+                      void* option_data,
+                      size_t option_length,
+                      SecPolicyRef* policy);
 
 SecProtocolType convertToSecProtocolType(JNIEnv *env, jstring jProtocol)
 {
-    if([convertToNSString(env, jProtocol) isEqualTo: @"ftp"]) {
+    if([JNFJavaToNSString(env, jProtocol) isEqualTo: @"ftp"]) {
         return kSecProtocolTypeFTP;
     }
-    if([convertToNSString(env, jProtocol) isEqualTo: @"ftps"]) {
+    if([JNFJavaToNSString(env, jProtocol) isEqualTo: @"ftps"]) {
         return kSecProtocolTypeFTPS;
     }
-    if([convertToNSString(env, jProtocol) isEqualTo: @"sftp"]) {
+    if([JNFJavaToNSString(env, jProtocol) isEqualTo: @"sftp"]) {
         return kSecProtocolTypeSSH;
     }
-    if([convertToNSString(env, jProtocol) isEqualTo: @"http"]) {
+    if([JNFJavaToNSString(env, jProtocol) isEqualTo: @"http"]) {
         return kSecProtocolTypeHTTP;
     }
-    if([convertToNSString(env, jProtocol) isEqualTo: @"https"]) {
+    if([JNFJavaToNSString(env, jProtocol) isEqualTo: @"https"]) {
         return kSecProtocolTypeHTTPS;
     }
     return kSecProtocolTypeAny;
@@ -58,8 +57,8 @@ SecProtocolType convertToSecProtocolType(JNIEnv *env, jstring jProtocol)
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getInternetPasswordFromKeychain(JNIEnv *env, jobject this, jstring jProtocol, 
 																						  jint port, jstring jService,jstring jUsername) {
 	
-	EMInternetKeychainItem *keychainItem = [[EMKeychainProxy sharedProxy] internetKeychainItemForServer:convertToNSString(env, jService)
-																						   withUsername:convertToNSString(env, jUsername)
+	EMInternetKeychainItem *keychainItem = [[EMKeychainProxy sharedProxy] internetKeychainItemForServer:JNFJavaToNSString(env, jService)
+																						   withUsername:JNFJavaToNSString(env, jUsername)
 																								   path:nil 
 																								   port:port 
 																							   protocol:convertToSecProtocolType(env, jProtocol)];
@@ -67,25 +66,25 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getInternetPasswordFro
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getPasswordFromKeychain(JNIEnv *env, jobject this, jstring jService, jstring jUsername) {
-	EMGenericKeychainItem *keychainItem = [[EMKeychainProxy sharedProxy] genericKeychainItemForService:convertToNSString(env, jService)
-																						  withUsername:convertToNSString(env, jUsername)];
+	EMGenericKeychainItem *keychainItem = [[EMKeychainProxy sharedProxy] genericKeychainItemForService:JNFJavaToNSString(env, jService)
+																						  withUsername:JNFJavaToNSString(env, jUsername)];
     return (*env)->NewStringUTF(env, [[keychainItem password] UTF8String]);
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeychain(JNIEnv *env, jobject this, jstring jProtocol, jint port, 
 																					 jstring jService, jstring jUsername, jstring jPassword) {
-	[[EMKeychainProxy sharedProxy] addInternetKeychainItemForServer:convertToNSString(env, jService)
-													   withUsername:convertToNSString(env, jUsername)
-														   password:convertToNSString(env, jPassword) 
+	[[EMKeychainProxy sharedProxy] addInternetKeychainItemForServer:JNFJavaToNSString(env, jService)
+													   withUsername:JNFJavaToNSString(env, jUsername)
+														   password:JNFJavaToNSString(env, jPassword) 
 															   path:nil 
 															   port:port
 														   protocol:convertToSecProtocolType(env, jProtocol)];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addPasswordToKeychain(JNIEnv *env, jobject this, jstring jService, jstring jUsername, jstring jPass)  {
-	[[EMKeychainProxy sharedProxy] addGenericKeychainItemForService:convertToNSString(env, jService) 
-													   withUsername:convertToNSString(env, jUsername)
-														   password:convertToNSString(env, jPass)];
+	[[EMKeychainProxy sharedProxy] addGenericKeychainItemForService:JNFJavaToNSString(env, jService) 
+													   withUsername:JNFJavaToNSString(env, jUsername)
+														   password:JNFJavaToNSString(env, jPass)];
 }
 
 jbyteArray GetCertData(JNIEnv *env, SecCertificateRef certificateRef) {
@@ -114,9 +113,9 @@ JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNI
     CFRelease(search);
 	SFChooseIdentityPanel *panel = [[SFChooseIdentityPanel alloc] init];
     [panel setShowsHelp:NO];
-    [panel setDomain:convertToNSString(env, jHostname)];
+    [panel setDomain:JNFJavaToNSString(env, jHostname)];
     [panel setAlternateButtonTitle:NSLocalizedString(@"Disconnect", @"")];
-	[panel setInformativeText:convertToNSString(env, jPrompt)];
+	[panel setInformativeText:JNFJavaToNSString(env, jPrompt)];
 	// Create an SSL policy ref configured for client cert evaluation.
 	SecPolicyRef policy;
 	if (CreateSSLClientPolicy(&policy) == noErr) {
@@ -253,7 +252,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	if(!policyRef) {
 	    return FALSE;
 	}
-	NSString *hostname = convertToNSString(env, jHostname);
+	NSString *hostname = JNFJavaToNSString(env, jHostname);
 	// Returns NULL if the receiver cannot be losslessly converted to encoding.
 	const char *cHostname = [hostname cStringUsingEncoding:NSASCIIStringEncoding];
 	if(!cHostname) {

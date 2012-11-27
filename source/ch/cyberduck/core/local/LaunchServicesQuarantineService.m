@@ -21,44 +21,18 @@
 #import <LaunchServicesQuarantineService.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
-
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
-{
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
-    if (javaString == NULL) {
-        return nil;
-    }
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
-}
-
-jstring convertToJString(JNIEnv *env, NSString *nsString)
-{
-	if(nsString == nil) {
-		return NULL;
-	}
-	const char *unichars = [nsString UTF8String];
-
-	return (*env)->NewStringUTF(env, unichars);
-}
+#import <JavaNativeFoundation/JNFString.h>
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setQuarantine(JNIEnv *env, jobject this, jstring path, jstring originUrl, jstring dataUrl)
 {
-	NSURL* url = [NSURL fileURLWithPath:convertToNSString(env, path)];
+	NSURL* url = [NSURL fileURLWithPath:JNFJavaToNSString(env, path)];
 	FSRef ref;
 	if(CFURLGetFSRef((CFURLRef) url, &ref)) {
         NSMutableDictionary* attrs = [[NSMutableDictionary alloc] init];
         // Write quarantine attributes
         [attrs setValue:(NSString*)kLSQuarantineTypeOtherDownload forKey:(NSString*)kLSQuarantineTypeKey];
-        [attrs setValue:convertToNSString(env, originUrl) forKey:(NSString*)kLSQuarantineOriginURLKey];
-        [attrs setValue:convertToNSString(env, dataUrl) forKey:(NSString*)kLSQuarantineDataURLKey];
+        [attrs setValue:JNFJavaToNSString(env, originUrl) forKey:(NSString*)kLSQuarantineOriginURLKey];
+        [attrs setValue:JNFJavaToNSString(env, dataUrl) forKey:(NSString*)kLSQuarantineDataURLKey];
 
         if(LSSetItemAttribute(&ref, kLSRolesAll, kLSItemQuarantineProperties, (CFDictionaryRef*) attrs) != noErr) {
             NSLog(@"Error writing quarantine attribute");
@@ -84,10 +58,10 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineServ
 	if (!mdItemSetAttributeFunc) {
 		return;
 	}
-	MDItemRef mdItem = MDItemCreate(NULL, (CFStringRef)convertToNSString(env, path));
+	MDItemRef mdItem = MDItemCreate(NULL, (CFStringRef)JNFJavaToNSString(env, path));
 	if (!mdItem) {
 	   return;
 	}
-	mdItemSetAttributeFunc(mdItem, kMDItemWhereFroms, (CFMutableArrayRef)[NSMutableArray arrayWithObject:convertToNSString(env, dataUrl)]);
+	mdItemSetAttributeFunc(mdItem, kMDItemWhereFroms, (CFMutableArrayRef)[NSMutableArray arrayWithObject:JNFJavaToNSString(env, dataUrl)]);
 	CFRelease(mdItem);
 }

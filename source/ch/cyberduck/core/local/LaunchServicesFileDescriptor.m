@@ -21,39 +21,13 @@
 #import <LaunchServicesFileDescriptor.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
-
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
-{
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
-    if (javaString == NULL) {
-        return nil;	
-    }                   
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
-}
-
-jstring convertToJString(JNIEnv *env, NSString *nsString)
-{
-	if(nsString == nil) {
-		return NULL;
-	}
-	const char *unichars = [nsString UTF8String];
-
-	return (*env)->NewStringUTF(env, unichars);
-}
+#import <JavaNativeFoundation/JNFString.h>
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_LaunchServicesFileDescriptor_kind(JNIEnv *env, jobject this, jstring extension)
 {
 	NSString *kind = nil;
 	OSStatus status = LSCopyKindStringForTypeInfo(kLSUnknownType, kLSUnknownCreator,
-		(CFStringRef)convertToNSString(env, extension), (CFStringRef *)&kind);
+		(CFStringRef)JNFJavaToNSString(env, extension), (CFStringRef *)&kind);
     if(noErr == status) {
         jstring result = (*env)->NewStringUTF(env, [kind UTF8String]);
         if(kind) {

@@ -17,24 +17,24 @@
  */
 
 #import "Growl.h"
+#import <Cocoa/Cocoa.h>
+#import <JavaNativeFoundation/JNFString.h>
+#import <Growl/Growl.h>
 
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
-{
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
+static id instance;
+
+@interface Growl : NSObject<GrowlApplicationBridgeDelegate> {
     
-    if (javaString == NULL) {
-        return nil; 
-    }                   
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
 }
+
++ (id)defaultInstance;
+
+- (void)registerGrowl;
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImageName:(NSString *) image;
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image;
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description;
+
+@end
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_register(
                                                                      JNIEnv *env, 
@@ -49,8 +49,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notify(
                                                                      jstring title,
                                                                      jstring description)
 {
-    [[Growl defaultInstance] notifyGrowl:convertToNSString(env, title) 
-                         withDescription:convertToNSString(env, description)];
+    [[Growl defaultInstance] notifyGrowl:JNFJavaToNSString(env, title)
+                         withDescription:JNFJavaToNSString(env, description)];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notifyWithImage(
@@ -60,9 +60,9 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notifyWithImage(
                                                                               jstring description,
                                                                               jstring image)
 {
-    [[Growl defaultInstance] notifyGrowl:convertToNSString(env, title) 
-                         withDescription:convertToNSString(env, description)
-                           withImageName:convertToNSString(env, image)];
+    [[Growl defaultInstance] notifyGrowl:JNFJavaToNSString(env, title)
+                         withDescription:JNFJavaToNSString(env, description)
+                           withImageName:JNFJavaToNSString(env, image)];
 }
 
 #define GROWL_DOWNLOAD_COMPLETE             @"Download complete"

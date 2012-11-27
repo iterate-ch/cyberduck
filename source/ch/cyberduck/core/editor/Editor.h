@@ -40,18 +40,3 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_editor_ODBEditor_edit
 }
 #endif
 #endif
-
-#import <Cocoa/Cocoa.h>
-#import "ODBEditor.h"
-
-@interface Editor : NSObject
-{
-	jclass		editorClass;
-	jobject		editorObject;
-	JNIEnv*		env;
-}
-
-- (id)init:(JNIEnv*)env withEditorClass:(jclass)editorClass withEditorObject:(jobject)editorObject;
-- (BOOL)odbEdit:(id) sender path:(NSString *)path url:(NSString *)url withEditor:(NSString *)editor;
-
-@end

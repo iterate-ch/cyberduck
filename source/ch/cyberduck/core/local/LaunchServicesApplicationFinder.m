@@ -21,33 +21,7 @@
 #import <LaunchServicesApplicationFinder.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
-
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
-{
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
-    if (javaString == NULL) {
-        return nil;	
-    }                   
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
-}
-
-jstring convertToJString(JNIEnv *env, NSString *nsString)
-{
-	if(nsString == nil) {
-		return NULL;
-	}
-	const char *unichars = [nsString UTF8String];
-
-	return (*env)->NewStringUTF(env, unichars);
-}
+#import <JavaNativeFoundation/JNFString.h>
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplicationFinder_findForType(
 										JNIEnv *env,
@@ -58,7 +32,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplication
 	// Locates the preferred application for opening items with a specified file type,
 	// creator signature, filename extension, or any combination of these characteristics.
     OSStatus err = LSGetApplicationForInfo(kLSUnknownType, kLSUnknownCreator,
-        (CFStringRef)convertToNSString(env, extension),
+        (CFStringRef)JNFJavaToNSString(env, extension),
         kLSRolesEditor, NULL, &url);
     if(err != noErr) {
         // kLSApplicationNotFoundErr
@@ -68,7 +42,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplication
     }
     NSString *result = [(NSURL *)url path];
     CFRelease(url);
-	return convertToJString(env, result);
+	return JNFNSToJavaString(env, result);
 }
 
 
@@ -78,7 +52,7 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplic
                                         jstring extension)
 {
     NSArray *handlers = [(NSArray *)LSCopyAllRoleHandlersForContentType(
-        UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)convertToNSString(env, extension), NULL),
+        UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)JNFJavaToNSString(env, extension), NULL),
         kLSRolesEditor) autorelease];
     if(nil == handlers) {
         handlers = [NSArray array];
@@ -88,7 +62,7 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplic
     );
     jint i;
     for(i = 0; i < [handlers count]; i++) {
-        (*env)->SetObjectArrayElement(env, result, i, convertToJString(env, [handlers objectAtIndex:i]));
+        (*env)->SetObjectArrayElement(env, result, i, JNFNSToJavaString(env, [handlers objectAtIndex:i]));
     }
     return result;
 }

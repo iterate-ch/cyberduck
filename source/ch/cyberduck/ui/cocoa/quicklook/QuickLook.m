@@ -18,25 +18,9 @@
 
 #import <QuickLook.h>
 #import <Cocoa/Cocoa.h>
+#import <JavaNativeFoundation/JNFString.h>
 #import "QLPreviewPanel.h"
 #define QLPreviewPanel NSClassFromString(@"QLPreviewPanel")
-
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
-{
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
-    if (javaString == NULL) {
-        return nil;	
-    }                   
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
-}
 
 // First, load the private Quick Look framework if available (10.5+)
 #define QUICK_LOOK_AVAILABLE [[NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/QuickLookUI.framework"] load]
@@ -48,7 +32,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_
 		URLs = [NSMutableArray arrayWithCapacity:(*env)->GetArrayLength(env, paths)];
 		int i;
 		for(i = 0; i < (*env)->GetArrayLength(env, paths); i++) {
-			[URLs addObject:[NSURL fileURLWithPath:convertToNSString(env, (jstring)(*env)->GetObjectArrayElement(env, paths, i))]];
+			[URLs addObject:[NSURL fileURLWithPath:JNFJavaToNSString(env, (jstring)(*env)->GetObjectArrayElement(env, paths, i))]];
 		}
 		[[QLPreviewPanel sharedPreviewPanel] setURLs:URLs currentIndex:0 preservingDisplayState:YES];
 	}

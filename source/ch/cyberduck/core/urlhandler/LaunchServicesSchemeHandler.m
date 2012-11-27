@@ -20,39 +20,14 @@
 #import "LaunchServicesSchemeHandler.h"
 #import <Foundation/Foundation.h>
 #import "ApplicationServices/ApplicationServices.h"
-
-// Simple utility to convert java strings to NSStrings
-NSString *convertToNSString(JNIEnv *env, jstring javaString)
-{
-    NSString *converted = nil;
-    const jchar *unichars = NULL;
-    if (javaString == NULL) {
-        return nil; 
-    }                   
-    unichars = (*env)->GetStringChars(env, javaString, NULL);
-    if ((*env)->ExceptionOccurred(env)) {
-        return @"";
-    }
-    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
-    (*env)->ReleaseStringChars(env, javaString, unichars);
-    return converted;
-}
-
-jstring convertToJString(JNIEnv *env, NSString *nsString) 
-{
-    if(nsString == nil) {
-        return NULL;
-    }
-    const char *unichars = [nsString UTF8String];
-    return (*env)->NewStringUTF(env, unichars);
-}
+#import <JavaNativeFoundation/JNFString.h>
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_setDefaultHandler
   (JNIEnv *env, jobject this, jstring scheme, jstring bundleIdentifier)
 {
 	LSSetDefaultHandlerForURLScheme(
-		(CFStringRef)convertToNSString(env, scheme), 
-		(CFStringRef)convertToNSString(env, bundleIdentifier)
+		(CFStringRef)JNFJavaToNSString(env, scheme),
+		(CFStringRef)JNFJavaToNSString(env, bundleIdentifier)
 	);
 }
 
@@ -60,7 +35,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesScheme
   (JNIEnv *env, jobject this, jstring scheme)
 {
     NSString *bundleIdentifier = nil;
-	bundleIdentifier = (NSString *)LSCopyDefaultHandlerForURLScheme((CFStringRef)convertToNSString(env, scheme));
+	bundleIdentifier = (NSString *)LSCopyDefaultHandlerForURLScheme((CFStringRef)JNFJavaToNSString(env, scheme));
     if(nil == bundleIdentifier) {
         return NULL;
     }
@@ -75,7 +50,7 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesS
   (JNIEnv *env, jobject this, jstring scheme)
 {
     NSArray *handlers = [(NSArray *)LSCopyAllHandlersForURLScheme(
-		(CFStringRef)convertToNSString(env, scheme)) autorelease];
+		(CFStringRef)JNFJavaToNSString(env, scheme)) autorelease];
     if(nil == handlers) {
         handlers = [NSArray array];
     }
@@ -84,7 +59,7 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesS
     );
     jint i;
     for(i = 0; i < [handlers count]; i++) {
-        (*env)->SetObjectArrayElement(env, result, i, convertToJString(env, [handlers objectAtIndex:i]));
+        (*env)->SetObjectArrayElement(env, result, i, JNFNSToJavaString(env, [handlers objectAtIndex:i]));
     }
     return result;
 }
