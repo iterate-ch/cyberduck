@@ -9,6 +9,7 @@
 - [Feature] Website Configuration (Google Storage)
 - [Feature] Website Configuration (Cloudfiles)
 - [Feature] Edit container metadata (Cloudfiles)
+- [Bugfix] Moving folders deletes the folder (Cloudfiles) (#6442)
 - [Bugfix] Copy folder from server to server (#6440)
 - [Bugfix] Duplicate folder (#6495)
 - [Bugfix] Interoperability with latest API (CloudFront)
