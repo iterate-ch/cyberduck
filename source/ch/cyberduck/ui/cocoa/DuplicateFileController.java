@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -67,8 +66,7 @@ public class DuplicateFileController extends FileController {
     }
 
     private void duplicateFile(final Path selected, final String filename) {
-        final Session target = ((BrowserController) parent).getTransferSession(true);
-        final Path duplicate = PathFactory.createPath(target,
+        final Path duplicate = PathFactory.createPath(this.getSession(),
                 selected.getParent().getAbsolute(), filename, selected.attributes().getType());
         ((BrowserController) parent).duplicatePath(selected, duplicate);
     }
