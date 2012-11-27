@@ -13,8 +13,19 @@
 		4704227312EEC0DB004658C0 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		4704238712EEC56F004658C0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		470423D712EEC5EC004658C0 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
+		4704C3A91664F94F00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3AA1664F95E00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3AB1664F96400B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3AC1664F96700B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3AD1664FB2E00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3AE1664FB4A00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3AF1664FB4F00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3B01664FB5300B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3B11664FC8D00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3B21664FCB300B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3B31664FD0B00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		4704C3B41664FD0F00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
-		470C64781328CC0300146FB6 /* docs.google.com – Google Docs.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */; };
 		470C64791328CC0300146FB6 /* s3.amazonaws.com – S3.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */; };
 		470C647A1328CC0300146FB6 /* storage.clouddrive.com – Cloud Files.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */; };
 		47121FF71611F94000E2547D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47121FF61611F94000E2547D /* main.m */; };
@@ -348,7 +359,6 @@
 			dstPath = Bookmarks;
 			dstSubfolderSpec = 7;
 			files = (
-				470C64781328CC0300146FB6 /* docs.google.com – Google Docs.duck in CopyFiles */,
 				470C64791328CC0300146FB6 /* s3.amazonaws.com – S3.duck in CopyFiles */,
 				470C647A1328CC0300146FB6 /* storage.clouddrive.com – Cloud Files.duck in CopyFiles */,
 				47EBC1311328D01C00E9E6B3 /* mirror.switch.ch – FTP.duck in CopyFiles */,
@@ -416,6 +426,7 @@
 		4701684D0EED9EB7005E2CCF /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = da.lproj/Mosso.strings; sourceTree = "<group>"; };
 		4701684F0EED9EB7005E2CCF /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = ca.lproj/Mosso.strings; sourceTree = "<group>"; };
 		47022C221018663600488C19 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaNativeFoundation.framework; path = /System/Library/Frameworks/JavaVM.framework/Versions/A/Frameworks/JavaNativeFoundation.framework; sourceTree = "<absolute>"; };
 		470912EC0C36FCE00049FBCE /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Prompt.nib; sourceTree = "<group>"; };
 		470912FB0C36FD330049FBCE /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Prompt.nib; sourceTree = "<group>"; };
 		4709130A0C36FD920049FBCE /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Prompt.nib; sourceTree = "<group>"; };
@@ -463,7 +474,6 @@
 		470BCDA41340563C00EF835E /* bg */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
 		470BCDA51340563C00EF835E /* bg */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Status.strings; sourceTree = "<group>"; };
 		470BCDA61340563C00EF835E /* bg */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Transfer.strings; sourceTree = "<group>"; };
-		470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "docs.google.com – Google Docs.duck"; sourceTree = "<group>"; };
 		470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "s3.amazonaws.com – S3.duck"; sourceTree = "<group>"; };
 		470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "storage.clouddrive.com – Cloud Files.duck"; sourceTree = "<group>"; };
 		470DEC5E125F2CAF00952823 /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Prompt.nib; sourceTree = "<group>"; };
@@ -1546,6 +1556,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4704C3A91664F94F00B17020 /* JavaNativeFoundation.framework in Frameworks */,
 				4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */,
 				475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */,
 				4786AA14162F4AED006156A0 /* Security.framework in Frameworks */,
@@ -1557,6 +1568,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4704C3AA1664F95E00B17020 /* JavaNativeFoundation.framework in Frameworks */,
 				4704238712EEC56F004658C0 /* Cocoa.framework in Frameworks */,
 				474523921076B6A900823467 /* Foundation.framework in Frameworks */,
 				474522C61076B68E00823467 /* ApplicationServices.framework in Frameworks */,
@@ -1571,6 +1583,7 @@
 				4704227312EEC0DB004658C0 /* Growl.framework in Frameworks */,
 				4739EF9C0856990000405FD3 /* Foundation.framework in Frameworks */,
 				4739EF9E0856990000405FD3 /* Cocoa.framework in Frameworks */,
+				4704C3B31664FD0B00B17020 /* JavaNativeFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1578,6 +1591,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4704C3AB1664F96400B17020 /* JavaNativeFoundation.framework in Frameworks */,
 				474523E21076B70000823467 /* Foundation.framework in Frameworks */,
 				4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */,
 			);
@@ -1589,6 +1603,7 @@
 			files = (
 				479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */,
 				4797D28E162829F800340E1C /* ApplicationServices.framework in Frameworks */,
+				4704C3AC1664F96700B17020 /* JavaNativeFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1598,6 +1613,7 @@
 			files = (
 				474524B71076B7FC00823467 /* Foundation.framework in Frameworks */,
 				4762DAC109FC42EC0034C662 /* SystemConfiguration.framework in Frameworks */,
+				4704C3AD1664FB2E00B17020 /* JavaNativeFoundation.framework in Frameworks */,
 				474520F21076B60600823467 /* CoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1618,6 +1634,7 @@
 			files = (
 				474524DD1076B89700823467 /* Foundation.framework in Frameworks */,
 				4714591713B492CD00F1A9D2 /* libAquaticPrime.a in Frameworks */,
+				4704C3B11664FC8D00B17020 /* JavaNativeFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1626,6 +1643,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				478ECD130DAD5743008A5B1F /* Cocoa.framework in Frameworks */,
+				4704C3B41664FD0F00B17020 /* JavaNativeFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1635,6 +1653,7 @@
 			files = (
 				4781DFE5162FF6FE001F4993 /* Foundation.framework in Frameworks */,
 				4797D2751628276C00340E1C /* ApplicationServices.framework in Frameworks */,
+				4704C3AE1664FB4A00B17020 /* JavaNativeFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1644,6 +1663,7 @@
 			files = (
 				474524B11076B7DA00823467 /* Foundation.framework in Frameworks */,
 				47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */,
+				4704C3B21664FCB300B17020 /* JavaNativeFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1661,6 +1681,7 @@
 			files = (
 				4786AA13162F4AE1006156A0 /* Foundation.framework in Frameworks */,
 				47C57EB5162F471700A272BC /* ApplicationServices.framework in Frameworks */,
+				4704C3B01664FB5300B17020 /* JavaNativeFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1670,6 +1691,7 @@
 			files = (
 				4781DFE6162FF703001F4993 /* Foundation.framework in Frameworks */,
 				47F102B41628D57500923FDE /* ApplicationServices.framework in Frameworks */,
+				4704C3AF1664FB4F00B17020 /* JavaNativeFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1713,6 +1735,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */,
 				4792112812F6F4FD00E35E16 /* Sparkle.framework */,
 				474523971076B6D800823467 /* Carbon.framework */,
 				474522C51076B68E00823467 /* ApplicationServices.framework */,
@@ -1736,7 +1759,6 @@
 		470C646C1328CBF300146FB6 /* bookmarks */ = {
 			isa = PBXGroup;
 			children = (
-				470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */,
 				470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */,
 				470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */,
 				47EBC12F1328D00200E9E6B3 /* mirror.switch.ch – FTP.duck */,
@@ -4310,6 +4332,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libKeychain;
 			};
@@ -4320,6 +4346,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libODBEdit;
 			};
@@ -4330,6 +4360,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libGrowl;
 			};
@@ -4340,6 +4374,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libProxy;
 			};
@@ -4350,6 +4388,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLocal;
 			};
@@ -4360,6 +4402,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDiagnostics;
 			};
@@ -4384,6 +4430,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/lib\"",
@@ -4400,6 +4450,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libQuickLook;
 			};
@@ -4410,6 +4464,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLaunchServicesApplicationFinder;
 			};
@@ -4420,6 +4478,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLaunchServicesApplicationFinder;
@@ -4479,6 +4541,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libKeychain;
@@ -4490,6 +4556,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libODBEdit;
@@ -4501,6 +4571,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libGrowl;
@@ -4512,6 +4586,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libProxy;
@@ -4523,6 +4601,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLocal;
@@ -4534,6 +4616,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDiagnostics;
@@ -4545,6 +4631,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLaunchServicesSchemeHandler;
@@ -4556,6 +4646,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libQuickLook;
@@ -4567,6 +4661,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4575,7 +4673,7 @@
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = libPrime;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.5;
 			};
 			name = Debug;
 		};
@@ -4599,6 +4697,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLaunchServicesSchemeHandler;
 			};
@@ -4609,6 +4711,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLaunchServicesFileDescriptor;
 			};
@@ -4619,6 +4725,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLaunchServicesFileDescriptor;
@@ -4674,6 +4784,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLaunchServicesQuarantineService;
 			};
@@ -4684,6 +4798,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLaunchServicesQuarantineService;
