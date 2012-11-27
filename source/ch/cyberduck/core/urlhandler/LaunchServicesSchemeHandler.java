@@ -79,7 +79,10 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
     public List<Application> getAllHandlers(final Scheme scheme) {
         List<Application> handlers = new ArrayList<Application>();
         for(String bundleIdentifier : this.getAllHandlers(scheme.name())) {
-            handlers.add(ApplicationFinderFactory.get().getDescription(bundleIdentifier));
+            final Application application = ApplicationFinderFactory.get().getDescription(bundleIdentifier);
+            if(ApplicationFinderFactory.get().isInstalled(application)) {
+                handlers.add(application);
+            }
         }
         return handlers;
     }
