@@ -1717,8 +1717,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         s.iam().getUserCredentials(BrowserController.getSession().analytics().getName());
                     if (credentials.validate(BrowserController.getSession().getHost().getProtocol()))
                     {
-                        _analytics = s.analytics().getSetup(s.getHost().getProtocol(), _selected.getContainerName(),
-                                                            credentials);
+                        _analytics = s.analytics().getSetup(s.getHost().getProtocol(), s.getHost().getProtocol().getScheme(), 
+                            _selected.getContainerName(), credentials);
                     }
                 }
                 if (_infoController.NumberOfFiles == 1)
@@ -1888,7 +1888,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Credentials credentials =
                         session.iam().getUserCredentials(BrowserController.getSession().analytics().getName());
-                    _analytics = session.analytics().getSetup(session.cdn().getProtocol(), container, credentials);
+                    _analytics = session.analytics().getSetup(session.cdn().getProtocol(), session.cdn().getProtocol().getScheme(), 
+                        container, credentials);
                 }
             }
 
