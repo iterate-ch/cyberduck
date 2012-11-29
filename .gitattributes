@@ -274,7 +274,10 @@ cy.lproj/Status.strings -text svneol=unset#text/utf-16
 cy.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /cyberduck-application.icns -text svneol=unset#image/icns
 /cyberduck-application.ico -text
+/cyberduck-application.png -text svneol=unset#image/png
 /cyberduck-application.template.png -text svneol=unset#image/png
+/cyberduck-application.tiff -text
+/cyberduck-application@2x.png -text svneol=unset#image/png
 /cyberduck-document.icns -text svneol=unset#image/icns
 /cyberduck-document.ico -text
 da.lproj/Alert.nib/classes.nib -text
