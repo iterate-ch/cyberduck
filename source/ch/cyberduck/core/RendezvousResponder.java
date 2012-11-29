@@ -138,7 +138,9 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
             String user = null;
             String password = null;
             String path = null;
-            log.debug("TXT Record:" + txtRecord);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("TXT Record %s", txtRecord));
+            }
             if(txtRecord.contains("u")) {
                 user = txtRecord.getValueAsString("u");
             }
