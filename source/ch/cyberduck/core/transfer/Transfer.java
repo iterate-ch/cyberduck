@@ -625,7 +625,6 @@ public abstract class Transfer implements Serializable {
             // We have our own session independent of any browser.
             this.cache().clear();
         }
-        reset = false;
     }
 
     /**
