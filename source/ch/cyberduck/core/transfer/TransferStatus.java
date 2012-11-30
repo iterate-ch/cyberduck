@@ -60,10 +60,10 @@ public class TransferStatus {
     private boolean complete = false;
 
     public void setComplete() {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Status set to complete (%s) with %d bytes", complete, this.getCurrent()));
-        }
         this.complete = true;
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Status set to complete with %d bytes", this.getCurrent()));
+        }
     }
 
     public boolean isComplete() {
