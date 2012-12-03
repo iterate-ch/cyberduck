@@ -180,8 +180,7 @@ public class DAVPath extends HttpPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                         this.getName()));
 
-                List<DavResource> resources = this.getSession().getClient().list(this.toURL());
-
+                final List<DavResource> resources = this.getSession().getClient().list(this.toURL());
                 for(final DavResource resource : resources) {
                     // Try to parse as RFC 2396
                     final URI uri = resource.getHref();
@@ -224,7 +223,7 @@ public class DAVPath extends HttpPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
                         this.getName()));
 
-                List<DavResource> resources = this.getSession().getClient().list(this.toURL());
+                final List<DavResource> resources = this.getSession().getClient().list(this.toURL());
                 for(DavResource resource : resources) {
                     this.attributes().setMetadata(resource.getCustomProps());
                 }
@@ -357,7 +356,7 @@ public class DAVPath extends HttpPath {
 
     @Override
     public ResponseOutputStream<Void> write(final TransferStatus status) throws IOException {
-        Map<String, String> headers = new HashMap<String, String>();
+        final Map<String, String> headers = new HashMap<String, String>();
         if(status.isResume()) {
             headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
                     + status.getCurrent()
