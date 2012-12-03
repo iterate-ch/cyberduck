@@ -52,17 +52,7 @@ import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
-import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
@@ -3217,9 +3207,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
             }
             for(final Path next : pasteboard) {
-                Path current = PathFactory.createPath(getSession(),
+                Path current = PathFactory.createPath(this.getSession(),
                         next.getAbsolute(), next.attributes().getType());
-                Path renamed = PathFactory.createPath(getSession(),
+                Path renamed = PathFactory.createPath(this.getSession(),
                         parent.getAbsolute(), current.getName(), next.attributes().getType());
                 files.put(current, renamed);
             }
