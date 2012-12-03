@@ -128,7 +128,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public CheckState GetCheckState(Object path)
         {
-            bool included = Transfer.isSelected((Path) path) &&
+            bool included = !Transfer.isSkipped(item) &&
+                            Transfer.isSelected((Path) path) &&
                             !_controller.Action.equals(TransferAction.ACTION_SKIP);
             if (included)
             {

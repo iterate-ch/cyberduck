@@ -183,7 +183,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             if(identifier.equals(INCLUDE_COLUMN)) {
                 // Not included if the particular path should be skipped or skip
                 // existing is selected as the default transfer action for duplicate files
-                final boolean included = transfer.isSelected(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
+                final boolean included = !transfer.isSkipped(item) && transfer.isSelected(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
                 return NSNumber.numberWithInt(included ? NSCell.NSOnState : NSCell.NSOffState);
             }
             if(identifier.equals(FILENAME_COLUMN)) {
