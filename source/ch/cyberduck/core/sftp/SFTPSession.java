@@ -18,16 +18,7 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostnameConfiguratorFactory;
-import ch.cyberduck.core.LoginCanceledException;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 
@@ -231,9 +222,9 @@ public class SFTPSession extends Session {
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
             if(credentials.isPublicKeyAuthentication()) {
                 final Local identity = credentials.getIdentity();
-                CharArrayWriter privatekey = new CharArrayWriter();
+                final CharArrayWriter privatekey = new CharArrayWriter();
                 if(PuTTYKey.isPuTTYKeyFile(identity.getInputStream())) {
-                    PuTTYKey putty = new PuTTYKey(identity.getInputStream());
+                    final PuTTYKey putty = new PuTTYKey(identity.getInputStream());
                     if(putty.isEncrypted()) {
                         if(StringUtils.isEmpty(credentials.getPassword())) {
                             controller.prompt(host.getProtocol(), credentials,
