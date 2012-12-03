@@ -635,7 +635,7 @@ public class S3Path extends CloudPath {
             // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
             // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
             // not yet been completed or aborted.
-            List<MultipartUpload> uploads = this.getSession().getClient().multipartListUploads(this.getContainerName());
+            final List<MultipartUpload> uploads = this.getSession().getClient().multipartListUploads(this.getContainerName());
             for(MultipartUpload upload : uploads) {
                 if(!upload.getBucketName().equals(this.getContainerName())) {
                     continue;
@@ -668,7 +668,7 @@ public class S3Path extends CloudPath {
                     this.getContainerName(), this.getKey(), metadata);
         }
 
-        List<MultipartPart> completed;
+        final List<MultipartPart> completed;
         if(status.isResume()) {
             log.info(String.format("List completed parts of %s", multipart.getUploadId()));
             // This operation lists the parts that have been uploaded for a specific multipart upload.
@@ -686,7 +686,7 @@ public class S3Path extends CloudPath {
                 Preferences.instance().getInteger("s3.upload.multipart.concurency"), threadFactory);
 
         try {
-            List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
+            final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
 
             final long defaultPartSize = Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS),
                     DEFAULT_MINIMUM_UPLOAD_PART_SIZE);
@@ -765,7 +765,7 @@ public class S3Path extends CloudPath {
         return pool.submit(new Callable<MultipartPart>() {
             @Override
             public MultipartPart call() throws IOException, ServiceException {
-                Map<String, String> requestParameters = new HashMap<String, String>();
+                final Map<String, String> requestParameters = new HashMap<String, String>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
 
@@ -931,7 +931,7 @@ public class S3Path extends CloudPath {
         do {
             // Read directory listing in chunks. List results are always returned
             // in lexicographic (alphabetical) order.
-            StorageObjectsChunk chunk = this.getSession().getClient().listObjectsChunked(
+            final StorageObjectsChunk chunk = this.getSession().getClient().listObjectsChunked(
                     bucket, prefix, delimiter,
                     Preferences.instance().getInteger("s3.listing.chunksize"), priorLastKey);
 
@@ -953,7 +953,7 @@ public class S3Path extends CloudPath {
                         p.attributes().setPlaceholder(true);
                     }
                 }
-                Object etag = object.getMetadataMap().get(StorageObject.METADATA_HEADER_ETAG);
+                final Object etag = object.getMetadataMap().get(StorageObject.METADATA_HEADER_ETAG);
                 if(null != etag) {
                     String s = etag.toString().replaceAll("\"", StringUtils.EMPTY);
                     p.attributes().setChecksum(s);
@@ -1177,7 +1177,7 @@ public class S3Path extends CloudPath {
                         new ObjectKeyAndVersion(this.getKey(), this.attributes().getVersionId())));
             }
             else if(attributes().isDirectory()) {
-                List<ObjectKeyAndVersion> files = new ArrayList<ObjectKeyAndVersion>();
+                final List<ObjectKeyAndVersion> files = new ArrayList<ObjectKeyAndVersion>();
                 for(Path child : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
@@ -1230,7 +1230,7 @@ public class S3Path extends CloudPath {
      */
     protected void delete(String container, List<ObjectKeyAndVersion> keys) throws ConnectionCanceledException, ServiceException {
         if(this.getSession().isMultiFactorAuthentication(container)) {
-            LoginController c = LoginControllerFactory.instance(this.getSession());
+            final LoginController c = LoginControllerFactory.instance(this.getSession());
             final Credentials credentials = this.getSession().mfa(c);
             this.getSession().getClient().deleteMultipleObjectsWithMFA(container,
                     keys.toArray(new ObjectKeyAndVersion[keys.size()]),
@@ -1361,7 +1361,7 @@ public class S3Path extends CloudPath {
      * @return URL to be displayed in browser
      */
     private String toURL(final String scheme) {
-        StringBuilder url = new StringBuilder(scheme);
+        final StringBuilder url = new StringBuilder(scheme);
         url.append("://");
         if(this.isRoot()) {
             url.append(this.getHost().getHostname());
@@ -1464,7 +1464,7 @@ public class S3Path extends CloudPath {
 
     @Override
     public Set<DescriptiveUrl> getHttpURLs() {
-        Set<DescriptiveUrl> urls = super.getHttpURLs();
+        final Set<DescriptiveUrl> urls = super.getHttpURLs();
         // Always include HTTP URL
         urls.add(new DescriptiveUrl(this.toURL("http"),
                 MessageFormat.format(Locale.localizedString("{0} URL"), "http".toUpperCase())));
