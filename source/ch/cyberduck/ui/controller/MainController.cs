@@ -33,6 +33,7 @@ using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Serializer;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using Ch.Cyberduck.core.editor;
 using Microsoft.VisualBasic.ApplicationServices;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
@@ -205,6 +206,7 @@ namespace Ch.Cyberduck.Ui.Controller
             WindowsApplicationLauncher.register();
             Win32FileDescriptor.Register();
             ExplorerRevealService.Register();
+            RegistryApplicationFinder.Register();
         }
 
         private static void ConfigureLogging()

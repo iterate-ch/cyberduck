@@ -23,8 +23,6 @@ using System.Linq;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Collections;
 using Microsoft.Win32;
-using ch.cyberduck.core;
-using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
 using java.util;
 using org.apache.log4j;
@@ -47,7 +45,7 @@ namespace Ch.Cyberduck.core.editor
         //vormals GetApplicationNameForExe
         public Application getDescription(string application)
         {
-            if (applicationNameCache.ContainsKey(application))
+            if (!applicationNameCache.ContainsKey(application))
             {
                 if (Utils.IsVistaOrLater)
                 {
@@ -98,7 +96,9 @@ namespace Ch.Cyberduck.core.editor
                     }
                 }
             }
-            return applicationNameCache[application];
+            Application result;
+            applicationNameCache.TryGetValue(application, out result);
+            return result;
         }
 
         public Application find(String filename)
@@ -156,7 +156,9 @@ namespace Ch.Cyberduck.core.editor
                     Log.error(string.Format("Exception while finding application for {0}", filename));
                 }
             }
-            return defaultApplicationCache[extension];
+            Application result;
+            defaultApplicationCache.TryGetValue(extension, out result);
+            return result;
         }
 
         public List findAll(String filename)
@@ -203,7 +205,8 @@ namespace Ch.Cyberduck.core.editor
                     }
                 }
                 map.Sort(
-                    delegate(Application app1, Application app2) { return app1.getIdentifier().CompareTo(app2.getIdentifier()); });
+                    delegate(Application app1, Application app2)
+                        { return app1.getIdentifier().CompareTo(app2.getIdentifier()); });
                 defaultApplicationListCache.Add(extension, map);
             }
             return Utils.ConvertToJavaList(defaultApplicationListCache[extension]);
@@ -212,6 +215,11 @@ namespace Ch.Cyberduck.core.editor
         public bool isInstalled(Application application)
         {
             return Utils.IsNotBlank(application.getIdentifier()) && File.Exists(application.getIdentifier());
+        }
+
+        public static void Register()
+        {
+            ApplicationFinderFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
         /// <summary>
@@ -293,6 +301,14 @@ namespace Ch.Cyberduck.core.editor
                 }
             }
             return null;
+        }
+
+        private class Factory : ApplicationFinderFactory
+        {
+            protected override object create()
+            {
+                return new RegistryApplicationFinder();
+            }
         }
     }
 }
