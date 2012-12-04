@@ -255,7 +255,7 @@ namespace Ch.Cyberduck.Core
 
             foreach (string exe in progs.Distinct())
             {
-                Application application = ApplicationFinderFactory.get().find(exe);
+                Application application = ApplicationFinderFactory.get().getDescription(exe);
                 if (null != application)
                 {
                     map.Add(new KeyValuePair<string, string>(application.getName(), exe));

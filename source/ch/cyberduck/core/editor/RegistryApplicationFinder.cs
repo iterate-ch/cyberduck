@@ -45,6 +45,10 @@ namespace Ch.Cyberduck.core.editor
         //vormals GetApplicationNameForExe
         public Application getDescription(string application)
         {
+            if (application == null)
+            {
+                return null;
+            }
             if (!applicationNameCache.ContainsKey(application))
             {
                 if (Utils.IsVistaOrLater)
@@ -118,7 +122,7 @@ namespace Ch.Cyberduck.core.editor
             String exe = GetExplorerRegisteredApplication(extension);
             if (null != exe)
             {
-                defaultApplicationCache.Add(extension, find(exe));
+                defaultApplicationCache.Add(extension, getDescription(exe));
             }
             else
             {
@@ -148,7 +152,7 @@ namespace Ch.Cyberduck.core.editor
                                 }
                             }
                         }
-                        defaultApplicationCache.Add(extension, find(exe));
+                        defaultApplicationCache.Add(extension, getDescription(exe));
                     }
                 }
                 catch (Exception)
@@ -156,9 +160,8 @@ namespace Ch.Cyberduck.core.editor
                     Log.error(string.Format("Exception while finding application for {0}", filename));
                 }
             }
-            Application result;
-            defaultApplicationCache.TryGetValue(extension, out result);
-            return result;
+            defaultApplicationCache.TryGetValue(extension, out app);
+            return app;
         }
 
         public List findAll(String filename)
