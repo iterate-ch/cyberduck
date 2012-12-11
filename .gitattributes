@@ -782,8 +782,10 @@ img/aliasbadge@2x.png -text svneol=unset#image/png
 img/azure-icon.png -text svneol=unset#image/png
 img/azure-icon.tiff -text
 img/azure-icon@2x.png -text svneol=unset#image/png
-img/azure.icns -text
 img/azure.ico -text
+img/azure.png -text svneol=unset#image/png
+img/azure.tiff -text
+img/azure@2x.png -text svneol=unset#image/png
 img/bandwidth.png -text svneol=unset#image/png
 img/bandwidth.tiff -text svneol=unset#image/tiff
 img/bandwidth@2x.png -text svneol=unset#image/png
@@ -801,8 +803,10 @@ img/cancel.tiff -text svneol=unset#image/tiff
 img/cf-icon.png -text svneol=unset#unset
 img/cf-icon.tiff -text
 img/cf-icon@2x.png -text svneol=unset#image/png
-img/cf.icns -text
 img/cf.ico -text
+img/cf.png -text svneol=unset#image/png
+img/cf.tiff -text
+img/cf@2x.png -text svneol=unset#image/png
 img/clean.png -text svneol=unset#image/png
 img/clean.tiff -text svneol=unset#image/tiff
 img/clean@2x.png -text svneol=unset#image/png
@@ -837,8 +841,10 @@ img/download@2x.png -text svneol=unset#image/png
 img/dropbox-icon.png -text svneol=unset#image/png
 img/dropbox-icon.tiff -text
 img/dropbox-icon@2x.png -text svneol=unset#image/png
-img/dropbox.icns -text
 img/dropbox.ico -text
+img/dropbox.png -text svneol=unset#image/png
+img/dropbox.tiff -text
+img/dropbox@2x.png -text svneol=unset#image/png
 img/dropfolderbadge.png -text svneol=unset#image/png
 img/dropfolderbadge.tiff -text
 img/dropfolderbadge@2x.png -text svneol=unset#image/png
@@ -857,8 +863,10 @@ img/executable@2x.png -text svneol=unset#image/png
 img/ftp-icon.png -text svneol=unset#image/png
 img/ftp-icon.tiff -text
 img/ftp-icon@2x.png -text svneol=unset#image/png
-img/ftp.icns -text
 img/ftp.ico -text
+img/ftp.png -text svneol=unset#image/png
+img/ftp.tiff -text
+img/ftp@2x.png -text svneol=unset#image/png
 img/gear.png -text svneol=unset#image/png
 img/gear.tiff -text svneol=unset#image/tiff
 img/gear@2x.png -text svneol=unset#image/png
@@ -868,20 +876,23 @@ img/general@2x.png -text svneol=unset#image/png
 img/google-icon.png -text svneol=unset#image/png
 img/google-icon.tiff -text
 img/google-icon@2x.png -text svneol=unset#image/png
-img/google.icns -text
 img/google.ico -text
 img/googledrive-icon.png -text svneol=unset#image/png
 img/googledrive-icon.tiff -text
 img/googledrive-icon@2x.png -text svneol=unset#image/png
-img/googledrive.icns -text
 img/googledrive.ico -text
+img/googledrive.png -text svneol=unset#image/png
+img/googledrive.tiff -text
+img/googledrive@2x.png -text svneol=unset#image/png
 img/greenArrow1.png -text
 img/greenArrow2.png -text
 img/history.png -text svneol=unset#image/png
 img/history.tiff -text svneol=unset#image/tiff
 img/history@2x.png -text svneol=unset#image/png
 img/hpcloud-icon.png -text svneol=unset#image/png
-img/hpcloud.icns -text
+img/hpcloud.png -text svneol=unset#image/png
+img/hpcloud.tiff -text
+img/hpcloud@2x.png -text svneol=unset#image/png
 img/info.png -text svneol=unset#image/png
 img/info.tiff -text svneol=unset#image/tiff
 img/info@2x.png -text svneol=unset#image/png
@@ -958,15 +969,19 @@ img/reveal@2x.png -text svneol=unset#image/png
 img/s3-icon.png -text svneol=unset#image/png
 img/s3-icon.tiff -text
 img/s3-icon@2x.png -text svneol=unset#image/png
-img/s3.icns -text
 img/s3.ico -text
+img/s3.png -text svneol=unset#image/png
+img/s3.tiff -text
+img/s3@2x.png -text svneol=unset#image/png
 img/search-active.png -text
 img/search-inactive.png -text
 img/sftp-icon.png -text svneol=unset#image/png
 img/sftp-icon.tiff -text
 img/sftp-icon@2x.png -text svneol=unset#image/png
-img/sftp.icns -text
 img/sftp.ico -text
+img/sftp.png -text svneol=unset#image/png
+img/sftp.tiff -text
+img/sftp@2x.png -text svneol=unset#image/png
 img/site.png -text svneol=unset#image/png
 img/site.tiff -text
 img/site@2x.png -text svneol=unset#image/png
@@ -986,8 +1001,10 @@ img/stop@2x.png -text svneol=unset#image/png
 img/swift-icon.png -text svneol=unset#image/png
 img/swift-icon.tiff -text
 img/swift-icon@2x.png -text svneol=unset#image/png
-img/swift.icns -text
 img/swift.ico -text
+img/swift.png -text svneol=unset#image/png
+img/swift.tiff -text
+img/swift@2x.png -text svneol=unset#image/png
 img/sync.png -text svneol=unset#image/png
 img/sync.tiff -text svneol=unset#image/tiff
 img/sync@2x.png -text svneol=unset#image/png
