@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,8 +15,10 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Bonjour;
 using ch.cyberduck.core;
 
@@ -113,18 +115,24 @@ namespace Ch.Cyberduck.Core
             String path = null;
             if (txtRecord.ContainsKey("u"))
             {
-                user = txtRecord.GetValueForKey("u").ToString();
+                user = ByteArrayToString((byte[]) txtRecord.GetValueForKey("u"));
             }
             if (txtRecord.ContainsKey("p"))
             {
-                password = txtRecord.GetValueForKey("p").ToString();
+                password = ByteArrayToString((byte[]) txtRecord.GetValueForKey("p"));
             }
             if (txtRecord.ContainsKey("path"))
             {
-                path = txtRecord.GetValueForKey("path").ToString();
+                path = ByteArrayToString((byte[]) txtRecord.GetValueForKey("path"));
             }
             base.add(fullName, hostName, port, user, password, path);
             service.Stop();
+        }
+
+        public string ByteArrayToString(byte[] input)
+        {
+            UTF8Encoding enc = new UTF8Encoding();
+            return enc.GetString(input);
         }
 
         public void OperationFailed(DNSSDService service, DNSSDError error)
