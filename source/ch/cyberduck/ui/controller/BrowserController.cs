@@ -77,6 +77,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BookmarkModel _bookmarkModel;
         private readonly TreeBrowserModel _browserModel;
         private readonly List<Path> _forwardHistory = new List<Path>();
+        private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
         private Comparator _comparator = new NullComparator();
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
@@ -773,6 +774,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_HostEndDrag(DataObject data)
         {
             RemoveTemporaryFiles(data);
+            RemoveTemporaryFilesystemWatcher();
         }
 
         private string CreateAndWatchTemporaryFile(FileSystemEventHandler del)
@@ -796,7 +798,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         watcher.IncludeSubdirectories = true;
                         watcher.EnableRaisingEvents = true;
                         watcher.Created += del;
-                        watcher.Created += delegate { watcher.Dispose(); };
+                        _temporaryWatcher.Add(watcher);
                     }
                     catch (Exception e)
                     {
@@ -1873,6 +1875,15 @@ namespace Ch.Cyberduck.Ui.Controller
             return data;
         }
 
+        private void RemoveTemporaryFilesystemWatcher()
+        {
+            foreach (FileSystemWatcher watcher in _temporaryWatcher)
+            {
+                watcher.Dispose();
+            }
+            _temporaryWatcher.Clear();
+        }
+
         private void RemoveTemporaryFiles(DataObject data)
         {
             if (data.ContainsFileDropList())
@@ -1898,6 +1909,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_BrowserEndDrag(DataObject data)
         {
             RemoveTemporaryFiles(data);
+            RemoveTemporaryFilesystemWatcher();
         }
 
         private void View_BrowserDropped(OlvDropEventArgs e)
