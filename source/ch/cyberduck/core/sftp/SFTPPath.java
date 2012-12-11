@@ -493,30 +493,30 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    public void touch() {
-        if(this.attributes().isFile()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                        this.getName()));
+    public boolean touch() {
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                    this.getName()));
 
-                SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                attr.permissions = Integer.parseInt(permission.getOctalString(), 8);
-                this.getSession().sftp().createFile(this.getAbsolute(), attr);
-                try {
-                    // Even if specified above when creating the file handle, we still need to update the
-                    // permissions after the creating the file. SSH_FXP_OPEN does not support setting
-                    // attributes in version 4 or lower.
-                    this.writeUnixPermissionImpl(permission);
-                }
-                catch(SFTPException ignore) {
-                    log.warn(ignore.getMessage());
-                }
+            SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+            Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+            attr.permissions = Integer.parseInt(permission.getOctalString(), 8);
+            this.getSession().sftp().createFile(this.getAbsolute(), attr);
+            try {
+                // Even if specified above when creating the file handle, we still need to update the
+                // permissions after the creating the file. SSH_FXP_OPEN does not support setting
+                // attributes in version 4 or lower.
+                this.writeUnixPermissionImpl(permission);
             }
-            catch(IOException e) {
-                this.error("Cannot create file {0}", e);
+            catch(SFTPException ignore) {
+                log.warn(ignore.getMessage());
             }
+            return true;
+        }
+        catch(IOException e) {
+            this.error("Cannot create file {0}", e);
+            return false;
         }
     }
 }

@@ -64,8 +64,7 @@ public class CreateFileController extends FileController {
 
             @Override
             public void run() {
-                file.touch();
-                if(file.exists()) {
+                if(file.touch()) {
                     if(edit) {
                         Editor editor = EditorFactory.instance().create(c, file);
                         editor.open();

@@ -236,7 +236,7 @@ public abstract class AbstractPath {
     /**
      * Create a new empty file.
      */
-    public abstract void touch();
+    public abstract boolean touch();
 
     /**
      * #getAbsolute -> target

@@ -69,9 +69,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                _file.touch();
-                if (_file.exists())
-                {
+                if(file.touch()) {
+                    _file.touch();
                     if (_edit)
                     {
                         Editor editor = EditorFactory.instance().create(BrowserController, _file);

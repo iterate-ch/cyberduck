@@ -102,18 +102,22 @@ public abstract class Local extends AbstractPath {
      * Creates a new file and sets its resource fork to feature a custom progress icon
      */
     @Override
-    public void touch() {
+    public boolean touch() {
         try {
             final File file = new File(path);
             if(!file.getParentFile().mkdirs()) {
                 log.debug(String.format("Create directory %s failed", path));
+                return false;
             }
             if(!file.createNewFile()) {
                 log.warn(String.format("Create file %s failed", path));
+                return false;
             }
+            return true;
         }
         catch(IOException e) {
             log.error(String.format("Error creating new file %s", e.getMessage()));
+            return false;
         }
     }
 

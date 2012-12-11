@@ -615,27 +615,26 @@ public abstract class Path extends AbstractPath implements Serializable {
      * Upload an empty file.
      */
     @Override
-    public void touch() {
-        if(this.attributes().isFile()) {
-            final Local temp = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), UUID.randomUUID().toString());
-            temp.touch();
-            this.setLocal(temp);
-            TransferOptions options = new TransferOptions();
-            options.closeSession = false;
-            try {
-                UploadTransfer upload = new UploadTransfer(this);
-                upload.start(new TransferPrompt() {
-                    @Override
-                    public TransferAction prompt() {
-                        return TransferAction.ACTION_OVERWRITE;
-                    }
-                }, options);
-            }
-            finally {
-                temp.delete();
-                this.setLocal(null);
-            }
+    public boolean touch() {
+        final Local temp = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), UUID.randomUUID().toString());
+        temp.touch();
+        this.setLocal(temp);
+        TransferOptions options = new TransferOptions();
+        options.closeSession = false;
+        UploadTransfer upload = new UploadTransfer(this);
+        try {
+            upload.start(new TransferPrompt() {
+                @Override
+                public TransferAction prompt() {
+                    return TransferAction.ACTION_OVERWRITE;
+                }
+            }, options);
         }
+        finally {
+            temp.delete();
+            this.setLocal(null);
+        }
+        return upload.isComplete();
     }
 
     /**
@@ -848,7 +847,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * Check for file existence. The default implementation does a directory listing of the parent folder.
      *
-     * @return True if the path exists or is cached.
+     * @return True if the path is cached.
      */
     @Override
     public boolean exists() {

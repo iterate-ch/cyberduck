@@ -1031,27 +1031,27 @@ public class GDPath extends Path {
     }
 
     @Override
-    public void touch() {
-        if(this.attributes().isFile()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                        this.getName()));
+    public boolean touch() {
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                    this.getName()));
 
-                DocumentListEntry file = new DocumentEntry();
-                file.setTitle(new PlainTextConstruct(this.getName()));
-                try {
-                    this.getSession().getClient().insert(new URL(((GDPath) this.getParent()).getFolderFeed()), file);
-                }
-                catch(ServiceException e) {
-                    IOException failure = new IOException(e.getMessage());
-                    failure.initCause(e);
-                    throw failure;
-                }
+            DocumentListEntry file = new DocumentEntry();
+            file.setTitle(new PlainTextConstruct(this.getName()));
+            try {
+                this.getSession().getClient().insert(new URL(((GDPath) this.getParent()).getFolderFeed()), file);
             }
-            catch(IOException e) {
-                this.error("Cannot create file {0}", e);
+            catch(ServiceException e) {
+                IOException failure = new IOException(e.getMessage());
+                failure.initCause(e);
+                throw failure;
             }
+            return true;
+        }
+        catch(IOException e) {
+            this.error("Cannot create file {0}", e);
+            return false;
         }
     }
 
