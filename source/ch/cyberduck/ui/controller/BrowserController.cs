@@ -819,8 +819,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                     {
                                         dropFolder =
                                             System.IO.Path
-                                                .
-                                                GetDirectoryName
+                                                  .
+                                                   GetDirectoryName
                                                 (
                                                     args.
                                                         FullPath);
@@ -839,8 +839,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                             foreach (
                                                 char c in
                                                     System.IO.Path
-                                                        .
-                                                        GetInvalidFileNameChars
+                                                          .
+                                                           GetInvalidFileNameChars
                                                         ()
                                                 )
                                             {
@@ -866,9 +866,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                             HostWriterFactory
                                                 .get()
                                                 .
-                                                write(
-                                                    host,
-                                                    file);
+                                                 write(
+                                                     host,
+                                                     file);
                                         }
                                     });
                             }
@@ -1706,7 +1706,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         path.setLocal(
                             LocalFactory.createLocal(folderName,
                                                      path.getLocal().
-                                                         getName()));
+                                                          getName()));
                         return path;
                     };
                 Transfer q = new DownloadTransfer(Utils.ConvertToJavaList(SelectedPaths, apply));
@@ -1859,8 +1859,8 @@ namespace Ch.Cyberduck.Ui.Controller
                             {
                                 dropFolder =
                                     System.IO.Path.
-                                        GetDirectoryName(
-                                            args.FullPath);
+                                           GetDirectoryName(
+                                               args.FullPath);
                                 Invoke(
                                     () =>
                                     Download(SelectedPaths,
@@ -2324,20 +2324,20 @@ namespace Ch.Cyberduck.Ui.Controller
             bool rootRefreshed = false; //prevent multiple root updates
             foreach (Path path in changed)
             {
-                Path parent = path.getParent();
-                getSession().cache().invalidate(parent.getReference());
-                if (Workdir.equals(parent))
+                getSession().cache().invalidate(path.getParent().getReference());
+                Path lookup = getSession().cache().lookup(path.getParent().getReference());
+                if (null == lookup || Workdir.equals(lookup))
                 {
                     if (rootRefreshed)
                     {
                         continue;
                     }
-                    View.SetBrowserModel(_browserModel.ChildrenGetter(parent));
+                    View.SetBrowserModel(_browserModel.ChildrenGetter(Workdir));
                     rootRefreshed = true;
                 }
                 else
                 {
-                    View.RefreshBrowserObject(parent);
+                    View.RefreshBrowserObject(lookup);
                 }
             }
             View.SelectedPaths = selected;
@@ -3608,7 +3608,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                BrowserController.RefreshParentPaths(new Collection<Path> {_selected}, new Collection<Path>());
+                BrowserController.RefreshParentPaths(new Collection<Path> {_selected});
             }
 
             public override string getActivity()

@@ -189,16 +189,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                //TODO review
-                Path path = _controller.getSession().cache().lookup(_path.getReference());
-                if (path != null)
-                {
-                    path.children();
-                }
-                else
-                {
-                    _path.children();
-                }
+                _path.children();
             }
 
             public override string getActivity()
