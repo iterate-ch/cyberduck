@@ -21,5 +21,6 @@
 - [Bugfix] Import of FXP sites  (#6915)
 - [Bugfix] Versioning for directory placeholders (S3) (#5748)
 - [Bugfix] Duplicating file does not retain permissions (#6525)
+- [Bugfix] Proxy configuration with PAC file (#6968)
 - [Bugfix] Dropped support Azure Blob Storage connections (Azure)
 - [Bugfix] Dropped support Dropbox connections (Dropbox)
