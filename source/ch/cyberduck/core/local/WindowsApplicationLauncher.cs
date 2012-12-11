@@ -19,7 +19,6 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
 using org.apache.log4j;
 
@@ -31,7 +30,7 @@ namespace Ch.Cyberduck.Core.Local
 
         public void bounce(ch.cyberduck.core.local.Local local)
         {
-            throw new NotImplementedException();
+            ;
         }
 
         public bool open(ch.cyberduck.core.local.Local local)
