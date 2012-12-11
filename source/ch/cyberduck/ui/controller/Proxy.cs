@@ -94,8 +94,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static void Register()
         {
-            Uri proxy = WebRequest.DefaultWebProxy.GetProxy(new Uri("http://google.com/login"));
-            Console.WriteLine(proxy.ToString());
             ProxyFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
