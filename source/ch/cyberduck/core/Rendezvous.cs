@@ -129,7 +129,7 @@ namespace Ch.Cyberduck.Core
             service.Stop();
         }
 
-        public string ByteArrayToString(byte[] input)
+        private string ByteArrayToString(byte[] input)
         {
             UTF8Encoding enc = new UTF8Encoding();
             return enc.GetString(input);
