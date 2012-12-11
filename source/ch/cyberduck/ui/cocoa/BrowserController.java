@@ -141,12 +141,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Override
     public void awakeFromNib() {
-        this._updateBrowserColumns(this.browserListView);
-        this._updateBrowserColumns(this.browserOutlineView);
-
-        if(Preferences.instance().getBoolean("browser.logDrawer.isOpen")) {
-            this.logDrawer.open();
-        }
         // Configure Toolbar
         this.toolbar = NSToolbar.toolbarWithIdentifier("Cyberduck Toolbar");
         this.toolbar.setDelegate((this.id()));
@@ -154,11 +148,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.toolbar.setAutosavesConfiguration(true);
         this.window().setToolbar(toolbar);
         this.window().makeFirstResponder(this.quickConnectPopup);
-
+        this._updateBrowserColumns(this.browserListView);
+        this._updateBrowserColumns(this.browserOutlineView);
+        if(Preferences.instance().getBoolean("browser.logDrawer.isOpen")) {
+            this.logDrawer.open();
+        }
         if(LicenseFactory.find().equals(LicenseFactory.EMPTY_LICENSE)) {
             this.addDonateWindowTitle();
         }
-
         this.toggleBookmarks(true);
         super.awakeFromNib();
     }
@@ -347,6 +344,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             // Only scroll to the first in the list
             scroll = false;
         }
+        this.setSelectedPaths(selected);
         this.updateStatusLabel();
         // Update path navigation
         this.validateNavigationButtons();
@@ -507,7 +505,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private static final int TAB_OUTLINE_VIEW = 2;
 
     private int getSelectedTabView() {
-        return this.browserTabView.indexOfTabViewItem(this.browserTabView.selectedTabViewItem());
+        return browserTabView.indexOfTabViewItem(browserTabView.selectedTabViewItem());
     }
 
     private NSTabView browserTabView;
@@ -522,10 +520,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public NSTableView getSelectedBrowserView() {
         switch(this.browserSwitchView.selectedSegment()) {
             case SWITCH_LIST_VIEW: {
-                return this.browserListView;
+                return browserListView;
             }
             case SWITCH_OUTLINE_VIEW: {
-                return this.browserOutlineView;
+                return browserOutlineView;
             }
         }
         log.fatal("No selected brower view");
@@ -538,10 +536,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public BrowserTableDataSource getSelectedBrowserModel() {
         switch(this.browserSwitchView.selectedSegment()) {
             case SWITCH_LIST_VIEW: {
-                return this.browserListModel;
+                return browserListModel;
             }
             case SWITCH_OUTLINE_VIEW: {
-                return this.browserOutlineModel;
+                return browserOutlineModel;
             }
         }
         log.fatal("No selected brower view");
@@ -551,10 +549,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public AbstractBrowserTableDelegate<Path> getSelectedBrowserDelegate() {
         switch(this.browserSwitchView.selectedSegment()) {
             case SWITCH_LIST_VIEW: {
-                return this.browserListViewDelegate;
+                return browserListViewDelegate;
             }
             case SWITCH_OUTLINE_VIEW: {
-                return this.browserOutlineViewDelegate;
+                return browserOutlineViewDelegate;
             }
         }
         log.fatal("No selected brower view");
@@ -3313,25 +3311,25 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param archive Archive format
      */
     private void archiveClicked(final Archive archive) {
-        final List<Path> selected = this.getSelectedPaths();
-        this.checkOverwrite(Collections.singletonList(archive.getArchive(selected)), new DefaultMainAction() {
+        final List<Path> changed = this.getSelectedPaths();
+        this.checkOverwrite(Collections.singletonList(archive.getArchive(changed)), new DefaultMainAction() {
             @Override
             public void run() {
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     @Override
                     public void run() {
-                        session.archive(archive, selected);
+                        session.archive(archive, changed);
                     }
 
                     @Override
                     public void cleanup() {
                         // Update Selection
-                        reloadData(selected, Collections.singletonList(archive.getArchive(selected)));
+                        reloadData(changed, Collections.singletonList(archive.getArchive(changed)));
                     }
 
                     @Override
                     public String getActivity() {
-                        return archive.getCompressCommand(selected);
+                        return archive.getCompressCommand(changed);
                     }
                 });
             }
