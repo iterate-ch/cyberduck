@@ -838,7 +838,7 @@ public abstract class Protocol {
 
         @Override
         public String getDefaultHostname() {
-            return "commondatastorage.googleapis.com";
+            return "storage.googleapis.com";
         }
 
         @Override
