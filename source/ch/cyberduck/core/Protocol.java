@@ -823,12 +823,12 @@ public abstract class Protocol {
 
         @Override
         public String disk() {
-            return "google";
+            return GDOCS_SSL.disk();
         }
 
         @Override
         public String icon() {
-            return "google-icon";
+            return GDOCS_SSL.icon();
         }
 
         @Override
