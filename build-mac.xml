@@ -62,6 +62,8 @@
     <!--<property name="codesign.arg" value="- -requirements ${codesign.requirement}"/>-->
     <!--<property name="codesign.arg" value="- -entitlements ${codesign.entitlements}"/>-->
 
+    <property name="keychain.password" value=""/>
+
     <property name="installer.certificate" value="3rd Party Mac Developer Installer: David Kocher"/>
     <property name="installer.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
 
@@ -332,7 +334,7 @@
 
     <target name="unlock-keychain">
         <exec executable="/usr/bin/security" failonerror="true">
-            <arg line="unlock-keychain ${codesign.keychain}"/>
+            <arg line="unlock-keychain -p ${keychain.password} ${codesign.keychain}"/>
         </exec>
     </target>
 
