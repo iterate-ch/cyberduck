@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Net;
 using ch.cyberduck.core;
@@ -23,7 +24,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class Proxy : AbstractProxy
     {
-        private readonly IWebProxy _webProxy = WebRequest.DefaultWebProxy;
+        private readonly IWebProxy _webProxy = WebRequest.GetSystemWebProxy();
 
         private Uri GetProxy(string scheme, string hostname)
         {
@@ -93,6 +94,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static void Register()
         {
+            Uri proxy = WebRequest.DefaultWebProxy.GetProxy(new Uri("http://google.com/login"));
+            Console.WriteLine(proxy.ToString());
             ProxyFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
