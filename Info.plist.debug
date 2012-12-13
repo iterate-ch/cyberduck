@@ -100,7 +100,7 @@
         <key>CFBundleExecutable</key>
         <string>Cyberduck</string>
         <key>CFBundleIconFile</key>
-        <string>cyberduck-application.tiff</string>
+        <string>cyberduck-application.icns</string>
         <key>CFBundleIdentifier</key>
         <string>ch.sudo.cyberduck</string>
         <key>CFBundleInfoDictionaryVersion</key>
