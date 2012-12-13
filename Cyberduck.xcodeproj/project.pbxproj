@@ -212,11 +212,11 @@
 		47993F7811699F12000271A8 /* Transfer.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47993F5711699F12000271A8 /* Transfer.strings */; };
 		47993F7C11699F40000271A8 /* Transfer.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47993F7B11699F40000271A8 /* Transfer.nib */; };
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
+		47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A082B0167A169D004458C7 /* cyberduck-application.icns */; };
 		47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A88FB90B931D9C00DB9D87 /* Configuration.strings */; };
 		47AA19690AF09F810059C736 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AA19670AF09F810059C736 /* Error.strings */; };
 		47AE2FDA1630470D0091E874 /* LaunchServicesApplicationFinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 47AE2FD81630470D0091E874 /* LaunchServicesApplicationFinder.h */; };
 		47AE2FDB1630470D0091E874 /* LaunchServicesApplicationFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AE2FD91630470D0091E874 /* LaunchServicesApplicationFinder.m */; };
-		47B3318316680F4000C9FFA0 /* cyberduck-application.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B3318216680F4000C9FFA0 /* cyberduck-application.tiff */; };
 		47B3318516680FB400C9FFA0 /* cyberduck-document.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B3318416680FB400C9FFA0 /* cyberduck-document.tiff */; };
 		47B3318A16680FEA00C9FFA0 /* cf.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B3318916680FEA00C9FFA0 /* cf.tiff */; };
 		47B3318C16680FF100C9FFA0 /* ftp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B3318B16680FF100C9FFA0 /* ftp.tiff */; };
@@ -1132,6 +1132,7 @@
 		47993F7B11699F40000271A8 /* Transfer.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Transfer.nib; path = resources/Transfer.nib; sourceTree = "<group>"; };
 		479982AF05F54B1600F81519 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
+		47A082B0167A169D004458C7 /* cyberduck-application.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "cyberduck-application.icns"; sourceTree = "<group>"; };
 		47A88FBA0B931D9C00DB9D87 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Configuration.strings; sourceTree = "<group>"; };
 		47A88FC30B931E6800DB9D87 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = cs.lproj/Configuration.strings; sourceTree = "<group>"; };
 		47A88FC40B931E6800DB9D87 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = ca.lproj/Configuration.strings; sourceTree = "<group>"; };
@@ -1194,7 +1195,6 @@
 		47AC356E0DA1025000CC1426 /* CTGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTGradientView.m; sourceTree = "<group>"; };
 		47AE2FD81630470D0091E874 /* LaunchServicesApplicationFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesApplicationFinder.h; sourceTree = "<group>"; };
 		47AE2FD91630470D0091E874 /* LaunchServicesApplicationFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesApplicationFinder.m; sourceTree = "<group>"; };
-		47B3318216680F4000C9FFA0 /* cyberduck-application.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "cyberduck-application.tiff"; sourceTree = "<group>"; };
 		47B3318416680FB400C9FFA0 /* cyberduck-document.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "cyberduck-document.tiff"; sourceTree = "<group>"; };
 		47B3318916680FEA00C9FFA0 /* cf.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = cf.tiff; sourceTree = "<group>"; };
 		47B3318B16680FF100C9FFA0 /* ftp.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ftp.tiff; sourceTree = "<group>"; };
@@ -1856,6 +1856,8 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				47A082B0167A169D004458C7 /* cyberduck-application.icns */,
+				47B3318416680FB400C9FFA0 /* cyberduck-document.tiff */,
 				47BCF18D13BB4EC700D26E4C /* container-migration.plist */,
 				478F0DF312FB03DC000FE33C /* update.pem */,
 				470C646C1328CBF300146FB6 /* bookmarks */,
@@ -1889,8 +1891,6 @@
 				47CD045C12DB5F4500694306 /* Goto.strings */,
 				47CD047F12DB5F5200694306 /* Duplicate.strings */,
 				474163AF06C4F64100AC0BD2 /* License.txt */,
-				47B3318216680F4000C9FFA0 /* cyberduck-application.tiff */,
-				47B3318416680FB400C9FFA0 /* cyberduck-document.tiff */,
 				474166A406C6555E00AC0BD2 /* InfoPlist.strings */,
 				474B5BA20AEFB7F5009FD459 /* Alert.nib */,
 				4716C5EF0872BA9800938886 /* Command.nib */,
@@ -2789,13 +2789,13 @@
 				4767310416108E1300B28D35 /* unlocked.tiff in Resources */,
 				4767310516108E1300B28D35 /* update.tiff in Resources */,
 				4767310616108E1300B28D35 /* upload.tiff in Resources */,
-				47B3318316680F4000C9FFA0 /* cyberduck-application.tiff in Resources */,
 				47B3318516680FB400C9FFA0 /* cyberduck-document.tiff in Resources */,
 				47B3318A16680FEA00C9FFA0 /* cf.tiff in Resources */,
 				47B3318C16680FF100C9FFA0 /* ftp.tiff in Resources */,
 				47B3318E1668100700C9FFA0 /* googledrive.tiff in Resources */,
 				47B331931668102400C9FFA0 /* s3.tiff in Resources */,
 				47B331941668102400C9FFA0 /* swift.tiff in Resources */,
+				47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
