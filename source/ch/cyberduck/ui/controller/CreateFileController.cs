@@ -69,7 +69,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                if(file.touch()) {
+                if(_file.touch()) {
                     _file.touch();
                     if (_edit)
                     {
