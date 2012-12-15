@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.io.StringReader;
 
+import ch.ethz.ssh2.crypto.PEMDecryptException;
+
 public class PuTTYKeyTest {
 
     final static String ppk2048 = "PuTTY-User-Key-File-2: ssh-rsa\n" +
@@ -80,6 +82,25 @@ public class PuTTYKeyTest {
             "z15x\n" +
             "Private-MAC: a11331fa8b59cfb2be1c8e9f67ead34ac848d514\n";
 
+    final static String ppk1024_passphrase = "PuTTY-User-Key-File-2: ssh-rsa\n" +
+            "Encryption: aes256-cbc\n" +
+            "Comment: rsa-key-20121215\n" +
+            "Public-Lines: 4\n" +
+            "AAAAB3NzaC1yc2EAAAABJQAAAIB7KdUyuvGb2ne9G9YDAjaYvX/Mq6Q6ppGjbEQo\n" +
+            "bac66VUazxVpZsnAWikcdYAU7odkyt3jg7Nn1NgQS1a5mpXk/j77Ss5C9W4rymrU\n" +
+            "p32cmbgB/KIV80DnOyZyOtDWDPM0M0RRXqQvAO6TsnmsNSnBa8puMLHqCtrhvvJD\n" +
+            "KU+XEw==\n" +
+            "Private-Lines: 8\n" +
+            "4YMkPgLQJ9hOI1L1HsdOUnYi57tDy5h9DoPTHD55fhEYsn53h4WaHpxuZH8dTpbC\n" +
+            "5TcV3vYTfhh+aFBY0p/FI8L1hKfABLRxhkqkkc7xMmOGlA6HejAc8oTA3VArgSeG\n" +
+            "tRBuQRmBAC1Edtek/U+s8HzI2whzTw8tZoUUnT6844oc4tyCpWJUy5T8l+O3/03s\n" +
+            "SceJ98DN2k+L358VY8AXgPxP6NJvHvIlwmIo+PtcMWsyZegfSHEnoXN2GN4N0ul6\n" +
+            "298RzA9R+I3GSKKxsxUvWfOVibLq0dDM3+CTwcbmo4qvyM2xrRRLhObB2rVW07gL\n" +
+            "7+FZpHxf44QoQQ8mVkDJNaT1faF+h/8tCp2j1Cj5yEPHMOHGTVMyaz7gqhoMw5RX\n" +
+            "sfSP4ZaCGinLbouPrZN9Ue3ytwdEpmqU2MelmcZdcH6kWbLCqpWBswsxPfuhFdNt\n" +
+            "oYhmT2+0DKBuBVCAM4qRdA==\n" +
+            "Private-MAC: 40ccc8b9a7291ec64e5be0c99badbc8a012bf220\n";
+
     @Test
     public void test2048() throws Exception {
         PuTTYKey key = new PuTTYKey(new StringReader(ppk2048));
@@ -90,5 +111,19 @@ public class PuTTYKeyTest {
     public void test4096() throws Exception {
         PuTTYKey key = new PuTTYKey(new StringReader(ppk4096));
         key.toOpenSSH(null);
+    }
+
+    @Test
+    public void testCorrectPassphrase() throws Exception {
+        PuTTYKey key = new PuTTYKey(new StringReader(ppk1024_passphrase));
+        // correct passphrase
+        key.toOpenSSH("123456");
+    }
+
+    @Test(expected = PEMDecryptException.class)
+    public void testWrongPassphrase() throws Exception {
+        PuTTYKey key = new PuTTYKey(new StringReader(ppk1024_passphrase));
+        // wrong passphrase
+        key.toOpenSSH("egfsdgdfgsdfsdfasfs523534dgdsgdfa");
     }
 }
