@@ -107,7 +107,6 @@ public abstract class Local extends AbstractPath {
             final File file = new File(path);
             if(!file.getParentFile().mkdirs()) {
                 log.debug(String.format("Create directory %s failed", path));
-                return false;
             }
             if(!file.createNewFile()) {
                 log.warn(String.format("Create file %s failed", path));
