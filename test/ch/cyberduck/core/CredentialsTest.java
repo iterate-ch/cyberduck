@@ -24,7 +24,7 @@ public class CredentialsTest extends AbstractTestCase {
         c.setIdentity(LocalFactory.createLocal("~/.ssh/unknown.rsa"));
         assertFalse(c.isPublicKeyAuthentication());
         final Local t = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), "id_rsa");
-        t.touch();
+        assertTrue(t.touch());
         c.setIdentity(t);
         assertTrue(c.isPublicKeyAuthentication());
         t.delete();
