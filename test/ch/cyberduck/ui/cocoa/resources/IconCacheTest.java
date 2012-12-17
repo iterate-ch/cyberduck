@@ -129,7 +129,7 @@ public class IconCacheTest extends AbstractTestCase {
         final NullLocal f = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
         NSImage icon = IconCache.instance().iconForPath(f);
         assertNull(icon);
-        f.touch();
+        assertTrue(f.touch());
         icon = IconCache.instance().iconForPath(f);
         assertNotNull(icon);
         assertTrue(icon.isValid());
