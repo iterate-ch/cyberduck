@@ -42,9 +42,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private LoginController(WindowController c)
         {
-            _view = ObjectFactory.GetInstance<ILoginView>();
             _browser = c;
-            InitEventHandlers();
         }
 
         public ILoginView View
@@ -110,9 +108,9 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Utils.IsNotBlank(_credentials.getUsername()))
             {
                 String password = KeychainFactory.get().getPassword(_protocol.getScheme(),
-                                                                         _protocol.getDefaultPort(),
-                                                                         _protocol.getDefaultHostname(),
-                                                                         _credentials.getUsername());
+                                                                    _protocol.getDefaultPort(),
+                                                                    _protocol.getDefaultHostname(),
+                                                                    _credentials.getUsername());
                 if (Utils.IsNotBlank(password))
                 {
                     _view.Password = password;
@@ -169,6 +167,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                     String title, String reason,
                                     bool enableKeychain, bool enablePublicKey, bool enableAnonymous)
         {
+            _view = ObjectFactory.GetInstance<ILoginView>();
+            InitEventHandlers();
+
             _protocol = protocol;
             _credentials = credentials;
             _enableKeychain = enableKeychain;
