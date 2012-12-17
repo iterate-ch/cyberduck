@@ -28,7 +28,7 @@ using X509Certificate = java.security.cert.X509Certificate;
 
 namespace Ch.Cyberduck.Core.Ssl
 {
-    internal class HostnameVerifier
+    public class HostnameVerifier
     {
         private static readonly Logger Log = Logger.getLogger(typeof (HostnameVerifier).FullName);
 
@@ -146,7 +146,7 @@ namespace Ch.Cyberduck.Core.Ssl
             return null;
         }
 
-        private static bool Match(string hostname, string pattern)
+        public static bool Match(string hostname, string pattern)
         {
             // check if this is a pattern
             int index = pattern.IndexOf('*');

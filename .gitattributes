@@ -2948,6 +2948,7 @@ test/ch/cyberduck/core/local/LocalImplTest.cs -text svneol=unset#application/oct
 test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck -text
 test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile -text
 test/ch/cyberduck/core/sftp/openssh/config -text
+test/ch/cyberduck/core/ssl/HostnameVerifierTest.cs -text
 test/ch/cyberduck/core/ssl/\*.cyberduck.ch[!!-~](OXxlRDVcWqdPEvFm).cer -text
 test/ch/cyberduck/ui/controller/PersistentFormHandlerTest.cs -text
 test/org/kohsuke/putty/PuTTYKeyTest.java -text

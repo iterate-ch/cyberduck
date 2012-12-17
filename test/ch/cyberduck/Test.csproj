@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="core\local\LocalImplTest.cs" />
+    <Compile Include="core\ssl\HostnameVerifierTest.cs" />
     <Compile Include="ui\controller\PersistentFormHandlerTest.cs" />
   </ItemGroup>
   <ItemGroup>
