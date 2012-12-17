@@ -30,16 +30,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSControl;
-import ch.cyberduck.ui.cocoa.application.NSImageView;
-import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
-import ch.cyberduck.ui.cocoa.application.NSPanel;
-import ch.cyberduck.ui.cocoa.application.NSSecureTextField;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
@@ -125,7 +116,7 @@ public final class PromptLoginController extends AbstractLoginController {
                        final String title, final String reason,
                        final boolean enableKeychain, final boolean enablePublicKey,
                        final boolean enableAnonymous) throws LoginCanceledException {
-        SheetController c = new SheetController(parent) {
+        final SheetController c = new SheetController(parent) {
             @Override
             protected String getBundleName() {
                 return "Login";
