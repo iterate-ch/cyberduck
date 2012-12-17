@@ -22,7 +22,7 @@
                     <string>duck</string>
                 </array>
                 <key>CFBundleTypeIconFile</key>
-                <string>cyberduck-document.tiff</string>
+                <string>cyberduck-document.icns</string>
                 <key>CFBundleTypeName</key>
                 <string>Cyberduck Bookmark</string>
                 <key>CFBundleTypeRole</key>
@@ -42,7 +42,7 @@
                     <string>cyberducklicense</string>
                 </array>
                 <key>CFBundleTypeIconFile</key>
-                <string>cyberduck-document.tiff</string>
+                <string>cyberduck-document.icns</string>
                 <key>CFBundleTypeName</key>
                 <string>Cyberduck Donation Key</string>
                 <key>CFBundleTypeRole</key>
@@ -62,7 +62,7 @@
                     <string>cyberduckreceipt</string>
                 </array>
                 <key>CFBundleTypeIconFile</key>
-                <string>cyberduck-document.tiff</string>
+                <string>cyberduck-document.icns</string>
                 <key>CFBundleTypeName</key>
                 <string>Cyberduck Receipt</string>
                 <key>CFBundleTypeRole</key>
@@ -82,7 +82,7 @@
                     <string>cyberduckprofile</string>
                 </array>
                 <key>CFBundleTypeIconFile</key>
-                <string>cyberduck-document.tiff</string>
+                <string>cyberduck-document.icns</string>
                 <key>CFBundleTypeName</key>
                 <string>Cyberduck Connection Profile</string>
                 <key>CFBundleTypeRole</key>
@@ -265,7 +265,7 @@
                     </array>
                 </dict>
                 <key>UTTypeIconFile</key>
-                <string>cyberduck-document.tiff</string>
+                <string>cyberduck-document.icns</string>
             </dict>
             <dict>
                 <key>UTTypeConformsTo</key>
@@ -284,7 +284,7 @@
                     </array>
                 </dict>
                 <key>UTTypeIconFile</key>
-                <string>cyberduck-document.tiff</string>
+                <string>cyberduck-document.icns</string>
             </dict>
             <dict>
                 <key>UTTypeConformsTo</key>
@@ -303,7 +303,7 @@
                     </array>
                 </dict>
                 <key>UTTypeIconFile</key>
-                <string>cyberduck-document.tiff</string>
+                <string>cyberduck-document.icns</string>
             </dict>
             <dict>
                 <key>UTTypeConformsTo</key>
@@ -322,7 +322,7 @@
                     </array>
                 </dict>
                 <key>UTTypeIconFile</key>
-                <string>cyberduck-document.tiff</string>
+                <string>cyberduck-document.icns</string>
             </dict>
         </array>
         <key>LSMinimumSystemVersion</key>
