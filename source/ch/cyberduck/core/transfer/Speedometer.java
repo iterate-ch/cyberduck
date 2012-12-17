@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.date.PeriodFormatter;
 import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.formatter.SizeFormatter;
@@ -51,11 +50,6 @@ public class Speedometer {
     private long last = 0L;
 
     /**
-     * Show overall transfer speed or per interval
-     */
-    private boolean overall = Preferences.instance().getBoolean("speedometer.overall");
-
-    /**
      * Formatter for remaining time
      */
     private PeriodFormatter periodFormatter = new RemainingPeriodFormatter();
@@ -71,9 +65,7 @@ public class Speedometer {
             final long differential = transferred - last;
             // Remember for next iteration
             last = transferred;
-            if(!overall) {
-                timestamp = System.currentTimeMillis();
-            }
+            timestamp = System.currentTimeMillis();
             // The throughput is usually measured in bits per second
             return (double) differential / elapsed;
         }
