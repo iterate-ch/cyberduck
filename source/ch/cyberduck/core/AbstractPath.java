@@ -50,13 +50,12 @@ public abstract class AbstractPath {
      */
     public String unique() {
         final StringBuilder reference = new StringBuilder(this.getAbsolute());
-        final Attributes attributes = this.attributes();
-        if(attributes.isDuplicate()) {
-            if(StringUtils.isNotBlank(attributes.getVersionId())) {
-                reference.append("-").append(attributes.getVersionId());
+        if(this.attributes().isDuplicate()) {
+            if(StringUtils.isNotBlank(this.attributes().getVersionId())) {
+                reference.append("-").append(this.attributes().getVersionId());
             }
-            else if(StringUtils.isNotBlank(attributes.getChecksum())) {
-                reference.append("-").append(attributes.getChecksum());
+            else if(StringUtils.isNotBlank(this.attributes().getChecksum())) {
+                reference.append("-").append(this.attributes().getChecksum());
             }
         }
         return reference.toString();
