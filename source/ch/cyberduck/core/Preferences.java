@@ -645,11 +645,82 @@ public abstract class Preferences {
 
         defaults.put("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
 
-        //todo add container to policy
         defaults.put("analytics.provider.qloudstat.iam.policy.s3",
-                "{\"Statement\": [{\"Action\": [\"s3:Get*\",\"s3:List*\"],\"Effect\": \"Allow\",\"Resource\": \"arn:aws:s3:::%s/*\"}]}");
+                "{\n" +
+                        "    \"Statement\": [\n" +
+                        "        {\n" +
+                        "            \"Action\": [\n" +
+                        "                \"s3:GetObject\", \n" +
+                        "                \"s3:ListBucket\"\n" +
+                        "            ], \n" +
+                        "            \"Condition\": {\n" +
+                        "                \"Bool\": {\n" +
+                        "                    \"aws:SecureTransport\": \"true\"\n" +
+                        "                }\n" +
+                        "            }, \n" +
+                        "            \"Effect\": \"Allow\", \n" +
+                        "            \"Resource\": \"arn:aws:s3:::%s/*\"\n" +
+                        "        }, \n" +
+                        "        {\n" +
+                        "            \"Action\": [\n" +
+                        "                \"s3:ListAllMyBuckets\", \n" +
+                        "                \"s3:GetBucketLogging\", \n" +
+                        "                \"s3:GetBucketLocation\"\n" +
+                        "            ], \n" +
+                        "            \"Condition\": {\n" +
+                        "                \"Bool\": {\n" +
+                        "                    \"aws:SecureTransport\": \"true\"\n" +
+                        "                }\n" +
+                        "            }, \n" +
+                        "            \"Effect\": \"Allow\", \n" +
+                        "            \"Resource\": \"arn:aws:s3:::*\"\n" +
+                        "        }\n" +
+                        "    ]\n" +
+                        "}\n");
         defaults.put("analytics.provider.qloudstat.iam.policy.cloudfront",
-                "{\"Statement\": [{\"Action\": [\"s3:Get*\",\"s3:List*\"],\"Effect\": \"Allow\",\"Resource\": \"arn:aws:s3:::%s/*\"},{\"Action\": [\"cloudfront:Get*\",\"cloudfront:List*\"],\"Effect\": \"Allow\",\"Resource\": \"*\"}]}");
+                "{\n" +
+                        "    \"Statement\": [\n" +
+                        "        {\n" +
+                        "            \"Action\": [\n" +
+                        "                \"s3:GetObject\", \n" +
+                        "                \"s3:ListBucket\"\n" +
+                        "            ], \n" +
+                        "            \"Condition\": {\n" +
+                        "                \"Bool\": {\n" +
+                        "                    \"aws:SecureTransport\": \"true\"\n" +
+                        "                }\n" +
+                        "            }, \n" +
+                        "            \"Effect\": \"Allow\", \n" +
+                        "            \"Resource\": \"arn:aws:s3:::%s/*\"\n" +
+                        "        }, \n" +
+                        "        {\n" +
+                        "            \"Action\": [\n" +
+                        "                \"s3:ListAllMyBuckets\", \n" +
+                        "                \"s3:GetBucketLogging\", \n" +
+                        "                \"s3:GetBucketLocation\"\n" +
+                        "            ], \n" +
+                        "            \"Effect\": \"Allow\", \n" +
+                        "            \"Resource\": \"arn:aws:s3:::*\"\n" +
+                        "        }, \n" +
+                        "        {\n" +
+                        "            \"Action\": [\n" +
+                        "                \"cloudfront:GetDistribution\", \n" +
+                        "                \"cloudfront:GetDistributionConfig\", \n" +
+                        "                \"cloudfront:ListDistributions\", \n" +
+                        "                \"cloudfront:GetStreamingDistribution\", \n" +
+                        "                \"cloudfront:GetStreamingDistributionConfig\", \n" +
+                        "                \"cloudfront:ListStreamingDistributions\"\n" +
+                        "            ], \n" +
+                        "            \"Condition\": {\n" +
+                        "                \"Bool\": {\n" +
+                        "                    \"aws:SecureTransport\": \"true\"\n" +
+                        "                }\n" +
+                        "            }, \n" +
+                        "            \"Effect\": \"Allow\", \n" +
+                        "            \"Resource\": \"*\"\n" +
+                        "        }\n" +
+                        "    ]\n" +
+                        "}\n");
 
         /**
          * Maximum concurrent connections to the same host
