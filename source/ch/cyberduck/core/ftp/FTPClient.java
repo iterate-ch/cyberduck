@@ -53,7 +53,7 @@ public class FTPClient extends FTPSClient {
 
     private SSLSocketFactory sslSocketFactory;
 
-    public FTPClient(SSLSocketFactory f, SSLContext c) {
+    public FTPClient(final SSLSocketFactory f, final SSLContext c) {
         super(false, c);
         this.sslSocketFactory = f;
     }
@@ -118,11 +118,11 @@ public class FTPClient extends FTPSClient {
     }
 
     @Override
-    public int sendCommand(int command, String args) throws IOException {
+    public int sendCommand(final int command, final String args) throws IOException {
         return super.sendCommand(this.getCommand(command), args);
     }
 
-    protected String getCommand(int command) {
+    protected String getCommand(final int command) {
         String value = commands.get(command);
         if(null == value) {
             return FTPCommand.getCommand(command);
@@ -131,7 +131,7 @@ public class FTPClient extends FTPSClient {
     }
 
     @Override
-    protected Socket _openDataConnection_(int command, String arg) throws IOException {
+    protected Socket _openDataConnection_(final int command, final String arg) throws IOException {
         Socket socket = super._openDataConnection_(command, arg);
         if(null == socket) {
             throw new FTPException(this.getReplyString());
@@ -145,7 +145,7 @@ public class FTPClient extends FTPSClient {
     private List<String> versions = Collections.emptyList();
 
     @Override
-    public void setEnabledProtocols(String[] protocols) {
+    public void setEnabledProtocols(final String[] protocols) {
         versions = Arrays.asList(protocols);
         super.setEnabledProtocols(protocols);
     }
@@ -164,7 +164,7 @@ public class FTPClient extends FTPSClient {
         try {
             super.execPROT(prot);
             if("P".equals(prot)) {
-                setSocketFactory(sslSocketFactory);
+                this.setSocketFactory(sslSocketFactory);
             }
         }
         catch(SSLException e) {
@@ -186,11 +186,11 @@ public class FTPClient extends FTPSClient {
         super.sslNegotiation();
     }
 
-    public List<String> list(int command) throws IOException {
+    public List<String> list(final int command) throws IOException {
         return this.list(command, null);
     }
 
-    public List<String> list(int command, String pathname) throws IOException {
+    public List<String> list(final int command, final String pathname) throws IOException {
         this.pret(this.getCommand(command), pathname);
 
         Socket socket = _openDataConnection_(command, pathname);
@@ -256,7 +256,7 @@ public class FTPClient extends FTPSClient {
      * @param file    Remote file
      * @throws IOException I/O failure
      */
-    protected void pret(String command, String file) throws IOException {
+    protected void pret(final String command, final String file) throws IOException {
         if(this.isFeatureSupported(PRET)) {
             // PRET support
             if(!FTPReply.isPositiveCompletion(this.sendCommand(PRET, command + " " + file))) {
@@ -265,7 +265,7 @@ public class FTPClient extends FTPSClient {
         }
     }
 
-    public long size(String pathname) throws IOException {
+    public long size(final String pathname) throws IOException {
         if(this.isFeatureSupported(SIZE)) {
             if(!this.setFileType(FTPClient.BINARY_FILE_TYPE)) {
                 throw new FTPException(this.getReplyString());
@@ -289,7 +289,7 @@ public class FTPClient extends FTPSClient {
     }
 
     @Override
-    public String getModificationTime(String file) throws IOException {
+    public String getModificationTime(final String file) throws IOException {
         final String status = super.getModificationTime(file);
         if(null == status) {
             return null;
