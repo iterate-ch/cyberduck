@@ -1032,7 +1032,7 @@ public class S3Session extends CloudSession {
                 // Disable website configuration if bucket name is not DNS compatible
                 return super.getMethods(container);
             }
-            return Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN, Distribution.DOWNLOAD, Distribution.STREAMING);
+            return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING, Distribution.WEBSITE, Distribution.WEBSITE_CDN);
         }
 
         @Override
