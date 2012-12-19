@@ -498,8 +498,9 @@ public abstract class Preferences {
          * connection is attached.
          */
         defaults.put("ftp.datachannel.verify", String.valueOf(false));
-
         defaults.put("ftp.command.feat", String.valueOf(true));
+        defaults.put("ftp.socket.buffer", String.valueOf(8192));
+
         /**
          * Send LIST -a
          */
