@@ -245,8 +245,17 @@ public abstract class Archive {
      * @param path Filename
      * @return Escaped whitespace in path
      */
-    private String escape(String path) {
-        return StringUtils.replace(path, " ", "\\ ");
+    protected String escape(final String path) {
+        final StringBuilder escaped = new StringBuilder();
+        for(char c : path.toCharArray()) {
+            if(StringUtils.isAlphanumeric(String.valueOf(c))) {
+                escaped.append(c);
+            }
+            else {
+                escaped.append("\\").append(c);
+            }
+        }
+        return escaped.toString();
     }
 
     /**
