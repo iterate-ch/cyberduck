@@ -96,6 +96,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\build\core.dll</HintPath>
     </Reference>
+    <Reference Include="CustomOpenFileFolderDialog">
+      <HintPath>..\..\..\lib\CustomOpenFileFolderDialog.dll</HintPath>
+    </Reference>
     <Reference Include="ExceptionReporter.WinForms">
       <HintPath>..\..\..\lib\ExceptionReporter.WinForms.dll</HintPath>
     </Reference>
@@ -610,12 +613,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="ui\winforms\commondialog\CustomOpenFileFolderDialog.csproj">
-      <Project>{4B3467EF-CAB0-4500-B1ED-979FAE9B9C77}</Project>
-      <Name>CustomOpenFileFolderDialog</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

@@ -1818,6 +1818,7 @@ lib/1.7.0-u12-b02.jre/Contents/MacOS/libjli.dylib -text
 lib/ActiveButtons.dll -text
 lib/ActiveButtons.pdb -text
 lib/AutomaticUpdater.dll -text
+lib/CustomOpenFileFolderDialog.dll -text
 lib/ExceptionReporter.WinForms.dll -text
 lib/ExceptionReporter.WinForms.xml -text
 lib/Growl.Connector.dll -text
