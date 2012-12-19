@@ -92,14 +92,14 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @param socket    Socket to configure
      * @param protocols Enabled SSL protocol versions
      */
-    private void configure(Socket socket, String[] protocols) {
+    private void configure(final Socket socket, final String[] protocols) {
         if(socket instanceof SSLSocket) {
             try {
                 log.debug("Configure SSL parameters with protocol:" + Arrays.toString(protocols));
                 ((SSLSocket) socket).setEnabledProtocols(protocols);
             }
             catch(Exception e) {
-                log.warn(String.format("Failed to configure SSL parameters:%s", e.getMessage()));
+                log.warn(String.format("Failed to configure SSL parameters %s", e.getMessage()));
             }
         }
     }
@@ -112,7 +112,9 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private Socket handshake(SocketGetter f) throws IOException {
         Socket socket = f.create();
         this.configure(socket, ENABLED_SSL_PROTOCOLS.<String>toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
-        log.debug("handhsake:" + socket);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Handshake for socket %s", socket));
+        }
         return socket;
     }
 
