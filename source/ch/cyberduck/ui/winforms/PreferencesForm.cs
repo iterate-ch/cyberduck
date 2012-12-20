@@ -53,9 +53,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             MaximumSize = new Size(MaxWidth, MaxHeight);
             MinimumSize = new Size(MinWidth, MinHeight);
 
-            sftpButton.Image = IconCache.Instance.IconForName("sftp", 32);
+            sftpButton.Image = IconCache.Instance.IconForName("ftp", 32);
             s3Button.Image = IconCache.Instance.IconForName("s3", 32);
-            googleDocsButton.Image = IconCache.Instance.IconForName("google", 32);
+            googleDocsButton.Image = IconCache.Instance.IconForName("googledrive", 32);
 
             connectBookmarkCombobox.ICImageList = IconCache.Instance.GetProtocolIcons();
             defaultProtocolCombobox.ICImageList = IconCache.Instance.GetProtocolIcons();
