@@ -59,7 +59,7 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setEnabled(true);
-            item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
+            item.setImage(IconCache.iconNamed(String.format("%s.tiff", h.getProtocol().icon()), 16));
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
         }

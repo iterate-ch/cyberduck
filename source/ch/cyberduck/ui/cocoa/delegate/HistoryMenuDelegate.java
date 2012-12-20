@@ -103,7 +103,7 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
                 item.setRepresentedObject(h.getUuid());
                 item.setTarget(this.id());
                 item.setEnabled(true);
-                item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
+                item.setImage(IconCache.iconNamed(String.format("%s.tiff", h.getProtocol().icon()), 16));
             }
             else {
                 // Dummy menu item with timestamp
