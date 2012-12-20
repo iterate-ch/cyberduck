@@ -1396,7 +1396,7 @@ public class InfoController extends ToolbarWindowController {
             }
             else {
                 // CloudFront is the default for custom distributions
-                item.setImage(IconCache.iconNamed(Protocol.S3_SSL.disk(), 32));
+                item.setImage(IconCache.iconNamed(String.format("%s.tiff", Protocol.S3_SSL.disk()), 32));
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
