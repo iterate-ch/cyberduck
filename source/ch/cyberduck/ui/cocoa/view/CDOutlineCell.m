@@ -50,9 +50,6 @@
     [super dealloc];
 }
 
-NSString *CDOutlineCellFilename = @"FILENAME";
-NSString *CDOutlineCellIcon = @"ICON";
-
 - (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
     if ([controlView isFlipped]) {
