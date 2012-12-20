@@ -166,16 +166,6 @@ public final class Profile extends Protocol implements Serializable {
     }
 
     @Override
-    public String icon() {
-        final String temp = this.write(this.getValue("Icon"));
-        if(StringUtils.isBlank(temp)) {
-            return parent.icon();
-        }
-        // Temporary file
-        return temp;
-    }
-
-    @Override
     public String favicon() {
         return this.icon();
     }

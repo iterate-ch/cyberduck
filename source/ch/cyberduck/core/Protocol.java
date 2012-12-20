@@ -134,7 +134,7 @@ public abstract class Protocol {
      * @return A small icon to display
      */
     public String icon() {
-        return String.format("%s-icon", this.getIdentifier());
+        return this.disk();
     }
 
     /**
@@ -733,11 +733,6 @@ public abstract class Protocol {
         @Override
         public String disk() {
             return "googledrive";
-        }
-
-        @Override
-        public String icon() {
-            return "googledrive-icon";
         }
 
         @Override
