@@ -873,6 +873,7 @@ img/gear@2x.png -text svneol=unset#image/png
 img/general.png -text svneol=unset#image/png
 img/general.tiff -text svneol=unset#image/tiff
 img/general@2x.png -text svneol=unset#image/png
+img/google.tiff -text
 img/googledrive-icon.png -text svneol=unset#image/png
 img/googledrive-icon.tiff -text
 img/googledrive-icon@2x.png -text svneol=unset#image/png
@@ -971,6 +972,7 @@ img/s3.tiff -text
 img/s3@2x.png -text svneol=unset#image/png
 img/search-active.png -text
 img/search-inactive.png -text
+img/sftp.tiff -text
 img/site.png -text svneol=unset#image/png
 img/site.tiff -text
 img/site@2x.png -text svneol=unset#image/png
