@@ -44,18 +44,7 @@ import ch.cyberduck.core.transfer.TransferCollection;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSMenu;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSPasteboard;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
@@ -653,7 +642,7 @@ public class MainController extends BundleController implements NSApplication.De
                 i++;
             }
             bookmarksPopup.addItemWithTitle(title);
-            bookmarksPopup.lastItem().setImage(IconCache.iconNamed(b.getProtocol().icon(), 16));
+            bookmarksPopup.lastItem().setImage(IconCache.iconNamed(String.format("%s.tiff", b.getProtocol().icon()), 16));
             bookmarksPopup.lastItem().setRepresentedObject(b.getUuid());
             if(b.equals(open)) {
                 bookmarksPopup.selectItemAtIndex(bookmarksPopup.indexOfItem(bookmarksPopup.lastItem()));

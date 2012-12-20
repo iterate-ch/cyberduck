@@ -958,7 +958,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_LOG));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_LOG));
             item.setToolTip(Locale.localizedString("Toggle Log Drawer"));
-            item.setImage(IconCache.iconNamed("log"));
+            item.setImage(IconCache.iconNamed("log.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("toggleLogDrawer:"));
             return item;

@@ -38,18 +38,7 @@ import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSText;
-import ch.cyberduck.ui.cocoa.application.NSTextView;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -497,7 +486,7 @@ public final class PreferencesController extends ToolbarWindowController {
                 @Override
                 public void run() {
                     defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
-                    defaultBookmarkCombobox.lastItem().setImage(IconCache.iconNamed("cyberduck-document", 16));
+                    defaultBookmarkCombobox.lastItem().setImage(IconCache.iconNamed("cyberduck-document.icns", 16));
                     defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
                 }
             });
@@ -534,7 +523,7 @@ public final class PreferencesController extends ToolbarWindowController {
         for(Host bookmark : BookmarkCollection.defaultCollection()) {
             this.defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
             this.defaultBookmarkCombobox.lastItem().setImage(
-                    IconCache.iconNamed(bookmark.getProtocol().icon(), 16));
+                    IconCache.iconNamed(String.format("%s.tiff", bookmark.getProtocol().icon()), 16));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
             if(bookmark.getUuid().equals(Preferences.instance().getProperty("browser.defaultBookmark"))) {
                 this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
@@ -1636,7 +1625,7 @@ public final class PreferencesController extends ToolbarWindowController {
         for(Protocol protocol : ProtocolFactory.getKnownProtocols()) {
             final NSMenuItem item = this.protocolCombobox.itemWithTitle(protocol.getDescription());
             item.setRepresentedObject(protocol.getProvider());
-            item.setImage(IconCache.iconNamed(protocol.icon(), 16));
+            item.setImage(IconCache.iconNamed(String.format("%s.tiff", protocol.icon()), 16));
         }
 
         final Protocol defaultProtocol

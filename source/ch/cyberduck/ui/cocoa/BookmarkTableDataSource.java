@@ -18,17 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractHostCollection;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostFilter;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.HostReaderFactory;
@@ -273,7 +263,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         final NSObject cached = cache.get(host, identifier);
         if(null == cached) {
             if(identifier.equals(ICON_COLUMN)) {
-                return IconCache.iconNamed(host.getProtocol().disk(),
+                return IconCache.iconNamed(String.format("%s.tiff", host.getProtocol().disk()),
                         Preferences.instance().getInteger("bookmark.icon.size"));
             }
             if(identifier.equals(BOOKMARK_COLUMN)) {
