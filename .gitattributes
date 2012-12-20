@@ -873,10 +873,6 @@ img/gear@2x.png -text svneol=unset#image/png
 img/general.png -text svneol=unset#image/png
 img/general.tiff -text svneol=unset#image/tiff
 img/general@2x.png -text svneol=unset#image/png
-img/google-icon.png -text svneol=unset#image/png
-img/google-icon.tiff -text
-img/google-icon@2x.png -text svneol=unset#image/png
-img/google.ico -text
 img/googledrive-icon.png -text svneol=unset#image/png
 img/googledrive-icon.tiff -text
 img/googledrive-icon@2x.png -text svneol=unset#image/png
