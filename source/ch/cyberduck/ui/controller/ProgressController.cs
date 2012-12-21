@@ -178,7 +178,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class TransferAdapter : ch.cyberduck.core.transfer.TransferAdapter
         {
             private const long Delay = 0;
-            private const long Period = 200; //in milliseconds
+            private const long Period = 500; //in milliseconds
             private static readonly Logger Log = Logger.getLogger(typeof (TransferAdapter).FullName);
             private readonly ProgressController _controller;
             private readonly IProgressView _view;
