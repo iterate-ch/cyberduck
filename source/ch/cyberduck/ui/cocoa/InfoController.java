@@ -470,7 +470,7 @@ public class InfoController extends ToolbarWindowController {
                     final CloudSession session = (CloudSession) controller.getSession();
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = String.format(Preferences.instance().getProperty(
-                                "analytics.provider.qloudstat.iam.policy.s3"),
+                                "analytics.provider.qloudstat.iam.policy"),
                                 session.getLoggingTarget(getSelected().getContainerName()));
                         session.iam().createUser(session.analytics().getName(), document);
                     }
@@ -2633,7 +2633,7 @@ public class InfoController extends ToolbarWindowController {
                         Distribution distribution = session.cdn().read(
                                 session.cdn().getOrigin(method, container), method);
                         final String document = String.format(Preferences.instance().getProperty(
-                                "analytics.provider.qloudstat.iam.policy.cloudfront"), distribution.getLoggingTarget());
+                                "analytics.provider.qloudstat.iam.policy"), distribution.getLoggingTarget());
                         session.iam().createUser(session.analytics().getName(), document);
                     }
                     else {

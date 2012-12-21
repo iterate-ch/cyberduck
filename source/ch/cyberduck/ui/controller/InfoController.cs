@@ -2153,7 +2153,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Session session = BrowserController.getSession();
                 if (_bucketAnalyticsCheckBox)
                 {
-                    String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy.s3");
+                    String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
                     session.iam().createUser(session.analytics().getName(), document);
                 }
                 else
@@ -2256,7 +2256,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (_distributionAnalyticsCheckBox)
                 {
                     String document =
-                        Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy.cloudfront");
+                        Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
                     session.iam().createUser(session.analytics().getName(), document);
                 }
                 else

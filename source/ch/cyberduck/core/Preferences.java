@@ -644,40 +644,7 @@ public abstract class Preferences {
         defaults.put("webdav.expect-continue", String.valueOf(true));
 
         defaults.put("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
-
-        defaults.put("analytics.provider.qloudstat.iam.policy.s3",
-                "{\n" +
-                        "    \"Statement\": [\n" +
-                        "        {\n" +
-                        "            \"Action\": [\n" +
-                        "                \"s3:GetObject\", \n" +
-                        "                \"s3:ListBucket\"\n" +
-                        "            ], \n" +
-                        "            \"Condition\": {\n" +
-                        "                \"Bool\": {\n" +
-                        "                    \"aws:SecureTransport\": \"true\"\n" +
-                        "                }\n" +
-                        "            }, \n" +
-                        "            \"Effect\": \"Allow\", \n" +
-                        "            \"Resource\": \"arn:aws:s3:::%s/*\"\n" +
-                        "        }, \n" +
-                        "        {\n" +
-                        "            \"Action\": [\n" +
-                        "                \"s3:ListAllMyBuckets\", \n" +
-                        "                \"s3:GetBucketLogging\", \n" +
-                        "                \"s3:GetBucketLocation\"\n" +
-                        "            ], \n" +
-                        "            \"Condition\": {\n" +
-                        "                \"Bool\": {\n" +
-                        "                    \"aws:SecureTransport\": \"true\"\n" +
-                        "                }\n" +
-                        "            }, \n" +
-                        "            \"Effect\": \"Allow\", \n" +
-                        "            \"Resource\": \"arn:aws:s3:::*\"\n" +
-                        "        }\n" +
-                        "    ]\n" +
-                        "}\n");
-        defaults.put("analytics.provider.qloudstat.iam.policy.cloudfront",
+        defaults.put("analytics.provider.qloudstat.iam.policy",
                 "{\n" +
                         "    \"Statement\": [\n" +
                         "        {\n" +
