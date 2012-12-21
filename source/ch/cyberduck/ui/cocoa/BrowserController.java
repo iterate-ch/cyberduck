@@ -46,6 +46,7 @@ import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.PathPasteboard;
+import ch.cyberduck.ui.action.DeleteWorker;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
@@ -60,6 +61,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 import ch.cyberduck.ui.growl.Growl;
@@ -2477,30 +2479,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     private void deletePathsImpl(final List<Path> files) {
-        this.background(new BrowserBackgroundAction(this) {
-            @Override
-            public void run() {
-                for(Path file : files) {
-                    if(this.isCanceled()) {
-                        break;
+        this.background(new WorkerBackgroundAction<Boolean>(this,
+                new DeleteWorker(files) {
+                    @Override
+                    public void cleanup(final Boolean result) {
+                        if(result) {
+                            reloadData(files, false);
+                        }
                     }
-                    file.delete();
-                    if(!isConnected()) {
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"), StringUtils.EMPTY);
-            }
-
-            @Override
-            public void cleanup() {
-                reloadData(files, false);
-            }
-        });
+                })
+        );
     }
 
     /**
