@@ -106,7 +106,7 @@ public class UploadTransfer extends Transfer {
         }
         else if(!this.cache().containsKey(parent.getReference())) {
             if(!parent.getLocal().exists()) {
-                // Cannot fetch file listing of non existant file
+                // Cannot fetch file listing of non existent file
                 this.cache().put(parent.getReference(), AttributedList.<Path>emptyList());
             }
             else {
