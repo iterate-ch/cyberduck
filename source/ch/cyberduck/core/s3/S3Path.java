@@ -1251,11 +1251,11 @@ public class S3Path extends CloudPath {
     @Override
     public void rename(AbstractPath renamed) {
         try {
-            if(attributes().isFile() || attributes().isPlaceholder()) {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
-                        this.getName(), renamed));
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+                    this.getName(), renamed));
 
+            if(attributes().isFile() || attributes().isPlaceholder()) {
                 final StorageObject destination = new StorageObject(((S3Path) renamed).getKey());
                 // Keep same storage class
                 destination.setStorageClass(this.attributes().getStorageClass());
