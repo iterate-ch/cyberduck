@@ -26,8 +26,12 @@ import ch.cyberduck.core.library.Native;
  */
 public final class GrowlNative extends Growl {
 
-    private GrowlNative() {
+    static {
         Native.load("Growl");
+    }
+
+    private GrowlNative() {
+        //
     }
 
     public static void register() {

@@ -44,8 +44,12 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         }
     }
 
-    private SystemConfigurationProxy() {
+    static {
         Native.load("Proxy");
+    }
+
+    private SystemConfigurationProxy() {
+        //
     }
 
     /**

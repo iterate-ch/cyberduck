@@ -45,8 +45,12 @@ public final class Keychain extends AbstractKeychain {
         }
     }
 
-    private Keychain() {
+    static {
         Native.load("Keychain");
+    }
+
+    private Keychain() {
+        //
     }
 
     /**

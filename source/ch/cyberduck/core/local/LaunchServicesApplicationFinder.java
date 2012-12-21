@@ -54,8 +54,12 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
 
     private static final Object workspace = new Object();
 
-    private LaunchServicesApplicationFinder() {
+    static {
         Native.load("LaunchServicesApplicationFinder");
+    }
+
+    private LaunchServicesApplicationFinder() {
+        //
     }
 
     /**

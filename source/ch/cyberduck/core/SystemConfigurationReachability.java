@@ -37,8 +37,12 @@ public final class SystemConfigurationReachability implements Reachability {
         }
     }
 
-    private SystemConfigurationReachability() {
+    static {
         Native.load("Diagnostics");
+    }
+
+    private SystemConfigurationReachability() {
+        //
     }
 
     @Override

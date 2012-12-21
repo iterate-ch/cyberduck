@@ -40,8 +40,12 @@ public final class LaunchServicesFileDescriptor extends AbstractFileDescriptor {
         }
     }
 
-    private LaunchServicesFileDescriptor() {
+    static {
         Native.load("LaunchServicesFileDescriptor");
+    }
+
+    private LaunchServicesFileDescriptor() {
+        //
     }
 
     @Override
