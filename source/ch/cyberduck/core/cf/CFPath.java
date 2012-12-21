@@ -570,8 +570,24 @@ public class CFPath extends CloudPath {
     @Override
     public void rename(final AbstractPath renamed) {
         try {
-            this._copy(renamed, new TransferStatus());
-            this.delete();
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+                    this.getName(), renamed));
+
+            if(this.attributes().isFile()) {
+                this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
+                        ((CFPath) renamed).getContainerName(), ((CFPath) renamed).getKey());
+                this.delete();
+            }
+            else if(this.attributes().isDirectory()) {
+                for(Path i : this.children()) {
+                    if(!this.getSession().isConnected()) {
+                        break;
+                    }
+                    i.rename(new CFPath(this.getSession(), renamed.getAbsolute(),
+                            i.getName(), i.attributes().getType()));
+                }
+            }
         }
         catch(HttpException e) {
             this.error("Cannot rename {0}", e);
@@ -586,7 +602,15 @@ public class CFPath extends CloudPath {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
-                this._copy(copy, status);
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                        this.getName(), copy));
+
+                if(this.attributes().isFile()) {
+                    this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
+                            ((CFPath) copy).getContainerName(), ((CFPath) copy).getKey());
+                    status.setComplete();
+                }
             }
             catch(HttpException e) {
                 this.error("Cannot copy {0}", e);
@@ -599,31 +623,6 @@ public class CFPath extends CloudPath {
             // Copy to different host
             super.copy(copy, throttle, listener, status);
         }
-    }
-
-    private void _copy(final AbstractPath copy, final TransferStatus status) throws IOException, HttpException {
-        this.getSession().check();
-        this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                this.getName(), copy));
-
-        if(attributes().isVolume()) {
-            throw new IOException("Renaming containers is not supported");
-        }
-        else if(this.attributes().isFile()) {
-            String destination = ((CFPath) copy).getKey();
-            this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
-                    ((CFPath) copy).getContainerName(), destination);
-        }
-        else if(attributes().isDirectory()) {
-            for(Path i : this.children()) {
-                if(!this.getSession().isConnected()) {
-                    break;
-                }
-                i.copy(new CFPath(this.getSession(), copy.getAbsolute(),
-                        i.getName(), i.attributes().getType()), status);
-            }
-        }
-        status.setComplete();
     }
 
     /**
