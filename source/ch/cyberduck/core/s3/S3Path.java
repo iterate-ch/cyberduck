@@ -1169,10 +1169,11 @@ public class S3Path extends CloudPath {
     public void delete() {
         try {
             this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    this.getName()));
+
             final String container = this.getContainerName();
             if(attributes().isFile()) {
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                        this.getName()));
                 this.delete(container, Collections.singletonList(
                         new ObjectKeyAndVersion(this.getKey(), this.attributes().getVersionId())));
             }
@@ -1186,8 +1187,7 @@ public class S3Path extends CloudPath {
                         child.delete();
                     }
                     else {
-                        files.add(new ObjectKeyAndVersion(child.getKey(),
-                                child.attributes().getVersionId()));
+                        files.add(new ObjectKeyAndVersion(child.getKey(), child.attributes().getVersionId()));
                     }
                 }
                 if(!this.isContainer()) {
@@ -1201,13 +1201,9 @@ public class S3Path extends CloudPath {
                             this.attributes().getVersionId()));
                     // AWS does not return 404 for non-existing keys
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                        this.getName()));
-
                 if(!files.isEmpty()) {
                     this.delete(container, files);
                 }
-
                 if(this.isContainer()) {
                     // Finally delete bucket itself
                     this.getSession().getClient().deleteBucket(container);
@@ -1315,6 +1311,7 @@ public class S3Path extends CloudPath {
                     // Copying object applying the metadata of the original
                     this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
                             ((S3Path) copy).getContainerName(), destination, false);
+                    listener.bytesSent(this.attributes().getSize());
                     status.setComplete();
                 }
             }

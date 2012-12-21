@@ -639,30 +639,20 @@ public class FTPPath extends Path {
     public void delete() {
         try {
             this.getSession().check();
-            if(attributes().isFile() || attributes().isSymbolicLink()) {
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                        this.getName()));
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    this.getName()));
 
+            if(attributes().isFile() || attributes().isSymbolicLink()) {
                 if(!this.getSession().getClient().deleteFile(this.getAbsolute())) {
                     throw new FTPException(this.getSession().getClient().getReplyString());
                 }
             }
             else if(attributes().isDirectory()) {
-                for(AbstractPath file : this.children()) {
+                for(AbstractPath child : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
-                    if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
-                        this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                                file.getName()));
-
-                        if(!this.getSession().getClient().deleteFile(file.getAbsolute())) {
-                            throw new FTPException(this.getSession().getClient().getReplyString());
-                        }
-                    }
-                    else if(file.attributes().isDirectory()) {
-                        file.delete();
-                    }
+                    child.delete();
                 }
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));

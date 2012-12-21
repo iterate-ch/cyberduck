@@ -478,11 +478,11 @@ public class CFPath extends CloudPath {
     public void delete() {
         try {
             this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    this.getName()));
+
             final String container = this.getContainerName();
             if(attributes().isFile()) {
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                        this.getName()));
-
                 this.getSession().getClient().deleteObject(container, this.getKey());
             }
             else if(attributes().isDirectory()) {
@@ -492,8 +492,6 @@ public class CFPath extends CloudPath {
                     }
                     i.delete();
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                        this.getName()));
                 if(this.isContainer()) {
                     this.getSession().getClient().deleteContainer(container);
                 }
@@ -502,7 +500,7 @@ public class CFPath extends CloudPath {
                         this.getSession().getClient().deleteObject(container, this.getKey());
                     }
                     catch(FilesNotFoundException e) {
-                        // No real placeholder but just a delmiter returned in the object listing.
+                        // No real placeholder but just a delimiter returned in the object listing.
                         log.warn(e.getMessage());
                     }
                 }
@@ -577,7 +575,7 @@ public class CFPath extends CloudPath {
             if(this.attributes().isFile()) {
                 this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
                         ((CFPath) renamed).getContainerName(), ((CFPath) renamed).getKey());
-                this.delete();
+                this.getSession().getClient().deleteObject(this.getContainerName(), this.getKey());
             }
             else if(this.attributes().isDirectory()) {
                 for(Path i : this.children()) {
@@ -587,7 +585,13 @@ public class CFPath extends CloudPath {
                     i.rename(new CFPath(this.getSession(), renamed.getAbsolute(),
                             i.getName(), i.attributes().getType()));
                 }
-                this.delete();
+                try {
+                    this.getSession().getClient().deleteObject(this.getContainerName(), this.getKey());
+                }
+                catch(FilesNotFoundException e) {
+                    // No real placeholder but just a delimiter returned in the object listing.
+                    log.warn(e.getMessage());
+                }
             }
         }
         catch(HttpException e) {
@@ -610,6 +614,7 @@ public class CFPath extends CloudPath {
                 if(this.attributes().isFile()) {
                     this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
                             ((CFPath) copy).getContainerName(), ((CFPath) copy).getKey());
+                    listener.bytesSent(this.attributes().getSize());
                     status.setComplete();
                 }
             }

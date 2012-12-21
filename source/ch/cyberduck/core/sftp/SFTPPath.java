@@ -151,10 +151,10 @@ public class SFTPPath extends Path {
     public void delete() {
         try {
             this.getSession().check();
-            if(this.attributes().isFile() || this.attributes().isSymbolicLink()) {
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                        this.getName()));
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    this.getName()));
 
+            if(this.attributes().isFile() || this.attributes().isSymbolicLink()) {
                 this.getSession().sftp().rm(this.getAbsolute());
             }
             else if(this.attributes().isDirectory()) {

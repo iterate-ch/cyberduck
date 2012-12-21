@@ -279,6 +279,7 @@ public class DAVPath extends HttpPath {
 
                 if(attributes().isFile()) {
                     this.getSession().getClient().copy(this.toURL(), copy.toURL());
+                    listener.bytesSent(this.attributes().getSize());
                     status.setComplete();
                 }
             }
