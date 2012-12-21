@@ -1,6 +1,5 @@
 package ch.cyberduck.core.transfer.move;
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -39,12 +38,6 @@ public class MoveTransferFilter extends TransferPathFilter {
         final TransferStatus status = new TransferStatus();
         if(source.attributes().isFile()) {
             status.setLength(source.attributes().getSize());
-        }
-        else if(source.attributes().isDirectory()) {
-            final Path destination = files.get(source);
-            if(!destination.exists()) {
-                destination.getSession().cache().put(destination.getReference(), AttributedList.<Path>emptyList());
-            }
         }
         return status;
     }

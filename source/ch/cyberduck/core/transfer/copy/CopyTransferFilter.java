@@ -1,6 +1,5 @@
 package ch.cyberduck.core.transfer.copy;
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -47,11 +46,6 @@ public class CopyTransferFilter extends AbstractUploadFilter {
             final long length = source.attributes().getSize();
             // Download + Upload
             status.setLength(length * 2);
-        }
-        else if(source.attributes().isDirectory()) {
-            if(!destination.exists()) {
-                files.get(source).getSession().cache().put(destination.getReference(), AttributedList.<Path>emptyList());
-            }
         }
         return status;
     }
