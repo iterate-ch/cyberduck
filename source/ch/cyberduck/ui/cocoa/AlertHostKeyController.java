@@ -97,7 +97,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
                 database = new KnownHosts(file.getAbsolute());
             }
             catch(IOException e) {
-                log.error("Cannot read " + file.getAbsolute() + ":" + e.getMessage());
+                log.error(String.format("Cannot read known hosts file %s", file.getAbsolute()), e);
             }
         }
         if(null == database) {

@@ -80,7 +80,7 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
         else if(identifier.equals(BrowserTableDataSource.PERMISSIONS_COLUMN)) {
             return new PermissionsComparator(ascending);
         }
-        log.error("Unknown column identifier:" + identifier);
+        log.error(String.format("Unknown column identifier %s", identifier));
         return new NullComparator<Path>();
     }
 

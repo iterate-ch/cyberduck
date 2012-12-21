@@ -3269,7 +3269,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final String app = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                 Preferences.instance().getProperty("terminal.bundle.identifier"));
         if(StringUtils.isEmpty(app)) {
-            log.error("Application with bundle identifier " + Preferences.instance().getProperty("terminal.bundle.identifier") + " is not installed");
+            log.error(String.format("Application with bundle identifier %s is not installed",
+                    Preferences.instance().getProperty("terminal.bundle.identifier")));
             return;
         }
         String ssh = MessageFormat.format(Preferences.instance().getProperty("terminal.command.ssh"),
@@ -4570,7 +4571,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             String app = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                     Preferences.instance().getProperty("terminal.bundle.identifier"));
             if(StringUtils.isEmpty(app)) {
-                log.error("Application with bundle identifier " + Preferences.instance().getProperty("terminal.bundle.identifier") + " is not installed");
+                log.error(String.format("Application with bundle identifier %s is not installed",
+                        Preferences.instance().getProperty("terminal.bundle.identifier")));
             }
             else {
                 final Local terminal = LocalFactory.createLocal(app);

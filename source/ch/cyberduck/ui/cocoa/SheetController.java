@@ -167,7 +167,7 @@ public abstract class SheetController extends WindowController implements SheetC
                     this.signal.await();
                 }
                 catch(InterruptedException e) {
-                    log.error(String.format("Error waiting for sheet dismiss: %s", e.getMessage()));
+                    log.error("Error waiting for sheet dismiss", e);
                 }
             }
         }
