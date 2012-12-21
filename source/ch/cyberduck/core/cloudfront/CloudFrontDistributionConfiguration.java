@@ -371,7 +371,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             final long reference = System.currentTimeMillis();
             Distribution d = distributionStatus.get(method).get(origin);
             if(null == d) {
-                log.error("No cached distribution for origin:" + origin);
+                log.error(String.format("No cached distribution for origin %s", origin));
                 return;
             }
             List<String> keys = this.getInvalidationKeys(files, recursive);
