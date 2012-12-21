@@ -1255,10 +1255,7 @@ public class S3Path extends CloudPath {
     @Override
     public void rename(AbstractPath renamed) {
         try {
-            if(attributes().isVolume()) {
-                throw new IOException("Renaming buckets is not supported");
-            }
-            else if(attributes().isFile() || attributes().isPlaceholder()) {
+            if(attributes().isFile() || attributes().isPlaceholder()) {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                         this.getName(), renamed));
