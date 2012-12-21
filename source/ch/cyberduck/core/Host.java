@@ -422,7 +422,7 @@ public final class Host implements Serializable {
                         path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
                     }
                     catch(UnsupportedEncodingException e) {
-                        log.error(e.getMessage());
+                        log.error(e.getMessage(), e);
                     }
                 }
                 else {
@@ -442,7 +442,7 @@ public final class Host implements Serializable {
                 path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
             }
             catch(UnsupportedEncodingException e) {
-                log.error(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         }
         final Host h = new Host(protocol, hostname, port, path);
@@ -586,7 +586,7 @@ public final class Host implements Serializable {
      */
     public String getHostname(boolean punycode) {
         if(punycode && Preferences.instance().getBoolean("connection.hostname.idn")) {
-            if(null == this.punycode && StringUtils.isNotEmpty(this.hostname)) {
+            if(null == this.punycode && StringUtils.isNotEmpty(hostname)) {
                 try {
                     // Convenience function that implements the IDNToASCII operation as defined in
                     // the IDNA RFC. This operation is done on complete domain names, e.g: "www.example.com".
@@ -596,14 +596,14 @@ public final class Host implements Serializable {
                     // IDNA.DEFAULT Use default options, i.e., do not process unassigned code points
                     // and do not use STD3 ASCII rules If unassigned code points are found
                     // the operation fails with ParseException
-                    final String idn = IDNA.convertIDNToASCII(this.hostname, IDNA.DEFAULT).toString();
+                    final String idn = IDNA.convertIDNToASCII(hostname, IDNA.DEFAULT).toString();
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("IDN hostname for %s is %s", this.hostname, idn));
+                        log.info(String.format("IDN hostname for %s is %s", hostname, idn));
                     }
                     this.punycode = idn;
                 }
                 catch(StringPrepParseException e) {
-                    log.error(String.format("Cannot convert hostname to IDNA:%s", e.getMessage()));
+                    log.error(String.format("Failed to convert hostname %s to IDNA", hostname), e);
                 }
             }
             if(StringUtils.isNotEmpty(this.punycode)) {

@@ -69,7 +69,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
             }
         }
         catch(DNSSDException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             this.quit();
         }
     }
@@ -98,7 +98,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
             DNSSD.resolve(flags, ifIndex, servicename, regType, domain, this);
         }
         catch(DNSSDException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -114,7 +114,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
             this.remove(identifier);
         }
         catch(DNSSDException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
         }
         finally {
             pool.drain();

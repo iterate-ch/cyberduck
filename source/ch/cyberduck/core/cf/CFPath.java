@@ -182,7 +182,7 @@ public class CFPath extends CloudPath {
                     );
                 }
                 catch(ParseException e) {
-                    log.error(e);
+                    log.error("Failure parsing timestamp", e);
                 }
             }
             catch(HttpException e) {
@@ -342,7 +342,7 @@ public class CFPath extends CloudPath {
                         digest = MessageDigest.getInstance("MD5");
                     }
                     catch(NoSuchAlgorithmException e) {
-                        log.error("MD5 calculation disabled:" + e.getMessage());
+                        log.error("Failure loading MD5 digest", e);
                     }
                 }
                 InputStream in = null;

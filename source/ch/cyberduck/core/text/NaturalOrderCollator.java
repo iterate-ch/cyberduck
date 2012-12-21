@@ -95,7 +95,7 @@ public class NaturalOrderCollator extends Collator implements java.io.Serializab
                 collator = new RuleBasedCollator(rules);
             }
             catch(ParseException e) {
-                log.error("Error configuring collator:" + e.getMessage());
+                log.error("Error configuring collator", e);
             }
         }
     }

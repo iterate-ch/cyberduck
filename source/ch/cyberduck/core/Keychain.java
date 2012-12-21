@@ -92,7 +92,7 @@ public final class Keychain extends AbstractKeychain {
                 encoded[i] = certificates[i].getEncoded();
             }
             catch(CertificateEncodingException c) {
-                log.error("Error getting encoded certificate: " + c.getMessage());
+                log.error("Error getting encoded certificate", c);
             }
         }
         return encoded;
@@ -165,7 +165,7 @@ public final class Keychain extends AbstractKeychain {
             return selected;
         }
         catch(CertificateException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
         }
         return null;
     }

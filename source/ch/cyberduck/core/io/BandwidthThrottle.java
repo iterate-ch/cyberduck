@@ -204,7 +204,7 @@ public final class BandwidthThrottle {
                 Thread.sleep(nextTickTime - now);
             }
             catch(InterruptedException e) {
-                log.error(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         }
     }

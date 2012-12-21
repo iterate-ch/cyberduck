@@ -291,10 +291,10 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     wait.await();
                 }
                 catch(InterruptedException e) {
-                    log.error(e.getMessage());
+                    log.error(e.getMessage(), e);
                 }
                 catch(BrokenBarrierException e) {
-                    log.error(e.getMessage());
+                    log.error(e.getMessage(), e);
                 }
                 return super.cancel();
             }
@@ -304,10 +304,10 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             wait.await();
         }
         catch(InterruptedException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
         }
         catch(BrokenBarrierException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
         }
     }
 

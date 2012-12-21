@@ -205,7 +205,7 @@ public final class Profile extends Protocol implements Serializable {
             return file.getAbsolute();
         }
         catch(IOException e) {
-            log.error("Error writing temporary file:" + e.getMessage());
+            log.error("Error writing temporary file", e);
         }
         return null;
     }

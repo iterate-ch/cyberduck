@@ -183,7 +183,7 @@ public class FTPPath extends Path {
                                         result.add(line.substring(line.indexOf(response) + line.length() + 1).trim());
                                     }
                                     catch(IndexOutOfBoundsException e) {
-                                        log.error("Failed parsing line '" + line + "':" + e.getMessage());
+                                        log.error(String.format("Failed parsing line %s", line), e);
                                     }
                                 }
                                 else {
@@ -358,7 +358,7 @@ public class FTPPath extends Path {
         for(String line : replies) {
             final Map<String, Map<String, String>> file = this.parseFacts(line);
             if(null == file) {
-                log.error("Error parsing line:" + line);
+                log.error(String.format("Error parsing line %s", line));
                 continue;
             }
             for(String name : file.keySet()) {
@@ -376,7 +376,7 @@ public class FTPPath extends Path {
                 // charset    -- Character set per IANA registry (if not UTF-8)
                 for(Map<String, String> facts : file.values()) {
                     if(!facts.containsKey("type")) {
-                        log.error("No type fact:" + line);
+                        log.error(String.format("No type fact in line %s", line));
                         continue;
                     }
                     if("dir".equals(facts.get("type").toLowerCase())) {
@@ -424,7 +424,7 @@ public class FTPPath extends Path {
                             parsed.attributes().setPermission(new Permission(Integer.parseInt(facts.get("unix.mode"))));
                         }
                         catch(NumberFormatException e) {
-                            log.error("Failed to parse fact:" + facts.get("unix.mode"));
+                            log.error(String.format("Failed to parse fact %s", facts.get("unix.mode")));
                         }
                     }
                     if(facts.containsKey("modify")) {
@@ -435,9 +435,8 @@ public class FTPPath extends Path {
                     }
                     if(facts.containsKey("charset")) {
                         if(!facts.get("charset").equalsIgnoreCase(this.getSession().getEncoding())) {
-                            log.error("Incompatible charset " + facts.get("charset")
-                                    + " but session is configured with "
-                                    + this.getSession().getEncoding());
+                            log.error(String.format("Incompatible charset %s but session is configured with %s",
+                                    facts.get("charset"), this.getSession().getEncoding()));
                         }
                     }
                     children.add(parsed);
@@ -606,7 +605,7 @@ public class FTPPath extends Path {
                 log.warn("Failed to parse timestamp:" + f.getMessage());
             }
         }
-        log.error("Failed to parse timestamp:" + timestamp);
+        log.error(String.format("Failed to parse timestamp %s", timestamp));
         return -1;
     }
 

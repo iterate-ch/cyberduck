@@ -61,7 +61,7 @@ public class FileWatcher {
             watchable.register(monitor, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
         }
         catch(IOException e) {
-            log.error(e.getMessage());
+            log.error(String.format("Failure registering file watcher monitor for %s", file), e);
         }
         final AtomicReference<Thread> consumer = new AtomicReference<Thread>(new Thread(new Runnable() {
             public void run() {
@@ -146,7 +146,7 @@ public class FileWatcher {
                 monitor.close();
             }
             catch(IOException e) {
-                log.error(e.getMessage());
+                log.error(String.format("Failure closing file watcher monitor for %s", file), e);
             }
         }
     }

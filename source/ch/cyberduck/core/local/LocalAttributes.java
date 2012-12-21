@@ -145,7 +145,7 @@ public class LocalAttributes extends Attributes {
                 return new MD5ChecksumCompute().compute(new FileInputStream(path));
             }
             catch(FileNotFoundException e) {
-                log.error(String.format("Error computing checksum for path %s:%s", path, e.getMessage()));
+                log.error(String.format("Error computing checksum for path %s", path), e);
                 return null;
             }
         }

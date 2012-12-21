@@ -166,7 +166,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
                         }
                     }
                     catch(URISyntaxException e) {
-                        log.error("Failure parsing URI:" + e.getMessage());
+                        log.error("Failure parsing URI", e);
                     }
                     catch(ConnectionCanceledException e) {
                         log.warn(e.getMessage());

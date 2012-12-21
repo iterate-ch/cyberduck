@@ -925,7 +925,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             return new URI(uri + this.getWebPath(this.getAbsolute())).normalize().toString();
         }
         catch(URISyntaxException e) {
-            log.error("Failure parsing URI:" + e.getMessage());
+            log.error(String.format("Failure parsing URI %s", uri), e);
         }
         return null;
     }

@@ -96,7 +96,7 @@ public class Resolver implements Runnable {
                 this.signal.await();
             }
             catch(InterruptedException e) {
-                log.error(String.format("Error awaiting lock for resolver: %s", e.getMessage()));
+                log.error(String.format("Error awaiting lock for resolver: %s", e.getMessage()), e);
             }
         }
         if(!this.isResolved()) {

@@ -177,13 +177,13 @@ public class GDPath extends Path {
      */
     public String getExportUri() {
         if(StringUtils.isBlank(exportUri)) {
-            log.warn(String.format("Refetching Export URI for %s", this.toString()));
+            log.warn(String.format("Refetching Export URI for %s", this.getAbsolute()));
             AttributedList<Path> l = this.getParent().children();
             if(l.contains(this.getReference())) {
                 exportUri = ((GDPath) l.get(this.getReference())).getExportUri();
             }
             else {
-                log.error("Missing Export URI for " + this.toString());
+                log.error("Missing Export URI for " + this.getAbsolute());
             }
         }
         return exportUri;
@@ -207,7 +207,7 @@ public class GDPath extends Path {
                 resourceId = ((GDPath) l.get(this.getReference())).getResourceId();
             }
             else {
-                log.error("Missing Resource ID for " + this.toString());
+                log.error("Missing Resource ID for " + this.getAbsolute());
             }
         }
         return resourceId;

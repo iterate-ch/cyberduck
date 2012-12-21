@@ -158,7 +158,7 @@ public abstract class Session implements TranscriptListener {
                 throw e;
             }
             catch(SSLHandshakeException e) {
-                log.error(String.format("SSL Handshake failed for host %s: %s", host, e.getMessage()));
+                log.error(String.format("SSL Handshake failed for host %s", host), e);
                 if(e.getCause() instanceof sun.security.validator.ValidatorException) {
                     throw e;
                 }
@@ -803,7 +803,7 @@ public abstract class Session implements TranscriptListener {
                             return new URI(Session.this.getHost().getWebURL()).getHost();
                         }
                         catch(URISyntaxException e) {
-                            log.error("Failure parsing URI:" + e.getMessage());
+                            log.error(String.format("Failure parsing URI %s", Session.this.getHost().getWebURL()), e);
                         }
                     }
                     return super.getOrigin(method, container);

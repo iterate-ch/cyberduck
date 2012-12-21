@@ -253,7 +253,7 @@ public class FTPSession extends SSLSession {
             }
         }
         catch(IOException e) {
-            log.error("IO Error: " + e.getMessage());
+            log.error(String.format("Error closing connection: %s", e.getMessage()));
         }
         finally {
             if(null != client) {
@@ -271,7 +271,7 @@ public class FTPSession extends SSLSession {
             this.getClient().disconnect();
         }
         catch(IOException e) {
-            log.error(e.getMessage());
+            log.error(String.format("Error closing connection: %s", e.getMessage()));
         }
         finally {
             if(null != client) {

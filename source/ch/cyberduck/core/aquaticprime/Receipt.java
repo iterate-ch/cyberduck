@@ -187,7 +187,7 @@ public class Receipt extends AbstractLicense {
                 }
             }
             else {
-                log.error("Expected set of attributes for:" + asn);
+                log.error(String.format("Expected set of attributes for %s", asn));
                 return false;
             }
             if(!StringUtils.equals("ch.sudo.cyberduck", StringUtils.trim(bundleIdentifier))) {
@@ -228,14 +228,13 @@ public class Receipt extends AbstractLicense {
                     this.name = hex;
                 }
                 else {
-                    log.error("Failed verfification. Hash with GUID "
-                            + hex + " does not match hash in receipt");
+                    log.error(String.format("Failed verification. Hash with GUID %s does not match hash in receipt", hex));
                     return false;
                 }
             }
         }
         catch(Exception e) {
-            log.error("Unknown receipt validation error:" + e.getMessage());
+            log.error("Unknown receipt validation error", e);
             // Shutdown if receipt is not valid
             return false;
         }

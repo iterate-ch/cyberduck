@@ -435,7 +435,7 @@ public class Distribution {
             return new URI(url.toString()).normalize().toString();
         }
         catch(URISyntaxException e) {
-            log.error("Failure parsing URI:" + e.getMessage());
+            log.error("Failure parsing URI", e);
         }
         return url.toString();
     }
@@ -508,7 +508,7 @@ public class Distribution {
             return new URI(b.toString()).normalize().toString();
         }
         catch(URISyntaxException e) {
-            log.error("Failure parsing URI:" + e.getMessage());
+            log.error("Failure parsing URI", e);
         }
         return b.toString();
     }
@@ -577,7 +577,7 @@ public class Distribution {
             return new URI(b.toString()).normalize().toString();
         }
         catch(URISyntaxException e) {
-            log.error("Failure parsing URI:" + e.getMessage());
+            log.error("Failure parsing URI", e);
         }
         return b.toString();
     }
