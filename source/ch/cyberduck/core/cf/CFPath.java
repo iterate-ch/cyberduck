@@ -587,6 +587,7 @@ public class CFPath extends CloudPath {
                     i.rename(new CFPath(this.getSession(), renamed.getAbsolute(),
                             i.getName(), i.attributes().getType()));
                 }
+                this.delete();
             }
         }
         catch(HttpException e) {
