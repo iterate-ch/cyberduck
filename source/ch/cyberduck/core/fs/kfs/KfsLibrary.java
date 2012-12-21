@@ -21,6 +21,8 @@ package ch.cyberduck.core.fs.kfs;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
+import java.util.List;
 
 import com.sun.jna.Callback;
 import com.sun.jna.IntegerType;
@@ -1241,11 +1243,11 @@ public interface KfsLibrary extends Library {
 
         public __darwin_pthread_handler_rec() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"__routine", "__arg", "__next"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("__routine", "__arg", "__next");
         }
 
         /**
@@ -1260,7 +1262,6 @@ public interface KfsLibrary extends Library {
             this.__routine = __routine;
             this.__arg = __arg;
             this.__next = __next;
-            initFieldOrder();
         }
 
         public static class ByReference extends __darwin_pthread_handler_rec implements Structure.ByReference {
@@ -1284,11 +1285,11 @@ public interface KfsLibrary extends Library {
 
         public _opaque_pthread_attr_t() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"__sig", "__opaque"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("__sig", "__opaque");
         }
 
         /// @param __opaque C type : char[36]
@@ -1299,7 +1300,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.__opaque = __opaque;
-            initFieldOrder();
         }
 
         public static class ByReference extends _opaque_pthread_attr_t implements Structure.ByReference {
@@ -1323,11 +1323,11 @@ public interface KfsLibrary extends Library {
 
         public _opaque_pthread_cond_t() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"__sig", "__opaque"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("__sig", "__opaque");
         }
 
         /// @param __opaque C type : char[24]
@@ -1338,7 +1338,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.__opaque = __opaque;
-            initFieldOrder();
         }
 
         public static class ByReference extends _opaque_pthread_cond_t implements Structure.ByReference {
@@ -1362,11 +1361,11 @@ public interface KfsLibrary extends Library {
 
         public _opaque_pthread_condattr_t() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"__sig", "__opaque"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("__sig", "__opaque");
         }
 
         /// @param __opaque C type : char[4]
@@ -1377,7 +1376,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.__opaque = __opaque;
-            initFieldOrder();
         }
 
         public static class ByReference extends _opaque_pthread_condattr_t implements Structure.ByReference {
@@ -1401,11 +1399,11 @@ public interface KfsLibrary extends Library {
 
         public _opaque_pthread_mutex_t() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"__sig", "__opaque"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("__sig", "__opaque");
         }
 
         /// @param __opaque C type : char[40]
@@ -1416,7 +1414,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.__opaque = __opaque;
-            initFieldOrder();
         }
 
         public static class ByReference extends _opaque_pthread_mutex_t implements Structure.ByReference {
@@ -1440,11 +1437,11 @@ public interface KfsLibrary extends Library {
 
         public _opaque_pthread_mutexattr_t() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"__sig", "__opaque"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("__sig", "__opaque");
         }
 
         /// @param __opaque C type : char[8]
@@ -1455,7 +1452,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.__opaque = __opaque;
-            initFieldOrder();
         }
 
         public static class ByReference extends _opaque_pthread_mutexattr_t implements Structure.ByReference {
@@ -1479,11 +1475,11 @@ public interface KfsLibrary extends Library {
 
         public _opaque_pthread_once_t() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"__sig", "__opaque"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("__sig", "__opaque");
         }
 
         /// @param __opaque C type : char[4]
@@ -1494,7 +1490,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.__opaque = __opaque;
-            initFieldOrder();
         }
 
         public static class ByReference extends _opaque_pthread_once_t implements Structure.ByReference {
@@ -1518,11 +1513,11 @@ public interface KfsLibrary extends Library {
 
         public _opaque_pthread_rwlock_t() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"__sig", "__opaque"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("__sig", "__opaque");
         }
 
         /// @param __opaque C type : char[124]
@@ -1533,7 +1528,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.__opaque = __opaque;
-            initFieldOrder();
         }
 
         public static class ByReference extends _opaque_pthread_rwlock_t implements Structure.ByReference {
@@ -1557,11 +1551,11 @@ public interface KfsLibrary extends Library {
 
         public _opaque_pthread_rwlockattr_t() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"__sig", "__opaque"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("__sig", "__opaque");
         }
 
         /// @param __opaque C type : char[12]
@@ -1572,7 +1566,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.__opaque = __opaque;
-            initFieldOrder();
         }
 
         public static class ByReference extends _opaque_pthread_rwlockattr_t implements Structure.ByReference {
@@ -1598,11 +1591,11 @@ public interface KfsLibrary extends Library {
 
         public _opaque_pthread_t() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"__sig", "__cleanup_stack", "__opaque"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("__sig", "__cleanup_stack", "__opaque");
         }
 
         /**
@@ -1617,7 +1610,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.__opaque = __opaque;
-            initFieldOrder();
         }
 
         public static class ByReference extends _opaque_pthread_t implements Structure.ByReference {
@@ -1642,11 +1634,11 @@ public interface KfsLibrary extends Library {
 
         public accessx_descriptor() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"ad_name_offset", "ad_flags", "ad_pad"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("ad_name_offset", "ad_flags", "ad_pad");
         }
 
         /// @param ad_pad C type : int[2]
@@ -1658,7 +1650,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.ad_pad = ad_pad;
-            initFieldOrder();
         }
 
         public static class ByReference extends accessx_descriptor implements Structure.ByReference {
@@ -1682,11 +1673,11 @@ public interface KfsLibrary extends Library {
 
         public timespec() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"tv_sec", "tv_nsec"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("tv_sec", "tv_nsec");
         }
 
         /// @param tv_sec C type : __darwin_time_t
@@ -1694,7 +1685,6 @@ public interface KfsLibrary extends Library {
             super();
             this.tv_sec = tv_sec;
             this.tv_nsec = tv_nsec;
-            initFieldOrder();
         }
 
         public static class ByReference extends timespec implements Structure.ByReference {
@@ -1725,11 +1715,11 @@ public interface KfsLibrary extends Library {
 
         public timeval() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"tv_sec", "tv_usec"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("tv_sec", "tv_usec");
         }
 
         /**
@@ -1742,7 +1732,6 @@ public interface KfsLibrary extends Library {
             super();
             this.tv_sec = tv_sec;
             this.tv_usec = tv_usec;
-            initFieldOrder();
         }
 
         public static class ByReference extends timeval implements Structure.ByReference {
@@ -1765,11 +1754,11 @@ public interface KfsLibrary extends Library {
 
         public fd_set() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"fds_bits"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("fds_bits");
         }
 
         /// @param fds_bits C type : __int32_t[(((1024) + ((sizeof(__int32_t) * 8) - 1)) / (sizeof(__int32_t) * 8))]
@@ -1779,7 +1768,6 @@ public interface KfsLibrary extends Library {
                 throw new IllegalArgumentException("Wrong array size !");
             }
             this.fds_bits = fds_bits;
-            initFieldOrder();
         }
 
         public static class ByReference extends fd_set implements Structure.ByReference {
@@ -1855,11 +1843,11 @@ public interface KfsLibrary extends Library {
 
         public ostat() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"st_dev", "st_ino", "st_mode", "st_nlink", "st_uid", "st_gid", "st_rdev", "st_size", "st_atimespec", "st_mtimespec", "st_ctimespec", "st_blksize", "st_blocks", "st_flags", "st_gen"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("st_dev", "st_ino", "st_mode", "st_nlink", "st_uid", "st_gid", "st_rdev", "st_size", "st_atimespec", "st_mtimespec", "st_ctimespec", "st_blksize", "st_blocks", "st_flags", "st_gen");
         }
 
         public static class ByReference extends ostat implements Structure.ByReference {
@@ -1956,11 +1944,11 @@ public interface KfsLibrary extends Library {
 
         public stat() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"st_dev", "st_ino", "st_mode", "st_nlink", "st_uid", "st_gid", "st_rdev", "st_atimespec", "st_mtimespec", "st_ctimespec", "st_size", "st_blocks", "st_blksize", "st_flags", "st_gen", "st_lspare", "st_qspare"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("st_dev", "st_ino", "st_mode", "st_nlink", "st_uid", "st_gid", "st_rdev", "st_atimespec", "st_mtimespec", "st_ctimespec", "st_size", "st_blocks", "st_blksize", "st_flags", "st_gen", "st_lspare", "st_qspare");
         }
 
         public static class ByReference extends stat implements Structure.ByReference {
@@ -2014,11 +2002,11 @@ public interface KfsLibrary extends Library {
 
         public stat64() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"st_dev", "st_mode", "st_nlink", "st_ino", "st_uid", "st_gid", "st_rdev", "st_atimespec", "st_mtimespec", "st_ctimespec", "st_birthtimespec", "st_size", "st_blocks", "st_blksize", "st_flags", "st_gen", "st_lspare", "st_qspare"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("st_dev", "st_mode", "st_nlink", "st_ino", "st_uid", "st_gid", "st_rdev", "st_atimespec", "st_mtimespec", "st_ctimespec", "st_birthtimespec", "st_size", "st_blocks", "st_blksize", "st_flags", "st_gen", "st_lspare", "st_qspare");
         }
 
         public static class ByReference extends stat64 implements Structure.ByReference {
@@ -2045,18 +2033,17 @@ public interface KfsLibrary extends Library {
 
         public kfsoptions() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"mountpoint"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("mountpoint");
         }
 
         /// @param mountpoint C type : const char*
         public kfsoptions(String mountpoint) {
             super();
             this.mountpoint = mountpoint;
-            initFieldOrder();
         }
 
         public static class ByReference extends kfsoptions implements Structure.ByReference {
@@ -2119,11 +2106,11 @@ public interface KfsLibrary extends Library {
 
         public kfsfilesystem() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"statfs", "stat", "read", "write", "symlink", "readlink", "create", "remove", "rename", "truncate", "chmod", "utimes", "mkdir", "rmdir", "readdir", "options", "context"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("statfs", "stat", "read", "write", "symlink", "readlink", "create", "remove", "rename", "truncate", "chmod", "utimes", "mkdir", "rmdir", "readdir", "options", "context");
         }
 
         public static class ByReference extends kfsfilesystem implements Structure.ByReference {
@@ -2146,18 +2133,17 @@ public interface KfsLibrary extends Library {
 
         public kfstime() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"sec", "nsec"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("sec", "nsec");
         }
 
         public kfstime(long sec, long nsec) {
             super();
             this.sec = sec;
             this.nsec = nsec;
-            initFieldOrder();
         }
 
         public static class ByReference extends kfstime implements Structure.ByReference {
@@ -2190,11 +2176,11 @@ public interface KfsLibrary extends Library {
 
         public kfsstat() {
             super();
-            initFieldOrder();
         }
 
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"type", "mode", "size", "used", "atime", "mtime", "ctime"});
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("type", "mode", "size", "used", "atime", "mtime", "ctime");
         }
 
         /**
@@ -2213,7 +2199,6 @@ public interface KfsLibrary extends Library {
             this.atime = atime;
             this.mtime = mtime;
             this.ctime = ctime;
-            initFieldOrder();
         }
 
         public static class ByReference extends kfsstat implements Structure.ByReference {
@@ -2236,18 +2221,17 @@ public interface KfsLibrary extends Library {
 
         public kfsstatfs() {
             super();
-            initFieldOrder();
-        }
-
-        protected void initFieldOrder() {
-            setFieldOrder(new java.lang.String[]{"free", "size"});
         }
 
         public kfsstatfs(long free, long size) {
             super();
             this.free = free;
             this.size = size;
-            initFieldOrder();
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("free", "size");
         }
 
         public static class ByReference extends kfsstatfs implements Structure.ByReference {
