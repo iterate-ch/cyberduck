@@ -151,7 +151,7 @@ public class Permission implements Serializable {
 
     private void init(final String symbolic) {
         if(symbolic.length() != 9) {
-            log.error("Invalid mask:" + symbolic);
+            log.error(String.format("Invalid mask %s", symbolic));
             throw new NumberFormatException("Must be a nine digit string");
         }
         this.owner = this.getOwnerPermissions(symbolic);
