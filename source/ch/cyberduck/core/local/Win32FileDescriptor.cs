@@ -37,7 +37,12 @@ namespace Ch.Cyberduck.Core.Local
             String extension = FilenameUtils.getExtension(filename);
             if (Utils.IsBlank(extension))
             {
-                return Locale.localizedString("Unknown");
+                String kind = this.kind(filename);
+                if (Utils.IsBlank(kind))
+                {
+                    return Locale.localizedString("Unknown");
+                }
+                return kind;
             }
             String kind = this.kind(FilenameUtils.getExtension(filename));
             if (Utils.IsBlank(kind))
