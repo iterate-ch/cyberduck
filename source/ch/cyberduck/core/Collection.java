@@ -160,7 +160,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners) {
+        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
             listener.collectionLoaded();
         }
     }
@@ -171,7 +171,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners) {
+        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
             listener.collectionItemAdded(item);
         }
     }
@@ -182,7 +182,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners) {
+        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
             listener.collectionItemRemoved(item);
         }
     }
@@ -193,7 +193,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners) {
+        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
             listener.collectionItemChanged(item);
         }
     }
