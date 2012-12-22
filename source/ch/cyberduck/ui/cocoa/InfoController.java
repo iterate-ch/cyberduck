@@ -1392,7 +1392,7 @@ public class InfoController extends ToolbarWindowController {
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             if(session instanceof CloudSession) {
                 // Give icon and label of the given session
-                item.setImage(IconCache.iconNamed(String.format("%s.tiff", session.getHost().getProtocol().disk()), 32));
+                item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
             }
             else {
                 // CloudFront is the default for custom distributions

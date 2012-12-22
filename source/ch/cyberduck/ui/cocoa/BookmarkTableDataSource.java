@@ -263,7 +263,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         final NSObject cached = cache.get(host, identifier);
         if(null == cached) {
             if(identifier.equals(ICON_COLUMN)) {
-                return IconCache.iconNamed(String.format("%s.tiff", host.getProtocol().disk()),
+                return IconCache.iconNamed(host.getProtocol().disk(),
                         Preferences.instance().getInteger("bookmark.icon.size"));
             }
             if(identifier.equals(BOOKMARK_COLUMN)) {

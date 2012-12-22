@@ -523,7 +523,7 @@ public final class PreferencesController extends ToolbarWindowController {
         for(Host bookmark : BookmarkCollection.defaultCollection()) {
             this.defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
             this.defaultBookmarkCombobox.lastItem().setImage(
-                    IconCache.iconNamed(String.format("%s.tiff", bookmark.getProtocol().icon()), 16));
+                    IconCache.iconNamed(bookmark.getProtocol().icon(), 16));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
             if(bookmark.getUuid().equals(Preferences.instance().getProperty("browser.defaultBookmark"))) {
                 this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
@@ -1625,7 +1625,7 @@ public final class PreferencesController extends ToolbarWindowController {
         for(Protocol protocol : ProtocolFactory.getKnownProtocols()) {
             final NSMenuItem item = this.protocolCombobox.itemWithTitle(protocol.getDescription());
             item.setRepresentedObject(protocol.getProvider());
-            item.setImage(IconCache.iconNamed(String.format("%s.tiff", protocol.icon()), 16));
+            item.setImage(IconCache.iconNamed(protocol.icon(), 16));
         }
 
         final Protocol defaultProtocol

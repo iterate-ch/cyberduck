@@ -84,7 +84,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             Host h = collection.get(index.intValue() - (BOOKMARKS_INDEX + 3));
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
-            item.setImage(IconCache.iconNamed(String.format("%s.tiff", h.getProtocol().icon()), 16));
+            item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
         }

@@ -334,7 +334,7 @@ public final class IconCache {
             return this.iconForExtension(item.getExtension(), size);
         }
         if(item.attributes().isVolume()) {
-            return this.iconForName(String.format("%s.tiff", item.getHost().getProtocol().disk()), size);
+            return this.iconForName(item.getHost().getProtocol().disk(), size);
         }
         if(item.attributes().isDirectory()) {
             if(overlay) {

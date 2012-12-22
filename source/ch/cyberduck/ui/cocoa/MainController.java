@@ -642,7 +642,7 @@ public class MainController extends BundleController implements NSApplication.De
                 i++;
             }
             bookmarksPopup.addItemWithTitle(title);
-            bookmarksPopup.lastItem().setImage(IconCache.iconNamed(String.format("%s.tiff", b.getProtocol().icon()), 16));
+            bookmarksPopup.lastItem().setImage(IconCache.iconNamed(b.getProtocol().icon(), 16));
             bookmarksPopup.lastItem().setRepresentedObject(b.getUuid());
             if(b.equals(open)) {
                 bookmarksPopup.selectItemAtIndex(bookmarksPopup.indexOfItem(bookmarksPopup.lastItem()));
