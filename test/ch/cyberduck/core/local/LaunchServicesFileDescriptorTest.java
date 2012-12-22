@@ -40,4 +40,9 @@ public class LaunchServicesFileDescriptorTest extends AbstractTestCase {
     public void testGetKind() throws Exception {
         assertTrue(FileDescriptorFactory.get().getKind("/tmp/t.txt").startsWith("Plain"));
     }
+
+    @Test
+    public void testGetKindWithoutExtension() throws Exception {
+        assertTrue(FileDescriptorFactory.get().getKind("txt").startsWith("Plain"));
+    }
 }

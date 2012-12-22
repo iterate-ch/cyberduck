@@ -51,7 +51,11 @@ public final class LaunchServicesFileDescriptor extends AbstractFileDescriptor {
     @Override
     public String getKind(final String filename) {
         if(StringUtils.isBlank(FilenameUtils.getExtension(filename))) {
-            return Locale.localizedString("Unknown");
+            final String kind = this.kind(filename);
+            if(StringUtils.isBlank(kind)) {
+                return Locale.localizedString("Unknown");
+            }
+            return kind;
         }
         final String kind = this.kind(FilenameUtils.getExtension(filename));
         if(StringUtils.isBlank(kind)) {
