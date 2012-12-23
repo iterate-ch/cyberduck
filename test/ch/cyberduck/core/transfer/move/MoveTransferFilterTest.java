@@ -79,6 +79,5 @@ public class MoveTransferFilterTest {
         MoveTransferFilter f = new MoveTransferFilter(files);
         final TransferStatus status = f.prepare(source);
         assertEquals(0L, status.getLength());
-        assertTrue(target.getSession().cache().isCached(target.getReference()));
     }
 }
