@@ -35,16 +35,17 @@ namespace Ch.Cyberduck.Core.Local
         public override string getKind(string filename)
         {
             String extension = FilenameUtils.getExtension(filename);
+            String kind = null;
             if (Utils.IsBlank(extension))
             {
-                String kind = this.kind(filename);
+                kind = this.kind(filename);
                 if (Utils.IsBlank(kind))
                 {
                     return Locale.localizedString("Unknown");
                 }
                 return kind;
             }
-            String kind = this.kind(FilenameUtils.getExtension(filename));
+            kind = this.kind(FilenameUtils.getExtension(filename));
             if (Utils.IsBlank(kind))
             {
                 return Locale.localizedString("Unknown");
