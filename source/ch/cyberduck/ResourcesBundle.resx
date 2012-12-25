@@ -145,9 +145,6 @@
   <data name="s3-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\s3-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="sftp-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\img\sftp-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="download" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\download.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -250,9 +247,6 @@
   <data name="rendezvous" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\rendezvous.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="google-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\img\google-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="googledrive-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\googledrive-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -316,9 +310,6 @@
   <data name="swift" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\swift.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="google" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\img\google.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="remove" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\remove.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -327,9 +318,6 @@
   </data>
   <data name="s3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\s3.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="sftp" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\img\sftp.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\outline.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
