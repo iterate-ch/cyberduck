@@ -1723,7 +1723,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DownloadAs()
         {
-            string fileName = View.DownloadAsDialog(null, SelectedPath.getLocal().getDisplayName());
+            string fileName = View.DownloadAsDialog(null, SelectedPath.getDisplayName());
             if (null != fileName)
             {
                 Path selection = PathFactory.createPath(getTransferSession(), SelectedPath.getAsDictionary());
