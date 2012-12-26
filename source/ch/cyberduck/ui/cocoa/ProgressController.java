@@ -29,16 +29,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSImageView;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
-import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -304,8 +295,8 @@ public class ProgressController extends BundleController {
 
     private AbstractMenuDelegate filesPopupMenuDelegate;
 
-    public void setFilesPopup(NSPopUpButton filesPopup) {
-        this.filesPopup = filesPopup;
+    public void setFilesPopup(NSPopUpButton p) {
+        this.filesPopup = p;
         this.filesPopup.setTarget(this.id());
         this.filesPopup.removeAllItems();
         {
@@ -340,8 +331,8 @@ public class ProgressController extends BundleController {
     @Outlet
     private NSTextField progressField;
 
-    public void setProgressField(final NSTextField progressField) {
-        this.progressField = progressField;
+    public void setProgressField(final NSTextField f) {
+        this.progressField = f;
         this.progressField.setEditable(false);
         this.progressField.setSelectable(false);
         this.progressField.setTextColor(NSColor.darkGrayColor());
@@ -350,8 +341,8 @@ public class ProgressController extends BundleController {
     @Outlet
     private NSTextField statusField;
 
-    public void setStatusField(final NSTextField statusField) {
-        this.statusField = statusField;
+    public void setStatusField(final NSTextField f) {
+        this.statusField = f;
         this.statusField.setEditable(false);
         this.statusField.setSelectable(false);
         this.statusField.setTextColor(NSColor.darkGrayColor());
@@ -360,8 +351,8 @@ public class ProgressController extends BundleController {
     @Outlet
     private NSTextField messageField;
 
-    public void setMessageField(final NSTextField messageField) {
-        this.messageField = messageField;
+    public void setMessageField(final NSTextField f) {
+        this.messageField = f;
         this.messageField.setEditable(false);
         this.messageField.setSelectable(false);
         this.messageField.setTextColor(NSColor.darkGrayColor());
@@ -370,8 +361,8 @@ public class ProgressController extends BundleController {
     @Outlet
     private NSProgressIndicator progressBar;
 
-    public void setProgressBar(final NSProgressIndicator progressBar) {
-        this.progressBar = progressBar;
+    public void setProgressBar(final NSProgressIndicator p) {
+        this.progressBar = p;
         this.progressBar.setDisplayedWhenStopped(false);
         this.progressBar.setUsesThreadedAnimation(true);
         this.progressBar.setControlSize(NSCell.NSSmallControlSize);
