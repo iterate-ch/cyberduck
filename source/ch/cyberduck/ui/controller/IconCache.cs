@@ -188,7 +188,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (obj is Icon)
                     {
                         image = (new Icon(obj as Icon, size, size)).ToBitmap();
-                        return image;
                     }
                     else if (obj is Bitmap)
                     {
