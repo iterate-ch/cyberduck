@@ -795,9 +795,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     try
                     {
                         FileSystemWatcher watcher = new FileSystemWatcher(@d.Name, System.IO.Path.GetFileName(tfile));
+                        watcher.BeginInit();
                         watcher.IncludeSubdirectories = true;
                         watcher.EnableRaisingEvents = true;
                         watcher.Created += del;
+                        watcher.EndInit();
                         _temporaryWatcher.Add(watcher);
                     }
                     catch (Exception e)
@@ -1877,11 +1879,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RemoveTemporaryFilesystemWatcher()
         {
-            foreach (FileSystemWatcher watcher in _temporaryWatcher)
-            {
-                watcher.Dispose();
-            }
-            _temporaryWatcher.Clear();
+            BeginInvoke(delegate
+                {
+                    foreach (FileSystemWatcher watcher in _temporaryWatcher)
+                    {
+                        watcher.Dispose();
+                    }
+                    _temporaryWatcher.Clear();                    
+                });
         }
 
         private void RemoveTemporaryFiles(DataObject data)

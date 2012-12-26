@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,10 +15,11 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
+using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
-using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.ui.threading;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -47,6 +48,24 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             ControllerMainAction mainAction = new SimpleDefaultMainAction(this, del);
             invoke(mainAction, wait);
+        }
+
+        public void BeginInvoke(AsyncDelegate del)
+        {
+            ControllerMainAction mainAction = new SimpleDefaultMainAction(this, del);
+            try
+            {
+                if (!View.IsHandleCreated)
+                {
+                    return;
+                }
+                View.BeginInvoke(new AsyncDelegate(mainAction.run), null);
+            }
+            catch (ObjectDisposedException)
+            {
+                //happens because there is no synchronization between the lifecycle of a form and callbacks of background threads.
+                //catch silently                
+            }
         }
 
         public void Invoke(AsyncDelegate del)
