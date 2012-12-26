@@ -43,9 +43,7 @@ public class CopyTransferFilter extends AbstractUploadFilter {
                 // Read file size
                 source.readSize();
             }
-            final long length = source.attributes().getSize();
-            // Download + Upload
-            status.setLength(length * 2);
+            status.setLength(source.attributes().getSize());
         }
         return status;
     }
