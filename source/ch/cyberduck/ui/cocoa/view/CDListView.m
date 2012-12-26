@@ -123,21 +123,21 @@ static NSTableColumn *localSelectionColumn;
 	return [self menu];
 }
 
-// This is the Quick Look delegate method. It should return the frame for the item represented by the URL. If an 
+// This is the Quick Look delegate method. It should return the frame for the item represented by the URL. If an
 // empty frame is returned then the panel will fade in/out instead
-- (NSRect)previewPanel:(NSPanel*)panel frameForURL:(NSURL*)URL
+- (NSRect)previewPanel:(NSPanel*)panel frameForURL:(NSURL*)url
 {
 	NSRect frame = NSMakeRect(0, 0, 0, 0);
 	NSRange visibleRows = [self rowsInRect:[self bounds]];
 	int row, endRow;
 	for(row = visibleRows.location, endRow = row + visibleRows.length; row <= endRow; ++row) {
-		NSString *path = [[self dataSource] tableView:self 
-							objectValueForTableColumn:[CDListView _localSelectionColumn] 
-											      row:row];
+		id path = [[self dataSource] outlineView:self
+                       objectValueForTableColumn:[CDListView _localSelectionColumn]
+                                             row:row];
 		if(nil == path) {
 			continue;
 		}
-		if([path isEqualToString:[URL path]]) {
+		if([[path string] isEqualToString:[url lastPathComponent]]) {
 			frame           = [self rectOfRow:row];
 			frame.origin    = [self convertPoint:frame.origin toView:nil];
 			frame.origin    = [[self window] convertBaseToScreen:frame.origin];
@@ -150,7 +150,7 @@ static NSTableColumn *localSelectionColumn;
 
 - (NSRect)previewPanel:(id)panel sourceFrameOnScreenForPreviewItem:(id)item
 {
-	if ([item respondsToSelector:@selector(previewItemURL:)]) {
+	if ([item respondsToSelector:@selector(previewItemURL)]) {
 		return [self previewPanel:panel frameForURL:[item performSelector:@selector(previewItemURL)]];
 	}
 	return NSZeroRect;
@@ -196,7 +196,7 @@ static NSTableColumn *localSelectionColumn;
 + (NSTableColumn *)_localSelectionColumn
 {
 	if(nil == localSelectionColumn) {
-		localSelectionColumn = [[NSTableColumn alloc] initWithIdentifier:@"LOCAL"];
+		localSelectionColumn = [[NSTableColumn alloc] initWithIdentifier:@"FILENAME"];
 	}
 	return localSelectionColumn;
 }

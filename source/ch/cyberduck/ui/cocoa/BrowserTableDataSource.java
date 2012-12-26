@@ -78,8 +78,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
     public static final String KIND_COLUMN = "KIND";
     public static final String EXTENSION_COLUMN = "EXTENSION";
-    // virtual column to implement quick look
-    protected static final String LOCAL_COLUMN = "LOCAL";
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
@@ -237,10 +235,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         item.attributes().isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : Locale.localizedString("None") : Locale.localizedString("None"),
                         TableCellAttributes.browserFontLeftAlignment()));
-            }
-            if(identifier.equals(LOCAL_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSString.stringWithString(
-                        item.getLocal().getAbsolute()));
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -538,9 +532,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             final Local destination = LocalFactory.createLocal(url.path());
             final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
             for(Path p : pasteboard) {
-                p.setLocal(LocalFactory.createLocal(destination, p.getName()));
+                final Local local = LocalFactory.createLocal(destination, p.getName());
+                p.setLocal(local);
                 // Add to returned path names
-                promisedDragNames.addObject(NSString.stringWithString(p.getLocal().getName()));
+                promisedDragNames.addObject(NSString.stringWithString(local.getName()));
             }
             if(pasteboard.size() == 1) {
                 final Local file = pasteboard.get(0).getLocal();
