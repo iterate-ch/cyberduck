@@ -21,12 +21,17 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.AbstractStreamListener;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -41,6 +46,7 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +59,7 @@ public class CopyTransfer extends Transfer {
     /**
      * Mapping source to destination files
      */
-    private Map<Path, Path> files = Collections.emptyMap();
+    protected Map<Path, Path> files = Collections.emptyMap();
 
     private Session destination;
 
@@ -71,8 +77,22 @@ public class CopyTransfer extends Transfer {
         this.destination = files.values().iterator().next().getSession();
     }
 
-    public <T> CopyTransfer(T dict, Session s) {
-        super(dict, s, new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
+    public <T> CopyTransfer(T serialized, Session s) {
+        super(serialized, s, new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        Object hostObj = dict.objectForKey("CopyHost");
+        if(hostObj != null) {
+            destination = SessionFactory.createSession(new Host(hostObj));
+            final List destinationsObj = dict.listForKey("CopyRoots");
+            if(destinationsObj != null) {
+                this.files = new HashMap<Path, Path>();
+                int i = 0;
+                for(Object rootDict : destinationsObj) {
+                    this.files.put(this.getRoots().get(i), PathFactory.createPath(destination, rootDict));
+                    i++;
+                }
+            }
+        }
     }
 
     @Override
@@ -89,6 +109,8 @@ public class CopyTransfer extends Transfer {
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_COPY), "Kind");
+        dict.setObjectForKey(destination.getHost(), "CopyHost");
+        dict.setListForKey(new ArrayList<Serializable>(files.values()), "CopyRoots");
         return dict.getSerialized();
     }
 
