@@ -17,8 +17,6 @@
 // 
 
 using System;
-using System.IO;
-using System.Reflection;
 using System.Text;
 using Ch.Cyberduck.Core.Local;
 using NUnit.Framework;
@@ -40,7 +38,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Keychain.Register();
         }
 
-        private const string ExpiredSelfsigned =
+        private const string ExpiredSelfSigned =
             "-----BEGIN CERTIFICATE-----\n" +
             "MIICnzCCAggCCQD/H0dWJzmTsjANBgkqhkiG9w0BAQUFADCBkzELMAkGA1UEBhMC\n" +
             "Q0gxDTALBgNVBAgMBEJlcm4xDTALBgNVBAcMBEJlcm4xFTATBgNVBAoMDGl0ZXJh\n" +
@@ -62,14 +60,8 @@ namespace Ch.Cyberduck.Ui.Controller
         [Test]
         public void ExpiredSelfSignedCertificate()
         {
-            Stream stream =
-                Assembly.GetExecutingAssembly()
-                        .GetManifestResourceStream("Ch.Cyberduck.ui.controller.expired-selfsigned.crt");
-            MemoryStream memory = new MemoryStream();
-            stream.CopyTo(memory);
-
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-            InputStream inputStream = new ByteArrayInputStream(Encoding.ASCII.GetBytes(ExpiredSelfsigned));
+            InputStream inputStream = new ByteArrayInputStream(Encoding.ASCII.GetBytes(ExpiredSelfSigned));
             X509Certificate cert = (X509Certificate) certFactory.generateCertificate(inputStream);
             const string hostName = "foo.secure.example.com";
             try
