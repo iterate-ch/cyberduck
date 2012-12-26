@@ -19,49 +19,23 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class ResponseOutputStream<T> extends OutputStream {
-
-    private OutputStream delegate;
+public abstract class ResponseOutputStream<T> extends FilterOutputStream {
 
     public ResponseOutputStream(OutputStream d) {
-        this.delegate = d;
-    }
-
-    @Override
-    public void write(int b) throws IOException {
-        delegate.write(b);
-    }
-
-    @Override
-    public void write(byte[] b) throws IOException {
-        delegate.write(b);
-    }
-
-    @Override
-    public void write(byte[] b, int off, int len) throws IOException {
-        delegate.write(b, off, len);
-    }
-
-    @Override
-    public void flush() throws IOException {
-        delegate.flush();
-    }
-
-    @Override
-    public void close() throws IOException {
-        delegate.close();
+        super(d);
     }
 
     /**
      * Return the response after closing the stream. Must close the stream first to prevent deadlock.
      *
-     * @return A specific reponse header
+     * @return A specific response header
      */
     public abstract T getResponse() throws IOException;
 }
