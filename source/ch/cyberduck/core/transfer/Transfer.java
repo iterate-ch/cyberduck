@@ -28,7 +28,6 @@ import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -336,8 +335,6 @@ public abstract class Transfer implements Serializable {
     public Path getRoot() {
         return roots.get(0);
     }
-
-    public abstract Local getLocal(Path path);
 
     /**
      * @return All <code>root</code>s added to this transfer

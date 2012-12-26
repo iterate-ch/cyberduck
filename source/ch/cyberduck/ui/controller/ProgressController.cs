@@ -218,7 +218,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         _view.TransferStatus = _controller._transfer.isComplete()
                                                    ? TransferStatus.Complete
                                                    : TransferStatus.Incomplete;
-//                        filesPopup.itemAtIndex(new NSInteger(0)).setEnabled(transfer.getLocal(transfer.getRoot()).exists());
+                        //todo
+                        //filesPopup.itemAtIndex(new NSInteger(0)).setEnabled(transfer.getRoot().getLocal().exists());
                         _controller.UpdateOverallProgress();
                     };
                 _controller.invoke(new SimpleDefaultMainAction(_controller, d));

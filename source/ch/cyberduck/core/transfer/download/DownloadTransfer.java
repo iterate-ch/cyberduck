@@ -80,11 +80,6 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public Local getLocal(final Path path) {
-        return path.getLocal();
-    }
-
-    @Override
     public AttributedList<Path> children(final Path parent) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", parent));

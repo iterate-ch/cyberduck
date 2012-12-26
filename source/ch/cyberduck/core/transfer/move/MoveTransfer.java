@@ -56,6 +56,24 @@ public class MoveTransfer extends Transfer {
 
     private MoveTransfer(final Map<Path, Path> files, final BandwidthThrottle bandwidth) {
         super(new ArrayList<Path>(files.keySet()), bandwidth);
+        for(Path f : files.keySet()) {
+            f.setLocal(new Local("/dev/null") {
+                @Override
+                public boolean exists() {
+                    return false;
+                }
+
+                @Override
+                public String getAbbreviatedPath() {
+                    return this.getDisplayName();
+                }
+
+                @Override
+                public String getDisplayName() {
+                    return Locale.localizedString("Unknown");
+                }
+            });
+        }
         this.files = files;
     }
 
@@ -79,11 +97,6 @@ public class MoveTransfer extends Transfer {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_MOVE), "Kind");
         return dict.getSerialized();
-    }
-
-    @Override
-    public Local getLocal(final Path path) {
-        return Local.NULL;
     }
 
     @Override

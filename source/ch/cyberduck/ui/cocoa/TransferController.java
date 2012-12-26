@@ -589,11 +589,12 @@ public final class TransferController extends WindowController implements NSTool
         if(1 == selected) {
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
+            String url = transfer.getRoot().toURL();
             urlField.setAttributedStringValue(
-                    HyperlinkAttributedStringFactory.create(transfer.getRoot().toURL()));
+                    HyperlinkAttributedStringFactory.create(url));
             if(transfer.numberOfRoots() == 1) {
                 localField.setAttributedStringValue(
-                        HyperlinkAttributedStringFactory.create(transfer.getLocal(transfer.getRoot()).getAbbreviatedPath()));
+                        HyperlinkAttributedStringFactory.create(transfer.getRoot().getLocal().toURL()));
             }
             else {
                 localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Multiple files"),
@@ -606,6 +607,9 @@ public final class TransferController extends WindowController implements NSTool
         }
     }
 
+    /**
+     *
+     */
     private void updateIcon() {
         final int selected = transferTable.numberOfSelectedRows().intValue();
         if(1 != selected) {
@@ -615,13 +619,16 @@ public final class TransferController extends WindowController implements NSTool
         final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
         // Draw file type icon
         if(transfer.numberOfRoots() == 1) {
-            iconView.setImage(IconCache.instance().iconForPath(transfer.getLocal(transfer.getRoot()), 32));
+            iconView.setImage(IconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
         }
         else {
             iconView.setImage(IconCache.iconNamed("NSMultipleDocuments", 32));
         }
     }
 
+    /**
+     *
+     */
     private void updateBandwidthPopup() {
         final int selected = transferTable.numberOfSelectedRows().intValue();
         bandwidthPopup.setEnabled(selected > 0);

@@ -75,6 +75,24 @@ public class CopyTransfer extends Transfer {
     private CopyTransfer(final Map<Path, Path> files, final BandwidthThrottle bandwidth) {
         super(new ArrayList<Path>(files.keySet()), bandwidth);
         this.files = files;
+        for(Path f : files.keySet()) {
+            f.setLocal(new Local("/dev/null") {
+                @Override
+                public boolean exists() {
+                    return false;
+                }
+
+                @Override
+                public String getAbbreviatedPath() {
+                    return this.getDisplayName();
+                }
+
+                @Override
+                public String getDisplayName() {
+                    return Locale.localizedString("Unknown");
+                }
+            });
+        }
         this.destination = files.values().iterator().next().getSession();
     }
 
@@ -122,11 +140,6 @@ public class CopyTransfer extends Transfer {
             sessions.add(destination);
         }
         return sessions;
-    }
-
-    @Override
-    public Local getLocal(final Path path) {
-        return Local.NULL;
     }
 
     @Override
