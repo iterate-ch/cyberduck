@@ -23,6 +23,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
 
@@ -159,7 +160,9 @@ public abstract class Local extends AbstractPath {
     /**
      * Move file to trash.
      */
-    public abstract void trash();
+    public void trash() {
+        this.delete();
+    }
 
     @Override
     public AttributedList<Local> list() {
@@ -262,6 +265,11 @@ public abstract class Local extends AbstractPath {
             }
         }
         path = normalized;
+    }
+
+    @Override
+    public void writeUnixPermission(final Permission permission) {
+        //
     }
 
     @Override
