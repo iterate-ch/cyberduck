@@ -25,6 +25,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -78,6 +79,11 @@ public class MoveTransfer extends Transfer {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_MOVE), "Kind");
         return dict.getSerialized();
+    }
+
+    @Override
+    public Local getLocal(final Path path) {
+        return Local.NULL;
     }
 
     @Override

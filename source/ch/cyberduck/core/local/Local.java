@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -355,4 +356,21 @@ public abstract class Local extends AbstractPath {
     public OutputStream getOutputStream(final boolean append) throws FileNotFoundException {
         return new FileOutputStream(new File(path), append);
     }
+
+    public static final Local NULL = new Local("/dev/null") {
+        @Override
+        public boolean exists() {
+            return false;
+        }
+
+        @Override
+        public String getAbbreviatedPath() {
+            return this.getDisplayName();
+        }
+
+        @Override
+        public String getDisplayName() {
+            return Locale.localizedString("Unknown");
+        }
+    };
 }

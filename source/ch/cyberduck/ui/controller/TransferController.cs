@@ -405,7 +405,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Transfer transfer = GetTransferFromView(selectedTransfers[0]);
             if (transfer.numberOfRoots() == 1)
             {
-                View.FileIcon = IconCache.Instance.IconForFilename(transfer.getRoot().getLocal().getAbsolute(),
+                View.FileIcon = IconCache.Instance.IconForFilename(transfer.getLocal(transfer.getRoot()).getAbsolute(),
                                                                    IconCache.IconSize.Large);
             }
             else
@@ -424,7 +424,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Url = transfer.getRoot().toURL();
                 if (transfer.numberOfRoots() == 1)
                 {
-                    View.Local = transfer.getRoot().getLocal().getAbsolute();
+                    View.Local = transfer.getLocal(transfer.getRoot()).getAbbreviatedPath();
                 }
                 else
                 {

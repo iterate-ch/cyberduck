@@ -30,6 +30,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -121,6 +122,11 @@ public class CopyTransfer extends Transfer {
             sessions.add(destination);
         }
         return sessions;
+    }
+
+    @Override
+    public Local getLocal(final Path path) {
+        return Local.NULL;
     }
 
     @Override

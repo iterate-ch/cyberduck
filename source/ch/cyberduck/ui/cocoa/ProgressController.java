@@ -151,7 +151,7 @@ public class ProgressController extends BundleController {
                         setProgressText();
                         setStatusText();
                         statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
-                        filesPopup.itemAtIndex(new NSInteger(0)).setEnabled(transfer.getRoot().getLocal().exists());
+                        filesPopup.itemAtIndex(new NSInteger(0)).setEnabled(transfer.getLocal(transfer.getRoot()).exists());
                     }
                 });
             }
@@ -282,7 +282,7 @@ public class ProgressController extends BundleController {
     private void setMenuHighlighted(boolean highlighted) {
         filesPopup.itemAtIndex(new NSInteger(0)).setAttributedTitle(
                 NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(0)).title(),
-                        highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : transfer.getRoot().getLocal().exists() ? NORMAL_FONT_ATTRIBUTES : DARK_FONT_ATTRIBUTES)
+                        highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : transfer.getLocal(transfer.getRoot()).exists() ? NORMAL_FONT_ATTRIBUTES : DARK_FONT_ATTRIBUTES)
         );
     }
 
