@@ -2638,7 +2638,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                 base.Enter(e);
                 if (!(e.Data is OLVDataObject))
                 {
-                    DropTargetHelper.DragEnter(_form.browser, e.Data, new Point(e.X, e.Y), e.Effect);
+                    try
+                    {
+                        DropTargetHelper.DragEnter(_form.browser, e.Data, new Point(e.X, e.Y), e.Effect);
+                    }
+                    catch
+                    {
+                        //silenty catch exceptions that are thrown with some special object (e.g. WinRAR) 
+                    }
                 }
             }
 

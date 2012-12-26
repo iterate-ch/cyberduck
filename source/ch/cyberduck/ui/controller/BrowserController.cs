@@ -1964,7 +1964,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// Check if we accept drag operation from external program
+        /// Check if we accept drag operation from an external program
         /// </summary>
         /// <param name="args"></param>
         private void View_BrowserCanDrop(OlvDropEventArgs args)

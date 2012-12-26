@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@ using IDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
  * Taken from, thanks Adam for a great post
  * http://blogs.msdn.com/b/adamroot/archive/2008/02/19/shell-style-drag-and-drop-in-net-part-3.aspx?PageIndex=3
  */
+
 namespace Ch.Cyberduck.Core
 {
     [ComImport]
@@ -103,18 +104,18 @@ namespace Ch.Cyberduck.Core
             [In] IntPtr hwndTarget,
             [In, MarshalAs(UnmanagedType.Interface)] IDataObject dataObject,
             [In] ref Win32Point pt,
-            [In] int effect);
+            [In] DragDropEffects effect);
 
         void DragLeave();
 
         void DragOver(
             [In] ref Win32Point pt,
-            [In] int effect);
+            [In] DragDropEffects effect);
 
         void Drop(
             [In, MarshalAs(UnmanagedType.Interface)] IDataObject dataObject,
             [In] ref Win32Point pt,
-            [In] int effect);
+            [In] DragDropEffects effect);
 
         void Show(
             [In] bool show);
@@ -225,8 +226,7 @@ namespace System.Runtime.InteropServices.ComTypes
             catch
             {
                 // If we failed, we need to free the HGLOBAL memory
-                Marshal.FreeHGlobal(pDD);
-                throw;
+                Marshal.FreeHGlobal(pDD);               
             }
         }
 
@@ -1079,9 +1079,9 @@ namespace System.Windows.Forms
         /// <param name="cursorOffset">The location of the cursor relative to the image.</param>
         public static void SetDragImage(this IDataObject dataObject, Image image, Point cursorOffset)
         {
-            SetDragImage((ComIDataObject)dataObject, image, cursorOffset);
-        }        
-        
+            SetDragImage((ComIDataObject) dataObject, image, cursorOffset);
+        }
+
         /// <summary>
         /// Sets the drag image.
         /// </summary>
@@ -1180,7 +1180,7 @@ namespace System.Windows.Forms
             dd.szMessage = format;
             dd.szInsert = insert;
 
-            ComDataObjectExtensions.SetDropDescription((ComIDataObject) dataObject, dd);
+            ((ComIDataObject) dataObject).SetDropDescription(dd);
         }
 
         /// <summary>
@@ -1239,7 +1239,7 @@ namespace System.Windows.Forms
                 // by unmanaged code, so we'll use our custom marshaling
                 // implemented by our COM IDataObject extensions.
 
-                ComDataObjectExtensions.SetManagedData((ComIDataObject) dataObject, format, data);
+                ((ComIDataObject) dataObject).SetManagedData(format, data);
             }
         }
 
@@ -1305,7 +1305,7 @@ namespace System.Windows.Forms
             // is stamped by us for custom marshaling
             if (data is Stream)
             {
-                object data2 = ComDataObjectExtensions.GetManagedData((ComIDataObject) dataObject, format);
+                object data2 = ((ComIDataObject) dataObject).GetManagedData(format);
                 if (data2 != null)
                     return data2;
             }
@@ -1505,7 +1505,7 @@ namespace Ch.Cyberduck.Core
             if (control != null)
                 controlHandle = control.Handle;
             Win32Point pt = cursorOffset.ToWin32Point();
-            dropHelper.DragEnter(controlHandle, (ComIDataObject) data, ref pt, (int) effect);
+            dropHelper.DragEnter(controlHandle, (ComIDataObject) data, ref pt, effect);
         }
 
         /// <summary>
@@ -1518,7 +1518,7 @@ namespace Ch.Cyberduck.Core
         public static void DragOver(this IDropTargetHelper dropHelper, Point cursorOffset, DragDropEffects effect)
         {
             Win32Point pt = cursorOffset.ToWin32Point();
-            dropHelper.DragOver(ref pt, (int) effect);
+            dropHelper.DragOver(ref pt, effect);
         }
 
         /// <summary>
@@ -1533,7 +1533,7 @@ namespace Ch.Cyberduck.Core
                                 Point cursorOffset, DragDropEffects effect)
         {
             Win32Point pt = cursorOffset.ToWin32Point();
-            dropHelper.Drop((ComIDataObject) data, ref pt, (int) effect);
+            dropHelper.Drop((ComIDataObject) data, ref pt, effect);
         }
     }
 }
@@ -1634,8 +1634,8 @@ namespace System.Windows.Forms
             // We need to listen for drop description changes. If a drop target
             // changes the drop description, we shouldn't provide a default one.
             entry.adviseConnection =
-                ComDataObjectExtensions.Advise(((Runtime.InteropServices.ComTypes.IDataObject) data),
-                                               new AdviseSink(data), DropDescriptionFormat, 0);
+                ((Runtime.InteropServices.ComTypes.IDataObject) data).Advise(new AdviseSink(data), DropDescriptionFormat,
+                                                                             0);
 
             // Hook up the default drag source event handlers
             control.GiveFeedback += DefaultGiveFeedbackHandler;
@@ -1741,7 +1741,7 @@ namespace System.Windows.Forms
         {
             AllowDropDescription(true);
 
-            DataObject d =  new DataObject(data);
+            DataObject d = new DataObject(data);
             ((IDataObject) d).SetDragImage(dragImage, cursorOffset);
             RegisterDefaultDragSource(control, d);
             try
@@ -1753,7 +1753,7 @@ namespace System.Windows.Forms
                 UnregisterDefaultDragSource(control);
             }
         }
-        
+
         /// <summary>
         /// Performs a default drag and drop operation for the specified drag source.
         /// </summary>
@@ -1770,8 +1770,7 @@ namespace System.Windows.Forms
             if (data != null)
             {
                 foreach (KeyValuePair<string, object> dataPair in data)
-                    dataObject.SetDataEx(dataPair.Key, dataPair.Value); 
-                
+                    dataObject.SetDataEx(dataPair.Key, dataPair.Value);
             }
 
             try
@@ -1994,7 +1993,7 @@ namespace System.Windows.Forms
         private static bool IsDropDescriptionValid(IDataObject dataObject)
         {
             object data =
-                ComDataObjectExtensions.GetDropDescription((Runtime.InteropServices.ComTypes.IDataObject) dataObject);
+                ((Runtime.InteropServices.ComTypes.IDataObject) dataObject).GetDropDescription();
             if (data is DropDescription)
                 return (DropImageType) ((DropDescription) data).type != DropImageType.Invalid;
             return false;
@@ -2087,7 +2086,7 @@ namespace System.Windows.Forms
         private static DropImageType GetDropImageType(IDataObject dataObject)
         {
             object data =
-                ComDataObjectExtensions.GetDropDescription((Runtime.InteropServices.ComTypes.IDataObject) dataObject);
+                ((Runtime.InteropServices.ComTypes.IDataObject) dataObject).GetDropDescription();
             if (data is DropDescription)
                 return (DropImageType) ((DropDescription) data).type;
             return DropImageType.Invalid;
@@ -2120,7 +2119,7 @@ namespace System.Windows.Forms
                 // We listen to DropDescription changes, so that we can unset the IsDefault
                 // drop description flag.
                 object odd =
-                    ComDataObjectExtensions.GetDropDescription((Runtime.InteropServices.ComTypes.IDataObject) data);
+                    ((Runtime.InteropServices.ComTypes.IDataObject) data).GetDropDescription();
                 if (odd != null)
                     SetDropDescriptionIsDefault(data, false);
             }
