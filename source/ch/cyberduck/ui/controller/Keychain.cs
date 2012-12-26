@@ -86,10 +86,16 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             chain.Build(serverCert);
 
+            bool isException = CheckForException(hostName, serverCert);
+            if (isException)
+            {
+                // Exceptions always have precendence
+                return true;
+            }
+
             string errorFromChainStatus = GetErrorFromChainStatus(chain, hostName);
             bool certError = null != errorFromChainStatus;
-            bool hostnameMismatch = !HostnameVerifier.CheckServerIdentity(certs[0], serverCert, hostName) &&
-                                    !CheckForException(hostName, serverCert);
+            bool hostnameMismatch = !HostnameVerifier.CheckServerIdentity(certs[0], serverCert, hostName);
 
             // check if host name matches
             if (null == errorFromChainStatus && hostnameMismatch)
@@ -128,11 +134,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                     //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
                                     AddCertificate(serverCert, StoreName.Root);
                                 }
-                                if (hostnameMismatch)
-                                {
-                                    Preferences.instance().setProperty(hostName + ".certificate.accept",
-                                                                       serverCert.SubjectName.Name);
-                                }
+                                Preferences.instance().setProperty(hostName + ".certificate.accept",
+                                                                   serverCert.SubjectName.Name);
                             }
                             return true;
                         }
