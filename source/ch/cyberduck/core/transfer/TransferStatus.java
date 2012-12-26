@@ -62,7 +62,7 @@ public class TransferStatus {
     public void setComplete() {
         this.complete = true;
         if(log.isInfoEnabled()) {
-            log.info(String.format("Status set to complete with %d bytes", this.getCurrent()));
+            log.info(String.format("Status set to complete with %d bytes", current));
         }
     }
 
@@ -95,14 +95,14 @@ public class TransferStatus {
      * @param current The already transferred bytes
      */
     public void setCurrent(final long current) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Transferred bytes set to %d bytes", this.getCurrent()));
-        }
         this.current = current;
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Transferred bytes set to %d bytes", current));
+        }
     }
 
     public void addCurrent(final long transferred) {
-        this.current += transferred;
+        this.setCurrent(current + transferred);
     }
 
     public long getLength() {
