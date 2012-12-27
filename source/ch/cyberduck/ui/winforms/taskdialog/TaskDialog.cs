@@ -265,6 +265,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                     td.Content = Content;
                     td.ExpandedInfo = ExpandedInfo;
                     td.Footer = Footer;
+                    td.FooterLinkDelegate = HelpDelegate;
                     td.RadioButtons = RadioButtons;
                     td.CommandButtons = CommandButtons;
                     td.PlaySystemSounds = PlaySystemSounds;

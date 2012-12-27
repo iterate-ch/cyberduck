@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
@@ -45,7 +47,13 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
     public string MainInstruction { get { return m_mainInstruction; } set { m_mainInstruction = value; this.Invalidate(); } }
     public string Content { get { return lbContent.Text; } set { lbContent.Text = value; } }
     public string ExpandedInfo { get { return lbExpandedInfo.Text; } set { lbExpandedInfo.Text = value; } }
-    public string Footer { get { return lbFooter.Text; } set { lbFooter.Text = value; } }
+    public string Footer { get { return lbFooter.Text; } set { SetLinkedText(lbFooter, value); } }
+    public TaskDialog.Help FooterLinkDelegate { set { lbFooter.LinkClicked += delegate(object sender,
+                                                                                       LinkLabelLinkClickedEventArgs
+                                                                                           args)
+        {
+            value(args.Link.LinkData.ToString());
+        }; } }
     public int DefaultButtonIndex { get { return m_defaultButtonIndex; } set { m_defaultButtonIndex = value; } }
 
     public string RadioButtons { get { return m_radioButtons; } set { m_radioButtons = value; } }
@@ -298,6 +306,32 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
       this.ClientSize = new Size(ClientSize.Width, form_height);
 
       m_formBuilt = true;
+    }
+
+    private static void SetLinkedText(LinkLabel linkLabel, string htmlFragment)
+    {
+        Regex regEx = new Regex(
+            @"\<a\s(href\=""|[^\>]+?\shref\="")(?<link>[^""]+)"".*?\>(?<text>.*?)(\<\/a\>|$)",
+            RegexOptions.IgnoreCase | RegexOptions.Multiline);
+
+        int nextOffset = 0;
+        StringBuilder builder = new StringBuilder();
+        linkLabel.Links.Clear();
+        foreach (Match match in regEx.Matches(htmlFragment))
+        {
+            if (match.Index > nextOffset || match.Index == 0)
+            {
+                builder.Append(htmlFragment.Substring(nextOffset, match.Index - nextOffset));
+                nextOffset = match.Index + match.Length;
+                linkLabel.Links.Add(builder.Length, match.Groups["text"].Value.Length, match.Groups["link"].Value);
+                builder.Append(match.Groups["text"].Value);
+            }
+        }
+        if (nextOffset < htmlFragment.Length)
+        {
+            builder.Append(htmlFragment.Substring(nextOffset));
+        }
+        linkLabel.Text = builder.ToString();
     }
 
     //--------------------------------------------------------------------------------
