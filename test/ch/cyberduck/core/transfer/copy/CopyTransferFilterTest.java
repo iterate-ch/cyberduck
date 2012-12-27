@@ -62,7 +62,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         files.put(source, new NullPath("a", Path.FILE_TYPE));
         CopyTransferFilter f = new CopyTransferFilter(files);
         final TransferStatus status = f.prepare(source);
-        assertEquals(2L, status.getLength());
+        assertEquals(1L, status.getLength());
     }
 
     @Test
