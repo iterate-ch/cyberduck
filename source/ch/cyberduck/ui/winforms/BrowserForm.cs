@@ -670,17 +670,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             else
             {
                 transcriptBox.SelectionColor = Color.DarkGray;
+                transcriptBox.SelectionColor = Color.DarkGray;
             }
             if (transcriptBox.TextLength > 0)
             {
                 entry = Environment.NewLine + entry;
             }
             transcriptBox.SelectedText = entry;
-            // todo improve performance
-            // Select seems to be an expensive operation
-            // see http://codebetter.com/blogs/patricksmacchia/archive/2008/07/07/some-richtextbox-tricks.aspx
-            transcriptBox.Select(transcriptBox.TextLength, transcriptBox.TextLength);
-            transcriptBox.ScrollToCaret();
+            ScrollToBottom(transcriptBox);
         }
 
         public void ClearTranscript()
@@ -953,6 +950,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool SecureConnection
         {
             set { securityToolStripStatusLabel.Image = IconCache.Instance.IconForName(value ? "locked" : "unlocked"); }
+        }
+
+        public static void ScrollToBottom(RichTextBox richTextBox)
+        {
+            NativeMethods.SendMessage(richTextBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
         }
 
         private void AddDonateButton()
@@ -2433,7 +2435,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     {
                         int pos =
                             BookmarkCollection.defaultCollection().
-                                indexOf(obj);
+                                               indexOf(obj);
                         Host h = (Host) obj;
                         MenuItem i = new MenuItem(h.getNickname());
                         i.Tag = h;
@@ -2447,8 +2449,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                         _form.vistaMenu1.SetImage(i,
                                                   _icons[
                                                       h.getProtocol()
-                                                          .
-                                                          getProvider
+                                                       .
+                                                        getProvider
                                                           ()]);
                     }));
             }
@@ -2459,7 +2461,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     {
                         int pos =
                             BookmarkCollection.defaultCollection().
-                                indexOf(obj);
+                                               indexOf(obj);
                         Host h = (Host) obj;
                         MenuItem i = new MenuItem(h.getNickname());
                         i.Tag = h;
@@ -2473,7 +2475,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         _form.vistaMenu1.SetImage(i,
                                                   _icons[
                                                       h.getProtocol().
-                                                          getProvider()
+                                                        getProvider()
                                                       ]);
 
 
@@ -2970,8 +2972,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                             _form.vistaMenu1.SetImage(i,
                                                       _icons[
                                                           h.getProtocol()
-                                                              .
-                                                              getProvider
+                                                           .
+                                                            getProvider
                                                               ()]);
                         }
                     }));

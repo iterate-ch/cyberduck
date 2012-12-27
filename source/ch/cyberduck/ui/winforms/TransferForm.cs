@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,18 +15,19 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.io;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Windows7.DesktopIntegration;
 using Windows7.DesktopIntegration.WindowsForms;
+using ch.cyberduck.core;
+using ch.cyberduck.core.io;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -65,19 +66,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             dummyColumn.Width = 0;
             transferColumn.FillsFreeSpace = true;
             transferListView.ItemSelectionChanged += delegate(object sender, ListViewItemSelectionChangedEventArgs e)
-                                                         {
-                                                             TransferControl uc =
-                                                                 ((TransferControl)
-                                                                  transferListView.GetEmbeddedControl(1, e.ItemIndex));
-                                                             if (null != uc)
-                                                             {
-                                                                 uc.Selected = e.IsSelected;
-                                                                 if (e.IsSelected && uc.FocusRemoveAllowed)
-                                                                 {
-                                                                     transferListView.Select();
-                                                                 }
-                                                             }
-                                                         };
+                {
+                    TransferControl uc =
+                        ((TransferControl)
+                         transferListView.GetEmbeddedControl(1, e.ItemIndex));
+                    if (null != uc)
+                    {
+                        uc.Selected = e.IsSelected;
+                        if (e.IsSelected && uc.FocusRemoveAllowed)
+                        {
+                            transferListView.Select();
+                        }
+                    }
+                };
             transferListView.ItemSelectionChanged += (sender, e) => SelectionChangedEvent();
             transferListView.ItemsChanged +=
                 delegate { transferListView.GridLines = transferListView.GetItemCount() > 0; };
@@ -145,7 +146,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         m.Checked = value.Equals(m.Tag);
                         if (m.Checked)
                         {
-                            if (m.Tag.Equals((float) BandwidthThrottle.UNLIMITED))
+                            if (m.Tag.Equals(BandwidthThrottle.UNLIMITED))
                             {
                                 if (!_currentImage.Equals("bandwidth"))
                                 {
@@ -231,11 +232,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                 transcriptBox.SelectionColor = Color.DarkGray;
             }
             transcriptBox.SelectedText = entry + Environment.NewLine;
-            // todo improve performance
-            // Select seems to be an expensive operation
-            // see http://codebetter.com/blogs/patricksmacchia/archive/2008/07/07/some-richtextbox-tricks.aspx
             transcriptBox.Select(transcriptBox.TextLength, transcriptBox.TextLength);
-            transcriptBox.ScrollToCaret();
+            ScrollToBottom(transcriptBox);
         }
 
         public IList<IProgressView> SelectedTransfers
@@ -279,17 +277,17 @@ namespace Ch.Cyberduck.Ui.Winforms
                 ToolStripMenuItem item = new ToolStripMenuItem(throttle.Value);
                 item.Tag = throttle.Key;
                 item.Click += delegate(object sender, EventArgs args)
-                                  {
-                                      foreach (ToolStripItem i in bandwidthMenuStrip.Items)
-                                      {
-                                          if (i is ToolStripMenuItem)
-                                          {
-                                              ((ToolStripMenuItem) i).Checked = false;
-                                          }
-                                          ((ToolStripMenuItem) sender).Checked = true;
-                                      }
-                                      BandwidthChangedEvent();
-                                  };
+                    {
+                        foreach (ToolStripItem i in bandwidthMenuStrip.Items)
+                        {
+                            if (i is ToolStripMenuItem)
+                            {
+                                ((ToolStripMenuItem) i).Checked = false;
+                            }
+                            ((ToolStripMenuItem) sender).Checked = true;
+                        }
+                        BandwidthChangedEvent();
+                    };
 
                 bandwidthMenuStrip.Items.Add(item);
 
@@ -346,17 +344,22 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        public static void ScrollToBottom(RichTextBox richTextBox)
+        {
+            NativeMethods.SendMessage(richTextBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
+        }
+
         private void ConfigureToolbarMenu(ToolStripMenuItem menuItem, ToolStripButton button, String property)
         {
             menuItem.CheckOnClick = true;
             menuItem.Click += delegate
-                                  {
-                                      button.Visible =
-                                          !button.Visible;
-                                      Preferences.instance().setProperty(
-                                          property,
-                                          button.Visible);
-                                  };
+                {
+                    button.Visible =
+                        !button.Visible;
+                    Preferences.instance().setProperty(
+                        property,
+                        button.Visible);
+                };
 
             button.Visible = menuItem.Checked = Preferences.instance().getBoolean(property);
         }
