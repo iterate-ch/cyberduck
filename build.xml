@@ -140,6 +140,7 @@
                 <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
                 <include name="org/rococoa/**/*.class"/>
                 <include name="com/barbarysoftware/**/*.class"/>
+                <include name="com/sun/jna/**/*.class"/>
             </fileset>
         </jar>
         <jar jarfile="${build}/ui.jar"
