@@ -1028,6 +1028,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                     IconCache.Instance.ExtractIconFromExecutable(app.getIdentifier(),
                                                                                  IconCache.IconSize.Small));
             }
+            vistaMenu1.UpdateParent(browserContextMenu);
         }
 
         private void OnArchiveMenuStripOpening(object sender, CancelEventArgs e)

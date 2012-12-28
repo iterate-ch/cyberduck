@@ -243,6 +243,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             MenuItem_Popup(parent, new EventArgs());
         }
 
+        public void UpdateParent(ContextMenu parent)
+        {
+            MenuItem_Popup(parent, new EventArgs());
+        }
+
         private void AddVistaMenuItem(MenuItem mnuItem)
         {
             //get the bitmap children of the parent
