@@ -59,6 +59,7 @@ import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -558,7 +559,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             else {
                 final DownloadTransfer transfer = new DownloadTransfer(pasteboard.copy(controller.getTransferSession()));
-                controller.transfer(transfer);
+                controller.transfer(transfer, Collections.<Path>emptyList());
             }
             pasteboard.clear();
         }

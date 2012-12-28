@@ -2675,7 +2675,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if((filename = sheet.filename()) != null) {
                 final Path selection = PathFactory.createPath(this.getTransferSession(), this.getSelectedPath().getAsDictionary());
                 selection.setLocal(LocalFactory.createLocal(filename));
-                this.transfer(new DownloadTransfer(selection));
+                this.transfer(new DownloadTransfer(selection), Collections.<Path>emptyList());
             }
         }
     }
@@ -2750,7 +2750,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             roots.add(path);
         }
         final Transfer transfer = new DownloadTransfer(roots);
-        this.transfer(transfer);
+        this.transfer(transfer, Collections.<Path>emptyList());
     }
 
     private static String lastSelectedUploadDirectory = null;
@@ -2838,26 +2838,24 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         return SessionFactory.createSession(session.getHost());
     }
 
+    protected void transfer(final Transfer transfer) {
+        this.transfer(transfer, transfer.getRoots());
+    }
+
     /**
      * Transfers the files either using the queue or using the browser session if #connection.pool.max is 1
      *
      * @param transfer Transfer Operation
      */
-    protected void transfer(final Transfer transfer) {
-        this.transfer(transfer, this.getSession().getMaxConnections() == 1);
-    }
-
-    /**
-     * @param transfer Transfer Operation
-     * @param browser  Transfer in browser window
-     */
-    protected void transfer(final Transfer transfer, final boolean browser) {
-        this.transfer(transfer, browser, new TransferPrompt() {
-            @Override
-            public TransferAction prompt() {
-                return TransferPromptController.create(BrowserController.this, transfer).prompt();
-            }
-        });
+    protected void transfer(final Transfer transfer, final List<Path> selected) {
+        this.transfer(transfer, selected, this.getSession().getMaxConnections() == 1,
+                new TransferPrompt() {
+                    @Override
+                    public TransferAction prompt() {
+                        return TransferPromptController.create(BrowserController.this, transfer).prompt();
+                    }
+                }
+        );
     }
 
     /**
@@ -2873,35 +2871,28 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         });
     }
 
-    /**
-     * @param transfer Transfer
-     * @param browser  Transfer in browser window
-     * @param prompt   Callback for overwrite action
-     */
-    protected void transfer(final Transfer transfer, boolean browser, final TransferPrompt prompt) {
-        this.transfer(transfer, transfer.getRoots(), browser, prompt);
-    }
+    protected void transfer(final Transfer transfer, final List<Path> selected, boolean browser, final TransferPrompt prompt) {
+        if(!selected.isEmpty()) {
+            transfer.addListener(new TransferAdapter() {
+                @Override
+                public void transferDidEnd() {
+                    if(!transfer.isCanceled()) {
+                        invoke(new WindowMainAction(BrowserController.this) {
+                            @Override
+                            public void run() {
+                                reloadData(selected, selected, true);
+                            }
 
-    protected void transfer(final Transfer transfer, final List<Path> changed, boolean browser, final TransferPrompt prompt) {
-        transfer.addListener(new TransferAdapter() {
-            @Override
-            public void transferDidEnd() {
-                if(!transfer.isCanceled()) {
-                    invoke(new WindowMainAction(BrowserController.this) {
-                        @Override
-                        public void run() {
-                            reloadData(changed, changed, true);
-                        }
-
-                        @Override
-                        public boolean isValid() {
-                            return super.isValid() && BrowserController.this.isConnected();
-                        }
-                    });
+                            @Override
+                            public boolean isValid() {
+                                return super.isValid() && BrowserController.this.isConnected();
+                            }
+                        });
+                    }
+                    transfer.removeListener(this);
                 }
-                transfer.removeListener(this);
-            }
-        });
+            });
+        }
         if(browser) {
             transfer.addListener(new TransferAdapter() {
                 private TransferSpeedometer meter = new TransferSpeedometer(transfer);
