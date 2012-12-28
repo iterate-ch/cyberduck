@@ -1416,7 +1416,6 @@ public class S3Path extends CloudPath {
                     log.info("Anonymous cannot create signed URL");
                     return null;
                 }
-                this.getSession().check();
                 // Determine expiry time for URL
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.SECOND, expiry);
@@ -1481,6 +1480,5 @@ public class S3Path extends CloudPath {
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Torrent"))));
         }
         return urls;
-
     }
 }
