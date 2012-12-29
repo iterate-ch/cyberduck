@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.logging;
 import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
 
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -34,6 +35,16 @@ public class SystemLogAppender extends AppenderSkeleton {
     @Override
     protected void append(final LoggingEvent event) {
         FoundationKitFunctionsLibrary.NSLog(layout.format(event));
+        if(layout.ignoresThrowable()) {
+            final String[] trace = event.getThrowableStrRep();
+            if(trace != null) {
+                StringBuilder buffer = new StringBuilder();
+                for(final String t : trace) {
+                    buffer.append(t).append(Layout.LINE_SEP);
+                }
+                FoundationKitFunctionsLibrary.NSLog(buffer.toString());
+            }
+        }
     }
 
     @Override
