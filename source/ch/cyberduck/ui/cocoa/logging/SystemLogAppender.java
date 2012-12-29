@@ -34,17 +34,18 @@ public class SystemLogAppender extends AppenderSkeleton {
 
     @Override
     protected void append(final LoggingEvent event) {
-        FoundationKitFunctionsLibrary.NSLog(layout.format(event));
+        final StringBuilder buffer = new StringBuilder();
+        buffer.append(layout.format(event));
         if(layout.ignoresThrowable()) {
             final String[] trace = event.getThrowableStrRep();
             if(trace != null) {
-                StringBuilder buffer = new StringBuilder();
+                buffer.append(Layout.LINE_SEP);
                 for(final String t : trace) {
                     buffer.append(t).append(Layout.LINE_SEP);
                 }
-                FoundationKitFunctionsLibrary.NSLog(buffer.toString());
             }
         }
+        FoundationKitFunctionsLibrary.NSLog(buffer.toString());
     }
 
     @Override
