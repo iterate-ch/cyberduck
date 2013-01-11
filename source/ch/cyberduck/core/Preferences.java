@@ -316,6 +316,7 @@ public abstract class Preferences {
          * Use octal or decimal file sizes
          */
         defaults.put("browser.filesize.decimal", String.valueOf(false));
+        defaults.put("browser.date.natural", String.valueOf(true));
 
         defaults.put("info.toggle.permission", String.valueOf(1));
         defaults.put("info.toggle.distribution", String.valueOf(0));
