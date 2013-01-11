@@ -110,7 +110,8 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public long getTransferred() {
-        return _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
+        // Include super for serialized state.
+        return super.getTransferred() + _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
     }
 
     private TransferAction action = TransferAction.forName(
