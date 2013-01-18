@@ -467,11 +467,9 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() {
-                    final CloudSession session = (CloudSession) controller.getSession();
+                    final Session session = controller.getSession();
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
-                        final String document = String.format(Preferences.instance().getProperty(
-                                "analytics.provider.qloudstat.iam.policy"),
-                                session.getLoggingTarget(getSelected().getContainerName()));
+                        final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
                         session.iam().createUser(session.analytics().getName(), document);
                     }
                     else {
@@ -2626,14 +2624,7 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     final Session session = controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
-                        final Distribution.Method method
-                                = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-                        // We only support one distribution per bucket for the sake of simplicity
-                        final String container = getSelected().getContainerName();
-                        Distribution distribution = session.cdn().read(
-                                session.cdn().getOrigin(method, container), method);
-                        final String document = String.format(Preferences.instance().getProperty(
-                                "analytics.provider.qloudstat.iam.policy"), distribution.getLoggingTarget());
+                        final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
                         session.iam().createUser(session.analytics().getName(), document);
                     }
                     else {
