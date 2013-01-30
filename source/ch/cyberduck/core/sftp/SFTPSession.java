@@ -139,6 +139,7 @@ public class SFTPSession extends Session {
         this.fireConnectionWillOpenEvent();
 
         connection = new Connection(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()), host.getPort(), this.getUserAgent());
+        connection.setTCPNoDelay(true);
         connection.addConnectionMonitor(new ConnectionMonitor() {
             @Override
             public void connectionLost(Throwable reason) {

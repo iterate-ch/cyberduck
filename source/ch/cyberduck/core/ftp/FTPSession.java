@@ -318,7 +318,9 @@ public class FTPSession extends SSLSession {
             }
             client.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
         }
-        client.setBufferSize(Preferences.instance().getInteger("ftp.socket.buffer"));
+        final int buffer = Preferences.instance().getInteger("ftp.socket.buffer");
+        client.setBufferSize(buffer);
+        client.setTcpNoDelay(true);
     }
 
     /**
