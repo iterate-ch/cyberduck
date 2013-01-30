@@ -320,6 +320,10 @@ public class FTPSession extends SSLSession {
         }
         final int buffer = Preferences.instance().getInteger("ftp.socket.buffer");
         client.setBufferSize(buffer);
+        client.setReceiveBufferSize(buffer);
+        client.setReceieveDataSocketBufferSize(buffer);
+        client.setSendBufferSize(buffer);
+        client.setSendDataSocketBufferSize(buffer);
         client.setTcpNoDelay(true);
     }
 
