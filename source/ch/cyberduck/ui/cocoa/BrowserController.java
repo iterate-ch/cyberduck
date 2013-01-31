@@ -219,7 +219,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.filenameFilter = new PathFilter<Path>() {
                 @Override
                 public boolean accept(Path file) {
-                    if(file.getName().toLowerCase().contains(search.toLowerCase())) {
+                    if(file.getName().toLowerCase(java.util.Locale.ROOT).contains(search.toLowerCase(java.util.Locale.ROOT))) {
                         // Matching filename
                         return true;
                     }
@@ -1764,9 +1764,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.bookmarkModel.setFilter(new HostFilter() {
                 @Override
                 public boolean accept(Host host) {
-                    return StringUtils.lowerCase(host.getNickname()).contains(searchString.toLowerCase())
-                            || ((null != host.getComment()) && StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase()))
-                            || StringUtils.lowerCase(host.getHostname()).contains(searchString.toLowerCase());
+                    return StringUtils.lowerCase(host.getNickname()).contains(searchString.toLowerCase(java.util.Locale.ROOT))
+                            || ((null != host.getComment()) && StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase(java.util.Locale.ROOT)))
+                            || StringUtils.lowerCase(host.getHostname()).contains(searchString.toLowerCase(java.util.Locale.ROOT));
                 }
             });
         }

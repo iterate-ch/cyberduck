@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -160,7 +161,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     private String getToolbarName() {
-        return this.getBundleName().toLowerCase() + ".toolbar";
+        return this.getBundleName().toLowerCase(Locale.ROOT) + ".toolbar";
     }
 
     /**
