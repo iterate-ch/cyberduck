@@ -490,7 +490,7 @@ public abstract class Preferences {
          */
         defaults.put("http.connections.total", String.valueOf(5));
         defaults.put("http.manager.timeout", String.valueOf(0)); // Inifinite
-        defaults.put("http.socket.buffer", String.valueOf(8192));
+        defaults.put("http.socket.buffer", String.valueOf(131072));
         defaults.put("http.credentials.charset", "ISO-8859-1");
 
         /**
@@ -500,7 +500,7 @@ public abstract class Preferences {
          */
         defaults.put("ftp.datachannel.verify", String.valueOf(false));
         defaults.put("ftp.command.feat", String.valueOf(true));
-        defaults.put("ftp.socket.buffer", String.valueOf(8192));
+        defaults.put("ftp.socket.buffer", String.valueOf(131072));
 
         /**
          * Send LIST -a
