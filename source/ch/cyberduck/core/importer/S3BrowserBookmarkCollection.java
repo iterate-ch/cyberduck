@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -83,7 +84,7 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
                             log.warn("Missing key in line:" + line);
                             continue;
                         }
-                        String name = scanner.next().toLowerCase();
+                        String name = scanner.next().toLowerCase(Locale.ROOT);
                         if(!scanner.hasNext()) {
                             log.warn("Missing value in line:" + line);
                             continue;
