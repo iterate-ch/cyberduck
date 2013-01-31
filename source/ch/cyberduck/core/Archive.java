@@ -127,7 +127,7 @@ public abstract class Archive {
         if(StringUtils.isNotBlank(name)) {
             for(Archive archive : getKnownArchives()) {
                 for(String extension : archive.getExtensions()) {
-                    if(name.toLowerCase().endsWith(extension.toLowerCase())) {
+                    if(name.toLowerCase(java.util.Locale.ROOT).endsWith(extension.toLowerCase(java.util.Locale.ROOT))) {
                         return archive;
                     }
                 }
