@@ -135,7 +135,7 @@ public class FTPSession extends SSLSession {
                     ((Configurable) parser).configure(null);
                 }
                 if(StringUtils.isNotBlank(system)) {
-                    String ukey = system.toUpperCase();
+                    String ukey = system.toUpperCase(java.util.Locale.ROOT);
                     if(ukey.contains(FTPClientConfig.SYST_NT)) {
                         // Workaround for #5572.
                         this.setStatListSupportedEnabled(false);
@@ -301,7 +301,7 @@ public class FTPSession extends SSLSession {
         }
     };
 
-    protected void configure(FTPClient client) throws IOException {
+    protected void configure(final FTPClient client) throws IOException {
         client.setControlEncoding(this.getEncoding());
         client.removeProtocolCommandListener(listener);
         client.addProtocolCommandListener(listener);
@@ -321,10 +321,9 @@ public class FTPSession extends SSLSession {
         final int buffer = Preferences.instance().getInteger("ftp.socket.buffer");
         client.setBufferSize(buffer);
         client.setReceiveBufferSize(buffer);
-        client.setReceieveDataSocketBufferSize(buffer);
         client.setSendBufferSize(buffer);
+        client.setReceieveDataSocketBufferSize(buffer);
         client.setSendDataSocketBufferSize(buffer);
-        client.setTcpNoDelay(true);
     }
 
     /**
@@ -350,24 +349,26 @@ public class FTPSession extends SSLSession {
         this.client = new
                 FTPClient(f, f.getSSLContext());
 
-        this.configure(this.getClient());
-        this.getClient().connect(host.getHostname(true), host.getPort());
+        final FTPClient client = this.getClient();
+        this.configure(client);
+        client.connect(host.getHostname(true), host.getPort());
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
+        client.setTcpNoDelay(false);
         this.login();
 
         if(this.getHost().getProtocol().isSecure()) {
-            this.getClient().execPBSZ(0);
+            client.execPBSZ(0);
             // Negotiate data connection security
-            this.getClient().execPROT(Preferences.instance().getProperty("ftp.tls.datachannel"));
+            client.execPROT(Preferences.instance().getProperty("ftp.tls.datachannel"));
         }
 
         this.fireConnectionDidOpenEvent();
         if("UTF-8".equals(this.getEncoding())) {
-            if(this.getClient().isFeatureSupported("UTF8")) {
-                if(!FTPReply.isPositiveCompletion(this.getClient().sendCommand("OPTS UTF8 ON"))) {
-                    log.warn("Failed to negogiate UTF-8 charset:" + this.getClient().getReplyString());
+            if(client.isFeatureSupported("UTF8")) {
+                if(!FTPReply.isPositiveCompletion(client.sendCommand("OPTS UTF8 ON"))) {
+                    log.warn("Failed to negogiate UTF-8 charset:" + client.getReplyString());
                 }
             }
         }
