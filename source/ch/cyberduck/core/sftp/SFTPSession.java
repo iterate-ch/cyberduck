@@ -163,7 +163,7 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    protected void login(LoginController controller, final Credentials credentials) throws IOException {
+    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
         if(this.getClient().isAuthenticationComplete()) {
             this.message(Locale.localizedString("Login successful", "Credentials"));
             // Already authenticated
@@ -216,7 +216,7 @@ public class SFTPSession extends Session {
      * @return True if authentication succeeded
      * @throws IOException Error reading private key
      */
-    private boolean loginUsingPublicKeyAuthentication(LoginController controller, final Credentials credentials)
+    private boolean loginUsingPublicKeyAuthentication(final LoginController controller, final Credentials credentials)
             throws IOException {
 
         log.debug("loginUsingPublicKeyAuthentication:" + credentials);
@@ -284,7 +284,7 @@ public class SFTPSession extends Session {
      * @return True if authentication succeeded
      * @throws IOException Login failed or canceled
      */
-    private boolean loginUsingPasswordAuthentication(LoginController controller, final Credentials credentials) throws IOException {
+    private boolean loginUsingPasswordAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
         log.debug("loginUsingPasswordAuthentication:" + credentials);
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "password")) {
             return this.getClient().authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
