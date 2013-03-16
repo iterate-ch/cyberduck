@@ -521,6 +521,7 @@ public abstract class Preferences {
          2) Private (requested by 'PROT P')
          */
         defaults.put("ftp.tls.datachannel", "P"); //C
+        defaults.put("ftp.tls.session.requirereuse", String.valueOf(true));
 
         /**
          * Try to determine the timezone automatically using timestamp comparison from MLST and LIST

@@ -29,18 +29,23 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSessionContext;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +54,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class FTPClient extends FTPSClient {
-    private static Logger log = Logger.getLogger(FTPSession.class);
+    private static final Logger log = Logger.getLogger(FTPClient.class);
 
     private SSLSocketFactory sslSocketFactory;
 
@@ -123,7 +128,7 @@ public class FTPClient extends FTPSClient {
     }
 
     protected String getCommand(final int command) {
-        String value = commands.get(command);
+        final String value = commands.get(command);
         if(null == value) {
             return FTPCommand.getCommand(command);
         }
@@ -131,12 +136,40 @@ public class FTPClient extends FTPSClient {
     }
 
     @Override
-    protected Socket _openDataConnection_(final int command, final String arg) throws IOException {
-        Socket socket = super._openDataConnection_(command, arg);
+    protected Socket _openDataConnection_(final String command, final String arg) throws IOException {
+        final Socket socket = super._openDataConnection_(command, arg);
         if(null == socket) {
             throw new FTPException(this.getReplyString());
         }
         return socket;
+    }
+
+    @Override
+    protected void _prepareDataSocket_(final Socket socket) throws IOException {
+        if(Preferences.instance().getBoolean("ftp.tls.session.requirereuse")) {
+            if(socket instanceof SSLSocket) {
+                // Control socket is SSL
+                final SSLSessionContext sessions = (((SSLSocket) _socket_).getSession()).getSessionContext();
+                try {
+                    final Field sessionHostPortCache = sessions.getClass().getDeclaredField("sessionHostPortCache");
+                    sessionHostPortCache.setAccessible(true);
+                    final Object cachedSession = sessionHostPortCache.get(sessions);
+                    final String key = String.format("%s:%s", socket.getInetAddress().getHostAddress(),
+                            String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT);
+                    final Method method = cachedSession.getClass().getDeclaredMethod("put", Object.class, Object.class);
+                    method.setAccessible(true);
+                    method.invoke(cachedSession, key, (((SSLSocket) _socket_).getSession()));
+                }
+                catch(NoSuchFieldException e) {
+                    // Not running in expected JRE
+                    log.warn("No field sessionHostPortCache in SSLSessionContext", e);
+                }
+                catch(Exception e) {
+                    // Not running in expected JRE
+                    log.warn(e.getMessage());
+                }
+            }
+        }
     }
 
     /**
