@@ -818,12 +818,7 @@ public abstract class Protocol {
 
         @Override
         public String disk() {
-            return GDOCS_SSL.disk();
-        }
-
-        @Override
-        public String icon() {
-            return GDOCS_SSL.icon();
+            return "google";
         }
 
         @Override
