@@ -32,8 +32,6 @@ import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpException;
@@ -129,53 +127,6 @@ public class CFSession extends CloudSession implements DistributionConfiguration
             log.info(String.format("Using authentication URL %s", authentication.toString()));
         }
         return authentication.toString();
-    }
-
-    /**
-     * Request to CDN URL in progress
-     */
-    private boolean cdnRequest;
-
-    @Override
-    public AbstractX509TrustManager getTrustManager(String hostname) {
-        if(!trust.containsKey(hostname)) {
-            trust.put(hostname, new KeychainX509TrustManager() {
-                /**
-                 * Different hostname depending if authentication has completed or not.
-                 * @return Authentication or storage hostname.
-                 */
-                @Override
-                public String getHostname() {
-                    try {
-                        if(CFSession.this.isConnected()) {
-                            final FilesClient c = CFSession.this.getClient();
-                            if(!c.isLoggedin()) {
-                                URI url = new URI(c.getAuthenticationURL());
-                                return url.getHost();
-                            }
-                            if(cdnRequest) {
-                                URI url = new URI(c.getCdnManagementURL());
-                                return url.getHost();
-                            }
-                            URI url = new URI(c.getStorageURL());
-                            return url.getHost();
-                        }
-                        else {
-                            URI url = new URI(CFSession.this.getAuthenticationUrl());
-                            return url.getHost();
-                        }
-                    }
-                    catch(URISyntaxException e) {
-                        log.error("Failure parsing URI", e);
-                    }
-                    catch(ConnectionCanceledException e) {
-                        log.warn(e.getMessage());
-                    }
-                    return null;
-                }
-            });
-        }
-        return trust.get(hostname);
     }
 
     @Override
@@ -286,7 +237,6 @@ public class CFSession extends CloudSession implements DistributionConfiguration
             if(StringUtils.isNotBlank(defaultRootObject)) {
                 this.getClient().updateContainerMetadata(origin, Collections.singletonMap("Web-Index", defaultRootObject));
             }
-            cdnRequest = true;
             try {
                 this.getClient().getCDNContainerInfo(origin);
             }
@@ -307,7 +257,6 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         }
         finally {
             distributionStatus.clear();
-            cdnRequest = false;
         }
     }
 
@@ -319,7 +268,6 @@ public class CFSession extends CloudSession implements DistributionConfiguration
                 this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
                         origin));
 
-                cdnRequest = true;
                 final FilesCDNContainer info = this.getClient().getCDNContainerInfo(origin);
                 final Distribution distribution = new Distribution(info.getName(),
                         new URI(this.getClient().getStorageURL()).getHost(),
@@ -349,9 +297,6 @@ public class CFSession extends CloudSession implements DistributionConfiguration
             catch(URISyntaxException e) {
                 this.error("Cannot read CDN configuration", e);
             }
-            finally {
-                cdnRequest = false;
-            }
         }
         if(distributionStatus.containsKey(origin)) {
             return distributionStatus.get(origin);
@@ -365,7 +310,6 @@ public class CFSession extends CloudSession implements DistributionConfiguration
             this.check();
             this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
                     origin));
-            cdnRequest = true;
             for(Path file : files) {
                 if(file.isContainer()) {
                     this.getClient().purgeCDNContainer(origin, null);
@@ -383,7 +327,6 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         }
         finally {
             distributionStatus.clear();
-            cdnRequest = false;
         }
     }
 
