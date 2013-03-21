@@ -779,7 +779,6 @@ img/alert@2x.png -text svneol=unset#image/png
 img/aliasbadge.png -text svneol=unset#image/png
 img/aliasbadge.tiff -text
 img/aliasbadge@2x.png -text svneol=unset#image/png
-img/azure-icon.tiff -text
 img/azure.ico -text
 img/azure.png -text svneol=unset#image/png
 img/azure.tiff -text
@@ -798,7 +797,6 @@ img/bookmarks.tiff -text svneol=unset#image/tiff
 img/bookmarks@2x.png -text svneol=unset#image/png
 img/browser.tiff -text svneol=unset#image/tiff
 img/cancel.tiff -text svneol=unset#image/tiff
-img/cf-icon.tiff -text
 img/cf.ico -text
 img/cf.png -text svneol=unset#image/png
 img/cf.tiff -text
@@ -864,7 +862,6 @@ img/general.png -text svneol=unset#image/png
 img/general.tiff -text svneol=unset#image/tiff
 img/general@2x.png -text svneol=unset#image/png
 img/google.tiff -text
-img/googledrive-icon@2x.png -text svneol=unset#image/png
 img/googledrive.ico -text
 img/googledrive.png -text svneol=unset#image/png
 img/googledrive.tiff -text
