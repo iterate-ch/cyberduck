@@ -101,6 +101,11 @@ public class S3Session extends CloudSession {
         }
 
         @Override
+        protected boolean isTargettingGoogleStorageService() {
+            return getHost().getHostname().equals(Protocol.GOOGLESTORAGE_SSL.getDefaultHostname());
+        }
+
+        @Override
         protected void initializeProxy() {
             // Client already configured
         }
