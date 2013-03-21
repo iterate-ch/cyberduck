@@ -22,53 +22,46 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @version $Id$
  */
 public abstract class SSLSession extends Session {
 
+    private AbstractX509TrustManager trustManager;
+
     protected SSLSession(Host h) {
         super(h);
+        this.trustManager = new KeychainX509TrustManager() {
+            @Override
+            public String getHostname() {
+                return SSLSession.this.getDomain();
+            }
+        };
+    }
+
+    protected String getDomain() {
+        return this.getHost().getHostname(true);
     }
 
     /**
-     *
-     */
-    protected Map<String, AbstractX509TrustManager> trust
-            = new HashMap<String, AbstractX509TrustManager>();
-
-    /**
-     * @param hostname Target hostname used for hostname validation in certificate trust verification
      * @return Trust manager backed by keychain
      */
-    public AbstractX509TrustManager getTrustManager(final String hostname) {
-        if(!trust.containsKey(hostname)) {
-            trust.put(hostname, new KeychainX509TrustManager() {
-                @Override
-                public String getHostname() {
-                    return hostname;
-                }
-            });
-        }
-        return trust.get(hostname);
+    public AbstractX509TrustManager getTrustManager() {
+        return trustManager;
     }
 
     /**
      * @return List of certificates accepted by all trust managers of this session.
      */
     public List<X509Certificate> getAcceptedIssuers() {
-        List<X509Certificate> accepted = new ArrayList<X509Certificate>();
-        for(AbstractX509TrustManager m : trust.values()) {
-            accepted.addAll(Arrays.asList(m.getAcceptedIssuers()));
-        }
-        return accepted;
+        return Arrays.asList(trustManager.getAcceptedIssuers());
     }
 
     @Override
     protected void fireConnectionDidCloseEvent() {
-        trust.clear();
         super.fireConnectionDidCloseEvent();
     }
 }

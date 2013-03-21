@@ -50,6 +50,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
@@ -111,7 +112,7 @@ public abstract class HttpSession extends SSLSession {
                     PlainSocketFactory.getSocketFactory()));
             registry.register(new Scheme(ch.cyberduck.core.Scheme.https.toString(), host.getPort(),
                     new SSLSocketFactory(
-                            new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(hostname)).getSSLContext(),
+                            new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
                             new X509HostnameVerifier() {
                                 @Override
                                 public void verify(String host, SSLSocket ssl) throws IOException {
@@ -158,7 +159,7 @@ public abstract class HttpSession extends SSLSession {
         return clients.get(hostname);
     }
 
-    protected void configure(AbstractHttpClient client) {
+    protected void configure(final AbstractHttpClient client) {
         client.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
@@ -166,6 +167,7 @@ public abstract class HttpSession extends SSLSession {
                 for(Header header : request.getAllHeaders()) {
                     log(true, header.toString());
                 }
+                domain = ((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName();
             }
         });
         client.addResponseInterceptor(new HttpResponseInterceptor() {
@@ -181,6 +183,13 @@ public abstract class HttpSession extends SSLSession {
             client.addRequestInterceptor(new RequestAcceptEncoding());
             client.addResponseInterceptor(new ResponseContentEncoding());
         }
+    }
+
+    private String domain;
+
+    @Override
+    protected String getDomain() {
+        return domain;
     }
 
     @Override

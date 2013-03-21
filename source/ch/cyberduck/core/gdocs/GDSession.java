@@ -19,17 +19,7 @@ package ch.cyberduck.core.gdocs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Proxy;
-import ch.cyberduck.core.ProxyFactory;
-import ch.cyberduck.core.ResolveCanceledException;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -177,8 +167,7 @@ public class GDSession extends SSLSession {
         c.setConnectTimeout(timeout());
         c.setReadTimeout(timeout());
         if(c instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) c).setSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
-                    this.getTrustManager(url.getHost())));
+            ((HttpsURLConnection) c).setSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()));
             ((HttpsURLConnection) c).setHostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {

@@ -344,7 +344,7 @@ public class FTPSession extends SSLSession {
         this.fireConnectionWillOpenEvent();
 
         final CustomTrustSSLProtocolSocketFactory f
-                = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(this.getHost().getHostname(true)));
+                = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
 
         this.client = new
                 FTPClient(f, f.getSSLContext());
