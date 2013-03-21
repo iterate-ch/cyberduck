@@ -779,9 +779,7 @@ img/alert@2x.png -text svneol=unset#image/png
 img/aliasbadge.png -text svneol=unset#image/png
 img/aliasbadge.tiff -text
 img/aliasbadge@2x.png -text svneol=unset#image/png
-img/azure-icon.png -text svneol=unset#image/png
 img/azure-icon.tiff -text
-img/azure-icon@2x.png -text svneol=unset#image/png
 img/azure.ico -text
 img/azure.png -text svneol=unset#image/png
 img/azure.tiff -text
@@ -800,9 +798,7 @@ img/bookmarks.tiff -text svneol=unset#image/tiff
 img/bookmarks@2x.png -text svneol=unset#image/png
 img/browser.tiff -text svneol=unset#image/tiff
 img/cancel.tiff -text svneol=unset#image/tiff
-img/cf-icon.png -text svneol=unset#unset
 img/cf-icon.tiff -text
-img/cf-icon@2x.png -text svneol=unset#image/png
 img/cf.ico -text
 img/cf.png -text svneol=unset#image/png
 img/cf.tiff -text
@@ -838,9 +834,6 @@ img/download7.icns -text
 img/download8.icns -text
 img/download9.icns -text
 img/download@2x.png -text svneol=unset#image/png
-img/dropbox-icon.png -text svneol=unset#image/png
-img/dropbox-icon.tiff -text
-img/dropbox-icon@2x.png -text svneol=unset#image/png
 img/dropbox.ico -text
 img/dropbox.png -text svneol=unset#image/png
 img/dropbox.tiff -text
@@ -860,9 +853,6 @@ img/eject@2x.png -text svneol=unset#image/png
 img/executable.png -text svneol=unset#image/png
 img/executable.tiff -text
 img/executable@2x.png -text svneol=unset#image/png
-img/ftp-icon.png -text svneol=unset#image/png
-img/ftp-icon.tiff -text
-img/ftp-icon@2x.png -text svneol=unset#image/png
 img/ftp.ico -text
 img/ftp.png -text svneol=unset#image/png
 img/ftp.tiff -text
@@ -874,8 +864,6 @@ img/general.png -text svneol=unset#image/png
 img/general.tiff -text svneol=unset#image/tiff
 img/general@2x.png -text svneol=unset#image/png
 img/google.tiff -text
-img/googledrive-icon.png -text svneol=unset#image/png
-img/googledrive-icon.tiff -text
 img/googledrive-icon@2x.png -text svneol=unset#image/png
 img/googledrive.ico -text
 img/googledrive.png -text svneol=unset#image/png
@@ -886,7 +874,6 @@ img/greenArrow2.png -text
 img/history.png -text svneol=unset#image/png
 img/history.tiff -text svneol=unset#image/tiff
 img/history@2x.png -text svneol=unset#image/png
-img/hpcloud-icon.png -text svneol=unset#image/png
 img/hpcloud.png -text svneol=unset#image/png
 img/hpcloud.tiff -text
 img/hpcloud@2x.png -text svneol=unset#image/png
@@ -963,9 +950,6 @@ img/resume@2x.png -text svneol=unset#image/png
 img/reveal.png -text svneol=unset#image/png
 img/reveal.tiff -text svneol=unset#image/tiff
 img/reveal@2x.png -text svneol=unset#image/png
-img/s3-icon.png -text svneol=unset#image/png
-img/s3-icon.tiff -text
-img/s3-icon@2x.png -text svneol=unset#image/png
 img/s3.ico -text
 img/s3.png -text svneol=unset#image/png
 img/s3.tiff -text
@@ -989,9 +973,6 @@ img/statusYellow@2x.png -text svneol=unset#image/png
 img/stop.png -text svneol=unset#image/png
 img/stop.tiff -text svneol=unset#image/tiff
 img/stop@2x.png -text svneol=unset#image/png
-img/swift-icon.png -text svneol=unset#image/png
-img/swift-icon.tiff -text
-img/swift-icon@2x.png -text svneol=unset#image/png
 img/swift.ico -text
 img/swift.png -text svneol=unset#image/png
 img/swift.tiff -text
