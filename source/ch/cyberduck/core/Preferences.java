@@ -773,13 +773,6 @@ public abstract class Preferences {
          */
         defaults.put("ssh.transfer", Protocol.SFTP.getIdentifier()); // Session.SCP
 
-        defaults.put("ssh.CSEncryption", "blowfish-cbc"); //client -> server encryption cipher
-        defaults.put("ssh.SCEncryption", "blowfish-cbc"); //server -> client encryption cipher
-        defaults.put("ssh.CSAuthentication", "hmac-md5"); //client -> server message authentication
-        defaults.put("ssh.SCAuthentication", "hmac-md5"); //server -> client message authentication
-        defaults.put("ssh.publickey", "ssh-rsa");
-        defaults.put("ssh.compression", "none"); //zlib
-
         defaults.put("ssh.authentication.publickey.default.enable", String.valueOf(false));
         defaults.put("ssh.authentication.publickey.default.rsa", "~/.ssh/id_rsa");
         defaults.put("ssh.authentication.publickey.default.dsa", "~/.ssh/id_dsa");
