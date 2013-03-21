@@ -111,7 +111,6 @@
 		476730C316108E1300B28D35 /* nav-forward.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767307316108E1200B28D35 /* nav-forward.tiff */; };
 		476730C416108E1300B28D35 /* transfer-upload.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767307416108E1200B28D35 /* transfer-upload.tiff */; };
 		476730C616108E1300B28D35 /* nav-up.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767307616108E1200B28D35 /* nav-up.tiff */; };
-		476730C716108E1300B28D35 /* azure-icon.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767307716108E1200B28D35 /* azure-icon.tiff */; };
 		476730C816108E1300B28D35 /* bandwidth.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767307816108E1200B28D35 /* bandwidth.tiff */; };
 		476730C916108E1300B28D35 /* book.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767307916108E1200B28D35 /* book.tiff */; };
 		476730CA16108E1300B28D35 /* bookmark.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4767307A16108E1200B28D35 /* bookmark.tiff */; };
@@ -977,7 +976,6 @@
 		4767307316108E1200B28D35 /* nav-forward.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "nav-forward.tiff"; sourceTree = "<group>"; };
 		4767307416108E1200B28D35 /* transfer-upload.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "transfer-upload.tiff"; sourceTree = "<group>"; };
 		4767307616108E1200B28D35 /* nav-up.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "nav-up.tiff"; sourceTree = "<group>"; };
-		4767307716108E1200B28D35 /* azure-icon.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "azure-icon.tiff"; sourceTree = "<group>"; };
 		4767307816108E1200B28D35 /* bandwidth.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = bandwidth.tiff; sourceTree = "<group>"; };
 		4767307916108E1200B28D35 /* book.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = book.tiff; sourceTree = "<group>"; };
 		4767307A16108E1200B28D35 /* bookmark.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = bookmark.tiff; sourceTree = "<group>"; };
@@ -1919,7 +1917,6 @@
 				4767307316108E1200B28D35 /* nav-forward.tiff */,
 				4767307416108E1200B28D35 /* transfer-upload.tiff */,
 				4767307616108E1200B28D35 /* nav-up.tiff */,
-				4767307716108E1200B28D35 /* azure-icon.tiff */,
 				4767307816108E1200B28D35 /* bandwidth.tiff */,
 				4767307916108E1200B28D35 /* book.tiff */,
 				4767307A16108E1200B28D35 /* bookmark.tiff */,
@@ -2714,7 +2711,6 @@
 				476730C316108E1300B28D35 /* nav-forward.tiff in Resources */,
 				476730C416108E1300B28D35 /* transfer-upload.tiff in Resources */,
 				476730C616108E1300B28D35 /* nav-up.tiff in Resources */,
-				476730C716108E1300B28D35 /* azure-icon.tiff in Resources */,
 				476730C816108E1300B28D35 /* bandwidth.tiff in Resources */,
 				476730C916108E1300B28D35 /* book.tiff in Resources */,
 				476730CA16108E1300B28D35 /* bookmark.tiff in Resources */,
