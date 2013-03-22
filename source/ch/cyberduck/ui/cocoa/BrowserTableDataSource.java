@@ -203,13 +203,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             if(identifier.equals(SIZE_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        SizeFormatterFactory.get().format(item.attributes().getSize(),
-                                Preferences.instance().getBoolean("browser.date.natural")),
+                        SizeFormatterFactory.get().format(item.attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(MODIFIED_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        UserDateFormatterFactory.get().getShortFormat(item.attributes().getModificationDate()),
+                        UserDateFormatterFactory.get().getShortFormat(item.attributes().getModificationDate(),
+                                Preferences.instance().getBoolean("browser.date.natural")),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(OWNER_COLUMN)) {

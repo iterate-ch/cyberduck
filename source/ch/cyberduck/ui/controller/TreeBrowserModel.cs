@@ -126,7 +126,7 @@ namespace Ch.Cyberduck.Ui.Controller
             DateTime modificationDate = (DateTime) value;
             if (modificationDate != DateTime.MinValue)
             {
-                return UserDefaultsDateFormatter.GetShortFormat(modificationDate);
+                return UserDateFormatterFactory.get().getShortFormat(modificationDate, Preferences.instance().getBoolean("browser.date.natural"));
             }
             return _unknown;
         }
