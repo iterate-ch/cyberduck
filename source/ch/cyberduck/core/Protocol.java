@@ -627,6 +627,16 @@ public abstract class Protocol {
         }
 
         @Override
+        public String disk() {
+            return SWIFT.disk();
+        }
+
+        @Override
+        public String icon() {
+            return SWIFT.icon();
+        }
+
+        @Override
         public String[] getSchemes() {
             return new String[]{this.getScheme().name(), "mosso", "cloudfiles", "cf"};
         }
