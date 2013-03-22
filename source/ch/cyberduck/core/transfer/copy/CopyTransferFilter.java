@@ -1,23 +1,22 @@
 package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
-import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
  * @version $Id$
  */
-public class CopyTransferFilter extends AbstractUploadFilter {
+public class CopyTransferFilter extends TransferPathFilter {
 
     private final Map<Path, Path> files;
 
     public CopyTransferFilter(final Map<Path, Path> files) {
-        super(new DownloadSymlinkResolver(new ArrayList<Path>(files.keySet())));
         this.files = files;
     }
 
@@ -35,8 +34,6 @@ public class CopyTransferFilter extends AbstractUploadFilter {
 
     @Override
     public TransferStatus prepare(final Path source) {
-        final Path destination = files.get(source);
-        destination.setAttributes(source.attributes());
         final TransferStatus status = new TransferStatus();
         if(source.attributes().isFile()) {
             if(source.attributes().getSize() == -1) {
@@ -50,7 +47,23 @@ public class CopyTransferFilter extends AbstractUploadFilter {
 
     @Override
     public void complete(final Path source, final TransferOptions options, final TransferStatus status) {
-        final Path destination = files.get(source);
-        super.complete(destination, options, status);
+        if(!status.isCanceled()) {
+            final Path destination = files.get(source);
+            if(destination.getSession().isUnixPermissionsSupported()) {
+                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    Permission permission = source.attributes().getPermission();
+                    if(!Permission.EMPTY.equals(permission)) {
+                        destination.writeUnixPermission(permission);
+                    }
+                }
+            }
+            if(destination.getSession().isWriteTimestampSupported()) {
+                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    destination.writeTimestamp(source.attributes().getCreationDate(),
+                            source.attributes().getModificationDate(),
+                            source.attributes().getAccessedDate());
+                }
+            }
+        }
     }
 }

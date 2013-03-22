@@ -6,7 +6,10 @@ import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.BeforeClass;
@@ -88,5 +91,36 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         CopyTransferFilter f = new CopyTransferFilter(files);
         final TransferStatus status = f.prepare(source);
         assertEquals(0L, status.getLength());
+    }
+
+    @Test
+    public void testComplete() throws Exception {
+        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final NullPath source = new NullPath("a", Path.FILE_TYPE);
+        source.attributes().setSize(1L);
+        source.attributes().setPermission(new Permission(777));
+        final long time = System.currentTimeMillis();
+        source.attributes().setModificationDate(time);
+        final boolean[] timestampWrite = new boolean[1];
+        final boolean[] permissionWrite = new boolean[1];
+        final NullPath target = new NullPath("a", Path.FILE_TYPE) {
+            @Override
+            public void writeTimestamp(final long created, final long modified, final long accessed) {
+                assertEquals(time, modified);
+                timestampWrite[0] = true;
+            }
+
+            @Override
+            public void writeUnixPermission(final Permission permission) {
+                assertEquals(new Permission(777), permission);
+                permissionWrite[0] = true;
+            }
+        };
+        files.put(source, target);
+        CopyTransferFilter f = new CopyTransferFilter(files);
+        Preferences.instance().setProperty("queue.upload.preserveDate", true);
+        f.complete(source, new TransferOptions(), new TransferStatus());
+        assertTrue(permissionWrite[0]);
+        assertTrue(timestampWrite[0]);
     }
 }
