@@ -2171,6 +2171,7 @@ pl.lproj/Status.strings -text svneol=unset#text/utf-16
 pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 profiles/Cloud.ca[!!-~]Object[!!-~]Store[!!-~]East-1[!!-~]Region.cyberduckprofile -text
 profiles/Dream Objects.cyberduckprofile -text
+profiles/Dump[!!-~]Truck.cyberduckprofile -text svneol=unset#application/xml
 profiles/Dunkel[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text
 profiles/Eucalyptus[!!-~]Walrus[!!-~]S3.cyberduckprofile -text
 profiles/GreenQloud.cyberduckprofile -text
