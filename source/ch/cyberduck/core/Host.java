@@ -621,7 +621,12 @@ public final class Host implements Serializable {
      * @param hostname Server
      */
     public void setHostname(final String hostname) {
-        this.hostname = hostname.trim();
+        if(this.protocol.isHostnameConfigurable()) {
+            this.hostname = hostname.trim();
+        }
+        else {
+            this.hostname = protocol.getDefaultHostname();
+        }
         this.punycode = null;
         CredentialsConfiguratorFactory.get(this.protocol).configure(this.credentials, this.hostname);
     }
