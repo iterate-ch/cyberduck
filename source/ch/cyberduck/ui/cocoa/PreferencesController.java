@@ -178,7 +178,6 @@ public final class PreferencesController extends ToolbarWindowController {
         views.add(panelFTP);
         views.add(panelSFTP);
         views.add(panelS3);
-        views.add(panelGoogle);
         views.add(panelBandwidth);
         views.add(panelAdvanced);
         if(null != Updater.getFeed()) {
@@ -198,7 +197,6 @@ public final class PreferencesController extends ToolbarWindowController {
         views.add("ftp");
         views.add("sftp");
         views.add("s3");
-        views.add("google");
         views.add("bandwidth");
         views.add("connection");
         if(null != Updater.getFeed()) {

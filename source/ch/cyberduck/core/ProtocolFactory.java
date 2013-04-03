@@ -60,7 +60,6 @@ public final class ProtocolFactory {
         register(Protocol.GOOGLESTORAGE_SSL);
         register(Protocol.CLOUDFILES);
         register(Protocol.SWIFT);
-        register(Protocol.GDOCS_SSL);
 
         // Load thirdparty protocols
         final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");

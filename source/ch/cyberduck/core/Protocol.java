@@ -23,8 +23,6 @@ import ch.cyberduck.core.i18n.Locale;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -716,92 +714,6 @@ public abstract class Protocol {
         @Override
         public String getPasswordPlaceholder() {
             return Locale.localizedString("API Access Key", "Mosso");
-        }
-    };
-
-    public static final Protocol GDOCS_SSL = new Protocol() {
-        @Override
-        public String getName() {
-            return Locale.localizedString("Google Docs");
-        }
-
-        @Override
-        public String getDescription() {
-            return this.getName();
-        }
-
-        @Override
-        public String getIdentifier() {
-            return "gd";
-        }
-
-        @Override
-        public Type getType() {
-            return Type.googledrive;
-        }
-
-        @Override
-        public String disk() {
-            return "googledrive";
-        }
-
-        @Override
-        public boolean isHostnameConfigurable() {
-            return false;
-        }
-
-        @Override
-        public String getDefaultHostname() {
-            return "docs.google.com";
-        }
-
-        @Override
-        public Scheme getScheme() {
-            return Scheme.https;
-        }
-
-        @Override
-        public boolean isPortConfigurable() {
-            return false;
-        }
-
-        @Override
-        public boolean isWebUrlConfigurable() {
-            return false;
-        }
-
-        @Override
-        public boolean isAnonymousConfigurable() {
-            return false;
-        }
-
-        @Override
-        public String getUsernamePlaceholder() {
-            return Locale.localizedString("Google Account Email", "S3");
-        }
-
-        @Override
-        public String getPasswordPlaceholder() {
-            return Locale.localizedString("Google Account Password", "S3");
-        }
-
-        @Override
-        public String favicon() {
-            return this.icon();
-        }
-
-        @Override
-        public boolean validate(Credentials credentials) {
-            if(super.validate(credentials)) {
-                try {
-                    new InternetAddress(credentials.getUsername()).validate();
-                    return true;
-                }
-                catch(AddressException e) {
-                    log.warn(e.getMessage());
-                }
-            }
-            return false;
         }
     };
 

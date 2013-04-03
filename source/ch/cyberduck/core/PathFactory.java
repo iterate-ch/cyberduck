@@ -24,8 +24,6 @@ import ch.cyberduck.core.dav.DAVPath;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.gdocs.GDPath;
-import ch.cyberduck.core.gdocs.GDSession;
 import ch.cyberduck.core.gstorage.GSPath;
 import ch.cyberduck.core.gstorage.GSSession;
 import ch.cyberduck.core.local.Local;
@@ -169,29 +167,6 @@ public abstract class PathFactory<S extends Session> {
                             @Override
                             protected <T> Path create(GSSession session, T dict) {
                                 return new GSPath(session, dict);
-                            }
-                        });
-                        break;
-                    case googledrive:
-                        factories.put(p, new PathFactory<GDSession>() {
-                            @Override
-                            protected Path create(GDSession session, String path, int type) {
-                                return new GDPath(session, path, type);
-                            }
-
-                            @Override
-                            protected Path create(GDSession session, String parent, String name, int type) {
-                                return new GDPath(session, parent, name, type);
-                            }
-
-                            @Override
-                            protected Path create(GDSession session, String parent, Local file) {
-                                return new GDPath(session, parent, file);
-                            }
-
-                            @Override
-                            protected <T> Path create(GDSession session, T dict) {
-                                return new GDPath(session, dict);
                             }
                         });
                         break;

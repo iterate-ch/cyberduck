@@ -1936,14 +1936,6 @@ lib/ext/junit-4.8.2.jar -text
 lib/ext/nunit.framework.dll -text
 lib/ext/sonar-ant-task-1.2.jar -text
 lib/ganymed-ssh-2-260.jar -text
-lib/gdata-client-1.0.jar -text
-lib/gdata-client-meta-1.0.jar -text
-lib/gdata-core-1.0.jar -text
-lib/gdata-docs-3.0.jar -text
-lib/gdata-docs-meta-3.0.jar -text
-lib/gdata-media-1.0.jar -text
-lib/gdata-spreadsheet-3.0.jar -text
-lib/gdata-spreadsheet-meta-3.0.jar -text
 lib/google-collect-1.0.jar -text
 lib/httpclient-4.2.3.jar -text
 lib/httpcore-4.2.3.jar -text

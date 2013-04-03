@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.cf.CFSession;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.gdocs.GDSession;
 import ch.cyberduck.core.gstorage.GSSession;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPSession;
@@ -84,14 +83,6 @@ public abstract class SessionFactory {
                             @Override
                             protected Session create(Host h) {
                                 return new GSSession(h);
-                            }
-                        });
-                        break;
-                    case googledrive:
-                        factories.put(p, new SessionFactory() {
-                            @Override
-                            protected Session create(Host h) {
-                                return new GDSession(h);
                             }
                         });
                         break;
