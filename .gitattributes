@@ -848,7 +848,9 @@ img/gear@2x.png -text svneol=unset#image/png
 img/general.png -text svneol=unset#image/png
 img/general.tiff -text svneol=unset#image/tiff
 img/general@2x.png -text svneol=unset#image/png
+img/googlestorage.png -text svneol=unset#image/png
 img/googlestorage.tiff -text svneol=unset#image/tiff
+img/googlestorage@2x.png -text svneol=unset#image/png
 img/greenArrow1.png -text
 img/greenArrow2.png -text
 img/history.png -text svneol=unset#image/png
