@@ -23,6 +23,7 @@ import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -324,6 +325,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testLeapYear() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
