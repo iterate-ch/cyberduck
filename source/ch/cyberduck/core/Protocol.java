@@ -882,5 +882,11 @@ public abstract class Protocol {
         public String favicon() {
             return this.icon();
         }
+
+        @Override
+        public boolean validate(final Credentials credentials) {
+            // OAuth only requires the project token
+            return StringUtils.isNotBlank(credentials.getUsername());
+        }
     };
 }
