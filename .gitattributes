@@ -793,10 +793,6 @@ img/bookmarks.tiff -text svneol=unset#image/tiff
 img/bookmarks@2x.png -text svneol=unset#image/png
 img/browser.tiff -text svneol=unset#image/tiff
 img/cancel.tiff -text svneol=unset#image/tiff
-img/cf.ico -text
-img/cf.png -text svneol=unset#image/png
-img/cf.tiff -text
-img/cf@2x.png -text svneol=unset#image/png
 img/clean.png -text svneol=unset#image/png
 img/clean.tiff -text svneol=unset#image/tiff
 img/clean@2x.png -text svneol=unset#image/png
