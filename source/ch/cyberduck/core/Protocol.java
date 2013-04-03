@@ -828,7 +828,7 @@ public abstract class Protocol {
 
         @Override
         public String disk() {
-            return "google";
+            return "googlestorage";
         }
 
         @Override

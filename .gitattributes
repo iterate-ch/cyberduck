@@ -861,11 +861,11 @@ img/gear@2x.png -text svneol=unset#image/png
 img/general.png -text svneol=unset#image/png
 img/general.tiff -text svneol=unset#image/tiff
 img/general@2x.png -text svneol=unset#image/png
-img/google.tiff -text svneol=unset#image/tiff
 img/googledrive.ico -text
 img/googledrive.png -text svneol=unset#image/png
 img/googledrive.tiff -text
 img/googledrive@2x.png -text svneol=unset#image/png
+img/googlestorage.tiff -text svneol=unset#image/tiff
 img/greenArrow1.png -text
 img/greenArrow2.png -text
 img/history.png -text svneol=unset#image/png
