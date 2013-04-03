@@ -4,7 +4,7 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-4.2.2 [http://trac.cyberduck.ch/milestone/4.2.2]
+4.3 [http://trac.cyberduck.ch/milestone/4.3]
 - [Localize] Arabic Localization
 - [Feature] Retina resolution support (10.8) (#6760)
 - [Feature] Notification center support (10.8) (#6792)
@@ -18,6 +18,7 @@ Changelog. Last modified: $Date$
 - [Feature] Website Configuration (Google Storage)
 - [Feature] Website Configuration (Cloudfiles)
 - [Feature] Edit container metadata (Cloudfiles)
+- [Feature] Reuse Session key on data connection (FTP/TLS) (#5087)
 - [Bugfix] Hangs editing file in external editor (10.8.2) (#6878)
 - [Bugfix] Moving folders deletes the folder (Cloudfiles) (#6442)
 - [Bugfix] Copy folder from server to server (#6440)
@@ -28,8 +29,9 @@ Changelog. Last modified: $Date$
 - [Bugfix] Changes in editor not uploaded when choosing save on close (#6590)
 - [Bugfix] Versioning for directory placeholders (S3) (#5748)
 - [Bugfix] Duplicating file does not retain permissions (#6525)
-- [Bugfix] Dropped support Azure Blob Storage connections (Azure)
-- [Bugfix] Dropped support Dropbox connections (Dropbox)
+- [Remove] Dropped support Azure Blob Storage connections (Azure)
+- [Remove] Dropped support Dropbox connections (Dropbox)
+- [Remove] Dropped support Google Drive connections (Google Docs)
 
 4.2.1 [http://trac.cyberduck.ch/milestone/4.2.1]
 - [Bugfix] Edited files not uploaded (#6399)

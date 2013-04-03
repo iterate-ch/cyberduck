@@ -1,4 +1,4 @@
-4.2.2 [http://trac.cyberduck.ch/milestone/4.2.2]
+4.3 [http://trac.cyberduck.ch/milestone/4.3]
 - [Localize] Arabic Localization
 - [Feature] One click setup for analytics with Qloudstat (S3, CloudFront, Cloudfiles, Google Storage)
 - [Feature] Bucket location in South America (Sao Paulo) Region (S3)
@@ -9,8 +9,8 @@
 - [Feature] Website Configuration (Google Storage)
 - [Feature] Website Configuration (Cloudfiles)
 - [Feature] Edit container metadata (Cloudfiles)
-- [Feature] Edit container metadata (Cloudfiles)
 - [Feature] Create symbolic links (SFTP)
+- [Feature] Reuse Session key on data connection (FTP/TLS) (#5087)
 - [Bugfix] Running out of window handles (#6550)
 - [Bugfix] Moving folders deletes the folder (Cloudfiles) (#6442)
 - [Bugfix] Copy folder from server to server (#6440)
@@ -24,5 +24,7 @@
 - [Bugfix] Versioning for directory placeholders (S3) (#5748)
 - [Bugfix] Duplicating file does not retain permissions (#6525)
 - [Bugfix] Proxy configuration with PAC file (#6968)
-- [Bugfix] Dropped support Azure Blob Storage connections (Azure)
-- [Bugfix] Dropped support Dropbox connections (Dropbox)
+- [Bugfix] Trust exception for expired certificates not saved (#6603)
+- [Remove] Dropped support Azure Blob Storage connections (Azure)
+- [Remove] Dropped support Dropbox connections (Dropbox)
+- [Remove] Dropped support Google Drive connections (Google Docs)

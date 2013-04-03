@@ -39,7 +39,7 @@
 </p>
 
 <p>
-    <a href="http://trac.cyberduck.ch/milestone/4.2.2"><strong>Version 4.2.2</strong></a>
+    <a href="http://trac.cyberduck.ch/milestone/4.3"><strong>Version 4.3</strong></a>
 </p>
 <ul>
     <li>[Localize] Arabic Localization</li>
@@ -55,6 +55,7 @@
     <li>[Feature] Website Configuration (Google Storage)</li>
     <li>[Feature] Website Configuration (Cloudfiles)</li>
     <li>[Feature] Edit container metadata (Cloudfiles)</li>
+    <li>[Feature] Reuse Session key on data connection (FTP/TLS) (#5087)</li>
     <li>[Bugfix] Hangs editing file in external editor (10.8.2) (<a
             href="http://trac.cyberduck.ch/ticket/6878">#6878</a>)
     </li>
@@ -73,137 +74,9 @@
     <li>[Bugfix] Versioning for directory placeholders (S3) (<a href="http://trac.cyberduck.ch/ticket/5748">#5748</a>)
     </li>
     <li>[Bugfix] Duplicating file does not retain permissions (#6525)</li>
-    <li>[Bugfix] Dropped support Azure Blob Storage connections (Azure)</li>
-    <li>[Bugfix] Dropped support Dropbox connections (Dropbox)</li>
-</ul>
-
-<p>
-    <a href="http://trac.cyberduck.ch/milestone/4.2.1"><strong>Version 4.2.1</strong></a>
-</p>
-<ul>
-    <li>[Bugfix] Edited files not uploaded (<a href="http://trac.cyberduck.ch/ticket/6399">#6399</a>)</li>
-    <li>[Bugfix] Content-Type not set to proper MIME type of file on upload (WebDAV) (<a
-            href="http://trac.cyberduck.ch/ticket/6433">#6433</a>)
-    </li>
-    <li>[Bugfix] Transfer status not saved (<a href="http://trac.cyberduck.ch/ticket/6430">#6430</a>)</li>
-</ul>
-
-<p>
-    <a href="http://trac.cyberduck.ch/milestone/4.2"><strong>Version 4.2</strong></a>
-</p>
-<ul>
-    <li>[Feature] Drag files between browser windows to copy files from server to server</li>
-    <li>[Feature] Support server side encryption (S3)</li>
-    <li>[Feature] Configure access logs for buckets (Google Cloud Storage)</li>
-    <li>[Feature] Interoperability with OpenSSH to read private key from keychain.</li>
-    <li>[Feature] Connect to multiple projects (Google Cloud Storage) (<a
-            href="http://trac.cyberduck.ch/ticket/5955">#5955</a>)
-    </li>
-    <li>[Feature] Support OAuth 2.0 Authentication (Google Cloud Storage) (<a
-            href="http://trac.cyberduck.ch/ticket/5955">#5955</a>)
-    </li>
-    <li>[Feature] Support US West (Oregon) location (S3)</li>
-    <li>[Feature] Try public key authentication login with default keys from OpenSSH (SFTP) (<a
-            href="http://trac.cyberduck.ch/ticket/3982">#3982</a>)
-    </li>
-    <li>[Bugfix] Performance improvement preparing files for download</li>
-    <li>[Bugfix] ETag mismatch deleting files (Google Docs) (<a
-            href="http://trac.cyberduck.ch/ticket/6204">#6204</a>)
-    </li>
-    <li>[Bugfix] Creating new file (WebDAV) (<a
-            href="http://trac.cyberduck.ch/ticket/6341">#6341</a>)
-    </li>
-    <li>[Bugfix] No error message when SFTP subsystem is disabled (SFTP) (<a
-            href="http://trac.cyberduck.ch/ticket/5902">#5902</a>)
-    </li>
-</ul>
-
-<p>
-    <a href="http://trac.cyberduck.ch/milestone/4.1.3"><strong>Version 4.1.3</strong></a>
-</p>
-<ul>
-    <li>[Bugfix] Freeze after file transfer is complete (<a
-            href="http://trac.cyberduck.ch/ticket/6183">#6183</a>)
-    </li>
-    <li>[Bugfix] Connection failure to Eucalyptus Cloud installation (S3) (<a
-            href="http://trac.cyberduck.ch/ticket/6206">#6206</a>)
-    </li>
-    <li>[Feature] Copy streaming URLs (Cloudfiles)</li>
-    <li>[Feature] Option to set ACLs for Google Apps Domain (Google Storage)</li>
-    <li>[Feature] Option to set ACLs for Google Group Email Address (Google Storage)</li>
-    <li>[Feature] Allow setting non-metadata headers (Cloudfiles, Openstack Swift) (<a
-            href="http://trac.cyberduck.ch/ticket/6191">#6191</a>, <a
-            href="http://trac.cyberduck.ch/ticket/6239">#6239</a>)
-    </li>
-</ul>
-
-<p>
-    <a href="http://trac.cyberduck.ch/milestone/4.1.2"><strong>Version 4.1.2</strong></a>
-</p>
-<ul>
-    <li>[Feature] Rename files (Cloudfiles)</li>
-    <li>[Feature] Duplicate files (Cloudfiles)</li>
-    <li>[Bugfix] Select filename only without suffix in browser (<a
-            href="http://trac.cyberduck.ch/ticket/6158">#6158</a>)
-    </li>
-</ul>
-
-<p>
-    <a href="http://trac.cyberduck.ch/milestone/4.1.1"><strong>Version 4.1.1</strong></a>
-<ul>
-    <li>[Feature] Importer for WinSCP bookmarks (Windows)</li>
-    <li>[Bugfix] Connection failure with email address as username (WebDAV) (<a
-            href="http://trac.cyberduck.ch/ticket/6066">#6066</a>)
-    </li>
-    <li>[Bugfix] Synchronisation comparison failures (<a
-            href="http://trac.cyberduck.ch/ticket/6074">#6074</a>)
-    </li>
-    <li>[Bugfix] Error listing folders (Openstack Swift) (<a
-            href="http://trac.cyberduck.ch/ticket/6089">#6089</a>)
-    </li>
-</ul>
-
-<p>
-    <a href="http://trac.cyberduck.ch/milestone/4.1"><strong>Version 4.1</strong></a>
-</p>
-<ul>
-    <li>[Localize] Bulgarian Localization</li>
-    <li>[Feature] Replaced WebDAV protocol implementation</li>
-    <li>[Feature] Sort bookmarks by nickname, hostname or protocol (<a
-            href="http://trac.cyberduck.ch/ticket/5925">#5925</a>)
-    </li>
-    <li>[Feature] Enable access logs for custom origin distributions (CloudFront)</li>
-    <li>[Feature] Choose target bucket for access logs (CloudFront)</li>
-    <li>[Feature] Choose target bucket for access logs (S3)</li>
-    <li>[Feature] CDN (Akamai) configuration (Cloudfiles UK) (<a href="http://trac.cyberduck.ch/ticket/5989">#5989</a>)
-    </li>
-    <li>[Feature] Filter bookmarks by comments (<a href="http://trac.cyberduck.ch/ticket/5926">#5926</a>)</li>
-    <li>[Feature] Upload arbitrary file types (Google Docs)</li>
-    <li>[Feature] Support trackpad gestures for navigation and selection (Mac) (<a
-            href="http://trac.cyberduck.ch/ticket/2793">#2793</a>)
-    </li>
-    <li>[Bugfix] Delete only trashes documents (Google Docs) (<a
-            href="http://trac.cyberduck.ch/ticket/5873">#5873</a>)
-    </li>
-    <li>[Bugfix] Wrong timestamp in transfer prompt (<a
-            href="http://trac.cyberduck.ch/ticket/5916">#5916</a>)
-    </li>
-    <li>[Bugfix] Uploading file to collection places it in root folder instead (Google Docs) (<a
-            href="http://trac.cyberduck.ch/ticket/5856">#5856</a>)
-    </li>
-    <li>[Bugfix] Limited to 10'000 containers (Cloudfiles) (<a href="http://trac.cyberduck.ch/ticket/6037">6037</a>)
-    </li>
-    <li>[Bugfix] SSL version number incompatibility (<a href="http://trac.cyberduck.ch/ticket/5061">#5061</a>)</li>
-    <li>[Bugfix] Donation key validation failure (10.5) (<a href="http://trac.cyberduck.ch/ticket/5846">#5846</a>)</li>
-    <li>[Bugfix] CDN URL for files only available after opening Info window (Cloudfiles) (<a
-            href="http://trac.cyberduck.ch/ticket/6040">#6040</a>)
-    </li>
-    <li>[Bugfix] Interoperability (FTP) (<a href="http://trac.cyberduck.ch/ticket/5866">#5866</a>, <a
-            href="http://trac.cyberduck.ch/ticket/5949">#5949</a>)
-    </li>
-    <li>[Bugfix] Preserve modification dates for folders on upload (<a
-            href="http://trac.cyberduck.ch/ticket/6048">#6048</a>)
-    </li>
+    <li>[Remove] Dropped support Azure Blob Storage connections (Azure)</li>
+    <li>[Remove] Dropped support Dropbox connections (Dropbox)</li>
+    <li>[Remove] Dropped support Google Drive connections (Google Docs)</li>
 </ul>
 
 <p>Release notes for previous versions can be found at <a
