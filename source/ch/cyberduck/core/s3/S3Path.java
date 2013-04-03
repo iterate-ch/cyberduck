@@ -942,7 +942,7 @@ public class S3Path extends CloudPath {
                 p.setParent(this);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
-                // Directory placholders
+                // Directory placeholders
                 if(object.isDirectoryPlaceholder()) {
                     p.attributes().setType(DIRECTORY_TYPE);
                     p.attributes().setPlaceholder(true);
