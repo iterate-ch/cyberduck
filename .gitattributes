@@ -824,10 +824,6 @@ img/download7.icns -text
 img/download8.icns -text
 img/download9.icns -text
 img/download@2x.png -text svneol=unset#image/png
-img/dropbox.ico -text
-img/dropbox.png -text svneol=unset#image/png
-img/dropbox.tiff -text
-img/dropbox@2x.png -text svneol=unset#image/png
 img/dropfolderbadge.png -text svneol=unset#image/png
 img/dropfolderbadge.tiff -text
 img/dropfolderbadge@2x.png -text svneol=unset#image/png
