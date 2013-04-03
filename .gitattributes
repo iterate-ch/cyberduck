@@ -839,7 +839,6 @@ img/eject@2x.png -text svneol=unset#image/png
 img/executable.png -text svneol=unset#image/png
 img/executable.tiff -text
 img/executable@2x.png -text svneol=unset#image/png
-img/ftp.ico -text
 img/ftp.png -text svneol=unset#image/png
 img/ftp.tiff -text
 img/ftp@2x.png -text svneol=unset#image/png
@@ -931,7 +930,6 @@ img/resume@2x.png -text svneol=unset#image/png
 img/reveal.png -text svneol=unset#image/png
 img/reveal.tiff -text svneol=unset#image/tiff
 img/reveal@2x.png -text svneol=unset#image/png
-img/s3.ico -text
 img/s3.png -text svneol=unset#image/png
 img/s3.tiff -text
 img/s3@2x.png -text svneol=unset#image/png
@@ -954,7 +952,6 @@ img/statusYellow@2x.png -text svneol=unset#image/png
 img/stop.png -text svneol=unset#image/png
 img/stop.tiff -text svneol=unset#image/tiff
 img/stop@2x.png -text svneol=unset#image/png
-img/swift.ico -text
 img/swift.png -text svneol=unset#image/png
 img/swift.tiff -text
 img/swift@2x.png -text svneol=unset#image/png
