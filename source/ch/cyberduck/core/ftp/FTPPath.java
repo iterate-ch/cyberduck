@@ -929,7 +929,7 @@ public class FTPPath extends Path {
                        final TransferStatus status) {
         if(this.attributes().isFile()) {
             try {
-                this.data(new DataConnectionAction() {
+                if(this.data(new DataConnectionAction() {
                     @Override
                     public boolean run() throws IOException {
                         InputStream in = null;
@@ -940,16 +940,15 @@ public class FTPPath extends Path {
                             upload(out, in, throttle, listener, status);
                         }
                         finally {
+                            if(!getSession().getClient().completePendingCommand()) {
+                                throw new FTPException(getSession().getClient().getReplyString());
+                            }
                             IOUtils.closeQuietly(in);
                             IOUtils.closeQuietly(out);
                         }
                         return true;
                     }
-                });
-                if(status.isComplete()) {
-                    if(!getSession().getClient().completePendingCommand()) {
-                        throw new FTPException(getSession().getClient().getReplyString());
-                    }
+                })) {
                 }
             }
             catch(IOException e) {
