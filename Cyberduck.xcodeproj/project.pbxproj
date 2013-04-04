@@ -40,7 +40,6 @@
 		471B490B102C66600059687D /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = 471B4907102C66600059687D /* Growl.m */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
 		471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
-		4724949E16837E23004AA261 /* sftp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4724949D16837E23004AA261 /* sftp.tiff */; };
 		472938A00F9DBC420086605D /* AquaticPrime.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389C0F9DBC420086605D /* AquaticPrime.h */; };
 		472938A10F9DBC420086605D /* License.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389D0F9DBC420086605D /* License.h */; };
 		472938A30F9DBC420086605D /* License.m in Sources */ = {isa = PBXBuildFile; fileRef = 4729389F0F9DBC420086605D /* License.m */; };
@@ -589,7 +588,6 @@
 		471F5C2912AD1B6B0005D323 /* ru */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2C12AD1B6B0005D323 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2D12AD1B6B0005D323 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Alert.strings; sourceTree = "<group>"; };
-		4724949D16837E23004AA261 /* sftp.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = sftp.tiff; sourceTree = "<group>"; };
 		4725396810F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sr; path = sr.lproj/Alert.nib; sourceTree = "<group>"; };
 		4725396B10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sr; path = sr.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		4725396E10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sr; path = sr.lproj/Browser.nib; sourceTree = "<group>"; };
@@ -1898,7 +1896,6 @@
 			children = (
 				475C6D59170C9214006535BB /* googlestorage.tiff */,
 				47B3318B16680FF100C9FFA0 /* ftp.tiff */,
-				4724949D16837E23004AA261 /* sftp.tiff */,
 				47B331911668102400C9FFA0 /* s3.tiff */,
 				47B331921668102400C9FFA0 /* swift.tiff */,
 				4767306716108E1200B28D35 /* add.tiff */,
@@ -2766,7 +2763,6 @@
 				47B331941668102400C9FFA0 /* swift.tiff in Resources */,
 				47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */,
 				471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */,
-				4724949E16837E23004AA261 /* sftp.tiff in Resources */,
 				475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
