@@ -169,6 +169,15 @@ public final class PreferencesController extends ToolbarWindowController {
     }
 
     @Override
+    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar, final String itemIdentifier, final boolean flag) {
+        final NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, itemIdentifier, flag);
+        if(itemIdentifier.equals("sftp")) {
+            item.setImage(IconCache.iconNamed("ftp"));
+        }
+        return item;
+    }
+
+    @Override
     protected List<NSView> getPanels() {
         List<NSView> views = new ArrayList<NSView>();
         views.add(panelGeneral);
