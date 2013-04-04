@@ -47,7 +47,7 @@ public class CopyTransferFilter extends TransferPathFilter {
 
     @Override
     public void complete(final Path source, final TransferOptions options, final TransferStatus status) {
-        if(!status.isCanceled()) {
+        if(status.isComplete()) {
             final Path destination = files.get(source);
             if(destination.getSession().isUnixPermissionsSupported()) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {

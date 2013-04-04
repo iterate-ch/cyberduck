@@ -115,7 +115,7 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
-        if(!status.isCanceled()) {
+        if(status.isComplete()) {
             if(file.getSession().isUnixPermissionsSupported()) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     Permission permission = file.attributes().getPermission();
