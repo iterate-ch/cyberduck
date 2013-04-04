@@ -22,6 +22,11 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
         super(symlinkResolver);
     }
 
+    @Override
+    public boolean accept(final Path file) {
+        return true;
+    }
+
     /**
      * Rename existing file on disk if there is a conflict.
      */

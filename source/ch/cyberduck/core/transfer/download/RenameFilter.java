@@ -20,6 +20,11 @@ public class RenameFilter extends AbstractDownloadFilter {
     }
 
     @Override
+    public boolean accept(final Path file) {
+        return true;
+    }
+
+    @Override
     public TransferStatus prepare(final Path file) {
         if(file.getLocal().exists()) {
             final String parent = file.getLocal().getParent().getAbsolute();

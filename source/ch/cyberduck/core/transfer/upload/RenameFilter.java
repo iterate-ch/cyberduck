@@ -19,6 +19,11 @@ public class RenameFilter extends AbstractUploadFilter {
     }
 
     @Override
+    public boolean accept(final Path file) {
+        return true;
+    }
+
+    @Override
     public TransferStatus prepare(final Path file) {
         final TransferStatus status = super.prepare(file);
         if(file.exists()) {

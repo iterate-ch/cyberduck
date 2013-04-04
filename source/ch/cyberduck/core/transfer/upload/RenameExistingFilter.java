@@ -22,11 +22,8 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public boolean accept(final Path p) {
-        if(!p.getSession().isRenameSupported(p)) {
-            return false;
-        }
-        return super.accept(p);
+    public boolean accept(final Path file) {
+        return file.getSession().isRenameSupported(file);
     }
 
     /**
