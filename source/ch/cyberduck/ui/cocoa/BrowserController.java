@@ -4065,7 +4065,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(this.isBookmarks()) {
                 return bookmarkModel.getSource().allowsAdd();
             }
-            return false;
+            return true;
         }
         else if(action.equals(Foundation.selector("deleteBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {
