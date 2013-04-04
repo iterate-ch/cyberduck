@@ -52,7 +52,7 @@ public abstract class Protocol {
     }
 
     public String getName() {
-        return this.getScheme().name().toUpperCase();
+        return this.getScheme().name().toUpperCase(java.util.Locale.ROOT);
     }
 
     public String favicon() {
@@ -232,7 +232,6 @@ public abstract class Protocol {
         sftp,
         s3,
         googlestorage,
-        googledrive,
         swift,
         dav
     }
