@@ -5,11 +5,11 @@
 	<key>Protocol</key>
 	<string>cf</string>
 	<key>Vendor</key>
-	<string>rackspaceuk</string>
+	<string>rackspace</string>
 	<key>Description</key>
-	<string>Rackspace Cloud Files UK</string>
+	<string>Rackspace Cloud Files</string>
 	<key>Default Hostname</key>
-	<string>lon.auth.api.rackspacecloud.com</string>
+	<string>auth.api.rackspacecloud.com</string>
 	<key>Default Port</key>
 	<string>443</string>
 	<key>Username Placeholder</key>
