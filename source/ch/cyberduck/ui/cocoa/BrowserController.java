@@ -373,11 +373,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private List<Path> selected = Collections.emptyList();
 
-    protected void setSelectedPaths(List<Path> selected) {
+    protected void setSelectedPaths(final List<Path> selected) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set selected paths to %s", selected));
         }
-        this.selected = selected;
+        this.selected.clear();
+        this.selected = new ArrayList<Path>();
+        for(Path s : selected) {
+            this.selected.add(PathFactory.createPath(session, s.getAsDictionary()));
+        }
         this.validateToolbar();
     }
 
