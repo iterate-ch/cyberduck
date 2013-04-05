@@ -25,6 +25,7 @@
 - [Bugfix] Duplicating file does not retain permissions (#6525)
 - [Bugfix] Proxy configuration with PAC file (#6968)
 - [Bugfix] Trust exception for expired certificates not saved (#6603)
+- [Bugfix] SSL hostname verification on HTTP redirects
 - [Remove] Dropped support Azure Blob Storage connections (Azure)
 - [Remove] Dropped support Dropbox connections (Dropbox)
 - [Remove] Dropped support Google Drive connections (Google Docs)
