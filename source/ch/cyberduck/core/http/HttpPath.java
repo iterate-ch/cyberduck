@@ -19,12 +19,15 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -90,6 +93,8 @@ public abstract class HttpPath extends Path {
                     return command.getContentLength();
                 }
             };
+            final String type = new MappingMimeTypeService().getMime(this.getName());
+            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, type));
             final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
                 @Override
                 public void run() {

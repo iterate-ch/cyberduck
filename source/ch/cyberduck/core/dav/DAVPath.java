@@ -21,7 +21,6 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
@@ -39,7 +38,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
@@ -392,8 +390,6 @@ public class DAVPath extends HttpPath {
              */
             @Override
             public Void call(AbstractHttpEntity entity) throws IOException {
-                final String type = new MappingMimeTypeService().getMime(getName());
-                entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, type));
                 getSession().getClient().put(toURL(), entity, headers);
                 return null;
             }

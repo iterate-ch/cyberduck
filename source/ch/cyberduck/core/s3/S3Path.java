@@ -33,9 +33,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpHeaders;
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
@@ -820,9 +818,7 @@ public class S3Path extends CloudPath {
         DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override
             public StorageObject call(AbstractHttpEntity entity) throws IOException {
-                final String type = new MappingMimeTypeService().getMime(getName());
                 try {
-                    entity.setContentType(new BasicHeader(HttpHeaders.CONTENT_TYPE, type));
                     getSession().getClient().putObjectWithRequestEntityImpl(getContainerName(), part, entity, requestParams);
                 }
                 catch(ServiceException e) {
@@ -946,6 +942,7 @@ public class S3Path extends CloudPath {
                 if(object.isDirectoryPlaceholder()) {
                     p.attributes().setType(DIRECTORY_TYPE);
                     p.attributes().setPlaceholder(true);
+                    p.attributes().setDuplicate(true);
                 }
                 else if(0 == object.getContentLength()) {
                     if("application/x-directory".equals(p.getDetails().getContentType())) {
