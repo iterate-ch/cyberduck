@@ -22,35 +22,24 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpConnection;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthState;
-import org.apache.http.auth.NTCredentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.params.AuthPolicy;
-import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import com.googlecode.sardine.impl.SardineException;
 import com.googlecode.sardine.impl.SardineImpl;
+import com.googlecode.sardine.impl.handler.VoidResponseHandler;
+import com.googlecode.sardine.impl.methods.HttpPropFind;
 
 /**
  * @version $Id$
@@ -58,14 +47,25 @@ import com.googlecode.sardine.impl.SardineImpl;
 public class DAVSession extends HttpSession {
     private static Logger log = Logger.getLogger(DAVSession.class);
 
-    private SardineImpl client;
+    private DAVClient client;
 
     public DAVSession(Host h) {
         super(h);
     }
 
+    protected class DAVClient extends SardineImpl {
+        public DAVClient(final AbstractHttpClient http) {
+            super(http);
+        }
+
+        @Override
+        public <T> T execute(final HttpRequestBase request, final ResponseHandler<T> responseHandler) throws IOException {
+            return super.execute(request, responseHandler);
+        }
+    }
+
     @Override
-    protected SardineImpl getClient() throws ConnectionCanceledException {
+    protected DAVClient getClient() throws ConnectionCanceledException {
         if(null == client) {
             throw new ConnectionCanceledException();
         }
@@ -79,16 +79,10 @@ public class DAVSession extends HttpSession {
         }
         this.fireConnectionWillOpenEvent();
 
-        this.client = new SardineImpl(this.http());
+        this.client = new DAVClient(this.http());
         this.login();
 
         this.fireConnectionDidOpenEvent();
-    }
-
-    @Override
-    protected void prompt(LoginController controller) throws LoginCanceledException {
-        // Do not prompt for credentials yet but in the credentials provider
-        // below upon request when the given authentication scheme realm is known
     }
 
     @Override
@@ -96,173 +90,35 @@ public class DAVSession extends HttpSession {
         // Do not warn yet but in the credentials provider depending on the choosen realm.
     }
 
-    /**
-     *
-     */
-    private static class CustomCredentialsProvider extends BasicCredentialsProvider {
-        private boolean failure;
-        private boolean retry;
-        private boolean canceled;
-        private boolean saved;
-
-        public boolean isFailure() {
-            return failure;
-        }
-
-        public void setFailure(boolean failure) {
-            this.failure = failure;
-        }
-
-        public boolean isRetry() {
-            return retry;
-        }
-
-        public void setRetry(boolean retry) {
-            this.retry = retry;
-        }
-
-        public boolean isCanceled() {
-            return canceled;
-        }
-
-        public void setCanceled(boolean canceled) {
-            this.canceled = canceled;
-        }
-
-        public boolean isSaved() {
-            return saved;
-        }
-
-        public void setSaved(boolean saved) {
-            this.saved = saved;
-        }
-
-        /**
-         * Append realm message to hostname.
-         *
-         * @param authscope Authentication scope with realm and host
-         * @return Authentication message
-         */
-        public StringBuilder getRealm(AuthScope authscope) {
-            final StringBuilder realm = new StringBuilder(authscope.getHost());
-            if(StringUtils.isNotBlank(authscope.getRealm())) {
-                realm.append(":").append(authscope.getPort()).append(".");
-            }
-            if(StringUtils.isNotBlank(authscope.getRealm())) {
-                realm.append(" ").append(authscope.getRealm());
-            }
-            return realm;
-        }
-    }
-
     @Override
     protected void login(final LoginController controller, final Credentials credentials) throws IOException {
+        this.client.setCredentials(credentials.getUsername(), credentials.getPassword(),
+                // Windows credentials. Provide empty string for NTLM domain by default.
+                Preferences.instance().getProperty("webdav.ntlm.workstation"),
+                Preferences.instance().getProperty("webdav.ntlm.domain"));
         if(credentials.validate(host.getProtocol())) {
             // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-            this.getClient().setCredentials(credentials.getUsername(), credentials.getPassword());
+            this.client.enablePreemptiveAuthentication(this.getHost().getHostname());
         }
-        final CustomCredentialsProvider provider = new CustomCredentialsProvider() {
-
-            /**
-             * @see org.apache.http.impl.client.DefaultRequestDirector#handleResponse(org.apache.http.impl.client.RoutedRequest, org.apache.http.HttpResponse, org.apache.http.protocol.HttpContext)
-             * @param authscope Read the realm of the domain from this
-             * @return Null if login has been canceled and no retry attempt should be made
-             */
-            @Override
-            public org.apache.http.auth.Credentials getCredentials(AuthScope authscope) {
-                if(this.isCanceled()) {
-                    // Request will be canceled in the request interceptor below.
-                    return new UsernamePasswordCredentials(credentials.getUsername(), null);
-                }
-                final StringBuilder realm = this.getRealm(authscope);
-                try {
-                    if(!this.isRetry()) {
-                        controller.check(host,
-                                Locale.localizedString("Login with username and password", "Credentials"),
-                                realm.toString());
-                    }
-                    else if(this.isFailure()) {
-                        // Already received a unauthorized response with custom credentials set
-                        message(Locale.localizedString("Login failed", "Credentials"));
-                        controller.fail(host.getProtocol(), credentials, realm.toString());
-                    }
-                    // Reset status
-                    this.setFailure(false);
-                    this.setRetry(true);
-                }
-                catch(LoginCanceledException e) {
-                    this.setCanceled(true);
-                    // Request will be canceled in the request interceptor below.
-                    return new UsernamePasswordCredentials(credentials.getUsername(), null);
-                }
-                if(!credentials.validate(DAVSession.this.getHost().getProtocol())) {
-                    log.warn("No credentials available");
-                    return null;
-                }
-                if(authscope.getScheme().equals(AuthPolicy.NTLM)) {
-                    // Windows credentials. Provide empty string for NTLM domain by default.
-                    return new NTCredentials(credentials.getUsername(), credentials.getPassword(),
-                            Preferences.instance().getProperty("webdav.ntlm.workstation"),
-                            Preferences.instance().getProperty("webdav.ntlm.domain"));
-                }
-                else {
-                    // Basic or Digest authentication credentials
-                    return new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword());
-                }
+        try {
+            this.client.execute(new HttpHead(this.home().toURL()), new VoidResponseHandler());
+            message(Locale.localizedString("Login successful", "Credentials"));
+        }
+        catch(SardineException e) {
+            if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
+                // Possibly only HEAD requests are not allowed
+                this.client.execute(new HttpPropFind(this.home().toURL()), new VoidResponseHandler());
+                message(Locale.localizedString("Login successful", "Credentials"));
             }
-        };
-        AbstractHttpClient client = this.http();
-        client.setCredentialsProvider(provider);
-        client.addRequestInterceptor(new HttpRequestInterceptor() {
-            @Override
-            public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
-                if(provider.isCanceled()) {
-                    throw new LoginCanceledException();
-                }
+            else if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+                message(Locale.localizedString("Login failed", "Credentials"));
+                controller.fail(host.getProtocol(), credentials);
+                this.login();
             }
-        });
-        client.addResponseInterceptor(new HttpResponseInterceptor() {
-            /**
-             * Clear the credentials from the authentication state upon failed login to make sure a retry attempt is made.
-             */
-            @Override
-            public void process(final HttpResponse r, final HttpContext context) throws HttpException, IOException {
-                final int code = r.getStatusLine().getStatusCode();
-                if(code == HttpStatus.SC_UNAUTHORIZED) {
-                    // Obtain authentication state
-                    final AuthState authstate = (AuthState) context.getAttribute(
-                            ClientContext.TARGET_AUTH_STATE);
-                    if(null == authstate) {
-                        log.warn(String.format("No auth state available in context:%s", context));
-                    }
-                    else {
-                        // Reset false credentials
-                        authstate.setCredentials(null);
-                        // Release underlying connection so we will get a new one (hopefully) when we retry.
-                        HttpConnection conn = (HttpConnection) context.getAttribute(
-                                ExecutionContext.HTTP_CONNECTION);
-                        try {
-                            conn.close();
-                        }
-                        catch(IOException e) {
-                            log.warn("Error closing connection:" + e.getMessage());
-                        }
-                    }
-                    // Do not handle here because authentication state is not populated yet.
-                    provider.setFailure(true);
-                }
-                else {
-                    if(code == HttpStatus.SC_MULTI_STATUS) {
-                        message(Locale.localizedString("Login successful", "Credentials"));
-                        if(!provider.isSaved()) {
-                            // Save credentials upon first successful response
-                            controller.success(host);
-                            provider.setSaved(true);
-                        }
-                    }
-                }
+            else {
+                throw e;
             }
-        });
+        }
     }
 
     @Override
