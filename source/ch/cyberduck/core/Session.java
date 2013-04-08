@@ -231,7 +231,7 @@ public abstract class Session implements TranscriptListener {
      * @param controller Prompt
      * @throws IOException I/O failure
      */
-    protected void login(LoginController controller) throws IOException {
+    protected void login(final LoginController controller) throws IOException {
         this.prompt(controller);
 
         final Credentials credentials = host.getCredentials();
@@ -401,7 +401,7 @@ public abstract class Session implements TranscriptListener {
      * @return True if making directories is possible.
      * @see Path#mkdir()
      */
-    public boolean isCreateFolderSupported(Path workdir) {
+    public boolean isCreateFolderSupported(final Path workdir) {
         return true;
     }
 
@@ -410,7 +410,7 @@ public abstract class Session implements TranscriptListener {
      * @return True if creating an empty file is possible.
      * @see ch.cyberduck.core.Path#touch()
      */
-    public boolean isCreateFileSupported(Path workdir) {
+    public boolean isCreateFileSupported(final Path workdir) {
         return true;
     }
 
@@ -571,11 +571,11 @@ public abstract class Session implements TranscriptListener {
         return opening;
     }
 
-    public void addConnectionListener(ConnectionListener listener) {
+    public void addConnectionListener(final ConnectionListener listener) {
         connectionListeners.add(listener);
     }
 
-    public void removeConnectionListener(ConnectionListener listener) {
+    public void removeConnectionListener(final ConnectionListener listener) {
         connectionListeners.remove(listener);
     }
 
@@ -797,7 +797,7 @@ public abstract class Session implements TranscriptListener {
                 }
 
                 @Override
-                public String getOrigin(Distribution.Method method, String container) {
+                public String getOrigin(final Distribution.Method method, final String container) {
                     if(Distribution.CUSTOM.equals(method)) {
                         try {
                             return new URI(Session.this.getHost().getWebURL()).getHost();
