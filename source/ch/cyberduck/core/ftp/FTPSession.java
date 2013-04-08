@@ -159,7 +159,7 @@ public class FTPSession extends SSLSession {
      * @param workdir Directory listing
      * @return Matching timezones
      */
-    private List<TimeZone> calculateTimezone(Path workdir) {
+    private List<TimeZone> calculateTimezone(final Path workdir) {
         // Determine the server offset from UTC
         final AttributedList<Path> list = workdir.children();
         if(list.isEmpty()) {
@@ -466,7 +466,7 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    public void sendCommand(String command) throws IOException {
+    public void sendCommand(final String command) throws IOException {
         if(this.isConnected()) {
             this.message(command);
             this.getClient().sendSiteCommand(command);

@@ -106,7 +106,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     private String getAuthenticationUrl() {
-        StringBuilder authentication = new StringBuilder();
+        final StringBuilder authentication = new StringBuilder();
         authentication.append(host.getProtocol().getScheme().toString()).append("://");
         if(host.getHostname().equals("storage.clouddrive.com")) {
             // Legacy bookmarks. Use default authentication server for Rackspace.
@@ -130,8 +130,8 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     @Override
-    protected void login(LoginController controller, Credentials credentials) throws IOException {
-        FilesClient client = this.getClient();
+    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
+        final FilesClient client = this.getClient();
         client.setUserName(credentials.getUsername());
         client.setPassword(credentials.getPassword());
         try {
@@ -171,7 +171,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     @Override
-    public boolean isRenameSupported(Path file) {
+    public boolean isRenameSupported(final Path file) {
         return !file.attributes().isVolume();
     }
 
@@ -182,7 +182,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
      * @return False if directory is root.
      */
     @Override
-    public boolean isCreateFileSupported(Path workdir) {
+    public boolean isCreateFileSupported(final Path workdir) {
         return !workdir.isRoot();
     }
 
@@ -305,7 +305,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     @Override
-    public void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive) {
+    public void invalidate(final String origin, final Distribution.Method method, final List<Path> files, final boolean recursive) {
         try {
             this.check();
             this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
@@ -331,27 +331,27 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     @Override
-    public boolean isInvalidationSupported(Distribution.Method method) {
+    public boolean isInvalidationSupported(final Distribution.Method method) {
         return true;
     }
 
     @Override
-    public boolean isDefaultRootSupported(Distribution.Method method) {
+    public boolean isDefaultRootSupported(final Distribution.Method method) {
         return true;
     }
 
     @Override
-    public boolean isLoggingSupported(Distribution.Method method) {
+    public boolean isLoggingSupported(final Distribution.Method method) {
         return method.equals(Distribution.DOWNLOAD);
     }
 
     @Override
-    public boolean isAnalyticsSupported(Distribution.Method method) {
+    public boolean isAnalyticsSupported(final Distribution.Method method) {
         return this.isLoggingSupported(method);
     }
 
     @Override
-    public boolean isCnameSupported(Distribution.Method method) {
+    public boolean isCnameSupported(final Distribution.Method method) {
         return false;
     }
 
@@ -373,7 +373,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     @Override
-    public String getName(Distribution.Method method) {
+    public String getName(final Distribution.Method method) {
         return this.getName();
     }
 

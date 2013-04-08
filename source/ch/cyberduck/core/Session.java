@@ -206,7 +206,7 @@ public abstract class Session implements TranscriptListener {
      * @param controller Prompt
      * @throws LoginCanceledException Login prompt dismissed with cancel
      */
-    protected void prompt(LoginController controller) throws IOException {
+    protected void prompt(final LoginController controller) throws IOException {
         controller.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
     }
 

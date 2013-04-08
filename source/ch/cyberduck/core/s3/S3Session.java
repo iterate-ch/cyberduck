@@ -333,7 +333,7 @@ public class S3Session extends CloudSession {
      * @throws ServiceException Error response
      * @throws IOException      I/O failure
      */
-    protected List<StorageBucket> getBuckets(boolean reload) throws IOException, ServiceException {
+    protected List<StorageBucket> getBuckets(final boolean reload) throws IOException, ServiceException {
         if(buckets.isEmpty() || reload) {
             buckets.clear();
             if(host.getCredentials().isAnonymousLogin()) {
@@ -491,7 +491,7 @@ public class S3Session extends CloudSession {
     }
 
     @Override
-    protected void login(LoginController controller, Credentials credentials) throws IOException {
+    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
         try {
             this.client = new RequestEntityRestStorageService(this.getProviderCredentials(credentials));
             for(StorageBucket bucket : this.getBuckets(true)) {
@@ -526,7 +526,7 @@ public class S3Session extends CloudSession {
      * @return MFA one time authentication password.
      * @throws ConnectionCanceledException Prompt dismissed
      */
-    protected Credentials mfa(LoginController controller) throws ConnectionCanceledException {
+    protected Credentials mfa(final LoginController controller) throws ConnectionCanceledException {
         final Credentials credentials = new Credentials(
                 Preferences.instance().getProperty("s3.mfa.serialnumber"), null, false) {
             @Override
@@ -554,7 +554,7 @@ public class S3Session extends CloudSession {
      * @param e Error response
      * @return True if the error code of the S3 exception is a login failure
      */
-    protected boolean isLoginFailure(ServiceException e) {
+    protected boolean isLoginFailure(final ServiceException e) {
         if(403 == e.getResponseCode()) {
             return true;
         }
@@ -614,12 +614,12 @@ public class S3Session extends CloudSession {
      * @return False if directory is root.
      */
     @Override
-    public boolean isCreateFileSupported(Path workdir) {
+    public boolean isCreateFileSupported(final Path workdir) {
         return !workdir.isRoot();
     }
 
     @Override
-    public boolean isRenameSupported(Path file) {
+    public boolean isRenameSupported(final Path file) {
         return !file.attributes().isVolume();
     }
 
@@ -833,7 +833,7 @@ public class S3Session extends CloudSession {
      * @param versioning True if enabled
      */
     @Override
-    public void setVersioning(final String container, boolean mfa, boolean versioning) {
+    public void setVersioning(final String container, final boolean mfa, final boolean versioning) {
         if(this.isVersioningSupported()) {
             try {
                 this.check();
@@ -911,7 +911,7 @@ public class S3Session extends CloudSession {
     }
 
     @Override
-    public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
+    public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
         return Arrays.asList(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()),
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()),
@@ -1041,7 +1041,7 @@ public class S3Session extends CloudSession {
         }
 
         @Override
-        public String getName(Distribution.Method method) {
+        public String getName(final Distribution.Method method) {
             if(method.equals(Distribution.WEBSITE)) {
                 return method.toString();
             }
@@ -1049,7 +1049,7 @@ public class S3Session extends CloudSession {
         }
 
         @Override
-        public String getOrigin(Distribution.Method method, String container) {
+        public String getOrigin(final Distribution.Method method, final String container) {
             if(method.equals(Distribution.WEBSITE)) {
                 return S3Session.this.getHostnameForContainer(container);
             }
@@ -1065,7 +1065,7 @@ public class S3Session extends CloudSession {
         }
 
         @Override
-        public Distribution read(String origin, Distribution.Method method) {
+        public Distribution read(final String origin, final Distribution.Method method) {
             if(method.equals(Distribution.WEBSITE)) {
                 final String bucket = S3Session.this.getContainerForHostname(origin);
                 // Website Endpoint URL
@@ -1111,7 +1111,8 @@ public class S3Session extends CloudSession {
         }
 
         @Override
-        public void write(boolean enabled, String origin, Distribution.Method method, String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) {
+        public void write(final boolean enabled, final String origin, final Distribution.Method method,
+                          final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) {
             if(method.equals(Distribution.WEBSITE)) {
                 try {
                     S3Session.this.check();
@@ -1154,7 +1155,8 @@ public class S3Session extends CloudSession {
 
         @Override
         protected CustomOrigin getCustomOriginConfiguration(final String id,
-                                                            final Distribution.Method method, final String origin) {
+                                                            final Distribution.Method method,
+                                                            final String origin) {
             if(method.equals(Distribution.WEBSITE_CDN)) {
                 return new CustomOrigin(id, origin, CustomOrigin.OriginProtocolPolicy.HTTP_ONLY);
             }
@@ -1162,7 +1164,7 @@ public class S3Session extends CloudSession {
         }
 
         @Override
-        public boolean isDefaultRootSupported(Distribution.Method method) {
+        public boolean isDefaultRootSupported(final Distribution.Method method) {
             if(method.equals(Distribution.WEBSITE)) {
                 return true;
             }
@@ -1170,7 +1172,7 @@ public class S3Session extends CloudSession {
         }
 
         @Override
-        public boolean isLoggingSupported(Distribution.Method method) {
+        public boolean isLoggingSupported(final Distribution.Method method) {
             if(method.equals(Distribution.WEBSITE)) {
                 return false;
             }

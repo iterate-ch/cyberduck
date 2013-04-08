@@ -439,7 +439,7 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    public void sendCommand(String command) throws IOException {
+    public void sendCommand(final String command) throws IOException {
         final ch.ethz.ssh2.Session sess = this.getClient().openSession();
         try {
             this.message(command);
