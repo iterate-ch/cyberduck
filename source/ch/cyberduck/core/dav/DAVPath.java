@@ -172,27 +172,25 @@ public class DAVPath extends HttpPath {
 
     @Override
     public AttributedList<Path> list(final AttributedList<Path> children) {
-        if(this.attributes().isDirectory()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                    this.getName()));
 
-                final List<DavResource> resources = this.getSession().getClient().list(this.toURL());
-                for(final DavResource resource : resources) {
-                    // Try to parse as RFC 2396
-                    final URI uri = resource.getHref();
-                    DAVPath p = new DAVPath(this.getSession(), uri.getPath(),
-                            resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
-                    p.setParent(this);
-                    p.readAttributes(resource);
-                    children.add(p);
-                }
+            final List<DavResource> resources = this.getSession().getClient().list(this.toURL());
+            for(final DavResource resource : resources) {
+                // Try to parse as RFC 2396
+                final URI uri = resource.getHref();
+                DAVPath p = new DAVPath(this.getSession(), uri.getPath(),
+                        resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
+                p.setParent(this);
+                p.readAttributes(resource);
+                children.add(p);
             }
-            catch(IOException e) {
-                log.warn("Listing directory failed:" + e.getMessage());
-                children.attributes().setReadable(false);
-            }
+        }
+        catch(IOException e) {
+            log.warn("Listing directory failed:" + e.getMessage());
+            children.attributes().setReadable(false);
         }
         return children;
     }

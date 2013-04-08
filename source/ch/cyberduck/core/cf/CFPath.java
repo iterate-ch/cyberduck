@@ -196,94 +196,92 @@ public class CFPath extends CloudPath {
 
     @Override
     public AttributedList<Path> list(final AttributedList<Path> children) {
-        if(this.attributes().isDirectory()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                    this.getName()));
 
-                if(this.isRoot()) {
-                    // Clear CDN cache when reloading
-                    this.getSession().cdn().clear();
+            if(this.isRoot()) {
+                // Clear CDN cache when reloading
+                this.getSession().cdn().clear();
 
-                    final int limit = Preferences.instance().getInteger("cf.list.limit");
-                    String marker = null;
-                    List<FilesContainerInfo> list;
-                    // List all containers
-                    do {
-                        list = this.getSession().getClient().listContainersInfo(limit, marker);
-                        for(FilesContainerInfo container : list) {
-                            Path p = new CFPath(this.getSession(), this.getAbsolute(), container.getName(),
-                                    VOLUME_TYPE | DIRECTORY_TYPE);
-                            p.attributes().setSize(container.getTotalSize());
-                            p.attributes().setOwner(this.getSession().getClient().getUserName());
+                final int limit = Preferences.instance().getInteger("cf.list.limit");
+                String marker = null;
+                List<FilesContainerInfo> list;
+                // List all containers
+                do {
+                    list = this.getSession().getClient().listContainersInfo(limit, marker);
+                    for(FilesContainerInfo container : list) {
+                        Path p = new CFPath(this.getSession(), this.getAbsolute(), container.getName(),
+                                VOLUME_TYPE | DIRECTORY_TYPE);
+                        p.attributes().setSize(container.getTotalSize());
+                        p.attributes().setOwner(this.getSession().getClient().getUserName());
 
-                            children.add(p);
+                        children.add(p);
 
-                            marker = container.getName();
+                        marker = container.getName();
+                    }
+                }
+                while(list.size() == limit);
+            }
+            else {
+                final int limit = Preferences.instance().getInteger("cf.list.limit");
+                String marker = null;
+                List<FilesObject> list;
+                do {
+                    list = this.getSession().getClient().listObjectsStartingWith(this.getContainerName(),
+                            this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
+                    for(FilesObject object : list) {
+                        final Path file = new CFPath(this.getSession(), this.getContainerName(), object.getName(),
+                                "application/directory".equals(object.getMimeType()) ? DIRECTORY_TYPE : FILE_TYPE);
+                        file.setParent(this);
+                        if(file.attributes().isFile()) {
+                            file.attributes().setSize(object.getSize());
+                            file.attributes().setChecksum(object.getMd5sum());
+                            try {
+                                final Date modified = DateParser.parse(object.getLastModified());
+                                if(null != modified) {
+                                    file.attributes().setModificationDate(modified.getTime());
+                                }
+                            }
+                            catch(InvalidDateException e) {
+                                log.warn("Not ISO 8601 format:" + e.getMessage());
+                            }
+                        }
+                        if(file.attributes().isDirectory()) {
+                            file.attributes().setPlaceholder(true);
+                            if(children.contains(file.getReference())) {
+                                continue;
+                            }
+                        }
+                        file.attributes().setOwner(this.attributes().getOwner());
+
+                        children.add(file);
+
+                        marker = object.getName();
+                    }
+                    if(Preferences.instance().getBoolean("cf.list.cdn.preload")) {
+                        for(Distribution.Method method : this.getSession().cdn().getMethods(this.getContainerName())) {
+                            // Cache CDN configuration
+                            this.getSession().cdn().read(this.getSession().cdn().getOrigin(method, this.getContainerName()), method);
                         }
                     }
-                    while(list.size() == limit);
                 }
-                else {
-                    final int limit = Preferences.instance().getInteger("cf.list.limit");
-                    String marker = null;
-                    List<FilesObject> list;
-                    do {
-                        list = this.getSession().getClient().listObjectsStartingWith(this.getContainerName(),
-                                this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
-                        for(FilesObject object : list) {
-                            final Path file = new CFPath(this.getSession(), this.getContainerName(), object.getName(),
-                                    "application/directory".equals(object.getMimeType()) ? DIRECTORY_TYPE : FILE_TYPE);
-                            file.setParent(this);
-                            if(file.attributes().isFile()) {
-                                file.attributes().setSize(object.getSize());
-                                file.attributes().setChecksum(object.getMd5sum());
-                                try {
-                                    final Date modified = DateParser.parse(object.getLastModified());
-                                    if(null != modified) {
-                                        file.attributes().setModificationDate(modified.getTime());
-                                    }
-                                }
-                                catch(InvalidDateException e) {
-                                    log.warn("Not ISO 8601 format:" + e.getMessage());
-                                }
-                            }
-                            if(file.attributes().isDirectory()) {
-                                file.attributes().setPlaceholder(true);
-                                if(children.contains(file.getReference())) {
-                                    continue;
-                                }
-                            }
-                            file.attributes().setOwner(this.attributes().getOwner());
-
-                            children.add(file);
-
-                            marker = object.getName();
-                        }
-                        if(Preferences.instance().getBoolean("cf.list.cdn.preload")) {
-                            for(Distribution.Method method : this.getSession().cdn().getMethods(this.getContainerName())) {
-                                // Cache CDN configuration
-                                this.getSession().cdn().read(this.getSession().cdn().getOrigin(method, this.getContainerName()), method);
-                            }
-                        }
-                    }
-                    while(list.size() == limit);
-                }
+                while(list.size() == limit);
             }
-            catch(HttpException e) {
-                log.warn("Listing directory failed:" + e.getMessage());
-                children.attributes().setReadable(false);
-                if(!session.cache().containsKey(this.getReference())) {
-                    this.error(e.getMessage(), e);
-                }
+        }
+        catch(HttpException e) {
+            log.warn("Listing directory failed:" + e.getMessage());
+            children.attributes().setReadable(false);
+            if(!session.cache().containsKey(this.getReference())) {
+                this.error(e.getMessage(), e);
             }
-            catch(IOException e) {
-                log.warn("Listing directory failed:" + e.getMessage());
-                children.attributes().setReadable(false);
-                if(!session.cache().containsKey(this.getReference())) {
-                    this.error(e.getMessage(), e);
-                }
+        }
+        catch(IOException e) {
+            log.warn("Listing directory failed:" + e.getMessage());
+            children.attributes().setReadable(false);
+            if(!session.cache().containsKey(this.getReference())) {
+                this.error(e.getMessage(), e);
             }
         }
         return children;

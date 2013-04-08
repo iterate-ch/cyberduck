@@ -163,117 +163,115 @@ public class FTPPath extends Path {
 
     @Override
     public AttributedList<Path> list(final AttributedList<Path> children) {
-        if(this.attributes().isDirectory()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                    this.getName()));
 
-                // Cached file parser determined from SYST response with the timezone set from the bookmark
-                final FTPFileEntryParser parser = this.getSession().getFileParser();
-                boolean success = false;
-                try {
-                    if(this.getSession().isStatListSupportedEnabled()) {
-                        int response = this.getSession().getClient().stat(this.getAbsolute());
-                        if(FTPReply.isPositiveCompletion(response)) {
-                            String[] reply = this.getSession().getClient().getReplyStrings();
-                            final List<String> result = new ArrayList<String>(reply.length);
-                            for(final String line : reply) {
-                                //Some servers include the status code for every line.
-                                if(line.startsWith(String.valueOf(response))) {
-                                    try {
-                                        result.add(line.substring(line.indexOf(response) + line.length() + 1).trim());
-                                    }
-                                    catch(IndexOutOfBoundsException e) {
-                                        log.error(String.format("Failed parsing line %s", line), e);
-                                    }
+            // Cached file parser determined from SYST response with the timezone set from the bookmark
+            final FTPFileEntryParser parser = this.getSession().getFileParser();
+            boolean success = false;
+            try {
+                if(this.getSession().isStatListSupportedEnabled()) {
+                    int response = this.getSession().getClient().stat(this.getAbsolute());
+                    if(FTPReply.isPositiveCompletion(response)) {
+                        String[] reply = this.getSession().getClient().getReplyStrings();
+                        final List<String> result = new ArrayList<String>(reply.length);
+                        for(final String line : reply) {
+                            //Some servers include the status code for every line.
+                            if(line.startsWith(String.valueOf(response))) {
+                                try {
+                                    result.add(line.substring(line.indexOf(response) + line.length() + 1).trim());
                                 }
-                                else {
-                                    result.add(StringUtils.stripStart(line, null));
+                                catch(IndexOutOfBoundsException e) {
+                                    log.error(String.format("Failed parsing line %s", line), e);
                                 }
-                            }
-                            success = this.parseListResponse(children, parser, result);
-                        }
-                        else {
-                            this.getSession().setStatListSupportedEnabled(false);
-                        }
-                    }
-                }
-                catch(IOException e) {
-                    log.warn("Command STAT failed with I/O error:" + e.getMessage());
-                    this.getSession().interrupt();
-                    this.getSession().check();
-                }
-                if(!success || children.isEmpty()) {
-                    success = this.data(new DataConnectionAction() {
-                        @Override
-                        public boolean run() throws IOException {
-                            if(!getSession().getClient().changeWorkingDirectory(getAbsolute())) {
-                                throw new FTPException(getSession().getClient().getReplyString());
-                            }
-                            if(!getSession().getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
-                                // Set transfer type for traditional data socket file listings. The data transfer is over the
-                                // data connection in type ASCII or type EBCDIC.
-                                throw new FTPException(getSession().getClient().getReplyString());
-                            }
-                            boolean success = false;
-                            // STAT listing failed or empty
-                            if(getSession().isMlsdListSupportedEnabled()
-                                    // Note that there is no distinct FEAT output for MLSD.
-                                    // The presence of the MLST feature indicates that both MLST and MLSD are supported.
-                                    && getSession().getClient().isFeatureSupported(FTPCommand.MLST)) {
-                                success = parseMlsdResponse(children, getSession().getClient().list(FTPCommand.MLSD));
-                                if(!success) {
-                                    getSession().setMlsdListSupportedEnabled(false);
-                                }
-                            }
-                            if(!success) {
-                                // MLSD listing failed or not enabled
-                                if(getSession().isExtendedListEnabled()) {
-                                    try {
-                                        success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, "-a"));
-                                    }
-                                    catch(FTPException e) {
-                                        getSession().setExtendedListEnabled(false);
-                                    }
-                                }
-                                if(!success) {
-                                    // LIST -a listing failed or not enabled
-                                    success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST));
-                                }
-                            }
-                            return success;
-                        }
-                    });
-                }
-                for(Path child : children) {
-                    if(child.attributes().isSymbolicLink()) {
-                        if(this.getSession().getClient().changeWorkingDirectory(child.getAbsolute())) {
-                            child.attributes().setType(SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE);
-                        }
-                        else {
-                            // Try if CWD to symbolic link target succeeds
-                            if(this.getSession().getClient().changeWorkingDirectory(child.getSymlinkTarget().getAbsolute())) {
-                                // Workdir change succeeded
-                                child.attributes().setType(SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE);
                             }
                             else {
-                                child.attributes().setType(SYMBOLIC_LINK_TYPE | FILE_TYPE);
+                                result.add(StringUtils.stripStart(line, null));
                             }
                         }
+                        success = this.parseListResponse(children, parser, result);
                     }
-                }
-                if(!success) {
-                    // LIST listing failed
-                    log.error("No compatible file listing method found");
+                    else {
+                        this.getSession().setStatListSupportedEnabled(false);
+                    }
                 }
             }
             catch(IOException e) {
-                log.warn("Listing directory failed:" + e.getMessage());
-                children.attributes().setReadable(false);
-                if(!session.cache().containsKey(this.getReference())) {
-                    this.error(e.getMessage(), e);
+                log.warn("Command STAT failed with I/O error:" + e.getMessage());
+                this.getSession().interrupt();
+                this.getSession().check();
+            }
+            if(!success || children.isEmpty()) {
+                success = this.data(new DataConnectionAction() {
+                    @Override
+                    public boolean run() throws IOException {
+                        if(!getSession().getClient().changeWorkingDirectory(getAbsolute())) {
+                            throw new FTPException(getSession().getClient().getReplyString());
+                        }
+                        if(!getSession().getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
+                            // Set transfer type for traditional data socket file listings. The data transfer is over the
+                            // data connection in type ASCII or type EBCDIC.
+                            throw new FTPException(getSession().getClient().getReplyString());
+                        }
+                        boolean success = false;
+                        // STAT listing failed or empty
+                        if(getSession().isMlsdListSupportedEnabled()
+                                // Note that there is no distinct FEAT output for MLSD.
+                                // The presence of the MLST feature indicates that both MLST and MLSD are supported.
+                                && getSession().getClient().isFeatureSupported(FTPCommand.MLST)) {
+                            success = parseMlsdResponse(children, getSession().getClient().list(FTPCommand.MLSD));
+                            if(!success) {
+                                getSession().setMlsdListSupportedEnabled(false);
+                            }
+                        }
+                        if(!success) {
+                            // MLSD listing failed or not enabled
+                            if(getSession().isExtendedListEnabled()) {
+                                try {
+                                    success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, "-a"));
+                                }
+                                catch(FTPException e) {
+                                    getSession().setExtendedListEnabled(false);
+                                }
+                            }
+                            if(!success) {
+                                // LIST -a listing failed or not enabled
+                                success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST));
+                            }
+                        }
+                        return success;
+                    }
+                });
+            }
+            for(Path child : children) {
+                if(child.attributes().isSymbolicLink()) {
+                    if(this.getSession().getClient().changeWorkingDirectory(child.getAbsolute())) {
+                        child.attributes().setType(SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE);
+                    }
+                    else {
+                        // Try if CWD to symbolic link target succeeds
+                        if(this.getSession().getClient().changeWorkingDirectory(child.getSymlinkTarget().getAbsolute())) {
+                            // Workdir change succeeded
+                            child.attributes().setType(SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE);
+                        }
+                        else {
+                            child.attributes().setType(SYMBOLIC_LINK_TYPE | FILE_TYPE);
+                        }
+                    }
                 }
+            }
+            if(!success) {
+                // LIST listing failed
+                log.error("No compatible file listing method found");
+            }
+        }
+        catch(IOException e) {
+            log.warn("Listing directory failed:" + e.getMessage());
+            children.attributes().setReadable(false);
+            if(!session.cache().containsKey(this.getReference())) {
+                this.error(e.getMessage(), e);
             }
         }
         return children;

@@ -84,30 +84,28 @@ public class SFTPPath extends Path {
 
     @Override
     public AttributedList<Path> list(final AttributedList<Path> children) {
-        if(this.attributes().isDirectory()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                    this.getName()));
 
-                for(SFTPv3DirectoryEntry f : this.getSession().sftp().ls(this.getAbsolute())) {
-                    if(f.filename.equals(".") || f.filename.equals("..")) {
-                        continue;
-                    }
-                    SFTPv3FileAttributes attributes = f.attributes;
-                    SFTPPath p = new SFTPPath(this.getSession(), this.getAbsolute(),
-                            f.filename, attributes.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
-                    p.setParent(this);
-                    p.readAttributes(attributes);
-                    children.add(p);
+            for(SFTPv3DirectoryEntry f : this.getSession().sftp().ls(this.getAbsolute())) {
+                if(f.filename.equals(".") || f.filename.equals("..")) {
+                    continue;
                 }
+                SFTPv3FileAttributes attributes = f.attributes;
+                SFTPPath p = new SFTPPath(this.getSession(), this.getAbsolute(),
+                        f.filename, attributes.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
+                p.setParent(this);
+                p.readAttributes(attributes);
+                children.add(p);
             }
-            catch(IOException e) {
-                log.warn("Listing directory failed:" + e.getMessage());
-                children.attributes().setReadable(false);
-                if(!session.cache().containsKey(this.getReference())) {
-                    this.error(e.getMessage(), e);
-                }
+        }
+        catch(IOException e) {
+            log.warn("Listing directory failed:" + e.getMessage());
+            children.attributes().setReadable(false);
+            if(!session.cache().containsKey(this.getReference())) {
+                this.error(e.getMessage(), e);
             }
         }
         return children;
