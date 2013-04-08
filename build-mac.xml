@@ -72,11 +72,12 @@
     <property name="spotlight" value="${home}/Spotlight Importer"/>
     <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
 
-    <property name="sdk.version" value="macosx10.7"/>
+    <property name="build.sdk.version" value="macosx10.7"/>
+    <property name="build.xcodeoptions" value=""/>
 
     <target name="spotlight">
         <exec dir="${spotlight}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="-sdk ${sdk.version} xcodebuild -project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>
+            <arg line="-sdk ${build.sdk.version} xcodebuild -project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>
         </exec>
         <copy todir="${app.spotlight}">
             <fileset dir="${build.spotlight}">
@@ -101,7 +102,7 @@
             </fileset>
         </copy>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="-sdk ${sdk.version} xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app"/>
+            <arg line="-sdk ${build.sdk.version} xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.xcodeoptions}"/>
         </exec>
         <copy todir="${app.java}">
             <fileset dir="${build.deploy}">
@@ -510,6 +511,7 @@
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6.6"/>
+            <param name="build.xcodeoptions" value="SDKROOT=macosx"/>
         </antcall>
         <antcall target="distribution-mas"/>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
