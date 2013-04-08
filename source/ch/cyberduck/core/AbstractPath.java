@@ -54,9 +54,6 @@ public abstract class AbstractPath {
             if(StringUtils.isNotBlank(this.attributes().getVersionId())) {
                 reference.append("-").append(this.attributes().getVersionId());
             }
-            else if(StringUtils.isNotBlank(this.attributes().getChecksum())) {
-                reference.append("-").append(this.attributes().getChecksum());
-            }
         }
         return reference.toString();
     }
