@@ -204,6 +204,7 @@ public class PathTest extends AbstractTestCase {
         assertFalse(p.isChild(new NullPath("/a", Path.FILE_TYPE)));
         final NullPath d = new NullPath("/a", Path.DIRECTORY_TYPE);
         d.attributes().setVersionId("1");
+        d.attributes().setDuplicate(true);
         assertFalse(p.isChild(d));
     }
 
