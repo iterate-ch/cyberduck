@@ -195,4 +195,20 @@ public class PathTest extends AbstractTestCase {
         p.setSymlinkTarget("s");
         assertEquals("/s", p.getSymlinkTarget().getAbsolute());
     }
+
+    @Test
+    public void testChildren() {
+        Path p = new NullPath("/a/t", Path.FILE_TYPE);
+        assertTrue(p.isChild(new NullPath("/a", Path.DIRECTORY_TYPE)));
+        assertTrue(p.isChild(new NullPath("/", Path.DIRECTORY_TYPE)));
+        assertFalse(p.isChild(new NullPath("/a", Path.FILE_TYPE)));
+        final NullPath d = new NullPath("/a", Path.DIRECTORY_TYPE);
+        d.attributes().setVersionId("1");
+        assertFalse(p.isChild(d));
+    }
+
+    @Test
+    public void testGetParent() {
+        assertEquals(new NullPath("/b/t", Path.DIRECTORY_TYPE), new NullPath("/b/t/f.type", Path.FILE_TYPE).getParent());
+    }
 }
