@@ -942,7 +942,6 @@ public class S3Path extends CloudPath {
                 if(object.isDirectoryPlaceholder()) {
                     p.attributes().setType(DIRECTORY_TYPE);
                     p.attributes().setPlaceholder(true);
-                    p.attributes().setDuplicate(true);
                 }
                 else if(0 == object.getContentLength()) {
                     if("application/x-directory".equals(p.getDetails().getContentType())) {

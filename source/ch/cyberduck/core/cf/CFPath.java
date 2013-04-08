@@ -251,7 +251,6 @@ public class CFPath extends CloudPath {
                             }
                             if(file.attributes().isDirectory()) {
                                 file.attributes().setPlaceholder(true);
-                                file.attributes().setVersionId("-");
                                 if(children.contains(file.getReference())) {
                                     continue;
                                 }
