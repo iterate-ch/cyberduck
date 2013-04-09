@@ -133,6 +133,7 @@ static NSTableColumn *localSelectionColumn;
 - (void)cancelOperation:(id)sender
 {
 	[self abortEditing];
+    [[self window] makeFirstResponder:self];
 }
 
 // make return and tab only end editing, and not cause other cells to edit
