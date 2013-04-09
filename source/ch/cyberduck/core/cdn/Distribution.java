@@ -96,7 +96,7 @@ public class Distribution {
     private String sslUrl;
 
     /**
-     * CDN SSL URL
+     * CDN Streaming (iOS) URL
      */
     private String streamingUrl;
 
