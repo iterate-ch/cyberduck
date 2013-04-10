@@ -33,6 +33,7 @@ import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -666,8 +667,13 @@ public final class TransferController extends WindowController implements NSTool
      *
      * @param transfer Transfer
      */
-    public void addTransfer(final Transfer transfer) {
+    public void addTransfer(final Transfer transfer, final BackgroundAction action) {
         final TransferCollection collection = TransferCollection.defaultCollection();
+        collection.add(transfer);
+        final int row = collection.size() - 1;
+        final NSInteger index = new NSInteger(row);
+        transferTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
+        transferTable.scrollRowToVisible(index);
         if(collection.size() > Preferences.instance().getInteger("queue.size.warn")) {
             final NSAlert alert = NSAlert.alert(
                     Locale.localizedString(TOOLBAR_CLEAN_UP), //title
@@ -688,14 +694,13 @@ public final class TransferController extends WindowController implements NSTool
                     if(returncode == DEFAULT_OPTION) {
                         clearButtonClicked(null);
                     }
+                    background(action);
                 }
             });
         }
-        collection.add(transfer);
-        final int row = collection.size() - 1;
-        final NSInteger index = new NSInteger(row);
-        transferTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
-        transferTable.scrollRowToVisible(index);
+        else {
+            this.background(action);
+        }
     }
 
     /**
@@ -711,13 +716,10 @@ public final class TransferController extends WindowController implements NSTool
      * @param reloadRequested Reload button clicked
      */
     private void startTransfer(final Transfer transfer, final boolean resumeRequested, final boolean reloadRequested) {
-        if(!TransferCollection.defaultCollection().contains(transfer)) {
-            this.addTransfer(transfer);
-        }
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window().makeKeyAndOrderFront(null);
         }
-        this.background(new AlertRepeatableBackgroundAction(this) {
+        final AlertRepeatableBackgroundAction action = new AlertRepeatableBackgroundAction(this) {
             private boolean resume = resumeRequested;
             private boolean reload = reloadRequested;
 
@@ -846,7 +848,13 @@ public final class TransferController extends WindowController implements NSTool
                 // No synchronization with other tasks
                 return lock;
             }
-        });
+        };
+        if(!TransferCollection.defaultCollection().contains(transfer)) {
+            this.addTransfer(transfer, action);
+        }
+        else {
+            this.background(action);
+        }
     }
 
     private void validateToolbar() {
@@ -989,7 +997,12 @@ public final class TransferController extends WindowController implements NSTool
             for(Path download : downloads) {
                 download.setLocal(LocalFactory.createLocal(download.getHost().getDownloadFolder(), download.getName()));
             }
-            this.addTransfer(new DownloadTransfer(downloads));
+            this.addTransfer(new DownloadTransfer(downloads), new AbstractBackgroundAction() {
+                @Override
+                public void run() {
+                    //
+                }
+            });
             pasteboard.clear();
         }
     }
@@ -1095,7 +1108,7 @@ public final class TransferController extends WindowController implements NSTool
         final TransferCollection collection = TransferCollection.defaultCollection();
         for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext(); ) {
             Transfer transfer = iter.next();
-            if(!transfer.isRunning() && transfer.isComplete()) {
+            if(!transfer.isRunning() && transfer.isComplete() && transfer.isReset()) {
                 iter.remove();
             }
         }
