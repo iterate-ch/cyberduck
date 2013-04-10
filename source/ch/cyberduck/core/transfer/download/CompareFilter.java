@@ -4,7 +4,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
-import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.log4j.Logger;
 
@@ -16,7 +16,7 @@ public class CompareFilter extends AbstractDownloadFilter {
 
     private ComparisonService compareService = new CombinedComparisionService();
 
-    public CompareFilter(final DownloadSymlinkResolver symlinkResolver) {
+    public CompareFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
     }
 

@@ -40,6 +40,7 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.normalizer.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.log4j.Logger;
 
@@ -103,7 +104,7 @@ public class DownloadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
-        final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
+        final SymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new OverwriteFilter(resolver);
         }
@@ -174,7 +175,7 @@ public class DownloadTransfer extends Transfer {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Local local = file.getLocal();
-        final DownloadSymlinkResolver symlinkResolver = new DownloadSymlinkResolver(this.getRoots());
+        final SymlinkResolver symlinkResolver = new DownloadSymlinkResolver(this.getRoots());
         if(file.attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
             final String target = symlinkResolver.relativize(file.getAbsolute(),
