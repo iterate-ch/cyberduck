@@ -1390,23 +1390,23 @@ public class InfoController extends ToolbarWindowController {
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             if(session instanceof CloudSession) {
                 // Give icon and label of the given session
-                item.setImage(IconCache.iconNamed(String.format("%s.tiff", session.getHost().getProtocol().disk()), 32));
+                item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
             }
             else {
                 // CloudFront is the default for custom distributions
-                item.setImage(IconCache.iconNamed(String.format("%s.tiff", Protocol.S3_SSL.disk()), 32));
+                item.setImage(IconCache.iconNamed(Protocol.S3_SSL.disk(), 32));
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
             if(session instanceof CloudSession) {
                 // Set icon of cloud service provider
                 item.setLabel(session.getHost().getProtocol().getName());
-                item.setImage(IconCache.iconNamed(String.format("%s.tiff", session.getHost().getProtocol().disk()), 32));
+                item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
             }
             else {
                 // Currently these settings are only available for Amazon S3
                 item.setLabel(Protocol.S3_SSL.getName());
-                item.setImage(IconCache.iconNamed(String.format("%s.tiff", Protocol.S3_SSL.disk()), 32));
+                item.setImage(IconCache.iconNamed(Protocol.S3_SSL.disk(), 32));
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {

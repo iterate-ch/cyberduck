@@ -125,7 +125,7 @@ public abstract class Protocol {
      * @return A mounted disk icon to display
      */
     public String disk() {
-        return this.getIdentifier();
+        return String.format("%s.tiff", this.getIdentifier());
     }
 
     /**

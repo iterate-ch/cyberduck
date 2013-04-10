@@ -140,7 +140,7 @@ public final class PromptLoginController extends AbstractLoginController {
 
             public void setIconView(NSImageView iconView) {
                 this.iconView = iconView;
-                this.iconView.setImage(IconCache.iconNamed(String.format("%s.tiff", protocol.disk())));
+                this.iconView.setImage(IconCache.iconNamed(protocol.disk()));
             }
 
             @Outlet
