@@ -602,8 +602,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     @Override
     public void symlink(String target) {
-        log.warn(String.format("Touching file instead of creating symbolic link for %s", this));
-        this.touch();
+        // No op.
     }
 
     /**
