@@ -938,11 +938,11 @@ public class FTPPath extends Path {
                             upload(out, in, throttle, listener, status);
                         }
                         finally {
+                            IOUtils.closeQuietly(in);
+                            IOUtils.closeQuietly(out);
                             if(!getSession().getClient().completePendingCommand()) {
                                 throw new FTPException(getSession().getClient().getReplyString());
                             }
-                            IOUtils.closeQuietly(in);
-                            IOUtils.closeQuietly(out);
                         }
                         return true;
                     }
