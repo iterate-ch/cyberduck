@@ -152,16 +152,16 @@ public class FTPClient extends FTPSClient {
                 // Control socket is SSL
                 final SSLSession session = ((SSLSocket) _socket_).getSession();
                 final SSLSessionContext context = session.getSessionContext();
-                context.setSessionCacheSize(Preferences.instance().getInteger("connection.ssl.session.cache.size"));
+                context.setSessionCacheSize(Preferences.instance().getInteger("ftp.ssl.session.cache.size"));
                 try {
                     final Field sessionHostPortCache = context.getClass().getDeclaredField("sessionHostPortCache");
                     sessionHostPortCache.setAccessible(true);
-                    final Object cachedSession = sessionHostPortCache.get(context);
-                    final String key = String.format("%s:%s", socket.getInetAddress().getHostAddress(),
-                            String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT);
-                    final Method method = cachedSession.getClass().getDeclaredMethod("put", Object.class, Object.class);
+                    final Object cache = sessionHostPortCache.get(context);
+                    final Method method = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
                     method.setAccessible(true);
-                    method.invoke(cachedSession, key, session);
+                    final String key = String.format("%s:%s", socket.getInetAddress().getHostName(),
+                            String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT);
+                    method.invoke(cache, key, session);
                 }
                 catch(NoSuchFieldException e) {
                     // Not running in expected JRE

@@ -522,6 +522,7 @@ public abstract class Preferences {
          */
         defaults.put("ftp.tls.datachannel", "P"); //C
         defaults.put("ftp.tls.session.requirereuse", String.valueOf(true));
+        defaults.put("ftp.ssl.session.cache.size", String.valueOf(100));
 
         /**
          * Try to determine the timezone automatically using timestamp comparison from MLST and LIST
@@ -748,7 +749,6 @@ public abstract class Preferences {
         defaults.put("connection.unsecure.switch", String.valueOf(true));
 
         defaults.put("connection.ssl.protocols", "SSLv3, TLSv1");
-        defaults.put("connection.ssl.session.cache.size", String.valueOf(100));
 
         /**
          * Transfer read buffer size
