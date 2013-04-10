@@ -73,18 +73,18 @@ public abstract class WindowController extends BundleController implements NSWin
     /**
      * @param listener Callback on window close
      */
-    public void addListener(WindowListener listener) {
+    public void addListener(final WindowListener listener) {
         listeners.add(listener);
     }
 
     /**
      * @param listener Callback on window close
      */
-    public void removeListener(WindowListener listener) {
+    public void removeListener(final WindowListener listener) {
         listeners.remove(listener);
     }
 
-    public void setWindow(NSWindow window) {
+    public void setWindow(final NSWindow window) {
         this.window = window;
         this.window.setReleasedWhenClosed(!this.isSingleton());
 //        window.setMinSize(new NSSize(this.getMinWindowWidth(), this.getMinWindowHeight()));
@@ -165,7 +165,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @see ch.cyberduck.ui.cocoa.application.NSWindow.Delegate
      */
     @Override
-    public boolean windowShouldClose(NSWindow sender) {
+    public boolean windowShouldClose(final NSWindow sender) {
         return true;
     }
 
@@ -173,7 +173,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * Override this method if the controller should not be invalidated after its window closes
      */
     @Override
-    public void windowWillClose(NSNotification notification) {
+    public void windowWillClose(final NSNotification notification) {
         log.debug("windowWillClose:" + notification);
         for(WindowListener listener : listeners.toArray(new WindowListener[listeners.size()])) {
             listener.windowWillClose();
@@ -202,7 +202,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param toggle Checkbox
      * @param select Selected
      */
-    protected void setState(NSButton toggle, boolean select) {
+    protected void setState(final NSButton toggle, final boolean select) {
         if(select) {
             toggle.performClick(null);
         }
@@ -260,7 +260,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param help     Help URL
      */
     protected void alert(final NSAlert alert, final SheetCallback callback, final String help) {
-        SheetController c = new AlertController(this, alert) {
+        final SheetController c = new AlertController(this, alert) {
             @Override
             public void callback(final int returncode) {
                 callback.callback(returncode);
