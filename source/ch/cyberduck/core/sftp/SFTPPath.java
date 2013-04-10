@@ -113,18 +113,16 @@ public class SFTPPath extends Path {
 
     @Override
     public void mkdir() {
-        if(this.attributes().isDirectory()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                    this.getName()));
 
-                this.getSession().sftp().mkdir(this.getAbsolute(),
-                        Integer.parseInt(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getOctalString(), 8));
-            }
-            catch(IOException e) {
-                this.error("Cannot create folder {0}", e);
-            }
+            this.getSession().sftp().mkdir(this.getAbsolute(),
+                    Integer.parseInt(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getOctalString(), 8));
+        }
+        catch(IOException e) {
+            this.error("Cannot create folder {0}", e);
         }
     }
 
@@ -398,21 +396,19 @@ public class SFTPPath extends Path {
     @Override
     public void download(BandwidthThrottle throttle, StreamListener listener,
                          final TransferStatus status) {
-        if(this.attributes().isFile()) {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = this.read(status);
-                out = this.getLocal().getOutputStream(status.isResume());
-                this.download(in, out, throttle, listener, status);
-            }
-            catch(IOException e) {
-                this.error("Download failed", e);
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = this.read(status);
+            out = this.getLocal().getOutputStream(status.isResume());
+            this.download(in, out, throttle, listener, status);
+        }
+        catch(IOException e) {
+            this.error("Download failed", e);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
         }
     }
 
@@ -472,21 +468,19 @@ public class SFTPPath extends Path {
 
     @Override
     public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
-        if(this.attributes().isFile()) {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = this.getLocal().getInputStream();
-                out = this.write(status);
-                this.upload(out, in, throttle, listener, status);
-            }
-            catch(IOException e) {
-                this.error("Upload failed", e);
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = this.getLocal().getInputStream();
+            out = this.write(status);
+            this.upload(out, in, throttle, listener, status);
+        }
+        catch(IOException e) {
+            this.error("Upload failed", e);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
         }
     }
 

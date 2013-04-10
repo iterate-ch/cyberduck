@@ -521,19 +521,17 @@ public class FTPPath extends Path {
 
     @Override
     public void mkdir() {
-        if(this.attributes().isDirectory()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                    this.getName()));
 
-                if(!this.getSession().getClient().makeDirectory(this.getAbsolute())) {
-                    throw new FTPException(this.getSession().getClient().getReplyString());
-                }
+            if(!this.getSession().getClient().makeDirectory(this.getAbsolute())) {
+                throw new FTPException(this.getSession().getClient().getReplyString());
             }
-            catch(IOException e) {
-                this.error("Cannot create folder {0}", e);
-            }
+        }
+        catch(IOException e) {
+            this.error("Cannot create folder {0}", e);
         }
     }
 
@@ -799,29 +797,27 @@ public class FTPPath extends Path {
     @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status) {
-        if(this.attributes().isFile()) {
-            try {
-                this.data(new DataConnectionAction() {
-                    @Override
-                    public boolean run() throws IOException {
-                        InputStream in = null;
-                        OutputStream out = null;
-                        try {
-                            in = read(status);
-                            out = getLocal().getOutputStream(status.isResume());
-                            download(in, out, throttle, listener, status);
-                        }
-                        finally {
-                            IOUtils.closeQuietly(in);
-                            IOUtils.closeQuietly(out);
-                        }
-                        return true;
+        try {
+            this.data(new DataConnectionAction() {
+                @Override
+                public boolean run() throws IOException {
+                    InputStream in = null;
+                    OutputStream out = null;
+                    try {
+                        in = read(status);
+                        out = getLocal().getOutputStream(status.isResume());
+                        download(in, out, throttle, listener, status);
                     }
-                });
-            }
-            catch(IOException e) {
-                this.error("Download failed", e);
-            }
+                    finally {
+                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly(out);
+                    }
+                    return true;
+                }
+            });
+        }
+        catch(IOException e) {
+            this.error("Download failed", e);
         }
     }
 
@@ -840,6 +836,7 @@ public class FTPPath extends Path {
                         status.isResume() ? status.getCurrent() : 0);
             }
         }
+        //todo transfer mode
         final InputStream delegate = getSession().getClient().retrieveFileStream(getAbsolute());
         return new InputStream() {
             /**
@@ -925,33 +922,31 @@ public class FTPPath extends Path {
     @Override
     public void upload(final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) {
-        if(this.attributes().isFile()) {
-            try {
-                if(this.data(new DataConnectionAction() {
-                    @Override
-                    public boolean run() throws IOException {
-                        InputStream in = null;
-                        OutputStream out = null;
-                        try {
-                            in = getLocal().getInputStream();
-                            out = write(status);
-                            upload(out, in, throttle, listener, status);
-                        }
-                        finally {
-                            IOUtils.closeQuietly(in);
-                            IOUtils.closeQuietly(out);
-                            if(!getSession().getClient().completePendingCommand()) {
-                                throw new FTPException(getSession().getClient().getReplyString());
-                            }
-                        }
-                        return true;
+        try {
+            if(this.data(new DataConnectionAction() {
+                @Override
+                public boolean run() throws IOException {
+                    InputStream in = null;
+                    OutputStream out = null;
+                    try {
+                        in = getLocal().getInputStream();
+                        out = write(status);
+                        upload(out, in, throttle, listener, status);
                     }
-                })) {
+                    finally {
+                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly(out);
+                        if(!getSession().getClient().completePendingCommand()) {
+                            throw new FTPException(getSession().getClient().getReplyString());
+                        }
+                    }
+                    return true;
                 }
+            })) {
             }
-            catch(IOException e) {
-                this.error("Upload failed", e);
-            }
+        }
+        catch(IOException e) {
+            this.error("Upload failed", e);
         }
     }
 

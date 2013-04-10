@@ -448,21 +448,19 @@ public class S3Path extends CloudPath {
     @Override
     public void download(BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status) {
-        if(attributes().isFile()) {
-            OutputStream out = null;
-            InputStream in = null;
-            try {
-                in = this.read(status);
-                out = this.getLocal().getOutputStream(status.isResume());
-                this.download(in, out, throttle, listener, status);
-            }
-            catch(IOException e) {
-                this.error("Download failed", e);
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
+        OutputStream out = null;
+        InputStream in = null;
+        try {
+            in = this.read(status);
+            out = this.getLocal().getOutputStream(status.isResume());
+            this.download(in, out, throttle, listener, status);
+        }
+        catch(IOException e) {
+            this.error("Download failed", e);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
         }
     }
 
@@ -1022,48 +1020,46 @@ public class S3Path extends CloudPath {
 
     @Override
     public void mkdir() {
-        if(this.attributes().isDirectory()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                    this.getName()));
 
-                if(this.isContainer()) {
-                    // Create bucket
-                    if(!ServiceUtils.isBucketNameValidDNSName(this.getName())) {
-                        throw new ServiceException(Locale.localizedString("Bucket name is not DNS compatible", "S3"));
-                    }
-                    String location = Preferences.instance().getProperty("s3.location");
-                    if(!this.getSession().getHost().getProtocol().getLocations().contains(location)) {
-                        log.warn("Default bucket location not supported by provider:" + location);
-                        location = "US";
-                        log.warn("Fallback to US");
-                    }
-                    AccessControlList acl;
-                    if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
-                        acl = this.getSession().getPublicCannedReadAcl();
-                    }
-                    else {
-                        acl = this.getSession().getPrivateCannedAcl();
-                    }
-                    this.getSession().getClient().createBucket(this.getContainerName(), location, acl);
+            if(this.isContainer()) {
+                // Create bucket
+                if(!ServiceUtils.isBucketNameValidDNSName(this.getName())) {
+                    throw new ServiceException(Locale.localizedString("Bucket name is not DNS compatible", "S3"));
+                }
+                String location = Preferences.instance().getProperty("s3.location");
+                if(!this.getSession().getHost().getProtocol().getLocations().contains(location)) {
+                    log.warn("Default bucket location not supported by provider:" + location);
+                    location = "US";
+                    log.warn("Fallback to US");
+                }
+                AccessControlList acl;
+                if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
+                    acl = this.getSession().getPublicCannedReadAcl();
                 }
                 else {
-                    StorageObject object = new StorageObject(this.getKey() + Path.DELIMITER);
-                    object.setBucketName(this.getContainerName());
-                    // Set object explicitly to private access by default.
-                    object.setAcl(this.getSession().getPrivateCannedAcl());
-                    object.setContentLength(0);
-                    object.setContentType("application/x-directory");
-                    this.getSession().getClient().putObject(this.getContainerName(), object);
+                    acl = this.getSession().getPrivateCannedAcl();
                 }
+                this.getSession().getClient().createBucket(this.getContainerName(), location, acl);
             }
-            catch(ServiceException e) {
-                this.error("Cannot create folder {0}", e);
+            else {
+                StorageObject object = new StorageObject(this.getKey() + Path.DELIMITER);
+                object.setBucketName(this.getContainerName());
+                // Set object explicitly to private access by default.
+                object.setAcl(this.getSession().getPrivateCannedAcl());
+                object.setContentLength(0);
+                object.setContentType("application/x-directory");
+                this.getSession().getClient().putObject(this.getContainerName(), object);
             }
-            catch(IOException e) {
-                this.error("Cannot create folder {0}", e);
-            }
+        }
+        catch(ServiceException e) {
+            this.error("Cannot create folder {0}", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot create folder {0}", e);
         }
     }
 

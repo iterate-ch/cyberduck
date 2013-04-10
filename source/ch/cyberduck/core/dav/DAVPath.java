@@ -197,17 +197,15 @@ public class DAVPath extends HttpPath {
 
     @Override
     public void mkdir() {
-        if(this.attributes().isDirectory()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                    this.getName()));
 
-                this.getSession().getClient().createDirectory(this.toURL());
-            }
-            catch(IOException e) {
-                this.error("Cannot create folder {0}", e);
-            }
+            this.getSession().getClient().createDirectory(this.toURL());
+        }
+        catch(IOException e) {
+            this.error("Cannot create folder {0}", e);
         }
     }
 
@@ -301,53 +299,49 @@ public class DAVPath extends HttpPath {
     @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status) {
-        if(attributes().isFile()) {
-            OutputStream out = null;
-            InputStream in = null;
-            try {
-                in = this.read(status);
-                out = this.getLocal().getOutputStream(status.isResume());
-                this.download(in, out, throttle, listener, status);
-            }
-            catch(IOException e) {
-                this.error("Download failed", e);
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
+        OutputStream out = null;
+        InputStream in = null;
+        try {
+            in = this.read(status);
+            out = this.getLocal().getOutputStream(status.isResume());
+            this.download(in, out, throttle, listener, status);
+        }
+        catch(IOException e) {
+            this.error("Download failed", e);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
         }
     }
 
     @Override
     public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
-        if(attributes().isFile()) {
+        try {
+            InputStream in = null;
+            ResponseOutputStream<Void> out = null;
             try {
-                InputStream in = null;
-                ResponseOutputStream<Void> out = null;
-                try {
-                    in = this.getLocal().getInputStream();
-                    if(status.isResume()) {
-                        long skipped = in.skip(status.getCurrent());
-                        log.info(String.format("Skipping %d bytes", skipped));
-                        if(skipped < status.getCurrent()) {
-                            throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
-                        }
+                in = this.getLocal().getInputStream();
+                if(status.isResume()) {
+                    long skipped = in.skip(status.getCurrent());
+                    log.info(String.format("Skipping %d bytes", skipped));
+                    if(skipped < status.getCurrent()) {
+                        throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
                     }
-                    out = this.write(status);
-                    this.upload(out, in, throttle, listener, status);
                 }
-                finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
-                }
-                if(null != out) {
-                    out.getResponse();
-                }
+                out = this.write(status);
+                this.upload(out, in, throttle, listener, status);
             }
-            catch(IOException e) {
-                this.error("Upload failed", e);
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
             }
+            if(null != out) {
+                out.getResponse();
+            }
+        }
+        catch(IOException e) {
+            this.error("Upload failed", e);
         }
     }
 

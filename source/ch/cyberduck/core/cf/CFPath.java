@@ -306,84 +306,80 @@ public class CFPath extends CloudPath {
     @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status) {
-        if(attributes().isFile()) {
-            OutputStream out = null;
-            InputStream in = null;
-            try {
-                in = this.read(status);
-                out = this.getLocal().getOutputStream(status.isResume());
-                this.download(in, out, throttle, listener, status);
-            }
-            catch(IOException e) {
-                this.error("Download failed", e);
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
+        OutputStream out = null;
+        InputStream in = null;
+        try {
+            in = this.read(status);
+            out = this.getLocal().getOutputStream(status.isResume());
+            this.download(in, out, throttle, listener, status);
+        }
+        catch(IOException e) {
+            this.error("Download failed", e);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
         }
     }
 
     @Override
     public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
-        if(attributes().isFile()) {
-            try {
-                String md5sum = null;
-                if(Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
-                    this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                            this.getName()));
-                    md5sum = this.getLocal().attributes().getChecksum();
-                }
-                MessageDigest digest = null;
-                if(!Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
-                    try {
-                        digest = MessageDigest.getInstance("MD5");
-                    }
-                    catch(NoSuchAlgorithmException e) {
-                        log.error("Failure loading MD5 digest", e);
-                    }
-                }
-                InputStream in = null;
-                ResponseOutputStream<String> out = null;
+        try {
+            String md5sum = null;
+            if(Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                        this.getName()));
+                md5sum = this.getLocal().attributes().getChecksum();
+            }
+            MessageDigest digest = null;
+            if(!Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
                 try {
-                    if(null == digest) {
-                        log.warn("MD5 calculation disabled");
-                        in = this.getLocal().getInputStream();
-                    }
-                    else {
-                        in = new DigestInputStream(this.getLocal().getInputStream(), digest);
-                    }
-                    out = this.write(status, md5sum);
-                    this.upload(out, in, throttle, listener, status);
+                    digest = MessageDigest.getInstance("MD5");
                 }
-                finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
+                catch(NoSuchAlgorithmException e) {
+                    log.error("Failure loading MD5 digest", e);
                 }
-                if(null != digest && null != out) {
-                    this.getSession().message(MessageFormat.format(
-                            Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
-                    // Obtain locally-calculated MD5 hash.
-                    String expectedETag = ServiceUtils.toHex(digest.digest());
-                    // Compare our locally-calculated hash with the ETag returned.
-                    final String result = out.getResponse();
-                    if(!expectedETag.equals(result)) {
-                        throw new IOException("Mismatch between MD5 hash of uploaded data ("
-                                + expectedETag + ") and ETag returned ("
-                                + result + ") for object key: "
-                                + this.getKey());
-                    }
-                    else {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Object upload was automatically verified, the calculated MD5 hash " +
-                                    "value matched the ETag returned: " + this.getKey());
-                        }
+            }
+            InputStream in = null;
+            ResponseOutputStream<String> out = null;
+            try {
+                if(null == digest) {
+                    log.warn("MD5 calculation disabled");
+                    in = this.getLocal().getInputStream();
+                }
+                else {
+                    in = new DigestInputStream(this.getLocal().getInputStream(), digest);
+                }
+                out = this.write(status, md5sum);
+                this.upload(out, in, throttle, listener, status);
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+            }
+            if(null != digest && null != out) {
+                this.getSession().message(MessageFormat.format(
+                        Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
+                // Obtain locally-calculated MD5 hash.
+                String expectedETag = ServiceUtils.toHex(digest.digest());
+                // Compare our locally-calculated hash with the ETag returned.
+                final String result = out.getResponse();
+                if(!expectedETag.equals(result)) {
+                    throw new IOException("Mismatch between MD5 hash of uploaded data ("
+                            + expectedETag + ") and ETag returned ("
+                            + result + ") for object key: "
+                            + this.getKey());
+                }
+                else {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Object upload was automatically verified, the calculated MD5 hash " +
+                                "value matched the ETag returned: " + this.getKey());
                     }
                 }
             }
-            catch(IOException e) {
-                this.error("Upload failed", e);
-            }
+        }
+        catch(IOException e) {
+            this.error("Upload failed", e);
         }
     }
 
@@ -448,27 +444,25 @@ public class CFPath extends CloudPath {
 
     @Override
     public void mkdir() {
-        if(this.attributes().isDirectory()) {
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                    this.getName()));
 
-                if(this.isContainer()) {
-                    // Create container at top level
-                    this.getSession().getClient().createContainer(this.getName());
-                }
-                else {
-                    // Create virtual directory
-                    this.getSession().getClient().createFullPath(this.getContainerName(), this.getKey());
-                }
+            if(this.isContainer()) {
+                // Create container at top level
+                this.getSession().getClient().createContainer(this.getName());
             }
-            catch(HttpException e) {
-                this.error("Cannot create folder {0}", e);
+            else {
+                // Create virtual directory
+                this.getSession().getClient().createFullPath(this.getContainerName(), this.getKey());
             }
-            catch(IOException e) {
-                this.error("Cannot create folder {0}", e);
-            }
+        }
+        catch(HttpException e) {
+            this.error("Cannot create folder {0}", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot create folder {0}", e);
         }
     }
 
