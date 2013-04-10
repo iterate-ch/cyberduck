@@ -2697,6 +2697,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         syncPanel = NSOpenPanel.openPanel();
         syncPanel.setCanChooseDirectories(selection.attributes().isDirectory());
+        syncPanel.setTreatsFilePackagesAsDirectories(true);
         syncPanel.setCanChooseFiles(selection.attributes().isFile());
         syncPanel.setCanCreateDirectories(true);
         syncPanel.setAllowsMultipleSelection(false);
@@ -2767,6 +2768,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         uploadPanel = NSOpenPanel.openPanel();
         uploadPanel.setCanChooseDirectories(true);
         uploadPanel.setCanCreateDirectories(false);
+        uploadPanel.setTreatsFilePackagesAsDirectories(true);
         uploadPanel.setCanChooseFiles(true);
         uploadPanel.setAllowsMultipleSelection(true);
         uploadPanel.setPrompt(Locale.localizedString("Upload"));
