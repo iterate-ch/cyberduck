@@ -798,23 +798,17 @@ public class FTPPath extends Path {
     public void download(final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status) {
         try {
-            this.data(new DataConnectionAction() {
-                @Override
-                public boolean run() throws IOException {
-                    InputStream in = null;
-                    OutputStream out = null;
-                    try {
-                        in = read(status);
-                        out = getLocal().getOutputStream(status.isResume());
-                        download(in, out, throttle, listener, status);
-                    }
-                    finally {
-                        IOUtils.closeQuietly(in);
-                        IOUtils.closeQuietly(out);
-                    }
-                    return true;
-                }
-            });
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = read(status);
+                out = getLocal().getOutputStream(status.isResume());
+                download(in, out, throttle, listener, status);
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+            }
         }
         catch(IOException e) {
             this.error("Download failed", e);
@@ -823,20 +817,24 @@ public class FTPPath extends Path {
 
     @Override
     public InputStream read(final TransferStatus status) throws IOException {
-        if(!getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
-            throw new FTPException(getSession().getClient().getReplyString());
-        }
+        this.data(new DataConnectionAction() {
+            @Override
+            public boolean run() throws IOException {
+                if(!getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
+                    throw new FTPException(getSession().getClient().getReplyString());
+                }
+                return true;
+            }
+        });
         if(status.isResume()) {
             // Where a server process supports RESTart in STREAM mode
             if(!getSession().getClient().isFeatureSupported("REST STREAM")) {
                 status.setResume(false);
             }
             else {
-                getSession().getClient().setRestartOffset(
-                        status.isResume() ? status.getCurrent() : 0);
+                getSession().getClient().setRestartOffset(status.getCurrent());
             }
         }
-        //todo transfer mode
         final InputStream delegate = getSession().getClient().retrieveFileStream(getAbsolute());
         return new InputStream() {
             /**
@@ -923,26 +921,19 @@ public class FTPPath extends Path {
     public void upload(final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) {
         try {
-            if(this.data(new DataConnectionAction() {
-                @Override
-                public boolean run() throws IOException {
-                    InputStream in = null;
-                    OutputStream out = null;
-                    try {
-                        in = getLocal().getInputStream();
-                        out = write(status);
-                        upload(out, in, throttle, listener, status);
-                    }
-                    finally {
-                        IOUtils.closeQuietly(in);
-                        IOUtils.closeQuietly(out);
-                        if(!getSession().getClient().completePendingCommand()) {
-                            throw new FTPException(getSession().getClient().getReplyString());
-                        }
-                    }
-                    return true;
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = getLocal().getInputStream();
+                out = write(status);
+                upload(out, in, throttle, listener, status);
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+                if(!getSession().getClient().completePendingCommand()) {
+                    throw new FTPException(getSession().getClient().getReplyString());
                 }
-            })) {
             }
         }
         catch(IOException e) {
@@ -952,12 +943,18 @@ public class FTPPath extends Path {
 
     @Override
     public OutputStream write(final TransferStatus status) throws IOException {
-        if(!getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-            throw new FTPException(getSession().getClient().getReplyString());
-        }
+        this.data(new DataConnectionAction() {
+            @Override
+            public boolean run() throws IOException {
+                if(!getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+                    throw new FTPException(getSession().getClient().getReplyString());
+                }
+                return true;
+            }
+        });
         if(status.isResume()) {
-            return getSession().getClient().appendFileStream(this.getAbsolute());
+            return getSession().getClient().appendFileStream(getAbsolute());
         }
-        return getSession().getClient().storeFileStream(this.getAbsolute());
+        return getSession().getClient().storeFileStream(getAbsolute());
     }
 }
