@@ -748,6 +748,7 @@ public abstract class Preferences {
         defaults.put("connection.unsecure.switch", String.valueOf(true));
 
         defaults.put("connection.ssl.protocols", "SSLv3, TLSv1");
+        defaults.put("connection.ssl.session.cache.size", String.valueOf(100));
 
         /**
          * Transfer read buffer size

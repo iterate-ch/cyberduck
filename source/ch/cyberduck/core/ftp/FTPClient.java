@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSessionContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -149,16 +150,18 @@ public class FTPClient extends FTPSClient {
         if(Preferences.instance().getBoolean("ftp.tls.session.requirereuse")) {
             if(socket instanceof SSLSocket) {
                 // Control socket is SSL
-                final SSLSessionContext sessions = (((SSLSocket) _socket_).getSession()).getSessionContext();
+                final SSLSession session = ((SSLSocket) _socket_).getSession();
+                final SSLSessionContext context = session.getSessionContext();
+                context.setSessionCacheSize(Preferences.instance().getInteger("connection.ssl.session.cache.size"));
                 try {
-                    final Field sessionHostPortCache = sessions.getClass().getDeclaredField("sessionHostPortCache");
+                    final Field sessionHostPortCache = context.getClass().getDeclaredField("sessionHostPortCache");
                     sessionHostPortCache.setAccessible(true);
-                    final Object cachedSession = sessionHostPortCache.get(sessions);
+                    final Object cachedSession = sessionHostPortCache.get(context);
                     final String key = String.format("%s:%s", socket.getInetAddress().getHostAddress(),
                             String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT);
                     final Method method = cachedSession.getClass().getDeclaredMethod("put", Object.class, Object.class);
                     method.setAccessible(true);
-                    method.invoke(cachedSession, key, (((SSLSocket) _socket_).getSession()));
+                    method.invoke(cachedSession, key, session);
                 }
                 catch(NoSuchFieldException e) {
                     // Not running in expected JRE
