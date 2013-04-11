@@ -17,6 +17,7 @@ public class ProfileTest extends AbstractTestCase {
         final Profile profile = ProfileReaderFactory.get().read(
                 LocalFactory.createLocal("profiles/Eucalyptus Walrus S3.cyberduckprofile")
         );
+        assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(Protocol.S3_SSL, profile.getProtocol());
         assertNotSame(Protocol.S3_SSL.getDefaultHostname(), profile.getDefaultHostname());
         assertEquals(Protocol.S3_SSL.getScheme(), profile.getScheme());
@@ -29,10 +30,10 @@ public class ProfileTest extends AbstractTestCase {
         final Profile profile = ProfileReaderFactory.get().read(
                 LocalFactory.createLocal("profiles/HP Cloud Object Storage (US East).cyberduckprofile")
         );
+        assertEquals(Protocol.Type.swift, profile.getType());
         assertEquals(Protocol.SWIFT, profile.getProtocol());
         assertNotSame(Protocol.CLOUDFILES.getDefaultHostname(), profile.getDefaultHostname());
         assertEquals(Scheme.https, profile.getScheme());
         assertNotNull(profile.getProvider());
-
     }
 }

@@ -101,6 +101,11 @@ public final class Profile extends Protocol implements Serializable {
     }
 
     @Override
+    public Type getType() {
+        return parent.getType();
+    }
+
+    @Override
     public String getUsernamePlaceholder() {
         final String v = this.getValue("Username Placeholder");
         if(StringUtils.isBlank(v)) {
