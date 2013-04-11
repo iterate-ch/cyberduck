@@ -265,7 +265,7 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (KeyValuePair<Transfer, ProgressController> pair in _transferMap)
             {
                 Transfer t = pair.Key;
-                if (!t.isRunning() && t.isComplete() && t.isReset())
+                if (!t.isRunning() && t.isComplete())
                 {
                     TransferCollection.defaultCollection().remove(t);
                     toRemove.Add(t);

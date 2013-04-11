@@ -669,11 +669,6 @@ public final class TransferController extends WindowController implements NSTool
      */
     public void addTransfer(final Transfer transfer, final BackgroundAction action) {
         final TransferCollection collection = TransferCollection.defaultCollection();
-        collection.add(transfer);
-        final int row = collection.size() - 1;
-        final NSInteger index = new NSInteger(row);
-        transferTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
-        transferTable.scrollRowToVisible(index);
         if(collection.size() > Preferences.instance().getInteger("queue.size.warn")) {
             final NSAlert alert = NSAlert.alert(
                     Locale.localizedString(TOOLBAR_CLEAN_UP), //title
@@ -694,13 +689,24 @@ public final class TransferController extends WindowController implements NSTool
                     if(returncode == DEFAULT_OPTION) {
                         clearButtonClicked(null);
                     }
+                    addTransfer(transfer);
                     background(action);
                 }
             });
         }
         else {
+            this.addTransfer(transfer);
             this.background(action);
         }
+    }
+
+    private void addTransfer(final Transfer transfer) {
+        final TransferCollection collection = TransferCollection.defaultCollection();
+        collection.add(transfer);
+        final int row = collection.size() - 1;
+        final NSInteger index = new NSInteger(row);
+        transferTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
+        transferTable.scrollRowToVisible(index);
     }
 
     /**
@@ -1108,7 +1114,7 @@ public final class TransferController extends WindowController implements NSTool
         final TransferCollection collection = TransferCollection.defaultCollection();
         for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext(); ) {
             Transfer transfer = iter.next();
-            if(!transfer.isRunning() && transfer.isComplete() && transfer.isReset()) {
+            if(!transfer.isRunning() && transfer.isComplete()) {
                 iter.remove();
             }
         }
