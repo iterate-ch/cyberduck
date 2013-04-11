@@ -340,7 +340,7 @@ public abstract class Transfer implements Serializable {
      * @return All <code>root</code>s added to this transfer
      */
     public List<Path> getRoots() {
-        return this.roots;
+        return roots;
     }
 
     public List<Session> getSessions() {
@@ -377,7 +377,7 @@ public abstract class Transfer implements Serializable {
      * @return Lookup from cache
      * @see ch.cyberduck.core.Cache#lookup(ch.cyberduck.core.PathReference)
      */
-    public Path lookup(PathReference r) {
+    public Path lookup(final PathReference r) {
         for(Path root : roots) {
             if(r.equals(root.getReference())) {
                 return root;
