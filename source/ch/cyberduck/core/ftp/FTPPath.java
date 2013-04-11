@@ -33,6 +33,8 @@ import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.ProxyInputStream;
+import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPCommand;
@@ -801,7 +803,7 @@ public class FTPPath extends Path {
             try {
                 in = read(status);
                 out = getLocal().getOutputStream(status.isResume());
-                download(in, out, throttle, listener, status);
+                this.download(in, out, throttle, listener, status);
             }
             finally {
                 IOUtils.closeQuietly(in);
@@ -815,102 +817,54 @@ public class FTPPath extends Path {
 
     @Override
     public InputStream read(final TransferStatus status) throws IOException {
+        final FTPSession session = getSession();
         this.data(new DataConnectionAction() {
             @Override
             public boolean run() throws IOException {
-                if(!getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
-                    throw new FTPException(getSession().getClient().getReplyString());
+                if(!session.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
+                    throw new FTPException(session.getClient().getReplyString());
                 }
                 return true;
             }
         });
         if(status.isResume()) {
             // Where a server process supports RESTart in STREAM mode
-            if(!getSession().getClient().isFeatureSupported("REST STREAM")) {
+            if(!session.getClient().isFeatureSupported("REST STREAM")) {
                 status.setResume(false);
             }
             else {
-                getSession().getClient().setRestartOffset(status.getCurrent());
+                session.getClient().setRestartOffset(status.getCurrent());
             }
         }
-        final InputStream delegate = getSession().getClient().retrieveFileStream(getAbsolute());
-        return new InputStream() {
-            /**
-             * Keep own status flag because stream may be used outside of transfer status.
-             */
+        return new ProxyInputStream(session.getClient().retrieveFileStream(getAbsolute())) {
             private boolean complete;
 
             @Override
-            public int read() throws IOException {
-                final int read = delegate.read();
-                if(-1 == read) {
+            protected void afterRead(final int n) throws IOException {
+                if(-1 == n) {
                     complete = true;
                 }
-                return read;
-            }
-
-            @Override
-            public int read(byte[] b) throws IOException {
-                final int read = delegate.read(b);
-                if(-1 == read) {
-                    complete = true;
-                }
-                return read;
-            }
-
-            @Override
-            public int read(byte[] b, int off, int len) throws IOException {
-                final int read = delegate.read(b, off, len);
-                if(-1 == read) {
-                    complete = true;
-                }
-                return read;
-            }
-
-            @Override
-            public long skip(long n) throws IOException {
-                return delegate.skip(n);
-            }
-
-            @Override
-            public int available() throws IOException {
-                return delegate.available();
             }
 
             @Override
             public void close() throws IOException {
                 try {
-                    delegate.close();
+                    super.close();
                 }
                 finally {
                     if(complete) {
                         // Read 226 status
-                        if(!getSession().getClient().completePendingCommand()) {
-                            log.error("Error closing data socket:" + getSession().getClient().getReplyString());
+                        if(!session.getClient().completePendingCommand()) {
+                            throw new FTPException(session.getClient().getReplyString());
                         }
                     }
                     else {
                         // Interrupted transfer
-                        if(!getSession().getClient().abort()) {
-                            log.error("Error closing data socket:" + getSession().getClient().getReplyString());
+                        if(!session.getClient().abort()) {
+                            log.error("Error closing data socket:" + session.getClient().getReplyString());
                         }
                     }
                 }
-            }
-
-            @Override
-            public synchronized void mark(int readlimit) {
-                delegate.mark(readlimit);
-            }
-
-            @Override
-            public synchronized void reset() throws IOException {
-                delegate.reset();
-            }
-
-            @Override
-            public boolean markSupported() {
-                return delegate.markSupported();
             }
         };
     }
@@ -924,14 +878,11 @@ public class FTPPath extends Path {
             try {
                 in = getLocal().getInputStream();
                 out = write(status);
-                upload(out, in, throttle, listener, status);
+                this.upload(out, in, throttle, listener, status);
             }
             finally {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                if(!getSession().getClient().completePendingCommand()) {
-                    throw new FTPException(getSession().getClient().getReplyString());
-                }
             }
         }
         catch(IOException e) {
@@ -941,18 +892,44 @@ public class FTPPath extends Path {
 
     @Override
     public OutputStream write(final TransferStatus status) throws IOException {
+        final FTPSession session = getSession();
         this.data(new DataConnectionAction() {
             @Override
             public boolean run() throws IOException {
-                if(!getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                    throw new FTPException(getSession().getClient().getReplyString());
+                if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+                    throw new FTPException(session.getClient().getReplyString());
                 }
                 return true;
             }
         });
+        final OutputStream out;
         if(status.isResume()) {
-            return getSession().getClient().appendFileStream(getAbsolute());
+            out = session.getClient().appendFileStream(getAbsolute());
         }
-        return getSession().getClient().storeFileStream(getAbsolute());
+        else {
+            out = session.getClient().storeFileStream(getAbsolute());
+        }
+        return new CountingOutputStream(out) {
+            @Override
+            public void close() throws IOException {
+                try {
+                    super.close();
+                }
+                finally {
+                    if(this.getByteCount() == status.getLength()) {
+                        // Read 226 status
+                        if(!session.getClient().completePendingCommand()) {
+                            throw new FTPException(session.getClient().getReplyString());
+                        }
+                    }
+                    else {
+                        // Interrupted transfer
+                        if(!session.getClient().abort()) {
+                            log.error("Error closing data socket:" + session.getClient().getReplyString());
+                        }
+                    }
+                }
+            }
+        };
     }
 }
