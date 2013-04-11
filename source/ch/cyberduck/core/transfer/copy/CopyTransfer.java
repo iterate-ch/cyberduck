@@ -99,16 +99,15 @@ public class CopyTransfer extends Transfer {
     public <T> CopyTransfer(T serialized, Session s) {
         super(serialized, s, new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        Object hostObj = dict.objectForKey("CopyHost");
+        Object hostObj = dict.objectForKey("Destination");
         if(hostObj != null) {
             destination = SessionFactory.createSession(new Host(hostObj));
-            final List destinationsObj = dict.listForKey("CopyRoots");
+            final List destinationsObj = dict.listForKey("Destinations");
             if(destinationsObj != null) {
                 this.files = new HashMap<Path, Path>();
-                int i = 0;
-                for(Object rootDict : destinationsObj) {
-                    this.files.put(this.getRoots().get(i), PathFactory.createPath(destination, rootDict));
-                    i++;
+                final List<Path> roots = this.getRoots();
+                for(int i = 0; i < roots.size(); i++) {
+                    this.files.put(roots.get(i), PathFactory.createPath(destination, destinationsObj.get(i)));
                 }
             }
         }
@@ -128,8 +127,12 @@ public class CopyTransfer extends Transfer {
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_COPY), "Kind");
-        dict.setObjectForKey(destination.getHost(), "CopyHost");
-        dict.setListForKey(new ArrayList<Serializable>(files.values()), "CopyRoots");
+        dict.setObjectForKey(destination.getHost(), "Destination");
+        List<Path> targets = new ArrayList<Path>();
+        for(Path root : this.getRoots()) {
+            targets.add(files.get(root));
+        }
+        dict.setListForKey(new ArrayList<Serializable>(targets), "Destinations");
         return dict.getSerialized();
     }
 
