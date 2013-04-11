@@ -4,6 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NSObjectPathReference;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -12,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
+@Ignore
 public class SpeedometerTest extends AbstractTestCase {
 
     @BeforeClass
