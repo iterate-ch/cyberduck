@@ -3049,7 +3049,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 CopyTransfer copy = new CopyTransfer(Utils.ConvertToJavaMap(selected));
                 List<Path> changed = new List<Path>();
-                changed.AddRange(selected.Keys);
                 changed.AddRange(selected.Values);
                 transfer(copy, changed, browser);
             }

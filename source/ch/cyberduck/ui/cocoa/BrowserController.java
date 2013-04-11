@@ -2288,10 +2288,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.checkOverwrite(selected.values(), new DefaultMainAction() {
             @Override
             public void run() {
-                final ArrayList<Path> changed = new ArrayList<Path>();
-                changed.addAll(selected.keySet());
-                changed.addAll(selected.values());
-                transfer(new CopyTransfer(selected), changed, browser);
+                transfer(new CopyTransfer(selected), new ArrayList<Path>(selected.values()), browser);
             }
         });
     }
