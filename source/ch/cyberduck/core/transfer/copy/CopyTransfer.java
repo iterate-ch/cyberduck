@@ -159,13 +159,14 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> children(Path source) {
+    public AttributedList<Path> children(final Path source) {
         final AttributedList<Path> list = source.children();
         final Path target = files.get(source);
         for(Path p : list) {
             files.put(p, PathFactory.createPath(destination,
                     target.getAbsolute(), p.getName(), p.attributes().getType()));
         }
+        destination.cache().put(target.getReference(), AttributedList.<Path>emptyList());
         return list;
     }
 
