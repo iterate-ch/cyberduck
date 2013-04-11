@@ -106,11 +106,9 @@ public class FTPPath extends Path {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
             if(this.getSession().getConnectMode().equals(FTPConnectMode.PASV)) {
-                this.getSession().message(Locale.localizedString("Opening PASV data connection", "Status"));
                 this.getSession().getClient().enterLocalPassiveMode();
             }
             else if(this.getSession().getConnectMode().equals(FTPConnectMode.PORT)) {
-                this.getSession().message(Locale.localizedString("Opening PORT data connection", "Status"));
                 this.getSession().getClient().enterLocalActiveMode();
             }
             return action.run();
