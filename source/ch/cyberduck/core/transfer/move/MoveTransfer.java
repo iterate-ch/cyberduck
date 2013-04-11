@@ -100,7 +100,7 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> children(Path parent) {
+    public AttributedList<Path> children(final Path parent) {
         // Move operation on parent directory will move all children already
         return AttributedList.emptyList();
     }
