@@ -27,7 +27,7 @@ public class ProfileTest extends AbstractTestCase {
     @Test
     public void testProvider() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile")
+                LocalFactory.createLocal("profiles/HP Cloud Object Storage (US East).cyberduckprofile")
         );
         assertEquals(Protocol.SWIFT, profile.getProtocol());
         assertNotSame(Protocol.CLOUDFILES.getDefaultHostname(), profile.getDefaultHostname());
