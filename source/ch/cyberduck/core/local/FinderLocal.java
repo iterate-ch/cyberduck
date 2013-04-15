@@ -96,7 +96,7 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public void setPath(final String name) {
+    protected void setPath(final String name) {
         super.setPath(this.resolveAlias(stringByExpandingTildeInPath(name)));
     }
 
@@ -268,11 +268,11 @@ public class FinderLocal extends Local {
         return Long.valueOf(this.attributes().getInode()).hashCode();
     }
 
-    private static String stringByAbbreviatingWithTildeInPath(String string) {
-        return NSString.stringByAbbreviatingWithTildeInPath(string);
+    private static String stringByAbbreviatingWithTildeInPath(final String path) {
+        return NSString.stringByAbbreviatingWithTildeInPath(path);
     }
 
-    private static String stringByExpandingTildeInPath(String string) {
-        return NSString.stringByExpandingTildeInPath(string);
+    private static String stringByExpandingTildeInPath(final String path) {
+        return NSString.stringByExpandingTildeInPath(path);
     }
 }

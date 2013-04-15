@@ -253,7 +253,7 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public void setPath(final String name) {
+    protected void setPath(final String name) {
         String normalized = name;
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
             if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {

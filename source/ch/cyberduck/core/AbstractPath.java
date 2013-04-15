@@ -191,7 +191,7 @@ public abstract class AbstractPath {
         }
     }
 
-    public abstract void setPath(String name);
+    protected abstract void setPath(String name);
 
     /**
      * @param directory Parent directory

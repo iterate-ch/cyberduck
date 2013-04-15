@@ -189,7 +189,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param name Must be an absolute pathname
      */
     @Override
-    public void setPath(final String name) {
+    protected void setPath(final String name) {
         this.path = Path.normalize(name);
         this.parent = null;
         this.reference = null;
