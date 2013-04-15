@@ -34,6 +34,7 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.params.AuthParams;
+import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.client.protocol.ResponseContentEncoding;
@@ -102,6 +103,7 @@ public abstract class HttpSession extends SSLSession {
 
             HttpClientParams.setRedirecting(params, true);
             HttpClientParams.setAuthenticating(params, true);
+            HttpClientParams.setCookiePolicy(params, CookiePolicy.BEST_MATCH);
 
             // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
             HttpClientParams.setConnectionManagerTimeout(params, Preferences.instance().getLong("http.manager.timeout"));
