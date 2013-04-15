@@ -161,7 +161,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     private String getToolbarName() {
-        return this.getBundleName().toLowerCase(Locale.ROOT) + ".toolbar";
+        return this.getBundleName().toLowerCase(Locale.ENGLISH) + ".toolbar";
     }
 
     /**

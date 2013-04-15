@@ -332,7 +332,7 @@ public class FTPPath extends Path {
                 if(StringUtils.isBlank(value)) {
                     continue;
                 }
-                facts.put(key.toLowerCase(java.util.Locale.ROOT), value);
+                facts.put(key.toLowerCase(java.util.Locale.ENGLISH), value);
             }
             file.put(filename, facts);
             return file;
@@ -379,10 +379,10 @@ public class FTPPath extends Path {
                         log.error(String.format("No type fact in line %s", line));
                         continue;
                     }
-                    if("dir".equals(facts.get("type").toLowerCase(java.util.Locale.ROOT))) {
+                    if("dir".equals(facts.get("type").toLowerCase(java.util.Locale.ENGLISH))) {
                         parsed.attributes().setType(DIRECTORY_TYPE);
                     }
-                    else if("file".equals(facts.get("type").toLowerCase(java.util.Locale.ROOT))) {
+                    else if("file".equals(facts.get("type").toLowerCase(java.util.Locale.ENGLISH))) {
                         parsed.attributes().setType(FILE_TYPE);
                     }
                     else {
@@ -397,7 +397,7 @@ public class FTPPath extends Path {
                         }
                     }
                     if(!success) {
-                        if("dir".equals(facts.get("type").toLowerCase(java.util.Locale.ROOT)) && this.getName().equals(name)) {
+                        if("dir".equals(facts.get("type").toLowerCase(java.util.Locale.ENGLISH)) && this.getName().equals(name)) {
                             log.warn("Possibly bogus response:" + line);
                         }
                         else {

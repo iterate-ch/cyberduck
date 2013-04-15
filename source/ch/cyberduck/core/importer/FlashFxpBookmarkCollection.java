@@ -78,7 +78,7 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
                             log.warn("Missing key in line:" + line);
                             continue;
                         }
-                        String name = scanner.next().toLowerCase(Locale.ROOT);
+                        String name = scanner.next().toLowerCase(Locale.ENGLISH);
                         if(!scanner.hasNext()) {
                             log.warn("Missing value in line:" + line);
                             continue;

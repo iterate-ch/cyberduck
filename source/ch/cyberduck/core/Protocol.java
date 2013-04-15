@@ -52,7 +52,7 @@ public abstract class Protocol {
     }
 
     public String getName() {
-        return this.getScheme().name().toUpperCase(java.util.Locale.ROOT);
+        return this.getScheme().name().toUpperCase(java.util.Locale.ENGLISH);
     }
 
     public String favicon() {

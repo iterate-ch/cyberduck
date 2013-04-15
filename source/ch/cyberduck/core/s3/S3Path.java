@@ -1450,7 +1450,7 @@ public class S3Path extends CloudPath {
         final Set<DescriptiveUrl> urls = super.getHttpURLs();
         // Always include HTTP URL
         urls.add(new DescriptiveUrl(this.toURL("http"),
-                MessageFormat.format(Locale.localizedString("{0} URL"), "http".toUpperCase(java.util.Locale.ROOT))));
+                MessageFormat.format(Locale.localizedString("{0} URL"), "http".toUpperCase(java.util.Locale.ENGLISH))));
         DescriptiveUrl hour = this.toSignedUrl(60 * 60);
         if(StringUtils.isNotBlank(hour.getUrl())) {
             urls.add(hour);

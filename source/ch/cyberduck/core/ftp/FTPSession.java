@@ -135,7 +135,7 @@ public class FTPSession extends SSLSession {
                     ((Configurable) parser).configure(null);
                 }
                 if(StringUtils.isNotBlank(system)) {
-                    String ukey = system.toUpperCase(java.util.Locale.ROOT);
+                    String ukey = system.toUpperCase(java.util.Locale.ENGLISH);
                     if(ukey.contains(FTPClientConfig.SYST_NT)) {
                         // Workaround for #5572.
                         this.setStatListSupportedEnabled(false);

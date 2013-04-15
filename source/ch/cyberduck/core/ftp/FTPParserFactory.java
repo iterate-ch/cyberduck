@@ -45,7 +45,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
 
     public FTPFileEntryParser createFileEntryParser(String system, TimeZone timezone) throws ParserInitializationException {
         if(null != system) {
-            String ukey = system.toUpperCase(java.util.Locale.ROOT);
+            String ukey = system.toUpperCase(java.util.Locale.ENGLISH);
             if(ukey.contains(FTPClientConfig.SYST_UNIX)) {
                 return this.createUnixFTPEntryParser(timezone);
             }
