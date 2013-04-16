@@ -108,7 +108,7 @@ namespace Ch.Cyberduck.Core.Local
             base.setPath(p, n);
         }
 
-        public override void setPath(string filename)
+        protected override void setPath(string filename)
         {
             string parent = Path.Combine(FilenameUtils.getPrefix(filename),
                                          MakeValidPath(FilenameUtils.getPath(filename)));
