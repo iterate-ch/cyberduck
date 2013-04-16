@@ -32,7 +32,6 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -45,7 +44,6 @@ import com.googlecode.sardine.impl.methods.HttpPropFind;
  * @version $Id$
  */
 public class DAVSession extends HttpSession {
-    private static Logger log = Logger.getLogger(DAVSession.class);
 
     private DAVClient client;
 
@@ -102,16 +100,16 @@ public class DAVSession extends HttpSession {
         }
         try {
             this.client.execute(new HttpHead(this.home().toURL()), new VoidResponseHandler());
-            message(Locale.localizedString("Login successful", "Credentials"));
+            this.message(Locale.localizedString("Login successful", "Credentials"));
         }
         catch(SardineException e) {
             if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
                 // Possibly only HEAD requests are not allowed
                 this.client.execute(new HttpPropFind(this.home().toURL()), new VoidResponseHandler());
-                message(Locale.localizedString("Login successful", "Credentials"));
+                this.message(Locale.localizedString("Login successful", "Credentials"));
             }
             else if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                message(Locale.localizedString("Login failed", "Credentials"));
+                this.message(Locale.localizedString("Login failed", "Credentials"));
                 controller.fail(host.getProtocol(), credentials);
                 this.login();
             }
