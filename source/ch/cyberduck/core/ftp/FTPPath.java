@@ -447,7 +447,7 @@ public class FTPPath extends Path {
     }
 
     protected boolean parseListResponse(final AttributedList<Path> children,
-                                        FTPFileEntryParser parser, List<String> replies) {
+                                        final FTPFileEntryParser parser, final List<String> replies) {
         if(null == replies) {
             // This is an empty directory
             return false;
@@ -463,6 +463,7 @@ public class FTPPath extends Path {
                 // Workaround for #2410. STAT only returns ls of directory itself
                 // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
                 if(this.getAbsolute().equals(name)) {
+                    log.warn(String.format("Skip %s", f.getName()));
                     continue;
                 }
                 if(name.contains(String.valueOf(DELIMITER))) {
@@ -475,6 +476,9 @@ public class FTPPath extends Path {
             }
             success = true;
             if(name.equals(".") || name.equals("..")) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Skip %s", f.getName()));
+                }
                 continue;
             }
             final Path parsed = new FTPPath(this.getSession(), this.getAbsolute(),
