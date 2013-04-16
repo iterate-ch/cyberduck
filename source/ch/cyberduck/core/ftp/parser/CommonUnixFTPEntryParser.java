@@ -45,7 +45,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
     }
 
     @Override
-    public Calendar parseTimestamp(String timestampStr) throws ParseException {
+    public Calendar parseTimestamp(final String timestampStr) throws ParseException {
         try {
             return super.parseTimestamp(timestampStr);
         }
@@ -54,7 +54,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
             return new FTPTimestampParserImpl() {
                 @Override
                 public Calendar parseTimestamp(String timestampStr) throws ParseException {
-                    Calendar working = Calendar.getInstance();
+                    final Calendar working = Calendar.getInstance();
                     working.setTimeZone(this.getServerTimeZone());
 
                     int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -108,7 +108,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
     }
 
     protected FTPFile parseFTPEntry(String typeStr, String usr, String grp, long filesize, String datestr, String name, String endtoken) {
-        FTPFile file = new FTPFile();
+        final FTPFile file = new FTPFile();
         int type;
         try {
             file.setTimestamp(this.parseTimestamp(datestr));

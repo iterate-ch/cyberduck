@@ -30,23 +30,31 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
     }
 
     @Override
-    public FTPFile parseFTPEntry(String listEntry) {
+    public FTPFile parseFTPEntry(final String line) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Parse %s", line));
+        }
         if(cachedFtpFileEntryParser != null) {
-            final FTPFile parsed = cachedFtpFileEntryParser.parseFTPEntry(listEntry);
+            final FTPFile parsed = cachedFtpFileEntryParser.parseFTPEntry(line);
             if(null != parsed) {
                 return parsed;
             }
-            log.info(String.format("Switching parser implementation because %s failed", cachedFtpFileEntryParser));
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Switching parser implementation because %s failed", cachedFtpFileEntryParser));
+            }
             cachedFtpFileEntryParser = null;
         }
         for(FTPFileEntryParser parser : ftpFileEntryParsers) {
-            FTPFile matched = parser.parseFTPEntry(listEntry);
+            FTPFile matched = parser.parseFTPEntry(line);
             if(matched != null) {
                 cachedFtpFileEntryParser = parser;
-                log.info(String.format("Caching %s parser implementation", cachedFtpFileEntryParser));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Caching %s parser implementation", cachedFtpFileEntryParser));
+                }
                 return matched;
             }
         }
+        log.warn(String.format("Failure parsing %s", line));
         return null;
     }
 
@@ -58,7 +66,7 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
     public void configure(FTPClientConfig config) {
         for(FTPFileEntryParser parser : ftpFileEntryParsers) {
             if(parser instanceof Configurable) {
-                ((Configurable)parser).configure(config);
+                ((Configurable) parser).configure(config);
             }
         }
     }
