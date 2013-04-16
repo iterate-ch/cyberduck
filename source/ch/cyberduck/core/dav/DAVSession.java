@@ -51,7 +51,7 @@ public class DAVSession extends HttpSession {
         super(h);
     }
 
-    protected class DAVClient extends SardineImpl {
+    protected static final class DAVClient extends SardineImpl {
         public DAVClient(final AbstractHttpClient http) {
             super(http);
         }
