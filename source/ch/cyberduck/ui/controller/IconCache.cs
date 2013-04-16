@@ -168,6 +168,11 @@ namespace Ch.Cyberduck.Ui.Controller
             return IconForName(name, size == IconSize.Small ? 16 : 32);
         }
 
+        public Bitmap IconForName(string name)
+        {
+            return IconForName(name, 0);
+        }
+
         /// <summary>
         /// Find a bitmap in the ResourcesBundle for a given name
         /// </summary>
@@ -184,7 +189,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    object obj = ResourcesBundle.ResourceManager.GetObject(name, ResourcesBundle.Culture);
+                    object obj = ResourcesBundle.ResourceManager.GetObject(FilenameUtils.getBaseName(name), ResourcesBundle.Culture);
                     if (obj is Icon)
                     {
                         image = (new Icon(obj as Icon, size, size)).ToBitmap();
@@ -206,11 +211,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 _bitmapCache.Put(name, image, size);
             }
             return image;
-        }
-
-        public Bitmap IconForName(string name)
-        {
-            return IconForName(name, 0);
         }
 
         /// <summary>
