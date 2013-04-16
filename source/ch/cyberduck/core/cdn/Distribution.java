@@ -31,7 +31,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -392,7 +391,7 @@ public class Distribution {
         this.sslUrl = sslUrl;
         this.streamingUrl = streamingUrl;
         this.status = status;
-        this.cnames = Arrays.copyOf(cnames, cnames.length);
+        this.cnames = cnames;
         this.logging = logging;
         this.loggingContainer = loggingContainer;
         this.method = method;

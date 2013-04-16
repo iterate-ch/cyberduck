@@ -164,19 +164,17 @@ public class Permission implements Serializable {
      *          by owner, group and others. (1,1) is the owner's read permission
      */
     public Permission(final boolean[][] p) {
-        final boolean[][] set = Arrays.copyOf(p, p.length);
+        this.owner[READ] = p[OWNER][READ];
+        this.owner[WRITE] = p[OWNER][WRITE];
+        this.owner[EXECUTE] = p[OWNER][EXECUTE];
 
-        this.owner[READ] = set[OWNER][READ];
-        this.owner[WRITE] = set[OWNER][WRITE];
-        this.owner[EXECUTE] = set[OWNER][EXECUTE];
+        this.group[READ] = p[GROUP][READ];
+        this.group[WRITE] = p[GROUP][WRITE];
+        this.group[EXECUTE] = p[GROUP][EXECUTE];
 
-        this.group[READ] = set[GROUP][READ];
-        this.group[WRITE] = set[GROUP][WRITE];
-        this.group[EXECUTE] = set[GROUP][EXECUTE];
-
-        this.other[READ] = set[OTHER][READ];
-        this.other[WRITE] = set[OTHER][WRITE];
-        this.other[EXECUTE] = set[OTHER][EXECUTE];
+        this.other[READ] = p[OTHER][READ];
+        this.other[WRITE] = p[OTHER][WRITE];
+        this.other[EXECUTE] = p[OTHER][EXECUTE];
     }
 
     /**
