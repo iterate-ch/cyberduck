@@ -59,9 +59,4 @@ public abstract class SSLSession extends Session {
     public List<X509Certificate> getAcceptedIssuers() {
         return Arrays.asList(trustManager.getAcceptedIssuers());
     }
-
-    @Override
-    protected void fireConnectionDidCloseEvent() {
-        super.fireConnectionDidCloseEvent();
-    }
 }
