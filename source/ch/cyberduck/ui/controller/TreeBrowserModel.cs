@@ -22,6 +22,7 @@ using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.date;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
 
@@ -126,7 +127,7 @@ namespace Ch.Cyberduck.Ui.Controller
             DateTime modificationDate = (DateTime) value;
             if (modificationDate != DateTime.MinValue)
             {
-                return UserDateFormatterFactory.get().getShortFormat(modificationDate, Preferences.instance().getBoolean("browser.date.natural"));
+                return UserDateFormatterFactory.get().getShortFormat(modificationDate.Millisecond, Preferences.instance().getBoolean("browser.date.natural"));
             }
             return _unknown;
         }

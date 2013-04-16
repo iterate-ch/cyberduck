@@ -1064,7 +1064,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (_session is SSLSession)
             {
                 X509Certificate[] certificates =
-                    ((SSLSession) _session).getTrustManager(_session.getHost().getHostname()).getAcceptedIssuers();
+                    ((SSLSession) _session).getTrustManager().getAcceptedIssuers();
                 if (0 == certificates.Length)
                 {
                     Log.warn("No accepted certificates found");
