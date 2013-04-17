@@ -158,6 +158,7 @@
         <echo message="Calculating DSA signature..."/>
         <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
             <arg value="-c"/>
+            <arg value="-o pipefail"/>
             <arg value="openssl dgst -sha1 -binary '${build}/${app.name}-${svn.revision}.tar.gz' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
         </exec>
         <property name="signature.dsa" value="${signature.dsa}"/>
