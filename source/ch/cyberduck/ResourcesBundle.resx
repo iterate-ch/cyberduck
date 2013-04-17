@@ -286,6 +286,9 @@
   <data name="s3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\s3.tiff;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="googlestorage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\img\googlestorage.tiff;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\outline.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -324,8 +327,5 @@
   </data>
   <data name="Credits" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\Credits.rtf;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="googlestorage" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\googlestorage.tiff;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
