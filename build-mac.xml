@@ -157,7 +157,8 @@
 
         <echo message="Calculating DSA signature..."/>
         <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
-            <arg value="-o pipefail"/>
+            <arg value="-o"/>
+            <arg value="pipefail"/>
             <arg value="-c"/>
             <arg value="openssl dgst -sha1 -binary '${build}/${app.name}-${svn.revision}.tar.gz' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
         </exec>
