@@ -513,7 +513,7 @@
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6.6"/>
-            <param name="build.xcodeoptions" value="SDKROOT=macosx"/>
+            <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
         </antcall>
         <antcall target="distribution-mas"/>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
