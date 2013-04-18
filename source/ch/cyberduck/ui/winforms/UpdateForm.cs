@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -47,8 +47,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             newVersionAvailableLabel.Text =
                 Locale.localizedString("A new version of %@ is available!", "Sparkle").Replace("%@",
                                                                                                Preferences.instance().
-                                                                                                   getProperty(
-                                                                                                       "application.name"));
+                                                                                                           getProperty(
+                                                                                                               "application.name"));
 
             //force handle creation to make the updater work
             IntPtr intPtr = Handle;
@@ -65,6 +65,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             SetFeedUrl();
             if (!background)
             {
+                //TODO localize
                 UpdateStatusLabel("Looking for newer versions of Cyberduck.", false);
                 tableLayoutPanel.RowStyles[7].SizeType = SizeType.AutoSize;
                 SetStatusChecking(true);
@@ -147,11 +148,11 @@ namespace Ch.Cyberduck.Ui.Winforms
                     versionLabel.Text = Locale.localizedString(
                         "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?",
                         "Sparkle")
-                        .Replace("%1$@",
-                                 Preferences.instance
-                                     ().getProperty
-                                     ("application.name"))
-                        .Replace("%2$@", newVersion).Replace("%3$@", currentVersion);
+                                              .Replace("%1$@",
+                                                       Preferences.instance
+                                                           ().getProperty
+                                                           ("application.name"))
+                                              .Replace("%2$@", newVersion).Replace("%3$@", currentVersion);
 
                     SetStatusChecking(false);
                     statusLabel.Text = "Update available";
@@ -162,7 +163,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             // error cases
             updater.CheckingFailed +=
-                delegate(object sender, FailArgs args) { UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true); };
+                delegate(object sender, FailArgs args)
+                    { UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true); };
 
             updater.UpdateFailed +=
                 (sender, args) =>
