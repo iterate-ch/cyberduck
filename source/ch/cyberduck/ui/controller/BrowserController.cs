@@ -343,7 +343,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public Path Workdir
         {
             get { return _workdir; }
-            set { _workdir = value; }
+            set { _workdir = value; }nt
         }
 
         /// <summary>
@@ -361,6 +361,15 @@ namespace Ch.Cyberduck.Ui.Controller
                     return View.SelectedPaths;
                 }
                 return new List<Path>();
+            }
+            set
+            {
+                List<Path> selected = new List<Path>();
+                foreach (Path s in SelectedPaths)
+                {
+                    selected.Add(PathFactory.createPath(getSession(), s.getAsDictionary()));
+                }
+                View.SelectedPaths = selected;
             }
         }
 
@@ -1885,7 +1894,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         watcher.Dispose();
                     }
-                    _temporaryWatcher.Clear();                    
+                    _temporaryWatcher.Clear();
                 });
         }
 
@@ -2357,7 +2366,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.RefreshBrowserObject(lookup);
                 }
             }
-            View.SelectedPaths = selected;
+            SelectedPaths = selected;
         }
 
         protected void ReloadData(IList<Path> selected)
@@ -2366,9 +2375,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 IEnumerable<Path> children = _browserModel.ChildrenGetter(Workdir);
                 //clear selection before resetting model. Otherwise we have weird selection effects.
-                View.SelectedPaths = new List<Path>();
+                SelectedPaths = new List<Path>();
                 View.SetBrowserModel(children);
-                View.SelectedPaths = selected;
+                SelectedPaths = selected;
                 List<Path> toUpdate = new List<Path>();
                 foreach (Path path in View.VisiblePaths)
                 {
@@ -2470,7 +2479,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.RefreshBrowserObject(path);
                 }
             }
-            View.SelectedPaths = selected;
+            SelectedPaths = selected;
             UpdateStatusLabel();
         }
 
