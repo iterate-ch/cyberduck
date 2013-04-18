@@ -3088,6 +3088,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.googleDocsButton.Name = "googleDocsButton";
             this.googleDocsButton.Size = new System.Drawing.Size(78, 69);
             this.googleDocsButton.Text = "Google Docs";
+            this.googleDocsButton.Visible = false;
             this.googleDocsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.googleDocsButton.Click += new System.EventHandler(this.googleDocsButton_Click);
             // 
