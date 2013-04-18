@@ -13,7 +13,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultX509TrustManagerTest extends AbstractTestCase {
 
@@ -30,7 +30,7 @@ public class DefaultX509TrustManagerTest extends AbstractTestCase {
                 return "cyberduck.ch";
             }
         };
-        InputStream inStream = new FileInputStream("test/ch/cyberduck/core/ssl/*.cyberduck.ch (OXxlRDVcWqdPEvFm).cer");
+        InputStream inStream = new FileInputStream("test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
         m.checkServerTrusted(new X509Certificate[]{cert}, "RSA");

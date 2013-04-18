@@ -32,7 +32,7 @@ public class KeychainX509TrustManagerTest extends AbstractTestCase {
                 return "cyberduck.ch";
             }
         };
-        InputStream inStream = new FileInputStream("test/ch/cyberduck/core/ssl/*.cyberduck.ch (OXxlRDVcWqdPEvFm).cer");
+        InputStream inStream = new FileInputStream("test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
         try {
