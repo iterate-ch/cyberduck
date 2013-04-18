@@ -343,7 +343,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public Path Workdir
         {
             get { return _workdir; }
-            set { _workdir = value; }nt
+            set { _workdir = value; }
         }
 
         /// <summary>
