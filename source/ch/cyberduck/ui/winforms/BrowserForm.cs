@@ -766,7 +766,9 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void SelectBookmark(Host host)
         {
-            bookmarkListView.SelectObject(host, true);
+            IList selected = new ArrayList();
+            selected.Add(host);
+            bookmarkListView.SelectObjects(selected);
             bookmarkListView.EnsureModelVisible(host);
             bookmarkListView.Focus();
         }
