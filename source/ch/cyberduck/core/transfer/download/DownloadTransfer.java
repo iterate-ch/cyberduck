@@ -127,7 +127,7 @@ public class DownloadTransfer extends Transfer {
             for(Path download : this.getRoots()) {
                 if(download.getLocal().exists()) {
                     if(download.getLocal().attributes().isDirectory()) {
-                        if(this.children(download).isEmpty()) {
+                        if(download.getLocal().children().isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
