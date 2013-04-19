@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -193,23 +193,32 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void collectionItemAdded(object obj)
         {
-            Host selected = View.DefaultBookmark;
-            PopulateBookmarks();
-            SelectDefaultBookmark(selected);
+            Invoke(delegate
+                {
+                    Host selected = View.DefaultBookmark;
+                    PopulateBookmarks();
+                    SelectDefaultBookmark(selected);
+                });
         }
 
         public void collectionItemRemoved(object obj)
         {
-            Host selected = View.DefaultBookmark;
-            PopulateBookmarks();
-            SelectDefaultBookmark(selected);
+            Invoke(delegate
+                {
+                    Host selected = View.DefaultBookmark;
+                    PopulateBookmarks();
+                    SelectDefaultBookmark(selected);
+                });
         }
 
         public void collectionItemChanged(object obj)
         {
-            Host selected = View.DefaultBookmark;
-            PopulateBookmarks();
-            SelectDefaultBookmark(selected);
+            Invoke(delegate
+                {
+                    Host selected = View.DefaultBookmark;
+                    PopulateBookmarks();
+                    SelectDefaultBookmark(selected);
+                });
         }
 
         private void View_DefaultEncryptionChangedEvent()
@@ -620,7 +629,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Preferences.instance().setProperty("queue.upload.reload.fileExists",
                                                    Preferences.instance().
-                                                       getProperty("queue.upload.fileExists"));
+                                                               getProperty("queue.upload.fileExists"));
             }
         }
 
@@ -635,7 +644,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Preferences.instance().setProperty("queue.download.reload.fileExists",
                                                    Preferences.instance().
-                                                       getProperty("queue.download.fileExists"));
+                                                               getProperty("queue.download.fileExists"));
             }
         }
 
@@ -894,16 +903,16 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DuplicateUploadAction = GetDuplicateAction("queue.upload.fileExists");
             View.DuplicateDownloadOverwrite = Preferences.instance().getProperty(
                 "queue.download.reload.fileExists")
-                                                  .
-                                                  Equals(
-                                                      TransferAction.ACTION_OVERWRITE.toString())
+                                                         .
+                                                          Equals(
+                                                              TransferAction.ACTION_OVERWRITE.toString())
                                                   ? true
                                                   : false;
             View.DuplicateUploadOverwrite = Preferences.instance().getProperty(
                 "queue.upload.reload.fileExists")
-                                                .
-                                                Equals(
-                                                    TransferAction.ACTION_OVERWRITE.toString())
+                                                       .
+                                                        Equals(
+                                                            TransferAction.ACTION_OVERWRITE.toString())
                                                 ? true
                                                 : false;
             View.UploadWithTemporaryFilename = Preferences.instance().getBoolean("queue.upload.file.temporary");
@@ -960,14 +969,14 @@ namespace Ch.Cyberduck.Ui.Controller
             if (
                 Preferences.instance().getProperty("ssh.transfer").Equals(
                     Protocol.SFTP.
-                        getIdentifier()))
+                             getIdentifier()))
             {
                 View.SshTransfer = Protocol.SFTP.getDescription();
             }
             else if (
                 Preferences.instance().getProperty("ssh.transfer").Equals(
                     Protocol.SCP.
-                        getIdentifier()))
+                             getIdentifier()))
             {
                 View.SshTransfer = Protocol.SCP.getDescription();
             }
@@ -1212,7 +1221,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (
                 Preferences.instance().getProperty(property).Equals(
                     TransferAction.ACTION_CALLBACK.
-                        toString()))
+                                   toString()))
             {
                 action = TransferAction.ACTION_CALLBACK.getLocalizableString();
             }
@@ -1252,7 +1261,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Preferences.instance().getProperty(property).Equals(
                     TransferAction.
                         ACTION_SKIP
-                        .toString()))
+                                  .toString()))
             {
                 action = TransferAction.ACTION_SKIP.getLocalizableString();
             }
