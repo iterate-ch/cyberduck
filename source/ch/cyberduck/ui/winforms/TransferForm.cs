@@ -249,25 +249,25 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        public event VoidHandler ResumeEvent;
-        public event VoidHandler ReloadEvent;
-        public event VoidHandler StopEvent;
-        public event VoidHandler RemoveEvent;
-        public event VoidHandler CleanEvent;
-        public event VoidHandler OpenEvent;
-        public event VoidHandler ShowEvent;
-        public event VoidHandler ToggleTranscriptEvent;
-        public event VoidHandler SelectionChangedEvent;
-        public event VoidHandler BandwidthChangedEvent;
+        public event VoidHandler ResumeEvent = delegate { };
+        public event VoidHandler ReloadEvent = delegate { };
+        public event VoidHandler StopEvent = delegate { };
+        public event VoidHandler RemoveEvent = delegate { };
+        public event VoidHandler CleanEvent = delegate { };
+        public event VoidHandler OpenEvent = delegate { };
+        public event VoidHandler ShowEvent = delegate { };
+        public event VoidHandler ToggleTranscriptEvent = delegate { };
+        public event VoidHandler SelectionChangedEvent = delegate { };
+        public event VoidHandler BandwidthChangedEvent = delegate { };
         public event VoidHandler QueueSizeChangedEvent = delegate { };
         public event VoidHandler TranscriptHeightChangedEvent = delegate { };
-        public event ValidateCommand ValidateResumeEvent;
-        public event ValidateCommand ValidateReloadEvent;
-        public event ValidateCommand ValidateStopEvent;
-        public event ValidateCommand ValidateRemoveEvent;
-        public event ValidateCommand ValidateCleanEvent;
-        public event ValidateCommand ValidateOpenEvent;
-        public event ValidateCommand ValidateShowEvent;
+        public event ValidateCommand ValidateResumeEvent = () => false;
+        public event ValidateCommand ValidateReloadEvent = () => false;
+        public event ValidateCommand ValidateStopEvent = () => false;
+        public event ValidateCommand ValidateRemoveEvent = () => false;
+        public event ValidateCommand ValidateCleanEvent = () => false;
+        public event ValidateCommand ValidateOpenEvent = () => false;
+        public event ValidateCommand ValidateShowEvent = () => false;
 
         public void PopulateBandwidthList(IList<KeyValuePair<float, string>> throttles)
         {
