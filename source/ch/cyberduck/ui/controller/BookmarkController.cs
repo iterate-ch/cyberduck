@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -276,7 +276,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _host.setHostname(input);
             }
-            ReadPasswordFromKeychain();
             ItemChanged();
             Update();
             Reachable();
@@ -364,7 +363,6 @@ namespace Ch.Cyberduck.Ui.Controller
         internal void View_ChangedUsernameEvent()
         {
             _host.getCredentials().setUsername(View.Username);
-            ReadPasswordFromKeychain();
             ItemChanged();
             Update();
         }
@@ -426,8 +424,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.UsernameEnabled = false;
                 View.Username = Preferences.instance().getProperty("connection.login.anon.name");
-                View.PasswordEnabled = false;
-                View.Password = Preferences.instance().getProperty("connection.login.anon.pass");
             }
             else
             {
@@ -441,35 +437,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     View.Username = Preferences.instance().getProperty("connection.login.name");
                 }
-                View.PasswordEnabled = true;
-                View.Password = String.Empty;
             }
             ItemChanged();
             Update();
-        }
-
-        public void ReadPasswordFromKeychain()
-        {
-            if (Preferences.instance().getBoolean("connection.login.useKeychain"))
-            {
-                if (string.IsNullOrEmpty(View.Hostname))
-                {
-                    return;
-                }
-                if (string.IsNullOrEmpty(View.Port))
-                {
-                    return;
-                }
-                if (string.IsNullOrEmpty(View.Username))
-                {
-                    return;
-                }
-                Protocol protocol = View.SelectedProtocol;
-                View.Password = KeychainFactory.get().getPassword(protocol.getScheme(),
-                                                                  Integer.parseInt(View.Port),
-                                                                  View.Hostname,
-                                                                  View.Username);
-            }
         }
 
         private void View_OpenDownloadFolderBrowserEvent()

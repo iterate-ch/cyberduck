@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,12 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -52,7 +53,6 @@ namespace Ch.Cyberduck.Ui.Controller
         bool PkCheckboxEnabled { set; }
         string PkLabel { get; set; }
         string UsernameLabel { set; }
-        string PasswordLabel { set; }
         bool HostFieldEnabled { get; set; }
         bool PortFieldEnabled { set; }
         Protocol SelectedProtocol { get; set; }
@@ -60,12 +60,8 @@ namespace Ch.Cyberduck.Ui.Controller
         string Port { get; set; }
         string Username { get; set; }
         bool UsernameEnabled { set; }
-        string Password { get; set; }
-        bool PasswordEnabled { set; }
         string Path { get; set; }
         bool PathEnabled { get; set; }
-        bool SavePasswordChecked { get; set; }
-        bool SavePasswordEnabled { set; }
         bool AnonymousChecked { get; set; }
         bool AnonymousEnabled { get; set; }
         event VoidHandler ToggleOptions;
@@ -95,7 +91,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ChangedPathEvent;
         event VoidHandler ChangedAnonymousCheckboxEvent;
         event VoidHandler ChangedPublicKeyCheckboxEvent;
-        event VoidHandler ChangedSavePasswordCheckboxEvent;
         event VoidHandler OpenUrl;
         event VoidHandler OpenWebUrl;
         event VoidHandler OpenDownloadFolderBrowserEvent;
