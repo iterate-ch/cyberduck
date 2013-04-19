@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -192,22 +193,20 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             bool found = false;
             for (int i = 0; i < _embeddedControls.Count; i++)
             {
-                EmbeddedControl ec = (EmbeddedControl) _embeddedControls[i];                
+                EmbeddedControl ec = (EmbeddedControl) _embeddedControls[i];
                 if (ec.Control == c)
                 {
                     c.Click -= _embeddedControl_Click;
                     Controls.Remove(c);
-                    _embeddedControls.RemoveAt(i);                    
+                    _embeddedControls.RemoveAt(i);
                     found = true;
                 }
                 if (found && i < _embeddedControls.Count)
                 {
-                    ec = (EmbeddedControl)_embeddedControls[i];
-                    ec.Row--;                    
+                    ec = (EmbeddedControl) _embeddedControls[i];
+                    ec.Row--;
                 }
             }
-            if (!found)
-            throw new Exception("Control not found!");
         }
 
         /// <summary>
