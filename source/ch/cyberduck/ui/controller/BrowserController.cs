@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -1668,8 +1668,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Path root = PathFactory.createPath(getTransferSession(true), selection.getAsDictionary());
                 root.setLocal(LocalFactory.createLocal(folder));
-                Transfer q = new SyncTransfer(root);
-                transfer(q);
+                transfer(new SyncTransfer(root));
             }
         }
 
@@ -1709,21 +1708,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                       Environment.SpecialFolder.Desktop, null);
             if (null != folderName)
             {
-                Session session = getTransferSession();
-                Utils.ApplyPerItemForwardDelegate<Path> apply = delegate(Path item)
-                    {
-                        Path path = PathFactory.createPath(session,
-                                                           item.
-                                                               getAsDictionary
-                                                               ());
-                        path.setLocal(
-                            LocalFactory.createLocal(folderName,
-                                                     path.getLocal().
-                                                          getName()));
-                        return path;
-                    };
-                Transfer q = new DownloadTransfer(Utils.ConvertToJavaList(SelectedPaths, apply));
-                transfer(q);
+                Local downloadFolder = LocalFactory.createLocal(folderName);
+                Download(SelectedPaths, downloadFolder);
             }
         }
 
@@ -1739,8 +1725,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Path selection = PathFactory.createPath(getTransferSession(), SelectedPath.getAsDictionary());
                 selection.setLocal(LocalFactory.createLocal(fileName));
-                Transfer q = new DownloadTransfer(selection);
-                transfer(q);
+                transfer(new DownloadTransfer(selection));
             }
         }
 
