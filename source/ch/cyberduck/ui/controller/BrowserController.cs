@@ -1725,9 +1725,7 @@ namespace Ch.Cyberduck.Ui.Controller
             string fileName = View.DownloadAsDialog(null, SelectedPath.getDisplayName());
             if (null != fileName)
             {
-                Path selection = PathFactory.createPath(getTransferSession(), SelectedPath.getAsDictionary());
-                selection.setLocal(LocalFactory.createLocal(fileName));
-                transfer(new DownloadTransfer(selection));
+                Download(new List<Path> {SelectedPath}, LocalFactory.createLocal(fileName));
             }
         }
 
