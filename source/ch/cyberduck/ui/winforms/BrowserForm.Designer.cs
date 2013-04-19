@@ -2407,36 +2407,43 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnSize.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.treeColumnSize.Text = "Size";
             this.treeColumnSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.treeColumnSize.IsEditable = false;
             // 
             // treeColumnModified
             // 
             this.treeColumnModified.IsTileViewColumn = true;
             this.treeColumnModified.Text = "Modified";
             this.treeColumnModified.Width = 145;
+            this.treeColumnModified.IsEditable = false;
             // 
             // treeColumnOwner
             // 
             this.treeColumnOwner.DisplayIndex = 3;
             this.treeColumnOwner.IsVisible = false;
             this.treeColumnOwner.Text = "Owner";
+            this.treeColumnOwner.IsEditable = false;
             // 
             // treeColumnGroup
             // 
             this.treeColumnGroup.DisplayIndex = 4;
             this.treeColumnGroup.IsVisible = false;
             this.treeColumnGroup.Text = "Group";
+            this.treeColumnGroup.IsEditable = false;
             // 
             // treeColumnPermissions
             // 
             this.treeColumnPermissions.DisplayIndex = 5;
             this.treeColumnPermissions.IsVisible = false;
             this.treeColumnPermissions.Text = "Permissions";
+            this.treeColumnPermissions.IsEditable = false;
+            
             // 
             // treeColumnKind
             // 
             this.treeColumnKind.DisplayIndex = 6;
             this.treeColumnKind.IsVisible = false;
             this.treeColumnKind.Text = "Kind";
+            this.treeColumnKind.IsEditable = false;
             // 
             // transcriptBox
             // 
