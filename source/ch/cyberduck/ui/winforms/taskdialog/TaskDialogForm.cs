@@ -317,19 +317,21 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
         int nextOffset = 0;
         StringBuilder builder = new StringBuilder();
         linkLabel.Links.Clear();
-        foreach (Match match in regEx.Matches(htmlFragment))
-        {
-            if (match.Index > nextOffset || match.Index == 0)
+        if (!String.IsNullOrEmpty(htmlFragment)){
+            foreach (Match match in regEx.Matches(htmlFragment))
             {
-                builder.Append(htmlFragment.Substring(nextOffset, match.Index - nextOffset));
-                nextOffset = match.Index + match.Length;
-                linkLabel.Links.Add(builder.Length, match.Groups["text"].Value.Length, match.Groups["link"].Value);
-                builder.Append(match.Groups["text"].Value);
+                if (match.Index > nextOffset || match.Index == 0)
+                {
+                    builder.Append(htmlFragment.Substring(nextOffset, match.Index - nextOffset));
+                    nextOffset = match.Index + match.Length;
+                    linkLabel.Links.Add(builder.Length, match.Groups["text"].Value.Length, match.Groups["link"].Value);
+                    builder.Append(match.Groups["text"].Value);
+                }
             }
-        }
-        if (nextOffset < htmlFragment.Length)
-        {
-            builder.Append(htmlFragment.Substring(nextOffset));
+            if (nextOffset < htmlFragment.Length)
+            {
+                builder.Append(htmlFragment.Substring(nextOffset));
+            }
         }
         linkLabel.Text = builder.ToString();
     }
