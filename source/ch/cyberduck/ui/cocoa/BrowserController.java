@@ -2673,9 +2673,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             String filename;
             if((filename = sheet.filename()) != null) {
-                final Path selection = PathFactory.createPath(this.getTransferSession(), this.getSelectedPath().getAsDictionary());
-                selection.setLocal(LocalFactory.createLocal(filename));
-                this.transfer(new DownloadTransfer(selection), Collections.<Path>emptyList());
+                this.download(Collections.singletonList(this.getSelectedPath()), LocalFactory.createLocal(filename));
             }
         }
     }
@@ -2742,7 +2740,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param downloads      Paths to transfer
      * @param downloadfolder Destination folder
      */
-    public void download(List<Path> downloads, Local downloadfolder) {
+    public void download(final List<Path> downloads, final Local downloadfolder) {
         final Session session = this.getTransferSession();
         final List<Path> roots = new Collection<Path>();
         for(Path selected : downloads) {
