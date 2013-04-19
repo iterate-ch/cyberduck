@@ -2233,18 +2233,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
             final List<Path> s = this.getSelectedPaths();
+            final Session session = this.getSession();session.cache().invalidate(this.workdir().getReference());
+            session.cdn().clear();
             switch(this.browserSwitchView.selectedSegment()) {
-                case SWITCH_LIST_VIEW: {
-                    this.getSession().cache().invalidate(this.workdir().getReference());
-                    break;
-                }
                 case SWITCH_OUTLINE_VIEW: {
-                    this.getSession().cache().invalidate(this.workdir().getReference());
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
                         if(browserOutlineView.isItemExpanded(item)) {
                             final NSObjectPathReference reference = new NSObjectPathReference(item);
-                            this.getSession().cache().invalidate(reference);
+                            session.cache().invalidate(reference);
                         }
                     }
                     break;

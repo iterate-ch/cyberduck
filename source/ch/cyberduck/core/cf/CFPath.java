@@ -202,9 +202,6 @@ public class CFPath extends CloudPath {
                     this.getName()));
 
             if(this.isRoot()) {
-                // Clear CDN cache when reloading
-                this.getSession().cdn().clear();
-
                 final int limit = Preferences.instance().getInteger("cf.list.limit");
                 String marker = null;
                 List<FilesContainerInfo> list;

@@ -1461,11 +1461,13 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                getSession().cache().invalidate(Workdir.getReference());
+                Session session = getSession();
+                session.cdn().clear();
+                session.cache().invalidate(Workdir.getReference());
                 foreach (Path path in View.VisiblePaths)
                 {
                     if (null == path) continue;
-                    getSession().cache().invalidate(path.getReference());
+                    session.cache().invalidate(path.getReference());
                 }
                 ReloadData(SelectedPaths);
             }
