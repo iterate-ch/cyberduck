@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -22,19 +23,21 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class FirefoxStyleRenderer : ToolStripSystemRenderer
     {
+        private readonly SolidBrush brush = new SolidBrush(Color.White);
+
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
         {
             Rectangle rect = e.AffectedBounds;
-            e.Graphics.FillRectangle(new SolidBrush(Color.White), rect);
+            e.Graphics.FillRectangle(brush, rect);
         }
 
         protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
         {
             base.OnRenderToolStripBorder(e);
-            Rectangle rect = e.AffectedBounds;            
-            e.Graphics.DrawLine(new Pen(Color.FromKnownColor(KnownColor.ControlDark)), 
-                rect.Left, rect.Bottom,
-                rect.Right, rect.Bottom);
+            Rectangle rect = e.AffectedBounds;
+            e.Graphics.DrawLine(new Pen(Color.FromKnownColor(KnownColor.ControlDark)),
+                                rect.Left, rect.Bottom,
+                                rect.Right, rect.Bottom);
             return;
         }
 
@@ -43,21 +46,24 @@ namespace Ch.Cyberduck.Ui.Controller
             if (e.Item is ToolStripButton)
             {
                 ToolStripButton button = (ToolStripButton) e.Item;
-                SolidBrush solidBrush;
-                if (button.Pressed || button.Checked)
+                SolidBrush solidBrush = null;
+                using (solidBrush)
                 {
-                    solidBrush = new SolidBrush(Color.FromArgb(193, 210, 238));
+                    if (button.Pressed || button.Checked)
+                    {
+                        solidBrush = new SolidBrush(Color.FromArgb(193, 210, 238));
+                    }
+                    else if (button.Selected)
+                    {
+                        solidBrush = new SolidBrush(Color.FromArgb(224, 232, 246));
+                    }
+                    else
+                    {
+                        base.OnRenderButtonBackground(e);
+                        return;
+                    }
+                    e.Graphics.FillRectangle(solidBrush, 0, 0, e.Item.Width, e.Item.Height);
                 }
-                else if (button.Selected)
-                {
-                    solidBrush = new SolidBrush(Color.FromArgb(224, 232, 246));
-                }
-                else
-                {
-                    base.OnRenderButtonBackground(e);
-                    return;
-                }
-                e.Graphics.FillRectangle(solidBrush, 0, 0, e.Item.Width, e.Item.Height);
             }
             else
             {
