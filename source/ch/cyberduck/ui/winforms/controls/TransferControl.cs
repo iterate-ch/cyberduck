@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -55,14 +55,15 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             progressBar.DoubleClick += DelegateOnDoubleClick;
 
             filesComboBox.Click += delegate
-                                       {
-                                           _focusRemoveAllowed = false;
-                                           OnClick(EventArgs.Empty);
-                                       };
+                {
+                    _focusRemoveAllowed = false;
+                    OnClick(EventArgs.Empty);
+                };
             filesComboBox.LostFocus += delegate { _focusRemoveAllowed = true; };
             progressBar.MarqueeAnimationSpeed = 50;
 
             statusLabel.Font = new Font(statusLabel.Font, FontStyle.Bold);
+            Disposed += delegate { statusLabel.Font.Dispose(); };
 
             // initialize colors
             Selected = false;

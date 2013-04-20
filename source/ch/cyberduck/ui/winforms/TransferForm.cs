@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -216,8 +216,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void RemoveTransfer(IProgressView view)
         {
-            transferListView.RemoveEmbeddedControl(view as Control);
-            transferListView.RemoveObject(view);
+            var control = view as Control;
+            transferListView.RemoveEmbeddedControl(control);
+            transferListView.RemoveObject(control);
+            control.Dispose();
         }
 
         public void AddTranscriptEntry(bool request, string entry)
