@@ -167,7 +167,7 @@ namespace Ch.Cyberduck.Ui.Controller
         protected override void DrawDescribedTask(Graphics g, Rectangle r, string title, string description, Image image)
         {
             Rectangle cellBounds = r;
-            cellBounds.Inflate(-CellPadding.Width, -CellPadding.Height);
+            cellBounds.Inflate(-CellPadding.Value.Width, -CellPadding.Value.Height);
             Rectangle textBounds = cellBounds;
 
             if (image != null)
