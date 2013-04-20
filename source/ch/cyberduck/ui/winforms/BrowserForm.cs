@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -2753,39 +2753,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        private class GradientStyleRenderer : ToolStripProfessionalRenderer
-        {
-            protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
-            {
-                if (e.Item is ToolStripButton)
-                {
-                    ToolStripButton button = (ToolStripButton) e.Item;
-                    if (button.Pressed || button.Checked || button.Selected)
-                    {
-                        Rectangle bounds = new Rectangle(0, 0, e.Item.Width - 1, e.Item.Height - 1);
-                        LinearGradientBrush fillBrush = new LinearGradientBrush(bounds,
-                                                                                Color.FromArgb(64, Color.LightBlue),
-                                                                                Color.FromArgb(64, Color.DodgerBlue),
-                                                                                LinearGradientMode.Vertical);
-
-
-                        e.Graphics.FillRectangle(fillBrush, bounds);
-                        //e.Graphics.FillRectangle(solidBrush, bounds);
-                        e.Graphics.DrawRectangle(new Pen(ProfessionalColors.ButtonSelectedHighlightBorder, 1), bounds);
-                    }
-                    else
-                    {
-                        base.OnRenderButtonBackground(e);
-                        return;
-                    }
-                }
-                else
-                {
-                    base.OnRenderButtonBackground(e);
-                }
-            }
-        }
-
         private class HostDragSource : SimpleDragSource
         {
             private readonly BrowserForm _form;
@@ -3073,7 +3040,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
             {
                 Rectangle rect = e.AffectedBounds;
-                e.Graphics.FillRectangle(new SolidBrush(Color.FromKnownColor(KnownColor.Control)), rect);
+                using (SolidBrush brush = new SolidBrush(Color.FromKnownColor(KnownColor.Control)))
+                {
+                    e.Graphics.FillRectangle(brush, rect);
+                }
             }
 
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
