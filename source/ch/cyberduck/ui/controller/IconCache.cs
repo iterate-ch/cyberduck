@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -91,8 +91,10 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null == original)
                 return null;
             Image cloned = (Image) original.Clone();
-            Graphics gra = Graphics.FromImage(cloned);
-            gra.DrawImage(overlay, new Point(0, 0));
+            using (Graphics gra = Graphics.FromImage(cloned))
+            {
+                gra.DrawImage(overlay, new Point(0, 0));
+            }
             return (Bitmap) cloned;
         }
 
@@ -110,13 +112,17 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (path.attributes().isSymbolicLink())
             {
-                Bitmap overlay = IconForName("aliasbadge", size);
-                if (path.attributes().isDirectory())
+                using (Bitmap overlay = IconForName("aliasbadge", size))
                 {
-                    return IconForFolder(overlay, size);
+                    if (path.attributes().isDirectory())
+                    {
+                        return IconForFolder(overlay, size);
+                    }
+                    using (Bitmap symlink = IconForFilename(path.getName(), size))
+                    {
+                        return OverlayImages(symlink, overlay);
+                    }
                 }
-                Bitmap symlink = IconForFilename(path.getName(), size);
-                return OverlayImages(symlink, overlay);
             }
             if (path.attributes().isFile())
             {
@@ -189,7 +195,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    object obj = ResourcesBundle.ResourceManager.GetObject(FilenameUtils.getBaseName(name), ResourcesBundle.Culture);
+                    object obj = ResourcesBundle.ResourceManager.GetObject(FilenameUtils.getBaseName(name),
+                                                                           ResourcesBundle.Culture);
                     if (obj is Icon)
                     {
                         image = (new Icon(obj as Icon, size, size)).ToBitmap();
@@ -278,17 +285,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
             try
             {
-                Icon icon = Icon.ExtractAssociatedIcon(exe);
-                if (null != icon)
+                using (Icon icon = Icon.ExtractAssociatedIcon(exe))
                 {
-                    Bitmap res = icon.ToBitmap();
-                    if (size == IconSize.Small)
+                    if (null != icon)
                     {
-                        res = ResizeImage(res, s);
+                        Bitmap res = icon.ToBitmap();
+                        if (size == IconSize.Small)
+                        {
+                            res = ResizeImage(res, s);
+                        }
+                        _bitmapCache.Put(exe, res, s);
+                        return res;
                     }
-
-                    _bitmapCache.Put(exe, res, s);
-                    return res;
                 }
             }
             catch
@@ -302,10 +310,12 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             try
             {
-                Icon icon = Icon.ExtractAssociatedIcon(file);
-                if (null != icon)
+                using (Icon icon = Icon.ExtractAssociatedIcon(file))
                 {
-                    return icon.ToBitmap();
+                    if (null != icon)
+                    {
+                        return icon.ToBitmap();
+                    }
                 }
             }
             catch (Exception)
@@ -326,7 +336,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return IconForName("notfound", size);
             }
-            return icon.ToBitmap();
+            Bitmap iconForFilename = icon.ToBitmap();
+            return iconForFilename;
         }
 
         /// <summary>
