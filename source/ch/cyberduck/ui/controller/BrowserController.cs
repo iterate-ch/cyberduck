@@ -299,9 +299,12 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidatePathsCombobox += View_ValidatePathsCombobox;
             View.ValidateSearchField += View_ValidateSearchField;
 
-            //View.ViewClosingEvent += View_ClosingEvent;
             View.Exit += View_Exit;
-
+            View.ViewShownEvent += delegate
+                {
+                    //eagerly initialize the TransferController singleton
+                    TransferController tc = TransferController.Instance;
+                };
             BookmarkCollection bookmarkCollection = BookmarkCollection.defaultCollection();
             //todo eigene ListenerKlasse muss her
             //hostCollection.addListener(this);
