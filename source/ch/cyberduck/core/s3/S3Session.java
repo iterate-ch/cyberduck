@@ -839,7 +839,7 @@ public class S3Session extends CloudSession {
                 this.check();
                 if(this.isMultiFactorAuthentication(container)) {
                     // The bucket is already MFA protected.
-                    LoginController c = LoginControllerFactory.instance(this);
+                    LoginController c = LoginControllerFactory.get(this);
                     final Credentials auth = this.mfa(c);
                     if(versioning) {
                         if(this.isVersioning(container)) {
@@ -868,7 +868,7 @@ public class S3Session extends CloudSession {
                 else {
                     if(versioning) {
                         if(mfa) {
-                            LoginController c = LoginControllerFactory.instance(this);
+                            LoginController c = LoginControllerFactory.get(this);
                             final Credentials auth = this.mfa(c);
                             log.debug("Enable bucket versioning with MFA " + auth.getUsername() + " for " + container);
                             this.getClient().enableBucketVersioningWithMFA(container,
@@ -1003,7 +1003,7 @@ public class S3Session extends CloudSession {
     private class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
 
         public WebsiteCloudFrontDistributionConfiguration() {
-            super(LoginControllerFactory.instance(S3Session.this), S3Session.this.host.getCredentials(),
+            super(LoginControllerFactory.get(S3Session.this), S3Session.this.host.getCredentials(),
                     new ErrorListener() {
                         @Override
                         public void error(BackgroundException exception) {

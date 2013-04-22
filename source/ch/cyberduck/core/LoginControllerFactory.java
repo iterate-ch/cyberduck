@@ -43,7 +43,7 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
      * @param s Connection
      * @return Login controller instance for the current platform.
      */
-    public static LoginController instance(Session s) {
+    public static LoginController get(Session s) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

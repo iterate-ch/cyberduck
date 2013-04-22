@@ -224,7 +224,7 @@ public abstract class Session implements TranscriptListener {
      * @throws IOException I/O failure
      */
     protected void login() throws IOException {
-        this.login(LoginControllerFactory.instance(this));
+        this.login(LoginControllerFactory.get(this));
     }
 
     /**
@@ -756,7 +756,7 @@ public abstract class Session implements TranscriptListener {
 
     public DistributionConfiguration cdn() {
         if(null == cf) {
-            cf = new CloudFrontDistributionConfiguration(LoginControllerFactory.instance(this),
+            cf = new CloudFrontDistributionConfiguration(LoginControllerFactory.get(this),
                     new DefaultCDNCredentialsIdentityConfiguration(host).getUserCredentials(null),
                     new ErrorListener() {
                         @Override

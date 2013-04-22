@@ -1216,7 +1216,7 @@ public class S3Path extends CloudPath {
      */
     protected void delete(String container, List<ObjectKeyAndVersion> keys) throws ConnectionCanceledException, ServiceException {
         if(this.getSession().isMultiFactorAuthentication(container)) {
-            final LoginController c = LoginControllerFactory.instance(this.getSession());
+            final LoginController c = LoginControllerFactory.get(this.getSession());
             final Credentials credentials = this.getSession().mfa(c);
             this.getSession().getClient().deleteMultipleObjectsWithMFA(container,
                     keys.toArray(new ObjectKeyAndVersion[keys.size()]),
