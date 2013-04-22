@@ -53,17 +53,6 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
         return factories.get(NATIVE_PLATFORM).create(s);
     }
 
-    /**
-     * @param c Browser controller
-     * @return Login controller instance for the current platform.
-     */
-    public static HostKeyController get(Controller c) {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create(c);
-    }
-
     public static void addFactory(Platform p, HostKeyControllerFactory f) {
         factories.put(p, f);
     }

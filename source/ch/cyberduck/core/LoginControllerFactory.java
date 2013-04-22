@@ -50,17 +50,6 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
         return factories.get(NATIVE_PLATFORM).create(s);
     }
 
-    /**
-     * @param c Browser of transfer controller
-     * @return Login controller instance for the current platform.
-     */
-    public static LoginController instance(Controller c) {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create(c);
-    }
-
     public static void addFactory(Platform p, LoginControllerFactory f) {
         factories.put(p, f);
     }
