@@ -18,15 +18,29 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WorkspaceApplicationBadgeLabeler implements ApplicationBadgeLabeler {
 
+    public static void register() {
+        ApplicationBadgeLabelerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends ApplicationBadgeLabelerFactory {
+        @Override
+        protected ApplicationBadgeLabeler create() {
+            return new WorkspaceApplicationBadgeLabeler();
+        }
+    }
+
     @Override
     public void badge(String label) {
-        NSApplication.sharedApplication().dockTile().setBadgeLabel(label);
+        if(Preferences.instance().getBoolean("queue.dock.badge")) {
+            NSApplication.sharedApplication().dockTile().setBadgeLabel(label);
+        }
     }
 }
