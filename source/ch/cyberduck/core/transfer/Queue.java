@@ -20,7 +20,9 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -95,6 +97,7 @@ public class Queue {
             t.fireTransferResumed();
         }
         running.add(t);
+        ApplicationBadgeLabelerFactory.get().badge(String.valueOf(running.size()));
     }
 
     /**
@@ -102,6 +105,12 @@ public class Queue {
      */
     public void remove(final Transfer t) {
         if(running.remove(t)) {
+            if(0 == running.size()) {
+                ApplicationBadgeLabelerFactory.get().badge(StringUtils.EMPTY);
+            }
+            else {
+                ApplicationBadgeLabelerFactory.get().badge(String.valueOf(running.size()));
+            }
             // Transfer has finished.
             this.poll();
         }

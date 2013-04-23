@@ -747,23 +747,11 @@ public final class TransferController extends WindowController implements NSTool
                     @Override
                     public void transferWillStart() {
                         validateToolbar();
-                        badge();
                     }
 
                     @Override
                     public void transferDidEnd() {
                         validateToolbar();
-                        badge();
-                    }
-
-                    private void badge() {
-                        int count = TransferCollection.defaultCollection().numberOfRunningTransfers();
-                        if(0 == count) {
-                            ApplicationBadgeLabelerFactory.get().badge(StringUtils.EMPTY);
-                        }
-                        else {
-                            ApplicationBadgeLabelerFactory.get().badge(String.valueOf(count));
-                        }
                     }
                 });
                 // Attach listeners
