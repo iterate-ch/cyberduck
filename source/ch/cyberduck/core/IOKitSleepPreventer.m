@@ -23,9 +23,9 @@
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_IOKitSleepPreventer_createAssertion
   (JNIEnv *env, jobject this, jstring reason)
 {
-    // kIOPMAssertionTypeNoIdleSleep prevents idle sleep
      IOPMAssertionID assertionID;
-     IOReturn success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoIdleSleep,
+     // Prevents the system from sleeping automatically due to a lack of user activity.
+     IOReturn success = IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleSystemSleep,
         kIOPMAssertionLevelOn, (CFStringRef)JNFJavaToNSString(env, reason), &assertionID);
      if (success == kIOReturnSuccess)
      {
