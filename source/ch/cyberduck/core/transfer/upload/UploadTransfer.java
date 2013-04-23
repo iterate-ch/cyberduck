@@ -224,7 +224,7 @@ public class UploadTransfer extends Transfer {
                         file.getName(), UUID.randomUUID().toString()));
             }
             // Transfer
-            file.upload(this.getBandwidth(), new AbstractStreamListener() {
+            file.upload(bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     addTransferred(bytes);

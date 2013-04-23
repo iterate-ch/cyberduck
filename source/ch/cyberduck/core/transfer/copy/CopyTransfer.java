@@ -180,7 +180,7 @@ public class CopyTransfer extends Transfer {
         }
         final Path destination = files.get(source);
         if(source.attributes().isFile()) {
-            source.copy(destination, this.getBandwidth(), new AbstractStreamListener() {
+            source.copy(destination, bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     addTransferred(bytes);

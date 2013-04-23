@@ -113,7 +113,7 @@ public abstract class Transfer implements Serializable {
     /**
      * In Bytes per second
      */
-    private BandwidthThrottle bandwidth
+    protected BandwidthThrottle bandwidth
             = new BandwidthThrottle(BandwidthThrottle.UNLIMITED);
 
 
