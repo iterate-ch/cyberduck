@@ -236,7 +236,7 @@
         </exec>
 
         <!-- overwrite generated wyUpdate.exe -->
-        <copy file="${www.update}/ Updater.exe" todir="${build}/update" overwrite="true"/>
+        <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
 
         <antcall target="setup"/>
     </target>
