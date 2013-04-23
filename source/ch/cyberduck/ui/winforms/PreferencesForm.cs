@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -1465,7 +1465,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                 DialogResult result = editorOpenFileDialog.ShowDialog();
                 if (result == DialogResult.OK)
                 {
-                    Preferences.instance().setProperty("editor.bundleIdentifier", editorOpenFileDialog.FileName);
+                    Preferences.instance()
+                               .setProperty("editor.bundleIdentifier", editorOpenFileDialog.FileName.ToLower());
                     RepopulateEditorsEvent();
                 }
                 else

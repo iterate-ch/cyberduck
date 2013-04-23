@@ -1767,6 +1767,10 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if the selected path is editable (not a directory)</returns>
         private bool IsEditable(Path selected)
         {
+            if (getSession().getHost().getCredentials().isAnonymousLogin())
+            {
+                return false;
+            }
             return selected.attributes().isFile();
         }
 
@@ -2047,7 +2051,15 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             foreach (Path selected in SelectedPaths)
             {
-                Editor editor = EditorFactory.instance().create(this, selected);
+                Editor editor;
+                if (Utils.IsBlank(exe))
+                {
+                    editor = EditorFactory.instance().create(this, selected);
+                }
+                else
+                {
+                    editor = EditorFactory.instance().create(this, new Application(exe, null), selected);
+                }
                 editor.open();
             }
         }

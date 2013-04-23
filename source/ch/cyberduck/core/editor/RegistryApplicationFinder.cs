@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -62,11 +62,13 @@ namespace Ch.Cyberduck.core.editor
                         {
                             foreach (string valueName in muiCache.GetValueNames())
                             {
-                                if (valueName.Equals(application, StringComparison.CurrentCultureIgnoreCase))
+                                if (valueName.Equals(application + ".FriendlyAppName",
+                                                     StringComparison.CurrentCultureIgnoreCase))
                                 {
                                     applicationNameCache.Add(new KeyValuePair<string, Application>(application,
                                                                                                    new Application(
-                                                                                                       application,
+                                                                                                       application
+                                                                                                           .ToLower(),
                                                                                                        (string)
                                                                                                        muiCache.GetValue
                                                                                                            (valueName))));
@@ -91,13 +93,24 @@ namespace Ch.Cyberduck.core.editor
                                 {
                                     applicationNameCache.Add(new KeyValuePair<string, Application>(application,
                                                                                                    new Application(
-                                                                                                       application,
+                                                                                                       application
+                                                                                                           .ToLower(),
                                                                                                        valueName)));
                                     break;
                                 }
                             }
                         }
                     }
+                }
+                if (!applicationNameCache.ContainsKey(application))
+                {
+                    applicationNameCache.Add(new KeyValuePair<string, Application>(application,
+                                                                                   new Application(
+                                                                                       application.ToLower(),
+                                                                                       LocalFactory
+                                                                                           .createLocal(
+                                                                                               application)
+                                                                                           .getName())));
                 }
             }
             Application result;
@@ -204,7 +217,7 @@ namespace Ch.Cyberduck.core.editor
                     }
                     else
                     {
-                        map.Add(new Application(LocalFactory.createLocal(exe).getName(), exe));
+                        map.Add(getDescription(exe));
                     }
                 }
                 map.Sort(

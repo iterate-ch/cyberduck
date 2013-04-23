@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -87,7 +87,7 @@ namespace Ch.Cyberduck.Core.Editor
                                     string exePath = (string) versionSubtree.GetValue(null);
                                     if (null != exePath)
                                     {
-                                        return exePath;
+                                        return exePath.ToLower();
                                     }
                                 }
                             }
@@ -119,7 +119,7 @@ namespace Ch.Cyberduck.Core.Editor
                 string notepadExe = System.IO.Path.Combine(windir, "system32", "notepad.exe");
                 if (File.Exists(notepadExe))
                 {
-                    return notepadExe;
+                    return notepadExe.ToLower();
                 }
                 return null;
             }
@@ -146,7 +146,7 @@ namespace Ch.Cyberduck.Core.Editor
                             string exe = (string) uc.GetValue("DisplayIcon");
                             if (null != exe)
                             {
-                                return exe;
+                                return exe.ToLower();
                             }
                         }
                     }
@@ -183,7 +183,7 @@ namespace Ch.Cyberduck.Core.Editor
                                     string exePath = (string) versionSubtree.GetValue("ExePath");
                                     if (null != exePath)
                                     {
-                                        return exePath;
+                                        return exePath.ToLower();
                                     }
                                 }
                             }
