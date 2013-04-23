@@ -2157,6 +2157,11 @@ profiles/Rackspace[!!-~]UK.cyberduckprofile -text
 profiles/Rackspace[!!-~]US.cyberduckprofile -text svneol=unset#application/xml
 profiles/S3[!!-~]Unsecure.cyberduckprofile -text
 profiles/Swift[!!-~]Unsecure.cyberduckprofile -text
+profiles/assets/Dream Objects.tiff -text svneol=unset#image/tiff
+profiles/assets/Dump[!!-~]Truck.png -text svneol=unset#image/png
+profiles/assets/GreenQloud.tiff -text svneol=unset#image/tiff
+profiles/assets/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.tiff -text svneol=unset#image/tiff
+profiles/assets/Lunacloud.png -text svneol=unset#image/png
 pt_BR.lproj/Alert.nib/classes.nib -text
 pt_BR.lproj/Alert.nib/info.nib -text
 pt_BR.lproj/Alert.nib/keyedobjects.nib -text
