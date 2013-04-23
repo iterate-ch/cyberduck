@@ -187,7 +187,19 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (FilenameUtils.getPrefix(name) != string.Empty)
                 {
-                    image = new Icon(name, size, size).ToBitmap();
+                    try
+                    {
+                        image = new Icon(name, size, size).ToBitmap();
+                    }
+                    catch (ArgumentException)
+                    {
+                        //was not an icon, try as plain bitmap
+                        image = (Bitmap) Image.FromFile(name);
+                        if (size > 0)
+                        {
+                            image = ResizeImage(image, new Size(size, size));
+                        }
+                    }
                 }
                 else
                 {
