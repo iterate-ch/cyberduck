@@ -757,14 +757,12 @@ public final class TransferController extends WindowController implements NSTool
                     }
 
                     private void badge() {
-                        if(Preferences.instance().getBoolean("queue.dock.badge")) {
-                            int count = TransferCollection.defaultCollection().numberOfRunningTransfers();
-                            if(0 == count) {
-                                ApplicationBadgeLabelerFactory.get().badge(StringUtils.EMPTY);
-                            }
-                            else {
-                                ApplicationBadgeLabelerFactory.get().badge(String.valueOf(count));
-                            }
+                        int count = TransferCollection.defaultCollection().numberOfRunningTransfers();
+                        if(0 == count) {
+                            ApplicationBadgeLabelerFactory.get().badge(StringUtils.EMPTY);
+                        }
+                        else {
+                            ApplicationBadgeLabelerFactory.get().badge(String.valueOf(count));
                         }
                     }
                 });

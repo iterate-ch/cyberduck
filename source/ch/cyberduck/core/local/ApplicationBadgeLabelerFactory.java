@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
@@ -26,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class ApplicationBadgeLabelerFactory extends Factory<ApplicationBadgeLabeler> {
     private static final Logger log = Logger.getLogger(ApplicationBadgeLabelerFactory.class);
@@ -42,6 +43,9 @@ public abstract class ApplicationBadgeLabelerFactory extends Factory<Application
     }
 
     public static ApplicationBadgeLabeler get() {
+        if(!Preferences.instance().getBoolean("queue.dock.badge")) {
+            return new DisabledApplicationBadgeLabeler();
+        }
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
             return new DisabledApplicationBadgeLabeler();
