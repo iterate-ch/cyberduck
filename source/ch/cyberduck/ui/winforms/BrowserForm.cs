@@ -2401,8 +2401,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         private void browser_CellEditFinishing(object sender, CellEditEventArgs e)
-        {
-            e.Cancel = RenameFile((Path) e.RowObject, (String) e.NewValue);
+        {   
+            if (!e.Cancel)
+            {
+                e.Cancel = RenameFile((Path)e.RowObject, (String)e.NewValue);   
+            }            
         }
 
         private void browser_BeforeLabelEdit(object sender, LabelEditEventArgs e)
