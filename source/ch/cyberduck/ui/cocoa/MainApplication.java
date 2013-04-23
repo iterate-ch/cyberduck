@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Preferences;
@@ -119,6 +120,8 @@ public final class MainApplication {
                 WorkspaceBrowserLauncher.register();
                 WorkspaceRevealService.register();
                 WorkspaceApplicationBadgeLabeler.register();
+                IOKitSleepPreventer.register();
+
                 MultipleEditorFactory.register();
 
                 DeprecatedQuickLook.register();

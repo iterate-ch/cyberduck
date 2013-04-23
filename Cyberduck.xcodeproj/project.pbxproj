@@ -29,7 +29,6 @@
 		470C64791328CC0300146FB6 /* s3.amazonaws.com – S3.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */; };
 		470C647A1328CC0300146FB6 /* storage.clouddrive.com – Cloud Files.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */; };
 		47121FF71611F94000E2547D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47121FF61611F94000E2547D /* main.m */; };
-		471220AD1611F96A00E2547D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 471220AC1611F96A00E2547D /* Cocoa.framework */; };
 		4714591713B492CD00F1A9D2 /* libAquaticPrime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4773D6B00F9C86A7004658BD /* libAquaticPrime.a */; };
 		4716C5F50872BA9900938886 /* Command.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.nib */; };
 		4718C1EF107A9F12006FDEFA /* SystemConfigurationReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */; };
@@ -225,6 +224,10 @@
 		47C57EB5162F471700A272BC /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		47C57EBD162F479900A272BC /* LaunchServicesFileDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C57EBB162F479900A272BC /* LaunchServicesFileDescriptor.h */; };
 		47C57EBE162F479900A272BC /* LaunchServicesFileDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C57EBC162F479900A272BC /* LaunchServicesFileDescriptor.m */; };
+		47C88FEC17269991001A746A /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479BF77D1725A68C006854BF /* IOKit.framework */; };
+		47C88FEF17269A54001A746A /* IOKitSleepPreventer.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C88FED17269A54001A746A /* IOKitSleepPreventer.h */; };
+		47C88FF017269A54001A746A /* IOKitSleepPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C88FEE17269A54001A746A /* IOKitSleepPreventer.m */; };
+		47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		47CD043812DB5F2000694306 /* File.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD041612DB5F2000694306 /* File.strings */; };
 		47CD045B12DB5F2E00694306 /* Folder.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD043912DB5F2E00694306 /* Folder.strings */; };
 		47CD047E12DB5F4500694306 /* Goto.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD045C12DB5F4500694306 /* Goto.strings */; };
@@ -244,6 +247,8 @@
 		47F102B41628D57500923FDE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		47F102CA1628D5CE00923FDE /* LaunchServicesQuarantineService.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */; };
 		47F102CE1628D5CE00923FDE /* LaunchServicesQuarantineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */; };
+		47FB9C641725A5CC00FE33C1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
+		47FB9C661725A5CC00FE33C1 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
 /* End PBXBuildFile section */
 
@@ -324,6 +329,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4797D26E1628276C00340E1C;
 			remoteInfo = libLaunchServicesApplicationFinder;
+		};
+		479BF7801725A6FE006854BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47FB9C5E1725A5CC00FE33C1;
+			remoteInfo = libIOKitSleepPreventer;
 		};
 		47BEDCEE0B92A23B00141EB4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -531,7 +543,6 @@
 		470FDC80099E4AC5008DE09C /* he */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = he.lproj/Status.strings; sourceTree = "<group>"; };
 		470FDC81099E4AC5008DE09C /* he */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = he.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		47121FF61611F94000E2547D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		471220AC1611F96A00E2547D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		4716C5F00872BA9800938886 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Command.nib; sourceTree = "<group>"; };
 		47181E840E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Command.nib; sourceTree = "<group>"; };
 		47181E850E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Info.nib; sourceTree = "<group>"; };
@@ -1118,6 +1129,7 @@
 		47993F7711699F12000271A8 /* de */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Transfer.strings; sourceTree = "<group>"; };
 		47993F7B11699F40000271A8 /* Transfer.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Transfer.nib; path = resources/Transfer.nib; sourceTree = "<group>"; };
 		479982AF05F54B1600F81519 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		479BF77D1725A68C006854BF /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		47A082B0167A169D004458C7 /* cyberduck-application.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "cyberduck-application.icns"; sourceTree = "<group>"; };
 		47A88FBA0B931D9C00DB9D87 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Configuration.strings; sourceTree = "<group>"; };
@@ -1263,6 +1275,8 @@
 		47C57EBC162F479900A272BC /* LaunchServicesFileDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesFileDescriptor.m; sourceTree = "<group>"; };
 		47C59A560880165B00CC2FA5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Command.nib; sourceTree = "<group>"; };
 		47C761EA06A88D7600B464FF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
+		47C88FED17269A54001A746A /* IOKitSleepPreventer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOKitSleepPreventer.h; sourceTree = "<group>"; };
+		47C88FEE17269A54001A746A /* IOKitSleepPreventer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IOKitSleepPreventer.m; sourceTree = "<group>"; };
 		47C92D4D1189B6B300EDDD00 /* sl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sl; path = sl.lproj/Alert.nib; sourceTree = "<group>"; };
 		47C92D4E1189B6B300EDDD00 /* sl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sl; path = sl.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		47C92D4F1189B6B300EDDD00 /* sl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sl; path = sl.lproj/Browser.nib; sourceTree = "<group>"; };
@@ -1522,6 +1536,7 @@
 		47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesQuarantineService.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesQuarantineService.h; sourceTree = "<group>"; };
 		47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesQuarantineService.m; sourceTree = "<group>"; };
+		47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libIOKitSleepPreventer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47FC190B099FB8AF0082431D /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC191F099FC1290082431D /* fr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = fr; path = fr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC1943099FDB310082431D /* it */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = it; path = it.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -1649,7 +1664,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				471220AD1611F96A00E2547D /* Cocoa.framework in Frameworks */,
+				47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1673,6 +1688,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47FB9C631725A5CC00FE33C1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47FB9C641725A5CC00FE33C1 /* Foundation.framework in Frameworks */,
+				47FB9C661725A5CC00FE33C1 /* JavaNativeFoundation.framework in Frameworks */,
+				47C88FEC17269991001A746A /* IOKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1693,6 +1718,7 @@
 				4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */,
 				47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */,
 				47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */,
+				47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1705,7 +1731,6 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				471D2C5405A2505600675163 /* Info.plist */,
-				471220AC1611F96A00E2547D /* Cocoa.framework */,
 			);
 			name = "cyberduck-cocoa";
 			sourceTree = "<group>";
@@ -1713,6 +1738,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				479BF77D1725A68C006854BF /* IOKit.framework */,
 				4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */,
 				4792112812F6F4FD00E35E16 /* Sparkle.framework */,
 				474523971076B6D800823467 /* Carbon.framework */,
@@ -1795,6 +1821,8 @@
 		474152DA06C4F08A00AC0BD2 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				47C88FED17269A54001A746A /* IOKitSleepPreventer.h */,
+				47C88FEE17269A54001A746A /* IOKitSleepPreventer.m */,
 				47EA2444162B5C44002E23E2 /* urlhandler */,
 				47F102BA1628D5CE00923FDE /* local */,
 				4797D27F1628296900340E1C /* editor */,
@@ -2272,6 +2300,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47FB9C5F1725A5CC00FE33C1 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47C88FEF17269A54001A746A /* IOKitSleepPreventer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -2293,6 +2329,7 @@
 				479737AD162F4962002809CC /* PBXTargetDependency */,
 				47F102DA1628D61A00923FDE /* PBXTargetDependency */,
 				4797D28D1628299700340E1C /* PBXTargetDependency */,
+				479BF7811725A6FE006854BF /* PBXTargetDependency */,
 				471E214C0A1734D7009E164E /* PBXTargetDependency */,
 				471E214E0A1734D7009E164E /* PBXTargetDependency */,
 				471E21520A1734D7009E164E /* PBXTargetDependency */,
@@ -2557,6 +2594,25 @@
 			productReference = 47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		47FB9C5E1725A5CC00FE33C1 /* libIOKitSleepPreventer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 47FB9C681725A5CC00FE33C1 /* Build configuration list for PBXNativeTarget "libIOKitSleepPreventer" */;
+			buildPhases = (
+				47FB9C5F1725A5CC00FE33C1 /* Headers */,
+				47FB9C611725A5CC00FE33C1 /* Sources */,
+				47FB9C631725A5CC00FE33C1 /* Frameworks */,
+				47FB9C671725A5CC00FE33C1 /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libIOKitSleepPreventer;
+			productInstallPath = /usr/local/lib;
+			productName = keychainLib;
+			productReference = 47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -2630,6 +2686,7 @@
 				4797D26E1628276C00340E1C /* libLaunchServicesApplicationFinder */,
 				47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */,
 				47C57EAE162F471700A272BC /* libLaunchServicesFileDescriptor */,
+				47FB9C5E1725A5CC00FE33C1 /* libIOKitSleepPreventer */,
 			);
 		};
 /* End PBXProject section */
@@ -2861,6 +2918,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47FB9C671725A5CC00FE33C1 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -3009,6 +3073,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47FB9C611725A5CC00FE33C1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47C88FF017269A54001A746A /* IOKitSleepPreventer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -3066,6 +3138,11 @@
 			isa = PBXTargetDependency;
 			target = 4797D26E1628276C00340E1C /* libLaunchServicesApplicationFinder */;
 			targetProxy = 4797D28C1628299700340E1C /* PBXContainerItemProxy */;
+		};
+		479BF7811725A6FE006854BF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47FB9C5E1725A5CC00FE33C1 /* libIOKitSleepPreventer */;
+			targetProxy = 479BF7801725A6FE006854BF /* PBXContainerItemProxy */;
 		};
 		47BEDCEF0B92A23B00141EB4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4629,7 +4706,7 @@
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = libPrime;
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -4761,6 +4838,35 @@
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLaunchServicesQuarantineService;
+			};
+			name = Debug;
+		};
+		47FB9C691725A5CC00FE33C1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libIOKitSleepPreventer;
+			};
+			name = Release;
+		};
+		47FB9C6A1725A5CC00FE33C1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				LD_DYLIB_INSTALL_NAME = "";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libIOKitSleepPreventer;
 			};
 			name = Debug;
 		};
@@ -4898,6 +5004,15 @@
 			buildConfigurations = (
 				47F102B71628D57500923FDE /* Release */,
 				47F102B81628D57500923FDE /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		47FB9C681725A5CC00FE33C1 /* Build configuration list for PBXNativeTarget "libIOKitSleepPreventer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				47FB9C691725A5CC00FE33C1 /* Release */,
+				47FB9C6A1725A5CC00FE33C1 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
