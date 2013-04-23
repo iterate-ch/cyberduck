@@ -26,7 +26,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_IOKitSleepPreventer_createAsser
      IOPMAssertionID assertionID;
      // Prevents the system from sleeping automatically due to a lack of user activity.
     IOReturn success;
-    if (IOPMAssertionCreateWithName) {
+    if (IOPMAssertionCreateWithName != NULL) {
         success = IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleSystemSleep,
                                               kIOPMAssertionLevelOn, (CFStringRef)JNFJavaToNSString(env, reason), &assertionID);
     }
