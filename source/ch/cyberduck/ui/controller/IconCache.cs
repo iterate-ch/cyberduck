@@ -212,16 +212,16 @@ namespace Ch.Cyberduck.Ui.Controller
                     else if (obj is Bitmap)
                     {
                         image = (Bitmap) obj;
-                        if (image.RawFormat == ImageFormat.Tiff)
-                        {
-                            // handle multi-page tiffs
-                            image = GetTiffImage(image, size);
-                        }
-                        else if (size > 0)
-                        {
-                            image = ResizeImage(image, new Size(size, size));
-                        }
                     }
+                }
+                if (image != null && image.RawFormat == ImageFormat.Tiff)
+                {
+                    // handle multi-page tiffs
+                    image = GetTiffImage(image, size);
+                }
+                else if (size > 0)
+                {
+                    image = ResizeImage(image, new Size(size, size));
                 }
                 _bitmapCache.Put(name, image, size);
             }
@@ -537,6 +537,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static Bitmap ResizeImage(Image imgToResize, Size size)
         {
+            if (imgToResize == null)
+            {
+                return null;
+            }
             Bitmap b = new Bitmap(size.Width, size.Height);
             using (Graphics g = Graphics.FromImage(b))
             {
