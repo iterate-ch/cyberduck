@@ -34,6 +34,9 @@ public abstract class SleepPreventerFactory extends Factory<SleepPreventer> {
     }
 
     public static SleepPreventer get() {
+        if(!Preferences.instance().getBoolean("queue.sleep.prevent")) {
+            return new DisabledSleepPreventer();
+        }
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             return new DisabledSleepPreventer();
         }
