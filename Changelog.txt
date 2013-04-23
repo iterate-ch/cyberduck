@@ -19,6 +19,7 @@ Changelog. Last modified: $Date$
 - [Feature] Website Configuration (Cloudfiles)
 - [Feature] Edit container metadata (Cloudfiles)
 - [Feature] Reuse Session key on data connection (FTP/TLS) (#5087)
+- [Feature] Suppress sleep mode during file transfers (#6479)
 - [Bugfix] Hangs editing file in external editor (10.8.2) (#6878)
 - [Bugfix] Moving folders deletes the folder (Cloudfiles) (#6442)
 - [Bugfix] Copy folder from server to server (#6440)

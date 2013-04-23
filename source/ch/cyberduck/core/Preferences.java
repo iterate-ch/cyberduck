@@ -433,7 +433,7 @@ public abstract class Preferences {
 
         defaults.put("queue.dock.badge", String.valueOf(false));
 
-        defaults.put("queue.sleep.prevent", String.valueOf(false));
+        defaults.put("queue.sleep.prevent", String.valueOf(true));
 
         /**
          * Bandwidth throttle options
