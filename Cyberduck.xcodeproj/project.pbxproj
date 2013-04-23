@@ -224,7 +224,7 @@
 		47C57EB5162F471700A272BC /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		47C57EBD162F479900A272BC /* LaunchServicesFileDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C57EBB162F479900A272BC /* LaunchServicesFileDescriptor.h */; };
 		47C57EBE162F479900A272BC /* LaunchServicesFileDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C57EBC162F479900A272BC /* LaunchServicesFileDescriptor.m */; };
-		47C88FEC17269991001A746A /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479BF77D1725A68C006854BF /* IOKit.framework */; };
+		47C88FEC17269991001A746A /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479BF77D1725A68C006854BF /* IOKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		47C88FEF17269A54001A746A /* IOKitSleepPreventer.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C88FED17269A54001A746A /* IOKitSleepPreventer.h */; };
 		47C88FF017269A54001A746A /* IOKitSleepPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C88FEE17269A54001A746A /* IOKitSleepPreventer.m */; };
 		47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
