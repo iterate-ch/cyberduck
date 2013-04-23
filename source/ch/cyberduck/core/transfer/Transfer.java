@@ -18,14 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -643,6 +636,8 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start transfer with prompt %s", prompt));
         }
+        final SleepPreventer sleep = SleepPreventerFactory.get();
+        final String lock = sleep.lock();
         try {
             this.fireTransferWillStart();
             this.queue();
@@ -653,6 +648,7 @@ public abstract class Transfer implements Serializable {
             this.transfer(prompt, options);
         }
         finally {
+            sleep.release(lock);
             this.fireTransferDidEnd();
         }
     }
