@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -341,7 +341,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Logger.debug("ApplicationDidFinishLaunching");
             CommandsAfterLaunch(CommandLineArgs);
 
-            //UpdateController.Instance.CheckForUpdatesIfNecessary();
+            UpdateController.Instance.CheckForUpdatesIfNecessary();
 
             if (Preferences.instance().getBoolean("queue.openByDefault"))
             {
@@ -432,9 +432,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                 {
                                     case 0:
                                         URLSchemeHandlerConfiguration.Instance.
-                                            RegisterFtpProtocol();
+                                                                      RegisterFtpProtocol();
                                         URLSchemeHandlerConfiguration.Instance.
-                                            RegisterSftpProtocol();
+                                                                      RegisterSftpProtocol();
                                         break;
                                 }
                             });
@@ -495,7 +495,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                   {
                                                                       case 0:
                                                                           BookmarkCollection.defaultCollection().
-                                                                              addAll(c1);
+                                                                                             addAll(c1);
                                                                           // Flag as imported
                                                                           Preferences.instance().setProperty(
                                                                               c1.getConfiguration(), true);
