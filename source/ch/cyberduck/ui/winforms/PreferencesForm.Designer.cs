@@ -2017,7 +2017,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.duplicateDownloadCombobox.FormattingEnabled = true;
             this.duplicateDownloadCombobox.Location = new System.Drawing.Point(158, 64);
             this.duplicateDownloadCombobox.Name = "duplicateDownloadCombobox";
-            this.duplicateDownloadCombobox.Size = new System.Drawing.Size(1, 23);
+            this.duplicateDownloadCombobox.Size = new System.Drawing.Size(286, 23);
             this.duplicateDownloadCombobox.TabIndex = 4;
             this.duplicateDownloadCombobox.SelectionChangeCommitted += new System.EventHandler(this.duplicateDownloadCombobox_SelectionChangeCommitted);
             // 
@@ -3088,8 +3088,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.googleDocsButton.Name = "googleDocsButton";
             this.googleDocsButton.Size = new System.Drawing.Size(78, 69);
             this.googleDocsButton.Text = "Google Docs";
-            this.googleDocsButton.Visible = false;
             this.googleDocsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.googleDocsButton.Visible = false;
             this.googleDocsButton.Click += new System.EventHandler(this.googleDocsButton_Click);
             // 
             // bandwidthButton
