@@ -933,4 +933,24 @@ namespace Ch.Cyberduck.Ui.Controller
             return bounds;
         }
     }
+
+    //
+    //see https://sourceforge.net/p/objectlistview/discussion/812922/thread/445489ce/
+    //
+    public class FixedImageRenderer : BaseRenderer
+    {
+        protected override int DrawImage(Graphics g, Rectangle r, object imageSelector)
+        {
+            Image image = imageSelector as Image;
+            if (image != null)
+            {
+                if (image.Size.Height < r.Height)
+                    r.Y = AlignVertically(r, new Rectangle(Point.Empty, image.Size));
+
+                g.DrawImageUnscaled(image, r.X, r.Y);
+                return image.Width;
+            }
+            return 0;
+        }
+    }
 }

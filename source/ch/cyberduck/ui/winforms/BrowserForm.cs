@@ -173,7 +173,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             historyMenuStrip.Items.Add(string.Empty);
             bonjourMenuStrip.Items.Add(string.Empty);
 
-            ConfigureBookmarkList(bookmarkListView, bookmarkDescriptionColumn, bookmarkImageColumn);
+            ConfigureBookmarkList(bookmarkListView, bookmarkDescriptionColumn, bookmarkImageColumn, activeColumn);
 
             newBookmarkToolStripButton.Tag = ResourcesBundle.addPressed;
             editBookmarkToolStripButton.Tag = ResourcesBundle.editPressed;
@@ -1545,7 +1545,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                          (sender, args) => DuplicateBookmark(), () => ValidateDuplicateBookmark());
         }
 
-        private void ConfigureBookmarkList(ObjectListView l, OLVColumn descColumn, OLVColumn imageColumn)
+        private void ConfigureBookmarkList(ObjectListView l, OLVColumn descColumn, OLVColumn imageColumn,
+                                           OLVColumn activeColumn)
         {
             l.RowHeight = 72;
             l.ShowGroups = false;
@@ -1567,12 +1568,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             bookmarkRenderer.NotesFont = smallerFont;
             bookmarkRenderer.UrlNotesSpace = 3;
 
-            //taskRenderer.CellPadding = new Size(2, 5);
             descColumn.Renderer = bookmarkRenderer;
             descColumn.FillsFreeSpace = true;
 
             imageColumn.Width = 90;
             imageColumn.TextAlign = HorizontalAlignment.Center;
+            imageColumn.CellVerticalAlignment = StringAlignment.Center;
+            imageColumn.Renderer = new FixedImageRenderer();
+
+            activeColumn.CellVerticalAlignment = StringAlignment.Center;
+            activeColumn.Renderer = new FixedImageRenderer();
         }
 
         private void EnableViewToolStripButton(ToolStripButton cb)
@@ -2401,11 +2406,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         private void browser_CellEditFinishing(object sender, CellEditEventArgs e)
-        {   
+        {
             if (!e.Cancel)
             {
-                e.Cancel = RenameFile((Path)e.RowObject, (String)e.NewValue);   
-            }            
+                e.Cancel = RenameFile((Path) e.RowObject, (String) e.NewValue);
+            }
         }
 
         private void browser_BeforeLabelEdit(object sender, LabelEditEventArgs e)
