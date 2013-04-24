@@ -360,7 +360,7 @@ public class S3Session extends CloudSession {
                     this.error("Cannot read container configuration",
                             new ServiceException(String.format("Bucket %s not accessible", bucketname)));
                 }
-                S3Bucket bucket = new S3Bucket(bucketname);
+                final S3Bucket bucket = new S3Bucket(bucketname);
                 try {
                     StorageOwner owner = this.getClient().getBucketAcl(bucketname).getOwner();
                     bucket.setOwner(owner);
@@ -372,14 +372,14 @@ public class S3Session extends CloudSession {
                 buckets.put(bucketname, bucket);
             }
             else {
-                // If bucketname is specified in hostname, try to connect to this particular bucket only.
-                String bucketname = this.getContainerForHostname(host.getHostname(true));
+                // If bucket is specified in hostname, try to connect to this particular bucket only.
+                final String bucketname = this.getContainerForHostname(host.getHostname(true));
                 if(StringUtils.isNotEmpty(bucketname)) {
                     if(!this.getClient().isBucketAccessible(bucketname)) {
                         this.error("Cannot read container configuration",
                                 new ServiceException(String.format("Bucket %s not accessible", bucketname)));
                     }
-                    S3Bucket bucket = new S3Bucket(bucketname);
+                    final S3Bucket bucket = new S3Bucket(bucketname);
                     try {
                         StorageOwner owner = this.getClient().getBucketAcl(bucketname).getOwner();
                         bucket.setOwner(owner);
@@ -754,6 +754,20 @@ public class S3Session extends CloudSession {
             finally {
                 loggingStatus.remove(container);
             }
+        }
+    }
+
+    public void setLifecycle(final String container) {
+        try {
+            this.check();
+            final LifecycleConfig config = new LifecycleConfig();
+            this.getClient().setLifecycleConfig(container, config);
+        }
+        catch(ServiceException e) {
+            this.error("Cannot write file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot write file attributes", e);
         }
     }
 

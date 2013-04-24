@@ -62,16 +62,13 @@ public abstract class AbstractLicense implements License {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof AbstractLicense)) {
             return false;
         }
-
         AbstractLicense that = (AbstractLicense) o;
-
         if(file != null ? !file.equals(that.file) : that.file != null) {
             return false;
         }
-
         return true;
     }
 

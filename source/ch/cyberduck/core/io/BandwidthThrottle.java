@@ -233,16 +233,13 @@ public final class BandwidthThrottle {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof BandwidthThrottle)) {
             return false;
         }
-
         BandwidthThrottle that = (BandwidthThrottle) o;
-
         if(Float.compare(that.rate, rate) != 0) {
             return false;
         }
-
         return true;
     }
 

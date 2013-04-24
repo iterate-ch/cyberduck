@@ -92,7 +92,7 @@ public abstract class Protocol {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof Protocol)) {
             return false;
         }
         Protocol protocol = (Protocol) o;

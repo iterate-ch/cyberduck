@@ -44,16 +44,13 @@ public class Application {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof Application)) {
             return false;
         }
-
         final Application that = (Application) o;
-
         if(identifier != null ? !identifier.equals(that.identifier) : that.identifier != null) {
             return false;
         }
-
         return true;
     }
 

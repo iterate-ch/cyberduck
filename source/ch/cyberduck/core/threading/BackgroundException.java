@@ -231,12 +231,10 @@ public class BackgroundException extends Exception {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof BackgroundException)) {
             return false;
         }
-
         BackgroundException that = (BackgroundException) o;
-
         if(this.getCause() != null ? !this.getCause().equals(that.getCause()) : that.getCause() != null) {
             return false;
         }
@@ -249,7 +247,6 @@ public class BackgroundException extends Exception {
         if(host != null ? !host.equals(that.host) : that.host != null) {
             return false;
         }
-
         return true;
     }
 

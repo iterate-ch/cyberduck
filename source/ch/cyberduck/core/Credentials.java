@@ -177,23 +177,20 @@ public class Credentials {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof Credentials)) {
             return false;
         }
-
-        Credentials that = (Credentials) o;
-
+        final Credentials that = (Credentials) o;
         if(password != null ? !password.equals(that.password) : that.password != null) {
             return false;
         }
         if(user != null ? !user.equals(that.user) : that.user != null) {
             return false;
         }
-
         return true;
     }
 

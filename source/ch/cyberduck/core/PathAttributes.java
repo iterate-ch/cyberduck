@@ -445,7 +445,7 @@ public class PathAttributes extends Attributes implements Serializable {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof PathAttributes)) {
             return false;
         }
         PathAttributes that = (PathAttributes) o;
