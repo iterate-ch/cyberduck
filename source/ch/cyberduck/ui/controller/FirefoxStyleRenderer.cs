@@ -23,12 +23,13 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class FirefoxStyleRenderer : ToolStripSystemRenderer
     {
-        private readonly SolidBrush brush = new SolidBrush(Color.White);
-
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
         {
             Rectangle rect = e.AffectedBounds;
-            e.Graphics.FillRectangle(brush, rect);
+            using (SolidBrush brush = new SolidBrush(Color.White))
+            {
+                e.Graphics.FillRectangle(brush, rect);
+            }
         }
 
         protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
