@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             SetMinMaxSize(Height);
             ConfigureToggleOptions();
 
-            textBoxPort.GotFocus += delegate { textBoxPort.Select(0, textBoxPort.Text.Length); };
+
+            numericUpDownPort.GotFocus += delegate { numericUpDownPort.Select(0, numericUpDownPort.Text.Length); };
         }
 
         public bool HostFieldEnabled
@@ -67,6 +68,28 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool SavePasswordEnabled
         {
+            set { ; }
+        }
+
+        public string PasswordLabel
+        {
+            set { }
+        }
+
+        public string Password
+        {
+            get { return string.Empty; }
+            set { ; }
+        }
+
+        public bool PasswordEnabled
+        {
+            set { ; }
+        }
+
+        public bool SavePasswordChecked
+        {
+            get { return true; }
             set { ; }
         }
 
@@ -138,11 +161,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { labelUsername.Text = value; }
         }
 
-        public string PasswordLabel
-        {
-            set { }
-        }
-
         bool IBookmarkView.HostFieldEnabled { get; set; }
 
         public Image Favicon
@@ -170,12 +188,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler OpenDownloadFolderEvent = delegate { };
         public event VoidHandler LaunchNetworkAssistantEvent = delegate { };
         public event VoidHandler OpenUrl = delegate { };
-        public event VoidHandler ChangedSavePasswordCheckboxEvent = delegate { };
         public event EventHandler<PrivateKeyArgs> ChangedPrivateKey = delegate { };
 
         public bool PortFieldEnabled
         {
-            set { textBoxPort.Enabled = value; }
+            set { numericUpDownPort.Enabled = value; }
         }
 
         public bool ConnectModeFieldEnabled
@@ -287,8 +304,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Port
         {
-            get { return textBoxPort.Text; }
-            set { textBoxPort.Text = value; }
+            get { return numericUpDownPort.Text; }
+            set { numericUpDownPort.Text = value; }
         }
 
         public string Username
@@ -302,17 +319,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { textBoxUsername.Enabled = value; }
         }
 
-        public string Password
-        {
-            get { return string.Empty; }
-            set { ; }
-        }
-
-        public bool PasswordEnabled
-        {
-            set { ; }
-        }
-
         public string Path
         {
             get { return textBoxPath.Text; }
@@ -323,12 +329,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get { return textBoxPath.Enabled; }
             set { textBoxPath.Enabled = value; }
-        }
-
-        public bool SavePasswordChecked
-        {
-            get { return true; }
-            set { ; }
         }
 
         public string SelectedConnectMode
@@ -376,6 +376,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             set { Text = value; }
         }
+
+        public event VoidHandler ChangedSavePasswordCheckboxEvent = delegate { };
 
         private void ConfigureToggleOptions()
         {

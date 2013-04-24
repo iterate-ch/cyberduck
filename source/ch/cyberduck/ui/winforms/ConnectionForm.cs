@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             SetMinMaxSize(Height);
             ConfigureToggleOptions();
 
-            textBoxPort.GotFocus += delegate { textBoxPort.Select(0, textBoxPort.Text.Length); };
+            numericUpDownPort.GotFocus += delegate { numericUpDownPort.Select(0, numericUpDownPort.Text.Length); };
         }
 
         public override string[] BundleNames
@@ -217,7 +217,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool PortFieldEnabled
         {
-            set { textBoxPort.Enabled = value; }
+            set { numericUpDownPort.Enabled = value; }
         }
 
         public bool PkCheckboxEnabled
@@ -239,8 +239,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Port
         {
-            get { return textBoxPort.Text; }
-            set { textBoxPort.Text = value; }
+            get { return numericUpDownPort.Text; }
+            set { numericUpDownPort.Text = value; }
         }
 
         public string Username

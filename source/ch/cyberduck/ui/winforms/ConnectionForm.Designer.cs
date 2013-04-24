@@ -43,12 +43,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxServer = new System.Windows.Forms.TextBox();
             this.labelServer = new System.Windows.Forms.Label();
             this.labelPort = new System.Windows.Forms.Label();
-            this.textBoxPort = new System.Windows.Forms.MaskedTextBox();
             this.labelUsername = new System.Windows.Forms.Label();
             this.textBoxUsername = new System.Windows.Forms.TextBox();
             this.textBoxPassword = new System.Windows.Forms.TextBox();
             this.anonymousCheckBox = new System.Windows.Forms.CheckBox();
             this.savePasswordCheckBox = new System.Windows.Forms.CheckBox();
+            this.numericUpDownPort = new System.Windows.Forms.NumericUpDown();
             this.separatorLine = new System.Windows.Forms.Label();
             this.toggleOptionsLabel = new System.Windows.Forms.Label();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
@@ -67,6 +67,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alertIcon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPort)).BeginInit();
             this.optionsPanel.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -86,12 +87,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Controls.Add(this.textBoxServer, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.labelServer, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.labelPort, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxPort, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.labelUsername, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.textBoxUsername, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.textBoxPassword, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.anonymousCheckBox, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.savePasswordCheckBox, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.numericUpDownPort, 3, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -205,17 +206,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelPort.Text = "Port:";
             this.labelPort.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // textBoxPort
-            // 
-            this.textBoxPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxPort.Location = new System.Drawing.Point(398, 45);
-            this.textBoxPort.Mask = "########";
-            this.textBoxPort.Name = "textBoxPort";
-            this.textBoxPort.PromptChar = ' ';
-            this.textBoxPort.Size = new System.Drawing.Size(70, 23);
-            this.textBoxPort.TabIndex = 8;
-            this.textBoxPort.TextChanged += new System.EventHandler(this.textBoxPort_TextChanged);
-            // 
             // labelUsername
             // 
             this.labelUsername.Anchor = System.Windows.Forms.AnchorStyles.Right;
@@ -272,6 +262,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.savePasswordCheckBox.Text = "Save Password";
             this.savePasswordCheckBox.UseVisualStyleBackColor = true;
             this.savePasswordCheckBox.CheckedChanged += new System.EventHandler(this.savePasswordCheckBox_CheckedChanged);
+            // 
+            // numericUpDownPort
+            // 
+            this.numericUpDownPort.Location = new System.Drawing.Point(398, 45);
+            this.numericUpDownPort.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.numericUpDownPort.Name = "numericUpDownPort";
+            this.numericUpDownPort.Size = new System.Drawing.Size(70, 23);
+            this.numericUpDownPort.TabIndex = 7;
+            this.numericUpDownPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // separatorLine
             // 
@@ -498,6 +501,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alertIcon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPort)).EndInit();
             this.optionsPanel.ResumeLayout(false);
             this.optionsPanel.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
@@ -517,7 +521,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.TextBox textBoxServer;
         private System.Windows.Forms.Label labelServer;
         private System.Windows.Forms.Label labelPort;
-        private System.Windows.Forms.MaskedTextBox textBoxPort;
         private System.Windows.Forms.Label labelUsername;
         private System.Windows.Forms.TextBox textBoxUsername;
         private System.Windows.Forms.TextBox textBoxPassword;
@@ -539,6 +542,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private EllipsisLabel pkLabel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.NumericUpDown numericUpDownPort;
         public event EventHandler<PrivateKeyArgs> ChangedPrivateKey;
     }
 }

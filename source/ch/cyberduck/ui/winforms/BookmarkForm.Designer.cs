@@ -50,8 +50,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelServer = new System.Windows.Forms.Label();
             this.textBoxServer = new System.Windows.Forms.TextBox();
             this.labelPort = new System.Windows.Forms.Label();
-            this.textBoxPort = new System.Windows.Forms.MaskedTextBox();
             this.checkBoxAnonymous = new System.Windows.Forms.CheckBox();
+            this.numericUpDownPort = new System.Windows.Forms.NumericUpDown();
             this.optionsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxPath = new System.Windows.Forms.TextBox();
@@ -77,6 +77,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toggleOptionsLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alertIcon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPort)).BeginInit();
             this.optionsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -128,8 +129,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Controls.Add(this.labelServer, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.textBoxServer, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.labelPort, 2, 3);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxPort, 3, 3);
             this.tableLayoutPanel1.Controls.Add(this.checkBoxAnonymous, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.numericUpDownPort, 3, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -273,17 +274,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelPort.Text = "Port:";
             this.labelPort.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // textBoxPort
-            // 
-            this.textBoxPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxPort.Location = new System.Drawing.Point(399, 101);
-            this.textBoxPort.Mask = "########";
-            this.textBoxPort.Name = "textBoxPort";
-            this.textBoxPort.PromptChar = ' ';
-            this.textBoxPort.Size = new System.Drawing.Size(70, 23);
-            this.textBoxPort.TabIndex = 5;
-            this.textBoxPort.TextChanged += new System.EventHandler(this.textBoxPort_TextChanged);
-            // 
             // checkBoxAnonymous
             // 
             this.checkBoxAnonymous.AutoSize = true;
@@ -295,6 +285,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkBoxAnonymous.Text = "Anonymous Login";
             this.checkBoxAnonymous.UseVisualStyleBackColor = true;
             this.checkBoxAnonymous.CheckedChanged += new System.EventHandler(this.checkBoxAnonymous_CheckedChanged);
+            // 
+            // numericUpDownPort
+            // 
+            this.numericUpDownPort.Location = new System.Drawing.Point(399, 101);
+            this.numericUpDownPort.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.numericUpDownPort.Name = "numericUpDownPort";
+            this.numericUpDownPort.Size = new System.Drawing.Size(70, 23);
+            this.numericUpDownPort.TabIndex = 5;
+            this.numericUpDownPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUpDownPort.ValueChanged += new System.EventHandler(this.textBoxPort_TextChanged);
             // 
             // optionsPanel
             // 
@@ -619,6 +623,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alertIcon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPort)).EndInit();
             this.optionsPanel.ResumeLayout(false);
             this.optionsPanel.PerformLayout();
             this.ResumeLayout(false);
@@ -635,7 +640,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label labelServer;
         private System.Windows.Forms.TextBox textBoxServer;
         private System.Windows.Forms.Label labelPort;
-        private System.Windows.Forms.MaskedTextBox textBoxPort;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.ImageList iconList;
         private System.Windows.Forms.Label labelUsername;
@@ -670,6 +674,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.CheckBox checkBoxAnonymous;
+        private System.Windows.Forms.NumericUpDown numericUpDownPort;
 
     }
 }
