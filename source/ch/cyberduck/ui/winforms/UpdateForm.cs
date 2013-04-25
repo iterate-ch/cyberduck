@@ -39,7 +39,15 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
-            Closing += delegate { updater.Cancel(); };
+            Closing += delegate
+                {
+                    if (updater.UpdateStepOn == UpdateStepOn.DownloadingUpdate ||
+                        updater.UpdateStepOn == UpdateStepOn.ExtractingUpdate ||
+                        updater.UpdateStepOn == UpdateStepOn.Checking)
+                    {
+                        updater.Cancel();
+                    }
+                };
 
             ConfigureUpdater();
 
@@ -49,10 +57,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                                                                Preferences.instance().
                                                                                                            getProperty(
                                                                                                                "application.name"));
-
-            //force handle creation to make the updater work
-            IntPtr intPtr = Handle;
-            OnLoad(new EventArgs());
         }
 
         public override string[] BundleNames
