@@ -110,7 +110,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         public int TranscriptHeight
         {
             get { return splitContainer.Height - splitContainer.SplitterDistance; }
-            set { splitContainer.SplitterDistance = splitContainer.Height - value; }
+            set
+            {
+                if (splitContainer.Height > value)
+                {
+                    splitContainer.SplitterDistance = splitContainer.Height - value;
+                }
+            }
         }
 
         public bool TranscriptVisible
