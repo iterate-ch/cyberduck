@@ -244,7 +244,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             changesTextBox.Visible = !checking;
         }
 
-        private void donateButton_Click(object sender, EventArgs e)
+        private void installButton_Click(object sender, EventArgs e)
         {
             if (updater.UpdateStepOn == UpdateStepOn.UpdateAvailable)
             {

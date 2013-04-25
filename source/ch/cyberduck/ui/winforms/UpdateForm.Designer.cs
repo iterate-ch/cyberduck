@@ -139,7 +139,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.installButton.TabIndex = 0;
             this.installButton.Text = "Install Update";
             this.installButton.UseVisualStyleBackColor = true;
-            this.installButton.Click += new System.EventHandler(this.donateButton_Click);
+            this.installButton.Click += new System.EventHandler(this.installButton_Click);
             // 
             // changesTextBox
             // 
