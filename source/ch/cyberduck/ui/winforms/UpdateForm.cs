@@ -69,12 +69,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                 UpdateStatusLabel("Looking for newer versions of Cyberduck.", false);
                 tableLayoutPanel.RowStyles[7].SizeType = SizeType.AutoSize;
                 SetStatusChecking(true);
-                updater.ForceCheckForUpdate(true);
+                updater.ForceCheckForUpdate(false);
                 Show();
             }
             else
             {
-                updater.ForceCheckForUpdate(true);
+                updater.ForceCheckForUpdate(false);
             }
         }
 
