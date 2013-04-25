@@ -57,6 +57,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                                                                Preferences.instance().
                                                                                                            getProperty(
                                                                                                                "application.name"));
+            //force handle creation to make the updater work
+            IntPtr intPtr = Handle;
+            OnLoad(new EventArgs());
         }
 
         public override string[] BundleNames
@@ -73,12 +76,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                 UpdateStatusLabel("Looking for newer versions of Cyberduck.", false);
                 tableLayoutPanel.RowStyles[7].SizeType = SizeType.AutoSize;
                 SetStatusChecking(true);
-                updater.ForceCheckForUpdate(false);
+                updater.ForceCheckForUpdate(true);
                 Show();
             }
             else
             {
-                updater.ForceCheckForUpdate(false);
+                updater.ForceCheckForUpdate(true);
             }
         }
 
