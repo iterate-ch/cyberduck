@@ -1905,7 +1905,7 @@ lib/bcprov-jdk15-145.jar -text
 lib/cglib-2.2.2.jar -text
 lib/cloudfiles-1.9.1.jar -text
 lib/cloudfiles.properties -text
-lib/commons-codec-1.7.jar -text svneol=unset#application/zip
+lib/commons-codec-1.6.jar -text
 lib/commons-collections-3.2.1.jar -text
 lib/commons-io-2.2.jar -text
 lib/commons-lang-2.6.jar -text
