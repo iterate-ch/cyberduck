@@ -88,7 +88,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\ActiveButtons.dll</HintPath>
     </Reference>
-    <Reference Include="AutomaticUpdater, Version=2.6.3.0, Culture=neutral, PublicKeyToken=d2050be9b2e72e40, processorArchitecture=MSIL">
+    <Reference Include="AutomaticUpdater, Version=2.6.18.4, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\AutomaticUpdater.dll</HintPath>
     </Reference>
