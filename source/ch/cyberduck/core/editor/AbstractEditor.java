@@ -19,7 +19,6 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
@@ -73,8 +72,7 @@ public abstract class AbstractEditor implements Editor {
 
     public AbstractEditor(final Application application, final Path path) {
         this.application = application;
-        // Create a copy of the path as to not interfere with the browser. #5524
-        this.edited = PathFactory.createPath(path.getSession(), path.<String>getAsDictionary());
+        this.edited = path;
         final Local folder = LocalFactory.createLocal(
                 new File(Preferences.instance().getProperty("editor.tmp.directory"),
                         edited.getHost().getUuid() + String.valueOf(Path.DELIMITER) + edited.getParent().getAbsolute()));
