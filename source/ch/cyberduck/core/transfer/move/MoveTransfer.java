@@ -142,6 +142,11 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
+    public String getLocal() {
+        return null;
+    }
+
+    @Override
     public String getImage() {
         return "transfer-upload.tiff";
     }

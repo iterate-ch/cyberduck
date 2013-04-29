@@ -21,6 +21,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -327,6 +328,18 @@ public abstract class Transfer implements Serializable {
      */
     public Path getRoot() {
         return roots.get(0);
+    }
+
+    public String getRemote() {
+        return session.getHost().toURL(false);
+    }
+
+    /**
+     * @return Download target folder
+     */
+    public String getLocal() {
+        final Local local = this.getRoot().getLocal();
+        return local.getParent().toURL();
     }
 
     /**
