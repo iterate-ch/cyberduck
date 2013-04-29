@@ -39,9 +39,11 @@ public class NullPath extends Path {
         return null;
     }
 
+    private final NullSession session = new NullSession(new Host("test"));
+
     @Override
     public Session getSession() {
-        return new NullSession(new Host("test"));
+        return session;
     }
 
     @Override
