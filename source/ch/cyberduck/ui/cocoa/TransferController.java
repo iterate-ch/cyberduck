@@ -318,7 +318,6 @@ public final class TransferController extends WindowController implements NSTool
 
         @Override
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean cancel) {
-            log.debug("menuUpdateItemAtIndex:" + item);
             if(item.representedObject() != null) {
                 final int selected = transferTable.numberOfSelectedRows().intValue();
                 int bytes = Integer.valueOf(item.representedObject());
@@ -582,23 +581,23 @@ public final class TransferController extends WindowController implements NSTool
         toolbar.validateVisibleItems();
     }
 
-    /**
-     *
-     */
     private void updateLabels() {
         final int selected = transferTable.numberOfSelectedRows().intValue();
         if(1 == selected) {
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
-            String url = transfer.getRoot().toURL();
-            urlField.setAttributedStringValue(
-                    HyperlinkAttributedStringFactory.create(url));
             if(transfer.numberOfRoots() == 1) {
+                urlField.setAttributedStringValue(
+                        HyperlinkAttributedStringFactory.create(transfer.getRemote()));
                 localField.setAttributedStringValue(
-                        HyperlinkAttributedStringFactory.create(transfer.getRoot().getLocal().toURL()));
+                        HyperlinkAttributedStringFactory.create(transfer.getLocal()));
             }
             else {
-                localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Multiple files"),
+                urlField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                        Locale.localizedString("Multiple files"),
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                        Locale.localizedString("Multiple files"),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
         }
@@ -608,28 +607,28 @@ public final class TransferController extends WindowController implements NSTool
         }
     }
 
-    /**
-     *
-     */
     private void updateIcon() {
         final int selected = transferTable.numberOfSelectedRows().intValue();
-        if(1 != selected) {
-            iconView.setImage(null);
-            return;
-        }
-        final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
-        // Draw file type icon
-        if(transfer.numberOfRoots() == 1) {
-            iconView.setImage(IconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
+        if(1 == selected) {
+            final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
+            // Draw file type icon
+            if(transfer.numberOfRoots() == 1) {
+                if(transfer.getLocal() != null) {
+                    iconView.setImage(IconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
+                }
+                else {
+                    iconView.setImage(IconCache.instance().iconForPath(transfer.getRoot(), 32));
+                }
+            }
+            else {
+                iconView.setImage(IconCache.iconNamed("NSMultipleDocuments", 32));
+            }
         }
         else {
-            iconView.setImage(IconCache.iconNamed("NSMultipleDocuments", 32));
+            iconView.setImage(null);
         }
     }
 
-    /**
-     *
-     */
     private void updateBandwidthPopup() {
         final int selected = transferTable.numberOfSelectedRows().intValue();
         bandwidthPopup.setEnabled(selected > 0);
@@ -1302,7 +1301,7 @@ public final class TransferController extends WindowController implements NSTool
      * @param v The validator to use
      * @return True if one or more of the selected items passes the validation test
      */
-    private boolean validate(TransferToolbarValidator v) {
+    private boolean validate(final TransferToolbarValidator v) {
         final NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {

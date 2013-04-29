@@ -399,40 +399,47 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateIcon()
         {
-            Log.debug("UpdateIcon");
             IList<IProgressView> selectedTransfers = View.SelectedTransfers;
-            if (1 != selectedTransfers.Count)
+            if (1 == selectedTransfers.Count)
             {
-                View.FileIcon = null;
-                return;
-            }
-            Transfer transfer = GetTransferFromView(selectedTransfers[0]);
-            if (transfer.numberOfRoots() == 1)
-            {
-                View.FileIcon = IconCache.Instance.IconForFilename(transfer.getRoot().getLocal().getAbsolute(),
-                                                                   IconCache.IconSize.Large);
+                Transfer transfer = GetTransferFromView(selectedTransfers[0]);
+                if (transfer.numberOfRoots() == 1)
+                {
+                    if(transfer.getLocal() != null) {
+                        View.FileIcon = IconCache.Instance.IconForFilename(transfer.getRoot().getLocal().getAbsolute(),
+                                                                           IconCache.IconSize.Large);
+                    }
+                    else {
+                        View.FileIcon = IconCache.Instance.IconForPath(transfer.getRoot(),
+                                                                       IconCache.IconSize.Large);
+                    }
+                }
+                else
+                {
+                    View.FileIcon = ResourcesBundle.multiple.ToBitmap();
+                }
             }
             else
             {
-                View.FileIcon = ResourcesBundle.multiple.ToBitmap();
+                View.FileIcon = null;
             }
         }
 
         private void UpdateLabels()
         {
-            Log.debug("UpdateLabels");
             IList<IProgressView> selectedTransfers = View.SelectedTransfers;
             if (1 == selectedTransfers.Count)
             {
                 Transfer transfer = GetTransferFromView(selectedTransfers[0]);
-                View.Url = transfer.getRoot().toURL();
                 if (transfer.numberOfRoots() == 1)
                 {
-                    View.Local = transfer.getRoot().getLocal().getAbsolute();
+                    View.Url = transfer.getRemote();
+                    View.Local = transfer.getLocal();
                 }
                 else
                 {
-                    View.Local = Locale.localizedString("Multiple files");
+                     View.Url = Locale.localizedString("Multiple files");
+                     View.Local = Locale.localizedString("Multiple files");
                 }
             }
             else
