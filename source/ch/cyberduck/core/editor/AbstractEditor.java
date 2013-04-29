@@ -34,6 +34,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -77,7 +78,7 @@ public abstract class AbstractEditor implements Editor {
         final Local folder = LocalFactory.createLocal(
                 new File(Preferences.instance().getProperty("editor.tmp.directory"),
                         edited.getHost().getUuid() + String.valueOf(Path.DELIMITER) + edited.getParent().getAbsolute()));
-        edited.setLocal(LocalFactory.createLocal(folder, edited.unique()));
+        edited.setLocal(LocalFactory.createLocal(folder, FilenameUtils.getName(edited.unique())));
     }
 
     /**
