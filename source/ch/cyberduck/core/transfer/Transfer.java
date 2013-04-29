@@ -331,7 +331,7 @@ public abstract class Transfer implements Serializable {
     }
 
     public String getRemote() {
-        return session.getHost().toURL(false);
+        return this.getRoot().getParent().toURL(false);
     }
 
     /**
