@@ -23,6 +23,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -67,7 +68,7 @@ public class ThreadPool {
      * @param command Action to run in its own executor thread
      * @return Future result
      */
-    public <T> Future<T> execute(final Callable<T> command) {
+    public <T> Future<T> execute(final Callable<T> command) throws RejectedExecutionException {
         return pool.submit(command);
     }
 }
