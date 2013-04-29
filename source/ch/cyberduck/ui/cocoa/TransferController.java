@@ -1259,13 +1259,15 @@ public final class TransferController extends WindowController implements NSTool
             return this.validate(new TransferToolbarValidator() {
                 @Override
                 public boolean validate(Transfer transfer) {
-                    if(!transfer.isComplete()) {
-                        return false;
-                    }
-                    if(!transfer.isRunning()) {
-                        for(Path i : transfer.getRoots()) {
-                            if(i.getLocal().exists()) {
-                                return true;
+                    if(transfer.getLocal() != null) {
+                        if(!transfer.isComplete()) {
+                            return false;
+                        }
+                        if(!transfer.isRunning()) {
+                            for(Path i : transfer.getRoots()) {
+                                if(i.getLocal().exists()) {
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -1277,9 +1279,11 @@ public final class TransferController extends WindowController implements NSTool
             return this.validate(new TransferToolbarValidator() {
                 @Override
                 public boolean validate(Transfer transfer) {
-                    for(Path i : transfer.getRoots()) {
-                        if(i.getLocal().exists()) {
-                            return true;
+                    if(transfer.getLocal() != null) {
+                        for(Path i : transfer.getRoots()) {
+                            if(i.getLocal().exists()) {
+                                return true;
+                            }
                         }
                     }
                     return false;

@@ -219,12 +219,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
                 {
-                    for (int i = 0; i < transfer.getRoots().size(); i++)
-                    {
-                        Path p = (Path) transfer.getRoots().get(i);
-                        if (p.getLocal().exists())
+                    if(transfer.getLocal() != null) {
+                        for (int i = 0; i < transfer.getRoots().size(); i++)
                         {
-                            return true;
+                            Path p = (Path) transfer.getRoots().get(i);
+                            if (p.getLocal().exists())
+                            {
+                                return true;
+                            }
                         }
                     }
                     return false;
@@ -235,18 +237,20 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
                 {
-                    if (!transfer.isComplete())
-                    {
-                        return false;
-                    }
-                    if (!transfer.isRunning())
-                    {
-                        for (int i = 0; i < transfer.getRoots().size(); i++)
+                    if(transfer.getLocal() != null) {
+                        if (!transfer.isComplete())
                         {
-                            Path p = (Path) transfer.getRoots().get(i);
-                            if (p.getLocal().exists())
+                            return false;
+                        }
+                        if (!transfer.isRunning())
+                        {
+                            for (int i = 0; i < transfer.getRoots().size(); i++)
                             {
-                                return true;
+                                Path p = (Path) transfer.getRoots().get(i);
+                                if (p.getLocal().exists())
+                                {
+                                    return true;
+                                }
                             }
                         }
                     }
