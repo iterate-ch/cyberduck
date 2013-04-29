@@ -280,10 +280,12 @@ public class ProgressController extends BundleController {
     }
 
     private void setMenuHighlighted(boolean highlighted) {
-        filesPopup.itemAtIndex(new NSInteger(0)).setAttributedTitle(
-                NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(0)).title(),
-                        highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : transfer.getRoot().getLocal().exists() ? NORMAL_FONT_ATTRIBUTES : DARK_FONT_ATTRIBUTES)
-        );
+        for(int i = 0; i < filesPopup.numberOfItems().intValue(); i++) {
+            filesPopup.itemAtIndex(new NSInteger(i)).setAttributedTitle(
+                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(0)).title(),
+                            highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
+            );
+        }
     }
 
     // ----------------------------------------------------------
