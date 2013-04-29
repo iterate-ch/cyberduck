@@ -52,9 +52,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class ProgressController extends BundleController {
 
-    /**
-     *
-     */
     private Transfer transfer;
 
     /**
@@ -151,7 +148,6 @@ public class ProgressController extends BundleController {
                         setProgressText();
                         setStatusText();
                         statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
-                        filesPopup.itemAtIndex(new NSInteger(0)).setEnabled(transfer.getRoot().getLocal().exists());
                     }
                 });
             }
@@ -297,18 +293,11 @@ public class ProgressController extends BundleController {
 
     private AbstractMenuDelegate filesPopupMenuDelegate;
 
-    public void setFilesPopup(NSPopUpButton p) {
+    public void setFilesPopup(final NSPopUpButton p) {
         this.filesPopup = p;
         this.filesPopup.setTarget(this.id());
         this.filesPopup.removeAllItems();
-        {
-            Path path = transfer.getRoot();
-            NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(path.getName(), Foundation.selector("reveal:"), StringUtils.EMPTY);
-            item.setRepresentedObject(path.getAbsolute());
-            item.setImage(IconCache.instance().iconForPath(path, 16, false));
-            item.setEnabled(path.getLocal().exists());
-        }
-        this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer.getRoots());
+        this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer);
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("filesPopupWillShow:"),

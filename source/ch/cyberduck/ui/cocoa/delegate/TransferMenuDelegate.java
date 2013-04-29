@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
@@ -30,19 +31,17 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.util.List;
-
 /**
  * @version $Id$
  */
 public class TransferMenuDelegate extends AbstractMenuDelegate {
 
-    private List<Path> roots;
+    private Transfer transfer;
 
     private RevealService reveal = RevealServiceFactory.get();
 
-    public TransferMenuDelegate(List<Path> roots) {
-        this.roots = roots;
+    public TransferMenuDelegate(final Transfer transfer) {
+        this.transfer = transfer;
     }
 
     @Override
@@ -52,24 +51,26 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
             // and menu:updateItem:atIndex:shouldCancel: is not called.
             return new NSInteger(-1);
         }
-        return new NSInteger(roots.size());
+        return new NSInteger(transfer.getRoots().size());
     }
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        final Path path = roots.get(index.intValue());
+        final Path path = transfer.getRoots().get(index.intValue());
         item.setTitle(path.getName());
-        if(path.getLocal().exists()) {
-            item.setEnabled(true);
-            item.setTarget(this.id());
-            item.setAction(this.getDefaultAction());
+        if(transfer.getLocal() != null) {
+            //item.setState(path.getLocal().exists() ? NSCell.NSOnState : NSCell.NSOffState);
+            item.setRepresentedObject(path.getLocal().getAbsolute());
+            if(path.getLocal().exists()) {
+                item.setEnabled(true);
+                item.setTarget(this.id());
+                item.setAction(this.getDefaultAction());
+            }
+            else {
+                item.setEnabled(false);
+                item.setTarget(null);
+            }
         }
-        else {
-            item.setEnabled(false);
-            item.setTarget(null);
-        }
-        //item.setState(path.getLocal().exists() ? NSCell.NSOnState : NSCell.NSOffState);
-        item.setRepresentedObject(path.getLocal().getAbsolute());
         item.setImage(IconCache.instance().iconForPath(path, 16, false));
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
