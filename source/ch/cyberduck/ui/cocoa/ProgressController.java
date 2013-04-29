@@ -297,6 +297,11 @@ public class ProgressController extends BundleController {
         this.filesPopup = p;
         this.filesPopup.setTarget(this.id());
         this.filesPopup.removeAllItems();
+        for(Path path : transfer.getRoots()) {
+            NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(path.getName(), Foundation.selector("reveal:"), StringUtils.EMPTY);
+            item.setRepresentedObject(path.getAbsolute());
+            item.setImage(IconCache.instance().iconForPath(path, 16, false));
+        }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer);
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
