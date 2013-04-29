@@ -325,7 +325,7 @@ public class ProgressController extends BundleController {
 
     @Action
     public void filesPopupWillHide(final NSNotification sender) {
-        this.setMenuHighlighted(true);
+        this.setMenuHighlighted(highlighted);
     }
 
     @Outlet
