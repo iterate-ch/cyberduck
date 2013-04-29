@@ -1458,7 +1458,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void editorComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             Application selected = DefaultEditor;
-            if (selected == null)
+            if (selected != null && selected.getIdentifier() == null)
             {
                 //choose dialog
                 editorOpenFileDialog.FileName = null;
