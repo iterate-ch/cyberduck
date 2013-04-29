@@ -395,11 +395,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             ChangedServerEvent();
         }
 
-        private void textBoxPort_TextChanged(object sender, EventArgs e)
-        {
-            ChangedPortEvent();
-        }
-
         private void linkLabelURL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             OpenUrl();
@@ -438,6 +433,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void checkBoxPKA_CheckedChanged(object sender, EventArgs e)
         {
             ChangedPublicKeyCheckboxEvent();
+        }
+
+        private void numericUpDownPort_TextChanged(object sender, EventArgs e)
+        {
+            ChangedPortEvent();
         }
     }
 }

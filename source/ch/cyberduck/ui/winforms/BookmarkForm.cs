@@ -409,7 +409,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             ChangedServerEvent();
         }
 
-        private void textBoxPort_TextChanged(object sender, EventArgs e)
+        private void numericUpDownPort_TextChanged(object sender, EventArgs e)
         {
             ChangedPortEvent();
         }

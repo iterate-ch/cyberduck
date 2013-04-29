@@ -275,6 +275,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.numericUpDownPort.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownPort.TabIndex = 7;
             this.numericUpDownPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUpDownPort.TextChanged += new System.EventHandler(this.numericUpDownPort_TextChanged);
             // 
             // separatorLine
             // 
