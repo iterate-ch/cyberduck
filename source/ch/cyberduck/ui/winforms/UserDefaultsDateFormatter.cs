@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -24,27 +24,28 @@ namespace Ch.Cyberduck.Ui.Winforms
 {
     internal class UserDefaultsDateFormatter : AbstractUserDateFormatter
     {
-        public override string getLongFormat(long milliseconds, bool natural)
+        public override string getLongFormat(long ticks, bool natural)
         {
-            if (-1 == milliseconds)
+            if (-1 == ticks)
             {
                 return Locale.localizedString("Unknown");
             }
-            return GetLongFormat(ConvertJavaMiliSecondToDateTime(milliseconds));
+            return GetLongFormat(new DateTime(ticks));
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="milliseconds">milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT</param>
+        /// <param name="ticks">ticks Ticks since January 1, 1970, 00:00:00 GMT</param>
         /// <returns>A short format string or "Unknown" if there is a problem converting the time to a string</returns>
-        public override string getShortFormat(long milliseconds, bool natural)
+        public override string getShortFormat(long ticks, bool natural)
         {
-            if (-1 == milliseconds)
+            if (-1 == ticks)
             {
                 return Locale.localizedString("Unknown");
             }
-            return GetShortFormat(ConvertJavaMiliSecondToDateTime(milliseconds));
+
+            return GetShortFormat(new DateTime(ticks));
         }
 
         public override string getMediumFormat(long milliseconds, bool natural)
@@ -67,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             UserDateFormatterFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
-        public static DateTime ConvertJavaMiliSecondToDateTime(long javaMS)
+        public static DateTime ConvertJavaMillisecondsToDateTime(long javaMS)
         {
             DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS*

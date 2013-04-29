@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -109,7 +109,7 @@ namespace Ch.Cyberduck.Ui.Controller
             long modificationDate = path.attributes().getModificationDate();
             if (modificationDate != -1)
             {
-                return UserDefaultsDateFormatter.ConvertJavaMiliSecondToDateTime(modificationDate);
+                return UserDefaultsDateFormatter.ConvertJavaMillisecondsToDateTime(modificationDate);
             }
             return UNKNOWN;
         }
@@ -128,7 +128,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public CheckState GetCheckState(Object path)
         {
-            bool included = !Transfer.isSkipped((Path)path) &&
+            bool included = !Transfer.isSkipped((Path) path) &&
                             Transfer.isSelected((Path) path) &&
                             !_controller.Action.equals(TransferAction.ACTION_SKIP);
             if (included)

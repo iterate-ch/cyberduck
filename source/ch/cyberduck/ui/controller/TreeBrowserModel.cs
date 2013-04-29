@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,8 @@ using System.Collections.Generic;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
-using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.date;
+using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
 
@@ -117,7 +117,7 @@ namespace Ch.Cyberduck.Ui.Controller
             long modificationDate = path.attributes().getModificationDate();
             if (modificationDate != -1)
             {
-                return UserDefaultsDateFormatter.ConvertJavaMiliSecondToDateTime(modificationDate);
+                return UserDefaultsDateFormatter.ConvertJavaMillisecondsToDateTime(modificationDate);
             }
             return DateTime.MinValue;
         }
@@ -127,7 +127,9 @@ namespace Ch.Cyberduck.Ui.Controller
             DateTime modificationDate = (DateTime) value;
             if (modificationDate != DateTime.MinValue)
             {
-                return UserDateFormatterFactory.get().getShortFormat(modificationDate.Millisecond, Preferences.instance().getBoolean("browser.date.natural"));
+                return UserDateFormatterFactory.get()
+                                               .getShortFormat(modificationDate.Ticks,
+                                                               Preferences.instance().getBoolean("browser.date.natural"));
             }
             return _unknown;
         }
