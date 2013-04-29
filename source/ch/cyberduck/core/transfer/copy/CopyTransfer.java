@@ -127,7 +127,9 @@ public class CopyTransfer extends Transfer {
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_COPY), "Kind");
-        dict.setObjectForKey(destination.getHost(), "Destination");
+        if(destination != null) {
+            dict.setObjectForKey(destination.getHost(), "Destination");
+        }
         List<Path> targets = new ArrayList<Path>();
         for(Path root : this.getRoots()) {
             targets.add(files.get(root));
