@@ -33,11 +33,11 @@ Compiling
 - Type 'ant' for executing the default 'build' target. Depending on the platform, build-mac.xml or build-windows.xml is included respectively for native compilation.
 - On Mac, to create an application with a bundled runtime, execute
 
-    ant -Dapp.runtime.properties.key=Runtime
+    ant -Dapp.runtime.properties.key=Runtime -Dbuild.xcodeoptions=SDKROOT=macosx
 
   or to use the system installation of Java 6, build with
 
-    ant -Dapp.runtime.properties.key=Java
+    ant -Dapp.runtime.properties.key=Java -Dbuild.xcodeoptions=SDKROOT=macosx
 
 Tagged Releases
 ---------------
