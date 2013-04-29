@@ -32,7 +32,7 @@ public class WatchEditorTest extends AbstractTestCase {
 
     @Test
     public void testEdit() throws Exception {
-        final NullPath path = new NullPath("/f/t", Path.FILE_TYPE);
+        final NullPath path = new NullPath("/f1/f2/t", Path.FILE_TYPE);
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
         final Editor e = EditorFactory.instance().create(new Controller() {
@@ -55,7 +55,8 @@ public class WatchEditorTest extends AbstractTestCase {
         assertEquals("t", ((AbstractEditor) e).getEdited().getName());
         final Local local = ((AbstractEditor) e).getEdited().getLocal();
         assertEquals("t-1", local.getName());
-        assertEquals("f", local.getParent().getName());
-        assertEquals(path.getHost().getUuid(), local.getParent().getParent().getName());
+        assertEquals("f2", local.getParent().getName());
+        assertEquals("f1", local.getParent().getParent().getName());
+        assertEquals(path.getHost().getUuid(), local.getParent().getParent().getParent().getName());
     }
 }
