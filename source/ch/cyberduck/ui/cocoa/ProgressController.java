@@ -271,12 +271,12 @@ public class ProgressController extends BundleController {
         return highlighted;
     }
 
-    public void setHighlighted(final boolean highlighted) {
-        statusField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.textColor());
-        progressField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
-        messageField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
-        this.setMenuHighlighted(highlighted);
-        this.highlighted = highlighted;
+    public void setHighlighted(final boolean h) {
+        highlighted = h;
+        statusField.setTextColor(h ? NSColor.whiteColor() : NSColor.textColor());
+        progressField.setTextColor(h ? NSColor.whiteColor() : NSColor.darkGrayColor());
+        messageField.setTextColor(h ? NSColor.whiteColor() : NSColor.darkGrayColor());
+        this.setMenuHighlighted(h);
     }
 
     private void setMenuHighlighted(boolean highlighted) {
