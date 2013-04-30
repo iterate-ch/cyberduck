@@ -391,7 +391,8 @@
 
     <target name="nightly" depends="clean, revision">
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Java"/>
+            <param name="app.runtime.properties.key" value="Runtime"/>
+            <param name="app.runtime.system.min" value="10.6"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
         </antcall>
