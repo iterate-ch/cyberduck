@@ -48,7 +48,7 @@
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
-    <property name="jvm.runtime.home" value="${lib}/1.7.0-u14-b21.jre"/>
+    <property name="jvm.runtime.home" value="${lib}/1.7.0-u14-b22.jre"/>
     <property name="jvm.runtime.bundle.home" value="Contents/Home"/>
     <property name="jvm.runtime.bundle.lib" value="Contents/Home/lib"/>
 
@@ -73,6 +73,9 @@
 
     <property name="build.sdk.version" value="macosx10.7"/>
     <property name="build.xcodeoptions" value=""/>
+
+    <property name="build.lipo.binaries" value="**/Contents/MacOS/*,**/*.framework/Versions/Current/*,**/*.dylib"/>
+    <property name="build.lipo.arch.remove" value=""/>
 
     <target name="spotlight">
         <exec dir="${spotlight}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
@@ -118,6 +121,9 @@
         <antcall target="copy-runtime"/>
         <!-- Copy stub for system runtime -->
         <antcall target="copy-stub"/>
+        <!-- Remove architectures -->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+        <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}"/>
 
         <antcall target="spotlight"/>
 
@@ -187,28 +193,6 @@
         </replace>
         <delete dir="${app.frameworks}/Sparkle.framework"/>
 
-        <antcall target="lipo">
-            <param name="arch" value="ppc"/>
-            <!--Remove from executables-->
-            <!--Remove from frameworks-->
-            <!--Remove from shared libraries-->
-            <param name="binaries" value="**/Contents/MacOS/*,**/*.framework/Versions/Current/*,**/*.dylib"/>
-        </antcall>
-        <antcall target="lipo">
-            <param name="arch" value="ppc7400"/>
-            <!--Remove from executables-->
-            <!--Remove from frameworks-->
-            <!--Remove from shared libraries-->
-            <param name="binaries" value="**/Contents/MacOS/*,**/*.framework/Versions/Current/*,**/*.dylib"/>
-        </antcall>
-        <antcall target="lipo">
-            <param name="arch" value="i386"/>
-            <!--Remove from executables-->
-            <!--Remove from frameworks-->
-            <!--Remove from shared libraries-->
-            <param name="binaries" value="**/Contents/MacOS/*,**/*.framework/Versions/Current/*,**/*.dylib"/>
-        </antcall>
-
         <antcall target="codesign">
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
         </antcall>
@@ -223,10 +207,13 @@
     </target>
 
     <target name="lipo">
-        <echo message="Remove ${arch} slice from ${binaries}"/>
+        <echo message="Remove ${arch} slice from ${build.lipo.binaries}"/>
         <apply executable="/usr/bin/lipo" failonerror="false" dest="${app.bundle}"
                parallel="false" spawn="false" force="true">
-            <fileset dir="${app.bundle}" includes="${binaries}"/>
+            <!--Remove from executables-->
+            <!--Remove from frameworks-->
+            <!--Remove from shared libraries-->
+            <fileset dir="${app.bundle}" includes="${build.lipo.binaries}"/>
             <arg line="-remove ${arch} -output"/>
             <srcfile/>
             <targetfile/>
@@ -406,6 +393,7 @@
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Java"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
+            <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
         </antcall>
         <antcall target="distribution-sparkle">
             <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
@@ -515,6 +503,7 @@
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6.6"/>
             <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
+            <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
         </antcall>
         <antcall target="distribution-mas"/>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
