@@ -54,7 +54,6 @@ using Exception = System.Exception;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
 using Path = ch.cyberduck.core.Path;
-using Process = System.Diagnostics.Process;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
 using Timer = System.Threading.Timer;
@@ -1282,7 +1281,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             foreach (Path selected in SelectedPaths)
             {
-                Process.Start(selected.toHttpURL());
+                Utils.StartProcess(selected.toHttpURL());
             }
         }
 

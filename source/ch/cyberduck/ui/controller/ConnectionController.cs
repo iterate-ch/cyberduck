@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,6 @@ using ch.cyberduck.core.threading;
 using java.lang;
 using org.apache.log4j;
 using Object = System.Object;
-using Process = System.Diagnostics.Process;
 using String = System.String;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -196,7 +195,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenUrl()
         {
-            Process.Start(View.URL);
+            Utils.StartProcess(View.URL);
         }
 
         private void View_ChangedAnonymousCheckboxEvent()

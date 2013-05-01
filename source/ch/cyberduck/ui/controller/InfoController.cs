@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,6 @@ using org.apache.commons.lang;
 using org.apache.log4j;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
-using Process = System.Diagnostics.Process;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
 
@@ -438,7 +437,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 _controller.getSession().getHost().getProtocol().getProvider());
                             break;
                     }
-                    Process.Start(site.ToString());
+                    Utils.StartProcess(site.ToString());
                 };
         }
 
@@ -1717,8 +1716,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         s.iam().getUserCredentials(BrowserController.getSession().analytics().getName());
                     if (credentials.validate(BrowserController.getSession().getHost().getProtocol()))
                     {
-                        _analytics = s.analytics().getSetup(s.getHost().getProtocol(), s.getHost().getProtocol().getScheme(), 
-                            _selected.getContainerName(), credentials);
+                        _analytics = s.analytics()
+                                      .getSetup(s.getHost().getProtocol(), s.getHost().getProtocol().getScheme(),
+                                                _selected.getContainerName(), credentials);
                     }
                 }
                 if (_infoController.NumberOfFiles == 1)
@@ -1888,8 +1888,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Credentials credentials =
                         session.iam().getUserCredentials(BrowserController.getSession().analytics().getName());
-                    _analytics = session.analytics().getSetup(session.cdn().getProtocol(), session.cdn().getProtocol().getScheme(), 
-                        container, credentials);
+                    _analytics = session.analytics()
+                                        .getSetup(session.cdn().getProtocol(), session.cdn().getProtocol().getScheme(),
+                                                  container, credentials);
                 }
             }
 
@@ -2468,7 +2469,8 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void run()
             {
                 Session session = BrowserController.getSession();
-                String origin = session.cdn().getOrigin(_deliveryMethod, _infoController.SelectedPath.getContainerName());
+                String origin = session.cdn()
+                                       .getOrigin(_deliveryMethod, _infoController.SelectedPath.getContainerName());
                 if (Utils.IsNotBlank(_cname))
                 {
                     session.cdn().write(_distribution,

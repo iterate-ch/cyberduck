@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 // 
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using Ch.Cyberduck.Ui.Controller;
@@ -61,21 +60,10 @@ namespace Ch.Cyberduck.Core.Editor
                 process.StartInfo.FileName = application.getIdentifier();
                 process.StartInfo.Arguments = "\"" + getEdited().getLocal().getAbsolute() + "\"";
             }
-            try
+            if (Utils.StartProcess(process))
             {
-                process.Start();
+                Watch();
             }
-            catch (InvalidOperationException e)
-            {
-                Log.error(e);
-                return;
-            }
-            catch (Win32Exception e)
-            {
-                Log.error(e);
-                return;
-            }
-            Watch();
         }
 
         private void Watch()

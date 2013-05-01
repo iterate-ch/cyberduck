@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 // 
 
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using Ch.Cyberduck.Core;
@@ -49,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             creditsRichTextBox.SelectionFont = new Font(Font.FontFamily, 9);
             creditsRichTextBox.DeselectAll();
             creditsRichTextBox.LinkClicked +=
-                (sender, e) => Process.Start(e.LinkText);
+                (sender, e) => Utils.StartProcess(e.LinkText);
 
             ackButton.Click +=
                 delegate { ApplicationLauncherFactory.get().open(LocalFactory.createLocal("Acknowledgments.rtf")); };

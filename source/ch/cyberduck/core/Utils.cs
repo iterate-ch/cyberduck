@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -266,7 +268,8 @@ namespace Ch.Cyberduck.Core
                 }
             }
             map.Sort(
-                delegate(KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2) { return pair1.Key.CompareTo(pair2.Key); });
+                delegate(KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2)
+                    { return pair1.Key.CompareTo(pair2.Key); });
 
             return map;
         }
@@ -488,6 +491,40 @@ namespace Ch.Cyberduck.Core
                 }
             }
             return null;
+        }
+
+        public static bool StartProcess(string filename, string args)
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = filename;
+            if (IsNotBlank(args))
+            {
+                process.StartInfo.Arguments = args;
+            }
+            return StartProcess(process);
+        }
+
+        public static bool StartProcess(string filename)
+        {
+            return StartProcess(filename, null);
+        }
+
+        public static bool StartProcess(Process process)
+        {
+            try
+            {
+                process.Start();
+                return true;
+            }
+            catch (InvalidOperationException e)
+            {
+                Log.error(e);
+            }
+            catch (Win32Exception e)
+            {
+                Log.error(String.Format("Error while StartProcess: {0},{1}", e.Message, e.NativeErrorCode));
+            }
+            return false;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -16,9 +16,6 @@
 // yves@cyberduck.ch
 // 
 
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using ch.cyberduck.core.local;
 using org.apache.log4j;
 
@@ -35,16 +32,7 @@ namespace Ch.Cyberduck.Core.Local
 
         public bool open(ch.cyberduck.core.local.Local local)
         {
-            try
-            {
-                Process.Start(local.getAbsolute());
-                return true;
-            }
-            catch (Win32Exception e)
-            {
-                Log.error(String.Format("StartProcess: {0},{1}", e.Message, e.NativeErrorCode));
-                return false;
-            }
+            return Utils.StartProcess(local.getAbsolute());
         }
 
         public bool open(ch.cyberduck.core.local.Local local, Application application)
@@ -54,16 +42,7 @@ namespace Ch.Cyberduck.Core.Local
 
         public bool open(Application application, string args)
         {
-            try
-            {
-                Process.Start(application.getIdentifier(), args);
-                return true;
-            }
-            catch (Win32Exception e)
-            {
-                Log.error(String.Format("StartProcess: {0},{1}", e.Message, e.NativeErrorCode));
-                return false;
-            }
+            return Utils.StartProcess(application.getIdentifier(), args);
         }
 
         public static void register()

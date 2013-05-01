@@ -235,7 +235,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenWebUrl()
         {
-            Process.Start(_host.getWebURL());
+            Utils.StartProcess(_host.getWebURL());
         }
 
         private void View_ChangedEncodingEvent()
@@ -410,7 +410,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenUrl()
         {
-            Process.Start(_host.toURL());
+            Utils.StartProcess(_host.toURL());
         }
 
         private void View_OpenDownloadFolderEvent()

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -17,9 +17,9 @@
 // 
 
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
+using Ch.Cyberduck.Core;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
@@ -47,7 +47,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     Preferences.instance().getProperty("donate.reminder"));
             if (DialogResult.OK == View.ShowDialog())
             {
-                Process.Start(Preferences.instance().getProperty("website.donate"));
+                Utils.StartProcess(Preferences.instance().getProperty("website.donate"));
             }
             if (View.NeverShowDonation)
             {

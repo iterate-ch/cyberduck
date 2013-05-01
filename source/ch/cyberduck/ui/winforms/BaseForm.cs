@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,6 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
@@ -159,7 +158,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             //BringToFront();
             TaskDialog dialog = new TaskDialog();
             dialog.HelpDelegate =
-                delegate(string url) { Process.Start(url); };
+                delegate(string url) { Utils.StartProcess(url); };
             DialogResult result = dialog.MessageBox(this,
                                                     title,
                                                     message,
@@ -182,7 +181,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             //BringToFront();
             TaskDialog dialog = new TaskDialog();
             dialog.HelpDelegate =
-                delegate(string url) { Process.Start(url); };
+                delegate(string url) { Utils.StartProcess(url); };
             DialogResult result = dialog.ShowCommandBox(this, title,
                                                         mainInstruction,
                                                         content,

@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -254,7 +253,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="activeRegister">Register to select (connections settings=4)</param>
         private void LaunchIEOptions(int activeRegister)
         {
-            Process.Start("rundll32.exe", "shell32.dll,Control_RunDLL inetcpl.cpl,," + activeRegister);
+            Utils.StartProcess("rundll32.exe", "shell32.dll,Control_RunDLL inetcpl.cpl,," + activeRegister);
         }
 
         private void View_UpdateFeedChangedEvent()
