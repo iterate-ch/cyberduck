@@ -18,11 +18,6 @@ import static org.junit.Assert.*;
  */
 public class DownloadSymlinkResolverTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testNoSymbolicLink() throws Exception {
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(Collections.<Path>emptyList());

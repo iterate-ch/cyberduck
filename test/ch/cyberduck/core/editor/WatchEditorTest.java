@@ -25,9 +25,7 @@ public class WatchEditorTest extends AbstractTestCase {
 
     @BeforeClass
     public static void register() {
-        LaunchServicesApplicationFinder.register();
         WatchEditorFactory.register();
-        NSObjectPathReference.register();
     }
 
     @Test

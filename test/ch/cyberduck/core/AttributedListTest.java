@@ -14,11 +14,6 @@ import static org.junit.Assert.*;
  */
 public class AttributedListTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testAdd() throws Exception {
         AttributedList<Path> list = new AttributedList<Path>();

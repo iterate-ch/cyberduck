@@ -20,12 +20,15 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
+import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.PlistSerializer;
 import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
+import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
@@ -75,6 +78,10 @@ public class AbstractTestCase {
         TransferPlistReader.register();
         ProfilePlistReader.register();
         ProtocolFactory.register();
+        LaunchServicesApplicationFinder.register();
+        NSObjectPathReference.register();
+        UserDefaultsDateFormatter.register();
+        WorkspaceApplicationLauncher.register();
     }
 
     @Before

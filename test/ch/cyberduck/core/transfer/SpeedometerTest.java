@@ -16,11 +16,6 @@ import static org.junit.Assert.assertTrue;
 @Ignore
 public class SpeedometerTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testProgress() throws Exception {
         Speedometer m = new Speedometer();

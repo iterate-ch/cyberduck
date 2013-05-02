@@ -40,11 +40,6 @@ import static org.junit.Assert.assertNotSame;
  */
 public class SyncTransferTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testSerialize() throws Exception {
         Transfer t = new SyncTransfer(new NullPath("t", Path.FILE_TYPE)) {

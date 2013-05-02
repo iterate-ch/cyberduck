@@ -39,11 +39,6 @@ import static org.junit.Assert.assertNotSame;
  */
 public class CopyTransferTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testSerialize() throws Exception {
         CopyTransfer t = new CopyTransfer(Collections.<Path, Path>singletonMap(new NullPath("t", Path.FILE_TYPE), new NullPath("d", Path.FILE_TYPE)));

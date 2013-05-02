@@ -25,11 +25,6 @@ import static org.junit.Assert.*;
  */
 public class UploadTransferTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testSerialize() throws Exception {
         Transfer t = new UploadTransfer(new NullPath("t", Path.FILE_TYPE));

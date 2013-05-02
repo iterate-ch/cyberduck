@@ -32,14 +32,9 @@ import java.util.HashMap;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CopyRootPathsNormalizerTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
 
     @Test
     public void testNormalizeNone() throws Exception {

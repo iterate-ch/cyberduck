@@ -33,14 +33,9 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WritePermissionWorkerTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
 
     @Test
     public void testRun() throws Exception {

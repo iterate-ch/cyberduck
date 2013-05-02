@@ -73,7 +73,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testPrepare() throws Exception {
         RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
         final NullPath p = new NullPath("t", Path.FILE_TYPE) {

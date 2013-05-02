@@ -20,11 +20,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class DownloadRootPathsNormalizerTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testNormalize() throws Exception {
         DownloadRootPathsNormalizer n = new DownloadRootPathsNormalizer();

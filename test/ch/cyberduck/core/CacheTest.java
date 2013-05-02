@@ -10,11 +10,6 @@ import static org.junit.Assert.*;
  */
 public class CacheTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testLookup() throws Exception {
         Cache cache = new Cache();

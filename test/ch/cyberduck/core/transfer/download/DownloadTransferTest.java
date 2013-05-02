@@ -30,12 +30,6 @@ import static org.junit.Assert.*;
  */
 public class DownloadTransferTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-        WorkspaceApplicationLauncher.register();
-    }
-
     @Test
     public void testSerialize() {
         Transfer t = new DownloadTransfer(new NullPath("t", Path.FILE_TYPE));

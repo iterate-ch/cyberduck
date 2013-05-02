@@ -24,11 +24,6 @@ import static org.junit.Assert.*;
  */
 public class CopyTransferFilterTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testAcceptDirectoryNew() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
