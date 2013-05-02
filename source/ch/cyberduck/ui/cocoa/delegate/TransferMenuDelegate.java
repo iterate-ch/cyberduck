@@ -59,7 +59,6 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
         final Path path = transfer.getRoots().get(index.intValue());
         item.setTitle(path.getName());
         if(transfer.getLocal() != null) {
-            //item.setState(path.getLocal().exists() ? NSCell.NSOnState : NSCell.NSOffState);
             item.setRepresentedObject(path.getLocal().getAbsolute());
             if(path.getLocal().exists()) {
                 item.setEnabled(true);
@@ -70,6 +69,9 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
                 item.setEnabled(false);
                 item.setTarget(null);
             }
+        }
+        else {
+            item.setRepresentedObject(path.getAbsolute());
         }
         item.setImage(IconCache.instance().iconForPath(path, 16, false));
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);

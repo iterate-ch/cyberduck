@@ -278,7 +278,7 @@ public class ProgressController extends BundleController {
     private void setMenuHighlighted(boolean highlighted) {
         for(int i = 0; i < filesPopup.numberOfItems().intValue(); i++) {
             filesPopup.itemAtIndex(new NSInteger(i)).setAttributedTitle(
-                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(0)).title(),
+                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(i)).title(),
                             highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
             );
         }
