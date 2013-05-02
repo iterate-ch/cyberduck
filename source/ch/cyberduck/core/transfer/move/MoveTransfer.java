@@ -25,7 +25,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -56,24 +55,6 @@ public class MoveTransfer extends Transfer {
 
     private MoveTransfer(final Map<Path, Path> files, final BandwidthThrottle bandwidth) {
         super(new ArrayList<Path>(files.keySet()), bandwidth);
-        for(Path f : files.keySet()) {
-            f.setLocal(new Local("/dev/null") {
-                @Override
-                public boolean exists() {
-                    return false;
-                }
-
-                @Override
-                public String getAbbreviatedPath() {
-                    return this.getDisplayName();
-                }
-
-                @Override
-                public String getDisplayName() {
-                    return Locale.localizedString("Unknown");
-                }
-            });
-        }
         this.files = files;
     }
 

@@ -30,7 +30,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -75,24 +74,6 @@ public class CopyTransfer extends Transfer {
     private CopyTransfer(final Map<Path, Path> files, final BandwidthThrottle bandwidth) {
         super(new ArrayList<Path>(files.keySet()), bandwidth);
         this.files = files;
-        for(Path f : files.keySet()) {
-            f.setLocal(new Local("/dev/null") {
-                @Override
-                public boolean exists() {
-                    return false;
-                }
-
-                @Override
-                public String getAbbreviatedPath() {
-                    return this.getDisplayName();
-                }
-
-                @Override
-                public String getDisplayName() {
-                    return Locale.localizedString("Unknown");
-                }
-            });
-        }
         this.destination = files.values().iterator().next().getSession();
     }
 
