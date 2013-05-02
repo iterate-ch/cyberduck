@@ -10,9 +10,9 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class MACOSX_PORT_165 {
+public class MACOSX_PORT_165Test {
 
     @Test
     public void testListFiles() throws IOException {
