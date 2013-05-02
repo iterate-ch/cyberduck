@@ -1,3 +1,7 @@
+4.3.1 [http://trac.cyberduck.ch/milestone/4.3.1]
+- [Bugfix] Modification date shown as 01.01.1970 (Windows) (#7177)
+- [Bugfix] Filename for edited file includes absolute path (Windows) (#7175)
+
 4.3 [http://trac.cyberduck.ch/milestone/4.3]
 - [Localize] Arabic Localization
 - [Feature] One click setup for analytics with Qloudstat (S3, CloudFront, Cloudfiles, Google Storage)

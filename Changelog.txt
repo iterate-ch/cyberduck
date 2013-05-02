@@ -1,8 +1,11 @@
 Cyberduck
-FTP, SFTP, WebDAV, Cloud Files, Google Docs, Windows Azure & Amazon S3 Browser for Mac & Windows.
 http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
+
+4.3.1 [http://trac.cyberduck.ch/milestone/4.3.1]
+- [Bugfix] Modification date shown as 01.01.1970 (Windows) (#7177)
+- [Bugfix] Filename for edited file includes absolute path (Windows) (#7175)
 
 4.3 [http://trac.cyberduck.ch/milestone/4.3]
 - [Localize] Arabic Localization
