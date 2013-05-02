@@ -83,13 +83,13 @@ public class CopyTransfer extends Transfer {
         Object hostObj = dict.objectForKey("Destination");
         if(hostObj != null) {
             destination = SessionFactory.createSession(new Host(hostObj));
-            final List destinationsObj = dict.listForKey("Destinations");
-            if(destinationsObj != null) {
-                this.files = new HashMap<Path, Path>();
-                final List<Path> roots = this.getRoots();
-                for(int i = 0; i < roots.size(); i++) {
-                    this.files.put(roots.get(i), PathFactory.createPath(destination, destinationsObj.get(i)));
-                }
+        }
+        final List destinationsObj = dict.listForKey("Destinations");
+        if(destinationsObj != null) {
+            this.files = new HashMap<Path, Path>();
+            final List<Path> roots = this.getRoots();
+            for(int i = 0; i < roots.size(); i++) {
+                this.files.put(roots.get(i), PathFactory.createPath(destination, destinationsObj.get(i)));
             }
         }
     }
@@ -113,7 +113,9 @@ public class CopyTransfer extends Transfer {
         }
         List<Path> targets = new ArrayList<Path>();
         for(Path root : this.getRoots()) {
-            targets.add(files.get(root));
+            if(files.containsKey(root)) {
+                targets.add(files.get(root));
+            }
         }
         dict.setListForKey(new ArrayList<Serializable>(targets), "Destinations");
         return dict.getSerialized();

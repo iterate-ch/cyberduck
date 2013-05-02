@@ -26,6 +26,7 @@ import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.PlistSerializer;
+import ch.cyberduck.core.serializer.impl.PlistWriter;
 import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
@@ -75,6 +76,7 @@ public class AbstractTestCase {
         GrowlNative.register();
         PlistDeserializer.register();
         PlistSerializer.register();
+        PlistWriter.register();
         HostPlistReader.register();
         TransferPlistReader.register();
         ProfilePlistReader.register();

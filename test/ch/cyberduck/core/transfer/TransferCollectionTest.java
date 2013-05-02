@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferCollectionTest extends AbstractTestCase {
 
@@ -34,6 +34,16 @@ public class TransferCollectionTest extends AbstractTestCase {
         assertTrue(c.get(0) instanceof CopyTransfer);
         assertEquals("/pub/hacks/listings/1301-046.zip", (c.get(0).getRoot()).getAbsolute());
         assertEquals("ftp.heise.de", (c.get(0).getSessions()).get(0).getHost().getHostname());
+    }
+
+    @Test
+    public void testSaveDeprecated() throws Exception {
+        TransferCollection c = new TransferCollection(LocalFactory.createLocal("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatDeprecated.plist"));
+        assertEquals(0, c.size());
+        c.load();
+        assertEquals(1, c.size());
+        c.save();
+        assertEquals(1, c.size());
     }
 
     @Test
