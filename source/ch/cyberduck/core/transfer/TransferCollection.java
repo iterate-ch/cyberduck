@@ -40,7 +40,7 @@ public final class TransferCollection extends Collection<Transfer> {
 
     private Local file;
 
-    private TransferCollection(Local file) {
+    protected TransferCollection(Local file) {
         this.file = file;
     }
 
@@ -82,7 +82,9 @@ public final class TransferCollection extends Collection<Transfer> {
     }
 
     private void save(Local f) {
-        log.debug("save");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Save collection to %s", f));
+        }
         if(Preferences.instance().getBoolean("queue.save")) {
             f.getParent().mkdir();
             TransferWriterFactory.get().write(this, f);
@@ -102,11 +104,10 @@ public final class TransferCollection extends Collection<Transfer> {
     }
 
     private void load(Local f) {
-        log.debug("load");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Load collection from %s", f));
+        }
         if(f.exists()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Found queue file in %s", f.toString()));
-            }
             this.addAll(TransferReaderFactory.get().readCollection(f));
         }
     }
