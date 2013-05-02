@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.formatter;
+package ch.cyberduck.core.formatter;
 
 import org.junit.Test;
 
