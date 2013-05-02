@@ -797,7 +797,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 FileInfo tmpFile = new FileInfo(tfile);
                 tmpFile.Attributes |= FileAttributes.Hidden;
             }
-
             DriveInfo[] allDrives = DriveInfo.GetDrives();
             foreach (DriveInfo d in allDrives)
             {
@@ -815,7 +814,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     catch (Exception e)
                     {
-                        Log.error(string.Format("Cannot watch drive {0}", d.VolumeLabel), e);
+                        Log.info(string.Format("Cannot watch drive {0}", d), e);
                     }
                 }
             }
@@ -1443,7 +1442,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Session session = getTransferSession();
             List roots = new Collection();
-            foreach (Path selected in SelectedPaths)
+            foreach (Path selected in downloads)
             {
                 Path path = PathFactory.createPath(session, selected.getAsDictionary());
                 path.setLocal(LocalFactory.createLocal(downloadFolder, path.getName()));
@@ -1866,11 +1865,13 @@ namespace Ch.Cyberduck.Ui.Controller
                                            GetDirectoryName(
                                                args.FullPath);
                                 Invoke(
-                                    () =>
-                                    Download(SelectedPaths,
-                                             LocalFactory.
-                                                 createLocal(
-                                                     dropFolder)));
+                                    delegate
+                                        {
+                                            Download(SelectedPaths,
+                                                     LocalFactory.
+                                                         createLocal(
+                                                             dropFolder));
+                                        });
                             }
                                                                        )
                 });
