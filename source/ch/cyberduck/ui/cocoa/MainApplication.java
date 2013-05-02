@@ -70,6 +70,15 @@ public final class MainApplication {
     }
 
     public static void main(String[] arguments) {
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread t, final Throwable e) {
+                // Swallow the exception
+                log.error(String.format("Thread %s has thrown uncaught exception:%s",
+                        t.getName(), e.getMessage()), e);
+            }
+        });
+
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
 
         try {
