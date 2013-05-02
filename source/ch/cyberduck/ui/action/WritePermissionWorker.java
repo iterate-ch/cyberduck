@@ -46,7 +46,7 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
      */
     private boolean recursive;
 
-    public WritePermissionWorker(List<Path> files, Permission permission, boolean recursive) {
+    public WritePermissionWorker(final List<Path> files, final Permission permission, final boolean recursive) {
         this.files = files;
         this.permission = permission;
         this.recursive = recursive;

@@ -36,7 +36,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
      */
     private List<Path> files;
 
-    public CalculateSizeWorker(List<Path> files) {
+    public CalculateSizeWorker(final List<Path> files) {
         this.files = files;
     }
 

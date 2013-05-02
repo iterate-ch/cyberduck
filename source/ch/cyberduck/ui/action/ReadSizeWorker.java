@@ -35,7 +35,7 @@ public abstract class ReadSizeWorker extends Worker<Long> {
      */
     private List<Path> files;
 
-    public ReadSizeWorker(List<Path> files) {
+    public ReadSizeWorker(final List<Path> files) {
         this.files = files;
     }
 

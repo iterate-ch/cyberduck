@@ -38,7 +38,7 @@ public abstract class ChecksumWorker extends Worker<List<String>> {
      */
     private List<Path> files;
 
-    public ChecksumWorker(List<Path> files) {
+    public ChecksumWorker(final List<Path> files) {
         this.files = files;
     }
 

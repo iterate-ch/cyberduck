@@ -38,7 +38,7 @@ public abstract class ReadPermissionWorker extends Worker<List<Permission>> {
      */
     private List<Path> files;
 
-    public ReadPermissionWorker(List<Path> files) {
+    public ReadPermissionWorker(final List<Path> files) {
         this.files = files;
     }
 

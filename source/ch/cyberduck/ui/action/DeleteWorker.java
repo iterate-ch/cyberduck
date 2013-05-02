@@ -27,7 +27,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class DeleteWorker extends Worker<Boolean> {
 
@@ -36,7 +36,7 @@ public abstract class DeleteWorker extends Worker<Boolean> {
      */
     private List<Path> files;
 
-    public DeleteWorker(List<Path> files) {
+    public DeleteWorker(final List<Path> files) {
         this.files = files;
     }
 

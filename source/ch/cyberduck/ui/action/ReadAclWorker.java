@@ -34,7 +34,7 @@ public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
     private List<Path> files;
 
-    public ReadAclWorker(List<Path> files) {
+    public ReadAclWorker(final List<Path> files) {
         this.files = files;
     }
 
