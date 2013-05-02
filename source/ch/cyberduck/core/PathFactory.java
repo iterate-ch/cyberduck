@@ -40,6 +40,10 @@ import java.util.Map;
 public abstract class PathFactory<S extends Session> {
     private static final Logger log = Logger.getLogger(PathFactory.class);
 
+    public static void register(Protocol protocol, PathFactory factory) {
+        factories.put(protocol, factory);
+    }
+
     /**
      * Registered factories
      */
@@ -56,7 +60,7 @@ public abstract class PathFactory<S extends Session> {
                 }
                 switch(p.getType()) {
                     case ftp:
-                        factories.put(p, new PathFactory<FTPSession>() {
+                        register(p, new PathFactory<FTPSession>() {
                             @Override
                             protected Path create(FTPSession session, String path, int type) {
                                 return new FTPPath(session, path, type);
@@ -79,7 +83,7 @@ public abstract class PathFactory<S extends Session> {
                         });
                         break;
                     case sftp:
-                        factories.put(p, new PathFactory<SFTPSession>() {
+                        register(p, new PathFactory<SFTPSession>() {
                             @Override
                             protected Path create(SFTPSession session, String path, int type) {
                                 return new SFTPPath(session, path, type);
@@ -102,7 +106,7 @@ public abstract class PathFactory<S extends Session> {
                         });
                         break;
                     case dav:
-                        factories.put(p, new PathFactory<DAVSession>() {
+                        register(p, new PathFactory<DAVSession>() {
                             @Override
                             protected Path create(DAVSession session, String path, int type) {
                                 return new DAVPath(session, path, type);
@@ -125,7 +129,7 @@ public abstract class PathFactory<S extends Session> {
                         });
                         break;
                     case s3:
-                        factories.put(p, new PathFactory<S3Session>() {
+                        register(p, new PathFactory<S3Session>() {
                             @Override
                             protected Path create(S3Session session, String path, int type) {
                                 return new S3Path(session, path, type);
@@ -148,7 +152,7 @@ public abstract class PathFactory<S extends Session> {
                         });
                         break;
                     case googlestorage:
-                        factories.put(p, new PathFactory<GSSession>() {
+                        register(p, new PathFactory<GSSession>() {
                             @Override
                             protected Path create(GSSession session, String path, int type) {
                                 return new GSPath(session, path, type);
@@ -171,7 +175,7 @@ public abstract class PathFactory<S extends Session> {
                         });
                         break;
                     case swift:
-                        factories.put(p, new PathFactory<CFSession>() {
+                        register(p, new PathFactory<CFSession>() {
                             @Override
                             protected Path create(CFSession session, String path, int type) {
                                 return new CFPath(session, path, type);

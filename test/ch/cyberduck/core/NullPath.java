@@ -78,6 +78,6 @@ public class NullPath extends Path {
 
     @Override
     public void rename(final AbstractPath renamed) {
-        throw new UnsupportedOperationException();
+        //
     }
 }

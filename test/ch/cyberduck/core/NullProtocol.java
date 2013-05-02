@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NullProtocol extends Protocol {
 
@@ -13,6 +13,11 @@ public class NullProtocol extends Protocol {
     @Override
     public String getDescription() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Type getType() {
+        return Type.ftp;
     }
 
     @Override

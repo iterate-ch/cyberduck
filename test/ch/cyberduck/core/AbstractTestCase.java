@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
@@ -82,6 +83,46 @@ public class AbstractTestCase {
         NSObjectPathReference.register();
         UserDefaultsDateFormatter.register();
         WorkspaceApplicationLauncher.register();
+    }
+
+    @BeforeClass
+    public static void register() {
+        PathFactory.register(new NullProtocol(), new PathFactory() {
+            @Override
+            protected Path create(final Session session, final String path, final int type) {
+                return new NullPath(path, type) {
+                    @Override
+                    public boolean exists() {
+                        return false;
+                    }
+                };
+            }
+
+            @Override
+            protected Path create(final Session session, final String parent, final String name, final int type) {
+                return new NullPath(parent + name, type) {
+                    @Override
+                    public boolean exists() {
+                        return false;
+                    }
+                };
+            }
+
+            @Override
+            protected Path create(final Session session, final String parent, final Local file) {
+                return new NullPath(parent + file.getName(), file.attributes().getType()) {
+                    @Override
+                    public boolean exists() {
+                        return false;
+                    }
+                };
+            }
+
+            @Override
+            protected Path create(final Session session, final Object dict) {
+                return null;
+            }
+        });
     }
 
     @Before

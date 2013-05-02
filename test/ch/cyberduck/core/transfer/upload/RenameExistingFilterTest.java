@@ -1,19 +1,9 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullPath;
-import ch.cyberduck.core.NullProtocol;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -98,6 +88,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 };
             }
         };
+        p.setLocal(new NullLocal("/Downloads", "n"));
         f.prepare(p);
     }
 }
