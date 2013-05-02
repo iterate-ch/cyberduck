@@ -477,12 +477,12 @@ public abstract class Transfer implements Serializable {
                 }
                 this.status.remove(child);
             }
-            // Post process of directory
-            filter.complete(file, options, status);
             // Set completion status
             if(!failure) {
                 status.setComplete();
             }
+            // Post process of directory
+            filter.complete(file, options, status);
             this.cache().remove(file.getReference());
         }
     }
