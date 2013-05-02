@@ -442,7 +442,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (hSuccess != IntPtr.Zero)
                 {
                     // Copy (clone) the returned icon to a new object, thus allowing us to clean-up properly
-                    icon = (Icon) Icon.FromHandle(shfi.hIcon).Clone();
+                    try
+                    {
+                        icon = (Icon) Icon.FromHandle(shfi.hIcon).Clone();
+                    }
+                    catch (Exception)
+                    {
+                        Log.error("Cannot get icon for " + filename);
+                        return Icon.FromHandle(IconForName("notfound", size).GetHicon());
+                    }
                     _iconCache.Put(key, icon, s);
                     // Release icon handle
                     User32.DestroyIcon(shfi.hIcon);
