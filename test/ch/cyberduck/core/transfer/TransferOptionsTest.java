@@ -8,18 +8,15 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @version $Id$
  */
 public class TransferOptionsTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        UserDefaultsPreferences.register();
-    }
-
     @Test
     public void testQuarantine() {
-        Assert.assertEquals(Preferences.instance().getBoolean("queue.download.quarantine"), new TransferOptions().quarantine);
+        assertEquals(Preferences.instance().getBoolean("queue.download.quarantine"), new TransferOptions().quarantine);
     }
 }

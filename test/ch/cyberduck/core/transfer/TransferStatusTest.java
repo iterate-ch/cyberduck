@@ -25,7 +25,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class TransferStatusTest extends AbstractTestCase {
+public class TransferStatusTest {
 
     @Test
     public void testSetResume() throws Exception {
