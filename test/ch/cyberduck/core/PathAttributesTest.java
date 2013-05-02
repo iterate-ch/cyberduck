@@ -44,4 +44,14 @@ public class PathAttributesTest extends AbstractTestCase {
         assertEquals(Permission.EMPTY, attributes.getPermission());
         assertEquals(Acl.EMPTY, attributes.getAcl());
     }
+
+    @Test
+    public void testSerialize() throws Exception {
+        PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
+        attributes.setPermission(new Permission(644));
+        attributes.setDuplicate(true);
+        attributes.setVersionId("v-1");
+        attributes.setModificationDate(System.currentTimeMillis());
+        assertEquals(attributes, new PathAttributes(attributes.getAsDictionary()));
+    }
 }

@@ -164,6 +164,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(modified != -1) {
             dict.setStringForKey(String.valueOf(modified), "Modified");
         }
+        if(permission != Permission.EMPTY) {
+            dict.setObjectForKey(permission, "Permission");
+        }
         if(StringUtils.isNotBlank(versionId)) {
             dict.setStringForKey(versionId, "Version");
         }
