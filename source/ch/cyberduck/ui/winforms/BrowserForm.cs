@@ -23,6 +23,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
@@ -1093,7 +1094,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                                 if (i > 0) sb.Append(Environment.NewLine);
                                 sb.Append(pair1.Value[i]);
                             }
-                            Clipboard.SetText(sb.ToString());
+                            try
+                            {
+                                Clipboard.SetDataObject(sb.ToString(), true, 5, 25);
+                            }
+                            catch (ExternalException exception)
+                            {
+                                Log.error("Could not copy URL to clipboard");
+                            }
                         };
                     foreach (string url in pair.Value)
                     {
