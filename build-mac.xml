@@ -393,8 +393,9 @@
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
+            <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
+            <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
             <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
@@ -426,7 +427,10 @@
 
     <target name="beta" depends="clean, revision">
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Java"/>
+            <param name="app.runtime.properties.key" value="Runtime"/>
+            <param name="app.runtime.system.min" value="10.6"/>
+            <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
+            <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
