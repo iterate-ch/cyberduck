@@ -245,6 +245,12 @@
                 <exclude name="Contents/Home/lib/JObjC.jar"/>
                 <exclude name="Contents/Home/lib/libJObjC.dylib"/>
                 <exclude name="Contents/Home/lib/libsplashscreen.dylib"/>
+                <exclude name="Contents/Home/lib/cmm/**"/>
+                <exclude name="Contents/Home/lib/liblcms.dylib"/>
+                <exclude name="Contents/Home/lib/libjava_crw_demo.dylib"/>
+                <exclude name="Contents/Home/lib/libmlib_image.dylib"/>
+                <exclude name="Contents/Home/lib/libfreetype.dylib"/>
+                <exclude name="Contents/Home/lib/libmanagement.dylib"/>
                 <exclude name="Contents/Home/lib/libfontmanager.dylib"/>
                 <exclude name="Contents/Home/lib/libAppleScriptEngine.dylib"/>
                 <exclude name="Contents/Home/lib/fontconfig.*"/>
