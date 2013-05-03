@@ -88,8 +88,10 @@ public class CopyTransfer extends Transfer {
         if(destinationsObj != null) {
             this.files = new HashMap<Path, Path>();
             final List<Path> roots = this.getRoots();
-            for(int i = 0; i < roots.size(); i++) {
-                this.files.put(roots.get(i), PathFactory.createPath(destination, destinationsObj.get(i)));
+            if(destinationsObj.size() == roots.size()) {
+                for(int i = 0; i < roots.size(); i++) {
+                    this.files.put(roots.get(i), PathFactory.createPath(destination, destinationsObj.get(i)));
+                }
             }
         }
     }

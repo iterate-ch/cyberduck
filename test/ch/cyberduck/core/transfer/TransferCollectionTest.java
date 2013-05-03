@@ -37,6 +37,16 @@ public class TransferCollectionTest extends AbstractTestCase {
     }
 
     @Test
+    public void testLoadCopyInvalidCopyTransfer() throws Exception {
+        TransferCollection c = new TransferCollection(LocalFactory.createLocal("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatInvalid.plist"));
+        assertEquals(0, c.size());
+        c.load();
+        assertEquals(1, c.size());
+        c.save();
+        assertEquals(1, c.size());
+    }
+
+    @Test
     public void testSaveDeprecated() throws Exception {
         TransferCollection c = new TransferCollection(LocalFactory.createLocal("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatDeprecated.plist"));
         assertEquals(0, c.size());
