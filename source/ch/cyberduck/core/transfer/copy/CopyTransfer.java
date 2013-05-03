@@ -103,7 +103,7 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public boolean isReloadable() {
-        return false;
+        return true;
     }
 
     @Override
