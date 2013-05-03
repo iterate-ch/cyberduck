@@ -101,7 +101,7 @@ public final class BandwidthThrottle {
     /**
      * No throttling
      */
-    public static final float UNLIMITED = -1;
+    public static final int UNLIMITED = -1;
 
     /**
      * Bytes per second allowed
