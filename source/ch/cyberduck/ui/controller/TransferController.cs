@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,8 +18,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using StructureMap;
 using ch.cyberduck.core;
@@ -219,7 +219,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
                 {
-                    if(transfer.getLocal() != null) {
+                    if (transfer.getLocal() != null)
+                    {
                         for (int i = 0; i < transfer.getRoots().size(); i++)
                         {
                             Path p = (Path) transfer.getRoots().get(i);
@@ -237,7 +238,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
                 {
-                    if(transfer.getLocal() != null) {
+                    if (transfer.getLocal() != null)
+                    {
                         if (!transfer.isComplete())
                         {
                             return false;
@@ -405,11 +407,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer = GetTransferFromView(selectedTransfers[0]);
                 if (transfer.numberOfRoots() == 1)
                 {
-                    if(transfer.getLocal() != null) {
+                    if (transfer.getLocal() != null)
+                    {
                         View.FileIcon = IconCache.Instance.IconForFilename(transfer.getRoot().getLocal().getAbsolute(),
                                                                            IconCache.IconSize.Large);
                     }
-                    else {
+                    else
+                    {
                         View.FileIcon = IconCache.Instance.IconForPath(transfer.getRoot(),
                                                                        IconCache.IconSize.Large);
                     }
@@ -438,8 +442,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                     View.Url = Locale.localizedString("Multiple files");
-                     View.Local = Locale.localizedString("Multiple files");
+                    View.Url = Locale.localizedString("Multiple files");
+                    View.Local = Locale.localizedString("Multiple files");
                 }
             }
             else
@@ -565,6 +569,11 @@ namespace Ch.Cyberduck.Ui.Controller
             background(new TransferBackgroundAction(this, transfer, resumeRequested, reloadRequested));
         }
 
+        public void TaskbarOverlayIcon(Icon icon, string description)
+        {
+            Invoke(delegate { View.TaskbarOverlayIcon(icon, description); });
+        }
+
         private class LogAction : WindowMainAction
         {
             private readonly string _msg;
@@ -601,19 +610,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 _resume = resumeRequested;
                 _reload = reloadRequested;
-            }
-
-            public override bool prepare()
-            {
-                if (Utils.IsWin7OrLater)
-                {
-                    _listener = new TaskbarTransferAdapter(_controller);
-                    _transfer.addListener(_listener);
-                }
-                // Attach listeners
-                base.prepare();
-                // Always continue. Current status might be canceled if interrupted before.
-                return true;
             }
 
             public override void run()
@@ -700,42 +696,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 public TransferAction prompt()
                 {
                     return TransferPromptController.Create(_controller, _transfer).prompt();
-                }
-            }
-
-            private class TaskbarTransferAdapter : TransferAdapter
-            {
-                private readonly TransferController _controller;
-
-                public TaskbarTransferAdapter(TransferController controller)
-                {
-                    _controller = controller;
-                }
-
-                public override void transferWillStart()
-                {
-                    Badge();
-                }
-
-                public override void transferDidEnd()
-                {
-                    Badge();
-                }
-
-                private void Badge()
-                {
-                    if (Preferences.instance().getBoolean("queue.dock.badge"))
-                    {
-                        int count = TransferCollection.defaultCollection().numberOfRunningTransfers();
-                        if (0 == count)
-                        {
-                            _controller.Invoke(delegate { _controller.View.TaskbarBadge(null); });
-                        }
-                        else
-                        {
-                            _controller.Invoke(delegate { _controller.View.TaskbarBadge(count.ToString()); });
-                        }
-                    }
                 }
             }
         }

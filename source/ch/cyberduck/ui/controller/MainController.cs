@@ -202,11 +202,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 Rendezvous.Register();
             }
             ProtocolFactory.register();
-            EditorFactory.register();
-            WindowsApplicationLauncher.register();
+            EditorFactory.Register();
+            WindowsApplicationLauncher.Register();
             Win32FileDescriptor.Register();
             ExplorerRevealService.Register();
             RegistryApplicationFinder.Register();
+            TaskbarApplicationBadgeLabeler.Register();
         }
 
         private static void ConfigureLogging()

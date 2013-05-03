@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Collections.Generic;
 using System.Drawing;
 using Ch.Cyberduck.Core;
@@ -61,7 +62,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler QueueSizeChangedEvent;
 
         void PopulateBandwidthList(IList<KeyValuePair<float, string>> throttles);
-        void TaskbarBadge(string text);
+        void TaskbarOverlayIcon(Icon icon, string text);
         void UpdateOverallProgressState(double progress, double maximum);
     }
 }

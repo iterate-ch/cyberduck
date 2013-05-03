@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
@@ -306,34 +305,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        public void TaskbarBadge(string text)
+        public void TaskbarOverlayIcon(Icon icon, string text)
         {
-            if (null == text)
-            {
-                this.SetTaskbarOverlayIcon(null, String.Empty);
-            }
-            else
-            {
-                Bitmap bm = new Bitmap(16, 16);
-                Graphics g = Graphics.FromImage(bm);
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                g.FillEllipse(Brushes.Navy, new Rectangle(0, 0, 15, 15));
-
-                if (text.Length == 1)
-                {
-                    Font f = new Font("Segoe UI", 8, FontStyle.Bold);
-                    g.DrawString(text, f, new SolidBrush(Color.White), 3, 1);
-                }
-                else
-                {
-                    Font f = new Font("Segoe UI", 7, FontStyle.Bold);
-                    g.DrawString(text, f, new SolidBrush(Color.White), 1, 1);
-                }
-                this.SetTaskbarOverlayIcon(Icon.FromHandle(bm.GetHicon()), text);
-
-                g.Dispose();
-                bm.Dispose();
-            }
+            this.SetTaskbarOverlayIcon(icon, text);
         }
 
         public void UpdateOverallProgressState(double progress, double maximum)
