@@ -142,7 +142,7 @@
 
     <target name="distribution-sparkle">
         <antcall target="codesign">
-            <param name="codesign.arg" value=""/>
+            <param name="codesign.arg" value="--requirements ${codesign.requirement}"/>
             <param name="codesign.certificate" value="Developer ID Application: David Kocher"/>
         </antcall>
         <antcall target="tar"/>
