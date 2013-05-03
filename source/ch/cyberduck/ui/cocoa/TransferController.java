@@ -27,7 +27,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.local.RevealService;
@@ -357,7 +356,7 @@ public final class TransferController extends WindowController implements NSTool
     @Action
     public void bandwidthPopupChanged(NSPopUpButton sender) {
         NSIndexSet selected = transferTable.selectedRowIndexes();
-        int bandwidth = Integer.valueOf(sender.selectedItem().representedObject());
+        float bandwidth = Float.valueOf(sender.selectedItem().representedObject());
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             Transfer transfer = TransferCollection.defaultCollection().get(index.intValue());
             transfer.setBandwidth(bandwidth);
