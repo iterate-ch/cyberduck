@@ -8,6 +8,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Filename for edited file includes absolute path (Windows) (#7175)
 - [Bugfix] Change of default editor (Windows) (#7178)
 - [Bugfix] Change bandwidth limit (#7189)
+- [Bugfix] Always asks for permsission to access Keychain (10.6) (#7202)
 
 4.3 [http://trac.cyberduck.ch/milestone/4.3]
 - [Localize] Arabic Localization
