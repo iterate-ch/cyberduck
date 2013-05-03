@@ -20,13 +20,11 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -51,15 +49,5 @@ public class CopyTransferTest extends AbstractTestCase {
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
         assertEquals(4L, serialized.getSize());
         assertEquals(3L, serialized.getTransferred());
-    }
-
-    @Test
-    public void testAction() throws Exception {
-
-    }
-
-    @Test
-    public void testChildren() throws Exception {
-
     }
 }
