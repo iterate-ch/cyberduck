@@ -43,7 +43,7 @@ namespace Ch.Cyberduck.Core.Editor
             _registeredEditors.Add(new TextPad());
         }
 
-        public static void register()
+        public static void Register()
         {
             addFactory(NATIVE_PLATFORM, new EditorFactory());
         }

@@ -45,7 +45,7 @@ namespace Ch.Cyberduck.Core.Local
             return Utils.StartProcess(application.getIdentifier(), args);
         }
 
-        public static void register()
+        public static void Register()
         {
             ApplicationLauncherFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
