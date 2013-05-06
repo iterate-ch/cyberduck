@@ -69,7 +69,7 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
             return;
         }
         synchronized(lock) {
-            setQuarantine(file.getAbsolute(), originUrl, dataUrl);
+            this.setQuarantine(file.getAbsolute(), originUrl, dataUrl);
         }
     }
 
@@ -90,7 +90,7 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
     @Override
     public void setWhereFrom(final Local file, final String dataUrl) {
         synchronized(lock) {
-            setWhereFrom(file.getAbsolute(), dataUrl);
+            this.setWhereFrom(file.getAbsolute(), dataUrl);
         }
     }
 
