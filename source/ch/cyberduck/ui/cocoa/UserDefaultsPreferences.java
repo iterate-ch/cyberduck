@@ -176,9 +176,10 @@ public class UserDefaultsPreferences extends Preferences {
                 applicationName = bundleName.toString();
             }
             else {
+                log.error("No CFBundleName property in main bundle info dictionary");
                 applicationName = "Cyberduck";
             }
-            NSArray directories = FoundationKitFunctionsLibrary.NSSearchPathForDirectoriesInDomains(
+            final NSArray directories = FoundationKitFunctionsLibrary.NSSearchPathForDirectoriesInDomains(
                     FoundationKitFunctions.NSSearchPathDirectory.NSApplicationSupportDirectory,
                     FoundationKitFunctions.NSSearchPathDomainMask.NSUserDomainMask,
                     true);
@@ -187,8 +188,10 @@ public class UserDefaultsPreferences extends Preferences {
                 defaults.put("application.support.path", LocalFactory.createLocal("~/Library/Application Support", applicationName).getAbbreviatedPath());
             }
             else {
-                String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
-                log.info("Found application support directory:" + directory);
+                final String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Found application support directory in %s", directory));
+                }
                 defaults.put("application.support.path", LocalFactory.createLocal(directory, applicationName).getAbbreviatedPath());
             }
             defaults.put("application.name", applicationName);
