@@ -39,7 +39,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
@@ -549,7 +548,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                 }
                 try {
                     Path workdir = session.home();
-                    Local folder = LocalFactory.createLocal(new File(delegate.options.mountpoint, workdir.getAbsolute()));
+                    Local folder = LocalFactory.createLocal(delegate.options.mountpoint, workdir.getAbsolute());
                     reveal.reveal(folder);
                 }
                 catch(IOException e) {
