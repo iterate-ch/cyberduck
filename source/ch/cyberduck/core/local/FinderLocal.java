@@ -31,7 +31,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -269,10 +268,16 @@ public class FinderLocal extends Local {
     }
 
     private static String stringByAbbreviatingWithTildeInPath(final String path) {
-        return NSString.stringByAbbreviatingWithTildeInPath(path);
+        if(StringUtils.startsWith(path, Preferences.instance().getProperty("local.user.home"))) {
+            return "~" + StringUtils.removeStart(path, Preferences.instance().getProperty("local.user.home"));
+        }
+        return path;
     }
 
     private static String stringByExpandingTildeInPath(final String path) {
-        return NSString.stringByExpandingTildeInPath(path);
+        if(path.startsWith("~")) {
+            return Preferences.instance().getProperty("local.user.home") + StringUtils.substring(path, 1);
+        }
+        return path;
     }
 }
