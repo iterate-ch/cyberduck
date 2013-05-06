@@ -260,7 +260,7 @@ public abstract class Local extends AbstractPath {
                 // Canonical decomposition followed by canonical composition (default)
                 normalized = Normalizer.normalize(name, Normalizer.NFC, Normalizer.UNICODE_3_2);
                 if(log.isDebugEnabled()) {
-                    log.debug("Normalized local path '" + name + "' to '" + normalized + "'");
+                    log.debug(String.format("Normalized local path %s to %s", name, normalized));
                 }
             }
         }
