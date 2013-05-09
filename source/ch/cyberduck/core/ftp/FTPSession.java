@@ -454,13 +454,6 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    protected void noop() throws IOException {
-        if(this.isConnected()) {
-            this.getClient().sendNoOp();
-        }
-    }
-
-    @Override
     public boolean isSendCommandSupported() {
         return true;
     }
