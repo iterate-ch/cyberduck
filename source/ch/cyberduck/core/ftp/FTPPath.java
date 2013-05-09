@@ -150,15 +150,7 @@ public class FTPPath extends Path {
             log.warn("Fallback to passive data connection");
             this.getSession().getClient().enterLocalPassiveMode();
         }
-        final boolean result = action.run();
-        // No I/O failure. Switch mode in bookmark.
-        if(this.getSession().getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
-            this.getSession().getHost().setFTPConnectMode(FTPConnectMode.PORT);
-        }
-        else if(this.getSession().getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
-            this.getSession().getHost().setFTPConnectMode(FTPConnectMode.PASV);
-        }
-        return result;
+        return action.run();
     }
 
     @Override
