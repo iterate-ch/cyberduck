@@ -66,7 +66,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <summary>
         /// Saved browsers
         /// </summary>
-        private readonly HistoryCollection _sessions = new HistoryCollection(
+        private readonly AbstractHostCollection _sessions = new FolderBookmarkCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Sessions"));
 
         /// <summary>

@@ -1134,7 +1134,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * Saved browsers
      */
-    private HistoryCollection sessions = new HistoryCollection(
+    private AbstractHostCollection sessions = new FolderBookmarkCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Sessions"));
 
     /**
