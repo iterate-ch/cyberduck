@@ -62,24 +62,24 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
      * @param bookmark Bookmark
      * @return File for bookmark
      */
-    public Local getFile(Host bookmark) {
+    public Local getFile(final Host bookmark) {
         return LocalFactory.createLocal(folder, bookmark.getUuid() + ".duck");
     }
 
     @Override
-    public void collectionItemAdded(Host bookmark) {
+    public void collectionItemAdded(final Host bookmark) {
         HostWriterFactory.get().write(bookmark, this.getFile(bookmark));
         super.collectionItemAdded(bookmark);
     }
 
     @Override
-    public void collectionItemRemoved(Host bookmark) {
+    public void collectionItemRemoved(final Host bookmark) {
         this.getFile(bookmark).delete();
         super.collectionItemRemoved(bookmark);
     }
 
     @Override
-    public void collectionItemChanged(Host bookmark) {
+    public void collectionItemChanged(final Host bookmark) {
         HostWriterFactory.get().write(bookmark, this.getFile(bookmark));
         super.collectionItemChanged(bookmark);
     }
