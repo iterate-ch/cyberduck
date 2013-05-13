@@ -20,11 +20,10 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
@@ -33,10 +32,8 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.text.MessageFormat;
 
 /**
@@ -73,10 +70,7 @@ public abstract class AbstractEditor implements Editor {
     public AbstractEditor(final Application application, final Path path) {
         this.application = application;
         this.edited = path;
-        final Local folder = LocalFactory.createLocal(
-                new File(Preferences.instance().getProperty("tmp.dir"),
-                        edited.getHost().getUuid() + String.valueOf(Path.DELIMITER) + edited.getParent().getAbsolute()));
-        edited.setLocal(LocalFactory.createLocal(folder, FilenameUtils.getName(edited.unique())));
+        edited.setLocal(new TemporaryFileService().get(edited));
     }
 
     /**

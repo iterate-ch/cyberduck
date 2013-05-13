@@ -27,6 +27,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -967,9 +968,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     if(!path.attributes().isFile()) {
                         continue;
                     }
-                    final Local folder = LocalFactory.createLocal(new File(Preferences.instance().getProperty("tmp.dir"),
-                            path.getSession().getHost().getUuid() + String.valueOf(Path.DELIMITER) + path.getParent().getAbsolute()));
-                    path.setLocal(LocalFactory.createLocal(folder, path.getName()));
+                    path.setLocal(new TemporaryFileService().get(path));
                     downloads.add(path);
                 }
                 if(downloads.size() > 0) {
