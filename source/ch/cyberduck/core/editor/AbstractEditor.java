@@ -74,7 +74,7 @@ public abstract class AbstractEditor implements Editor {
         this.application = application;
         this.edited = path;
         final Local folder = LocalFactory.createLocal(
-                new File(Preferences.instance().getProperty("editor.tmp.directory"),
+                new File(Preferences.instance().getProperty("tmp.dir"),
                         edited.getHost().getUuid() + String.valueOf(Path.DELIMITER) + edited.getParent().getAbsolute()));
         edited.setLocal(LocalFactory.createLocal(folder, FilenameUtils.getName(edited.unique())));
     }

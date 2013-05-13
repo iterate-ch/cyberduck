@@ -337,7 +337,6 @@ public abstract class Preferences {
         defaults.put("editor.alwaysUseDefault", String.valueOf(false));
 
         defaults.put("editor.odb.enable", String.valueOf(false));
-        defaults.put("editor.tmp.directory", System.getProperty("java.io.tmpdir"));
 
         defaults.put("filetype.text.regex",
                 ".*\\.txt|.*\\.cgi|.*\\.htm|.*\\.html|.*\\.shtml|.*\\.xml|.*\\.xsl|.*\\.php|.*\\.php3|" +
@@ -591,6 +590,9 @@ public abstract class Preferences {
          * Default metadata for uploads. Format must be "key1=value1 key2=value2"
          */
         defaults.put("s3.metadata.default", StringUtils.EMPTY);
+
+        defaults.put("s3.lifecycle.transition.options", "7 10 30 60 180 360 720");
+        defaults.put("s3.lifecycle.delete.options", "7 10 30 60 180 360 720");
 
         defaults.put("azure.metadata.default", StringUtils.EMPTY);
 
