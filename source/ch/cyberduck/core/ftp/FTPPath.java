@@ -95,8 +95,8 @@ public class FTPPath extends Path {
     /**
      *
      */
-    private abstract static class DataConnectionAction {
-        public abstract boolean run() throws IOException;
+    private abstract static class DataConnectionAction<T> {
+        public abstract T run() throws IOException;
     }
 
     /**
@@ -104,7 +104,7 @@ public class FTPPath extends Path {
      * @return True if action was successful
      * @throws IOException I/O error
      */
-    private boolean data(final DataConnectionAction action) throws IOException {
+    private <T> T data(final DataConnectionAction<T> action) throws IOException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
             if(this.getSession().getConnectMode().equals(FTPConnectMode.PASV)) {
@@ -131,8 +131,8 @@ public class FTPPath extends Path {
                     throw failure;
                 }
             }
+            throw failure;
         }
-        return false;
     }
 
     /**
@@ -140,7 +140,7 @@ public class FTPPath extends Path {
      * @return True if action was successful
      * @throws IOException I/O error
      */
-    private boolean fallback(final DataConnectionAction action) throws IOException {
+    private <T> T fallback(final DataConnectionAction<T> action) throws IOException {
         // Fallback to other connect mode
         if(this.getSession().getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
             log.warn("Fallback to active data connection");
@@ -196,9 +196,9 @@ public class FTPPath extends Path {
                 this.getSession().check();
             }
             if(!success || children.isEmpty()) {
-                success = this.data(new DataConnectionAction() {
+                success = this.data(new DataConnectionAction<Boolean>() {
                     @Override
-                    public boolean run() throws IOException {
+                    public Boolean run() throws IOException {
                         if(!getSession().getClient().changeWorkingDirectory(getAbsolute())) {
                             throw new FTPException(getSession().getClient().getReplyString());
                         }
@@ -806,15 +806,9 @@ public class FTPPath extends Path {
     @Override
     public InputStream read(final TransferStatus status) throws IOException {
         final FTPSession session = getSession();
-        this.data(new DataConnectionAction() {
-            @Override
-            public boolean run() throws IOException {
-                if(!session.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
-                    throw new FTPException(session.getClient().getReplyString());
-                }
-                return true;
-            }
-        });
+        if(!session.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
+            throw new FTPException(session.getClient().getReplyString());
+        }
         if(status.isResume()) {
             // Where a server process supports RESTart in STREAM mode
             if(!session.getClient().isFeatureSupported("REST STREAM")) {
@@ -824,7 +818,13 @@ public class FTPPath extends Path {
                 session.getClient().setRestartOffset(status.getCurrent());
             }
         }
-        return new CountingInputStream(session.getClient().retrieveFileStream(getAbsolute())) {
+        final InputStream in = this.data(new DataConnectionAction<InputStream>() {
+            @Override
+            public InputStream run() throws IOException {
+                return session.getClient().retrieveFileStream(getAbsolute());
+            }
+        });
+        return new CountingInputStream(in) {
             @Override
             public void close() throws IOException {
                 try {
@@ -872,22 +872,20 @@ public class FTPPath extends Path {
     @Override
     public OutputStream write(final TransferStatus status) throws IOException {
         final FTPSession session = getSession();
-        this.data(new DataConnectionAction() {
+        if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+            throw new FTPException(session.getClient().getReplyString());
+        }
+        final OutputStream out = this.data(new DataConnectionAction<OutputStream>() {
             @Override
-            public boolean run() throws IOException {
-                if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                    throw new FTPException(session.getClient().getReplyString());
+            public OutputStream run() throws IOException {
+                if(status.isResume()) {
+                    return session.getClient().appendFileStream(getAbsolute());
                 }
-                return true;
+                else {
+                    return session.getClient().storeFileStream(getAbsolute());
+                }
             }
         });
-        final OutputStream out;
-        if(status.isResume()) {
-            out = session.getClient().appendFileStream(getAbsolute());
-        }
-        else {
-            out = session.getClient().storeFileStream(getAbsolute());
-        }
         return new CountingOutputStream(out) {
             @Override
             public void close() throws IOException {
