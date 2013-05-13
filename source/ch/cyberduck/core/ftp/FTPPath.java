@@ -33,7 +33,7 @@ import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.ProxyInputStream;
+import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTP;
@@ -297,17 +297,9 @@ public class FTPPath extends Path {
      * media-type -- MIME media-type of file contents per IANA registry.
      * charset    -- Character set per IANA registry (if not UTF-8)
      *
-     * @param response The "facts" for a file in a reply to a MLSx command
+     * @param line The "facts" for a file in a reply to a MLSx command
      * @return Parsed keys and values
      */
-    protected Map<String, Map<String, String>> parseFacts(String[] response) {
-        Map<String, Map<String, String>> files = new HashMap<String, Map<String, String>>();
-        for(String line : response) {
-            files.putAll(this.parseFacts(line));
-        }
-        return files;
-    }
-
     protected Map<String, Map<String, String>> parseFacts(String line) {
         final Pattern p = Pattern.compile("\\s?(\\S+\\=\\S+;)*\\s(.*)");
         final Matcher result = p.matcher(line);
@@ -832,23 +824,14 @@ public class FTPPath extends Path {
                 session.getClient().setRestartOffset(status.getCurrent());
             }
         }
-        return new ProxyInputStream(session.getClient().retrieveFileStream(getAbsolute())) {
-            private boolean complete;
-
-            @Override
-            protected void afterRead(final int n) throws IOException {
-                if(-1 == n) {
-                    complete = true;
-                }
-            }
-
+        return new CountingInputStream(session.getClient().retrieveFileStream(getAbsolute())) {
             @Override
             public void close() throws IOException {
                 try {
                     super.close();
                 }
                 finally {
-                    if(complete) {
+                    if(this.getByteCount() == status.getLength()) {
                         // Read 226 status
                         if(!session.getClient().completePendingCommand()) {
                             throw new FTPException(session.getClient().getReplyString());
