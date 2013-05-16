@@ -71,10 +71,13 @@ public class CopyTransfer extends Transfer {
                 new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }
 
-    private CopyTransfer(final Map<Path, Path> files, final BandwidthThrottle bandwidth) {
-        super(new ArrayList<Path>(files.keySet()), bandwidth);
-        this.files = files;
-        this.destination = files.values().iterator().next().getSession();
+    private CopyTransfer(final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
+        super(new ArrayList<Path>(selected.keySet()), bandwidth);
+        destination = SessionFactory.createSession(session.getHost());
+        files = new HashMap<Path, Path>();
+        for(Map.Entry<Path, Path> e : selected.entrySet()) {
+            files.put(e.getKey(), PathFactory.createPath(destination, e.getValue().getAsDictionary()));
+        }
     }
 
     public <T> CopyTransfer(T serialized, Session s) {
