@@ -2867,7 +2867,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         });
     }
 
-    protected void transfer(final Transfer transfer, final List<Path> selected, boolean browser, final TransferPrompt prompt) {
+    private void transfer(final Transfer transfer, final List<Path> selected, boolean browser, final TransferPrompt prompt) {
         if(!selected.isEmpty()) {
             transfer.addListener(new TransferAdapter() {
                 @Override
