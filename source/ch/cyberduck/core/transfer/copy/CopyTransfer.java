@@ -73,7 +73,7 @@ public class CopyTransfer extends Transfer {
 
     private CopyTransfer(final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
         super(new ArrayList<Path>(selected.keySet()), bandwidth);
-        destination = SessionFactory.createSession(session.getHost());
+        destination = SessionFactory.createSession(selected.values().iterator().next().getSession().getHost());
         files = new HashMap<Path, Path>();
         for(Map.Entry<Path, Path> e : selected.entrySet()) {
             files.put(e.getKey(), PathFactory.createPath(destination, e.getValue().getAsDictionary()));
