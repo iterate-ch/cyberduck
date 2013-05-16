@@ -486,11 +486,11 @@ public abstract class Preferences {
         /**
          * HTTP routes to maximum number of connections allowed for those routes
          */
-        defaults.put("http.connections.route", String.valueOf(5));
+        defaults.put("http.connections.route", String.valueOf(Integer.MAX_VALUE));
         /**
          * Total number of connections in the pool
          */
-        defaults.put("http.connections.total", String.valueOf(5));
+        defaults.put("http.connections.total", String.valueOf(Integer.MAX_VALUE));
         defaults.put("http.manager.timeout", String.valueOf(0)); // Inifinite
         defaults.put("http.socket.buffer", String.valueOf(131072));
         defaults.put("http.credentials.charset", "ISO-8859-1");
