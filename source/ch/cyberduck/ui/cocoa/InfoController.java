@@ -580,6 +580,71 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSButton lifecycleTransitionCheckbox;
+
+    public void setLifecycleTransitionCheckbox(final NSButton b) {
+        this.lifecycleTransitionCheckbox = b;
+        this.lifecycleTransitionCheckbox.setAction(Foundation.selector("lifecyclePopupClicked:"));
+    }
+
+    @Outlet
+    private NSPopUpButton lifecycleTransitionPopup;
+
+    public void setLifecycleTransitionPopup(final NSPopUpButton b) {
+        this.lifecycleTransitionPopup = b;
+        this.lifecycleTransitionPopup.setTarget(this.id());
+        for(String option : Preferences.instance().getList("s3.lifecycle.transition.options")) {
+            this.lifecycleTransitionPopup.addItemWithTitle(String.format("after %d Days", Integer.valueOf(option)));
+            this.lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
+            this.lifecycleTransitionPopup.lastItem().setTarget(this.id());
+            this.lifecycleTransitionPopup.lastItem().setRepresentedObject(option);
+        }
+    }
+
+    @Outlet
+    private NSButton lifecycleDeleteCheckbox;
+
+    public void setLifecycleDeleteCheckbox(final NSButton b) {
+        this.lifecycleDeleteCheckbox = b;
+        this.lifecycleDeleteCheckbox.setAction(Foundation.selector("lifecyclePopupClicked:"));
+    }
+
+    @Outlet
+    private NSPopUpButton lifecycleDeletePopup;
+
+    public void setLifecycleDeletePopup(final NSPopUpButton b) {
+        this.lifecycleDeletePopup = b;
+        for(String option : Preferences.instance().getList("s3.lifecycle.delete.options")) {
+            this.lifecycleDeletePopup.addItemWithTitle(String.format("after %d Days", Integer.valueOf(option)));
+            this.lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
+            this.lifecycleDeletePopup.lastItem().setTarget(this.id());
+            this.lifecycleDeletePopup.lastItem().setRepresentedObject(option);
+        }
+    }
+
+    @Action
+    public void lifecyclePopupClicked(final NSButton sender) {
+        if(this.toggleS3Settings(false)) {
+            controller.background(new BrowserBackgroundAction(controller) {
+                @Override
+                public void run() {
+                    final String container = getSelected().getContainerName();
+                    ((S3Session) controller.getSession()).setLifecycle(container,
+                            lifecycleDeleteCheckbox.state() == NSCell.NSOnState || lifecycleTransitionCheckbox.state() == NSCell.NSOnState,
+                            lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
+                            lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
+                }
+
+                @Override
+                public void cleanup() {
+                    toggleS3Settings(true);
+                    initS3();
+                }
+            });
+        }
+    }
+
+    @Outlet
     private NSTextField distributionCnameField;
 
     public void setDistributionCnameField(NSTextField t) {
@@ -1982,30 +2047,37 @@ public class InfoController extends ToolbarWindowController {
             }
             final Path selected = getSelected();
             controller.background(new BrowserBackgroundAction(controller) {
-                String location = null;
-                boolean logging = false;
-                String loggingBucket = null;
-                boolean versioning = false;
-                boolean mfa = false;
+                String location;
+                boolean logging;
+                String loggingBucket;
+                boolean versioning;
+                boolean mfa;
                 List<String> containers = new ArrayList<String>();
-                String encryption = null;
+                String encryption;
+                Integer expiration;
+                Integer transition;
 
                 @Override
                 public void run() {
                     final CloudSession s = (CloudSession) controller.getSession();
+                    final String container = selected.getContainerName();
                     if(s.isLocationSupported()) {
-                        location = s.getLocation(selected.getContainerName());
+                        location = s.getLocation(container);
                     }
                     if(s.isLoggingSupported()) {
-                        logging = s.isLogging(selected.getContainerName());
-                        loggingBucket = s.getLoggingTarget(selected.getContainerName());
+                        logging = s.isLogging(container);
+                        loggingBucket = s.getLoggingTarget(container);
                         for(AbstractPath c : getSelected().getContainer().getParent().children()) {
                             containers.add(c.getName());
                         }
                     }
                     if(s.isVersioningSupported()) {
-                        versioning = s.isVersioning(selected.getContainerName());
-                        mfa = s.isMultiFactorAuthentication(selected.getContainerName());
+                        versioning = s.isVersioning(container);
+                        mfa = s.isMultiFactorAuthentication(container);
+                    }
+                    if(s.isLifecycleSupported()) {
+                        expiration = s.getExpiration(container);
+                        transition = s.getTransition(container);
                     }
                     if(numberOfFiles() == 1) {
                         encryption = selected.attributes().getEncryption();
@@ -2046,6 +2118,14 @@ public class InfoController extends ToolbarWindowController {
                                 ));
                             }
                             bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
+                        }
+                        lifecycleDeleteCheckbox.setState(expiration != null ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(expiration != null) {
+                            lifecycleDeletePopup.selectItemAtIndex(lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(expiration)));
+                        }
+                        lifecycleTransitionCheckbox.setState(transition != null ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(transition != null) {
+                            lifecycleTransitionPopup.selectItemAtIndex(lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(transition)));
                         }
                     }
                     finally {
