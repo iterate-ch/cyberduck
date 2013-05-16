@@ -72,7 +72,19 @@ public abstract class CloudSession extends HttpSession {
         throw new UnsupportedOperationException();
     }
 
+    public Integer getTransition(final String container) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Integer getExpiration(final String container) {
+        throw new UnsupportedOperationException();
+    }
+
     public boolean isVersioningSupported() {
+        return false;
+    }
+
+    public boolean isLifecycleSupported() {
         return false;
     }
 

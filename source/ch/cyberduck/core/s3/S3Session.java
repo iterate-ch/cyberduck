@@ -64,6 +64,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @version $Id$
@@ -733,7 +734,7 @@ public class S3Session extends CloudSession {
      * @param destination Logging bucket name or null to choose container itself as target
      */
     @Override
-    public void setLogging(final String container, final boolean enabled, String destination) {
+    public void setLogging(final String container, final boolean enabled, final String destination) {
         if(this.isLoggingSupported()) {
             try {
                 // Logging target bucket
@@ -757,17 +758,104 @@ public class S3Session extends CloudSession {
         }
     }
 
-    public void setLifecycle(final String container) {
-        try {
-            this.check();
-            final LifecycleConfig config = new LifecycleConfig();
-            this.getClient().setLifecycleConfig(container, config);
+    public Integer getTransition(final String container) {
+        if(this.isLifecycleSupported()) {
+            this.readLifecycle(container);
+            if(lifecycleStatus.containsKey(container)) {
+                for(LifecycleConfig.Rule rule : lifecycleStatus.get(container).getRules()) {
+                    if(rule.getTransition() != null) {
+                        if(rule.getTransition().getDays() != null) {
+                            return rule.getTransition().getDays();
+                        }
+                    }
+                }
+            }
         }
-        catch(ServiceException e) {
-            this.error("Cannot write file attributes", e);
+        return null;
+    }
+
+    public Integer getExpiration(final String container) {
+        if(this.isLifecycleSupported()) {
+            this.readLifecycle(container);
+            if(lifecycleStatus.containsKey(container)) {
+                for(LifecycleConfig.Rule rule : lifecycleStatus.get(container).getRules()) {
+                    if(rule.getExpiration() != null) {
+                        if(rule.getExpiration().getDays() != null) {
+                            return rule.getExpiration().getDays();
+                        }
+                    }
+                }
+            }
         }
-        catch(IOException e) {
-            this.error("Cannot write file attributes", e);
+        return null;
+    }
+
+    protected Map<String, LifecycleConfig> lifecycleStatus
+            = new HashMap<String, LifecycleConfig>();
+
+    public void readLifecycle(final String container) {
+        if(this.isLifecycleSupported()) {
+            if(!lifecycleStatus.containsKey(container)) {
+                try {
+                    if(this.getHost().getCredentials().isAnonymousLogin()) {
+                        log.info("Anonymous cannot access logging status");
+                        return;
+                    }
+                    this.check();
+                    final LifecycleConfig status = this.getClient().getLifecycleConfig(container);
+                    if(null != status) {
+                        lifecycleStatus.put(container, status);
+                    }
+                }
+                catch(ServiceException e) {
+                    log.warn("Bucket logging not supported:" + e.getMessage());
+                    this.setLoggingSupported(false);
+                }
+                catch(IOException e) {
+                    this.error("Cannot read container configuration", e);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param container  The bucket name
+     * @param enabled    True if lifecycle config should be enabled
+     * @param transition Days
+     * @param expiration Days
+     */
+    public void setLifecycle(final String container, final boolean enabled, final Integer transition, final Integer expiration) {
+        if(this.isLifecycleSupported()) {
+            try {
+                this.check();
+                if(transition != null || expiration != null) {
+                    final LifecycleConfig config = new LifecycleConfig();
+                    // Unique identifier for the rule. The value cannot be longer than 255 characters. When you specify an empty prefix, the rule applies to all objects in the bucket
+                    final LifecycleConfig.Rule rule = config.newRule(UUID.randomUUID().toString(), StringUtils.EMPTY, enabled);
+                    if(transition != null) {
+                        rule.newTransition().setDays(transition);
+                    }
+                    if(expiration != null) {
+                        final LifecycleConfig.Expiration e = rule.newExpiration();
+                        e.setDays(expiration);
+                    }
+                    if(!config.equals(lifecycleStatus.get(container))) {
+                        this.getClient().setLifecycleConfig(container, config);
+                    }
+                }
+                else {
+                    this.getClient().deleteLifecycleConfig(container);
+                }
+            }
+            catch(ServiceException e) {
+                this.error("Cannot write file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot write file attributes", e);
+            }
+            finally {
+                lifecycleStatus.remove(container);
+            }
         }
     }
 
@@ -783,6 +871,13 @@ public class S3Session extends CloudSession {
     @Override
     public boolean isVersioningSupported() {
         return versioningSupported;
+    }
+
+    private boolean lifecycleSupported = true;
+
+    @Override
+    public boolean isLifecycleSupported() {
+        return lifecycleSupported;
     }
 
     @Override
