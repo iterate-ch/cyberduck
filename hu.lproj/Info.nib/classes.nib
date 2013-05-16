@@ -44,6 +44,10 @@
         groupx = NSButton;
         iconImageView = NSImageView;
         kindField = NSTextField;
+        lifecycleDeleteCheckbox = NSButton;
+        lifecycleDeletePopup = NSPopUpButton;
+        lifecycleTransitionCheckbox = NSButton;
+        lifecycleTransitionPopup = NSPopUpButton;
         metadataAddButton = NSButton;
         metadataProgress = NSProgressIndicator;
         metadataRemoveButton = NSButton;

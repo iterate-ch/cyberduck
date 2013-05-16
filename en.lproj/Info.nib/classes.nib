@@ -96,6 +96,14 @@
 				<string>NSImageView</string>
 				<key>kindField</key>
 				<string>NSTextField</string>
+				<key>lifecycleDeleteCheckbox</key>
+				<string>NSButton</string>
+				<key>lifecycleDeletePopup</key>
+				<string>NSPopUpButton</string>
+				<key>lifecycleTransitionCheckbox</key>
+				<string>NSButton</string>
+				<key>lifecycleTransitionPopup</key>
+				<string>NSPopUpButton</string>
 				<key>metadataAddButton</key>
 				<string>NSButton</string>
 				<key>metadataProgress</key>
