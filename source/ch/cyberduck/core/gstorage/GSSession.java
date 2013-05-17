@@ -198,7 +198,7 @@ public class GSSession extends S3Session implements DistributionConfiguration {
             // Project ID needs OAuth2 authentication
             if(null == oauth) {
                 oauth = new OAuth2Credentials(
-                        new OAuthUtils(this.http("accounts.google.com"),
+                        new OAuthUtils(this.http(),
                                 OAuthUtils.OAuthImplementation.GOOGLE_STORAGE_OAUTH2_10,
                                 Preferences.instance().getProperty("google.storage.oauth.clientid"),
                                 Preferences.instance().getProperty("google.storage.oauth.secret")),
