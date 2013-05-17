@@ -4,6 +4,7 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 4.3.2 [http://trac.cyberduck.ch/milestone/4.3.2]
+- [Feature] Bucket lifecycle configuration to archive objects in Glacier (S3) (#6830)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)
 - [Bugfix] Failure duplicating files (FTP) (#7224)

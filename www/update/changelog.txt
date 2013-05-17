@@ -1,4 +1,5 @@
 4.3.2 [http://trac.cyberduck.ch/milestone/4.3.2]
+- [Feature] Bucket lifecycle configuration to archive objects in Glacier (S3) (#6830)
 - [Bugfix] Failure duplicating files (FTP) (#7224)
 - [Bugfix] Save workspace does not work for multiple browser sessions to the same server (#7213)
 
