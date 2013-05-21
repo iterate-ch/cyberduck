@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
@@ -775,7 +775,7 @@ public class BookmarkController extends WindowController {
         this.updateField(nicknameField, host.getNickname());
         final String url;
         if(StringUtils.isNotBlank(host.getDefaultPath())) {
-            url = host.toURL() + Path.normalize(host.getDefaultPath());
+            url = host.toURL() + PathNormalizer.normalize(host.getDefaultPath());
         }
         else {
             url = host.toURL();

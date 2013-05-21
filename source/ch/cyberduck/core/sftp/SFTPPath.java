@@ -21,6 +21,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
@@ -210,7 +211,7 @@ public class SFTPPath extends Path {
             try {
                 String target = this.getSession().sftp().readLink(this.getAbsolute());
                 if(!target.startsWith(String.valueOf(Path.DELIMITER))) {
-                    target = Path.normalize(this.getParent().getAbsolute() + String.valueOf(Path.DELIMITER) + target);
+                    target = PathNormalizer.normalize(this.getParent().getAbsolute() + String.valueOf(Path.DELIMITER) + target);
                 }
                 this.setSymlinkTarget(target);
                 SFTPv3FileAttributes targetAttributes = this.getSession().sftp().stat(target);

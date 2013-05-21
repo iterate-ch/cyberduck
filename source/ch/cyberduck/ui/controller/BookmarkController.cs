@@ -501,7 +501,7 @@ namespace Ch.Cyberduck.Ui.Controller
             string url;
             if (Utils.IsNotBlank(_host.getDefaultPath()))
             {
-                url = _host.toURL() + Path.normalize(_host.getDefaultPath());
+                url = _host.toURL() + PathNormalizer.normalize(_host.getDefaultPath());
             }
             else
             {

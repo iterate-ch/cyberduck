@@ -18,16 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.CredentialsConfiguratorFactory;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.KeychainFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.ReachabilityFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.LocalFactory;
@@ -584,7 +575,7 @@ public class ConnectionController extends SheetController {
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
             final String url = protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.intValue()
-                    + Path.normalize(pathField.stringValue());
+                    + PathNormalizer.normalize(pathField.stringValue());
             urlLabel.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
         }
         else {

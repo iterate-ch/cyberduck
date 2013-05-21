@@ -94,7 +94,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetUrl(object host)
         {
             Host h = (Host) host;
-            return h.toURL() + Path.normalize(h.getDefaultPath());
+            return h.toURL() + PathNormalizer.normalize(h.getDefaultPath());
         }
 
         public object GetNotes(object host)

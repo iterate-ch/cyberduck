@@ -295,7 +295,7 @@ public class S3Session extends CloudSession {
             configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
         }
         if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
-            configuration.setProperty("s3service.s3-endpoint-virtual-path", Path.normalize(host.getProtocol().getContext()));
+            configuration.setProperty("s3service.s3-endpoint-virtual-path", PathNormalizer.normalize(host.getProtocol().getContext()));
         }
         configuration.setProperty("s3service.s3-endpoint-http-port", String.valueOf(host.getPort()));
         configuration.setProperty("s3service.s3-endpoint-https-port", String.valueOf(host.getPort()));

@@ -24,6 +24,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
@@ -118,10 +119,10 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         }
         authentication.append(":").append(host.getPort());
         if(StringUtils.isBlank(host.getProtocol().getContext())) {
-            authentication.append(Path.normalize(Preferences.instance().getProperty("cf.authentication.context")));
+            authentication.append(PathNormalizer.normalize(Preferences.instance().getProperty("cf.authentication.context")));
         }
         else {
-            authentication.append(Path.normalize(host.getProtocol().getContext()));
+            authentication.append(PathNormalizer.normalize(host.getProtocol().getContext()));
         }
         if(log.isInfoEnabled()) {
             log.info(String.format("Using authentication URL %s", authentication.toString()));

@@ -394,7 +394,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 String url = View.SelectedProtocol.getScheme().toString() + "://" + View.Username
                              + "@" + View.Hostname + ":" + View.Port
-                             + Path.normalize(View.Path);
+                             + PathNormalizer.normalize(View.Path);
                 View.URL = url;
             }
             else

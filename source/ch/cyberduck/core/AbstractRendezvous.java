@@ -180,7 +180,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
         host.getCredentials().setUsername(user);
         host.getCredentials().setPassword(password);
         if(StringUtils.isNotBlank(path)) {
-            host.setDefaultPath(Path.normalize(path));
+            host.setDefaultPath(PathNormalizer.normalize(path));
         }
         host.setComment(UserDateFormatterFactory.get().getLongFormat(new Date().getTime()));
         this.add(fullname, host);
