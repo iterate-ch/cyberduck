@@ -73,11 +73,6 @@ public class PathTest extends AbstractTestCase {
         assertEquals("/path/to", path.getAbsolute());
         path.setPath("/path///to////");
         assertEquals("/path/to", path.getAbsolute());
-
-
-        assertEquals(Path.normalize("relative/path", false), "relative/path");
-        assertEquals(Path.normalize("/absolute/path", true), "/absolute/path");
-        assertEquals(Path.normalize("/absolute/path", false), "/absolute/path");
     }
 
     @Test
@@ -102,11 +97,6 @@ public class PathTest extends AbstractTestCase {
                 "\\\\directory", Path.DIRECTORY_TYPE);
         assertEquals("\\\\directory", path.getAbsolute());
         assertEquals("/", path.getParent().getAbsolute());
-    }
-
-    @Test
-    public void test972() throws Exception {
-        assertEquals("//home/path", Path.normalize("//home/path"));
     }
 
     @Test
