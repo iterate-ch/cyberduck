@@ -24,28 +24,28 @@ namespace Ch.Cyberduck.Ui.Winforms
 {
     internal class UserDefaultsDateFormatter : AbstractUserDateFormatter
     {
-        public override string getLongFormat(long ticks, bool natural)
+        public override string getLongFormat(long millis, bool natural)
         {
-            if (-1 == ticks)
+            if (-1 == millis)
             {
                 return Locale.localizedString("Unknown");
             }
-            return GetLongFormat(new DateTime(ticks));
+            return GetLongFormat(new DateTime(millis*TimeSpan.TicksPerMillisecond));
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ticks">ticks Ticks since January 1, 1970, 00:00:00 GMT</param>
+        /// <param name="millis">millis Milliseconds since January 1, 1970, 00:00:00 GMT</param>
         /// <returns>A short format string or "Unknown" if there is a problem converting the time to a string</returns>
-        public override string getShortFormat(long ticks, bool natural)
+        public override string getShortFormat(long millis, bool natural)
         {
-            if (-1 == ticks)
+            if (-1 == millis)
             {
                 return Locale.localizedString("Unknown");
             }
 
-            return GetShortFormat(new DateTime(ticks));
+            return GetShortFormat(new DateTime(millis*TimeSpan.TicksPerMillisecond));
         }
 
         public override string getMediumFormat(long milliseconds, bool natural)
