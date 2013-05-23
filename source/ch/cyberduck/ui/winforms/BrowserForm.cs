@@ -565,7 +565,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void SetBrowserModel(IEnumerable<Path> model)
         {
             // Clear the cache in order to avoid strange side effects
-            browser.ClearCachedInfo();
+            browser.RebuildAll(true);
+            browser.ClearCachedInfo();           
             browser.SetObjects(model);
 
             //only restore the state for the first time
