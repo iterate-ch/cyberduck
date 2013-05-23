@@ -32,6 +32,7 @@ import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
@@ -148,7 +149,8 @@ public final class PromptLoginController extends AbstractLoginController {
 
             public void setUsernameLabel(NSTextField usernameLabel) {
                 this.usernameLabel = usernameLabel;
-                this.usernameLabel.setStringValue(String.format("%s:", credentials.getUsernamePlaceholder()));
+                this.usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                        String.format("%s:", credentials.getUsernamePlaceholder()), TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
             @Outlet
@@ -156,7 +158,8 @@ public final class PromptLoginController extends AbstractLoginController {
 
             public void setPasswordLabel(NSTextField passwordLabel) {
                 this.passwordLabel = passwordLabel;
-                this.passwordLabel.setStringValue(String.format("%s:", credentials.getPasswordPlaceholder()));
+                this.passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                        String.format("%s:", credentials.getPasswordPlaceholder()), TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
             @Outlet
@@ -321,6 +324,7 @@ public final class PromptLoginController extends AbstractLoginController {
             private void update() {
                 this.usernameField.setEnabled(!credentials.isAnonymousLogin());
                 this.passwordField.setEnabled(!credentials.isAnonymousLogin());
+                this.window.makeFirstResponder(this.usernameField);
                 {
                     boolean enable = enableKeychain && !credentials.isAnonymousLogin();
                     this.keychainCheckbox.setEnabled(enable);
