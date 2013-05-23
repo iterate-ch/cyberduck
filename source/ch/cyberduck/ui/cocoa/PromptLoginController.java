@@ -126,6 +126,7 @@ public final class PromptLoginController extends AbstractLoginController {
             @Override
             public void awakeFromNib() {
                 this.update();
+                this.window.makeFirstResponder(this.usernameField);
                 super.awakeFromNib();
             }
 
@@ -324,7 +325,6 @@ public final class PromptLoginController extends AbstractLoginController {
             private void update() {
                 this.usernameField.setEnabled(!credentials.isAnonymousLogin());
                 this.passwordField.setEnabled(!credentials.isAnonymousLogin());
-                this.window.makeFirstResponder(this.usernameField);
                 {
                     boolean enable = enableKeychain && !credentials.isAnonymousLogin();
                     this.keychainCheckbox.setEnabled(enable);
