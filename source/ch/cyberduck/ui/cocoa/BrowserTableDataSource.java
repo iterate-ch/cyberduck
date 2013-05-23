@@ -543,7 +543,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 final Local file = pasteboard.get(0).getLocal();
                 if(pasteboard.get(0).attributes().isFile()) {
                     file.touch();
-                    IconServiceFactory.get().setProgress(file, 0);
+                    IconServiceFactory.get().set(file, 0);
                 }
                 if(pasteboard.get(0).attributes().isDirectory()) {
                     file.mkdir();

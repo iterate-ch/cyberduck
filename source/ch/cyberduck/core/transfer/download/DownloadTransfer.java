@@ -25,8 +25,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.local.ApplicationLauncher;
-import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.Local;
@@ -56,8 +54,8 @@ public class DownloadTransfer extends Transfer {
     private DownloadRegexFilter filter
             = new DownloadRegexFilter();
 
-    private final ApplicationLauncher launcher
-            = ApplicationLauncherFactory.get();
+    private final IconService icon
+            = IconServiceFactory.get();
 
     public DownloadTransfer(final Path root) {
         this(Collections.singletonList(root));
@@ -187,13 +185,6 @@ public class DownloadTransfer extends Transfer {
             status.setComplete();
         }
         else if(file.attributes().isFile()) {
-            final IconService icon = IconServiceFactory.get();
-            // No icon update if disabled
-            final boolean update
-                    = Preferences.instance().getBoolean("queue.download.icon.update");
-            if(update) {
-                icon.setProgress(local, 0);
-            }
             file.download(bandwidth, new AbstractStreamListener() {
                 // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
                 // overhead when transferring a large amount of files
@@ -206,17 +197,12 @@ public class DownloadTransfer extends Transfer {
                 @Override
                 public void bytesReceived(long bytes) {
                     addTransferred(bytes);
-                    if(update) {
-                        if(status.getLength() == status.getCurrent()) {
-                            // Remove custom icon if complete. The Finder will display the default
-                            // icon for this filetype
-                            icon.setProgress(local, -1);
-                        }
-                        else if(threshold) {
+                    if(threshold) {
+                        if(Preferences.instance().getBoolean("queue.download.icon.update")) {
                             int fraction = (int) (status.getCurrent() / file.attributes().getSize() * 10);
                             if(fraction > step) {
                                 // Another 10 percent of the file has been transferred
-                                icon.setProgress(local, ++step);
+                                icon.set(local, ++step);
                             }
                         }
                     }
@@ -226,21 +212,6 @@ public class DownloadTransfer extends Transfer {
         else if(file.attributes().isDirectory()) {
             local.mkdir();
         }
-    }
-
-    @Override
-    protected void fireTransferDidEnd() {
-        if(this.isComplete()) {
-            launcher.bounce(this.getRoot().getLocal());
-        }
-        super.fireTransferDidEnd();
-    }
-
-    /**
-     * @return Open file with default application
-     */
-    protected boolean shouldOpenWhenComplete() {
-        return Preferences.instance().getBoolean("queue.postProcessItemWhenComplete");
     }
 
     @Override
@@ -262,5 +233,4 @@ public class DownloadTransfer extends Transfer {
     public String getImage() {
         return "transfer-download.tiff";
     }
-
 }

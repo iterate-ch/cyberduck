@@ -51,12 +51,17 @@ public abstract class IconServiceFactory extends Factory<IconService> {
 
     private static final class DisabledIconService implements IconService {
         @Override
-        public boolean setIcon(final Local file, final String image) {
+        public boolean set(final Local file, final String image) {
             return false;
         }
 
         @Override
-        public boolean setProgress(final Local file, final int progress) {
+        public boolean set(final Local file, final int progress) {
+            return false;
+        }
+
+        @Override
+        public boolean remove(final Local file) {
             return false;
         }
     }

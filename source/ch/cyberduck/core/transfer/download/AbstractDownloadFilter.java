@@ -5,6 +5,8 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
+import ch.cyberduck.core.local.IconService;
+import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
@@ -28,6 +30,9 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
 
     private final ApplicationLauncher launcher
             = ApplicationLauncherFactory.get();
+
+    private final IconService icon
+            = IconServiceFactory.get();
 
     public AbstractDownloadFilter(final SymlinkResolver symlinkResolver) {
         this.symlinkResolver = symlinkResolver;
@@ -96,6 +101,10 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
             // Create download folder if missing
             file.getLocal().getParent().mkdir();
         }
+        // No icon update if disabled
+        if(Preferences.instance().getBoolean("queue.download.icon.update")) {
+            icon.set(file.getLocal(), 0);
+        }
         return status;
     }
 
@@ -108,6 +117,10 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
+            // Remove custom icon if complete. The Finder will display the default icon for this file type
+            if(Preferences.instance().getBoolean("queue.download.icon.update")) {
+                icon.remove(file.getLocal());
+            }
             if(options.quarantine) {
                 // Set quarantine attributes
                 quarantine.setQuarantine(file.getLocal(), file.getHost().toURL(), file.toURL());

@@ -46,19 +46,12 @@ public final class WorkspaceIconService implements IconService {
     }
 
     @Override
-    public boolean setIcon(final Local file, final String image) {
-        final NSImage icon;
-        if(StringUtils.isBlank(image)) {
-            icon = null;
-        }
-        else {
-            icon = IconCache.iconNamed(image);
-        }
-        return setIcon(file, icon);
+    public boolean set(final Local file, final String image) {
+        return this.update(file, IconCache.iconNamed(image));
 
     }
 
-    protected boolean setIcon(final Local file, final NSImage icon) {
+    protected boolean update(final Local file, final NSImage icon) {
         synchronized(NSWorkspace.class) {
             // Specify 0 if you want to generate icons in all available icon representation formats
             return NSWorkspace.sharedWorkspace().setIcon_forFile_options(icon, file.getAbsolute(), new NSUInteger(0));
@@ -66,12 +59,12 @@ public final class WorkspaceIconService implements IconService {
     }
 
     @Override
-    public boolean setProgress(final Local file, final int progress) {
-        if(-1 == progress) {
-            return this.setIcon(file, (String) null);
-        }
-        else {
-            return this.setIcon(file, String.format("download%d.icns", progress));
-        }
+    public boolean set(final Local file, final int progress) {
+        return this.set(file, String.format("download%d.icns", progress));
+    }
+
+    @Override
+    public boolean remove(final Local file) {
+        return this.update(file, null);
     }
 }
