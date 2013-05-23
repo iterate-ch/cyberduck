@@ -32,9 +32,9 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
             public Local call() throws Exception {
                 final NullLocal file = new NullLocal(Preferences.instance().getProperty("tmp.dir"),
                         UUID.randomUUID().toString());
-                assertFalse(s.setIcon(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
+                assertFalse(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
                 file.touch();
-                assertTrue(s.setIcon(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
+                assertTrue(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
                 file.delete();
                 return file;
             }
