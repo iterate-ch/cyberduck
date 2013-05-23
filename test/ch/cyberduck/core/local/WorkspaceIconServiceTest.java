@@ -42,4 +42,17 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
         // Test concurrency as set icon is not thread safe
         repeat(c, 50);
     }
+
+    @Test
+    public void testRemove() throws Exception {
+        final WorkspaceIconService s = (WorkspaceIconService) IconServiceFactory.get();
+        final NullLocal file = new NullLocal(Preferences.instance().getProperty("tmp.dir"),
+                UUID.randomUUID().toString());
+        assertFalse(s.remove(file));
+        file.touch();
+        assertFalse(s.remove(file));
+        assertTrue(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
+        assertTrue(s.remove(file));
+        file.delete();
+    }
 }
