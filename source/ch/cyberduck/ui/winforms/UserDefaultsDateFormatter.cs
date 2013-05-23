@@ -76,6 +76,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             return dt;
         }
 
+        public static long ConvertJavaMillisecondsToDotNetMillis(long javaMS)
+        {
+            DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS*
+                                                       TimeSpan.TicksPerMillisecond)).ToLocalTime();
+            return dt.Ticks/TimeSpan.TicksPerMillisecond;
+        }
+
         private class Factory : UserDateFormatterFactory
         {
             protected override object create()

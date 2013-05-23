@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
@@ -152,7 +153,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 Date timestamp = _transfer.getTimestamp();
                 if (null != timestamp)
                 {
-                    _messageText = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime());
+                    _messageText =
+                        UserDateFormatterFactory.get()
+                                                .getLongFormat(
+                                                    UserDefaultsDateFormatter.ConvertJavaMillisecondsToDotNetMillis(
+                                                        timestamp.getTime()));
                 }
             }
             if (null != _messageText)

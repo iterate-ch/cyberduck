@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Winforms;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.date;
@@ -29,7 +30,6 @@ using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.transfer.download;
 using ch.cyberduck.core.transfer.synchronisation;
 using ch.cyberduck.core.transfer.upload;
-using ch.cyberduck.ui.controller;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -165,8 +165,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         View.LocalFileModificationDate =
-                            UserDateFormatterFactory.get().getLongFormat(
-                                selected.getLocal().attributes().getModificationDate());
+                            UserDateFormatterFactory.get()
+                                                    .getLongFormat(UserDefaultsDateFormatter
+                                                                       .ConvertJavaMillisecondsToDotNetMillis(
+                                                                           selected.getLocal()
+                                                                                   .attributes()
+                                                                                   .getModificationDate()));
                     }
 
                     View.RemoteFileUrl = selected.toURL(false);
