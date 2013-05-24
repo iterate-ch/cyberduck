@@ -37,6 +37,7 @@ using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.controller.threading;
 using java.lang;
+using java.text;
 using java.util;
 using org.apache.commons.lang;
 using org.apache.log4j;
@@ -56,6 +57,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly FileDescriptor descriptor = FileDescriptorFactory.get();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
+        private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
+        private IList<KeyValuePair<string, string>> _lifecycleTransitionPeriods;
         private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
 
         private InfoController(BrowserController controller, IList<Path> files)
@@ -401,6 +404,41 @@ namespace Ch.Cyberduck.Ui.Controller
             metadata.Add(Locale.localizedString("Remove"), RemoveMetadata);
 
             View.PopulateMetadata(metadata);
+        }
+
+        private void PopulateLifecycleTransitionPeriod()
+        {
+            if (_lifecycleTransitionPeriods == null)
+            {
+                _lifecycleTransitionPeriods =
+                    Utils.ConvertFromJavaList(Preferences.instance().getList("s3.lifecycle.transition.options"),
+                                              item =>
+                                              new KeyValuePair<string, string>(
+                                                  MessageFormat.format(Locale.localizedString("after {0} Days", "S3"),
+                                                                       item.ToString()), item.ToString()));
+            }
+
+
+            /*
+            foreach(String option in Utils.ConvertFromJavaList<String>(Preferences.instance().getList("s3.lifecycle.transition.options")))
+            {
+                periods.Add(new KeyValuePair<string, string>(MessageFormat.format(Locale.localizedString("after {0} Days", "S3")), option));
+            }
+            */
+            View.PopulateLifecycleTransitionPeriod(_lifecycleTransitionPeriods);
+        }
+
+        private void PopulateLifecycleDeletePeriod()
+        {
+            if (_lifecycleDeletePeriods == null)
+            {
+                _lifecycleDeletePeriods =
+                    Utils.ConvertFromJavaList(Preferences.instance().getList("s3.lifecycle.delete.options"), item =>
+                                              new KeyValuePair<string, string>(
+                                                  MessageFormat.format(Locale.localizedString("after {0} Days", "S3"),
+                                                                       item.ToString()), item.ToString()));
+            }
+            View.PopulateLifecycleDeletePeriod(_lifecycleDeletePeriods);
         }
 
         private void RemoveMetadata()
@@ -756,6 +794,10 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BucketVersioningChanged += BucketVersioningChanged;
             View.BucketMfaChanged += BucketMfaChanged;
             View.BucketAnalyticsCheckboxChanged += BucketAnalyticsCheckboxChanged;
+            View.LifecycleTransitionCheckboxChanged += LifecycleChanged;
+            View.LifecycleTransitionPopupChanged += LifecycleChanged;
+            View.LifecycleDeleteCheckboxChanged += LifecycleChanged;
+            View.LifecycleDeletePopupChanged += LifecycleChanged;
         }
 
         private void BucketAnalyticsCheckboxChanged()
@@ -808,6 +850,18 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BucketVersioningChanged -= BucketVersioningChanged;
             View.BucketMfaChanged -= BucketMfaChanged;
             View.BucketAnalyticsCheckboxChanged -= BucketAnalyticsCheckboxChanged;
+            View.LifecycleTransitionCheckboxChanged -= LifecycleChanged;
+            View.LifecycleTransitionPopupChanged -= LifecycleChanged;
+            View.LifecycleDeleteCheckboxChanged -= LifecycleChanged;
+            View.LifecycleDeletePopupChanged -= LifecycleChanged;
+        }
+
+        private void LifecycleChanged()
+        {
+            if (ToggleS3Settings(false))
+            {
+                _controller.Background(new LifecycleBackgroundAction(_controller, this));
+            }
         }
 
         private void BucketMfaChanged()
@@ -1132,6 +1186,8 @@ namespace Ch.Cyberduck.Ui.Controller
             classes.Add(new KeyValuePair<string, string>(Locale.localizedString("Unknown"), "Unknown"));
             View.PopulateStorageClass(classes);
             View.StorageClass = "Unknown";
+            PopulateLifecycleTransitionPeriod();
+            PopulateLifecycleDeletePeriod();
 
             if (ToggleS3Settings(false))
             {
@@ -1207,6 +1263,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool versioning = false;
             bool storageclass = false;
             bool encryption = false;
+            bool lifecycle = false;
             if (enable)
             {
                 logging = ((CloudSession) session).isLoggingSupported();
@@ -1214,6 +1271,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 versioning = ((CloudSession) session).isVersioningSupported();
                 encryption = ((CloudSession) session).getSupportedEncryptionAlgorithms().size() > 0;
                 storageclass = ((CloudSession) session).getSupportedStorageClasses().size() > 1;
+                lifecycle = ((CloudSession) session).isLifecycleSupported();
             }
             View.BucketVersioningEnabled = stop && enable && versioning;
             View.BucketMfaEnabled = stop && enable && versioning && View.BucketVersioning;
@@ -1232,6 +1290,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.BucketAnalyticsCheckboxEnabled = stop && enable && analytics;
             }
+            View.LifecycleDeleteCheckboxEnabled = stop && enable && lifecycle;
+            View.LifecycleDeletePopupEnabled = stop && enable && lifecycle;
+            View.LifecycleTransitionCheckboxEnabled = stop && enable && lifecycle;
+            View.LifecycleTransitionPopupEnabled = stop && enable && lifecycle;
             if (stop)
             {
                 View.S3AnimationActive = false;
@@ -1678,13 +1740,16 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly InfoController _infoController;
             private readonly Path _selected;
             private readonly IInfoView _view;
-            private String _analytics;
+            private Credentials _credentials;
+            //private String _analytics;
             private String _encryption;
+            private Integer _expiration;
 
             private String _location;
             private bool _logging;
             private String _loggingBucket;
             private bool _mfa;
+            private Integer _transition;
             private bool _versioning;
 
             public FetchS3BackgroundAction(BrowserController browserController, InfoController infoController)
@@ -1698,6 +1763,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void run()
             {
                 CloudSession s = (CloudSession) BrowserController.getSession();
+                string container = _selected.getContainerName();
                 if (s.isLocationSupported())
                 {
                     _location = s.getLocation(_selected.getContainerName());
@@ -1717,16 +1783,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     _versioning = s.isVersioning(_selected.getContainerName());
                     _mfa = s.isMultiFactorAuthentication(_selected.getContainerName());
                 }
+                if (s.isLifecycleSupported())
+                {
+                    _expiration = s.getExpiration(container);
+                    _transition = s.getTransition(container);
+                }
                 if (s.isAnalyticsSupported())
                 {
-                    Credentials credentials =
-                        s.iam().getUserCredentials(BrowserController.getSession().analytics().getName());
-                    if (credentials.validate(BrowserController.getSession().getHost().getProtocol()))
-                    {
-                        _analytics = s.analytics()
-                                      .getSetup(s.getHost().getProtocol(), s.getHost().getProtocol().getScheme(),
-                                                _selected.getContainerName(), credentials);
-                    }
+                    _credentials = s.iam().getUserCredentials(s.analytics().getName());
                 }
                 if (_infoController.NumberOfFiles == 1)
                 {
@@ -1738,6 +1802,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 try
                 {
+                    CloudSession s = (CloudSession) BrowserController.getSession();
                     _view.BucketLoggingCheckbox = _logging;
                     if (_containers.Count > 0)
                     {
@@ -1760,15 +1825,41 @@ namespace Ch.Cyberduck.Ui.Controller
                     _view.BucketMfaEnabled = _versioning;
                     _view.BucketMfa = _mfa;
                     _view.Encryption = Utils.IsNotBlank(_encryption);
-                    _view.BucketAnalyticsCheckbox = Utils.IsNotBlank(_analytics);
-                    if (Utils.IsNotBlank(_analytics))
+                    if (null != _credentials)
                     {
-                        _view.BucketAnalyticsSetupUrl = _analytics;
-                        _view.BucketAnalyticsSetupUrlEnabled = true;
+                        _view.BucketAnalyticsSetupUrl = s.analytics()
+                                                         .getSetup(s.getHost().getProtocol(),
+                                                                   s.getHost().getProtocol().getScheme(),
+                                                                   _selected.getContainerName(), _credentials);
                     }
-                    else
+                    _view.BucketAnalyticsCheckbox = null != _credentials;
+                    _view.LifecycleDeleteCheckbox = null != _expiration;
+                    if (_expiration != null)
                     {
-                        _view.BucketAnalyticsSetupUrlEnabled = false;
+                        _view.LifecycleDelete = _expiration.toString();
+                        if (null == _view.LifecycleDelete)
+                        {
+                            _infoController._lifecycleDeletePeriods.Add(
+                                new KeyValuePair<string, string>(
+                                    MessageFormat.format(Locale.localizedString("after {0} Days", "S3"),
+                                                         _expiration.toString()), _expiration.toString()));
+                            _infoController.PopulateLifecycleDeletePeriod();
+                            _view.LifecycleDelete = _expiration.toString();
+                        }
+                    }
+                    _view.LifecycleTransitionCheckbox = null != _transition;
+                    if (_transition != null)
+                    {
+                        _view.LifecycleTransition = _transition.toString();
+                        if (null == _view.LifecycleTransition)
+                        {
+                            _infoController._lifecycleTransitionPeriods.Add(
+                                new KeyValuePair<string, string>(
+                                    MessageFormat.format(Locale.localizedString("after {0} Days", "S3"),
+                                                         _transition.toString()), _transition.toString()));
+                            _infoController.PopulateLifecycleTransitionPeriod();
+                            _view.LifecycleTransition = _transition.toString();
+                        }
                     }
                 }
                 finally
@@ -1776,12 +1867,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     _infoController.ToggleS3Settings(true);
                     _infoController.AttachS3Handlers();
                 }
-            }
-
-            public override String getActivity()
-            {
-                return String.Format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
@@ -1817,6 +1902,48 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return String.Format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
                                      _infoController.SelectedPath.getContainerName());
+            }
+        }
+
+        private class LifecycleBackgroundAction : BrowserBackgroundAction
+        {
+            private readonly bool _deleteEnabled;
+            private readonly string _deletePeriod;
+            private readonly InfoController _infoController;
+            private readonly Path _selected;
+            private readonly bool _transitionEnabled;
+            private readonly string _transitionPeriod;
+            private readonly IInfoView _view;
+
+            public LifecycleBackgroundAction(BrowserController browserController, InfoController infoController)
+                : base(browserController)
+            {
+                _infoController = infoController;
+                _view = infoController.View;
+                _selected = infoController.SelectedPath;
+
+                _deleteEnabled = _view.LifecycleDeleteCheckbox;
+                _transitionEnabled = _view.LifecycleTransitionCheckbox;
+                _deletePeriod = _view.LifecycleDelete;
+                _transitionPeriod = _view.LifecycleTransition;
+            }
+
+            public override void run()
+            {
+                string container = _selected.getContainerName();
+                ((S3Session) BrowserController.getSession()).setLifecycle(container,
+                                                                          _transitionEnabled
+                                                                              ? Integer.valueOf(_transitionPeriod)
+                                                                              : null,
+                                                                          _deleteEnabled
+                                                                              ? Integer.valueOf(_deletePeriod)
+                                                                              : null);
+            }
+
+            public override void cleanup()
+            {
+                _infoController.ToggleS3Settings(true);
+                _infoController.InitS3();
             }
         }
 

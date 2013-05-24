@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -164,6 +164,15 @@ namespace Ch.Cyberduck.Ui.Controller
         bool BucketVersioningEnabled { set; }
         bool BucketMfa { set; get; }
         bool BucketMfaEnabled { set; }
+        bool LifecycleTransitionCheckbox { set; get; }
+        bool LifecycleTransitionCheckboxEnabled { set; }
+        bool LifecycleDeleteCheckbox { set; get; }
+        bool LifecycleDeleteCheckboxEnabled { set; }
+        string LifecycleTransition { get; set; }
+        bool LifecycleTransitionPopupEnabled { set; }
+        string LifecycleDelete { get; set; }
+        bool LifecycleDeletePopupEnabled { set; }
+
         event VoidHandler FilenameChanged;
         event VoidHandler CalculateSize;
         event VoidHandler OwnerReadChanged;
@@ -188,6 +197,8 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateDefaultRoot(IList<KeyValuePair<string, string>> roots);
         void PopulateBucketLogging(IList<string> buckets);
         void PopulateDistributionLogging(IList<string> buckets);
+        void PopulateLifecycleTransitionPeriod(IList<KeyValuePair<string, string>> periods);
+        void PopulateLifecycleDeletePeriod(IList<KeyValuePair<string, string>> periods);
 
         event VoidHandler DistributionDeliveryMethodChanged;
         event VoidHandler DistributionEnabledChanged;
@@ -207,6 +218,10 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler StorageClassChanged;
         event VoidHandler BucketVersioningChanged;
         event VoidHandler BucketMfaChanged;
+        event VoidHandler LifecycleTransitionCheckboxChanged;
+        event VoidHandler LifecycleTransitionPopupChanged;
+        event VoidHandler LifecycleDeleteCheckboxChanged;
+        event VoidHandler LifecycleDeletePopupChanged;
 
         event VoidHandler ActiveTabChanged;
     }

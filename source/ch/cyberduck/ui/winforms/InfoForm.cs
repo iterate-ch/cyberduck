@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -39,14 +39,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             Load += delegate
-                        {
-                            int minWidth = 10; // border etc.
-                            foreach (ToolStripItem item in toolStrip.Items)
-                            {
-                                minWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
-                            }
-                            MinimumSize = new Size(minWidth, MinimumSize.Height);
-                        };
+                {
+                    int minWidth = 10; // border etc.
+                    foreach (ToolStripItem item in toolStrip.Items)
+                    {
+                        minWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
+                    }
+                    MinimumSize = new Size(minWidth, MinimumSize.Height);
+                };
 
             TopMost = false;
             TopLevel = true;
@@ -286,6 +286,44 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string Checksum
         {
             set { checksumTextBox.Text = value; }
+        }
+
+        public bool LifecycleTransitionCheckboxEnabled
+        {
+            set { lifecycleTransitionCheckBox.Enabled = value; }
+        }
+
+        public bool LifecycleDeleteCheckbox
+        {
+            get { return lifecycleDeleteCheckBox.Checked; }
+            set { lifecycleDeleteCheckBox.Checked = value; }
+        }
+
+        public bool LifecycleDeleteCheckboxEnabled
+        {
+            set { lifecycleDeleteCheckBox.Enabled = value; }
+        }
+
+        public string LifecycleTransition
+        {
+            get { return (string) lifecycleTransitionComboBox.SelectedValue; }
+            set { lifecycleTransitionComboBox.SelectedValue = value; }
+        }
+
+        public bool LifecycleTransitionPopupEnabled
+        {
+            set { lifecycleTransitionComboBox.Enabled = value; }
+        }
+
+        public string LifecycleDelete
+        {
+            get { return (string) lifecycleDeleteComboBox.SelectedValue; }
+            set { lifecycleDeleteComboBox.SelectedValue = value; }
+        }
+
+        public bool LifecycleDeletePopupEnabled
+        {
+            set { lifecycleDeleteComboBox.Enabled = value; }
         }
 
         public event VoidHandler FilenameChanged = delegate { };
@@ -623,6 +661,22 @@ namespace Ch.Cyberduck.Ui.Winforms
             distributionLoggingComboBox.DataSource = buckets;
         }
 
+        public void PopulateLifecycleTransitionPeriod(IList<KeyValuePair<string, string>> periods)
+        {
+            lifecycleTransitionComboBox.DataSource = null;
+            lifecycleTransitionComboBox.DataSource = periods;
+            lifecycleTransitionComboBox.DisplayMember = "Key";
+            lifecycleTransitionComboBox.ValueMember = "Value";
+        }
+
+        public void PopulateLifecycleDeletePeriod(IList<KeyValuePair<string, string>> periods)
+        {
+            lifecycleDeleteComboBox.DataSource = null;
+            lifecycleDeleteComboBox.DataSource = periods;
+            lifecycleDeleteComboBox.DisplayMember = "Key";
+            lifecycleDeleteComboBox.ValueMember = "Value";
+        }
+
         public bool DistributionDeliveryMethodEnabled
         {
             set { deliveryMethodComboBox.Enabled = value; }
@@ -859,12 +913,22 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { bucketMfaCheckBox.Enabled = value; }
         }
 
+        public bool LifecycleTransitionCheckbox
+        {
+            get { return lifecycleTransitionCheckBox.Checked; }
+            set { lifecycleTransitionCheckBox.Checked = value; }
+        }
+
         public event VoidHandler BucketLoggingCheckboxChanged = delegate { };
         public event VoidHandler BucketLoggingPopupChanged = delegate { };
         public event VoidHandler EncryptionChanged = delegate { };
         public event VoidHandler StorageClassChanged = delegate { };
         public event VoidHandler BucketVersioningChanged = delegate { };
         public event VoidHandler BucketMfaChanged = delegate { };
+        public event VoidHandler LifecycleTransitionCheckboxChanged = delegate { };
+        public event VoidHandler LifecycleTransitionPopupChanged = delegate { };
+        public event VoidHandler LifecycleDeleteCheckboxChanged = delegate { };
+        public event VoidHandler LifecycleDeletePopupChanged = delegate { };
         public event VoidHandler ActiveTabChanged = delegate { };
         public event VoidHandler BucketAnalyticsCheckboxChanged = delegate { };
         public event VoidHandler DistributionAnalyticsCheckboxChanged = delegate { };
@@ -887,7 +951,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool DistributionAnalyticsSetupUrlEnabled
         {
-            set {distributionAnalyticsSetupUrlLinkLabel.Enabled = value; }
+            set { distributionAnalyticsSetupUrlLinkLabel.Enabled = value; }
         }
 
         public bool MetadataTableEnabled
@@ -1017,55 +1081,55 @@ namespace Ch.Cyberduck.Ui.Winforms
             aclDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
             aclDataGridView.CellFormatting += delegate(object sender, DataGridViewCellFormattingEventArgs args)
-                                                  {
-                                                      if (null != aclDataGridView.DataSource)
-                                                      {
-                                                          if (aclDataGridView.IsCurrentCellInEditMode ||
-                                                              args.ColumnIndex != 0)
-                                                          {
-                                                              return;
-                                                          }
-                                                          if (String.IsNullOrEmpty(args.Value as String))
-                                                          {
-                                                              args.Value =
-                                                                  ((InfoController.UserAndRoleEntry)
-                                                                   aclDataGridView.Rows[args.RowIndex].DataBoundItem).
-                                                                      getUser().getPlaceholder();
-                                                              args.CellStyle.ForeColor = Color.Gray;
-                                                              args.CellStyle.Font = new Font(args.CellStyle.Font,
-                                                                                             FontStyle.Italic);
-                                                          }
-                                                      }
-                                                  };
+                {
+                    if (null != aclDataGridView.DataSource)
+                    {
+                        if (aclDataGridView.IsCurrentCellInEditMode ||
+                            args.ColumnIndex != 0)
+                        {
+                            return;
+                        }
+                        if (String.IsNullOrEmpty(args.Value as String))
+                        {
+                            args.Value =
+                                ((InfoController.UserAndRoleEntry)
+                                 aclDataGridView.Rows[args.RowIndex].DataBoundItem).
+                                    getUser().getPlaceholder();
+                            args.CellStyle.ForeColor = Color.Gray;
+                            args.CellStyle.Font = new Font(args.CellStyle.Font,
+                                                           FontStyle.Italic);
+                        }
+                    }
+                };
 
 
             //make combobox directly editable without multiple clicks
             aclDataGridView.CellClick += delegate(object o, DataGridViewCellEventArgs a)
-                                             {
-                                                 if (a.RowIndex < 0)
-                                                 {
-                                                     return; // Header
-                                                 }
-                                                 if (a.ColumnIndex != 1)
-                                                 {
-                                                     return; // Filter out other columns
-                                                 }
+                {
+                    if (a.RowIndex < 0)
+                    {
+                        return; // Header
+                    }
+                    if (a.ColumnIndex != 1)
+                    {
+                        return; // Filter out other columns
+                    }
 
-                                                 aclDataGridView.BeginEdit(true);
-                                                 ComboBox comboBox = (ComboBox) aclDataGridView.EditingControl;
-                                                 comboBox.DroppedDown = true;
-                                             };
+                    aclDataGridView.BeginEdit(true);
+                    ComboBox comboBox = (ComboBox) aclDataGridView.EditingControl;
+                    comboBox.DroppedDown = true;
+                };
 
             aclDataGridView.CellBeginEdit += delegate(object sender, DataGridViewCellCancelEventArgs args)
-                                                 {
-                                                     if (args.ColumnIndex == 0)
-                                                     {
-                                                         args.Cancel =
-                                                             !((InfoController.UserAndRoleEntry)
-                                                               aclDataGridView.Rows[args.RowIndex].DataBoundItem).
-                                                                  getUser().isEditable();
-                                                     }
-                                                 };
+                {
+                    if (args.ColumnIndex == 0)
+                    {
+                        args.Cancel =
+                            !((InfoController.UserAndRoleEntry)
+                              aclDataGridView.Rows[args.RowIndex].DataBoundItem).
+                                 getUser().isEditable();
+                    }
+                };
 
             DataGridViewTextBoxColumn userColumn = new DataGridViewTextBoxColumn();
             userColumn.HeaderText = "Grantee";
@@ -1314,6 +1378,26 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void distributionAnalyticsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             DistributionAnalyticsCheckboxChanged();
+        }
+
+        private void lifecycleTransitionCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            LifecycleTransitionCheckboxChanged();
+        }
+
+        private void lifecycleTransitionComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            LifecycleTransitionPopupChanged();
+        }
+
+        private void lifecycleDeleteCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            LifecycleDeleteCheckboxChanged();
+        }
+
+        private void lifecycleDeleteComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            LifecycleDeletePopupChanged();
         }
 
         private enum AclColumnName
