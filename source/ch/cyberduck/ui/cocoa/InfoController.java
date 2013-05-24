@@ -594,7 +594,7 @@ public class InfoController extends ToolbarWindowController {
         this.lifecycleTransitionPopup = b;
         this.lifecycleTransitionPopup.setTarget(this.id());
         for(String option : Preferences.instance().getList("s3.lifecycle.transition.options")) {
-            this.lifecycleTransitionPopup.addItemWithTitle(String.format("after %d Days", Integer.valueOf(option)));
+            this.lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), option));
             this.lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
             this.lifecycleTransitionPopup.lastItem().setTarget(this.id());
             this.lifecycleTransitionPopup.lastItem().setRepresentedObject(option);
@@ -615,7 +615,7 @@ public class InfoController extends ToolbarWindowController {
     public void setLifecycleDeletePopup(final NSPopUpButton b) {
         this.lifecycleDeletePopup = b;
         for(String option : Preferences.instance().getList("s3.lifecycle.delete.options")) {
-            this.lifecycleDeletePopup.addItemWithTitle(String.format("after %d Days", Integer.valueOf(option)));
+            this.lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), option));
             this.lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
             this.lifecycleDeletePopup.lastItem().setTarget(this.id());
             this.lifecycleDeletePopup.lastItem().setRepresentedObject(option);
