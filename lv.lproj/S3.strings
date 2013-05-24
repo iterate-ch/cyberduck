@@ -72,3 +72,6 @@
 "{0} invalidations completed" = "{0} invalidations completed";
 
 "Bucket name is not DNS compatible" = "Bucket name is not DNS compatible";
+
+/* Lifecyle configuration */
+"after {0} Days" = "after {0} Days";
