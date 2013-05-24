@@ -2122,10 +2122,24 @@ public class InfoController extends ToolbarWindowController {
                         bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
                         lifecycleDeleteCheckbox.setState(expiration != null ? NSCell.NSOnState : NSCell.NSOffState);
                         if(expiration != null) {
+                            final NSInteger index = lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(expiration));
+                            if(-1 == index.intValue()) {
+                                lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(expiration)));
+                                lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
+                                lifecycleDeletePopup.lastItem().setTarget(id());
+                                lifecycleDeletePopup.lastItem().setRepresentedObject(String.valueOf(expiration));
+                            }
                             lifecycleDeletePopup.selectItemAtIndex(lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(expiration)));
                         }
                         lifecycleTransitionCheckbox.setState(transition != null ? NSCell.NSOnState : NSCell.NSOffState);
                         if(transition != null) {
+                            final NSInteger index = lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(transition));
+                            if(-1 == index.intValue()) {
+                                lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(transition)));
+                                lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
+                                lifecycleTransitionPopup.lastItem().setTarget(id());
+                                lifecycleTransitionPopup.lastItem().setRepresentedObject(String.valueOf(transition));
+                            }
                             lifecycleTransitionPopup.selectItemAtIndex(lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(transition)));
                         }
                     }
