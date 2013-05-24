@@ -1954,12 +1954,14 @@ public class InfoController extends ToolbarWindowController {
         boolean versioning = false;
         boolean storageclass = false;
         boolean encryption = false;
+        boolean lifecycle = false;
         if(enable) {
             logging = ((CloudSession) session).isLoggingSupported();
             analytics = session.isAnalyticsSupported();
             versioning = ((CloudSession) session).isVersioningSupported();
             encryption = ((CloudSession) session).getSupportedEncryptionAlgorithms().size() > 0;
             storageclass = ((CloudSession) session).getSupportedStorageClasses().size() > 1;
+            lifecycle = ((CloudSession) session).isLifecycleSupported();
         }
         storageClassPopup.setEnabled(stop && enable && storageclass);
         encryptionButton.setEnabled(stop && enable && encryption);
@@ -1975,6 +1977,10 @@ public class InfoController extends ToolbarWindowController {
         else {
             bucketAnalyticsButton.setEnabled(stop && enable && analytics);
         }
+        lifecycleDeletePopup.setEnabled(stop && enable&& lifecycle);
+        lifecycleDeleteCheckbox.setEnabled(stop && enable&& lifecycle);
+        lifecycleTransitionPopup.setEnabled(stop && enable&& lifecycle);
+        lifecycleTransitionCheckbox.setEnabled(stop && enable&& lifecycle);
         if(stop) {
             s3Progress.stopAnimation(null);
         }
