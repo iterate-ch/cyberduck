@@ -2056,6 +2056,7 @@ public class InfoController extends ToolbarWindowController {
                 String encryption;
                 Integer expiration;
                 Integer transition;
+                Credentials credentials;
 
                 @Override
                 public void run() {
@@ -2078,6 +2079,9 @@ public class InfoController extends ToolbarWindowController {
                     if(s.isLifecycleSupported()) {
                         expiration = s.getExpiration(container);
                         transition = s.getTransition(container);
+                    }
+                    if(s.isAnalyticsSupported()) {
+                        credentials = s.iam().getUserCredentials(s.analytics().getName());
                     }
                     if(numberOfFiles() == 1) {
                         encryption = selected.attributes().getEncryption();
@@ -2108,17 +2112,14 @@ public class InfoController extends ToolbarWindowController {
                         bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
                         bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
                         encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(controller.getSession().isAnalyticsSupported()) {
-                            final Credentials credentials = controller.getSession().iam().getUserCredentials(controller.getSession().analytics().getName());
-                            if(null != credentials) {
-                                bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                                        controller.getSession().analytics().getSetup(controller.getSession().getHost().getProtocol(),
-                                                controller.getSession().getHost().getProtocol().getScheme(),
-                                                selected.getContainerName(), credentials)
-                                ));
-                            }
-                            bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(null != credentials) {
+                            bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
+                                    controller.getSession().analytics().getSetup(controller.getSession().getHost().getProtocol(),
+                                            controller.getSession().getHost().getProtocol().getScheme(),
+                                            selected.getContainerName(), credentials)
+                            ));
                         }
+                        bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
                         lifecycleDeleteCheckbox.setState(expiration != null ? NSCell.NSOnState : NSCell.NSOffState);
                         if(expiration != null) {
                             lifecycleDeletePopup.selectItemAtIndex(lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(expiration)));
