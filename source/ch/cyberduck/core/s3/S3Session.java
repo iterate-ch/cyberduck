@@ -820,24 +820,22 @@ public class S3Session extends CloudSession {
 
     /**
      * @param container  The bucket name
-     * @param enabled    True if lifecycle config should be enabled
-     * @param transition Days
-     * @param expiration Days
+     * @param transition Days Null to disable
+     * @param expiration Days Null to disable
      */
-    public void setLifecycle(final String container, final boolean enabled, final Integer transition, final Integer expiration) {
+    public void setLifecycle(final String container, final Integer transition, final Integer expiration) {
         if(this.isLifecycleSupported()) {
             try {
                 this.check();
                 if(transition != null || expiration != null) {
                     final LifecycleConfig config = new LifecycleConfig();
                     // Unique identifier for the rule. The value cannot be longer than 255 characters. When you specify an empty prefix, the rule applies to all objects in the bucket
-                    final LifecycleConfig.Rule rule = config.newRule(UUID.randomUUID().toString(), StringUtils.EMPTY, enabled);
+                    final LifecycleConfig.Rule rule = config.newRule(UUID.randomUUID().toString(), StringUtils.EMPTY, true);
                     if(transition != null) {
                         rule.newTransition().setDays(transition);
                     }
                     if(expiration != null) {
-                        final LifecycleConfig.Expiration e = rule.newExpiration();
-                        e.setDays(expiration);
+                        rule.newExpiration().setDays(expiration);
                     }
                     if(!config.equals(lifecycleStatus.get(container))) {
                         this.getClient().setLifecycleConfig(container, config);
@@ -860,33 +858,21 @@ public class S3Session extends CloudSession {
     }
 
     /**
-     * Set to false if permission error response indicates this
-     * feature is not implemented.
-     */
-    private boolean versioningSupported = true;
-
-    /**
      * @return True if the service supports object versioning.
      */
     @Override
     public boolean isVersioningSupported() {
-        return versioningSupported;
+        return true;
     }
-
-    private boolean lifecycleSupported = true;
 
     @Override
     public boolean isLifecycleSupported() {
-        return lifecycleSupported;
+        return true;
     }
 
     @Override
     public boolean isRevertSupported() {
         return this.isVersioningSupported();
-    }
-
-    protected void setVersioningSupported(boolean versioningSupported) {
-        this.versioningSupported = versioningSupported;
     }
 
     /**
@@ -910,8 +896,7 @@ public class S3Session extends CloudSession {
                     versioningStatus.put(container, status);
                 }
                 catch(ServiceException e) {
-                    log.warn("Bucket versioning not supported:" + e.getMessage());
-                    this.setVersioningSupported(false);
+                    this.error("Cannot read container configuration", e);
                 }
                 catch(IOException e) {
                     this.error("Cannot read container configuration", e);

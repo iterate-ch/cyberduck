@@ -630,7 +630,6 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     final String container = getSelected().getContainerName();
                     ((S3Session) controller.getSession()).setLifecycle(container,
-                            lifecycleDeleteCheckbox.state() == NSCell.NSOnState || lifecycleTransitionCheckbox.state() == NSCell.NSOnState,
                             lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
                             lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
                 }
