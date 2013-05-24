@@ -417,14 +417,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                                   MessageFormat.format(Locale.localizedString("after {0} Days", "S3"),
                                                                        item.ToString()), item.ToString()));
             }
-
-
-            /*
-            foreach(String option in Utils.ConvertFromJavaList<String>(Preferences.instance().getList("s3.lifecycle.transition.options")))
-            {
-                periods.Add(new KeyValuePair<string, string>(MessageFormat.format(Locale.localizedString("after {0} Days", "S3")), option));
-            }
-            */
             View.PopulateLifecycleTransitionPeriod(_lifecycleTransitionPeriods);
         }
 
