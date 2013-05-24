@@ -282,50 +282,29 @@
     </target>
 
     <target name="codesign" depends="unlock-keychain,compile-codesign-requirement">
-        <echo message="Code signing ${app.java}/*.dylib with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
+        <echo message="Code signing ${app.bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
         <apply executable="/usr/bin/codesign" failonerror="true"
-               type="file"
+               type="both"
                parallel="false" spawn="false" force="true">
             <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
             <fileset dir="${app.java}">
                 <include name="*.dylib"/>
             </fileset>
-            <srcfile/>
-        </apply>
-        <echo message="Code signing ${app.spotlight} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
-        <apply executable="/usr/bin/codesign" failonerror="true"
-               type="dir"
-               parallel="false" spawn="false" force="true">
-            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
-            <fileset dir="${app.spotlight}">
-                <include name="*"/>
-            </fileset>
-            <srcfile/>
-        </apply>
-        <echo message="Code signing ${app.frameworks} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
-        <apply executable="/usr/bin/codesign" failonerror="true"
-               type="dir"
-               parallel="false" spawn="false" force="true">
-            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
-            <fileset dir="${app.frameworks}">
-                <include name="*"/>
-            </fileset>
-            <srcfile/>
-        </apply>
-        <echo message="Code signing ${app.runtime} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
-        <apply executable="/usr/bin/codesign" failonerror="true"
-               type="file"
-               parallel="false" spawn="false" force="true">
-            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
             <fileset dir="${app.runtime}" erroronmissingdir="false">
                 <include name="**/*.dylib"/>
             </fileset>
+            <fileset dir="${app.spotlight}">
+                <include name="*"/>
+            </fileset>
+            <fileset dir="${app.frameworks}">
+                <include name="*"/>
+            </fileset>
+            <fileset dir="${build.deploy}">
+                <include name="${app.name}.app"/>
+            </fileset>
             <srcfile/>
         </apply>
-        <echo message="Code signing application bundle with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
-        <exec executable="/usr/bin/codesign" spawn="false" failonerror="true">
-            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v ${app.bundle}"/>
-        </exec>
+        <antcall target="verify-signature"/> 
     </target>
 
     <target name="unlock-keychain">
