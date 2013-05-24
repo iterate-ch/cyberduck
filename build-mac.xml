@@ -326,7 +326,6 @@
         <exec executable="/usr/bin/codesign" spawn="false" failonerror="true">
             <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v ${app.bundle}"/>
         </exec>
-        <antcall target="verify-signature"/>
     </target>
 
     <target name="unlock-keychain">
