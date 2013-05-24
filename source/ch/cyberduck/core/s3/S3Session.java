@@ -400,6 +400,7 @@ public class S3Session extends CloudSession {
             }
             if(reload) {
                 loggingStatus.clear();
+                lifecycleStatus.clear();
                 versioningStatus.clear();
                 this.cdn().clear();
             }
