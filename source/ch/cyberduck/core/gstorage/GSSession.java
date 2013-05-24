@@ -273,6 +273,11 @@ public class GSSession extends S3Session implements DistributionConfiguration {
     }
 
     @Override
+    public boolean isLifecycleSupported() {
+        return false;
+    }
+
+    @Override
     public boolean isMultipartUploadSupported() {
         return false;
     }
