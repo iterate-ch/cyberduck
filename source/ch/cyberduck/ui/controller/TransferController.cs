@@ -438,7 +438,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (transfer.numberOfRoots() == 1)
                 {
                     View.Url = transfer.getRemote();
-                    View.Local = transfer.getLocal();
+                    //Workaround to prevent NullReferenceException
+                    if (transfer.getRoot() != null && transfer.getRoot().getLocal() != null &&
+                        transfer.getRoot().getLocal().getParent() != null)
+                    {
+                        View.Local = transfer.getLocal();
+                    }
+                    
                 }
                 else
                 {
