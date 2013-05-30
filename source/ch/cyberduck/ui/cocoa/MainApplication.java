@@ -29,15 +29,7 @@ import ch.cyberduck.core.SystemConfigurationReachability;
 import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.Receipt;
 import ch.cyberduck.core.editor.MultipleEditorFactory;
-import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
-import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
-import ch.cyberduck.core.local.LaunchServicesQuarantineService;
-import ch.cyberduck.core.local.WorkspaceApplicationBadgeLabeler;
-import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
-import ch.cyberduck.core.local.WorkspaceBrowserLauncher;
-import ch.cyberduck.core.local.WorkspaceIconService;
-import ch.cyberduck.core.local.WorkspaceRevealService;
+import ch.cyberduck.core.local.*;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.PlistSerializer;
@@ -130,6 +122,7 @@ public final class MainApplication {
                 WorkspaceRevealService.register();
                 WorkspaceApplicationBadgeLabeler.register();
                 IOKitSleepPreventer.register();
+                TemporaryFileService.register();
 
                 MultipleEditorFactory.register();
 

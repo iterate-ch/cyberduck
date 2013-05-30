@@ -23,7 +23,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.TemporaryFileService;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
@@ -70,7 +70,7 @@ public abstract class AbstractEditor implements Editor {
     public AbstractEditor(final Application application, final Path path) {
         this.application = application;
         this.edited = path;
-        edited.setLocal(new TemporaryFileService().get(edited));
+        edited.setLocal(TemporaryFileServiceFactory.get().get(edited));
     }
 
     /**

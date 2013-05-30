@@ -26,9 +26,24 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TemporaryFileService {
+
+    private TemporaryFileService() {
+        //
+    }
+
+    public static void register() {
+        TemporaryFileServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends TemporaryFileServiceFactory {
+        @Override
+        protected TemporaryFileService create() {
+            return new TemporaryFileService();
+        }
+    }
 
     public Local get(final Path file) {
         final Local folder = LocalFactory.createLocal(
