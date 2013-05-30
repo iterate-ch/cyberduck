@@ -30,7 +30,7 @@ import java.io.File;
  */
 public class TemporaryFileService {
 
-    private TemporaryFileService() {
+    protected TemporaryFileService() {
         //
     }
 
