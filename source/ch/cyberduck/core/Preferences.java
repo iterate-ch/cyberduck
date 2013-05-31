@@ -591,8 +591,8 @@ public abstract class Preferences {
          */
         defaults.put("s3.metadata.default", StringUtils.EMPTY);
 
-        defaults.put("s3.lifecycle.transition.options", "7 10 30 60 180 360 720");
-        defaults.put("s3.lifecycle.delete.options", "7 10 30 60 180 360 720");
+        defaults.put("s3.lifecycle.transition.options", "1 7 10 30 60 180 360 720");
+        defaults.put("s3.lifecycle.delete.options", "1 7 10 30 60 180 360 720");
 
         defaults.put("azure.metadata.default", StringUtils.EMPTY);
 
