@@ -112,7 +112,7 @@ public abstract class CloudSession extends HttpSession {
      * @param hostname Hostname with container name in third level
      * @return Null if no container component in hostname prepended
      */
-    public String getContainerForHostname(String hostname) {
+    public String getContainerForHostname(final String hostname) {
         if(hostname.equals(host.getProtocol().getDefaultHostname())) {
             return null;
         }
@@ -128,7 +128,7 @@ public abstract class CloudSession extends HttpSession {
      * @param container DNS container name
      * @return Generic hostname
      */
-    public String getHostnameForContainer(String container) {
+    public String getHostnameForContainer(final String container) {
         if(StringUtils.isBlank(container)) {
             return this.getHost().getHostname(true);
         }
