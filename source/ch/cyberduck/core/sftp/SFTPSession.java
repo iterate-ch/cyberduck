@@ -218,8 +218,9 @@ public class SFTPSession extends Session {
      */
     private boolean loginUsingPublicKeyAuthentication(final LoginController controller, final Credentials credentials)
             throws IOException {
-
-        log.debug("loginUsingPublicKeyAuthentication:" + credentials);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Login using public key authentication with credentials %s", credentials));
+        }
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
             if(credentials.isPublicKeyAuthentication()) {
                 final Local identity = credentials.getIdentity();
@@ -285,7 +286,9 @@ public class SFTPSession extends Session {
      * @throws IOException Login failed or canceled
      */
     private boolean loginUsingPasswordAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
-        log.debug("loginUsingPasswordAuthentication:" + credentials);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Login using password authentication with credentials %s", credentials));
+        }
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "password")) {
             return this.getClient().authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
         }
