@@ -281,7 +281,9 @@ public class S3Session extends CloudSession {
     }
 
     protected void configure(final String hostname) {
-        log.debug("configure:" + hostname);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Configure for endpoint %s", hostname));
+        }
         if(StringUtils.isNotBlank(host.getProtocol().getDefaultHostname())
                 && hostname.endsWith(host.getProtocol().getDefaultHostname())) {
             // The user specified a DNS bucket endpoint. Connect to the default hostname instead.
@@ -337,66 +339,8 @@ public class S3Session extends CloudSession {
     protected List<StorageBucket> getBuckets(final boolean reload) throws IOException, ServiceException {
         if(buckets.isEmpty() || reload) {
             buckets.clear();
-            if(host.getCredentials().isAnonymousLogin()) {
-                log.info("Anonymous cannot list buckets");
-                // Listing buckets not supported for thirdparty buckets
-                String bucketname = this.getContainerForHostname(host.getHostname(true));
-                if(StringUtils.isEmpty(bucketname)) {
-                    if(StringUtils.isNotBlank(host.getDefaultPath())) {
-                        Path d = PathFactory.createPath(this, host.getDefaultPath(), Path.DIRECTORY_TYPE);
-                        while(!d.getParent().isRoot()) {
-                            d = d.getParent();
-                        }
-                        bucketname = d.getName();
-                    }
-                    log.info(String.format("Using default path to determine bucket name %s", bucketname));
-                }
-                if(StringUtils.isEmpty(bucketname)) {
-                    log.warn(String.format("No bucket name given in hostname %s", host.getHostname()));
-                    // Rewrite endpoint to default S3 endpoint
-                    this.configure(host.getProtocol().getDefaultHostname());
-                    bucketname = host.getHostname(true);
-                }
-                if(!this.getClient().isBucketAccessible(bucketname)) {
-                    this.error("Cannot read container configuration",
-                            new ServiceException(String.format("Bucket %s not accessible", bucketname)));
-                }
-                final S3Bucket bucket = new S3Bucket(bucketname);
-                try {
-                    StorageOwner owner = this.getClient().getBucketAcl(bucketname).getOwner();
-                    bucket.setOwner(owner);
-                }
-                catch(ServiceException e) {
-                    // ACL not readable by anonymous user.
-                    log.warn(e.getMessage());
-                }
-                buckets.put(bucketname, bucket);
-            }
-            else {
-                // If bucket is specified in hostname, try to connect to this particular bucket only.
-                final String bucketname = this.getContainerForHostname(host.getHostname(true));
-                if(StringUtils.isNotEmpty(bucketname)) {
-                    if(!this.getClient().isBucketAccessible(bucketname)) {
-                        this.error("Cannot read container configuration",
-                                new ServiceException(String.format("Bucket %s not accessible", bucketname)));
-                    }
-                    final S3Bucket bucket = new S3Bucket(bucketname);
-                    try {
-                        StorageOwner owner = this.getClient().getBucketAcl(bucketname).getOwner();
-                        bucket.setOwner(owner);
-                    }
-                    catch(ServiceException e) {
-                        // ACL not readable by anonymous or IAM user.
-                        log.warn(e.getMessage());
-                    }
-                    buckets.put(bucketname, bucket);
-                }
-                else {
-                    // List all buckets owned
-                    for(StorageBucket bucket : this.getClient().listAllBuckets()) {
-                        buckets.put(bucket.getName(), bucket);
-                    }
-                }
+            for(StorageBucket b : new S3BucketListService().list(this)) {
+                buckets.put(b.getName(), b);
             }
             if(reload) {
                 loggingStatus.clear();
@@ -489,6 +433,7 @@ public class S3Session extends CloudSession {
 
         // Prompt the login credentials first
         this.login();
+
         this.fireConnectionDidOpenEvent();
     }
 
