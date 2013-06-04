@@ -9,12 +9,14 @@
 	<key>Description</key>
 	<string>Rackspace Cloud Files UK</string>
 	<key>Default Hostname</key>
-	<string>lon.auth.api.rackspacecloud.com</string>
+	<string>lon.identity.api.rackspacecloud.com</string>
 	<key>Default Port</key>
 	<string>443</string>
 	<key>Username Placeholder</key>
 	<string>Username</string>
 	<key>Password Placeholder</key>
+    <key>Context</key>
+    <string>/v2.0/tokens</string>
 	<string>API Key</string>
 	<key>Disk</key>
 	<string>

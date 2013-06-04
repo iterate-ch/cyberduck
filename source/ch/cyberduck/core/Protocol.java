@@ -645,7 +645,12 @@ public abstract class Protocol {
 
         @Override
         public String getDefaultHostname() {
-            return "auth.api.rackspacecloud.com";
+            return "identity.api.rackspacecloud.com";
+        }
+
+        @Override
+        public String getContext() {
+            return "/v2.0/tokens";
         }
 
         @Override
@@ -693,11 +698,6 @@ public abstract class Protocol {
         @Override
         public boolean isHostnameConfigurable() {
             return true;
-        }
-
-        @Override
-        public String getDefaultHostname() {
-            return "auth.api.rackspacecloud.com";
         }
 
         @Override

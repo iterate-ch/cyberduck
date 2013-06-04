@@ -22,6 +22,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cdn.Distribution;
@@ -55,7 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.rackspacecloud.client.cloudfiles.FilesContainerInfo;
+import com.rackspacecloud.client.cloudfiles.FilesContainer;
 import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
 import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
 import com.rackspacecloud.client.cloudfiles.FilesObject;
@@ -103,7 +104,8 @@ public class CFPath extends CloudPath {
         }
         if(this.isContainer()) {
             try {
-                return this.getSession().getClient().containerExists(this.getName());
+                return this.getSession().getClient().containerExists(session.getRegion(this.getContainerName()),
+                        this.getName());
             }
             catch(HttpException e) {
                 log.warn(String.format("Container %s does not exist", this.getName()));
@@ -128,12 +130,14 @@ public class CFPath extends CloudPath {
 
             if(this.isContainer()) {
                 attributes().setSize(
-                        this.getSession().getClient().getContainerInfo(this.getContainerName()).getTotalSize()
+                        this.getSession().getClient().getContainerInfo(session.getRegion(this.getContainerName()),
+                                this.getContainerName()).getTotalSize()
                 );
             }
             else if(this.attributes().isFile()) {
                 attributes().setSize(
-                        Long.valueOf(this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getKey()).getContentLength())
+                        Long.valueOf(this.getSession().getClient().getObjectMetaData(session.getRegion(this.getContainerName()),
+                                this.getContainerName(), this.getKey()).getContentLength())
                 );
             }
         }
@@ -153,7 +157,7 @@ public class CFPath extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
 
-                final String checksum = this.getSession().getClient().getObjectMetaData(
+                final String checksum = this.getSession().getClient().getObjectMetaData(session.getRegion(this.getContainerName()),
                         this.getContainerName(), this.getKey()).getETag();
                 attributes().setChecksum(checksum);
                 attributes().setETag(checksum);
@@ -177,7 +181,7 @@ public class CFPath extends CloudPath {
 
                 try {
                     attributes().setModificationDate(
-                            ServiceUtils.parseRfc822Date(this.getSession().getClient().getObjectMetaData(this.getContainerName(),
+                            ServiceUtils.parseRfc822Date(this.getSession().getClient().getObjectMetaData(session.getRegion(this.getContainerName()), this.getContainerName(),
                                     this.getKey()).getLastModified()).getTime()
                     );
                 }
@@ -202,31 +206,18 @@ public class CFPath extends CloudPath {
                     this.getName()));
 
             if(this.isRoot()) {
-                final int limit = Preferences.instance().getInteger("cf.list.limit");
-                String marker = null;
-                List<FilesContainerInfo> list;
-                // List all containers
-                do {
-                    list = this.getSession().getClient().listContainersInfo(limit, marker);
-                    for(FilesContainerInfo container : list) {
-                        Path p = new CFPath(this.getSession(), this.getAbsolute(), container.getName(),
-                                VOLUME_TYPE | DIRECTORY_TYPE);
-                        p.attributes().setSize(container.getTotalSize());
-                        p.attributes().setOwner(this.getSession().getClient().getUserName());
-
-                        children.add(p);
-
-                        marker = container.getName();
-                    }
+                // List all containers in all regions
+                for(FilesContainer bucket : this.getSession().getBuckets(true)) {
+                    children.add(PathFactory.createPath(this.getSession(), this.getAbsolute(), bucket.getName(),
+                            VOLUME_TYPE | DIRECTORY_TYPE));
                 }
-                while(list.size() == limit);
             }
             else {
                 final int limit = Preferences.instance().getInteger("cf.list.limit");
                 String marker = null;
                 List<FilesObject> list;
                 do {
-                    list = this.getSession().getClient().listObjectsStartingWith(this.getContainerName(),
+                    list = this.getSession().getClient().listObjectsStartingWith(session.getRegion(this.getContainerName()), this.getContainerName(),
                             this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                     for(FilesObject object : list) {
                         final Path file = new CFPath(this.getSession(), this.getContainerName(), object.getName(),
@@ -260,7 +251,7 @@ public class CFPath extends CloudPath {
                     if(Preferences.instance().getBoolean("cf.list.cdn.preload")) {
                         for(Distribution.Method method : this.getSession().cdn().getMethods(this.getContainerName())) {
                             // Cache CDN configuration
-                            this.getSession().cdn().read(this.getSession().cdn().getOrigin(method, this.getContainerName()), method);
+                            this.getSession().cdn().read(this.getContainerName(), method);
                         }
                     }
                 }
@@ -288,10 +279,12 @@ public class CFPath extends CloudPath {
     public InputStream read(final TransferStatus status) throws IOException {
         try {
             if(status.isResume()) {
-                return this.getSession().getClient().getObjectAsRangedStream(this.getContainerName(), this.getKey(),
+                return this.getSession().getClient().getObject(session.getRegion(this.getContainerName()),
+                        this.getContainerName(), this.getKey(),
                         status.getCurrent(), status.getLength());
             }
-            return this.getSession().getClient().getObjectAsStream(this.getContainerName(), this.getKey());
+            return this.getSession().getClient().getObject(session.getRegion(this.getContainerName()),
+                    this.getContainerName(), this.getKey());
         }
         catch(HttpException e) {
             IOException failure = new IOException(e.getMessage());
@@ -410,7 +403,7 @@ public class CFPath extends CloudPath {
             }
             metadata.put(name, value);
         }
-
+        final String container = this.getContainerName();
         // Submit store call to background thread
         final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             /**
@@ -420,7 +413,8 @@ public class CFPath extends CloudPath {
             @Override
             public String call(AbstractHttpEntity entity) throws IOException {
                 try {
-                    return CFPath.this.getSession().getClient().storeObjectAs(CFPath.this.getContainerName(),
+                    return CFPath.this.getSession().getClient().storeObject(
+                            session.getRegion(container), container,
                             CFPath.this.getKey(), entity,
                             metadata, md5sum);
                 }
@@ -448,11 +442,11 @@ public class CFPath extends CloudPath {
 
             if(this.isContainer()) {
                 // Create container at top level
-                this.getSession().getClient().createContainer(this.getName());
+                this.getSession().getClient().createContainer(session.getRegion(this.getContainerName()), this.getName());
             }
             else {
                 // Create virtual directory
-                this.getSession().getClient().createFullPath(this.getContainerName(), this.getKey());
+                this.getSession().getClient().createPath(session.getRegion(this.getContainerName()), this.getContainerName(), this.getKey());
             }
         }
         catch(HttpException e) {
@@ -472,7 +466,8 @@ public class CFPath extends CloudPath {
 
             final String container = this.getContainerName();
             if(attributes().isFile()) {
-                this.getSession().getClient().deleteObject(container, this.getKey());
+                this.getSession().getClient().deleteObject(session.getRegion(this.getContainerName()),
+                        container, this.getKey());
             }
             else if(attributes().isDirectory()) {
                 for(AbstractPath i : this.children()) {
@@ -482,11 +477,13 @@ public class CFPath extends CloudPath {
                     i.delete();
                 }
                 if(this.isContainer()) {
-                    this.getSession().getClient().deleteContainer(container);
+                    this.getSession().getClient().deleteContainer(session.getRegion(this.getContainerName()),
+                            container);
                 }
                 else {
                     try {
-                        this.getSession().getClient().deleteObject(container, this.getKey());
+                        this.getSession().getClient().deleteObject(session.getRegion(this.getContainerName()),
+                                container, this.getKey());
                     }
                     catch(FilesNotFoundException e) {
                         // No real placeholder but just a delimiter returned in the object listing.
@@ -512,12 +509,14 @@ public class CFPath extends CloudPath {
 
             if(this.attributes().isFile()) {
                 final FilesObjectMetaData meta
-                        = this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getKey());
+                        = this.getSession().getClient().getObjectMetaData(session.getRegion(this.getContainerName()),
+                        this.getContainerName(), this.getKey());
                 this.attributes().setMetadata(meta.getMetaData());
             }
             if(this.attributes().isVolume()) {
                 final FilesContainerMetaData meta
-                        = this.getSession().getClient().getContainerMetaData(this.getContainerName());
+                        = this.getSession().getClient().getContainerMetaData(session.getRegion(this.getContainerName()),
+                        this.getContainerName());
                 this.attributes().setMetadata(meta.getMetaData());
             }
         }
@@ -537,10 +536,12 @@ public class CFPath extends CloudPath {
                     this.getName()));
 
             if(this.attributes().isFile()) {
-                this.getSession().getClient().updateObjectMetadata(this.getContainerName(), this.getKey(), meta);
+                this.getSession().getClient().updateObjectMetadata(session.getRegion(this.getContainerName()),
+                        this.getContainerName(), this.getKey(), meta);
             }
             else if(this.attributes().isVolume()) {
-                this.getSession().getClient().updateContainerMetadata(this.getContainerName(), meta);
+                this.getSession().getClient().updateContainerMetadata(session.getRegion(this.getContainerName()),
+                        this.getContainerName(), meta);
             }
         }
         catch(HttpException e) {
@@ -562,9 +563,11 @@ public class CFPath extends CloudPath {
                     this.getName(), renamed));
 
             if(this.attributes().isFile()) {
-                this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
+                this.getSession().getClient().copyObject(session.getRegion(this.getContainerName()),
+                        this.getContainerName(), this.getKey(),
                         ((CFPath) renamed).getContainerName(), ((CFPath) renamed).getKey());
-                this.getSession().getClient().deleteObject(this.getContainerName(), this.getKey());
+                this.getSession().getClient().deleteObject(session.getRegion(this.getContainerName()),
+                        this.getContainerName(), this.getKey());
             }
             else if(this.attributes().isDirectory()) {
                 for(Path i : this.children()) {
@@ -575,7 +578,8 @@ public class CFPath extends CloudPath {
                             i.getName(), i.attributes().getType()));
                 }
                 try {
-                    this.getSession().getClient().deleteObject(this.getContainerName(), this.getKey());
+                    this.getSession().getClient().deleteObject(session.getRegion(this.getContainerName()),
+                            this.getContainerName(), this.getKey());
                 }
                 catch(FilesNotFoundException e) {
                     // No real placeholder but just a delimiter returned in the object listing.
@@ -601,7 +605,8 @@ public class CFPath extends CloudPath {
                         this.getName(), copy));
 
                 if(this.attributes().isFile()) {
-                    this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
+                    this.getSession().getClient().copyObject(session.getRegion(this.getContainerName()),
+                            this.getContainerName(), this.getKey(),
                             ((CFPath) copy).getContainerName(), ((CFPath) copy).getKey());
                     listener.bytesSent(this.attributes().getSize());
                     status.setComplete();
@@ -628,7 +633,7 @@ public class CFPath extends CloudPath {
         CFSession session = this.getSession();
         for(Distribution.Method method : session.cdn().getMethods(this.getContainerName())) {
             if(session.cdn().isCached(method)) {
-                final Distribution distribution = session.cdn().read(session.cdn().getOrigin(method, this.getContainerName()), method);
+                final Distribution distribution = session.cdn().read(this.getContainerName(), method);
                 return distribution.getURL(this);
             }
         }

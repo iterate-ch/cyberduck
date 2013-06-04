@@ -12,6 +12,8 @@
 	<string>region-b.geo-1.identity.hpcloudsvc.com</string>
 	<key>Default Port</key>
 	<string>35357</string>
+    <key>Context</key>
+    <string>/v2.0/tokens</string>
 	<key>Username Placeholder</key>
 	<string>Tenant ID:Account Email Address</string>
 	<key>Password Placeholder</key>

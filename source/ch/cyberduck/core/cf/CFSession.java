@@ -40,18 +40,24 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.rackspacecloud.client.cloudfiles.FilesAuthenticationResponse;
+import com.rackspacecloud.client.cloudfiles.FilesAuthorizationException;
 import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
+import com.rackspacecloud.client.cloudfiles.FilesContainer;
 import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
 import com.rackspacecloud.client.cloudfiles.FilesException;
+import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
+import com.rackspacecloud.client.cloudfiles.FilesRegion;
+import com.rackspacecloud.client.cloudfiles.method.AuthenticationRequest;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -62,6 +68,14 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     private static final Logger log = Logger.getLogger(CFSession.class);
 
     private FilesClient client;
+
+    private FilesAuthenticationResponse authentication;
+
+    /**
+     * Caching the root containers
+     */
+    private Map<String, FilesContainer> containers
+            = new HashMap<String, FilesContainer>();
 
     public CFSession(Host h) {
         super(h);
@@ -80,72 +94,39 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         if(this.isConnected()) {
             return;
         }
-        this.client = new FilesClient(this.http(), null, null, null, null, this.timeout());
         this.fireConnectionWillOpenEvent();
-
-        // Configure for authentication URL
-        this.configure();
-
-        // Prompt the login credentials first
+        this.client = new FilesClient(this.http());
         this.login();
-
         this.fireConnectionDidOpenEvent();
     }
 
-    /**
-     * Set connection properties
-     *
-     * @throws java.io.IOException If the connection is already canceled
-     */
-    protected void configure() throws IOException {
-        final FilesClient c = this.getClient();
-        c.setConnectionTimeOut(this.timeout());
-        c.setUserAgent(this.getUserAgent());
-        // Do not calculate ETag in advance
-        c.setUseETag(false);
-        c.setAuthenticationURL(this.getAuthenticationUrl());
+    protected FilesRegion getRegion(final String container) {
+        return containers.get(container).getRegion();
     }
 
-    private String getAuthenticationUrl() {
-        final StringBuilder authentication = new StringBuilder();
-        authentication.append(host.getProtocol().getScheme().toString()).append("://");
-        if(host.getHostname().equals("storage.clouddrive.com")) {
-            // Legacy bookmarks. Use default authentication server for Rackspace.
-            authentication.append("auth.api.rackspacecloud.com");
+    protected List<FilesContainer> getBuckets(final boolean reload) throws IOException {
+        if(containers.isEmpty() || reload) {
+            containers.clear();
+            for(FilesContainer b : new ContainerListService().list(this)) {
+                containers.put(b.getName(), b);
+            }
+            if(reload) {
+                this.cdn().clear();
+            }
         }
-        else {
-            // Use custom authentication server. Swift (OpenStack Object Storage) installation.
-            authentication.append(host.getHostname());
-        }
-        authentication.append(":").append(host.getPort());
-        if(StringUtils.isBlank(host.getProtocol().getContext())) {
-            authentication.append(PathNormalizer.normalize(Preferences.instance().getProperty("cf.authentication.context")));
-        }
-        else {
-            authentication.append(PathNormalizer.normalize(host.getProtocol().getContext()));
-        }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Using authentication URL %s", authentication.toString()));
-        }
-        return authentication.toString();
+        return new ArrayList<FilesContainer>(containers.values());
     }
 
     @Override
     protected void login(final LoginController controller, final Credentials credentials) throws IOException {
         final FilesClient client = this.getClient();
-        client.setUserName(credentials.getUsername());
-        client.setPassword(credentials.getPassword());
         try {
-            if(!client.login()) {
-                this.message(Locale.localizedString("Login failed", "Credentials"));
-                controller.fail(host.getProtocol(), credentials);
-                this.login();
-            }
+            authentication = client.authenticate(new AuthenticationService().getRequest(host));
         }
-        catch(HttpException e) {
-            IOException failure = new IOException(e.getMessage());
-            failure.initCause(e);
-            throw failure;
+        catch(FilesAuthorizationException e) {
+            this.message(Locale.localizedString("Login failed", "Credentials"));
+            controller.fail(host.getProtocol(), credentials);
+            this.login();
         }
     }
 
@@ -194,12 +175,12 @@ public class CFSession extends CloudSession implements DistributionConfiguration
 
     @Override
     public boolean isCDNSupported() {
-        try {
-            return StringUtils.isNotBlank(this.getClient().getCdnManagementURL());
+        for(FilesRegion region : authentication.getRegions()) {
+            if(null != region.getCDNManagementUrl()) {
+                return true;
+            }
         }
-        catch(ConnectionCanceledException e) {
-            return false;
-        }
+        return false;
     }
 
     @Override
@@ -236,19 +217,20 @@ public class CFSession extends CloudSession implements DistributionConfiguration
                 this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), "CDN"));
             }
             if(StringUtils.isNotBlank(defaultRootObject)) {
-                this.getClient().updateContainerMetadata(origin, Collections.singletonMap("Web-Index", defaultRootObject));
+                this.getClient().updateContainerMetadata(containers.get(origin).getRegion(),
+                        origin, Collections.singletonMap("Web-Index", defaultRootObject));
             }
             try {
-                this.getClient().getCDNContainerInfo(origin);
+                this.getClient().getCDNContainerInfo(containers.get(origin).getRegion(),
+                        origin);
             }
-            catch(FilesException e) {
-                if(404 == e.getHttpStatusCode()) {
-                    // Not found.
-                    this.getClient().cdnEnableContainer(origin);
-                }
+            catch(FilesNotFoundException e) {
+                // Not found.
+                this.getClient().cdnEnableContainer(containers.get(origin).getRegion(), origin);
             }
             // Toggle content distribution for the container without changing the TTL expiration
-            this.getClient().cdnUpdateContainer(origin, -1, enabled, logging);
+            this.getClient().cdnUpdateContainer(containers.get(origin).getRegion(),
+                    origin, -1, enabled, logging);
         }
         catch(IOException e) {
             this.error("Cannot write CDN configuration", e);
@@ -269,10 +251,11 @@ public class CFSession extends CloudSession implements DistributionConfiguration
                 this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
                         origin));
 
-                final FilesCDNContainer info = this.getClient().getCDNContainerInfo(origin);
+                final FilesCDNContainer info = this.getClient().getCDNContainerInfo(containers.get(origin).getRegion(),
+                        origin);
                 final Distribution distribution = new Distribution(info.getName(),
-                        new URI(this.getClient().getStorageURL()).getHost(),
-                        method, info.isEnabled(), info.getCdnURL(), info.getSSLURL(), info.getStreamingURL(),
+                        containers.get(origin).getRegion().getStorageUrl().getHost(),
+                        method, info.isEnabled(), info.getCdnURL(), info.getSslURL(), info.getStreamingURL(),
                         info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
                         info.getRetainLogs()) {
                     @Override
@@ -280,22 +263,23 @@ public class CFSession extends CloudSession implements DistributionConfiguration
                         return ".CDN_ACCESS_LOGS";
                     }
                 };
-                final FilesContainerMetaData metadata = this.getClient().getContainerMetaData(origin);
+                final FilesContainerMetaData metadata = this.getClient().getContainerMetaData(containers.get(origin).getRegion(),
+                        origin);
                 if(metadata.getMetaData().containsKey("Web-Index")) {
                     distribution.setDefaultRootObject(metadata.getMetaData().get("Web-Index"));
                 }
                 distribution.setContainers(Collections.singletonList(".CDN_ACCESS_LOGS"));
                 distributionStatus.put(origin, distribution);
             }
-            catch(HttpException e) {
+            catch(FilesNotFoundException e) {
                 log.warn(e.getMessage());
                 // Not found.
                 distributionStatus.put(origin, new Distribution(null, origin, method, false, null, Locale.localizedString("CDN Disabled", "Mosso")));
             }
-            catch(IOException e) {
+            catch(HttpException e) {
                 this.error("Cannot read CDN configuration", e);
             }
-            catch(URISyntaxException e) {
+            catch(IOException e) {
                 this.error("Cannot read CDN configuration", e);
             }
         }
@@ -313,10 +297,12 @@ public class CFSession extends CloudSession implements DistributionConfiguration
                     origin));
             for(Path file : files) {
                 if(file.isContainer()) {
-                    this.getClient().purgeCDNContainer(origin, null);
+                    this.getClient().purgeCDNContainer(containers.get(origin).getRegion(),
+                            origin, null);
                 }
                 else {
-                    this.getClient().purgeCDNObject(origin, file.getKey(), null);
+                    this.getClient().purgeCDNObject(containers.get(origin).getRegion(),
+                            origin, file.getKey(), null);
                 }
             }
         }
