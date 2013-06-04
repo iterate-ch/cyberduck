@@ -14,10 +14,10 @@
 	<string>35357</string>
     <key>Context</key>
     <string>/v2.0/tokens</string>
-	<key>Username Placeholder</key>
-	<string>Tenant ID:Account Email Address</string>
-	<key>Password Placeholder</key>
-	<string>Console Password</string>
+    <key>Username Placeholder</key>
+   	<string>Tenant ID:Access Key</string>
+   	<key>Password Placeholder</key>
+   	<string>Secret Key</string>
 	<key>Icon</key>
 	<string>
 	iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwY
