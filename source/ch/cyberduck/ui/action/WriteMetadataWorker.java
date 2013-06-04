@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,21 +59,20 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
     @Override
     public Map<String, String> run() {
         for(Path next : files) {
-            final Map<String, String> updated = new HashMap<String, String>(metadata);
-            for(Map.Entry<String, String> entry : updated.entrySet()) {
+            for(Map.Entry<String, String> entry : metadata.entrySet()) {
                 // Prune metadata from entries which are unique to a single file. For example md5-hash.
                 if(StringUtils.isBlank(entry.getValue())) {
                     // Reset with previous value
-                    updated.put(entry.getKey(), next.attributes().getMetadata().get(entry.getKey()));
+                    metadata.put(entry.getKey(), next.attributes().getMetadata().get(entry.getKey()));
                 }
             }
-            if(updated.equals(next.attributes().getMetadata())) {
+            if(metadata.equals(next.attributes().getMetadata())) {
                 if(log.isInfoEnabled()) {
                     log.info("Skip writing equal metadata for " + next);
                 }
             }
             else {
-                next.writeMetadata(updated);
+                next.writeMetadata(metadata);
             }
         }
         return metadata;
