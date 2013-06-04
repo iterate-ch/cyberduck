@@ -24,8 +24,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -39,7 +37,6 @@ import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,10 +51,8 @@ import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
 import com.rackspacecloud.client.cloudfiles.FilesContainer;
 import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
-import com.rackspacecloud.client.cloudfiles.FilesException;
 import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
 import com.rackspacecloud.client.cloudfiles.FilesRegion;
-import com.rackspacecloud.client.cloudfiles.method.AuthenticationRequest;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -100,7 +95,10 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         this.fireConnectionDidOpenEvent();
     }
 
-    protected FilesRegion getRegion(final String container) {
+    protected FilesRegion getRegion(final String container) throws IOException {
+        if(containers.isEmpty()) {
+            this.getBuckets(true);
+        }
         return containers.get(container).getRegion();
     }
 
