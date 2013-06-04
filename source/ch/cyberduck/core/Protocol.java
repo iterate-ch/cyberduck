@@ -701,6 +701,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public String getContext() {
+            return Preferences.instance().getProperty("cf.authentication.context");
+        }
+
+        @Override
         public boolean isWebUrlConfigurable() {
             return false;
         }
