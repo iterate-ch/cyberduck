@@ -540,6 +540,13 @@ public class CFPath extends CloudPath {
                         this.getContainerName(), this.getKey(), meta);
             }
             else if(this.attributes().isVolume()) {
+                for(Map.Entry<String, String> entry : this.attributes().getMetadata().entrySet()) {
+                    // Choose metadata values to remove
+                    if(!meta.containsKey(entry.getKey())) {
+                        log.debug(String.format("Remove metadata with key %s", entry.getKey()));
+                        meta.put(entry.getKey(), StringUtils.EMPTY);
+                    }
+                }
                 this.getSession().getClient().updateContainerMetadata(session.getRegion(this.getContainerName()),
                         this.getContainerName(), meta);
             }
