@@ -333,10 +333,10 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     /**
-     * @param redundancy Storage redundancy identifier.
+     * @param storageClass Storage redundancy identifier.
      */
-    public void setStorageClass(String redundancy) {
-        this.storageClass = redundancy;
+    public void setStorageClass(String storageClass) {
+        this.storageClass = storageClass;
     }
 
     public String getEncryption() {

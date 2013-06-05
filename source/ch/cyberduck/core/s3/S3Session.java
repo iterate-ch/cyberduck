@@ -570,15 +570,11 @@ public class S3Session extends CloudSession {
         return !file.attributes().isVolume();
     }
 
-    /**
-     * AWS storage classes
-     */
-    private List<String> storageClasses
-            = Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
-
     @Override
     public List<String> getSupportedStorageClasses() {
-        return storageClasses;
+        return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD,
+                S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
+                "GLACIER");
     }
 
     @Override
