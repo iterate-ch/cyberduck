@@ -33,6 +33,7 @@
 /* Storage class */
 "STANDARD" = "Pastāvīgā Amazon S3 glabātuve";
 "REDUCED_REDUNDANCY" = "Samazināta līdzīgo datu glabātuve (RRS)";
+"GLACIER" = "Glacier";
 
 /* Google Login Credentials */
 "Google Account Email" = "Google konta e-pasts";
