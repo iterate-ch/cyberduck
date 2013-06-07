@@ -1061,13 +1061,13 @@ public final class PreferencesController extends ToolbarWindowController {
         this.infoWindowAsInspectorCheckbox = b;
         this.infoWindowAsInspectorCheckbox.setTarget(this.id());
         this.infoWindowAsInspectorCheckbox.setAction(Foundation.selector("infoWindowAsInspectorCheckboxClicked:"));
-        this.infoWindowAsInspectorCheckbox.setState(Preferences.instance().getBoolean("browser.info.isInspector") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.infoWindowAsInspectorCheckbox.setState(Preferences.instance().getBoolean("browser.info.inspector") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void infoWindowAsInspectorCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.info.isInspector", enabled);
+        Preferences.instance().setProperty("browser.info.inspector", enabled);
     }
 
     @Outlet

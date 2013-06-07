@@ -1052,7 +1052,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(quicklook.isOpen()) {
                 this.updateQuickLookSelection(BrowserController.this.selected);
             }
-            if(Preferences.instance().getBoolean("browser.info.isInspector")) {
+            if(Preferences.instance().getBoolean("browser.info.inspector")) {
                 InfoController c = InfoController.Factory.get(BrowserController.this);
                 if(null == c) {
                     return;

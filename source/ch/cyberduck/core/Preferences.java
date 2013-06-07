@@ -265,7 +265,7 @@ public abstract class Preferences {
         /**
          * Display only one info panel and change information according to selection in browser
          */
-        defaults.put("browser.info.isInspector", String.valueOf(true));
+        defaults.put("browser.info.inspector", String.valueOf(true));
 
         defaults.put("browser.columnKind", String.valueOf(false));
         defaults.put("browser.columnExtension", String.valueOf(false));

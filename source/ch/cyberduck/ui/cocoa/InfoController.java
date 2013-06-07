@@ -1341,7 +1341,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     public boolean isSingleton() {
-        return Preferences.instance().getBoolean("browser.info.isInspector");
+        return Preferences.instance().getBoolean("browser.info.inspector");
     }
 
     public static final class Factory {
@@ -1349,7 +1349,7 @@ public class InfoController extends ToolbarWindowController {
                 = new HashMap<BrowserController, InfoController>();
 
         public static InfoController create(final BrowserController controller, final List<Path> files) {
-            if(Preferences.instance().getBoolean("browser.info.isInspector")) {
+            if(Preferences.instance().getBoolean("browser.info.inspector")) {
                 if(open.containsKey(controller)) {
                     final InfoController c = open.get(controller);
                     c.setFiles(files);
@@ -1976,10 +1976,10 @@ public class InfoController extends ToolbarWindowController {
         else {
             bucketAnalyticsButton.setEnabled(stop && enable && analytics);
         }
-        lifecycleDeletePopup.setEnabled(stop && enable&& lifecycle);
-        lifecycleDeleteCheckbox.setEnabled(stop && enable&& lifecycle);
-        lifecycleTransitionPopup.setEnabled(stop && enable&& lifecycle);
-        lifecycleTransitionCheckbox.setEnabled(stop && enable&& lifecycle);
+        lifecycleDeletePopup.setEnabled(stop && enable && lifecycle);
+        lifecycleDeleteCheckbox.setEnabled(stop && enable && lifecycle);
+        lifecycleTransitionPopup.setEnabled(stop && enable && lifecycle);
+        lifecycleTransitionCheckbox.setEnabled(stop && enable && lifecycle);
         if(stop) {
             s3Progress.stopAnimation(null);
         }
