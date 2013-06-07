@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 
@@ -34,7 +35,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3BucketListService {
     private static final Logger log = Logger.getLogger(S3BucketListService.class);
@@ -47,7 +48,7 @@ public class S3BucketListService {
                     log.info("Anonymous cannot list buckets");
                 }
                 // Listing buckets not supported for thirdparty buckets
-                String bucketname = session.getContainerForHostname(session.getHost().getHostname(true));
+                String bucketname = this.getContainer(session.getHost());
                 if(StringUtils.isEmpty(bucketname)) {
                     if(StringUtils.isNotBlank(session.getHost().getDefaultPath())) {
                         Path d = PathFactory.createPath(session, session.getHost().getDefaultPath(), Path.DIRECTORY_TYPE);
@@ -81,7 +82,7 @@ public class S3BucketListService {
             }
             else {
                 // If bucket is specified in hostname, try to connect to this particular bucket only.
-                final String bucketname = session.getContainerForHostname(session.getHost().getHostname(true));
+                final String bucketname = this.getContainer(session.getHost());
                 if(StringUtils.isNotEmpty(bucketname)) {
                     if(!session.getClient().isBucketAccessible(bucketname)) {
                         session.error("Cannot read container configuration",
@@ -110,5 +111,21 @@ public class S3BucketListService {
             e.initCause(failure);
             throw e;
         }
+    }
+
+    /**
+     * @return Null if no container component in hostname prepended
+     */
+    protected String getContainer(final Host host) {
+        final String hostname = host.getHostname(true);
+        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
+            return null;
+        }
+        // Bucket name is available in URL's host name.
+        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
+            // Bucket name is available as S3 subdomain
+            return hostname.substring(0, hostname.length() - host.getProtocol().getDefaultHostname().length() - 1);
+        }
+        return null;
     }
 }
