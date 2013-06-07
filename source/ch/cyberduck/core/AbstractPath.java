@@ -49,13 +49,12 @@ public abstract class AbstractPath {
      * @return The absolute path with version ID and checksum if any.
      */
     public String unique() {
-        final StringBuilder reference = new StringBuilder(this.getAbsolute());
         if(this.attributes().isDuplicate()) {
             if(StringUtils.isNotBlank(this.attributes().getVersionId())) {
-                reference.append("-").append(this.attributes().getVersionId());
+                return String.format("%s-%s", this.getAbsolute(), this.attributes().getVersionId());
             }
         }
-        return reference.toString();
+        return this.getAbsolute();
     }
 
     /**

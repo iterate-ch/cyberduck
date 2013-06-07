@@ -207,6 +207,14 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
     }
 
+    @Override
+    public String unique() {
+        if(StringUtils.isNotBlank(this.attributes().getRegion())) {
+            return String.format("%s-%s", super.unique(), this.attributes().getRegion());
+        }
+        return super.unique();
+    }
+
     /**
      * The path delimiter for remote paths
      */

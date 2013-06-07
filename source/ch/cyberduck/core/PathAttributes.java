@@ -119,6 +119,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private boolean placeholder;
 
     /**
+     * Geographical location
+     */
+    private String region;
+
+    /**
      * HTTP headers.
      */
     private Map<String, String> metadata;
@@ -412,6 +417,14 @@ public class PathAttributes extends Attributes implements Serializable {
         this.placeholder = placeholder;
     }
 
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(final String region) {
+        this.region = region;
+    }
+
     /**
      * Clear all attributes
      */
@@ -473,6 +486,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(versionId != null ? !versionId.equals(that.versionId) : that.versionId != null) {
             return false;
         }
+        if(region != null ? !region.equals(that.region) : that.region != null) {
+            return false;
+        }
         return true;
     }
 
@@ -485,6 +501,7 @@ public class PathAttributes extends Attributes implements Serializable {
         result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
         result = 31 * result + (etag != null ? etag.hashCode() : 0);
         result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
+        result = 31 * result + (region != null ? region.hashCode() : 0);
         return result;
     }
 }
