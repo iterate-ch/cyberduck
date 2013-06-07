@@ -53,7 +53,7 @@ public class BackgroundException extends Exception {
 
     private Host host;
 
-    public BackgroundException(Host host, Path path, String message, Throwable cause) {
+    public BackgroundException(final Host host, final Path path, final String message, final Throwable cause) {
         super(cause);
         this.host = host;
         this.path = path;
