@@ -30,7 +30,10 @@ import java.util.List;
 public abstract class Worker<T> {
 
     protected String toString(List<Path> files) {
-        StringBuilder name = new StringBuilder();
+        if(files.isEmpty()) {
+            return Locale.localizedString("None");
+        }
+        final StringBuilder name = new StringBuilder();
         name.append(files.get(0).getName());
         if(files.size() > 1) {
             name.append("…");
