@@ -31,9 +31,7 @@ import ch.cyberduck.core.threading.BackgroundException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -117,54 +115,8 @@ public abstract class Session implements TranscriptListener {
      */
     public void check() throws IOException {
         try {
-            try {
-                if(!this.isConnected()) {
-                    if(StringUtils.isBlank(host.getHostname())) {
-                        if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
-                            log.warn(String.format("No default hostname configured for protocol %s", host.getProtocol()));
-                            throw new ConnectionCanceledException();
-                        }
-                        // If hostname is missing update with default
-                        host.setHostname(host.getProtocol().getDefaultHostname());
-                    }
-                    // If not connected anymore, reconnect the session
-                    this.connect();
-                }
-                else {
-                    // The session is still supposed to be connected
-                    try {
-                        // Send a 'no operation command' to make sure the session is alive
-                        this.noop();
-                    }
-                    catch(IOException e) {
-                        // Close the underlying socket first
-                        this.interrupt();
-                        // Try to reconnect once more
-                        this.connect();
-                    }
-                }
-            }
-            catch(SocketException e) {
-                if(e.getMessage().equals("Software caused connection abort")) {
-                    // Do not report as failed if socket opening interrupted
-                    log.warn("Supressed socket exception:" + e.getMessage());
-                    throw new ConnectionCanceledException(e.getMessage(), e);
-                }
-                if(e.getMessage().equals("Socket closed")) {
-                    // Do not report as failed if socket opening interrupted
-                    log.warn("Supressed socket exception:" + e.getMessage());
-                    throw new ConnectionCanceledException(e.getMessage(), e);
-                }
-                throw e;
-            }
-            catch(SSLHandshakeException e) {
-                log.error(String.format("SSL Handshake failed for host %s", host), e);
-                if(e.getCause() instanceof sun.security.validator.ValidatorException) {
-                    throw e;
-                }
-                // Most probably caused by user dismissing ceritifcate. No trusted certificate found.
-                throw new ConnectionCanceledException(e.getMessage(), e);
-            }
+            final ConnectionCheckService c = new ConnectionCheckService();
+            c.check(this);
         }
         catch(IOException e) {
             this.interrupt();
