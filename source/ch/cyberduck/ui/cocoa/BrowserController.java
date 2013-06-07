@@ -2234,7 +2234,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final List<Path> s = this.getSelectedPaths();
             final Session session = this.getSession();
             session.cache().invalidate(this.workdir().getReference());
-            session.cdn().clear();
             switch(this.browserSwitchView.selectedSegment()) {
                 case SWITCH_OUTLINE_VIEW: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {

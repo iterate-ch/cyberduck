@@ -1463,7 +1463,6 @@ namespace Ch.Cyberduck.Ui.Controller
             if (IsMounted())
             {
                 Session session = getSession();
-                session.cdn().clear();
                 session.cache().invalidate(Workdir.getReference());
                 foreach (Path path in View.VisiblePaths)
                 {
