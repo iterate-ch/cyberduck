@@ -554,17 +554,6 @@ public class S3Session extends CloudSession {
         return false;
     }
 
-    /**
-     * Creating files is only possible inside a bucket.
-     *
-     * @param workdir The workdir to create query
-     * @return False if directory is root.
-     */
-    @Override
-    public boolean isCreateFileSupported(final Path workdir) {
-        return !workdir.isRoot();
-    }
-
     @Override
     public boolean isRenameSupported(final Path file) {
         return !file.attributes().isVolume();

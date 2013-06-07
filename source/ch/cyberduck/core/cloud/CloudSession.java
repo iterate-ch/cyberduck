@@ -20,6 +20,7 @@ package ch.cyberduck.core.cloud;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -53,6 +54,17 @@ public abstract class CloudSession extends HttpSession {
 
     public boolean isLoggingSupported() {
         return false;
+    }
+
+    /**
+     * Creating files is only possible inside a bucket.
+     *
+     * @param workdir The workdir to create query
+     * @return False if directory is root.
+     */
+    @Override
+    public boolean isCreateFileSupported(final Path workdir) {
+        return !workdir.isRoot();
     }
 
     @Override

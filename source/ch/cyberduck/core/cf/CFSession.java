@@ -155,17 +155,6 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         return !file.attributes().isVolume();
     }
 
-    /**
-     * Creating files is only possible inside a bucket.
-     *
-     * @param workdir The workdir to create query
-     * @return False if directory is root.
-     */
-    @Override
-    public boolean isCreateFileSupported(final Path workdir) {
-        return !workdir.isRoot();
-    }
-
     @Override
     public boolean isChecksumSupported() {
         return true;
