@@ -378,11 +378,72 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set selected paths to %s", selected));
         }
+        if(quicklook.isOpen()) {
+            this.updateQuickLookSelection(selected);
+        }
+        if(Preferences.instance().getBoolean("browser.info.inspector")) {
+            InfoController c = InfoController.Factory.get(BrowserController.this);
+            if(null != c) {
+                // Currently open info panel
+                c.setFiles(selected);
+            }
+        }
         this.selected = new ArrayList<Path>();
         for(Path s : selected) {
             this.selected.add(PathFactory.createPath(session, s.getAsDictionary()));
         }
         this.validateToolbar();
+    }
+
+    private void updateQuickLookSelection(final List<Path> selected) {
+        if(quicklook.isAvailable()) {
+            final Collection<Path> downloads = new Collection<Path>();
+            for(Path path : selected) {
+                if(!path.attributes().isFile()) {
+                    continue;
+                }
+                path.setLocal(TemporaryFileServiceFactory.get().get(path));
+                downloads.add(path);
+            }
+            if(downloads.size() > 0) {
+                background(new BrowserBackgroundAction(BrowserController.this) {
+                    @Override
+                    public void run() {
+                        Transfer transfer = new DownloadTransfer(downloads);
+                        TransferOptions options = new TransferOptions();
+                        options.closeSession = false;
+                        transfer.start(new TransferPrompt() {
+                            @Override
+                            public TransferAction prompt() {
+                                return TransferAction.ACTION_COMPARISON;
+                            }
+                        }, options);
+                    }
+
+                    @Override
+                    public void cleanup() {
+                        final Collection<Local> previews = new Collection<Local>();
+                        for(Path download : downloads) {
+                            previews.add(download.getLocal());
+                        }
+                        // Change files in Quick Look
+                        quicklook.select(previews);
+                        // Open Quick Look Preview Panel
+                        quicklook.open();
+                        // Revert status label
+                        BrowserController.this.updateStatusLabel();
+                        // Restore the focus to our window to demo the selection changing, scrolling
+                        // (left/right) and closing (space) functionality
+                        BrowserController.this.window().makeKeyWindow();
+                    }
+
+                    @Override
+                    public String getActivity() {
+                        return Locale.localizedString("Quick Look", "Status");
+                    }
+                });
+            }
+        }
     }
 
     /**
@@ -951,65 +1012,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
 
         public void spaceKeyPressed(final ID sender) {
-            if(quicklook.isAvailable()) {
-                if(quicklook.isOpen()) {
-                    quicklook.close();
-                }
-                else {
-                    this.updateQuickLookSelection(BrowserController.this.getSelectedPaths());
-                }
-            }
-        }
-
-        private void updateQuickLookSelection(final List<Path> selected) {
-            if(quicklook.isAvailable()) {
-                final Collection<Path> downloads = new Collection<Path>();
-                for(Path path : selected) {
-                    if(!path.attributes().isFile()) {
-                        continue;
-                    }
-                    path.setLocal(TemporaryFileServiceFactory.get().get(path));
-                    downloads.add(path);
-                }
-                if(downloads.size() > 0) {
-                    background(new BrowserBackgroundAction(BrowserController.this) {
-                        @Override
-                        public void run() {
-                            Transfer transfer = new DownloadTransfer(downloads);
-                            TransferOptions options = new TransferOptions();
-                            options.closeSession = false;
-                            transfer.start(new TransferPrompt() {
-                                @Override
-                                public TransferAction prompt() {
-                                    return TransferAction.ACTION_COMPARISON;
-                                }
-                            }, options);
-                        }
-
-                        @Override
-                        public void cleanup() {
-                            final Collection<Local> previews = new Collection<Local>();
-                            for(Path download : downloads) {
-                                previews.add(download.getLocal());
-                            }
-                            // Change files in Quick Look
-                            quicklook.select(previews);
-                            // Open Quick Look Preview Panel
-                            quicklook.open();
-                            // Revert status label
-                            BrowserController.this.updateStatusLabel();
-                            // Restore the focus to our window to demo the selection changing, scrolling
-                            // (left/right) and closing (space) functionality
-                            BrowserController.this.window().makeKeyWindow();
-                        }
-
-                        @Override
-                        public String getActivity() {
-                            return Locale.localizedString("Quick Look", "Status");
-                        }
-                    });
-                }
-            }
+            quicklookButtonClicked(sender);
         }
 
         @Override
@@ -1049,16 +1052,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 selected.add(file);
             }
             setSelectedPaths(selected);
-            if(quicklook.isOpen()) {
-                this.updateQuickLookSelection(BrowserController.this.selected);
-            }
-            if(Preferences.instance().getBoolean("browser.info.inspector")) {
-                InfoController c = InfoController.Factory.get(BrowserController.this);
-                if(null == c) {
-                    return;
-                }
-                c.setFiles(BrowserController.this.selected);
-            }
         }
 
         protected abstract Path pathAtRow(int row);
@@ -2217,8 +2210,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             quicklook.close();
         }
         else {
-            final AbstractBrowserTableDelegate delegate = this.getSelectedBrowserDelegate();
-            delegate.updateQuickLookSelection(this.getSelectedPaths());
+            this.updateQuickLookSelection(this.getSelectedPaths());
         }
     }
 
