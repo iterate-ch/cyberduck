@@ -85,6 +85,8 @@ public class AbstractTestCase {
         NSObjectPathReference.register();
         UserDefaultsDateFormatter.register();
         WorkspaceApplicationLauncher.register();
+        SystemConfigurationProxy.register();
+        NullKeychain.register();
     }
 
     @BeforeClass
