@@ -101,7 +101,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * @return A cached cloud front service interface
      */
     @Override
-    protected CloudFrontService getClient() throws ConnectionCanceledException {
+    public CloudFrontService getClient() throws ConnectionCanceledException {
         if(null == client) {
             throw new ConnectionCanceledException();
         }

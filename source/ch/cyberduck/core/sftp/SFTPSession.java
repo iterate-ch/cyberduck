@@ -58,7 +58,7 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    protected Connection getClient() throws ConnectionCanceledException {
+    public Connection getClient() throws ConnectionCanceledException {
         if(null == connection) {
             throw new ConnectionCanceledException();
         }

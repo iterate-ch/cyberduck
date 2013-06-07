@@ -79,7 +79,7 @@ public class S3Session extends CloudSession {
     }
 
     @Override
-    protected RequestEntityRestStorageService getClient() throws ConnectionCanceledException {
+    public RequestEntityRestStorageService getClient() throws ConnectionCanceledException {
         if(null == client) {
             throw new ConnectionCanceledException();
         }

@@ -17,7 +17,7 @@ public class NullSession extends Session {
     }
 
     @Override
-    protected <C> C getClient() throws ConnectionCanceledException {
+    public <C> C getClient() throws ConnectionCanceledException {
         throw new UnsupportedOperationException();
     }
 

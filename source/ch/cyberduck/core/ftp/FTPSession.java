@@ -69,7 +69,7 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    protected FTPClient getClient() throws ConnectionCanceledException {
+    public FTPClient getClient() throws ConnectionCanceledException {
         if(null == client) {
             throw new ConnectionCanceledException();
         }

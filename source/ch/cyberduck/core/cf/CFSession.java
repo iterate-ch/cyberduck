@@ -77,7 +77,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     @Override
-    protected FilesClient getClient() throws ConnectionCanceledException {
+    public FilesClient getClient() throws ConnectionCanceledException {
         if(null == client) {
             throw new ConnectionCanceledException();
         }

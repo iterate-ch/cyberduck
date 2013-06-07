@@ -63,7 +63,7 @@ public class DAVSession extends HttpSession {
     }
 
     @Override
-    protected DAVClient getClient() throws ConnectionCanceledException {
+    public DAVClient getClient() throws ConnectionCanceledException {
         if(null == client) {
             throw new ConnectionCanceledException();
         }

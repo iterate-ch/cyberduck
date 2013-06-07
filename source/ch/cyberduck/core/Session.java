@@ -97,11 +97,10 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * @param <C> Native client type
      * @return The client implementation.
      * @throws ConnectionCanceledException If the connection is alreay closed
      */
-    protected abstract <C> C getClient() throws ConnectionCanceledException;
+    public abstract <C> C getClient() throws ConnectionCanceledException;
 
     public String getUserAgent() {
         return ua.get();
