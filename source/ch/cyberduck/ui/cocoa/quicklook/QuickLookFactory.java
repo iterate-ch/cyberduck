@@ -60,12 +60,12 @@ public abstract class QuickLookFactory extends Factory<QuickLook> {
 
         @Override
         public void open() {
-            throw new UnsupportedOperationException();
+            //
         }
 
         @Override
         public void close() {
-            throw new UnsupportedOperationException();
+            //
         }
     }
 
