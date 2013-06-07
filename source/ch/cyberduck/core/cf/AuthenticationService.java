@@ -18,7 +18,7 @@ import com.rackspacecloud.client.cloudfiles.method.Authentication20RAXUsernameKe
 import com.rackspacecloud.client.cloudfiles.method.AuthenticationRequest;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AuthenticationService {
     private static final Logger log = Logger.getLogger(AuthenticationService.class);
@@ -37,8 +37,8 @@ public class AuthenticationService {
         }
         url.append(host.getHostname());
         url.append(":").append(host.getPort());
-        // Default to 1.0
         if(StringUtils.isBlank(host.getProtocol().getContext())) {
+            // Default to 1.0
             url.append(PathNormalizer.normalize(Preferences.instance().getProperty("cf.authentication.context")));
             return new Authentication10UsernameKeyRequest(URI.create(url.toString()),
                     credentials.getUsername(), credentials.getPassword());
