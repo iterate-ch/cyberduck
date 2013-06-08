@@ -2,6 +2,7 @@
 - [Feature] Bucket lifecycle configuration to archive objects in Glacier (S3) (#6830)
 - [Feature] Keystone (2.0) authentication support (OpenStack) (#6330)
 - [Feature] Multiple region support (OpenStack) (#6902)
+- [Feature] Set container metadata (OpenStack)
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Failure duplicating files (FTP) (#7224)
 - [Bugfix] Save workspace does not work for multiple browser sessions to the same server (#7213)

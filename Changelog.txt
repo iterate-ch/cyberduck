@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 - [Feature] Bucket lifecycle configuration to archive objects in Glacier (S3) (#6830)
 - [Feature] Keystone (2.0) authentication support (OpenStack) (#6330)
 - [Feature] Multiple region support (OpenStack) (#6902)
+- [Feature] Set container metadata (OpenStack)
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)
