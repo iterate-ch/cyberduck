@@ -18,14 +18,13 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.AppKitFunctions;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.apache.commons.lang.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WorkspaceBrowserLauncher implements BrowserLauncher {
 
@@ -41,14 +40,12 @@ public class WorkspaceBrowserLauncher implements BrowserLauncher {
     }
 
     @Override
-    public void open(String url) {
+    public boolean open(final String url) {
         if(StringUtils.isNotBlank(url)) {
-            if(!NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url))) {
-                AppKitFunctions.instance.NSBeep();
+            if(NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url))) {
+                return true;
             }
         }
-        else {
-            AppKitFunctions.instance.NSBeep();
-        }
+        return false;
     }
 }

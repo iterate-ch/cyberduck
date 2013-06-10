@@ -19,8 +19,8 @@ package ch.cyberduck.core.local;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface BrowserLauncher {
-    void open(String url);
+    boolean open(String url);
 }
