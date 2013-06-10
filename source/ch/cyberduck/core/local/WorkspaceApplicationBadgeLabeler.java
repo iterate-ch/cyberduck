@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 /**
  * @version $Id$
@@ -38,6 +39,8 @@ public class WorkspaceApplicationBadgeLabeler implements ApplicationBadgeLabeler
 
     @Override
     public void badge(String label) {
-        NSApplication.sharedApplication().dockTile().setBadgeLabel(label);
+        synchronized(NSWorkspace.class) {
+            NSApplication.sharedApplication().dockTile().setBadgeLabel(label);
+        }
     }
 }

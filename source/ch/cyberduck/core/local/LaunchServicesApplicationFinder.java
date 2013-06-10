@@ -52,8 +52,6 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
         }
     }
 
-    private static final Object workspace = new Object();
-
     static {
         Native.load("LaunchServicesApplicationFinder");
     }
@@ -185,7 +183,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Find application for %s", bundleIdentifier));
             }
-            synchronized(workspace) {
+            synchronized(NSWorkspace.class) {
                 final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
                 String name = null;
                 if(StringUtils.isNotBlank(path)) {
@@ -227,7 +225,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
 
     @Override
     public boolean isInstalled(final Application application) {
-        synchronized(workspace) {
+        synchronized(NSWorkspace.class) {
             return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                     application.getIdentifier()) != null;
         }
