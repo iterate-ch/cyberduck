@@ -28,15 +28,11 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.AbstractHttpClient;
 
 import java.io.IOException;
 
 import com.googlecode.sardine.impl.SardineException;
-import com.googlecode.sardine.impl.SardineImpl;
 import com.googlecode.sardine.impl.handler.VoidResponseHandler;
 import com.googlecode.sardine.impl.methods.HttpPropFind;
 
@@ -49,17 +45,6 @@ public class DAVSession extends HttpSession {
 
     public DAVSession(Host h) {
         super(h);
-    }
-
-    protected static final class DAVClient extends SardineImpl {
-        public DAVClient(final AbstractHttpClient http) {
-            super(http);
-        }
-
-        @Override
-        public <T> T execute(final HttpRequestBase request, final ResponseHandler<T> responseHandler) throws IOException {
-            return super.execute(request, responseHandler);
-        }
     }
 
     @Override
