@@ -175,7 +175,7 @@ public class SFTPSession extends Session {
                 return;
             }
         }
-        else if(this.loginUsingKBIAuthentication(controller, credentials)) {
+        else if(this.loginUsingChallengeResponseAuthentication(controller, credentials)) {
             this.message(Locale.localizedString("Login successful", "Credentials"));
             return;
         }
@@ -198,7 +198,7 @@ public class SFTPSession extends Session {
             controller.prompt(host.getProtocol(), additional,
                     Locale.localizedString("Partial authentication success", "Credentials"),
                     Locale.localizedString("Provide additional login credentials", "Credentials") + ".", false, false, false);
-            if(this.loginUsingKBIAuthentication(controller, additional)) {
+            if(this.loginUsingChallengeResponseAuthentication(controller, additional)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
                 return;
             }
@@ -303,12 +303,12 @@ public class SFTPSession extends Session {
      * @return True if authentication succeeded
      * @throws IOException Login failed or canceled
      */
-    private boolean loginUsingKBIAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
-        log.debug("loginUsingKBIAuthentication:" + credentials);
+    private boolean loginUsingChallengeResponseAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
+        log.debug("loginUsingChallengeResponseAuthentication:" + credentials);
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
             return this.getClient().authenticateWithKeyboardInteractive(credentials.getUsername(),
                     /**
-                     * The logic that one has to implement if "keyboard-interactive" autentication shall be
+                     * The logic that one has to implement if "keyboard-interactive" authentication shall be
                      * supported.
                      */
                     new InteractiveCallback() {
@@ -324,7 +324,9 @@ public class SFTPSession extends Session {
                             log.debug("replyToChallenge:" + name);
                             // In its first callback the server prompts for the password
                             if(0 == promptCount) {
-                                log.debug("First callback returning provided credentials");
+                                if(log.isDebugEnabled()) {
+                                    log.debug("First callback returning provided credentials");
+                                }
                                 promptCount++;
                                 return new String[]{credentials.getPassword()};
                             }
