@@ -45,15 +45,14 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class KeychainX509TrustManager extends AbstractX509TrustManager {
+public class KeychainX509TrustManager extends AbstractX509TrustManager {
     private static Logger log = Logger.getLogger(KeychainX509TrustManager.class);
 
-    /**
-     * Override if hostname is different depending on the request.
-     *
-     * @return Hostname to use when validating server certificate.
-     */
-    public abstract String getHostname();
+    private TrustManagerHostnameCallback callback;
+
+    public KeychainX509TrustManager(TrustManagerHostnameCallback callback) {
+        this.callback = callback;
+    }
 
     @Override
     public void checkClientTrusted(final X509Certificate[] x509Certificates, String authType)
@@ -72,15 +71,16 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
     private void checkCertificates(final X509Certificate[] certs)
             throws CertificateException {
 
+        final String hostname = callback.getHostname();
         if(Arrays.asList(this.getAcceptedIssuers()).containsAll(Arrays.asList(certs))) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Certificate for %s previously trusted", this.getHostname()));
+                log.info(String.format("Certificate for %s previously trusted", hostname));
             }
             return;
         }
-        if(KeychainFactory.get().isTrusted(this.getHostname(), certs)) {
+        if(KeychainFactory.get().isTrusted(hostname, certs)) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Certificate for %s trusted in Keychain", this.getHostname()));
+                log.info(String.format("Certificate for %s trusted in Keychain", hostname));
             }
             // We still accept the certificate if we find it in the Keychain
             // regardless of its trust settings. There is currently no way I am
@@ -156,12 +156,12 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
                     }
                 }
             }
-            X509Certificate cert = KeychainFactory.get().chooseCertificate(list.toArray(new String[list.size()]),
-                    this.getHostname(),
-                    MessageFormat.format(Locale.localizedString("Select the certificate to use when connecting to {0}."), this.getHostname()));
+            final String hostname = callback.getHostname();
+            X509Certificate cert = KeychainFactory.get().chooseCertificate(list.toArray(new String[list.size()]), hostname,
+                    MessageFormat.format(Locale.localizedString("Select the certificate to use when connecting to {0}."), hostname));
             if(null == cert) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("No certificate selected for hostname %s", this.getHostname()));
+                    log.info(String.format("No certificate selected for hostname %s", hostname));
                 }
                 return null;
             }

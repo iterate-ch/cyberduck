@@ -19,7 +19,9 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
@@ -66,20 +68,17 @@ import java.security.cert.X509Certificate;
 public abstract class HttpSession extends SSLSession {
     private static final Logger log = Logger.getLogger(HttpSession.class);
 
-    private PoolingClientConnectionManager manager;
-
-    protected HttpSession(Host h) {
-        super(h);
-    }
+    private AbstractHttpClient client;
 
     /**
-     * Create new HTTP client with default configuration and custom trust manager.
-     *
-     * @return A new instance of a default HTTP client.
+     * Target hostname of current request
      */
-    protected AbstractHttpClient http() {
-        final HttpParams params = new BasicHttpParams();
+    private String target;
 
+    protected HttpSession(final Host h) {
+        super(h);
+
+        final HttpParams params = new BasicHttpParams();
         HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, getEncoding());
         HttpProtocolParams.setUserAgent(params, getUserAgent());
@@ -146,12 +145,36 @@ public abstract class HttpSession extends SSLSession {
                 }
             }
         }
-        manager = new PoolingClientConnectionManager(registry);
+        final PoolingClientConnectionManager manager = new PoolingClientConnectionManager(registry);
         manager.setMaxTotal(Preferences.instance().getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
-        AbstractHttpClient http = new DefaultHttpClient(manager, params);
-        this.configure(http);
-        return http;
+        client = new DefaultHttpClient(manager, params);
+        client.addRequestInterceptor(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                target = ((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName();
+            }
+        });
+        this.configure(client);
+    }
+
+    @Override
+    public String getHostname() {
+        return target;
+    }
+
+    public AbstractHttpClient http() {
+        return client;
+    }
+
+    @Override
+    protected void connect() throws IOException {
+        //
+    }
+
+    @Override
+    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
+        //
     }
 
     protected void configure(final AbstractHttpClient client) {
@@ -162,7 +185,6 @@ public abstract class HttpSession extends SSLSession {
                 for(Header header : request.getAllHeaders()) {
                     log(true, header.toString());
                 }
-                domain = ((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName();
             }
         });
         client.addResponseInterceptor(new HttpResponseInterceptor() {
@@ -180,19 +202,10 @@ public abstract class HttpSession extends SSLSession {
         }
     }
 
-    private String domain;
-
-    @Override
-    protected String getDomain() {
-        return domain;
-    }
-
     @Override
     public void close() {
-        if(manager != null) {
-            // When HttpClient instance is no longer needed, shut down the connection manager to ensure
-            // immediate deallocation of all system resources
-            manager.shutdown();
-        }
+        // When HttpClient instance is no longer needed, shut down the connection manager to ensure
+        // immediate deallocation of all system resources
+        client.getConnectionManager().shutdown();
     }
 }

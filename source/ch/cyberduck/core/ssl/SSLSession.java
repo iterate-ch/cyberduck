@@ -21,6 +21,7 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 
+import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
@@ -28,35 +29,35 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class SSLSession extends Session {
+public abstract class SSLSession extends Session implements TrustManagerHostnameCallback {
 
-    private AbstractX509TrustManager trustManager;
+    private X509TrustManager trust;
 
     protected SSLSession(Host h) {
         super(h);
-        this.trustManager = new KeychainX509TrustManager() {
-            @Override
-            public String getHostname() {
-                return SSLSession.this.getDomain();
-            }
-        };
+        this.trust = new KeychainX509TrustManager(this);
     }
 
-    protected String getDomain() {
+    protected SSLSession(final Host host, final X509TrustManager manager) {
+        super(host);
+        this.trust = manager;
+    }
+
+    public String getHostname() {
         return this.getHost().getHostname(true);
     }
 
     /**
      * @return Trust manager backed by keychain
      */
-    public AbstractX509TrustManager getTrustManager() {
-        return trustManager;
+    public X509TrustManager getTrustManager() {
+        return trust;
     }
 
     /**
      * @return List of certificates accepted by all trust managers of this session.
      */
     public List<X509Certificate> getAcceptedIssuers() {
-        return Arrays.asList(trustManager.getAcceptedIssuers());
+        return Arrays.asList(trust.getAcceptedIssuers());
     }
 }
