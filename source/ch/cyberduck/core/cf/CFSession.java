@@ -133,6 +133,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         try {
             if(this.isConnected()) {
                 this.fireConnectionWillCloseEvent();
+                super.close();
             }
         }
         finally {
