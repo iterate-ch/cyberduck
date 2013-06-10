@@ -63,7 +63,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     /**
      * @param trust Verifiying trusts in system settings
      */
-    public CustomTrustSSLProtocolSocketFactory(X509TrustManager trust) {
+    public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust) {
         this(trust, null);
     }
 
@@ -71,7 +71,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @param trust Verifiying trusts in system settings
      * @param key   Key manager for client certificate selection
      */
-    public CustomTrustSSLProtocolSocketFactory(X509TrustManager trust, X509KeyManager key) {
+    public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key) {
         try {
             context = SSLContext.getInstance("TLS");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, null);
