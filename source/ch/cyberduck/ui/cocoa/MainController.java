@@ -864,6 +864,9 @@ public class MainController extends BundleController implements NSApplication.De
                 @Override
                 public void cleanup() {
                     for(Host host : sessions) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("New browser for saved session %s", host));
+                        }
                         MainController.newDocument().mount(host);
                     }
                     sessions.clear();
