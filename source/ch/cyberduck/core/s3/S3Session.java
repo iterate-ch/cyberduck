@@ -725,7 +725,7 @@ public class S3Session extends CloudSession {
     protected Map<String, LifecycleConfig> lifecycleStatus
             = new HashMap<String, LifecycleConfig>();
 
-    public void readLifecycle(final String container) {
+    protected void readLifecycle(final String container) {
         if(this.isLifecycleSupported()) {
             if(!lifecycleStatus.containsKey(container)) {
                 try {
