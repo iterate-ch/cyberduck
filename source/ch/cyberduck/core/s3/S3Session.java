@@ -517,6 +517,7 @@ public class S3Session extends CloudSession {
         try {
             if(this.isConnected()) {
                 this.fireConnectionWillCloseEvent();
+                super.close();
             }
         }
         finally {
