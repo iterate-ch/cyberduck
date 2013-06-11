@@ -27,8 +27,18 @@ import ch.cyberduck.core.Scheme;
  */
 public interface AnalyticsProvider {
 
+    /**
+     * @return Third party solution name
+     */
     String getName();
 
+    /**
+     * @param protocol    Provider
+     * @param method      Distribution method
+     * @param container   Container name
+     * @param credentials Access keys
+     * @return Setup URI
+     */
     String getSetup(Protocol protocol, Scheme method, String container,
                     Credentials credentials);
 }
