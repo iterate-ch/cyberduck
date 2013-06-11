@@ -25,11 +25,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rackspacecloud.client.cloudfiles.FilesClient;
 import com.rackspacecloud.client.cloudfiles.FilesContainer;
 import com.rackspacecloud.client.cloudfiles.FilesRegion;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ContainerListService {
     private static final Logger log = Logger.getLogger(ContainerListService.class);
@@ -37,9 +38,10 @@ public class ContainerListService {
     public List<FilesContainer> list(final CFSession session) throws IOException {
         try {
             final List<FilesContainer> containers = new ArrayList<FilesContainer>();
-            for(FilesRegion region : session.getClient().getRegions()) {
+            final FilesClient client = session.getClient();
+            for(FilesRegion region : client.getRegions()) {
                 // List all containers
-                for(FilesContainer container : session.getClient().listContainers(region)) {
+                for(FilesContainer container : client.listContainers(region)) {
                     containers.add(container);
                 }
             }
