@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
@@ -1859,10 +1860,11 @@ public class InfoController extends ToolbarWindowController {
         distributionDefaultRootPopup.menu().addItem(NSMenuItem.separatorItem());
 
         Session session = controller.getSession();
+        final DistributionConfiguration cdn = session.cdn();
         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                session.cdn().getName()));
+                cdn.getName()));
         distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("None"));
-        for(Distribution.Method method : session.cdn().getMethods(this.getSelected().getContainerName())) {
+        for(Distribution.Method method : cdn.getMethods(this.getSelected().getContainerName())) {
             distributionDeliveryPopup.addItemWithTitle(method.toString());
             distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
         }
@@ -1870,7 +1872,7 @@ public class InfoController extends ToolbarWindowController {
         distributionDeliveryPopup.selectItemWithTitle(selected);
         if(null == distributionDeliveryPopup.selectedItem()) {
             // Select first distribution option
-            Distribution.Method method = session.cdn().getMethods(this.getSelected().getContainerName()).iterator().next();
+            Distribution.Method method = cdn.getMethods(this.getSelected().getContainerName()).iterator().next();
             distributionDeliveryPopup.selectItemWithTitle(method.toString());
         }
 
@@ -2475,18 +2477,19 @@ public class InfoController extends ToolbarWindowController {
         Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
         distributionEnableButton.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
-        distributionLoggingButton.setEnabled(stop && enable && session.cdn().isLoggingSupported(method));
+        final DistributionConfiguration cdn = session.cdn();
+        distributionLoggingButton.setEnabled(stop && enable && cdn.isLoggingSupported(method));
         if(ObjectUtils.equals(session.iam().getUserCredentials(session.analytics().getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             distributionAnalyticsButton.setEnabled(false);
         }
         else {
-            distributionAnalyticsButton.setEnabled(stop && enable && session.cdn().isAnalyticsSupported(method));
+            distributionAnalyticsButton.setEnabled(stop && enable && cdn.isAnalyticsSupported(method));
         }
-        distributionLoggingPopup.setEnabled(stop && enable && session.cdn().isLoggingSupported(method));
-        distributionCnameField.setEnabled(stop && enable && session.cdn().isCnameSupported(method));
-        distributionInvalidateObjectsButton.setEnabled(stop && enable && session.cdn().isInvalidationSupported(method));
-        distributionDefaultRootPopup.setEnabled(stop && enable && session.cdn().isDefaultRootSupported(method));
+        distributionLoggingPopup.setEnabled(stop && enable && cdn.isLoggingSupported(method));
+        distributionCnameField.setEnabled(stop && enable && cdn.isCnameSupported(method));
+        distributionInvalidateObjectsButton.setEnabled(stop && enable && cdn.isInvalidationSupported(method));
+        distributionDefaultRootPopup.setEnabled(stop && enable && cdn.isDefaultRootSupported(method));
         if(stop) {
             distributionProgress.stopAnimation(null);
         }
@@ -2504,7 +2507,8 @@ public class InfoController extends ToolbarWindowController {
                 public void run() throws BackgroundException {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-                    session.cdn().invalidate(session.cdn().getOrigin(method, getSelected().getContainerName()), method, files, false);
+                    final DistributionConfiguration cdn = session.cdn();
+                    cdn.invalidate(cdn.getOrigin(method, getSelected().getContainerName()), method, files, false);
                 }
 
                 @Override
@@ -2538,9 +2542,10 @@ public class InfoController extends ToolbarWindowController {
                 public void run() throws BackgroundException {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-                    final String origin = session.cdn().getOrigin(method, getSelected().getContainerName());
+                    final DistributionConfiguration cdn = session.cdn();
+                    final String origin = cdn.getOrigin(method, getSelected().getContainerName());
                     if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
-                        session.cdn().write(distributionEnableButton.state() == NSCell.NSOnState,
+                        cdn.write(distributionEnableButton.state() == NSCell.NSOnState,
                                 origin, method,
                                 StringUtils.split(distributionCnameField.stringValue()),
                                 distributionLoggingButton.state() == NSCell.NSOnState,
@@ -2548,7 +2553,7 @@ public class InfoController extends ToolbarWindowController {
                                 distributionDefaultRootPopup.selectedItem().representedObject());
                     }
                     else {
-                        session.cdn().write(distributionEnableButton.state() == NSCell.NSOnState,
+                        cdn.write(distributionEnableButton.state() == NSCell.NSOnState,
                                 origin, method,
                                 new String[]{}, distributionLoggingButton.state() == NSCell.NSOnState,
                                 null == distributionLoggingPopup.selectedItem() ? getSelected().getContainerName() : distributionLoggingPopup.selectedItem().representedObject(),
@@ -2584,7 +2589,8 @@ public class InfoController extends ToolbarWindowController {
                             = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     // We only support one distribution per bucket for the sake of simplicity
                     final String container = getSelected().getContainerName();
-                    distribution = session.cdn().read(session.cdn().getOrigin(method, container), method);
+                    final DistributionConfiguration cdn = session.cdn();
+                    distribution = cdn.read(cdn.getOrigin(method, container), method);
                     // Make sure container items are cached for default root object.
                     getSelected().getContainer().children();
                 }
@@ -2593,8 +2599,9 @@ public class InfoController extends ToolbarWindowController {
                 public void cleanup() {
                     try {
                         final Session session = controller.getSession();
+                        final DistributionConfiguration cdn = session.cdn();
                         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                session.cdn().getName(distribution.getMethod())));
+                                cdn.getName(distribution.getMethod())));
                         distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                         distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
 
@@ -2618,12 +2625,12 @@ public class InfoController extends ToolbarWindowController {
                         if(null == distributionLoggingPopup.selectedItem()) {
                             distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
                         }
-                        if(session.cdn().isAnalyticsSupported(distribution.getMethod())) {
+                        if(cdn.isAnalyticsSupported(distribution.getMethod())) {
                             final Credentials credentials = session.iam().getUserCredentials(controller.getSession().analytics().getName());
                             distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
                             if(credentials != null) {
                                 distributionAnalyticsSetupUrlField.setAttributedStringValue(
-                                        HyperlinkAttributedStringFactory.create(session.analytics().getSetup(session.cdn().getProtocol(),
+                                        HyperlinkAttributedStringFactory.create(session.analytics().getSetup(cdn.getProtocol(),
                                                 distribution.getMethod().getScheme(), container, credentials)));
                             }
                         }
@@ -2667,7 +2674,7 @@ public class InfoController extends ToolbarWindowController {
                                 break;
                             }
                         }
-                        if(session.cdn().isDefaultRootSupported(distribution.getMethod())) {
+                        if(cdn.isDefaultRootSupported(distribution.getMethod())) {
                             for(AbstractPath next : getSelected().getContainer().children()) {
                                 if(next.attributes().isFile()) {
                                     distributionDefaultRootPopup.addItemWithTitle(next.getName());
