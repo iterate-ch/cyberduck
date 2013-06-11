@@ -47,7 +47,7 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
             }
 
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 //
             }
         };
@@ -68,7 +68,7 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
             }
 
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 //
             }
         };

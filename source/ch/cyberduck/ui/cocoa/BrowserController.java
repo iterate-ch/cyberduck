@@ -32,6 +32,7 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.transfer.Transfer;
@@ -408,7 +409,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(downloads.size() > 0) {
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     @Override
-                    public void run() {
+                    public void run() throws BackgroundException {
                         Transfer transfer = new DownloadTransfer(downloads);
                         TransferOptions options = new TransferOptions();
                         options.closeSession = false;
@@ -2067,7 +2068,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             this.background(new BrowserBackgroundAction(this) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     session.close();
                 }
 
@@ -2485,7 +2486,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void revertPath(final Path selected) {
         this.background(new BrowserBackgroundAction(this) {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 if(this.isCanceled()) {
                     return;
                 }
@@ -2927,7 +2928,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             });
             this.background(new BrowserBackgroundAction(this) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     TransferOptions options = new TransferOptions();
                     options.closeSession = false;
                     transfer.start(prompt, options);
@@ -3285,7 +3286,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void run() {
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     @Override
-                    public void run() {
+                    public void run() throws BackgroundException {
                         session.archive(archive, changed);
                     }
 
@@ -3318,7 +3319,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 public void run() {
                     background(new BrowserBackgroundAction(BrowserController.this) {
                         @Override
-                        public void run() {
+                        public void run() throws BackgroundException {
                             session.unarchive(archive, s);
                         }
 
@@ -3404,7 +3405,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
 
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 if(getSession().cache().isCached(directory.getReference())) {
                     // Reset the readable attribute
                     directory.children().attributes().setReadable(true);
@@ -3653,7 +3654,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     private Path mount;
 
                     @Override
-                    public void run() {
+                    public void run() throws BackgroundException {
                         // Mount this session
                         mount = session.mount();
                     }
@@ -3765,7 +3766,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Session session = this.getSession();
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 session.close();
             }
 
@@ -3800,7 +3801,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             this.background(new BrowserBackgroundAction(this) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     if(hasSession()) {
                         // Aggressively close the connection to interrupt the current task
                         session.interrupt();
@@ -3835,7 +3836,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private void disconnect() {
         this.background(new BrowserBackgroundAction(this) {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 session.close();
             }
 

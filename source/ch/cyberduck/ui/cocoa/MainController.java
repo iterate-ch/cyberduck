@@ -39,6 +39,7 @@ import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.ProfileReaderFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.transfer.TransferCollection;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
@@ -582,7 +583,7 @@ public class MainController extends BundleController implements NSApplication.De
                 // Upload file
                 this.background(new AbstractBackgroundAction<Void>() {
                     @Override
-                    public void run() {
+                    public void run() throws BackgroundException {
                         // Wait until bookmarks are loaded
                         try {
                             loader.await();
@@ -857,7 +858,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(Preferences.instance().getBoolean("browser.serialize")) {
             this.background(new AbstractBackgroundAction<Void>() {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     sessions.load();
                 }
 
@@ -876,7 +877,7 @@ public class MainController extends BundleController implements NSApplication.De
 
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 final BookmarkCollection c = BookmarkCollection.defaultCollection();
                 c.load();
                 loader.countDown();
@@ -900,7 +901,7 @@ public class MainController extends BundleController implements NSApplication.De
         });
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 HistoryCollection.defaultCollection().load();
             }
 
@@ -911,7 +912,7 @@ public class MainController extends BundleController implements NSApplication.De
         });
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 TransferCollection.defaultCollection().load();
             }
 
@@ -922,7 +923,7 @@ public class MainController extends BundleController implements NSApplication.De
         });
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 // Make sure we register to Growl first
                 Growl.instance().setup();
             }
@@ -1011,7 +1012,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
             this.background(new AbstractBackgroundAction<Void>() {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     RendezvousFactory.instance().init();
                 }
             });
@@ -1021,7 +1022,7 @@ public class MainController extends BundleController implements NSApplication.De
             private List<ThirdpartyBookmarkCollection> bookmarks = Collections.emptyList();
 
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 bookmarks = this.getThirdpartyBookmarks();
                 for(ThirdpartyBookmarkCollection c : bookmarks) {
                     if(!Preferences.instance().getBoolean(c.getConfiguration())) {
@@ -1079,7 +1080,7 @@ public class MainController extends BundleController implements NSApplication.De
         });
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 // Wait until bookmarks are loaded
                 try {
                     loader.await();

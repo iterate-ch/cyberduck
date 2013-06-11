@@ -23,6 +23,7 @@ import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSColor;
@@ -298,7 +299,7 @@ public class ConnectionController extends SheetController {
                 boolean reachable = false;
 
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     reachable = ReachabilityFactory.get().isReachable(new Host(hostname));
                 }
 

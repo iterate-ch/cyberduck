@@ -30,6 +30,7 @@ import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
 import ch.cyberduck.ui.action.ChecksumWorker;
@@ -340,7 +341,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     for(Path next : files) {
                         next.attributes().setStorageClass(sender.selectedItem().representedObject());
                         // Copy item in place to write new attributes
@@ -377,7 +378,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     for(Path next : files) {
                         next.attributes().setEncryption(encryptionButton.state() == NSCell.NSOnState ?
                                 ((CloudSession) controller.getSession()).getSupportedEncryptionAlgorithms().iterator().next() : null);
@@ -415,7 +416,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     final String container = getSelected().getContainerName();
                     ((CloudSession) controller.getSession()).setLogging(container,
                             bucketLoggingButton.state() == NSCell.NSOnState,
@@ -466,7 +467,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     final Session session = controller.getSession();
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
@@ -508,7 +509,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     final String container = getSelected().getContainerName();
                     ((CloudSession) controller.getSession()).setVersioning(container,
                             bucketMfaButton.state() == NSCell.NSOnState,
@@ -537,7 +538,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     final String container = getSelected().getContainerName();
                     ((CloudSession) controller.getSession()).setVersioning(container,
                             bucketMfaButton.state() == NSCell.NSOnState,
@@ -627,7 +628,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     final String container = getSelected().getContainerName();
                     ((S3Session) controller.getSession()).setLifecycle(container,
                             lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
@@ -2064,7 +2065,7 @@ public class InfoController extends ToolbarWindowController {
                 Credentials credentials;
 
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     final CloudSession s = (CloudSession) controller.getSession();
                     final String container = selected.getContainerName();
                     if(s.isLocationSupported()) {
@@ -2500,7 +2501,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleDistributionSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     session.cdn().invalidate(session.cdn().getOrigin(method, getSelected().getContainerName()), method, files, false);
@@ -2534,7 +2535,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleDistributionSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final String origin = session.cdn().getOrigin(method, getSelected().getContainerName());
@@ -2577,7 +2578,7 @@ public class InfoController extends ToolbarWindowController {
                 private Distribution distribution;
 
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     final Session session = controller.getSession();
                     final Distribution.Method method
                             = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
@@ -2721,7 +2722,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleDistributionSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     final Session session = controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");

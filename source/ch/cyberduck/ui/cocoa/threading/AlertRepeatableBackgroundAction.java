@@ -18,22 +18,11 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.RepeatableBackgroundAction;
-import ch.cyberduck.ui.cocoa.AbstractTableDelegate;
-import ch.cyberduck.ui.cocoa.Action;
-import ch.cyberduck.ui.cocoa.AlertController;
-import ch.cyberduck.ui.cocoa.ErrorController;
-import ch.cyberduck.ui.cocoa.ListDataSource;
-import ch.cyberduck.ui.cocoa.Outlet;
-import ch.cyberduck.ui.cocoa.SheetCallback;
-import ch.cyberduck.ui.cocoa.SheetController;
-import ch.cyberduck.ui.cocoa.TableColumnFactory;
-import ch.cyberduck.ui.cocoa.WindowController;
+import ch.cyberduck.ui.cocoa.*;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSCell;
@@ -79,18 +68,9 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
     private void callback(final int returncode) {
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             //Try Again
-            for(BackgroundException e : getExceptions()) {
-                final Path workdir = e.getPath();
-                if(null == workdir) {
-                    continue;
-                }
-                for(Session session : this.getSessions()) {
-                    session.cache().invalidate(workdir.getReference());
-                }
-            }
-            AlertRepeatableBackgroundAction.this.reset();
+            this.reset();
             // Re-run the action with the previous lock used
-            controller.background(AlertRepeatableBackgroundAction.this);
+            controller.background(this);
         }
     }
 

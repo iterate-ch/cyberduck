@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.ftp.FTPException;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.application.NSLayoutManager;
@@ -112,7 +113,7 @@ public class CommandController extends SheetController implements TranscriptList
                 boolean close;
 
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     try {
                         session.sendCommand(command);
                     }

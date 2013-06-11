@@ -26,6 +26,7 @@ import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -140,7 +141,7 @@ public abstract class AbstractEditor implements Editor {
             };
 
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 // Delete any existing file which might be used by a watch editor already
                 final Local local = edited.getLocal();
                 local.trash();
@@ -188,7 +189,7 @@ public abstract class AbstractEditor implements Editor {
     public void save() {
         final BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 // If checksum still the same no need for save
                 edited.getSession().message(MessageFormat.format(
                         Locale.localizedString("Compute MD5 hash of {0}", "Status"), edited.getName()));

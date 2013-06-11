@@ -21,9 +21,10 @@ package ch.cyberduck.core.fs;
 
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.BackgroundException;
 
 /**
-* @version $Id:$
+* @version $Id$
 */
 public abstract class FilesystemBackgroundAction<T> extends AbstractBackgroundAction<T> {
     private Object lock;
@@ -37,7 +38,7 @@ public abstract class FilesystemBackgroundAction<T> extends AbstractBackgroundAc
         return lock;
     }
 
-    public void run() {
+    public void run() throws BackgroundException {
         throw new UnsupportedOperationException();
     }
 

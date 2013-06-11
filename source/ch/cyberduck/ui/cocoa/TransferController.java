@@ -33,6 +33,7 @@ import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -759,7 +760,7 @@ public final class TransferController extends WindowController implements NSTool
             }
 
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 final TransferOptions options = new TransferOptions();
                 options.reloadRequested = reload;
                 options.resumeRequested = resume;
@@ -989,7 +990,7 @@ public final class TransferController extends WindowController implements NSTool
             }
             this.addTransfer(new DownloadTransfer(downloads), new AbstractBackgroundAction() {
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     //
                 }
             });
@@ -1005,7 +1006,7 @@ public final class TransferController extends WindowController implements NSTool
             if(transfer.isRunning()) {
                 this.background(new AbstractBackgroundAction<Void>() {
                     @Override
-                    public void run() {
+                    public void run() throws BackgroundException {
                         transfer.cancel();
                     }
                 });
@@ -1020,7 +1021,7 @@ public final class TransferController extends WindowController implements NSTool
             if(transfer.isRunning()) {
                 this.background(new AbstractBackgroundAction<Void>() {
                     @Override
-                    public void run() {
+                    public void run() throws BackgroundException {
                         transfer.cancel();
                     }
                 });

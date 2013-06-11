@@ -20,24 +20,15 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ftp.FTPException;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.StatusLine;
 import org.apache.log4j.Logger;
-import org.jets3t.service.CloudFrontServiceException;
-import org.jets3t.service.ServiceException;
 
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-
-import ch.ethz.ssh2.SFTPException;
-import com.amazonaws.AmazonServiceException;
-import com.googlecode.sardine.impl.SardineException;
-import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
  * @version $Id$
@@ -80,50 +71,10 @@ public class BackgroundException extends Exception {
     }
 
     /**
-     * @return The real cause of the exception thrown
-     */
-    @Override
-    public Throwable getCause() {
-        final Throwable cause = super.getCause();
-        if(null == cause) {
-            return this;
-        }
-        Throwable root = cause.getCause();
-        if(null == root) {
-            return cause;
-        }
-        while(root.getCause() != null) {
-            root = root.getCause();
-        }
-        if(StringUtils.isNotBlank(root.getMessage())) {
-            return root;
-        }
-        return cause;
-    }
-
-    /**
      * @return What kind of error
      */
     public String getReadableTitle() {
         final Throwable cause = this.getCause();
-        if(cause instanceof FTPException) {
-            return String.format("FTP %s", Locale.localizedString("Error"));
-        }
-        if(cause instanceof SFTPException) {
-            return String.format("SSH %s", Locale.localizedString("Error"));
-        }
-        if(cause instanceof ServiceException) {
-            return String.format("S3 %s", Locale.localizedString("Error"));
-        }
-        if(cause instanceof AmazonServiceException) {
-            return String.format("IAM %s", Locale.localizedString("Error"));
-        }
-        if(cause instanceof CloudFrontServiceException) {
-            return String.format("CloudFront %s", Locale.localizedString("Error"));
-        }
-        if(cause instanceof org.apache.http.HttpException) {
-            return String.format("HTTP %s", Locale.localizedString("Error"));
-        }
         if(cause instanceof SocketException) {
             return String.format("Network %s", Locale.localizedString("Error"));
         }
@@ -141,72 +92,8 @@ public class BackgroundException extends Exception {
      */
     public String getDetailedCauseMessage() {
         final Throwable cause = this.getCause();
-        StringBuilder buffer = new StringBuilder();
         if(null != cause) {
-            if(StringUtils.isNotBlank(cause.getMessage())) {
-                String m = StringUtils.chomp(cause.getMessage());
-                buffer.append(m);
-                if(!m.endsWith(".")) {
-                    buffer.append(".");
-                }
-            }
-            if(cause instanceof ServiceException) {
-                final ServiceException s3 = (ServiceException) cause;
-                if(StringUtils.isNotBlank(s3.getResponseStatus())) {
-                    // HTTP method status
-                    buffer.append(" ").append(s3.getResponseStatus()).append(".");
-                }
-                if(StringUtils.isNotBlank(s3.getErrorMessage())) {
-                    // S3 protocol message
-                    buffer.append(" ").append(s3.getErrorMessage());
-                }
-            }
-            else if(cause instanceof SardineException) {
-                final SardineException http = (SardineException) cause;
-                if(StringUtils.isNotBlank(http.getResponsePhrase())) {
-                    buffer.delete(0, buffer.length());
-                    // HTTP method status
-                    buffer.append(http.getResponsePhrase()).append(".");
-                }
-            }
-            else if(cause instanceof org.jets3t.service.impl.rest.HttpException) {
-                final org.jets3t.service.impl.rest.HttpException http = (org.jets3t.service.impl.rest.HttpException) cause;
-                buffer.append(" ").append(http.getResponseCode());
-                if(StringUtils.isNotBlank(http.getResponseMessage())) {
-                    buffer.append(" ").append(http.getResponseMessage());
-                }
-            }
-            else if(cause instanceof CloudFrontServiceException) {
-                final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
-                if(StringUtils.isNotBlank(cf.getErrorMessage())) {
-                    buffer.append(" ").append(cf.getErrorMessage());
-                }
-                if(StringUtils.isNotBlank(cf.getErrorDetail())) {
-                    buffer.append(" ").append(cf.getErrorDetail());
-                }
-            }
-            else if(cause instanceof FilesException) {
-                final FilesException cf = (FilesException) cause;
-                final StatusLine status = cf.getHttpStatusLine();
-                if(null != status) {
-                    if(StringUtils.isNotBlank(status.getReasonPhrase())) {
-                        buffer.append(" ").append(status.getReasonPhrase());
-                    }
-                }
-            }
-            else if(cause instanceof AmazonServiceException) {
-                final AmazonServiceException a = (AmazonServiceException) cause;
-                final String status = a.getErrorCode();
-                if(StringUtils.isNotBlank(status)) {
-                    buffer.append(" ").append(status);
-                }
-            }
-        }
-        String message = buffer.toString();
-        if(!StringUtils.isEmpty(message)) {
-            if(Character.isLetter(message.charAt(message.length() - 1))) {
-                message = message + ".";
-            }
+            return cause.getMessage();
         }
         return Locale.localizedString(message, "Error");
     }

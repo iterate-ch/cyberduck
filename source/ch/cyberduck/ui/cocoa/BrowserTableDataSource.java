@@ -28,6 +28,7 @@ import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
@@ -129,7 +130,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 // Delay until path is cached in the background
                 controller.background(new BrowserBackgroundAction(controller) {
                     @Override
-                    public void run() {
+                    public void run() throws BackgroundException {
                         path.children();
                     }
 

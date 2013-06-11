@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 /**
  * @version $Id$
  */
-public interface BackgroundAction<T> extends Runnable, Callable<T> {
+public interface BackgroundAction<T> extends Callable<T> {
 
     /**
      * Called before synchronized with other pending actions
@@ -38,14 +38,13 @@ public interface BackgroundAction<T> extends Runnable, Callable<T> {
      */
     boolean prepare();
 
+    void run() throws BackgroundException;
+
     /**
      * Called form a worker thread not blocking the user interface
      */
     @Override
-    void run();
-
-    @Override
-    T call();
+    T call() throws BackgroundException;
 
     /**
      * Called after #run but still on the working thread

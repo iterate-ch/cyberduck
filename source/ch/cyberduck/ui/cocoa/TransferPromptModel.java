@@ -28,6 +28,7 @@ import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.FilenameComparator;
@@ -140,7 +141,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                 // Delay until path is cached in the background
                 controller.background(new AbstractBackgroundAction<Void>() {
                     @Override
-                    public void run() {
+                    public void run() throws BackgroundException {
                         transfer.children(path);
                     }
 

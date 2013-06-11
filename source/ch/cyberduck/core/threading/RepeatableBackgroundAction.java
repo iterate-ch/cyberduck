@@ -21,7 +21,6 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.ErrorListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ReachabilityFactory;
@@ -48,7 +47,7 @@ import java.util.concurrent.CyclicBarrier;
  * @version $Id$
  */
 public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean>
-        implements ErrorListener, TranscriptListener {
+        implements TranscriptListener {
     private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
     private static final String lineSeparator = System.getProperty("line.separator");
 
@@ -84,40 +83,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     private static final int TRANSCRIPT_MAX_LENGTH =
             Preferences.instance().getInteger("transcript.length");
-
-    /**
-     * @param exception Service error
-     * @see ch.cyberduck.core.ErrorListener
-     */
-    @Override
-    public void error(final BackgroundException exception) {
-        // Do not report an error when the action was canceled intentionally
-        Throwable cause = exception.getCause();
-        if(cause instanceof ConnectionCanceledException) {
-            log.warn(cause.getMessage());
-            // Do not report as failed if instanceof ConnectionCanceledException
-            return;
-        }
-        if(cause instanceof CertificateException) {
-            log.warn(cause.getMessage());
-            // Server certificate not accepted
-            return;
-        }
-        if(cause instanceof SSLPeerUnverifiedException) {
-            log.warn(cause.getMessage());
-            // Server certificate not accepted
-            return;
-        }
-        final String description
-                = (null == exception.getPath()) ? exception.getHost().getHostname() : exception.getPath().getName();
-        if(exceptions.size() < Preferences.instance().getInteger("growl.limit")) {
-            Growl.instance().notify(exception.getMessage(), description);
-        }
-        if(!exceptions.contains(exception)) {
-            exceptions.add(exception);
-        }
-        failed = true;
-    }
 
     public List<BackgroundException> getExceptions() {
         return exceptions;
@@ -156,7 +121,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     public boolean prepare() {
         for(Session session : this.getSessions()) {
             if(session != null) {
-                session.addErrorListener(this);
                 session.addTranscriptListener(this);
             }
         }
@@ -225,6 +189,46 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     }
 
     @Override
+    public Boolean call() {
+        try {
+            return super.call();
+        }
+        catch(BackgroundException failure) {
+            this.error(failure);
+        }
+        return false;
+    }
+
+    protected void error(final BackgroundException failure) {
+        // Do not report an error when the action was canceled intentionally
+        Throwable cause = failure.getCause();
+        if(cause instanceof ConnectionCanceledException) {
+            log.warn(cause.getMessage());
+            // Do not report as failed if instanceof ConnectionCanceledException
+            return;
+        }
+        if(cause instanceof CertificateException) {
+            log.warn(cause.getMessage());
+            // Server certificate not accepted
+            return;
+        }
+        if(cause instanceof SSLPeerUnverifiedException) {
+            log.warn(cause.getMessage());
+            // Server certificate not accepted
+            return;
+        }
+        final String description
+                = (null == failure.getPath()) ? failure.getHost().getHostname() : failure.getPath().getName();
+        if(exceptions.size() < Preferences.instance().getInteger("growl.limit")) {
+            Growl.instance().notify(failure.getMessage(), description);
+        }
+        if(!exceptions.contains(failure)) {
+            exceptions.add(failure);
+        }
+        failed = true;
+    }
+
+    @Override
     public void finish() {
         while(this.hasFailed() && this.retry() > 0) {
             if(log.isInfoEnabled()) {
@@ -237,7 +241,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 // Reset the failure status but remember the previous exception for automatic retry.
                 failed = false;
                 // Re-run the action with the previous lock used
-                this.run();
+                this.call();
             }
         }
         for(Session session : this.getSessions()) {
@@ -246,7 +250,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 // the listeners are still registered when the next BackgroundAction
                 // is already running
                 session.removeTranscriptListener(this);
-                session.removeErrorListener(this);
             }
         }
         super.finish();

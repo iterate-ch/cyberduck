@@ -90,13 +90,8 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         }
     }
 
-    /**
-     * Default implementation with no result
-     *
-     * @return Null
-     */
     @Override
-    public T call() {
+    public T call() throws BackgroundException {
         this.run();
         return null;
     }

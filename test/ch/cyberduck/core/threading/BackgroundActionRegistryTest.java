@@ -27,7 +27,7 @@ import java.util.concurrent.CountDownLatch;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class BackgroundActionRegistryTest extends AbstractTestCase {
 
@@ -37,7 +37,7 @@ public class BackgroundActionRegistryTest extends AbstractTestCase {
         final CountDownLatch lock = new CountDownLatch(1);
         final AbstractBackgroundAction action = new AbstractBackgroundAction() {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
             }
 
             @Override
@@ -58,7 +58,7 @@ public class BackgroundActionRegistryTest extends AbstractTestCase {
         BackgroundActionRegistry r = new BackgroundActionRegistry();
         final AbstractBackgroundAction action = new AbstractBackgroundAction() {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
             }
         };
         assertTrue(r.add(action));

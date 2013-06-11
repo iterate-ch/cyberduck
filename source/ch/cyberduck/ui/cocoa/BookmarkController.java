@@ -31,6 +31,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
@@ -263,7 +264,7 @@ public class BookmarkController extends WindowController {
             this.background(new AbstractBackgroundAction<Void>() {
 
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     NSImage img;
                     final String f = host.getProtocol().favicon();
                     if(StringUtils.isNotBlank(f)) {
@@ -677,7 +678,7 @@ public class BookmarkController extends WindowController {
                 boolean reachable = false;
 
                 @Override
-                public void run() {
+                public void run() throws BackgroundException {
                     reachable = ReachabilityFactory.get().isReachable(host);
                 }
 

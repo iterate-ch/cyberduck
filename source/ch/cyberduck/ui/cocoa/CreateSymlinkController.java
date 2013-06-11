@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -65,7 +66,7 @@ public class CreateSymlinkController extends FileController {
                 this.getWorkdir().getAbsolute(), symlink, Path.FILE_TYPE);
         c.background(new BrowserBackgroundAction(c) {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 // Symlink pointing to existing file
                 link.symlink(selected.getName());
             }

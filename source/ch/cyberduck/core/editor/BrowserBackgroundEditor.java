@@ -21,6 +21,7 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -55,7 +56,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
         }
         controller.background(new BrowserBackgroundAction((BrowserController) controller) {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 download.run();
             }
 
@@ -81,7 +82,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
         }
         controller.background(new BrowserBackgroundAction((BrowserController) controller) {
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 upload.run();
             }
 

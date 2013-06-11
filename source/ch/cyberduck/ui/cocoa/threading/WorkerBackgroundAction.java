@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.threading;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.action.Worker;
 import ch.cyberduck.ui.cocoa.BrowserController;
 
@@ -40,7 +41,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
     }
 
     @Override
-    public void run() {
+    public void run() throws BackgroundException {
         result = worker.run();
     }
 

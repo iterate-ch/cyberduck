@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -63,7 +64,7 @@ public class CreateFileController extends FileController {
                     filename, Path.FILE_TYPE);
 
             @Override
-            public void run() {
+            public void run() throws BackgroundException {
                 if(file.touch()) {
                     if(edit) {
                         Editor editor = EditorFactory.instance().create(c, file);
