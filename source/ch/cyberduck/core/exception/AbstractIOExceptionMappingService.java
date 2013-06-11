@@ -15,7 +15,7 @@ public abstract class AbstractIOExceptionMappingService<T> implements IOExceptio
 
     @Override
     public BackgroundException map(final String message, final T exception, final Host host) {
-        return new BackgroundException(host, null, message, this.map(exception));
+        return new BackgroundException(host, message, this.map(exception));
     }
 
     @Override

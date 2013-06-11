@@ -44,6 +44,18 @@ public class BackgroundException extends Exception {
 
     private Host host;
 
+    public BackgroundException(final String message, final Throwable cause) {
+        this(null, null, message, cause);
+    }
+
+    public BackgroundException(final Host host, final String message, final Throwable cause) {
+        this(host, null, message, cause);
+    }
+
+    public BackgroundException(final Path path, final String message, final Throwable cause) {
+        this(null, path, message, cause);
+    }
+
     public BackgroundException(final Host host, final Path path, final String message, final Throwable cause) {
         super(cause);
         this.host = host;
