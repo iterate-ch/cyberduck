@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.Local;
@@ -33,7 +34,6 @@ import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
-import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
 import ch.cyberduck.ui.growl.GrowlNative;
 
 import org.apache.log4j.BasicConfigurator;
