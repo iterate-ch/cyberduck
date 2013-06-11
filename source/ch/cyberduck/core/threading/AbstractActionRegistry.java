@@ -21,9 +21,11 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Collection;
 
+import java.util.concurrent.Callable;
+
 /**
  * @version $Id$
  */
-public abstract class AbstractActionRegistry<T extends Runnable> extends Collection<T> {
+public abstract class AbstractActionRegistry<T extends Callable> extends Collection<T> {
     private static final long serialVersionUID = 7745413022118744838L;
 }
