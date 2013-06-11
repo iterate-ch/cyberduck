@@ -31,16 +31,21 @@ import ch.cyberduck.core.serializer.impl.PlistWriter;
 import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
+import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.growl.GrowlNative;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
@@ -60,11 +65,23 @@ public class AbstractTestCase {
         BasicConfigurator.configure();
     }
 
-    NSAutoreleasePool pool;
+    private NSAutoreleasePool pool;
 
     @Before
     public void pool() {
         pool = NSAutoreleasePool.push();
+    }
+
+    protected static Properties properties = System.getProperties();
+
+    @BeforeClass
+    public static void properties() throws IOException {
+        final InputStream stream = AbstractTestCase.class.getResourceAsStream("/test.properties");
+        if(null != stream) {
+            // Found in test resources
+            properties.load(stream);
+        }
+        IOUtils.closeQuietly(stream);
     }
 
     @BeforeClass
@@ -87,6 +104,32 @@ public class AbstractTestCase {
         WorkspaceApplicationLauncher.register();
         SystemConfigurationProxy.register();
         NullKeychain.register();
+        LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginControllerFactory() {
+            @Override
+            protected LoginController create(final Controller c) {
+                return create();
+            }
+
+            @Override
+            protected LoginController create(final Session s) {
+                return create();
+            }
+
+            @Override
+            protected LoginController create() {
+                return new AbstractLoginController() {
+                    @Override
+                    public void warn(final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                        //
+                    }
+
+                    @Override
+                    public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final boolean enableKeychain, final boolean enablePublicKey, final boolean enableAnonymous) throws LoginCanceledException {
+                        //
+                    }
+                };
+            }
+        });
     }
 
     @BeforeClass
