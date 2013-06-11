@@ -125,7 +125,7 @@ public class AbstractTestCase {
 
                     @Override
                     public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final boolean enableKeychain, final boolean enablePublicKey, final boolean enableAnonymous) throws LoginCanceledException {
-                        //
+                        throw new LoginCanceledException();
                     }
                 };
             }
