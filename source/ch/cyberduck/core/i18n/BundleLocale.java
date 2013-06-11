@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.i18n;
+package ch.cyberduck.core.i18n;
 
 /*
  *  Copyright (c) 2009 David Kocher. All rights reserved.
@@ -18,8 +18,6 @@ package ch.cyberduck.ui.cocoa.i18n;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.i18n.LocaleFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.commons.collections.map.LRUMap;

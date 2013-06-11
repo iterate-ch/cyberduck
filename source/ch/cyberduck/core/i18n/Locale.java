@@ -18,6 +18,8 @@ package ch.cyberduck.core.i18n;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @version $Id$
  */
@@ -37,7 +39,11 @@ public abstract class Locale {
      * @return Localized from table
      */
     public static String localizedString(final String key, final String table) {
-        return LocaleFactory.instance().get(key, table);
+        final String lookup = LocaleFactory.instance().get(key, table);
+        if(StringUtils.contains(lookup, "{0}")) {
+            return StringUtils.replace(lookup, "'", "''");
+        }
+        return lookup;
     }
 
     public abstract String get(final String key, final String table);
