@@ -48,6 +48,10 @@ public class BackgroundException extends Exception {
         this(null, null, message, cause);
     }
 
+    public BackgroundException(final Host host, final Throwable cause) {
+        this(host, null, null, cause);
+    }
+
     public BackgroundException(final Host host, final String message, final Throwable cause) {
         this(host, null, message, cause);
     }
