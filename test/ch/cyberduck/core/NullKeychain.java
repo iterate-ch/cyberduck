@@ -18,7 +18,7 @@ public class NullKeychain extends AbstractKeychain {
 
     @Override
     public boolean isTrusted(final String hostname, final X509Certificate[] certs) {
-        return false;
+        return true;
     }
 
     @Override
