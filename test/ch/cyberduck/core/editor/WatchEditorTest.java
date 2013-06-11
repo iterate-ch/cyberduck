@@ -7,6 +7,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.Controller;
@@ -26,6 +27,7 @@ public class WatchEditorTest extends AbstractTestCase {
     @BeforeClass
     public static void register() {
         WatchEditorFactory.register();
+        TemporaryFileService.register();
     }
 
     @Test
