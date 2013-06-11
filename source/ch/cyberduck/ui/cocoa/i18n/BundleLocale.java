@@ -45,7 +45,7 @@ public class BundleLocale extends Locale {
         }
     }
 
-    private static Map<String, String> cache = Collections.<String, String>synchronizedMap(new LRUMap() {
+    private static Map<String, String> cache = Collections.<String, String>synchronizedMap(new LRUMap(1000) {
         @Override
         protected boolean removeLRU(LinkEntry entry) {
             log.debug("Removing from cache:" + entry);
@@ -55,7 +55,7 @@ public class BundleLocale extends Locale {
 
     @Override
     public String get(final String key, final String table) {
-        String identifier = String.format("%s.%s", table, key);
+        final String identifier = String.format("%s.%s", table, key);
         if(!cache.containsKey(identifier)) {
             cache.put(identifier, NSBundle.localizedString(key, table));
         }
