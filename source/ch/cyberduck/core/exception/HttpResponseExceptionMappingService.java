@@ -11,9 +11,8 @@ import java.io.IOException;
 public class HttpResponseExceptionMappingService extends AbstractIOExceptionMappingService<HttpResponseException> {
 
     @Override
-    public IOException map(final String help, final HttpResponseException e) {
+    public IOException map(final HttpResponseException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, help);
         this.append(buffer, String.valueOf(e.getStatusCode()));
         this.append(buffer, e.getMessage());
         if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN

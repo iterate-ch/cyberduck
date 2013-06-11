@@ -13,9 +13,8 @@ import java.io.IOException;
 public class ServiceExceptionMappingService extends AbstractIOExceptionMappingService<ServiceException> {
 
     @Override
-    public IOException map(final String help, final ServiceException e) {
+    public IOException map(final ServiceException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, help);
         if(StringUtils.isEmpty(e.getErrorMessage())) {
             if(null == e.getCause()) {
                 this.append(buffer, e.getMessage());
@@ -35,7 +34,7 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
             return new LoginFailureException(buffer.toString(), e);
         }
         if(e.getCause() instanceof HttpResponseException) {
-            return new HttpResponseExceptionMappingService().map(help, (HttpResponseException) e.getCause());
+            return new HttpResponseExceptionMappingService().map((HttpResponseException) e.getCause());
         }
         return new IOException(buffer.toString(), e);
     }

@@ -13,9 +13,8 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
 public class FilesExceptionMappingService extends AbstractIOExceptionMappingService<FilesException> {
 
     @Override
-    public IOException map(final String help, final FilesException e) {
+    public IOException map(final FilesException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, help);
         this.append(buffer, e.getMessage());
         final StatusLine status = e.getHttpStatusLine();
         if(null != status) {

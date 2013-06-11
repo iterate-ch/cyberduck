@@ -7,14 +7,13 @@ import java.io.IOException;
 import com.googlecode.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SardineExceptionMappingService extends AbstractIOExceptionMappingService<SardineException> {
 
     @Override
-    public IOException map(final String help, final SardineException e) {
+    public IOException map(final SardineException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, help);
         this.append(buffer, e.getMessage());
         // HTTP method status
         this.append(buffer, e.getResponsePhrase());

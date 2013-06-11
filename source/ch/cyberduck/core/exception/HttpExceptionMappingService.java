@@ -10,9 +10,8 @@ import java.io.IOException;
 public class HttpExceptionMappingService extends AbstractIOExceptionMappingService<HttpException> {
 
     @Override
-    public IOException map(final String help, final HttpException e) {
+    public IOException map(final HttpException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, help);
         this.append(buffer, e.getMessage());
         return new IOException(buffer.toString(), e);
     }

@@ -5,14 +5,13 @@ import java.io.IOException;
 import com.amazonaws.AmazonServiceException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMappingService<AmazonServiceException> {
 
     @Override
-    public IOException map(final String message, final AmazonServiceException e) {
+    public IOException map(final AmazonServiceException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, message);
         this.append(buffer, e.getMessage());
         this.append(buffer, e.getErrorCode());
         return new IOException(buffer.toString(), e);

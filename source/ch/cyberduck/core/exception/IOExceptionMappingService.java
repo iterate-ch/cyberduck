@@ -1,6 +1,8 @@
 package ch.cyberduck.core.exception;
 
-import java.io.IOException;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.threading.BackgroundException;
 
 /**
  * @version $Id$
@@ -8,15 +10,14 @@ import java.io.IOException;
 public interface IOExceptionMappingService<E> {
 
     /**
-     * @param message   Help message
      * @param exception Service error
      * @return Mapped exception
      */
-    IOException map(String message, E exception);
+    BackgroundException map(String message, E exception, Host host);
 
     /**
      * @param exception Service error
      * @return Mapped exception
      */
-    IOException map(E exception);
+    BackgroundException map(String message, E exception, Path directory);
 }
