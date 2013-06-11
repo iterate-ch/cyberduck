@@ -100,7 +100,7 @@ public abstract class AbstractController implements Controller {
                         }
                     }
                     catch(Exception e) {
-                        log.error(String.format("Exception running background task %s", e.getMessage()), e);
+                        log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
                     }
                     finally {
                         // Increase the run counter
