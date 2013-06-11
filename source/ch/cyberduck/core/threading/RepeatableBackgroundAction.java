@@ -191,6 +191,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     @Override
     public Boolean call() {
         try {
+            for(Session session: this.getSessions()) {
+                session.check();
+            }
             return super.call();
         }
         catch(BackgroundException failure) {
