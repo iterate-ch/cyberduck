@@ -23,6 +23,6 @@ public class CloudFrontServiceExceptionMappingService extends AbstractIOExceptio
                 return new LoginFailureException(buffer.toString(), e);
             }
         }
-        return new IOException(buffer.toString(), e);
+        return this.wrap(e, buffer);
     }
 }

@@ -36,6 +36,6 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
         if(e.getCause() instanceof HttpResponseException) {
             return new HttpResponseExceptionMappingService().map((HttpResponseException) e.getCause());
         }
-        return new IOException(buffer.toString(), e);
+        return this.wrap(e, buffer);
     }
 }

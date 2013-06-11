@@ -14,6 +14,6 @@ public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMap
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         this.append(buffer, e.getErrorCode());
-        return new IOException(buffer.toString(), e);
+        return this.wrap(e, buffer);
     }
 }

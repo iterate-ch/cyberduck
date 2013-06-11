@@ -5,7 +5,7 @@ import java.io.IOException;
 import ch.ethz.ssh2.SFTPException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPExceptionMappingService extends AbstractIOExceptionMappingService<SFTPException> {
 
@@ -14,6 +14,6 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         this.append(buffer, e.getServerErrorMessage());
-        return new IOException(buffer.toString(), e);
+        return this.wrap(e, buffer);
     }
 }

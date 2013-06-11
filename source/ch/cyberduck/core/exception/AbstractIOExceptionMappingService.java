@@ -11,7 +11,12 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public abstract class AbstractIOExceptionMappingService<T> implements IOExceptionMappingService<T> {
+public abstract class AbstractIOExceptionMappingService<T extends Exception> implements IOExceptionMappingService<T> {
+
+    @Override
+    public BackgroundException map(final T exception, final Host host) {
+        return new BackgroundException(host, null, this.map(exception));
+    }
 
     @Override
     public BackgroundException map(final String message, final T exception, final Host host) {
@@ -41,5 +46,11 @@ public abstract class AbstractIOExceptionMappingService<T> implements IOExceptio
             return buffer;
         }
         return buffer.append(".");
+    }
+
+    protected IOException wrap(final T e, final StringBuilder buffer) {
+        final IOException failure = new IOException(buffer.toString());
+        failure.initCause(e);
+        return failure;
     }
 }

@@ -19,6 +19,6 @@ public class HttpResponseExceptionMappingService extends AbstractIOExceptionMapp
                 || e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED || e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
             return new LoginFailureException(buffer.toString(), e);
         }
-        return new IOException(buffer.toString(), e);
+        return this.wrap(e, buffer);
     }
 }

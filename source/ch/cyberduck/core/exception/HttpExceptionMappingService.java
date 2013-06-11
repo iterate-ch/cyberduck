@@ -13,6 +13,6 @@ public class HttpExceptionMappingService extends AbstractIOExceptionMappingServi
     public IOException map(final HttpException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
-        return new IOException(buffer.toString(), e);
+        return this.wrap(e, buffer);
     }
 }

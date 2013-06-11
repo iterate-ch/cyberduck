@@ -20,6 +20,6 @@ public class SardineExceptionMappingService extends AbstractIOExceptionMappingSe
         if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             return new LoginFailureException(buffer.toString(), e);
         }
-        return new IOException(buffer.toString(), e);
+        return this.wrap(e, buffer);
     }
 }
