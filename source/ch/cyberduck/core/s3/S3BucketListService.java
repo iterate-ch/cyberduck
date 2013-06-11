@@ -28,6 +28,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageOwner;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -117,15 +118,13 @@ public class S3BucketListService {
      * @return Null if no container component in hostname prepended
      */
     protected String getContainer(final Host host) {
+        if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
+            return null;
+        }
         final String hostname = host.getHostname(true);
         if(hostname.equals(host.getProtocol().getDefaultHostname())) {
             return null;
         }
-        // Bucket name is available in URL's host name.
-        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
-            // Bucket name is available as S3 subdomain
-            return hostname.substring(0, hostname.length() - host.getProtocol().getDefaultHostname().length() - 1);
-        }
-        return null;
+        return ServiceUtils.findBucketNameInHostname(hostname, host.getProtocol().getDefaultHostname());
     }
 }
