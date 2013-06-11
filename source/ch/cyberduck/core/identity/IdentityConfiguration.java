@@ -1,6 +1,7 @@
 package ch.cyberduck.core.identity;
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.threading.BackgroundException;
 
 /**
  * @version $Id$
@@ -12,7 +13,7 @@ public interface IdentityConfiguration {
      *
      * @param username Username
      */
-    void deleteUser(final String username);
+    void deleteUser(final String username) throws BackgroundException;
 
     /**
      * Verify user exsits and get credentials from keychain
@@ -28,5 +29,5 @@ public interface IdentityConfiguration {
      * @param username Username
      * @param policy   Policy language document
      */
-    void createUser(String username, String policy);
+    void createUser(String username, String policy) throws BackgroundException;
 }

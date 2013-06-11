@@ -1,34 +1,21 @@
 package ch.cyberduck.core.identity;
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.ErrorListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.UseragentProvider;
+import ch.cyberduck.core.exception.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
 
-import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
-import com.amazonaws.services.identitymanagement.model.AccessKeyMetadata;
-import com.amazonaws.services.identitymanagement.model.CreateAccessKeyRequest;
-import com.amazonaws.services.identitymanagement.model.CreateAccessKeyResult;
-import com.amazonaws.services.identitymanagement.model.CreateUserRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteAccessKeyRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteUserPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteUserRequest;
-import com.amazonaws.services.identitymanagement.model.ListAccessKeysRequest;
-import com.amazonaws.services.identitymanagement.model.ListAccessKeysResult;
-import com.amazonaws.services.identitymanagement.model.ListUserPoliciesRequest;
-import com.amazonaws.services.identitymanagement.model.ListUserPoliciesResult;
-import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
-import com.amazonaws.services.identitymanagement.model.PutUserPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.User;
+import com.amazonaws.services.identitymanagement.model.*;
 
 /**
  * @version $Id$
@@ -38,26 +25,19 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
 
     private Host host;
 
-    /**
-     * Callback
-     */
-    private ErrorListener listener;
-
-    private UseragentProvider ua;
+    private UseragentProvider ua = new PreferencesUseragentProvider();
 
     /**
      * Prefix in preferences
      */
     private static final String prefix = "iam.";
 
-    public AWSIdentityConfiguration(final Host host, final ErrorListener listener) {
+    public AWSIdentityConfiguration(final Host host) {
         this.host = host;
-        this.listener = listener;
-        this.ua = new PreferencesUseragentProvider();
     }
 
     @Override
-    public void deleteUser(final String username) {
+    public void deleteUser(final String username) throws BackgroundException {
         Preferences.instance().deleteProperty(String.format("%s%s", prefix, username));
         try {
             // Create new IAM credentials
@@ -90,8 +70,8 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
         catch(NoSuchEntityException e) {
             log.warn(String.format("User %s already removed", username));
         }
-        catch(AmazonClientException e) {
-            listener.error(new BackgroundException(host, null, "Cannot write user configuration", e));
+        catch(AmazonServiceException e) {
+            throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e, host);
         }
     }
 
@@ -118,7 +98,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     }
 
     @Override
-    public void createUser(final String username, final String policy) {
+    public void createUser(final String username, final String policy) throws BackgroundException {
         try {
             // Create new IAM credentials
             final int timeout = Preferences.instance().getInteger("connection.timeout.seconds") * 1000;
@@ -157,8 +137,8 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                     host.getProtocol().getScheme(), host.getPort(), host.getHostname(),
                     id, key.getAccessKey().getSecretAccessKey());
         }
-        catch(AmazonClientException e) {
-            listener.error(new BackgroundException(host, null, "Cannot write user configuration", e));
+        catch(AmazonServiceException e) {
+            throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e, host);
         }
     }
 }
