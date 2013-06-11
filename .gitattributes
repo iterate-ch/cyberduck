@@ -2549,6 +2549,7 @@ source/ch/cyberduck/core/editor/Editor.cs -text
 source/ch/cyberduck/core/editor/EditorFactory.cs -text
 source/ch/cyberduck/core/editor/RegistryApplicationFinder.cs -text
 source/ch/cyberduck/core/editor/WatchEditor.cs -text
+source/ch/cyberduck/core/i18n/LocaleImpl.cs -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
 source/ch/cyberduck/core/local/ExplorerRevealService.cs -text
@@ -2637,7 +2638,6 @@ source/ch/cyberduck/ui/controller/IView.cs -text
 source/ch/cyberduck/ui/controller/IconCache.cs -text
 source/ch/cyberduck/ui/controller/InfoController.cs -text
 source/ch/cyberduck/ui/controller/Keychain.cs -text
-source/ch/cyberduck/ui/controller/LocaleImpl.cs -text
 source/ch/cyberduck/ui/controller/LoginController.cs -text
 source/ch/cyberduck/ui/controller/MainController.cs -text
 source/ch/cyberduck/ui/controller/PathClipboard.cs -text

@@ -24,7 +24,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using org.apache.log4j;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Core.I18n
 {
     public class LocaleImpl : Locale
     {
