@@ -228,6 +228,12 @@
                 </batchtest>
                 <sysproperty key="java.library.path" value="${build}/${configuration}"/>
                 <sysproperty key="jna.library.path" value="${build}/${configuration}"/>
+                <sysproperty key="s3.key" value="${s3.key}"/>
+                <sysproperty key="s3.secret" value="${s3.secret}"/>
+                <sysproperty key="rackspace.key" value="${rackspace.key}"/>
+                <sysproperty key="rackspace.secret" value="${rackspace.secret}"/>
+                <sysproperty key="hpcloud.key" value="${hpcloud.key}"/>
+                <sysproperty key="hpcloud.secret" value="${hpcloud.secret}"/>
             </junit>
         </jacoco:coverage>
         <junitreport todir="${build.unittests.reports}/html">
