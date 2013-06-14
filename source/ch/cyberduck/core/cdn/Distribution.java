@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -80,9 +81,9 @@ public class Distribution {
     private String loggingContainer;
 
     /**
-     * Containers available to store log files.
+     * Logging target containers
      */
-    List<String> containers = new ArrayList<String>();
+    private List<Path> containers = Collections.emptyList();
 
     /**
      * CDN URL
@@ -125,6 +126,9 @@ public class Distribution {
      */
     private String errorDocument;
 
+    /**
+     * Edge purge status message
+     */
     private String invalidationStatus;
 
     /**
@@ -486,7 +490,7 @@ public class Distribution {
      * @param file File in origin container
      * @return URL to file in distribution
      */
-    public String getURL(Path file) {
+    public String getURL(final Path file) {
         return this.getURL(file, this.getURL());
     }
 
@@ -495,7 +499,7 @@ public class Distribution {
      * @param base Distribution URL
      * @return URL to file in distribution
      */
-    private String getURL(Path file, String base) {
+    private String getURL(final Path file, final String base) {
         if(StringUtils.isEmpty(base)) {
             return null;
         }
@@ -521,7 +525,7 @@ public class Distribution {
         return sslUrl;
     }
 
-    public String getSslUrl(Path file) {
+    public String getSslUrl(final Path file) {
         return this.getURL(file, this.getSslUrl());
     }
 
@@ -529,7 +533,7 @@ public class Distribution {
         return streamingUrl;
     }
 
-    public String getStreamingUrl(Path file) {
+    public String getStreamingUrl(final Path file) {
         return this.getURL(file, this.getStreamingUrl());
     }
 
@@ -538,7 +542,7 @@ public class Distribution {
      * @param file File in origin container
      * @return Both CNAME and original URL
      */
-    public List<DescriptiveUrl> getURLs(Path file) {
+    public List<DescriptiveUrl> getURLs(final Path file) {
         List<DescriptiveUrl> urls = this.getCnameURL(file);
         urls.add(new DescriptiveUrl(this.getURL(file),
                 MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
@@ -557,7 +561,7 @@ public class Distribution {
      * @param file File in origin container
      * @return CNAME to distribution
      */
-    public List<DescriptiveUrl> getCnameURL(Path file) {
+    public List<DescriptiveUrl> getCnameURL(final Path file) {
         List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>();
         for(String cname : this.getCNAMEs()) {
             urls.add(new DescriptiveUrl(this.getCnameURL(cname, file),
@@ -566,7 +570,7 @@ public class Distribution {
         return urls;
     }
 
-    private String getCnameURL(String cname, Path file) {
+    private String getCnameURL(final String cname, final Path file) {
         StringBuilder b = new StringBuilder();
         b.append(String.format("%s://%s", this.getMethod().getScheme(), cname)).append(this.getMethod().getContext());
         if(StringUtils.isNotEmpty(file.getKey())) {
@@ -598,7 +602,7 @@ public class Distribution {
         return invalidationStatus;
     }
 
-    public void setInvalidationStatus(String invalidationStatus) {
+    public void setInvalidationStatus(final String invalidationStatus) {
         this.invalidationStatus = invalidationStatus;
     }
 
@@ -612,11 +616,11 @@ public class Distribution {
         return cnames;
     }
 
-    public List<String> getContainers() {
+    public List<Path> getContainers() {
         return containers;
     }
 
-    public void setContainers(List<String> containers) {
+    public void setContainers(final List<Path> containers) {
         this.containers = containers;
     }
 
@@ -629,7 +633,7 @@ public class Distribution {
         return defaultRootObject;
     }
 
-    public void setDefaultRootObject(String defaultRootObject) {
+    public void setDefaultRootObject(final String defaultRootObject) {
         this.defaultRootObject = defaultRootObject;
     }
 
@@ -658,5 +662,34 @@ public class Distribution {
     @Override
     public String toString() {
         return this.getId();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof Distribution)) {
+            return false;
+        }
+        final Distribution that = (Distribution) o;
+        if(id != null ? !id.equals(that.id) : that.id != null) {
+            return false;
+        }
+        if(method != null ? !method.equals(that.method) : that.method != null) {
+            return false;
+        }
+        if(origin != null ? !origin.equals(that.origin) : that.origin != null) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (origin != null ? origin.hashCode() : 0);
+        result = 31 * result + (method != null ? method.hashCode() : 0);
+        return result;
     }
 }
