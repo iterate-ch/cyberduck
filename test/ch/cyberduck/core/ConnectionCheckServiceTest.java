@@ -7,9 +7,10 @@ import ch.cyberduck.ui.Controller;
 import org.junit.Test;
 
 import java.net.UnknownHostException;
+import java.security.cert.X509Certificate;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ConnectionCheckServiceTest extends AbstractTestCase {
 
@@ -21,13 +22,13 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testHandshakeFailure() throws Exception {
-        final LoginController l = new AbstractLoginController() {
-
+        KeychainFactory.addFactory(Factory.NATIVE_PLATFORM, new KeychainFactory() {
             @Override
-            public void warn(final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
-                //
+            protected AbstractKeychain create() {
+                return new NoTrustKeychain();
             }
-
+        });
+        final LoginController l = new AbstractLoginController() {
             @Override
             public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final boolean enableKeychain, final boolean enablePublicKey, final boolean enableAnonymous) throws LoginCanceledException {
                 //
@@ -51,5 +52,12 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
         });
         ConnectionCheckService s = new ConnectionCheckService();
         s.check(new DAVSession(new Host(Protocol.WEBDAV_SSL, "54.228.253.92", new Credentials("user", "p"))));
+    }
+
+    private final class NoTrustKeychain extends NullKeychain {
+        @Override
+        public boolean isTrusted(final String hostname, final X509Certificate[] certs) {
+            return false;
+        }
     }
 }
