@@ -30,7 +30,7 @@ public class QloudstatAnalyticsProviderTest extends AbstractTestCase {
     @Test
     public void testGetSetupRackspace() {
         QloudstatAnalyticsProvider q = new QloudstatAnalyticsProvider();
-        Assert.assertEquals("https://qloudstat.com/configuration/add?setup=cHJvdmlkZXI9YXV0aC5hcGkucmFja3NwYWNlY2xvdWQuY29tLHByb3RvY29sPWh0dHAsZW5kcG9pbnQ9dGVzdC5jeWJlcmR1Y2suY2gsa2V5PXFsb3Vkc3RhdCxzZWNyZXQ9c2VjcmV0",
+        Assert.assertEquals("https://qloudstat.com/configuration/add?setup=cHJvdmlkZXI9aWRlbnRpdHkuYXBpLnJhY2tzcGFjZWNsb3VkLmNvbSxwcm90b2NvbD1odHRwLGVuZHBvaW50PXRlc3QuY3liZXJkdWNrLmNoLGtleT1xbG91ZHN0YXQsc2VjcmV0PXNlY3JldA%3D%3D",
                 q.getSetup(Protocol.CLOUDFILES, Scheme.http, "test.cyberduck.ch", new Credentials("qloudstat", "secret")));
     }
 
