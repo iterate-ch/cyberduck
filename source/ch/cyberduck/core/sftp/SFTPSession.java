@@ -132,7 +132,7 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    protected void connect() throws IOException {
+    public void connect() throws IOException {
         if(this.isConnected()) {
             return;
         }

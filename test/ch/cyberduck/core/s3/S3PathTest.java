@@ -28,16 +28,17 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3PathTest extends AbstractTestCase {
 
     @Test
     public void testToURL() throws Exception {
-        S3Path p = new S3Path(new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname())), "/bucket/f/key", Path.FILE_TYPE) {
+        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        S3Path p = new S3Path(session, "/bucket/f/key", Path.FILE_TYPE) {
             @Override
-            public String getContainerName() {
-                return "bucket";
+            public Path getContainer() {
+                return new S3Path(session, "/", "bucket", Path.VOLUME_TYPE);
             }
         };
         assertEquals("https://bucket.s3.amazonaws.com/f/key", p.toURL());
@@ -45,10 +46,11 @@ public class S3PathTest extends AbstractTestCase {
 
     @Test
     public void testToHttpURL() throws Exception {
-        S3Path p = new S3Path(new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname())), "/bucket/f/key", Path.FILE_TYPE) {
+        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        S3Path p = new S3Path(session, "/bucket/f/key", Path.FILE_TYPE) {
             @Override
-            public String getContainerName() {
-                return "bucket";
+            public Path getContainer() {
+                return new S3Path(session, "/", "bucket", Path.VOLUME_TYPE);
             }
         };
         assertEquals("http://bucket.s3.amazonaws.com/f/key", p.toHttpURL());

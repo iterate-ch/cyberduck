@@ -600,7 +600,7 @@ public abstract class Preferences {
         defaults.put("cf.upload.metadata.md5", String.valueOf(false));
         defaults.put("cf.metadata.default", StringUtils.EMPTY);
         defaults.put("cf.list.limit", String.valueOf(10000));
-        defaults.put("cf.list.cdn.preload", String.valueOf(true));
+        defaults.put("cf.cdn.preload", String.valueOf(true));
 
         //doc	Microsoft Word
         //html	HTML Format

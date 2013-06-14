@@ -337,7 +337,7 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    protected void connect() throws IOException {
+    public void connect() throws IOException {
         if(this.isConnected()) {
             return;
         }

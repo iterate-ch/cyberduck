@@ -1,9 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.i18n.Locale;
-
-import java.io.IOException;
-
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -22,6 +18,8 @@ import java.io.IOException;
  *  dkocher@cyberduck.ch
  */
 
+import java.io.IOException;
+
 /**
  * To be used if a connection attempt is interrupted by the user
  *
@@ -31,18 +29,18 @@ public class ConnectionCanceledException extends IOException {
     private static final long serialVersionUID = 1731598032382782206L;
 
     public ConnectionCanceledException() {
-        super(Locale.localizedString("Connection attempt canceled", "Credentials"));
+        super();
     }
 
-    public ConnectionCanceledException(Throwable cause) {
-        super(Locale.localizedString("Connection attempt canceled", "Credentials"), cause);
+    public ConnectionCanceledException(final String message) {
+        super(message);
+    }
+
+    public ConnectionCanceledException(final Throwable cause) {
+        super(cause);
     }
 
     public ConnectionCanceledException(final String message, final Throwable cause) {
         super(message, cause);
-    }
-
-    public ConnectionCanceledException(String s) {
-        super(s);
     }
 }

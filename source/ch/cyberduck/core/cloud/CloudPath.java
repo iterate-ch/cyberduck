@@ -65,17 +65,6 @@ public abstract class CloudPath extends HttpPath {
         return !StringUtils.contains(StringUtils.substring(this.getAbsolute(), 1), this.getPathDelimiter());
     }
 
-    /**
-     * @return The parent container/bucket of this file
-     */
-    @Override
-    public String getContainerName() {
-        if(this.isRoot()) {
-            return null;
-        }
-        return this.getContainer().getName();
-    }
-
     @Override
     public Path getContainer() {
         if(this.isRoot()) {
@@ -96,8 +85,8 @@ public abstract class CloudPath extends HttpPath {
         if(this.isContainer()) {
             return null;
         }
-        if(this.getAbsolute().startsWith(String.valueOf(Path.DELIMITER) + this.getContainerName())) {
-            return this.getAbsolute().substring(this.getContainerName().length() + 2);
+        if(this.getAbsolute().startsWith(String.valueOf(Path.DELIMITER) + this.getContainer().getName())) {
+            return this.getAbsolute().substring(this.getContainer().getName().length() + 2);
         }
         return null;
     }

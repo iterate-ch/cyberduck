@@ -20,23 +20,20 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
-import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
+import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.identity.DefaultCDNCredentialsIdentityConfiguration;
+import ch.cyberduck.core.identity.AbstractIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -86,12 +83,7 @@ public abstract class Session implements TranscriptListener {
      */
     private boolean opening;
 
-    /**
-     * Delegating CloudFront requests.
-     */
-    private DistributionConfiguration cf;
-
-    protected Session(Host h) {
+    protected Session(final Host h) {
         this.host = h;
         this.ua = new PreferencesUseragentProvider();
     }
@@ -119,7 +111,6 @@ public abstract class Session implements TranscriptListener {
         }
         catch(IOException e) {
             this.interrupt();
-            this.error("Connection failed", e);
             throw e;
         }
     }
@@ -149,7 +140,7 @@ public abstract class Session implements TranscriptListener {
      * @throws IOException            I/O failure
      * @throws LoginCanceledException Login prompt dismissed with cancel
      */
-    protected abstract void connect() throws IOException;
+    public abstract void connect() throws IOException;
 
     /**
      * Prompt for username and password if not available.
@@ -247,14 +238,14 @@ public abstract class Session implements TranscriptListener {
             if(!this.isConnected()) {
                 return null;
             }
-            Path directory = this.home();
-            // Retrieve direcotry listing of default path
-            if(!directory.children().attributes().isReadable()) {
-                // The default path does not exist or is not readable due to possible permission issues
-                // Fallback to default working directory
-                directory = this.workdir();
+            final Path directory = this.home();
+            // Open connection and retrieve direcotry listing of default path
+            if(directory.children().attributes().isReadable()) {
+                return directory;
             }
-            return directory;
+            // The default path does not exist or is not readable due to possible permission issues
+            // Fallback to default working directory
+            return this.workdir();
         }
         catch(IOException e) {
             log.warn(String.format("Connection failed to host %s:%s", host, e.getMessage()));
@@ -281,7 +272,7 @@ public abstract class Session implements TranscriptListener {
                 directory = host.getDefaultPath();
             }
             else {
-                Path workdir = this.workdir();
+                final Path workdir = this.workdir();
                 if(host.getDefaultPath().startsWith(Path.HOME)) {
                     // Relative path to the home directory
                     return PathFactory.createPath(this, workdir.getAbsolute(), host.getDefaultPath().substring(1), Path.DIRECTORY_TYPE);
@@ -613,8 +604,6 @@ public abstract class Session implements TranscriptListener {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did close to %s", host));
         }
-        this.cdn().clear();
-
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionDidClose();
         }
@@ -694,7 +683,12 @@ public abstract class Session implements TranscriptListener {
     }
 
     public IdentityConfiguration iam() {
-        return new DefaultCDNCredentialsIdentityConfiguration(host);
+        return new AbstractIdentityConfiguration() {
+            @Override
+            public Credentials getUserCredentials(final String username) {
+                return host.getCdnCredentials();
+            }
+        };
     }
 
     public boolean isAnalyticsSupported() {
@@ -706,62 +700,11 @@ public abstract class Session implements TranscriptListener {
     }
 
     public DistributionConfiguration cdn() {
-        if(null == cf) {
-            cf = new CloudFrontDistributionConfiguration(LoginControllerFactory.get(this),
-                    new DefaultCDNCredentialsIdentityConfiguration(host).getUserCredentials(null),
-                    new ErrorListener() {
-                        @Override
-                        public void error(BackgroundException exception) {
-                            Session.this.error(exception);
-                        }
-                    },
-                    new ProgressListener() {
-                        @Override
-                        public void message(String message) {
-                            Session.this.message(message);
-                        }
-                    },
-                    new TranscriptListener() {
-                        @Override
-                        public void log(boolean request, String message) {
-                            Session.this.log(request, message);
-                        }
-                    }
-            ) {
-
-                /**
-                 * @return Service name of the CDN
-                 */
-                public String getName() {
-                    if(this.isCDNSupported()) {
-                        return super.getName();
-                    }
-                    return Locale.localizedString("None");
-                }
-
-                @Override
-                public List<Distribution.Method> getMethods(final String container) {
-                    if(this.isCDNSupported()) {
-                        return Arrays.asList(Distribution.CUSTOM);
-                    }
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public String getOrigin(final Distribution.Method method, final String container) {
-                    if(Distribution.CUSTOM.equals(method)) {
-                        try {
-                            return new URI(Session.this.getHost().getWebURL()).getHost();
-                        }
-                        catch(URISyntaxException e) {
-                            log.error(String.format("Failure parsing URI %s", Session.this.getHost().getWebURL()), e);
-                        }
-                    }
-                    return super.getOrigin(method, container);
-                }
-            };
-        }
-        return cf;
+        return new CustomOriginCloudFrontDistributionConfiguration(new S3Session(
+                // Configure with the same host as S3 to get the same credentials from the keychain.
+                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCdnCredentials())),
+                // Use login context of current session
+                LoginControllerFactory.get(this));
     }
 
     /**
@@ -805,7 +748,7 @@ public abstract class Session implements TranscriptListener {
         errorListeners.remove(listener);
     }
 
-    public void error(String message, Throwable e) {
+    public void error(final String message, final Exception e) {
         this.error(null, message, e);
     }
 
@@ -816,7 +759,7 @@ public abstract class Session implements TranscriptListener {
      * @param message The error message to be displayed in the alert sheet
      * @param e       The cause of the error
      */
-    public void error(final Path path, final String message, final Throwable e) {
+    public void error(final Path path, final String message, final Exception e) {
         this.error(new BackgroundException(this.getHost(), path, message, e));
     }
 
@@ -858,6 +801,6 @@ public abstract class Session implements TranscriptListener {
     }
 
     public String toString() {
-        return String.format("Session %s", host.toURL());
+        return String.format("Session for %s", host.toURL());
     }
 }

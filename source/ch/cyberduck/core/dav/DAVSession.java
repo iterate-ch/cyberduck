@@ -56,7 +56,7 @@ public class DAVSession extends HttpSession {
     }
 
     @Override
-    protected void connect() throws IOException {
+    public void connect() throws IOException {
         if(this.isConnected()) {
             return;
         }

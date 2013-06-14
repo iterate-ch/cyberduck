@@ -26,15 +26,12 @@ import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3Session;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -49,7 +46,6 @@ import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.model.GSBucketLoggingStatus;
-import org.jets3t.service.model.GSWebsiteConfig;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.OAuth2Credentials;
@@ -66,9 +62,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Google Storage for Developers is a new service for developers to store and
@@ -78,14 +72,8 @@ import java.util.Map;
  *
  * @version $Id$
  */
-public class GSSession extends S3Session implements DistributionConfiguration {
+public class GSSession extends S3Session {
     private static final Logger log = Logger.getLogger(GSSession.class);
-
-    /**
-     * Cache distribution status result.
-     */
-    private Map<String, Distribution> distributionStatus
-            = new HashMap<String, Distribution>();
 
     public GSSession(Host h) {
         super(h);
@@ -235,25 +223,25 @@ public class GSSession extends S3Session implements DistributionConfiguration {
      * @param destination Logging bucket name or null to choose container itself as target
      */
     @Override
-    public void setLogging(final String container, final boolean enabled, String destination) {
+    public void setLogging(final Path container, final boolean enabled, String destination) {
         if(this.isLoggingSupported()) {
             try {
                 // Logging target bucket
                 final GSBucketLoggingStatus status = new GSBucketLoggingStatus(
-                        StringUtils.isNotBlank(destination) ? destination : container, null);
+                        StringUtils.isNotBlank(destination) ? destination : container.getName(), null);
                 if(enabled) {
                     status.setLogfilePrefix(Preferences.instance().getProperty("google.logging.prefix"));
                 }
                 this.check();
                 // Grant write for Google to logging target bucket
-                final AccessControlList acl = this.getClient().getBucketAcl(container);
+                final AccessControlList acl = this.getClient().getBucketAcl(container.getName());
                 final GroupByEmailAddressGrantee grantee = new GroupByEmailAddressGrantee(
                         "cloud-storage-analytics@google.com");
                 if(!acl.getPermissionsForGrantee(grantee).contains(Permission.PERMISSION_WRITE)) {
                     acl.grantPermission(grantee, Permission.PERMISSION_WRITE);
-                    this.getClient().putBucketAcl(container, acl);
+                    this.getClient().putBucketAcl(container.getName(), acl);
                 }
-                this.getClient().setBucketLoggingStatusImpl(container, status);
+                this.getClient().setBucketLoggingStatusImpl(container.getName(), status);
             }
             catch(ServiceException e) {
                 this.error("Cannot write file attributes", e);
@@ -395,170 +383,12 @@ public class GSSession extends S3Session implements DistributionConfiguration {
     }
 
     @Override
-    protected String getWebsiteEndpoint(String container) {
-        return String.format("%s.%s", container, this.getHost().getProtocol().getDefaultHostname());
+    public IdentityConfiguration iam() {
+        return new DefaultCredentialsIdentityConfiguration(this.getHost());
     }
 
     @Override
     public DistributionConfiguration cdn() {
-        return this;
-    }
-
-    /**
-     * Distribution methods supported by this S3 provider.
-     *
-     * @param container Origin bucket
-     * @return Download and Streaming for AWS.
-     */
-    @Override
-    public List<Distribution.Method> getMethods(final String container) {
-        return Arrays.asList(Distribution.WEBSITE);
-    }
-
-    @Override
-    public String getName(Distribution.Method method) {
-        return method.toString();
-    }
-
-    @Override
-    public void clear() {
-        distributionStatus.clear();
-    }
-
-    @Override
-    public String getOrigin(Distribution.Method method, String container) {
-        return container;
-    }
-
-    @Override
-    public Distribution read(String origin, Distribution.Method method) {
-        // Website Endpoint URL
-        final String url = String.format("%s://%s", method.getScheme(), this.getWebsiteEndpoint(origin));
-        if(!distributionStatus.containsKey(origin)) {
-            try {
-                this.check();
-
-                try {
-                    final WebsiteConfig configuration = this.getClient().getWebsiteConfigImpl(origin);
-                    final Distribution distribution = new Distribution(
-                            null,
-                            origin,
-                            method,
-                            configuration.isWebsiteConfigActive(),
-                            configuration.isWebsiteConfigActive(),
-                            // http://example-bucket.s3-website-us-east-1.amazonaws.com/
-                            url,
-                            Locale.localizedString("Deployed", "S3"),
-                            new String[]{},
-                            false,
-                            configuration.getIndexDocumentSuffix());
-                    // Cache website configuration
-                    distributionStatus.put(origin, distribution);
-                }
-                catch(ServiceException e) {
-                    // Not found. Website configuration not enbabled.
-                    String status = Locale.localizedString(e.getErrorCode());
-                    if(status.equals(e.getErrorCode())) {
-                        // No localization found. Use english text
-                        status = e.getErrorMessage();
-                    }
-                    final Distribution distribution = new Distribution(null, origin, method, false, url, status);
-                    distributionStatus.put(origin, distribution);
-                }
-            }
-            catch(IOException e) {
-                this.error("Cannot read website configuration", e);
-            }
-        }
-        if(distributionStatus.containsKey(origin)) {
-            return distributionStatus.get(origin);
-        }
-        return new ch.cyberduck.core.cdn.Distribution(origin, method);
-    }
-
-    @Override
-    public void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive) {
-        distributionStatus.remove(origin);
-    }
-
-    @Override
-    public boolean isInvalidationSupported(Distribution.Method method) {
-        return false;
-    }
-
-    @Override
-    public boolean isCached(Distribution.Method method) {
-        return !distributionStatus.isEmpty();
-    }
-
-    @Override
-    public String getName() {
-        return Locale.localizedString("Website Configuration", "S3");
-    }
-
-    @Override
-    public void write(boolean enabled, String origin, Distribution.Method method, String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) {
-        try {
-            this.check();
-            // Configure Website Index Document
-            StringBuilder name = new StringBuilder(Locale.localizedString("Website", "S3")).append(" ").append(method.toString());
-            if(enabled) {
-                this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
-            }
-            else {
-                this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
-            }
-            if(enabled) {
-                String suffix = "index.html";
-                if(StringUtils.isNotBlank(defaultRootObject)) {
-                    suffix = FilenameUtils.getName(defaultRootObject);
-                }
-                // Enable website endpoint
-                this.getClient().setWebsiteConfigImpl(origin, new GSWebsiteConfig(suffix));
-            }
-            else {
-                // Disable website endpoint
-                this.getClient().setWebsiteConfigImpl(origin, new GSWebsiteConfig());
-            }
-        }
-        catch(IOException e) {
-            this.error("Cannot write website configuration", e);
-        }
-        catch(ServiceException e) {
-            this.error("Cannot write website configuration", e);
-        }
-        finally {
-            distributionStatus.remove(origin);
-        }
-    }
-
-    @Override
-    public boolean isDefaultRootSupported(Distribution.Method method) {
-        return true;
-    }
-
-    @Override
-    public boolean isLoggingSupported(Distribution.Method method) {
-        return false;
-    }
-
-    @Override
-    public boolean isCnameSupported(Distribution.Method method) {
-        return false;
-    }
-
-    @Override
-    public boolean isAnalyticsSupported(Distribution.Method method) {
-        return false;
-    }
-
-    @Override
-    public IdentityConfiguration iam() {
-        return new DefaultCredentialsIdentityConfiguration(host);
-    }
-
-    @Override
-    public Protocol getProtocol() {
-        return this.getHost().getProtocol();
+        return new GSWebsiteDistributionConfiguration(this);
     }
 }

@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CloudPathTest extends AbstractTestCase {
 
@@ -31,8 +31,8 @@ public class CloudPathTest extends AbstractTestCase {
 
     @Test
     public void testGetContainerName() throws Exception {
-        assertEquals("t", new TestCloudPath("/t", Path.FILE_TYPE).getContainerName());
-        assertEquals("t", new TestCloudPath("/t/a", Path.FILE_TYPE).getContainerName());
+        assertEquals("t", new TestCloudPath("/t", Path.FILE_TYPE).getContainer().getName());
+        assertEquals("t", new TestCloudPath("/t/a", Path.FILE_TYPE).getContainer().getName());
     }
 
     @Test

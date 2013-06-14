@@ -21,6 +21,7 @@ package ch.cyberduck.core.cdn;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import java.util.List;
 
@@ -32,43 +33,37 @@ import java.util.List;
 public interface DistributionConfiguration {
 
     /**
-     * @param method Distribution method
-     * @return True if configuration is known.
-     */
-    boolean isCached(Distribution.Method method);
-
-    /**
      * Write distribution configuration for origin.
      *
+     * @param container         Container
      * @param enabled           True if distribution should be activated if not yet.
-     * @param origin            Source server
      * @param method            Distribution method
      * @param cnames            CNAME entires in the DNS pointing to the same origin.
      * @param logging           True if logging should be enabled for access to CDN.
      * @param loggingBucket     The logging target
      * @param defaultRootObject Index file for root of container
      */
-    void write(boolean enabled, String origin, Distribution.Method method,
-               String[] cnames, boolean logging, String loggingBucket, String defaultRootObject);
+    void write(final Path container, boolean enabled, Distribution.Method method,
+               String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) throws BackgroundException;
 
     /**
      * Read distribution configuration of origin
      *
-     * @param origin Source server
-     * @param method Protocol
+     * @param container Container
+     * @param method    Distribution protocol
      * @return Distribution Configuration
      */
-    Distribution read(String origin, Distribution.Method method);
+    Distribution read(final Path container, Distribution.Method method) throws BackgroundException;
 
     /**
-     * Invalidate distribution objects.
+     * Purge objects from edge locations
      *
-     * @param origin    Source server
+     * @param container Container
      * @param method    Distribution method
-     * @param files     Selected files or containers
+     * @param files     Selected files or containers to purge
      * @param recursive Apply recursively to selected container or placeholder
      */
-    void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive);
+    void invalidate(final Path container, Distribution.Method method, List<Path> files, boolean recursive) throws BackgroundException;
 
     /**
      * @param method Distribution method
@@ -105,17 +100,10 @@ public interface DistributionConfiguration {
     /**
      * List available distribution methods for this CDN.
      *
-     * @param container Origin
+     * @param container Container
      * @return The supported protocols
      */
-    List<Distribution.Method> getMethods(String container);
-
-    /**
-     * @param method    Distribution method
-     * @param container Bucket
-     * @return Bucket name not fully qualified.
-     */
-    String getOrigin(Distribution.Method method, String container);
+    List<Distribution.Method> getMethods(final Path container);
 
     /**
      * @return Hostname and port
@@ -134,11 +122,4 @@ public interface DistributionConfiguration {
      * @return CDN name
      */
     String getName(Distribution.Method method);
-
-    /**
-     * Clear any cached distribution information.
-     *
-     * @see #isCached(ch.cyberduck.core.cdn.Distribution.Method)
-     */
-    void clear();
 }

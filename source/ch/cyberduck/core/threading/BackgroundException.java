@@ -44,33 +44,31 @@ public class BackgroundException extends Exception {
 
     private Host host;
 
-    public BackgroundException(final String message, final Throwable cause) {
+    public BackgroundException(final Exception cause) {
+        this(null, null, Locale.localizedString("Unknown"), cause);
+    }
+
+    public BackgroundException(final String message, final Exception cause) {
         this(null, null, message, cause);
     }
 
-    public BackgroundException(final Host host, final Throwable cause) {
-        this(host, null, null, cause);
+    public BackgroundException(final Host host, final Exception cause) {
+        this(host, null, Locale.localizedString("Unknown"), cause);
     }
 
-    public BackgroundException(final Host host, final String message, final Throwable cause) {
+    public BackgroundException(final Host host, final String message, final Exception cause) {
         this(host, null, message, cause);
     }
 
-    public BackgroundException(final Path path, final String message, final Throwable cause) {
+    public BackgroundException(final Path path, final String message, final Exception cause) {
         this(null, path, message, cause);
     }
 
-    public BackgroundException(final Host host, final Path path, final String message, final Throwable cause) {
+    public BackgroundException(final Host host, final Path path, final String message, final Exception cause) {
         super(cause);
         this.host = host;
         this.path = path;
-        if(null == message) {
-            this.message = Locale.localizedString("Unknown");
-        }
-        else if(null == path) {
-            this.message = StringUtils.chomp(message);
-        }
-        else {
+        if(path != null) {
             try {
                 this.message = MessageFormat.format(StringUtils.chomp(message), path.getName());
             }
@@ -78,6 +76,9 @@ public class BackgroundException extends Exception {
                 log.warn(String.format("Error parsing message with format %s", e.getMessage()));
                 this.message = StringUtils.chomp(message);
             }
+        }
+        else {
+            this.message = StringUtils.chomp(message);
         }
     }
 

@@ -168,7 +168,7 @@ public abstract class HttpSession extends SSLSession {
     }
 
     @Override
-    protected void connect() throws IOException {
+    public void connect() throws IOException {
         //
     }
 

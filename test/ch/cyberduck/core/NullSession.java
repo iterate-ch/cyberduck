@@ -22,7 +22,7 @@ public class NullSession extends Session {
     }
 
     @Override
-    protected void connect() throws IOException {
+    public void connect() throws IOException {
         //
     }
 

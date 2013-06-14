@@ -19,11 +19,17 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.exception.CloudFrontServiceExceptionMappingService;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -42,15 +48,11 @@ import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -58,131 +60,24 @@ import java.util.UUID;
  *
  * @version $Id$
  */
-public class CloudFrontDistributionConfiguration extends HttpSession implements DistributionConfiguration {
+public class CloudFrontDistributionConfiguration implements DistributionConfiguration {
     private static Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
-    /**
-     * Cached instance for session
-     */
     private CloudFrontService client;
-    private LoginController login;
 
-    /**
-     * Cache distribution status result.
-     */
-    protected Map<Distribution.Method, Map<String, Distribution>> distributionStatus
-            = new HashMap<Distribution.Method, Map<String, Distribution>>() {
-        private static final long serialVersionUID = -2745277784871254371L;
+    private S3Session session;
 
-        @Override
-        public Map<String, Distribution> get(final Object key) {
-            if(!this.containsKey(key)) {
-                final HashMap<String, Distribution> create = new HashMap<String, Distribution>();
-                this.put((Distribution.Method) key, create);
-                return create;
+    public CloudFrontDistributionConfiguration(final S3Session session) {
+        this.session = session;
+        this.client = new CloudFrontService(
+                new AWSCredentials(session.getHost().getCredentials().getUsername(),
+                        session.getHost().getCredentials().getPassword())) {
+
+            @Override
+            protected HttpClient initHttpConnection() {
+                return session.http();
             }
-            return super.get(key);
-        }
-    };
-
-    public CloudFrontDistributionConfiguration(LoginController parent, Credentials credentials,
-                                               ErrorListener error, ProgressListener progress,
-                                               TranscriptListener transcript) {
-        super(new Host(Protocol.CLOUDFRONT, URI.create(CloudFrontService.ENDPOINT).getHost(), credentials));
-        this.login = parent;
-        this.addErrorListener(error);
-        this.addProgressListener(progress);
-        this.addTranscriptListener(transcript);
-    }
-
-    /**
-     * Amazon CloudFront Extension
-     *
-     * @return A cached cloud front service interface
-     */
-    @Override
-    public CloudFrontService getClient() throws ConnectionCanceledException {
-        if(null == client) {
-            throw new ConnectionCanceledException();
-        }
-        return client;
-    }
-
-    @Override
-    protected void connect() throws IOException {
-        if(this.isConnected()) {
-            return;
-        }
-        this.fireConnectionWillOpenEvent();
-
-        // Prompt the login credentials first
-        this.login();
-
-        this.fireConnectionDidOpenEvent();
-    }
-
-
-    @Override
-    protected void login() throws IOException {
-        this.login(login);
-    }
-
-    @Override
-    protected void login(LoginController controller, Credentials credentials) throws IOException {
-        try {
-            client = new CloudFrontService(
-                    new AWSCredentials(credentials.getUsername(), credentials.getPassword())) {
-
-                @Override
-                protected HttpClient initHttpConnection() {
-                    return CloudFrontDistributionConfiguration.this.http();
-                }
-            };
-            // Provoke authentication error
-            for(String container : this.getContainers()) {
-                for(Distribution.Method method : getMethods(container)) {
-                    // Cache first container
-                    this.cache(this.getOrigin(method, container), method);
-                    break;
-                }
-                break;
-            }
-        }
-        catch(CloudFrontServiceException e) {
-            log.warn(String.format("Invalid account: %s", e.getMessage()));
-            this.message(Locale.localizedString("Login failed", "Credentials"));
-            controller.fail(host.getProtocol(), credentials);
-            this.login();
-        }
-    }
-
-    @Override
-    protected void prompt(LoginController controller) throws LoginCanceledException {
-        // Configure with the same host as S3 to get the same credentials from the keychain.
-        controller.check(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
-                host.getCredentials()), this.getName(), null, true, false, false);
-    }
-
-    @Override
-    protected void login(LoginController controller) throws IOException {
-        super.login(controller);
-        controller.success(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
-                host.getCredentials()));
-    }
-
-    @Override
-    public void close() {
-        try {
-            if(this.isConnected()) {
-                this.fireConnectionWillCloseEvent();
-            }
-        }
-        finally {
-            this.clear();
-            // No logout required
-            client = null;
-            this.fireConnectionDidCloseEvent();
-        }
+        };
     }
 
     @Override
@@ -191,92 +86,110 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     }
 
     @Override
-    public String getName(Distribution.Method method) {
+    public String getName(final Distribution.Method method) {
         return this.getName();
     }
 
     @Override
-    public boolean isCached(Distribution.Method method) {
-        return !distributionStatus.get(method).isEmpty();
-    }
-
-    @Override
     public Protocol getProtocol() {
-        return this.getHost().getProtocol();
+        return Protocol.S3_SSL;
+    }
+
+    /**
+     * @param method Distribution method
+     * @return Origin server hostname. This is not the same as the container for
+     *         custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
+     */
+    public String getOrigin(final Path container, final Distribution.Method method) {
+        return String.format("%s.%s", container.getName(), container.getSession().getHost().getProtocol().getDefaultHostname());
     }
 
     @Override
-    public String getOrigin(Distribution.Method method, String container) {
-        return container + CloudFrontService.DEFAULT_BUCKET_SUFFIX;
-    }
-
-    @Override
-    public List<Distribution.Method> getMethods(final String container) {
+    public List<Distribution.Method> getMethods(final Path container) {
         return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
     }
 
     @Override
-    public Distribution read(String origin, Distribution.Method method) {
-        if(method.equals(Distribution.DOWNLOAD)
-                || method.equals(Distribution.STREAMING)
-                || method.equals(Distribution.CUSTOM)
-                || method.equals(Distribution.WEBSITE_CDN)) {
-            if(!distributionStatus.get(method).containsKey(origin)) {
-                try {
-                    this.check();
-                    this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
-                            origin));
+    public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
+        try {
+            session.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
+                    container.getName()));
 
-                    this.cache(origin, method);
-                }
-                catch(CloudFrontServiceException e) {
-                    this.error("Cannot read CDN configuration", e);
-                }
-                catch(LoginCanceledException canceled) {
-                    // User canceled Cloudfront login. Possibly not enabled in Amazon configuration.
-                    distributionStatus.get(method).put(origin, new Distribution(null,
-                            origin, method, false, null, canceled.getMessage()));
-                }
-                catch(IOException e) {
-                    this.error("Cannot read CDN configuration", e);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("List %s distributions", method));
+            }
+            if(method.equals(Distribution.STREAMING)) {
+                for(org.jets3t.service.model.cloudfront.Distribution d : client.listStreamingDistributions(this.getOrigin(container, method))) {
+                    for(Origin o : d.getConfig().getOrigins()) {
+                        if(o instanceof S3Origin) {
+                            // We currently only support one distribution per bucket
+                            return this.convert(d, method);
+                        }
+                    }
                 }
             }
+            else if(method.equals(Distribution.DOWNLOAD)) {
+                // List distributions restricting to bucket name origin
+                for(org.jets3t.service.model.cloudfront.Distribution d : client.listDistributions(this.getOrigin(container, method))) {
+                    for(Origin o : d.getConfig().getOrigins()) {
+                        if(o instanceof S3Origin) {
+                            // We currently only support one distribution per bucket
+                            return this.convert(d, method);
+                        }
+                    }
+                }
+            }
+            else if(method.equals(Distribution.CUSTOM) || method.equals(Distribution.WEBSITE_CDN)) {
+                for(org.jets3t.service.model.cloudfront.Distribution d : client.listDistributions()) {
+                    for(Origin o : d.getConfig().getOrigins()) {
+                        // Listing all distributions and look for custom origin
+                        if(o instanceof CustomOrigin) {
+                            if(o.getDomainName().equals(this.getOrigin(container, method))) {
+                                // We currently only support one distribution per bucket
+                                return this.convert(d, method);
+                            }
+                        }
+                    }
+                }
+            }
+            return new Distribution(this.getOrigin(container, method), method);
         }
-        if(distributionStatus.get(method).containsKey(origin)) {
-            return distributionStatus.get(method).get(origin);
+        catch(CloudFrontServiceException e) {
+            throw new CloudFrontServiceExceptionMappingService().map("Cannot read CDN configuration", e, session.getHost());
         }
-        return new Distribution(origin, method);
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot read CDN configuration", e, session.getHost());
+        }
     }
 
     @Override
-    public void write(boolean enabled, String origin, Distribution.Method method,
-                      String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) {
+    public void write(final Path container, final boolean enabled, final Distribution.Method method,
+                      final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
         try {
-            this.check();
-
             // Configure CDN
             LoggingStatus loggingStatus = null;
             if(logging) {
                 if(this.isLoggingSupported(method)) {
                     final String loggingDestination = StringUtils.isNotBlank(loggingBucket) ?
-                            ServiceUtils.generateS3HostnameForBucket(loggingBucket, false, Protocol.S3_SSL.getDefaultHostname()) : origin;
+                            ServiceUtils.generateS3HostnameForBucket(loggingBucket, false, Protocol.S3_SSL.getDefaultHostname()) :
+                            this.getOrigin(container, method);
                     loggingStatus = new LoggingStatus(loggingDestination,
                             Preferences.instance().getProperty("cloudfront.logging.prefix"));
                 }
             }
             StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
             if(enabled) {
-                this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
+                session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
             }
             else {
-                this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
+                session.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
             }
-            Distribution d = distributionStatus.get(method).get(origin);
+            final Distribution d = this.read(container, method);
             if(null == d) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No existing distribution found for method %s", method));
                 }
-                this.createDistribution(enabled, method, origin, cnames, loggingStatus, defaultRootObject);
+                this.createDistribution(enabled, method, this.getOrigin(container, method), cnames, loggingStatus, defaultRootObject);
             }
             else {
                 boolean modified = false;
@@ -298,7 +211,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                     modified = true;
                 }
                 if(modified) {
-                    this.updateDistribution(enabled, method, origin, d.getId(), d.getEtag(), d.getReference(),
+                    this.updateDistribution(enabled, method, this.getOrigin(container, method), d.getId(), d.getEtag(), d.getReference(),
                             cnames, loggingStatus, defaultRootObject);
                 }
                 else {
@@ -307,44 +220,41 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             }
         }
         catch(CloudFrontServiceException e) {
-            this.error("Cannot write CDN configuration", e);
+            throw new CloudFrontServiceExceptionMappingService().map("Cannot write CDN configuration", e, session.getHost());
         }
         catch(IOException e) {
-            this.error("Cannot write CDN configuration", e);
-        }
-        finally {
-            distributionStatus.get(method).clear();
+            throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e, session.getHost());
         }
     }
 
     @Override
-    public boolean isDefaultRootSupported(Distribution.Method method) {
+    public boolean isDefaultRootSupported(final Distribution.Method method) {
         return method.equals(Distribution.DOWNLOAD)
                 || method.equals(Distribution.WEBSITE_CDN)
                 || method.equals(Distribution.CUSTOM);
     }
 
     @Override
-    public boolean isInvalidationSupported(Distribution.Method method) {
+    public boolean isInvalidationSupported(final Distribution.Method method) {
         return method.equals(Distribution.DOWNLOAD)
                 || method.equals(Distribution.WEBSITE_CDN)
                 || method.equals(Distribution.CUSTOM);
     }
 
     @Override
-    public boolean isLoggingSupported(Distribution.Method method) {
+    public boolean isLoggingSupported(final Distribution.Method method) {
         return method.equals(Distribution.DOWNLOAD)
                 || method.equals(Distribution.STREAMING)
                 || method.equals(Distribution.CUSTOM);
     }
 
     @Override
-    public boolean isAnalyticsSupported(Distribution.Method method) {
+    public boolean isAnalyticsSupported(final Distribution.Method method) {
         return this.isLoggingSupported(method);
     }
 
     @Override
-    public boolean isCnameSupported(Distribution.Method method) {
+    public boolean isCnameSupported(final Distribution.Method method) {
         return true;
     }
 
@@ -355,44 +265,32 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * <p/>
      * It usually takes 10 to 15 minutes to complete your invalidation request, depending on
      * the size of your request.
-     *
-     * @param origin    Origin server
-     * @param method    Distribution method
-     * @param files     Files to purge
-     * @param recursive Recursivly for folders
      */
     @Override
-    public void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive) {
+    public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final boolean recursive) throws BackgroundException {
         try {
-            this.check();
-            this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
-                    origin));
+            session.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
+                    container.getName()));
 
             final long reference = System.currentTimeMillis();
-            Distribution d = distributionStatus.get(method).get(origin);
+            final Distribution d = this.read(container, method);
             if(null == d) {
-                log.error(String.format("No cached distribution for origin %s", origin));
-                return;
+                log.error(String.format("No cached distribution for origin %s", this.getOrigin(container, method)));
             }
-            List<String> keys = this.getInvalidationKeys(files, recursive);
-            if(keys.isEmpty()) {
-                log.warn("No keys selected for invalidation");
-                return;
+            else {
+                List<String> keys = this.getInvalidationKeys(files, recursive);
+                if(keys.isEmpty()) {
+                    log.warn("No keys selected for invalidation");
+                    return;
+                }
+                client.invalidateObjects(d.getId(),
+                        keys.toArray(new String[keys.size()]), // objects
+                        new Date(reference).toString() // Comment
+                );
             }
-            CloudFrontService cf = this.getClient();
-            cf.invalidateObjects(d.getId(),
-                    keys.toArray(new String[keys.size()]), // objects
-                    new Date(reference).toString() // Comment
-            );
         }
         catch(CloudFrontServiceException e) {
-            this.error("Cannot write CDN configuration", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot write CDN configuration", e);
-        }
-        finally {
-            distributionStatus.get(method).clear();
+            throw new CloudFrontServiceExceptionMappingService().map("Cannot write CDN configuration", e, session.getHost());
         }
     }
 
@@ -422,56 +320,28 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     /**
      * @param distribution Configuration
      * @return Status message from service
-     * @throws IOException Service error
      */
-    private String readInvalidationStatus(Distribution distribution) throws IOException {
-        try {
-            final CloudFrontService cf = this.getClient();
-            boolean complete = false;
-            int inprogress = 0;
-            List<InvalidationSummary> summaries = cf.listInvalidations(distribution.getId());
-            for(InvalidationSummary s : summaries) {
-                if("Completed".equals(s.getStatus())) {
-                    // No schema for status enumeration. Fail.
-                    complete = true;
-                }
-                else {
-                    // InProgress
-                    inprogress++;
-                }
+    private String readInvalidationStatus(Distribution distribution) throws IOException, CloudFrontServiceException {
+        boolean complete = false;
+        int inprogress = 0;
+        List<InvalidationSummary> summaries = client.listInvalidations(distribution.getId());
+        for(InvalidationSummary s : summaries) {
+            if("Completed".equals(s.getStatus())) {
+                // No schema for status enumeration. Fail.
+                complete = true;
             }
-            if(inprogress > 0) {
-                return MessageFormat.format(Locale.localizedString("{0} invalidations in progress", "S3"), inprogress);
+            else {
+                // InProgress
+                inprogress++;
             }
-            if(complete) {
-                return MessageFormat.format(Locale.localizedString("{0} invalidations completed", "S3"), summaries.size());
-            }
-            return Locale.localizedString("None");
         }
-        catch(CloudFrontServiceException e) {
-            this.error("Cannot read CDN configuration", e);
+        if(inprogress > 0) {
+            return MessageFormat.format(Locale.localizedString("{0} invalidations in progress", "S3"), inprogress);
         }
-        return Locale.localizedString("Unknown");
-    }
-
-    protected List<String> getContainers() {
-        // List S3 containers
-        final Session session = SessionFactory.createSession(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCredentials()));
-        if(session.getHost().getCredentials().validate(session.getHost().getProtocol())) {
-            List<String> buckets = new ArrayList<String>();
-            for(Path bucket : session.mount().children()) {
-                buckets.add(bucket.getName());
-            }
-            Collections.sort(buckets);
-            return buckets;
+        if(complete) {
+            return MessageFormat.format(Locale.localizedString("{0} invalidations completed", "S3"), summaries.size());
         }
-        return Collections.emptyList();
-    }
-
-    @Override
-    public void clear() {
-        distributionStatus.clear();
+        return Locale.localizedString("None");
     }
 
     /**
@@ -501,8 +371,6 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new %s distribution", method.toString()));
         }
-        CloudFrontService cf = this.getClient();
-
         final String originId = UUID.randomUUID().toString();
         final CacheBehavior cacheBehavior = new CacheBehavior(
                 originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
@@ -512,7 +380,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             final StreamingDistributionConfig config = new StreamingDistributionConfig(
                     new S3Origin[]{new S3Origin(originId, origin, null)},
                     reference, cnames, null, enabled, logging, null);
-            return cf.createDistribution(config
+            return client.createDistribution(config
             );
         }
         if(method.equals(Distribution.DOWNLOAD)) {
@@ -520,7 +388,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                     new Origin[]{new S3Origin(originId, origin, null)},
                     reference, cnames, null, enabled, logging,
                     defaultRootObject, cacheBehavior, new CacheBehavior[]{});
-            return cf.createDistribution(config);
+            return client.createDistribution(config);
         }
         if(method.equals(Distribution.CUSTOM)
                 || method.equals(Distribution.WEBSITE_CDN)) {
@@ -528,7 +396,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                     new Origin[]{new CustomOrigin(originId, origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER)},
                     reference, cnames, null, enabled, logging,
                     defaultRootObject, cacheBehavior, new CacheBehavior[]{});
-            return cf.createDistribution(config);
+            return client.createDistribution(config);
         }
         throw new RuntimeException("Invalid distribution method:" + method);
     }
@@ -560,12 +428,11 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                 originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
         );
 
-        final CloudFrontService cf = this.getClient();
         if(method.equals(Distribution.STREAMING)) {
             StreamingDistributionConfig config = new StreamingDistributionConfig(
                     new Origin[]{new S3Origin(originId, origin, null)}, reference, cnames, null, enabled, logging, null);
             config.setEtag(etag);
-            cf.updateDistributionConfig(distributionId, config);
+            client.updateDistributionConfig(distributionId, config);
         }
         else if(method.equals(Distribution.DOWNLOAD)) {
             DistributionConfig config = new DistributionConfig(
@@ -573,16 +440,16 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                     reference, cnames, null, enabled, logging,
                     defaultRootObject, cacheBehavior, new CacheBehavior[]{});
             config.setEtag(etag);
-            cf.updateDistributionConfig(distributionId, config);
+            client.updateDistributionConfig(distributionId, config);
         }
         else if(method.equals(Distribution.CUSTOM)
                 || method.equals(Distribution.WEBSITE_CDN)) {
             DistributionConfig config = new DistributionConfig(
-                    new Origin[]{this.getCustomOriginConfiguration(originId, method, origin)},
+                    new Origin[]{new CustomOrigin(originId, origin, this.getPolicy(method))},
                     reference, cnames, null, enabled, logging,
                     defaultRootObject, cacheBehavior, new CacheBehavior[]{});
             config.setEtag(etag);
-            cf.updateDistributionConfig(distributionId, config);
+            client.updateDistributionConfig(distributionId, config);
         }
         else {
             throw new RuntimeException("Invalid distribution method:" + method);
@@ -591,75 +458,14 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
 
     /**
      * @param method Distribution method
-     * @param origin Origin container
      * @return Match viewer policy
      */
-    protected CustomOrigin getCustomOriginConfiguration(final String id,
-                                                        final Distribution.Method method,
-                                                        final String origin) {
-        return new CustomOrigin(id, origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER);
-    }
-
-    /**
-     * Amazon CloudFront Extension used to list all configured distributions
-     *
-     * @param origin Name of the container
-     * @param method Distribution method
-     * @throws CloudFrontServiceException CloudFront failure details
-     * @throws IOException                Service error
-     */
-    private void cache(String origin, Distribution.Method method)
-            throws IOException, CloudFrontServiceException {
-
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("List distributions for origin %s", origin));
-        }
-
-        CloudFrontService cf = this.getClient();
-
-        if(method.equals(Distribution.STREAMING)) {
-            for(org.jets3t.service.model.cloudfront.Distribution d : cf.listStreamingDistributions(origin)) {
-                for(Origin o : d.getConfig().getOrigins()) {
-                    if(o instanceof S3Origin) {
-                        // Write to cache
-                        distributionStatus.get(method).put(origin, this.convert(d, method));
-                        // We currently only support one distribution per bucket
-                        break;
-                    }
-                }
-            }
-        }
-        else if(method.equals(Distribution.DOWNLOAD)) {
-            // List distributions restricting to bucket name origin
-            for(org.jets3t.service.model.cloudfront.Distribution d : cf.listDistributions(origin)) {
-                for(Origin o : d.getConfig().getOrigins()) {
-                    if(o instanceof S3Origin) {
-                        // Write to cache
-                        distributionStatus.get(method).put(origin, this.convert(d, method));
-                        // We currently only support one distribution per bucket
-                        break;
-                    }
-                }
-            }
-        }
-        else if(method.equals(Distribution.CUSTOM)
-                || method.equals(Distribution.WEBSITE_CDN)) {
-            for(org.jets3t.service.model.cloudfront.Distribution d : cf.listDistributions()) {
-                for(Origin o : d.getConfig().getOrigins()) {
-                    // Listing all distributions and look for custom origin
-                    if(o instanceof CustomOrigin) {
-                        if(o.getDomainName().equals(origin)) {
-                            distributionStatus.get(method).put(origin, this.convert(d, method));
-                        }
-                    }
-                }
-            }
-        }
+    protected CustomOrigin.OriginProtocolPolicy getPolicy(final Distribution.Method method) {
+        return CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER;
     }
 
     private Distribution convert(final org.jets3t.service.model.cloudfront.Distribution d,
-                                 Distribution.Method method)
-            throws IOException, CloudFrontServiceException {
+                                 Distribution.Method method) throws IOException, CloudFrontServiceException {
         // Retrieve distributions configuration to access current logging status settings.
         final DistributionConfig distributionConfig = this.getDistributionConfig(d);
         final String loggingTarget;
@@ -694,7 +500,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             distribution.setInvalidationStatus(this.readInvalidationStatus(distribution));
         }
         if(this.isLoggingSupported(method)) {
-            distribution.setContainers(this.getContainers());
+            distribution.setContainers(session.getContainers(false));
         }
         return distribution;
     }
@@ -708,10 +514,9 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     private DistributionConfig getDistributionConfig(final org.jets3t.service.model.cloudfront.Distribution distribution)
             throws IOException, CloudFrontServiceException {
 
-        CloudFrontService cf = this.getClient();
         if(distribution.isStreamingDistribution()) {
-            return cf.getStreamingDistributionConfig(distribution.getId());
+            return client.getStreamingDistributionConfig(distribution.getId());
         }
-        return cf.getDistributionConfig(distribution.getId());
+        return client.getDistributionConfig(distribution.getId());
     }
 }

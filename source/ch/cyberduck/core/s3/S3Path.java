@@ -49,7 +49,6 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.S3Owner;
 import org.jets3t.service.model.S3Version;
-import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
 import org.jets3t.service.utils.ServiceUtils;
@@ -117,7 +116,7 @@ public class S3Path extends CloudPath {
      * @throws ServiceException Service error
      */
     protected StorageObject getDetails() throws IOException, ServiceException {
-        final String container = this.getContainerName();
+        final String container = this.getContainer().getName();
         if(null == _details || !_details.isMetadataComplete()) {
             try {
                 if(this.attributes().isDuplicate()) {
@@ -136,7 +135,7 @@ public class S3Path extends CloudPath {
         if(null == _details) {
             log.warn("Cannot read object details.");
             StorageObject object = new StorageObject(this.getKey());
-            object.setBucketName(this.getContainerName());
+            object.setBucketName(container);
             return object;
         }
         return _details;
@@ -161,7 +160,7 @@ public class S3Path extends CloudPath {
                 }
                 destination.setAcl(this.convert(this.attributes().getAcl()));
                 this.getSession().getClient().copyVersionedObject(this.attributes().getVersionId(),
-                        this.getContainerName(), this.getKey(), this.getContainerName(), destination, false);
+                        this.getContainer().getName(), this.getKey(), this.getContainer().getName(), destination, false);
             }
             catch(ServiceException e) {
                 this.error("Cannot revert file", e);
@@ -179,24 +178,23 @@ public class S3Path extends CloudPath {
             if(credentials.isAnonymousLogin()) {
                 return;
             }
-            final String container = this.getContainerName();
             if(this.isContainer()) {
                 // This method can be performed by anonymous services, but can only succeed if the
                 // bucket's existing ACL already allows write access by the anonymous user.
                 // In general, you can only access the ACL of a bucket if the ACL already in place
                 // for that bucket (in S3) allows you to do so.
-                this.attributes().setAcl(this.convert(this.getSession().getClient().getBucketAcl(container)));
+                this.attributes().setAcl(this.convert(this.getSession().getClient().getBucketAcl(this.getContainer().getName())));
             }
             else if(attributes().isFile() || attributes().isPlaceholder()) {
                 AccessControlList list;
-                if(this.getSession().isVersioning(container)) {
+                if(this.getSession().isVersioning(this.getContainer())) {
                     list = this.getSession().getClient().getVersionedObjectAcl(this.attributes().getVersionId(),
-                            container, this.getKey());
+                            this.getContainer().getName(), this.getKey());
                 }
                 else {
                     // This method can be performed by anonymous services, but can only succeed if the
                     // object's existing ACL already allows read access by the anonymous user.
-                    list = this.getSession().getClient().getObjectAcl(container, this.getKey());
+                    list = this.getSession().getClient().getObjectAcl(this.getContainer().getName(), this.getKey());
                 }
                 this.attributes().setAcl(this.convert(list));
                 this.attributes().setOwner(list.getOwner().getDisplayName());
@@ -256,7 +254,7 @@ public class S3Path extends CloudPath {
             // to update an object's metadata while leaving the object's data unchanged.
             final StorageObject target = this.getDetails();
             target.addMetadata(METADATA_HEADER_EXPIRES, new RFC1123DateFormatter().format(expiration, TimeZone.getTimeZone("UTC")));
-            this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
+            this.getSession().getClient().updateObjectMetadata(this.getContainer().getName(), target);
         }
         catch(ServiceException e) {
             this.error("Cannot write file attributes", e);
@@ -286,7 +284,7 @@ public class S3Path extends CloudPath {
             else {
                 target.addMetadata(METADATA_HEADER_CACHE_CONTROL, maxage);
             }
-            this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
+            this.getSession().getClient().updateObjectMetadata(this.getContainer().getName(), target);
         }
         catch(ServiceException e) {
             this.error("Cannot write file attributes", e);
@@ -337,7 +335,7 @@ public class S3Path extends CloudPath {
                     this.readAcl();
                 }
                 target.setAcl(this.convert(this.attributes().getAcl()));
-                this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
+                this.getSession().getClient().updateObjectMetadata(this.getContainer().getName(), target);
                 target.setMetadataComplete(false);
             }
             catch(ServiceException e) {
@@ -424,14 +422,14 @@ public class S3Path extends CloudPath {
         try {
             if(this.attributes().isDuplicate()) {
                 return this.getSession().getClient().getVersionedObject(attributes().getVersionId(),
-                        this.getContainerName(), this.getKey(),
+                        this.getContainer().getName(), this.getKey(),
                         null, // ifModifiedSince
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
                         status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
             }
-            return this.getSession().getClient().getObject(this.getContainerName(), this.getKey(),
+            return this.getSession().getClient().getObject(this.getContainer().getName(), this.getKey(),
                     null, // ifModifiedSince
                     null, // ifUnmodifiedSince
                     null, // ifMatch
@@ -631,9 +629,9 @@ public class S3Path extends CloudPath {
             // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
             // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
             // not yet been completed or aborted.
-            final List<MultipartUpload> uploads = this.getSession().getClient().multipartListUploads(this.getContainerName());
+            final List<MultipartUpload> uploads = this.getSession().getClient().multipartListUploads(this.getContainer().getName());
             for(MultipartUpload upload : uploads) {
-                if(!upload.getBucketName().equals(this.getContainerName())) {
+                if(!upload.getBucketName().equals(this.getContainer().getName())) {
                     continue;
                 }
                 if(!upload.getObjectKey().equals(this.getKey())) {
@@ -661,7 +659,7 @@ public class S3Path extends CloudPath {
             }
 
             multipart = this.getSession().getClient().multipartStartUpload(
-                    this.getContainerName(), this.getKey(), metadata);
+                    this.getContainer().getName(), this.getKey(), metadata);
         }
 
         final List<MultipartPart> completed;
@@ -817,7 +815,7 @@ public class S3Path extends CloudPath {
             @Override
             public StorageObject call(AbstractHttpEntity entity) throws IOException {
                 try {
-                    getSession().getClient().putObjectWithRequestEntityImpl(getContainerName(), part, entity, requestParams);
+                    getSession().getClient().putObjectWithRequestEntityImpl(getContainer().getName(), part, entity, requestParams);
                 }
                 catch(ServiceException e) {
                     IOException failure = new IOException(e.getMessage());
@@ -844,20 +842,9 @@ public class S3Path extends CloudPath {
 
             if(this.isRoot()) {
                 // List all buckets
-                for(StorageBucket bucket : this.getSession().getBuckets(true)) {
-                    Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), bucket.getName(),
-                            VOLUME_TYPE | DIRECTORY_TYPE);
-                    if(null != bucket.getOwner()) {
-                        p.attributes().setOwner(bucket.getOwner().getDisplayName());
-                    }
-                    if(null != bucket.getCreationDate()) {
-                        p.attributes().setCreationDate(bucket.getCreationDate().getTime());
-                    }
-                    children.add(p);
-                }
+                return new AttributedList<Path>(this.getSession().getContainers(true));
             }
             else {
-                final String container = this.getContainerName();
                 // Keys can be listed by prefix. By choosing a common prefix
                 // for the names of related keys and marking these keys with
                 // a special character that delimits hierarchy, you can use the list
@@ -879,17 +866,17 @@ public class S3Path extends CloudPath {
                 // element in the CommonPrefixes collection. These rolled-up keys are
                 // not returned elsewhere in the response.
                 final String delimiter = String.valueOf(Path.DELIMITER);
-                children.addAll(this.listObjects(container, prefix, delimiter));
+                children.addAll(this.listObjects(this.getContainer().getName(), prefix, delimiter));
                 if(Preferences.instance().getBoolean("s3.revisions.enable")) {
-                    if(this.getSession().isVersioning(container)) {
+                    if(this.getSession().isVersioning(this.getContainer())) {
                         String priorLastKey = null;
                         String priorLastVersionId = null;
                         do {
                             final VersionOrDeleteMarkersChunk chunk = this.getSession().getClient().listVersionedObjectsChunked(
-                                    container, prefix, delimiter,
+                                    this.getContainer().getName(), prefix, delimiter,
                                     Preferences.instance().getInteger("s3.listing.chunksize"),
                                     priorLastKey, priorLastVersionId, true);
-                            children.addAll(this.listVersions(container, Arrays.asList(chunk.getItems())));
+                            children.addAll(this.listVersions(this.getContainer().getName(), Arrays.asList(chunk.getItems())));
                             priorLastKey = chunk.getNextKeyMarker();
                             priorLastVersionId = chunk.getNextVersionIdMarker();
                         }
@@ -1043,16 +1030,16 @@ public class S3Path extends CloudPath {
                 else {
                     acl = this.getSession().getPrivateCannedAcl();
                 }
-                this.getSession().getClient().createBucket(this.getContainerName(), location, acl);
+                this.getSession().getClient().createBucket(this.getContainer().getName(), location, acl);
             }
             else {
                 StorageObject object = new StorageObject(this.getKey() + Path.DELIMITER);
-                object.setBucketName(this.getContainerName());
+                object.setBucketName(this.getContainer().getName());
                 // Set object explicitly to private access by default.
                 object.setAcl(this.getSession().getPrivateCannedAcl());
                 object.setContentLength(0);
                 object.setContentType("application/x-directory");
-                this.getSession().getClient().putObject(this.getContainerName(), object);
+                this.getSession().getClient().putObject(this.getContainer().getName(), object);
             }
         }
         catch(ServiceException e) {
@@ -1077,11 +1064,11 @@ public class S3Path extends CloudPath {
                 acl.setOwner(this.attributes().getAcl().getOwner());
             }
             if(this.isContainer()) {
-                this.getSession().getClient().putBucketAcl(this.getContainerName(), this.convert(acl));
+                this.getSession().getClient().putBucketAcl(this.getContainer().getName(), this.convert(acl));
             }
             else {
                 if(attributes().isFile() || attributes().isPlaceholder()) {
-                    this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), this.convert(acl));
+                    this.getSession().getClient().putObjectAcl(this.getContainer().getName(), this.getKey(), this.convert(acl));
                 }
                 if(attributes().isDirectory()) {
                     if(recursive) {
@@ -1162,9 +1149,8 @@ public class S3Path extends CloudPath {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     this.getName()));
 
-            final String container = this.getContainerName();
             if(attributes().isFile()) {
-                this.delete(container, Collections.singletonList(
+                this.delete(this.getContainer(), Collections.singletonList(
                         new ObjectKeyAndVersion(this.getKey(), this.attributes().getVersionId())));
             }
             else if(attributes().isDirectory()) {
@@ -1192,11 +1178,11 @@ public class S3Path extends CloudPath {
                     // AWS does not return 404 for non-existing keys
                 }
                 if(!files.isEmpty()) {
-                    this.delete(container, files);
+                    this.delete(this.getContainer(), files);
                 }
                 if(this.isContainer()) {
                     // Finally delete bucket itself
-                    this.getSession().getClient().deleteBucket(container);
+                    this.getSession().getClient().deleteBucket(this.getContainer().getName());
                 }
             }
         }
@@ -1214,11 +1200,11 @@ public class S3Path extends CloudPath {
      * @throws ConnectionCanceledException Authentication canceled for MFA delete
      * @throws ServiceException            Service error
      */
-    protected void delete(String container, List<ObjectKeyAndVersion> keys) throws ConnectionCanceledException, ServiceException {
+    protected void delete(Path container, List<ObjectKeyAndVersion> keys) throws ConnectionCanceledException, ServiceException {
         if(this.getSession().isMultiFactorAuthentication(container)) {
             final LoginController c = LoginControllerFactory.get(this.getSession());
             final Credentials credentials = this.getSession().mfa(c);
-            this.getSession().getClient().deleteMultipleObjectsWithMFA(container,
+            this.getSession().getClient().deleteMultipleObjectsWithMFA(container.getName(),
                     keys.toArray(new ObjectKeyAndVersion[keys.size()]),
                     credentials.getUsername(),
                     credentials.getPassword(),
@@ -1226,13 +1212,13 @@ public class S3Path extends CloudPath {
         }
         else {
             if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
-                this.getSession().getClient().deleteMultipleObjects(container,
+                this.getSession().getClient().deleteMultipleObjects(container.getName(),
                         keys.toArray(new ObjectKeyAndVersion[keys.size()]),
                         true);
             }
             else {
                 for(ObjectKeyAndVersion k : keys) {
-                    this.getSession().getClient().deleteObject(container, k.getKey());
+                    this.getSession().getClient().deleteObject(container.getName(), k.getKey());
                 }
             }
         }
@@ -1257,7 +1243,7 @@ public class S3Path extends CloudPath {
                 }
                 destination.setAcl(this.convert(this.attributes().getAcl()));
                 // Moving the object retaining the metadata of the original.
-                this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), ((S3Path) renamed).getContainerName(),
+                this.getSession().getClient().moveObject(this.getContainer().getName(), this.getKey(), ((S3Path) renamed).getContainer().getName(),
                         destination, false);
             }
             else if(attributes().isDirectory()) {
@@ -1299,8 +1285,8 @@ public class S3Path extends CloudPath {
                     }
                     destination.setAcl(this.convert(this.attributes().getAcl()));
                     // Copying object applying the metadata of the original
-                    this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
-                            ((S3Path) copy).getContainerName(), destination, false);
+                    this.getSession().getClient().copyObject(this.getContainer().getName(), this.getKey(),
+                            ((S3Path) copy).getContainer().getName(), destination, false);
                     listener.bytesSent(this.attributes().getSize());
                     status.setComplete();
                 }
@@ -1351,9 +1337,8 @@ public class S3Path extends CloudPath {
             url.append(this.getHost().getHostname());
         }
         else {
-            String container = this.getContainerName();
-            String hostname = this.getSession().getHostnameForContainer(container);
-            if(hostname.startsWith(container)) {
+            final String hostname = this.getSession().getHostnameForContainer(this.getContainer());
+            if(hostname.startsWith(this.getContainer().getName())) {
                 url.append(hostname);
                 if(!this.isContainer()) {
                     url.append(URIEncoder.encode(this.getKey()));
@@ -1413,7 +1398,7 @@ public class S3Path extends CloudPath {
 
                 // Generate URL
                 return this.getSession().getClient().createSignedUrl("GET",
-                        this.getContainerName(), this.getKey(), null,
+                        this.getContainer().getName(), this.getKey(), null,
                         null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
             }
             catch(ServiceException e) {
@@ -1435,7 +1420,7 @@ public class S3Path extends CloudPath {
     public DescriptiveUrl toTorrentUrl() {
         if(this.attributes().isFile()) {
             try {
-                return new DescriptiveUrl(this.getSession().getClient().createTorrentUrl(this.getContainerName(),
+                return new DescriptiveUrl(this.getSession().getClient().createTorrentUrl(this.getContainer().getName(),
                         this.getKey()));
             }
             catch(ConnectionCanceledException e) {

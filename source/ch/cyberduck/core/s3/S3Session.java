@@ -22,16 +22,13 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
-import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
-import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
+import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.threading.BackgroundException;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
@@ -41,14 +38,20 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
-import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.*;
-import org.jets3t.service.model.cloudfront.CustomOrigin;
+import org.jets3t.service.model.LifecycleConfig;
+import org.jets3t.service.model.S3BucketLoggingStatus;
+import org.jets3t.service.model.S3BucketVersioningStatus;
+import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.StorageBucket;
+import org.jets3t.service.model.StorageBucketLoggingStatus;
+import org.jets3t.service.model.StorageObject;
+import org.jets3t.service.model.StorageOwner;
+import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
@@ -57,7 +60,6 @@ import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -89,7 +91,7 @@ public class S3Session extends CloudSession {
     /**
      * Exposing protected methods
      */
-    protected class RequestEntityRestStorageService extends RestS3Service {
+    public class RequestEntityRestStorageService extends RestS3Service {
         public RequestEntityRestStorageService(ProviderCredentials credentials) throws ServiceException {
             super(credentials, S3Session.this.getUserAgent(), null, S3Session.this.getProperties());
         }
@@ -191,10 +193,10 @@ public class S3Session extends CloudSession {
 
         @Override
         protected boolean isRecoverable403(HttpUriRequest httpRequest, Exception exception) {
-            if(this.credentials instanceof OAuth2Credentials) {
+            if(credentials instanceof OAuth2Credentials) {
                 OAuth2Tokens tokens;
                 try {
-                    tokens = ((OAuth2Credentials) this.credentials).getOAuth2Tokens();
+                    tokens = ((OAuth2Credentials) credentials).getOAuth2Tokens();
                 }
                 catch(IOException e) {
                     return false;
@@ -262,7 +264,7 @@ public class S3Session extends CloudSession {
     }
 
     @Override
-    protected void configure(AbstractHttpClient client) {
+    protected void configure(final AbstractHttpClient client) {
         super.configure(client);
         // Activates 'Expect: 100-Continue' handshake for the entity enclosing methods
         HttpProtocolParams.setUseExpectContinue(client.getParams(), true);
@@ -311,15 +313,15 @@ public class S3Session extends CloudSession {
     }
 
     @Override
-    public String getHostnameForContainer(final String bucket) {
+    public String getHostnameForContainer(final Path bucket) {
         if(configuration.getBoolProperty("s3service.disable-dns-buckets", false)) {
             return this.getHost().getHostname(true);
         }
-        if(!ServiceUtils.isBucketNameValidDNSName(bucket)) {
+        if(!ServiceUtils.isBucketNameValidDNSName(bucket.getContainer().getName())) {
             return this.getHost().getHostname(true);
         }
         if(this.getHost().getHostname().equals(this.getHost().getProtocol().getDefaultHostname())) {
-            return String.format("%s.%s", bucket, this.getHost().getHostname(true));
+            return String.format("%s.%s", bucket.getName(), this.getHost().getHostname(true));
         }
         return this.getHost().getHostname(true);
     }
@@ -327,48 +329,34 @@ public class S3Session extends CloudSession {
     /**
      * Caching the user's buckets
      */
-    private Map<String, StorageBucket> buckets
-            = new HashMap<String, StorageBucket>();
+    private Map<Path, StorageBucket> buckets = new HashMap<Path, StorageBucket>();
 
     /**
      * @param reload Disregard cache
      * @return List of buckets
-     * @throws ServiceException Error response
-     * @throws IOException      I/O failure
+     * @throws IOException I/O failure
      */
-    protected List<StorageBucket> getBuckets(final boolean reload) throws IOException, ServiceException {
+    public List<Path> getContainers(final boolean reload) throws IOException {
         if(buckets.isEmpty() || reload) {
             buckets.clear();
-            for(StorageBucket b : new S3BucketListService().list(this)) {
-                buckets.put(b.getName(), b);
+            for(StorageBucket bucket : new S3BucketListService().list(this)) {
+                final Path container = PathFactory.createPath(this, String.valueOf(Path.DELIMITER), bucket.getName(),
+                        Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                if(null != bucket.getOwner()) {
+                    container.attributes().setOwner(bucket.getOwner().getDisplayName());
+                }
+                if(null != bucket.getCreationDate()) {
+                    container.attributes().setCreationDate(bucket.getCreationDate().getTime());
+                }
+                buckets.put(container, bucket);
             }
             if(reload) {
                 loggingStatus.clear();
                 lifecycleStatus.clear();
                 versioningStatus.clear();
-                this.cdn().clear();
             }
         }
-        return new ArrayList<StorageBucket>(buckets.values());
-    }
-
-    /**
-     * @param bucketname Name of bucket
-     * @return Cached bucket
-     * @throws IOException I/O failure
-     */
-    protected StorageBucket getBucket(final String bucketname) throws IOException {
-        try {
-            for(StorageBucket bucket : this.getBuckets(false)) {
-                if(bucket.getName().equals(bucketname)) {
-                    return bucket;
-                }
-            }
-        }
-        catch(ServiceException e) {
-            this.error("Cannot read container configuration", e);
-        }
-        throw new ConnectionCanceledException(String.format("Bucket not found with name %s", bucketname));
+        return new ArrayList<Path>(buckets.keySet());
     }
 
     /**
@@ -386,29 +374,23 @@ public class S3Session extends CloudSession {
         this.bucketLocationSupported = bucketLocationSupported;
     }
 
-    /**
-     * @return Bucket geographical location
-     */
     @Override
-    public String getLocation(final String container) {
+    public String getLocation(final Path container) {
         if(this.isLocationSupported()) {
             try {
-                final S3Bucket bucket = (S3Bucket) this.getBucket(container);
-                if(bucket.isLocationKnown()) {
-                    return bucket.getLocation();
+                if(null == container.attributes().getRegion()) {
+                    if(this.getHost().getCredentials().isAnonymousLogin()) {
+                        log.info("Anonymous cannot access bucket location");
+                        return null;
+                    }
+                    this.check();
+                    String location = this.getClient().getBucketLocation(container.getContainer().getName());
+                    if(StringUtils.isBlank(location)) {
+                        location = "US"; //Default location US is null
+                    }
+                    container.attributes().setRegion(location);
                 }
-                if(this.getHost().getCredentials().isAnonymousLogin()) {
-                    log.info("Anonymous cannot access bucket location");
-                    return null;
-                }
-                this.check();
-                String location = this.getClient().getBucketLocation(container);
-                if(StringUtils.isBlank(location)) {
-                    location = "US"; //Default location US is null
-                }
-                // Cache location
-                bucket.setLocation(location);
-                return location;
+                return container.attributes().getRegion();
             }
             catch(ServiceException e) {
                 log.warn("Bucket location not supported:" + e.getMessage());
@@ -422,7 +404,7 @@ public class S3Session extends CloudSession {
     }
 
     @Override
-    protected void connect() throws IOException {
+    public void connect() throws IOException {
         if(this.isConnected()) {
             return;
         }
@@ -441,7 +423,7 @@ public class S3Session extends CloudSession {
     protected void login(final LoginController controller, final Credentials credentials) throws IOException {
         try {
             this.client = new RequestEntityRestStorageService(this.getProviderCredentials(credentials));
-            for(StorageBucket bucket : this.getBuckets(true)) {
+            for(Path bucket : this.getContainers(true)) {
                 if(log.isDebugEnabled()) {
                     log.debug("Bucket:" + bucket);
                 }
@@ -521,7 +503,6 @@ public class S3Session extends CloudSession {
             }
         }
         finally {
-            // No logout required
             client = null;
             this.fireConnectionDidCloseEvent();
         }
@@ -604,10 +585,10 @@ public class S3Session extends CloudSession {
     /**
      * Cache versioning status result.
      */
-    protected Map<String, StorageBucketLoggingStatus> loggingStatus
-            = new HashMap<String, StorageBucketLoggingStatus>();
+    protected Map<Path, StorageBucketLoggingStatus> loggingStatus
+            = new HashMap<Path, StorageBucketLoggingStatus>();
 
-    private void readLogging(String container) {
+    private void readLogging(Path container) {
         if(!loggingStatus.containsKey(container)) {
             try {
                 if(this.getHost().getCredentials().isAnonymousLogin()) {
@@ -616,7 +597,7 @@ public class S3Session extends CloudSession {
                 }
                 this.check();
                 final StorageBucketLoggingStatus status
-                        = this.getClient().getBucketLoggingStatusImpl(container);
+                        = this.getClient().getBucketLoggingStatusImpl(container.getName());
                 loggingStatus.put(container, status);
             }
             catch(ServiceException e) {
@@ -634,7 +615,7 @@ public class S3Session extends CloudSession {
      * @return True if the bucket logging status is enabled.
      */
     @Override
-    public boolean isLogging(final String container) {
+    public boolean isLogging(final Path container) {
         if(this.isLoggingSupported()) {
             this.readLogging(container);
             if(loggingStatus.containsKey(container)) {
@@ -649,13 +630,13 @@ public class S3Session extends CloudSession {
      * @return Null if bucket logging is not supported
      */
     @Override
-    public String getLoggingTarget(final String container) {
+    public String getLoggingTarget(final Path container) {
         if(this.isLoggingSupported()) {
             this.readLogging(container);
             if(loggingStatus.containsKey(container)) {
                 return loggingStatus.get(container).getTargetBucketName();
             }
-            return container;
+            return container.getName();
         }
         return null;
     }
@@ -666,17 +647,17 @@ public class S3Session extends CloudSession {
      * @param destination Logging bucket name or null to choose container itself as target
      */
     @Override
-    public void setLogging(final String container, final boolean enabled, final String destination) {
+    public void setLogging(final Path container, final boolean enabled, final String destination) {
         if(this.isLoggingSupported()) {
             try {
                 // Logging target bucket
                 final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
-                        StringUtils.isNotBlank(destination) ? destination : container, null);
+                        StringUtils.isNotBlank(destination) ? destination : container.getName(), null);
                 if(enabled) {
                     status.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
                 }
                 this.check();
-                this.getClient().setBucketLoggingStatus(container, status, true);
+                this.getClient().setBucketLoggingStatus(container.getName(), status, true);
             }
             catch(ServiceException e) {
                 this.error("Cannot write file attributes", e);
@@ -690,7 +671,7 @@ public class S3Session extends CloudSession {
         }
     }
 
-    public Integer getTransition(final String container) {
+    public Integer getTransition(final Path container) {
         if(this.isLifecycleSupported()) {
             this.readLifecycle(container);
             if(lifecycleStatus.containsKey(container)) {
@@ -706,7 +687,7 @@ public class S3Session extends CloudSession {
         return null;
     }
 
-    public Integer getExpiration(final String container) {
+    public Integer getExpiration(final Path container) {
         if(this.isLifecycleSupported()) {
             this.readLifecycle(container);
             if(lifecycleStatus.containsKey(container)) {
@@ -722,10 +703,10 @@ public class S3Session extends CloudSession {
         return null;
     }
 
-    protected Map<String, LifecycleConfig> lifecycleStatus
-            = new HashMap<String, LifecycleConfig>();
+    protected Map<Path, LifecycleConfig> lifecycleStatus
+            = new HashMap<Path, LifecycleConfig>();
 
-    protected void readLifecycle(final String container) {
+    public void readLifecycle(final Path container) {
         if(this.isLifecycleSupported()) {
             if(!lifecycleStatus.containsKey(container)) {
                 try {
@@ -734,7 +715,7 @@ public class S3Session extends CloudSession {
                         return;
                     }
                     this.check();
-                    final LifecycleConfig status = this.getClient().getLifecycleConfig(container);
+                    final LifecycleConfig status = this.getClient().getLifecycleConfig(container.getName());
                     if(null != status) {
                         lifecycleStatus.put(container, status);
                     }
@@ -755,7 +736,7 @@ public class S3Session extends CloudSession {
      * @param transition Days Null to disable
      * @param expiration Days Null to disable
      */
-    public void setLifecycle(final String container, final Integer transition, final Integer expiration) {
+    public void setLifecycle(final Path container, final Integer transition, final Integer expiration) {
         if(this.isLifecycleSupported()) {
             try {
                 this.check();
@@ -770,11 +751,11 @@ public class S3Session extends CloudSession {
                         rule.newExpiration().setDays(expiration);
                     }
                     if(!config.equals(lifecycleStatus.get(container))) {
-                        this.getClient().setLifecycleConfig(container, config);
+                        this.getClient().setLifecycleConfig(container.getName(), config);
                     }
                 }
                 else {
-                    this.getClient().deleteLifecycleConfig(container);
+                    this.getClient().deleteLifecycleConfig(container.getName());
                 }
             }
             catch(ServiceException e) {
@@ -810,21 +791,21 @@ public class S3Session extends CloudSession {
     /**
      * Cache versioning status result.
      */
-    private Map<String, S3BucketVersioningStatus> versioningStatus
-            = new HashMap<String, S3BucketVersioningStatus>();
+    private Map<Path, S3BucketVersioningStatus> versioningStatus
+            = new HashMap<Path, S3BucketVersioningStatus>();
 
     /**
      * @param container The bucket name
      * @return True if enabled
      */
     @Override
-    public boolean isVersioning(final String container) {
+    public boolean isVersioning(final Path container) {
         if(this.isVersioningSupported()) {
             if(!versioningStatus.containsKey(container)) {
                 try {
                     this.check();
                     final S3BucketVersioningStatus status
-                            = this.getClient().getBucketVersioningStatus(container);
+                            = this.getClient().getBucketVersioningStatus(container.getName());
                     versioningStatus.put(container, status);
                 }
                 catch(ServiceException e) {
@@ -846,7 +827,7 @@ public class S3Session extends CloudSession {
      * @return True if MFA is required to delete objects in this bucket.
      */
     @Override
-    public boolean isMultiFactorAuthentication(final String container) {
+    public boolean isMultiFactorAuthentication(final Path container) {
         if(this.isVersioning(container)) {
             return versioningStatus.get(container).isMultiFactorAuthDeleteRequired();
         }
@@ -859,7 +840,7 @@ public class S3Session extends CloudSession {
      * @param versioning True if enabled
      */
     @Override
-    public void setVersioning(final String container, final boolean mfa, final boolean versioning) {
+    public void setVersioning(final Path container, final boolean mfa, final boolean versioning) {
         if(this.isVersioningSupported()) {
             try {
                 this.check();
@@ -874,20 +855,20 @@ public class S3Session extends CloudSession {
                         else {
                             // Enable versioning if not already active.
                             log.debug("Enable bucket versioning with MFA " + auth.getUsername() + " for " + container);
-                            this.getClient().enableBucketVersioningWithMFA(container,
+                            this.getClient().enableBucketVersioningWithMFA(container.getName(),
                                     auth.getUsername(), auth.getPassword());
                         }
                     }
                     else {
                         log.debug("Suspend bucket versioning with MFA " + auth.getUsername() + " for " + container);
-                        this.getClient().suspendBucketVersioningWithMFA(container,
+                        this.getClient().suspendBucketVersioningWithMFA(container.getName(),
                                 auth.getUsername(), auth.getPassword());
                     }
                     if(versioning && !mfa) {
                         log.debug("Disable MFA " + auth.getUsername() + " for " + container);
                         // User has choosen to disable MFA
                         final Credentials auth2 = this.mfa(c);
-                        this.getClient().disableMFAForVersionedBucket(container,
+                        this.getClient().disableMFAForVersionedBucket(container.getName(),
                                 auth2.getUsername(), auth2.getPassword());
                     }
                 }
@@ -897,7 +878,7 @@ public class S3Session extends CloudSession {
                             LoginController c = LoginControllerFactory.get(this);
                             final Credentials auth = this.mfa(c);
                             log.debug("Enable bucket versioning with MFA " + auth.getUsername() + " for " + container);
-                            this.getClient().enableBucketVersioningWithMFA(container,
+                            this.getClient().enableBucketVersioningWithMFA(container.getName(),
                                     auth.getUsername(), auth.getPassword());
                         }
                         else {
@@ -906,13 +887,13 @@ public class S3Session extends CloudSession {
                             }
                             else {
                                 log.debug("Enable bucket versioning for " + container);
-                                this.getClient().enableBucketVersioning(container);
+                                this.getClient().enableBucketVersioning(container.getName());
                             }
                         }
                     }
                     else {
                         log.debug("Susped bucket versioning for " + container);
-                        this.getClient().suspendBucketVersioning(container);
+                        this.getClient().suspendBucketVersioning(container.getName());
                     }
                 }
             }
@@ -977,243 +958,20 @@ public class S3Session extends CloudSession {
         return users;
     }
 
-    /**
-     * The website endpoint given the location of the bucket. When you configure a bucket as
-     * a website, the website is available via the region-specific website endpoint.
-     * The website endpoint you use must be in the same region that your bucket resides.
-     * These website endpoints are different than the REST API endpoints (see Request
-     * Endpoints). Amazon S3 supports the following website endpoint.
-     *
-     * @param bucket Bucket name
-     * @return Website distribution hostname
-     */
-    protected String getWebsiteEndpoint(final String bucket) {
-        // Geographical location
-        final String location = this.getLocation(bucket);
-        // US Standard
-        final String endpoint;
-        if(null == location || "US".equals(location)) {
-            endpoint = "s3-website-us-east-1.amazonaws.com";
-        }
-        else if(S3Bucket.LOCATION_EUROPE.equals(location)) {
-            endpoint = "s3-website-eu-west-1.amazonaws.com";
-        }
-        else {
-            endpoint = String.format("s3-website-%s.amazonaws.com", location);
-        }
-        return String.format("%s.%s", bucket, endpoint);
-    }
-
-    /**
-     * Delegating CloudFront requests.
-     */
-    private DistributionConfiguration cf;
-
     @Override
     public DistributionConfiguration cdn() {
         if(host.getHostname().endsWith(Protocol.S3_SSL.getDefaultHostname())) {
-            if(null == cf) {
-                cf = new WebsiteCloudFrontDistributionConfiguration();
-            }
+            return new WebsiteCloudFrontDistributionConfiguration(this);
         }
         else {
             // Amazon CloudFront custom origin
             return super.cdn();
         }
-        return cf;
-    }
-
-    /**
-     *
-     */
-    private class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
-
-        public WebsiteCloudFrontDistributionConfiguration() {
-            super(LoginControllerFactory.get(S3Session.this), S3Session.this.host.getCredentials(),
-                    new ErrorListener() {
-                        @Override
-                        public void error(BackgroundException exception) {
-                            S3Session.this.error(exception);
-                        }
-                    },
-                    new ProgressListener() {
-                        @Override
-                        public void message(String message) {
-                            S3Session.this.message(message);
-                        }
-                    },
-                    new TranscriptListener() {
-                        @Override
-                        public void log(boolean request, String message) {
-                            S3Session.this.log(request, message);
-                        }
-                    }
-            );
-        }
-
-        /**
-         * Distribution methods supported by this S3 provider.
-         *
-         * @param container Origin bucket
-         * @return Download and Streaming for AWS.
-         */
-        @Override
-        public List<Distribution.Method> getMethods(final String container) {
-            if(!ServiceUtils.isBucketNameValidDNSName(container)) {
-                // Disable website configuration if bucket name is not DNS compatible
-                return super.getMethods(container);
-            }
-            return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING, Distribution.WEBSITE, Distribution.WEBSITE_CDN);
-        }
-
-        @Override
-        public String getName(final Distribution.Method method) {
-            if(method.equals(Distribution.WEBSITE)) {
-                return method.toString();
-            }
-            return super.getName(method);
-        }
-
-        @Override
-        public String getOrigin(final Distribution.Method method, final String container) {
-            if(method.equals(Distribution.WEBSITE)) {
-                return S3Session.this.getHostnameForContainer(container);
-            }
-            if(method.equals(Distribution.WEBSITE_CDN)) {
-                return S3Session.this.getWebsiteEndpoint(container);
-            }
-            return super.getOrigin(method, container);
-        }
-
-        @Override
-        protected List<String> getContainers() {
-            return new ArrayList<String>(buckets.keySet());
-        }
-
-        @Override
-        public Distribution read(final String origin, final Distribution.Method method) {
-            if(method.equals(Distribution.WEBSITE)) {
-                final String bucket = S3Session.this.getContainerForHostname(origin);
-                // Website Endpoint URL
-                final String url = String.format("%s://%s", method.getScheme(), S3Session.this.getWebsiteEndpoint(bucket));
-                if(!distributionStatus.get(method).containsKey(origin)) {
-                    try {
-                        S3Session.this.check();
-
-                        try {
-                            final WebsiteConfig configuration = S3Session.this.getClient().getWebsiteConfig(bucket);
-                            final Distribution distribution = new Distribution(
-                                    null,
-                                    origin,
-                                    method,
-                                    configuration.isWebsiteConfigActive(),
-                                    configuration.isWebsiteConfigActive(),
-                                    // http://example-bucket.s3-website-us-east-1.amazonaws.com/
-                                    url,
-                                    Locale.localizedString("Deployed", "S3"),
-                                    new String[]{},
-                                    false,
-                                    configuration.getIndexDocumentSuffix());
-                            // Cache website configuration
-                            distributionStatus.get(method).put(origin, distribution);
-                        }
-                        catch(ServiceException e) {
-                            // Not found. Website configuration not enbabled.
-                            String status = Locale.localizedString(e.getErrorCode());
-                            if(status.equals(e.getErrorCode())) {
-                                // No localization found. Use english text
-                                status = e.getErrorMessage();
-                            }
-                            final Distribution distribution = new Distribution(null, origin, method, false, url, status);
-                            distributionStatus.get(method).put(origin, distribution);
-                        }
-                    }
-                    catch(IOException e) {
-                        this.error("Cannot read website configuration", e);
-                    }
-                }
-            }
-            return super.read(origin, method);
-        }
-
-        @Override
-        public void write(final boolean enabled, final String origin, final Distribution.Method method,
-                          final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) {
-            if(method.equals(Distribution.WEBSITE)) {
-                try {
-                    S3Session.this.check();
-                    // Configure Website Index Document
-                    StringBuilder name = new StringBuilder(Locale.localizedString("Website", "S3")).append(" ").append(method.toString());
-                    if(enabled) {
-                        this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
-                    }
-                    else {
-                        this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
-                    }
-                    final String bucket = S3Session.this.getContainerForHostname(origin);
-                    if(enabled) {
-                        String suffix = "index.html";
-                        if(StringUtils.isNotBlank(defaultRootObject)) {
-                            suffix = FilenameUtils.getName(defaultRootObject);
-                        }
-                        // Enable website endpoint
-                        S3Session.this.getClient().setWebsiteConfig(bucket, new S3WebsiteConfig(suffix));
-                    }
-                    else {
-                        // Disable website endpoint
-                        S3Session.this.getClient().deleteWebsiteConfig(bucket);
-                    }
-                }
-                catch(IOException e) {
-                    this.error("Cannot write website configuration", e);
-                }
-                catch(S3ServiceException e) {
-                    this.error("Cannot write website configuration", e);
-                }
-                finally {
-                    distributionStatus.get(method).clear();
-                }
-            }
-            else {
-                super.write(enabled, origin, method, cnames, logging, loggingBucket, defaultRootObject);
-            }
-        }
-
-        @Override
-        protected CustomOrigin getCustomOriginConfiguration(final String id,
-                                                            final Distribution.Method method,
-                                                            final String origin) {
-            if(method.equals(Distribution.WEBSITE_CDN)) {
-                return new CustomOrigin(id, origin, CustomOrigin.OriginProtocolPolicy.HTTP_ONLY);
-            }
-            return super.getCustomOriginConfiguration(id, method, origin);
-        }
-
-        @Override
-        public boolean isDefaultRootSupported(final Distribution.Method method) {
-            if(method.equals(Distribution.WEBSITE)) {
-                return true;
-            }
-            return super.isDefaultRootSupported(method);
-        }
-
-        @Override
-        public boolean isLoggingSupported(final Distribution.Method method) {
-            if(method.equals(Distribution.WEBSITE)) {
-                return false;
-            }
-            return super.isLoggingSupported(method);
-        }
     }
 
     @Override
     public IdentityConfiguration iam() {
-        return new AWSIdentityConfiguration(this.getHost(), new ErrorListener() {
-            @Override
-            public void error(BackgroundException exception) {
-                S3Session.this.error(exception);
-            }
-        });
+        return new AWSIdentityConfiguration(this.getHost());
     }
 
     @Override

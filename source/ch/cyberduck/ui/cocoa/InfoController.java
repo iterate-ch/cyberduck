@@ -84,7 +84,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Selected files
      */
-    private List<Path> files = Collections.emptyList();
+    private List<Path> files;
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
@@ -418,8 +418,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
-                    final String container = getSelected().getContainerName();
-                    ((CloudSession) controller.getSession()).setLogging(container,
+                    ((CloudSession) controller.getSession()).setLogging(getSelected().getContainer(),
                             bucketLoggingButton.state() == NSCell.NSOnState,
                             null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject());
                 }
@@ -511,8 +510,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
-                    final String container = getSelected().getContainerName();
-                    ((CloudSession) controller.getSession()).setVersioning(container,
+                    ((CloudSession) controller.getSession()).setVersioning(getSelected().getContainer(),
                             bucketMfaButton.state() == NSCell.NSOnState,
                             bucketVersioningButton.state() == NSCell.NSOnState);
                 }
@@ -540,8 +538,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
-                    final String container = getSelected().getContainerName();
-                    ((CloudSession) controller.getSession()).setVersioning(container,
+                    ((CloudSession) controller.getSession()).setVersioning(getSelected().getContainer(),
                             bucketMfaButton.state() == NSCell.NSOnState,
                             bucketVersioningButton.state() == NSCell.NSOnState
                     );
@@ -630,8 +627,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
-                    final String container = getSelected().getContainerName();
-                    ((S3Session) controller.getSession()).setLifecycle(container,
+                    ((S3Session) controller.getSession()).setLifecycle(getSelected().getContainer(),
                             lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
                             lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
                 }
@@ -1761,7 +1757,7 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             this.updateField(webUrlField, Locale.localizedString("Unknown"));
-            String url = getSelected().toHttpURL();
+            String url = this.getSelected().toHttpURL();
             if(StringUtils.isNotBlank(url)) {
                 webUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
                 webUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
@@ -1859,12 +1855,14 @@ public class InfoController extends ToolbarWindowController {
         distributionDefaultRootPopup.addItemWithTitle(Locale.localizedString("None"));
         distributionDefaultRootPopup.menu().addItem(NSMenuItem.separatorItem());
 
-        Session session = controller.getSession();
+        final Session session = controller.getSession();
+        final Path container = this.getSelected().getContainer();
+
         final DistributionConfiguration cdn = session.cdn();
         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                 cdn.getName()));
         distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("None"));
-        for(Distribution.Method method : cdn.getMethods(this.getSelected().getContainerName())) {
+        for(Distribution.Method method : cdn.getMethods(container)) {
             distributionDeliveryPopup.addItemWithTitle(method.toString());
             distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
         }
@@ -1872,7 +1870,7 @@ public class InfoController extends ToolbarWindowController {
         distributionDeliveryPopup.selectItemWithTitle(selected);
         if(null == distributionDeliveryPopup.selectedItem()) {
             // Select first distribution option
-            Distribution.Method method = cdn.getMethods(this.getSelected().getContainerName()).iterator().next();
+            Distribution.Method method = cdn.getMethods(container).iterator().next();
             distributionDeliveryPopup.selectItemWithTitle(method.toString());
         }
 
@@ -2069,7 +2067,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void run() throws BackgroundException {
                     final CloudSession s = (CloudSession) controller.getSession();
-                    final String container = selected.getContainerName();
+                    final Path container = selected.getContainer();
                     if(s.isLocationSupported()) {
                         location = s.getLocation(container);
                     }
@@ -2112,7 +2110,7 @@ public class InfoController extends ToolbarWindowController {
                         }
                         else {
                             // Default to write log files to origin bucket
-                            bucketLoggingPopup.selectItemWithTitle(selected.getContainerName());
+                            bucketLoggingPopup.selectItemWithTitle(selected.getContainer().getName());
                         }
                         if(StringUtils.isNotBlank(location)) {
                             bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
@@ -2124,7 +2122,7 @@ public class InfoController extends ToolbarWindowController {
                             bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                                     controller.getSession().analytics().getSetup(controller.getSession().getHost().getProtocol(),
                                             controller.getSession().getHost().getProtocol().getScheme(),
-                                            selected.getContainerName(), credentials)
+                                            selected.getContainer().getName(), credentials)
                             ));
                         }
                         bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
@@ -2463,11 +2461,11 @@ public class InfoController extends ToolbarWindowController {
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.isCDNSupported();
+        final Path container = getSelected().getContainer();
         if(enable) {
-            String container = getSelected().getContainerName();
             // Not enabled if multiple files selected with not same parent container
             for(Path next : files) {
-                if(next.getContainerName().equals(container)) {
+                if(next.getContainer().equals(container)) {
                     continue;
                 }
                 enable = false;
@@ -2507,8 +2505,9 @@ public class InfoController extends ToolbarWindowController {
                 public void run() throws BackgroundException {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+                    final Path container = getSelected().getContainer();
                     final DistributionConfiguration cdn = session.cdn();
-                    cdn.invalidate(cdn.getOrigin(method, getSelected().getContainerName()), method, files, false);
+                    cdn.invalidate(container, method, files, false);
                 }
 
                 @Override
@@ -2520,7 +2519,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
-                            getSelected().getContainerName());
+                            getSelected().getContainer().getName());
                 }
             });
         }
@@ -2542,22 +2541,22 @@ public class InfoController extends ToolbarWindowController {
                 public void run() throws BackgroundException {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+                    final Path container = getSelected().getContainer();
                     final DistributionConfiguration cdn = session.cdn();
-                    final String origin = cdn.getOrigin(method, getSelected().getContainerName());
                     if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
-                        cdn.write(distributionEnableButton.state() == NSCell.NSOnState,
-                                origin, method,
+                        cdn.write(container,
+                                distributionEnableButton.state() == NSCell.NSOnState,
+                                method,
                                 StringUtils.split(distributionCnameField.stringValue()),
                                 distributionLoggingButton.state() == NSCell.NSOnState,
-                                distributionLoggingPopup.selectedItem().representedObject(),
-                                distributionDefaultRootPopup.selectedItem().representedObject());
+                                distributionLoggingPopup.selectedItem().representedObject(), distributionDefaultRootPopup.selectedItem().representedObject());
                     }
                     else {
-                        cdn.write(distributionEnableButton.state() == NSCell.NSOnState,
-                                origin, method,
-                                new String[]{}, distributionLoggingButton.state() == NSCell.NSOnState,
-                                null == distributionLoggingPopup.selectedItem() ? getSelected().getContainerName() : distributionLoggingPopup.selectedItem().representedObject(),
-                                distributionDefaultRootPopup.selectedItem().representedObject());
+                        cdn.write(container,
+                                distributionEnableButton.state() == NSCell.NSOnState,
+                                method, new String[]{},
+                                distributionLoggingButton.state() == NSCell.NSOnState,
+                                null == distributionLoggingPopup.selectedItem() ? getSelected().getName() : distributionLoggingPopup.selectedItem().representedObject(), distributionDefaultRootPopup.selectedItem().representedObject());
                     }
                 }
 
@@ -2570,7 +2569,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
-                            getSelected().getContainerName());
+                            getSelected().getName());
                 }
             });
         }
@@ -2579,26 +2578,27 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionStatusButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
+            final Path container = getSelected().getContainer();
+            final Distribution.Method method
+                    = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+
             controller.background(new BrowserBackgroundAction(controller) {
-                private Distribution distribution;
+                private Distribution distribution = new Distribution(container.getName(), method);
 
                 @Override
                 public void run() throws BackgroundException {
                     final Session session = controller.getSession();
-                    final Distribution.Method method
-                            = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-                    // We only support one distribution per bucket for the sake of simplicity
-                    final String container = getSelected().getContainerName();
                     final DistributionConfiguration cdn = session.cdn();
-                    distribution = cdn.read(cdn.getOrigin(method, container), method);
+                    distribution = cdn.read(container, method);
                     // Make sure container items are cached for default root object.
-                    getSelected().getContainer().children();
+                    container.children();
                 }
 
                 @Override
                 public void cleanup() {
                     try {
                         final Session session = controller.getSession();
+                        final Path container = getSelected().getContainer();
                         final DistributionConfiguration cdn = session.cdn();
                         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                                 cdn.getName(distribution.getMethod())));
@@ -2606,20 +2606,19 @@ public class InfoController extends ToolbarWindowController {
                         distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
 
                         distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
-                        final List<String> containers = distribution.getContainers();
-                        for(String c : containers) {
+                        final List<Path> containers = distribution.getContainers();
+                        for(Path c : containers) {
                             // Populate with list of available logging targets
-                            distributionLoggingPopup.addItemWithTitle(c);
-                            distributionLoggingPopup.lastItem().setRepresentedObject(c);
+                            distributionLoggingPopup.addItemWithTitle(c.getName());
+                            distributionLoggingPopup.lastItem().setRepresentedObject(c.getName());
                         }
-                        final String container = getSelected().getContainerName();
                         if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
                             // Select configured logging container if any
                             distributionLoggingPopup.selectItemWithTitle(distribution.getLoggingTarget());
                         }
                         else {
-                            if(distributionLoggingPopup.itemWithTitle(container) != null) {
-                                distributionLoggingPopup.selectItemWithTitle(container);
+                            if(distributionLoggingPopup.itemWithTitle(container.getName()) != null) {
+                                distributionLoggingPopup.selectItemWithTitle(container.getName());
                             }
                         }
                         if(null == distributionLoggingPopup.selectedItem()) {
@@ -2631,13 +2630,12 @@ public class InfoController extends ToolbarWindowController {
                             if(credentials != null) {
                                 distributionAnalyticsSetupUrlField.setAttributedStringValue(
                                         HyperlinkAttributedStringFactory.create(session.analytics().getSetup(cdn.getProtocol(),
-                                                distribution.getMethod().getScheme(), container, credentials)));
+                                                distribution.getMethod().getScheme(), container.getName(), credentials)));
                             }
                         }
 
-                        String origin = distribution.getOrigin(getSelected());
                         distributionOriginField.setAttributedStringValue(
-                                HyperlinkAttributedStringFactory.create(origin));
+                                HyperlinkAttributedStringFactory.create(distribution.getOrigin(getSelected())));
 
                         final Path file = getSelected();
                         // Concatenate URLs
@@ -2647,7 +2645,7 @@ public class InfoController extends ToolbarWindowController {
                             distributionCnameUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                         }
                         else {
-                            String url = distribution.getURL(file);
+                            final String url = distribution.getURL(file);
                             if(StringUtils.isNotBlank(url)) {
                                 distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
                                 distributionUrlField.setToolTip(Locale.localizedString("CDN URL"));
@@ -2710,7 +2708,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
-                            getSelected().getContainerName());
+                            getSelected().getName());
                 }
             });
         }

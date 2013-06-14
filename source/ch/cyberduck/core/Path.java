@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
@@ -233,20 +232,14 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @return Default path in bookmark or root delimiter
-     */
-    public String getContainerName() {
-        if(StringUtils.isNotBlank(this.getHost().getDefaultPath())) {
-            return PathNormalizer.normalize(this.getHost().getDefaultPath(), true);
-        }
-        return String.valueOf(DELIMITER);
-    }
-
-    /**
      * @return Default path or root with volume attributes set
      */
     public Path getContainer() {
-        return PathFactory.createPath(this.getSession(), this.getContainerName(),
+        if(StringUtils.isNotBlank(this.getHost().getDefaultPath())) {
+            return PathFactory.createPath(this.getSession(), PathNormalizer.normalize(this.getHost().getDefaultPath(), true),
+                    VOLUME_TYPE | DIRECTORY_TYPE);
+        }
+        return PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
                 VOLUME_TYPE | DIRECTORY_TYPE);
     }
 
@@ -892,25 +885,9 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return All possible URLs to the same resource that can be opened in a web browser.
      */
     public Set<DescriptiveUrl> getHttpURLs() {
-        Set<DescriptiveUrl> urls = new LinkedHashSet<DescriptiveUrl>();
-        // Include all CDN URLs
-        Session session = this.getSession();
-        if(session.isCDNSupported()) {
-            for(Distribution.Method method : session.cdn().getMethods(this.getContainerName())) {
-                if(session.cdn().isCached(method)) {
-                    String container = this.getContainerName();
-                    if(null == container) {
-                        continue;
-                    }
-                    Distribution distribution = session.cdn().read(session.cdn().getOrigin(method, container), method);
-                    if(distribution.isDeployed()) {
-                        urls.addAll(distribution.getURLs(this));
-                    }
-                }
-            }
-        }
+        final Set<DescriptiveUrl> urls = new LinkedHashSet<DescriptiveUrl>();
         // Include default Web URL
-        String http = this.toHttpURL();
+        final String http = this.toHttpURL();
         if(StringUtils.isNotBlank(http)) {
             urls.add(new DescriptiveUrl(http, MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")));
         }
@@ -930,9 +907,8 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @param message   Failure description
      * @param throwable The cause of the message
-     * @see Session#error(Path, String, Throwable)
      */
-    protected void error(String message, Throwable throwable) {
+    protected void error(String message, Exception throwable) {
         this.getSession().error(this, message, throwable);
     }
 }

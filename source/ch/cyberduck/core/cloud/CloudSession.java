@@ -23,8 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -72,23 +70,23 @@ public abstract class CloudSession extends HttpSession {
         return this.isLoggingSupported();
     }
 
-    public boolean isLogging(final String container) {
+    public boolean isLogging(final Path container) {
         throw new UnsupportedOperationException();
     }
 
-    public void setLogging(final String container, final boolean enabled, String destination) {
+    public void setLogging(final Path container, final boolean enabled, String destination) {
         throw new UnsupportedOperationException();
     }
 
-    public String getLoggingTarget(final String container) {
+    public String getLoggingTarget(final Path container) {
         throw new UnsupportedOperationException();
     }
 
-    public Integer getTransition(final String container) {
+    public Integer getTransition(final Path container) {
         throw new UnsupportedOperationException();
     }
 
-    public Integer getExpiration(final String container) {
+    public Integer getExpiration(final Path container) {
         throw new UnsupportedOperationException();
     }
 
@@ -100,11 +98,11 @@ public abstract class CloudSession extends HttpSession {
         return false;
     }
 
-    public boolean isVersioning(final String container) {
+    public boolean isVersioning(final Path container) {
         throw new UnsupportedOperationException();
     }
 
-    public void setVersioning(final String container, boolean mfa, boolean versioning) {
+    public void setVersioning(final Path container, boolean mfa, boolean versioning) {
         throw new UnsupportedOperationException();
     }
 
@@ -112,39 +110,24 @@ public abstract class CloudSession extends HttpSession {
         return false;
     }
 
-    public String getLocation(final String container) {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isMultiFactorAuthentication(final String container) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
-     * @param hostname Hostname with container name in third level
-     * @return Null if no container component in hostname prepended
+     * @param container Bucket
+     * @return Bucket geographical location
      */
-    public String getContainerForHostname(final String hostname) {
-        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
-            return null;
-        }
-        // Bucket name is available in URL's host name.
-        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
-            // Bucket name is available as S3 subdomain
-            return hostname.substring(0, hostname.length() - host.getProtocol().getDefaultHostname().length() - 1);
-        }
-        return null;
+    public String getLocation(final Path container) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isMultiFactorAuthentication(final Path container) {
+        throw new UnsupportedOperationException();
     }
 
     /**
      * @param container DNS container name
      * @return Generic hostname
      */
-    public String getHostnameForContainer(final String container) {
-        if(StringUtils.isBlank(container)) {
-            return this.getHost().getHostname(true);
-        }
-        return container + "." + this.getHost().getHostname(true);
+    public String getHostnameForContainer(final Path container) {
+        return String.format("%s.%s", container, this.getHost().getHostname(true));
     }
 
     @Override
