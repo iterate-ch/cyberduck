@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AbstractLoginControllerTest extends AbstractTestCase {
 
@@ -18,11 +18,6 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testCheck() throws Exception {
         LoginController c = new AbstractLoginController() {
-            @Override
-            public void warn(String title, String message, String continueButton, String disconnectButton, String preference) throws LoginCanceledException {
-                throw new UnsupportedOperationException();
-            }
-
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException {
                 assertEquals(Protocol.SFTP, protocol);
@@ -41,11 +36,6 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
     public void testFail() throws Exception {
         final Credentials user = new Credentials("t", "p");
         LoginController c = new AbstractLoginController() {
-            @Override
-            public void warn(String title, String message, String continueButton, String disconnectButton, String preference) throws LoginCanceledException {
-                throw new UnsupportedOperationException();
-            }
-
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException {
                 assertEquals(Protocol.WEBDAV, protocol);

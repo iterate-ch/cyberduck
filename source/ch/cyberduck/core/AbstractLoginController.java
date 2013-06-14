@@ -36,8 +36,10 @@ public abstract class AbstractLoginController implements LoginController {
     }
 
     @Override
-    public abstract void warn(String title, String message, String continueButton, String disconnectButton, String preference)
-            throws LoginCanceledException;
+    public void warn(String title, String message, String continueButton, String disconnectButton, String preference)
+            throws LoginCanceledException {
+        // No warning by default
+    }
 
     @Override
     public void check(final Host host, final String title, final String message)
