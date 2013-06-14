@@ -21,6 +21,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.ErrorListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ReachabilityFactory;
@@ -47,7 +48,7 @@ import java.util.concurrent.CyclicBarrier;
  * @version $Id$
  */
 public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean>
-        implements TranscriptListener {
+        implements ErrorListener, TranscriptListener {
     private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
     private static final String lineSeparator = System.getProperty("line.separator");
 
@@ -121,6 +122,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     public boolean prepare() {
         for(Session session : this.getSessions()) {
             if(session != null) {
+                session.addErrorListener(this);
                 session.addTranscriptListener(this);
             }
         }
@@ -191,9 +193,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     @Override
     public Boolean call() {
         try {
-            for(Session session: this.getSessions()) {
-                session.check();
-            }
             return super.call();
         }
         catch(BackgroundException failure) {
@@ -202,7 +201,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         return false;
     }
 
-    protected void error(final BackgroundException failure) {
+    public void error(final BackgroundException failure) {
         // Do not report an error when the action was canceled intentionally
         Throwable cause = failure.getCause();
         if(cause instanceof ConnectionCanceledException) {
@@ -253,6 +252,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 // the listeners are still registered when the next BackgroundAction
                 // is already running
                 session.removeTranscriptListener(this);
+                session.removeErrorListener(this);
             }
         }
         super.finish();
