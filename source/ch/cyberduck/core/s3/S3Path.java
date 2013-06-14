@@ -1401,9 +1401,6 @@ public class S3Path extends CloudPath {
                         this.getContainer().getName(), this.getKey(), null,
                         null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
             }
-            catch(ServiceException e) {
-                this.error("Cannot read file attributes", e);
-            }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
             }
