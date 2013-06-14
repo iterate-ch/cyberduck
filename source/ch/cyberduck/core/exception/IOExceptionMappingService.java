@@ -9,6 +9,10 @@ import ch.cyberduck.core.threading.BackgroundException;
  */
 public interface IOExceptionMappingService<E> {
 
+    /**
+     * @param exception Service error
+     * @return Mapped exception
+     */
     BackgroundException map(final E exception, final Host host);
 
     /**
@@ -16,6 +20,12 @@ public interface IOExceptionMappingService<E> {
      * @return Mapped exception
      */
     BackgroundException map(String message, E exception, Host host);
+
+    /**
+     * @param exception Service error
+     * @return Mapped exception
+     */
+    BackgroundException map(final E exception, final Path directory);
 
     /**
      * @param exception Service error
