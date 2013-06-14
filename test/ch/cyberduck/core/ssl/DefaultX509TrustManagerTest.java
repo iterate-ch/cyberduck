@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
@@ -22,14 +21,9 @@ public class DefaultX509TrustManagerTest extends AbstractTestCase {
         NullKeychain.register();
     }
 
-    @Test(expected = CertificateException.class)
+    @Test
     public void testCheckServerTrusted() throws Exception {
-        final KeychainX509TrustManager m = new KeychainX509TrustManager(new TrustManagerHostnameCallback() {
-            @Override
-            public String getHostname() {
-                return "cyberduck.ch";
-            }
-        });
+        final DefaultX509TrustManager m = new DefaultX509TrustManager();
         InputStream inStream = new FileInputStream("test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
