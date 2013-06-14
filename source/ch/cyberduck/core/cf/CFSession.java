@@ -31,8 +31,6 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +49,6 @@ import com.rackspacecloud.client.cloudfiles.FilesRegion;
  * @version $Id$
  */
 public class CFSession extends CloudSession {
-    private static final Logger log = Logger.getLogger(CFSession.class);
 
     private FilesClient client;
 

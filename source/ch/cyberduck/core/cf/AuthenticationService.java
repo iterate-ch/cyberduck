@@ -7,7 +7,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.net.URI;
 
@@ -21,7 +20,6 @@ import com.rackspacecloud.client.cloudfiles.method.AuthenticationRequest;
  * @version $Id$
  */
 public class AuthenticationService {
-    private static final Logger log = Logger.getLogger(AuthenticationService.class);
 
     public AuthenticationRequest getRequest(final Host host) {
         final Credentials credentials = host.getCredentials();
