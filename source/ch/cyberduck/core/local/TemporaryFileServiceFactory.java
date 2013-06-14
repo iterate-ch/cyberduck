@@ -18,7 +18,6 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractKeychain;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 

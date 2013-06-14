@@ -22,7 +22,6 @@ import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 
-import org.apache.commons.lang.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
