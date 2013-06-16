@@ -83,8 +83,6 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
         }
     }
 
-    protected void save(final String hostname, final String serverHostKeyAlgorithm,
-                        final byte[] serverHostKey) {
-        throw new UnsupportedOperationException();
-    }
+    protected abstract void save(final String hostname, final String serverHostKeyAlgorithm,
+                                 final byte[] serverHostKey);
 }
