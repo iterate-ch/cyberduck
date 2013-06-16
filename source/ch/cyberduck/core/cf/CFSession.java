@@ -97,7 +97,7 @@ public class CFSession extends CloudSession {
     public List<Path> getContainers(final boolean reload) throws IOException {
         if(containers.isEmpty() || reload) {
             containers.clear();
-            for(FilesContainer b : new ContainerListService().list(this)) {
+            for(FilesContainer b : new SwiftContainerListService().list(this)) {
                 final Path container = PathFactory.createPath(this, String.valueOf(Path.DELIMITER), b.getName(),
                         Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                 container.attributes().setRegion(b.getRegion().getRegionId());

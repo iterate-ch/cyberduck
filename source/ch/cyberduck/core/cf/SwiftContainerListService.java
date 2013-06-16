@@ -32,8 +32,8 @@ import com.rackspacecloud.client.cloudfiles.FilesRegion;
 /**
  * @version $Id$
  */
-public class ContainerListService {
-    private static final Logger log = Logger.getLogger(ContainerListService.class);
+public class SwiftContainerListService {
+    private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
     public List<FilesContainer> list(final CFSession session) throws IOException {
         try {

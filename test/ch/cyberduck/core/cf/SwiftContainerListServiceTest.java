@@ -20,11 +20,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class ContainerListServiceTest extends AbstractTestCase {
+public class SwiftContainerListServiceTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testListNoCredentials() throws Exception {
-        new ContainerListService().list(new CFSession(
+        new SwiftContainerListService().list(new CFSession(
                 new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname())));
     }
 
@@ -36,7 +36,7 @@ public class ContainerListServiceTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.connect();
-        final List<FilesContainer> list = new ContainerListService().list(session);
+        final List<FilesContainer> list = new SwiftContainerListService().list(session);
         final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
         assertFalse(list.contains(new FilesContainer(new FilesRegion("ORD", null, null), "test.cyberduck.ch")));
         assertTrue(list.contains(new FilesContainer(new FilesRegion("DFW", null, null), "test.cyberduck.ch")));
