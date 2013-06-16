@@ -29,7 +29,7 @@ import ch.ethz.ssh2.crypto.Base64;
  *
  * @version $Id$
  */
-public abstract class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
+public class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
 
     @Override
     protected boolean isHostKeyDatabaseWritable() {
@@ -41,6 +41,11 @@ public abstract class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
             throws ConnectionCanceledException {
         return String.valueOf(Base64.encode(serverHostKey)).equals(
                 Preferences.instance().getProperty(String.format("ssh.hostkey.%s.%s", serverHostKeyAlgorithm, hostname)));
+    }
+
+    @Override
+    protected boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws ConnectionCanceledException {
+        return false;
     }
 
     @Override

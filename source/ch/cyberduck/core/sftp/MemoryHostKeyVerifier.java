@@ -19,6 +19,8 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.local.Local;
+
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -37,11 +39,28 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
      */
     protected KnownHosts database;
 
-    protected KnownHosts getDatabase() {
+    public MemoryHostKeyVerifier() {
+        database = new KnownHosts();
+    }
+
+    public MemoryHostKeyVerifier(final Local file) {
+        if(!file.exists()) {
+            file.touch();
+        }
+        if(file.attributes().getPermission().isReadable()) {
+            try {
+                database = new KnownHosts(file.getAbsolute());
+            }
+            catch(IOException e) {
+                log.error(String.format("Cannot read known hosts file %s", file.getAbsolute()), e);
+            }
+        }
+        else {
+            log.warn(String.format("Cannot read known hosts file %s", file.getAbsolute()));
+        }
         if(null == database) {
             database = new KnownHosts();
         }
-        return database;
     }
 
     protected boolean isHostKeyDatabaseWritable() {
@@ -51,7 +70,7 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
     @Override
     public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                        final byte[] serverHostKey) throws IOException {
-        final int result = this.getDatabase().verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
+        final int result = database.verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
         if(KnownHosts.HOSTKEY_IS_OK == result) {
             return true; // We are happy
         }
@@ -71,18 +90,18 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
         final String hashedHostname = KnownHosts.createHashedHostname(hostname);
         try {
             // Add the hostkey to the in-memory database
-            this.getDatabase().addHostkey(new String[]{hashedHostname}, serverHostKeyAlgorithm, serverHostKey);
+            database.addHostkey(new String[]{hashedHostname}, serverHostKeyAlgorithm, serverHostKey);
+            if(always) {
+                if(this.isHostKeyDatabaseWritable()) {
+                    this.save(hostname, serverHostKeyAlgorithm, serverHostKey);
+                }
+            }
         }
         catch(IOException e) {
-            log.error(e.getMessage());
-        }
-        if(always) {
-            if(this.isHostKeyDatabaseWritable()) {
-                this.save(hostname, serverHostKeyAlgorithm, serverHostKey);
-            }
+            log.error(String.format("Failure adding host key to database: %s", e.getMessage()));
         }
     }
 
     protected abstract void save(final String hostname, final String serverHostKeyAlgorithm,
-                                 final byte[] serverHostKey);
+                                 final byte[] serverHostKey) throws IOException;
 }

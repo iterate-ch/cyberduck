@@ -77,33 +77,19 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
 
     private WindowController parent;
 
-    public AlertHostKeyController(WindowController c) {
-        this.parent = c;
-    }
-
     /**
      * Path to known_hosts file.
      */
-    private Local file
-            = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts"));
+    private final Local file;
 
-    @Override
-    protected KnownHosts getDatabase() {
-        if(!file.exists()) {
-            file.touch();
-        }
-        if(file.attributes().getPermission().isReadable()) {
-            try {
-                database = new KnownHosts(file.getAbsolute());
-            }
-            catch(IOException e) {
-                log.error(String.format("Cannot read known hosts file %s", file.getAbsolute()), e);
-            }
-        }
-        if(null == database) {
-            return super.getDatabase();
-        }
-        return database;
+    public AlertHostKeyController(final WindowController c) {
+        this(c, LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")));
+    }
+
+    public AlertHostKeyController(final WindowController parent, final Local file) {
+        super(file);
+        this.file = file;
+        this.parent = parent;
     }
 
     @Override
@@ -114,7 +100,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                            final byte[] serverHostKey) throws ConnectionCanceledException {
-        NSAlert alert = NSAlert.alert(MessageFormat.format(Locale.localizedString("Unknown host key for {0}."), hostname), //title
+        final NSAlert alert = NSAlert.alert(MessageFormat.format(Locale.localizedString("Unknown host key for {0}."), hostname), //title
                 MessageFormat.format(Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
                         KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
                 Locale.localizedString("Allow"), // default button
@@ -208,15 +194,11 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     }
 
     @Override
-    protected void save(String hostname, String serverHostKeyAlgorithm, byte[] serverHostKey) {
+    protected void save(final String hostname,
+                        final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws IOException {
         // Also try to add the key to a known_host file
-        try {
-            KnownHosts.addHostkeyToFile(new File(file.getAbsolute()),
-                    new String[]{KnownHosts.createHashedHostname(hostname)},
-                    serverHostKeyAlgorithm, serverHostKey);
-        }
-        catch(IOException ignore) {
-            log.error(ignore.getMessage());
-        }
+        KnownHosts.addHostkeyToFile(new File(file.getAbsolute()),
+                new String[]{KnownHosts.createHashedHostname(hostname)},
+                serverHostKeyAlgorithm, serverHostKey);
     }
 }
