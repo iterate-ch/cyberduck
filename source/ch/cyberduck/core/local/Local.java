@@ -21,7 +21,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
@@ -38,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.util.Comparator;
 
 import com.ibm.icu.text.Normalizer;
 
@@ -214,7 +212,7 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public AbstractPath getParent() {
+    public Local getParent() {
         return LocalFactory.createLocal(new File(path).getParentFile());
     }
 
