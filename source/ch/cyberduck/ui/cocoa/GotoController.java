@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -47,7 +47,7 @@ public class GotoController extends AlertController {
 
         private final Comparator<Path> comparator = new NullComparator<Path>();
 
-        private final PathFilter<Path> filter = new PathFilter<Path>() {
+        private final Filter<Path> filter = new Filter<Path>() {
             @Override
             public boolean accept(Path p) {
                 return p.attributes().isDirectory();

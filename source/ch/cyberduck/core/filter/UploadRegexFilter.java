@@ -1,6 +1,6 @@
 package ch.cyberduck.core.filter;
 
-import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Local;
 
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 /**
  * @version $Id$
  */
-public class UploadRegexFilter implements PathFilter<Local> {
+public class UploadRegexFilter implements Filter<Local> {
     private static final Logger log = Logger.getLogger(UploadRegexFilter.class);
 
     private final Pattern pattern

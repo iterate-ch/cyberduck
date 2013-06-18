@@ -19,8 +19,8 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ftp.FTPConnectMode;
@@ -56,7 +56,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
 
     @Override
     protected void parse(Local folder) {
-        for(Local child : folder.children(new PathFilter<Local>() {
+        for(Local child : folder.children(new Filter<Local>() {
             @Override
             public boolean accept(Local file) {
                 if(file.attributes().isDirectory()) {

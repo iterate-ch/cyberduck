@@ -20,10 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
@@ -80,7 +80,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         roots.add(p);
     }
 
-    protected static class PromptFilter implements PathFilter<Path> {
+    protected static class PromptFilter implements Filter<Path> {
         @Override
         public boolean accept(final Path file) {
             return true;
@@ -113,7 +113,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     /**
      * @return The filter to apply to the file listing in the prompt dialog
      */
-    protected abstract PathFilter<Path> filter();
+    protected abstract Filter<Path> filter();
 
     /**
      * Container for all paths currently being listed in the background

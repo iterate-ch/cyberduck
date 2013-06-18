@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.Transfer;
@@ -47,10 +47,10 @@ public class SyncPromptModel extends TransferPromptModel {
     /**
      * Filtering what files are displayed. Used to decide which files to include in the prompt.
      */
-    private PathFilter<Path> filter = new PromptFilter();
+    private Filter<Path> filter = new PromptFilter();
 
     @Override
-    protected PathFilter<Path> filter() {
+    protected Filter<Path> filter() {
         return filter;
     }
 

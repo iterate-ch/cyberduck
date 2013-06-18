@@ -70,7 +70,7 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
             log.info("Reloading:" + folder);
         }
         final AttributedList<Local> groups = folder.children(
-                new PathFilter<Local>() {
+                new Filter<Local>() {
                     @Override
                     public boolean accept(Local file) {
                         return file.attributes().isDirectory();

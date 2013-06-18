@@ -1,12 +1,12 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Filter;
 
 /**
  * @version $Id$
  */
-public abstract class TransferPathFilter implements PathFilter<Path> {
+public abstract class TransferPathFilter implements Filter<Path> {
     /**
      * Called before the file will actually get transferred. Should prepare for the transfer
      * such as calculating its size.
@@ -15,7 +15,6 @@ public abstract class TransferPathFilter implements PathFilter<Path> {
      *
      * @param p File
      * @return Transfer status
-     * @see PathFilter#accept(ch.cyberduck.core.AbstractPath)
      */
     public abstract TransferStatus prepare(Path p);
 

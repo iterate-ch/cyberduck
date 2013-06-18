@@ -96,7 +96,7 @@ public abstract class AbstractPath {
      * @return Cached directory listing as returned by the server filtered
      * @see #list()
      */
-    public AttributedList<? extends AbstractPath> children(PathFilter<? extends AbstractPath> filter) {
+    public AttributedList<? extends AbstractPath> children(Filter<? extends AbstractPath> filter) {
         return this.children(null, filter);
     }
 
@@ -110,7 +110,7 @@ public abstract class AbstractPath {
      * @see #list()
      */
     public AttributedList<? extends AbstractPath> children(final Comparator<? extends AbstractPath> comparator,
-                                                           final PathFilter<? extends AbstractPath> filter) {
+                                                           final Filter<? extends AbstractPath> filter) {
         return this.list().filter(comparator, filter);
     }
 

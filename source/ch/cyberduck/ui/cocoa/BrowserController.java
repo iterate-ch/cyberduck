@@ -175,7 +175,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private boolean showHiddenFiles;
 
-    private PathFilter<Path> filenameFilter;
+    private Filter<Path> filenameFilter;
 
     {
         if(Preferences.instance().getBoolean("browser.showHidden")) {
@@ -191,14 +191,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * No file filter.
      */
-    private static final PathFilter<Path> NULL_FILTER = new NullPathFilter<Path>();
+    private static final Filter<Path> NULL_FILTER = new NullPathFilter<Path>();
 
     /**
      * Filter hidden files.
      */
-    private static final PathFilter<Path> HIDDEN_FILTER = new HiddenFilesPathFilter<Path>();
+    private static final Filter<Path> HIDDEN_FILTER = new HiddenFilesPathFilter<Path>();
 
-    protected PathFilter<Path> getFileFilter() {
+    protected Filter<Path> getFileFilter() {
         return this.filenameFilter;
     }
 
@@ -218,7 +218,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else {
             // Setting up a custom filter for the directory listing
-            this.filenameFilter = new PathFilter<Path>() {
+            this.filenameFilter = new Filter<Path>() {
                 @Override
                 public boolean accept(Path file) {
                     if(file.getName().toLowerCase(java.util.Locale.ENGLISH).contains(search.toLowerCase(java.util.Locale.ENGLISH))) {

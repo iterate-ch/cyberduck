@@ -20,7 +20,7 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.local.Local;
@@ -66,7 +66,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     protected void parse(Local folder) {
-        for(Local child : folder.children(new PathFilter<Local>() {
+        for(Local child : folder.children(new Filter<Local>() {
             @Override
             public boolean accept(Local file) {
                 if(file.attributes().isDirectory()) {

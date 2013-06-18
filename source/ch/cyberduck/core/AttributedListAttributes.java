@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Container for file listing attributes, such as a sorting comparator and filter
  *
- * @see ch.cyberduck.core.PathFilter
+ * @see Filter
  * @see ch.cyberduck.ui.BrowserComparator
  */
 public class AttributedListAttributes<E extends AbstractPath> {
@@ -38,7 +38,7 @@ public class AttributedListAttributes<E extends AbstractPath> {
     /**
      * The filter to apply to the directory listing excluding files from display.
      */
-    private PathFilter filter;
+    private Filter filter;
 
     /**
      * Hidden attribute holds a list of hidden files.
@@ -70,7 +70,7 @@ public class AttributedListAttributes<E extends AbstractPath> {
      * @param comparator Sorting comparator
      * @param filter     Collection filter
      */
-    public AttributedListAttributes(final Comparator<E> comparator, final PathFilter filter) {
+    public AttributedListAttributes(final Comparator<E> comparator, final Filter filter) {
         this.comparator = comparator;
         this.filter = filter;
     }
@@ -83,11 +83,11 @@ public class AttributedListAttributes<E extends AbstractPath> {
         this.comparator = comparator;
     }
 
-    public PathFilter getFilter() {
+    public Filter getFilter() {
         return filter;
     }
 
-    public void setFilter(final PathFilter filter) {
+    public void setFilter(final Filter filter) {
         this.filter = filter;
     }
 

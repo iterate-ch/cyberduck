@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -41,7 +41,7 @@ public class UploadPromptModel extends TransferPromptModel {
     /**
      * Filtering what files are displayed. Used to decide which files to include in the prompt dialog
      */
-    private PathFilter<Path> filter = new PromptFilter() {
+    private Filter<Path> filter = new PromptFilter() {
         @Override
         public boolean accept(Path file) {
             if(file.exists()) {
@@ -66,7 +66,7 @@ public class UploadPromptModel extends TransferPromptModel {
     };
 
     @Override
-    protected PathFilter<Path> filter() {
+    protected Filter<Path> filter() {
         return filter;
     }
 

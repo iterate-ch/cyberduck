@@ -19,7 +19,7 @@ package ch.cyberduck.core.aquaticprime;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
@@ -84,7 +84,7 @@ public class Receipt extends AbstractLicense {
         protected License open() {
             Local receipt = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
             if(receipt.exists()) {
-                for(Local key : receipt.children(new PathFilter<Local>() {
+                for(Local key : receipt.children(new Filter<Local>() {
                     @Override
                     public boolean accept(Local file) {
                         return "receipt".equals(file.getName());

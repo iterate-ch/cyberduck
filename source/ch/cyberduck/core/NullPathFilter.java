@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class NullPathFilter<E extends AbstractPath> implements PathFilter<E> {
+public class NullPathFilter<E extends AbstractPath> implements Filter<E> {
 
     public boolean accept(E file) {
         return true;

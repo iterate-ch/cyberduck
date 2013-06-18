@@ -21,7 +21,7 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
@@ -58,7 +58,7 @@ public abstract class LicenseFactory extends Factory<License> {
     protected License open() {
         Local support = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
         if(support.exists()) {
-            for(Local key : support.children(new PathFilter<Local>() {
+            for(Local key : support.children(new Filter<Local>() {
                 @Override
                 public boolean accept(Local file) {
                     return "cyberducklicense".equals(FilenameUtils.getExtension(file.getName()));
@@ -67,7 +67,7 @@ public abstract class LicenseFactory extends Factory<License> {
                 return open(key);
             }
             // No key found. Look for receipt
-            for(Local key : support.children(new PathFilter<Local>() {
+            for(Local key : support.children(new Filter<Local>() {
                 @Override
                 public boolean accept(Local file) {
                     return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));

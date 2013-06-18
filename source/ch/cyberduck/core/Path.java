@@ -310,13 +310,13 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     @Override
-    public AttributedList<Path> children(final PathFilter<? extends AbstractPath> filter) {
+    public AttributedList<Path> children(final Filter<? extends AbstractPath> filter) {
         return this.children(null, filter);
     }
 
     @Override
     public AttributedList<Path> children(final Comparator<? extends AbstractPath> comparator,
-                                         final PathFilter<? extends AbstractPath> filter) {
+                                         final Filter<? extends AbstractPath> filter) {
         final Cache cache = this.getSession().cache();
         if(!cache.isCached(this.getReference())) {
             cache.put(this.getReference(), this.list());

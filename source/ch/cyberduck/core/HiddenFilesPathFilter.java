@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 /**
  * @version $Id$
  */
-public class HiddenFilesPathFilter<E extends AbstractPath> implements PathFilter<E> {
+public class HiddenFilesPathFilter<E extends AbstractPath> implements Filter<E> {
 
     private Pattern pattern = Pattern.compile(
             Preferences.instance().getProperty("browser.hidden.regex"));

@@ -21,7 +21,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
@@ -184,13 +184,13 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public AttributedList<Local> children(final PathFilter<? extends AbstractPath> filter) {
+    public AttributedList<Local> children(final Filter<? extends AbstractPath> filter) {
         return this.children(null, filter);
     }
 
     @Override
     public AttributedList<Local> children(final Comparator<? extends AbstractPath> comparator,
-                                          final PathFilter<? extends AbstractPath> filter) {
+                                          final Filter<? extends AbstractPath> filter) {
         return this.list().filter(comparator, filter);
     }
 
