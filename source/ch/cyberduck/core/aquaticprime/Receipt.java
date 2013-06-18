@@ -84,7 +84,7 @@ public class Receipt extends AbstractLicense {
         protected License open() {
             Local receipt = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
             if(receipt.exists()) {
-                for(Local key : receipt.children(new Filter<Local>() {
+                for(Local key : receipt.list().filter(new Filter<Local>() {
                     @Override
                     public boolean accept(Local file) {
                         return "receipt".equals(file.getName());

@@ -112,7 +112,7 @@ public class UploadTransfer extends Transfer {
             }
             else {
                 final AttributedList<Path> children = new AttributedList<Path>();
-                for(Local local : parent.getLocal().children(filter)) {
+                for(Local local : parent.getLocal().list().filter(filter)) {
                     children.add(PathFactory.createPath(session, parent.getAbsolute(), local));
                 }
                 this.cache().put(parent.getReference(), children);

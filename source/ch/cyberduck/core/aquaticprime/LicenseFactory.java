@@ -58,7 +58,7 @@ public abstract class LicenseFactory extends Factory<License> {
     protected License open() {
         Local support = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
         if(support.exists()) {
-            for(Local key : support.children(new Filter<Local>() {
+            for(Local key : support.list().filter(new Filter<Local>() {
                 @Override
                 public boolean accept(Local file) {
                     return "cyberducklicense".equals(FilenameUtils.getExtension(file.getName()));
@@ -67,7 +67,7 @@ public abstract class LicenseFactory extends Factory<License> {
                 return open(key);
             }
             // No key found. Look for receipt
-            for(Local key : support.children(new Filter<Local>() {
+            for(Local key : support.list().filter(new Filter<Local>() {
                 @Override
                 public boolean accept(Local file) {
                     return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));

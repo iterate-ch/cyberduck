@@ -179,22 +179,6 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public AttributedList<Local> children() {
-        return this.children(null);
-    }
-
-    @Override
-    public AttributedList<Local> children(final Filter<? extends AbstractPath> filter) {
-        return this.children(null, filter);
-    }
-
-    @Override
-    public AttributedList<Local> children(final Comparator<? extends AbstractPath> comparator,
-                                          final Filter<? extends AbstractPath> filter) {
-        return this.list().filter(comparator, filter);
-    }
-
-    @Override
     public String getAbsolute() {
         return new File(path).getAbsolutePath();
     }

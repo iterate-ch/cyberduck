@@ -67,13 +67,13 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
      */
     @Override
     protected void parse(Local folder) {
-        for(Local settings : folder.children(new Filter<Local>() {
+        for(Local settings : folder.list().filter(new Filter<Local>() {
             @Override
             public boolean accept(Local file) {
                 return file.attributes().isDirectory();
             }
         })) {
-            for(Local child : settings.children(new Filter<Local>() {
+            for(Local child : settings.list().filter(new Filter<Local>() {
                 @Override
                 public boolean accept(Local file) {
                     if(file.attributes().isFile()) {

@@ -128,6 +128,10 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         }
     }
 
+    public AttributedList<E> filter(final Filter filter) {
+        return this.filter(null, filter);
+    }
+
     public AttributedList<E> filter(final Comparator comparator, final Filter filter) {
         boolean needsSorting = false;
         if(null != comparator) {

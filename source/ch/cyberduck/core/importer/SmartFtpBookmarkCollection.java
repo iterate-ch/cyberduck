@@ -56,7 +56,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
 
     @Override
     protected void parse(Local folder) {
-        for(Local child : folder.children(new Filter<Local>() {
+        for(Local child : folder.list().filter(new Filter<Local>() {
             @Override
             public boolean accept(Local file) {
                 if(file.attributes().isDirectory()) {
