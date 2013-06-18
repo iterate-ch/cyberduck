@@ -234,6 +234,8 @@
                 <sysproperty key="rackspace.secret" value="${rackspace.secret}"/>
                 <sysproperty key="hpcloud.key" value="${hpcloud.key}"/>
                 <sysproperty key="hpcloud.secret" value="${hpcloud.secret}"/>
+                <sysproperty key="webdav.user" value="${webdav.user}"/>
+                <sysproperty key="webdav.password" value="${webdav.password}"/>
             </junit>
         </jacoco:coverage>
         <junitreport todir="${build.unittests.reports}/html">
