@@ -49,8 +49,8 @@
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
     <property name="jvm.runtime.home" value="${lib}/1.7.0-u14-b22.jre"/>
-    <property name="jvm.runtime.bundle.home" value="Contents/Home"/>
-    <property name="jvm.runtime.bundle.lib" value="Contents/Home/lib"/>
+    <property name="jvm.runtime.bundle.home" value="${jvm.runtime.home}/Contents/Home"/>
+    <property name="jvm.runtime.bundle.lib" value="${jvm.runtime.home}/Contents/Home/lib"/>
 
     <property name="codesign.certificate" value="Developer ID Application: David Kocher"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
