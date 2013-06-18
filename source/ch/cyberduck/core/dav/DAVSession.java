@@ -95,7 +95,7 @@ public class DAVSession extends HttpSession {
             }
             else if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                 this.message(Locale.localizedString("Login failed", "Credentials"));
-                controller.fail(host.getProtocol(), credentials);
+                controller.fail(host.getProtocol(), credentials, e.getResponsePhrase());
                 this.login();
             }
             else {
