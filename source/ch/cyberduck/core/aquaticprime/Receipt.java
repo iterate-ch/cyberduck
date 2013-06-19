@@ -67,7 +67,7 @@ public class Receipt extends AbstractLicense {
         @Override
         protected License open(final Local file) {
             AbstractLicense l = new Receipt(file);
-            // Verify immediatly and exit if not a valid receipt
+            // Verify immediately and exit if not a valid receipt
             if(!l.verify()) {
                 System.exit(APPSTORE_VALIDATION_FAILURE);
             }
