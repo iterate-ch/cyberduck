@@ -70,9 +70,9 @@ public abstract class CloudPath extends HttpPath {
         if(this.isRoot()) {
             return null;
         }
-        CloudPath container = this;
+        Path container = this;
         while(!container.isContainer()) {
-            container = (CloudPath) container.getParent();
+            container = container.getParent();
         }
         return container;
     }
