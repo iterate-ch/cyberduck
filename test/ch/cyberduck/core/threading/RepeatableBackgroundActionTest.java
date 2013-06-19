@@ -21,11 +21,13 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 
 import org.junit.Test;
 
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +53,7 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
                 //
             }
         };
-        a.error(new BackgroundException(new Host("t"), null, null, new ConnectionCanceledException()));
+        a.error(new ConnectionCanceledException());
         assertFalse(a.hasFailed());
         assertEquals(0, a.getExceptions().size());
         a.error(new BackgroundException(new Host("t"), null, null, null));
@@ -81,5 +83,22 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
         a.error(new BackgroundException(new Host("t"), null, null, new UnknownHostException("")));
         assertTrue(a.hasFailed());
         assertEquals(2, a.getExceptions().size());
+    }
+
+    @Test
+    public void testRetrySocket() throws Exception {
+        RepeatableBackgroundAction a = new RepeatableBackgroundAction() {
+            @Override
+            protected List<Session> getSessions() {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public void run() throws BackgroundException {
+                //
+            }
+        };
+        a.error(new BackgroundException(new Host("t"), null, null, new SocketTimeoutException("")));
+        assertEquals(Preferences.instance().getInteger("connection.retry"), a.retry());
     }
 }
