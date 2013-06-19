@@ -1,19 +1,22 @@
 package ch.cyberduck.core.exception;
 
-import java.io.IOException;
+import ch.cyberduck.core.threading.BackgroundException;
 
-import ch.ethz.ssh2.SFTPException;
+import java.io.IOException;
+import java.net.SocketException;
 
 /**
  * @version $Id$
  */
-public class SFTPExceptionMappingService extends AbstractIOExceptionMappingService<SFTPException> {
+public class SFTPExceptionMappingService extends AbstractIOExceptionMappingService<IOException> {
 
     @Override
-    public IOException map(final SFTPException e) {
+    public BackgroundException map(final IOException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
-        this.append(buffer, e.getServerErrorMessage());
+        if(e.getMessage().equals("Unexpected end of sftp stream.")) {
+            return this.wrap(new SocketException(), buffer);
+        }
         return this.wrap(e, buffer);
     }
 }
