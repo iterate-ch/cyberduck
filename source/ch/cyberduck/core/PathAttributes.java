@@ -157,6 +157,7 @@ public class PathAttributes extends Attributes implements Serializable {
             duplicate = Boolean.valueOf(duplicateObj);
         }
         metadata = Collections.emptyMap();
+        region = dict.stringForKey("Region");
     }
 
     @Override
@@ -176,6 +177,9 @@ public class PathAttributes extends Attributes implements Serializable {
             dict.setStringForKey(versionId, "Version");
         }
         dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
+        if(StringUtils.isNotBlank(region)) {
+            dict.setStringForKey(region, "Region");
+        }
         return dict.getSerialized();
     }
 
