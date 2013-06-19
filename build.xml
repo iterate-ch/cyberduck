@@ -196,7 +196,7 @@
         </manifest>
     </target>
 
-    <target name="test-compile" depends="compile">
+    <target name="test-compile" depends="build">
         <javac debug="${debug}"
                encoding="utf-8"
                source="1.5"
