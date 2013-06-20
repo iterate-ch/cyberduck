@@ -157,7 +157,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         UserDateFormatterFactory.get()
                                                 .getLongFormat(
                                                     UserDefaultsDateFormatter.ConvertJavaMillisecondsToDotNetMillis(
-                                                        timestamp.getTime()));
+                                                        timestamp.getTime()), false);
                 }
             }
             if (null != _messageText)

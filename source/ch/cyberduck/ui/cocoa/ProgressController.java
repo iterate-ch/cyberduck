@@ -209,7 +209,7 @@ public class ProgressController extends BundleController {
             // Do not display any progress text when transfer is stopped
             final Date timestamp = transfer.getTimestamp();
             if(null != timestamp) {
-                messageText = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime());
+                messageText = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime(), false);
             }
         }
         if(messageText != null) {
