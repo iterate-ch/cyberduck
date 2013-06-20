@@ -116,6 +116,11 @@ public class BackgroundException extends Exception {
         return Locale.localizedString("Error");
     }
 
+    @Deprecated
+    public String getReadableTitle() {
+        return this.getTitle();
+    }
+
     /**
      * @return The path accessed when the exception was thrown or null if
      *         the exception is not related to any path
