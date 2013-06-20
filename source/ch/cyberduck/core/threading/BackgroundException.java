@@ -22,13 +22,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -38,59 +36,73 @@ public class BackgroundException extends Exception {
 
     private static final long serialVersionUID = -6114495291207129418L;
 
-    private String message;
+    private String title = Locale.localizedString("Unknown");
+    private String detail;
 
     private Path path;
 
     private Host host;
 
     public BackgroundException(final Exception cause) {
-        this(null, null, Locale.localizedString("Unknown"), cause);
+        this(null, null, cause.getMessage(), cause);
     }
 
-    public BackgroundException(final String message, final Exception cause) {
-        this(null, null, message, cause);
+    public BackgroundException(final String detail, final Exception cause) {
+        this(null, null, detail, cause);
     }
 
     public BackgroundException(final Host host, final Exception cause) {
         this(host, null, Locale.localizedString("Unknown"), cause);
     }
 
-    public BackgroundException(final Host host, final String message, final Exception cause) {
-        this(host, null, message, cause);
+    public BackgroundException(final Host host, final String detail, final Exception cause) {
+        this(host, null, detail, cause);
     }
 
-    public BackgroundException(final Path path, final String message, final Exception cause) {
-        this(null, path, message, cause);
+    public BackgroundException(final Path path, final String detail, final Exception cause) {
+        this(null, path, detail, cause);
     }
 
-    public BackgroundException(final Host host, final Path path, final String message, final Exception cause) {
+    public BackgroundException(final Host host, final Path path, final String detail, final Exception cause) {
         super(cause);
         this.host = host;
         this.path = path;
-        if(path != null) {
-            try {
-                this.message = MessageFormat.format(StringUtils.chomp(message), path.getName());
-            }
-            catch(IllegalArgumentException e) {
-                log.warn(String.format("Error parsing message with format %s", e.getMessage()));
-                this.message = StringUtils.chomp(message);
-            }
-        }
-        else {
-            this.message = StringUtils.chomp(message);
-        }
+        this.detail = detail;
+    }
+
+    public void setTitle(final String title) {
+        this.title = title;
+    }
+
+    public void setPath(final Path path) {
+        this.path = path;
+    }
+
+    public void setHost(final Host host) {
+        this.host = host;
     }
 
     @Override
     public String getMessage() {
-        return Locale.localizedString(message, "Error");
+        return Locale.localizedString(title, "Error");
+    }
+
+    /**
+     * @return Detailed message from the underlying cause.
+     */
+    public String getDetail() {
+        return detail;
+    }
+
+    @Deprecated
+    public String getDetailedCauseMessage() {
+        return this.getDetail();
     }
 
     /**
      * @return What kind of error
      */
-    public String getReadableTitle() {
+    public String getTitle() {
         final Throwable cause = this.getCause();
         if(cause instanceof SocketException) {
             return String.format("Network %s", Locale.localizedString("Error"));
@@ -102,17 +114,6 @@ public class BackgroundException extends Exception {
             return String.format("I/O %s", Locale.localizedString("Error"));
         }
         return Locale.localizedString("Error");
-    }
-
-    /**
-     * @return Detailed message from the underlying cause.
-     */
-    public String getDetailedCauseMessage() {
-        final Throwable cause = this.getCause();
-        if(null != cause) {
-            return cause.getMessage();
-        }
-        return Locale.localizedString(message, "Error");
     }
 
     /**
@@ -142,7 +143,7 @@ public class BackgroundException extends Exception {
         if(this.getCause() != null ? !this.getCause().equals(that.getCause()) : that.getCause() != null) {
             return false;
         }
-        if(message != null ? !message.equals(that.message) : that.message != null) {
+        if(detail != null ? !detail.equals(that.detail) : that.detail != null) {
             return false;
         }
         if(path != null ? !path.equals(that.path) : that.path != null) {
@@ -156,7 +157,7 @@ public class BackgroundException extends Exception {
 
     @Override
     public int hashCode() {
-        int result = message != null ? message.hashCode() : 0;
+        int result = detail != null ? detail.hashCode() : 0;
         result = 31 * result + (path != null ? path.hashCode() : 0);
         result = 31 * result + (host != null ? host.hashCode() : 0);
         result = 31 * result + (this.getCause() != null ? this.getCause().hashCode() : 0);
