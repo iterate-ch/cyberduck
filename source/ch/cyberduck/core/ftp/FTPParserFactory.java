@@ -25,6 +25,7 @@ import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.TrellixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.UnitreeFTPEntryParser;
 
+import org.apache.commons.net.ftp.Configurable;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory;
@@ -73,7 +74,12 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     }
 
     public FTPFileEntryParser createFileEntryParser(String system) throws ParserInitializationException {
-        return this.createFileEntryParser(system, TimeZone.getDefault());
+        final FTPFileEntryParser parser = this.createFileEntryParser(system, TimeZone.getDefault());
+        if(parser instanceof Configurable) {
+            // Configure with default configuration
+            ((Configurable) parser).configure(null);
+        }
+        return parser;
     }
 
     public FTPFileEntryParser createFileEntryParser(FTPClientConfig config) throws ParserInitializationException {
