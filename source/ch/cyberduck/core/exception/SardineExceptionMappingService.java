@@ -1,8 +1,8 @@
 package ch.cyberduck.core.exception;
 
-import org.apache.http.HttpStatus;
+import ch.cyberduck.core.threading.BackgroundException;
 
-import java.io.IOException;
+import org.apache.http.HttpStatus;
 
 import com.googlecode.sardine.impl.SardineException;
 
@@ -12,9 +12,8 @@ import com.googlecode.sardine.impl.SardineException;
 public class SardineExceptionMappingService extends AbstractIOExceptionMappingService<SardineException> {
 
     @Override
-    public IOException map(final SardineException e) {
+    public BackgroundException map(final SardineException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, e.getMessage());
         // HTTP method status
         this.append(buffer, e.getResponsePhrase());
         if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {

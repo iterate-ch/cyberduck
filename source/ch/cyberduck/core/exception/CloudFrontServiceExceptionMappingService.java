@@ -1,9 +1,9 @@
 package ch.cyberduck.core.exception;
 
+import ch.cyberduck.core.threading.BackgroundException;
+
 import org.apache.http.HttpStatus;
 import org.jets3t.service.CloudFrontServiceException;
-
-import java.io.IOException;
 
 /**
  * @version $Id$
@@ -11,7 +11,7 @@ import java.io.IOException;
 public class CloudFrontServiceExceptionMappingService extends AbstractIOExceptionMappingService<CloudFrontServiceException> {
 
     @Override
-    public IOException map(final CloudFrontServiceException e) {
+    public BackgroundException map(final CloudFrontServiceException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getErrorMessage());
         this.append(buffer, e.getErrorDetail());

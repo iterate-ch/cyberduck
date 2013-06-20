@@ -1,9 +1,9 @@
 package ch.cyberduck.core.exception;
 
+import ch.cyberduck.core.threading.BackgroundException;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-
-import java.io.IOException;
 
 import com.rackspacecloud.client.cloudfiles.FilesException;
 
@@ -13,7 +13,7 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
 public class FilesExceptionMappingService extends AbstractIOExceptionMappingService<FilesException> {
 
     @Override
-    public IOException map(final FilesException e) {
+    public BackgroundException map(final FilesException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         final StatusLine status = e.getHttpStatusLine();
