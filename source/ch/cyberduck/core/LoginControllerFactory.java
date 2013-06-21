@@ -31,8 +31,6 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
 
     protected abstract LoginController create(Controller c);
 
-    protected abstract LoginController create(Session s);
-
     /**
      * Registered factories
      */
@@ -40,14 +38,13 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
             = new HashMap<Platform, LoginControllerFactory>();
 
     /**
-     * @param s Connection
      * @return Login controller instance for the current platform.
      */
-    public static LoginController get(Session s) {
+    public static LoginController get(final Controller c) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return factories.get(NATIVE_PLATFORM).create(s);
+        return factories.get(NATIVE_PLATFORM).create(c);
     }
 
     public static void addFactory(Platform p, LoginControllerFactory f) {

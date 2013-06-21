@@ -26,7 +26,6 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginControllerFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.Controller;
@@ -66,17 +65,6 @@ public final class PromptLoginController extends AbstractLoginController {
         @Override
         protected LoginController create(Controller c) {
             return new PromptLoginController((WindowController) c);
-        }
-
-        @Override
-        protected LoginController create(Session s) {
-            for(BrowserController c : MainController.getBrowsers()) {
-                if(c.getSession() == s) {
-                    return this.create(c);
-                }
-            }
-            log.warn("No browser to attach login controller for session:" + s);
-            return this.create();
         }
     }
 
