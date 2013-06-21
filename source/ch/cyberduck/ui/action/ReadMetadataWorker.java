@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
 
@@ -48,7 +49,7 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
      * @return Metadata
      */
     @Override
-    public Map<String, String> run() {
+    public Map<String, String> run() throws BackgroundException {
         final Map<String, Integer> count = new HashMap<String, Integer>();
         final Map<String, String> updated = new HashMap<String, String>() {
             @Override

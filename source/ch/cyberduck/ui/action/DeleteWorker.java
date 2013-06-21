@@ -18,8 +18,10 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -36,14 +38,17 @@ public abstract class DeleteWorker extends Worker<Boolean> {
      */
     private List<Path> files;
 
-    public DeleteWorker(final List<Path> files) {
+    private LoginController prompt;
+
+    public DeleteWorker(final LoginController prompt, final List<Path> files) {
+        this.prompt = prompt;
         this.files = files;
     }
 
     @Override
-    public Boolean run() {
+    public Boolean run() throws BackgroundException {
         for(Path file : files) {
-            file.delete();
+            file.delete(prompt);
         }
         return true;
     }

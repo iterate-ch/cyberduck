@@ -20,8 +20,10 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
 
@@ -56,10 +58,10 @@ public abstract class WriteAclWorker extends Worker<Acl> {
     }
 
     @Override
-    public Acl run() {
+    public Acl run() throws BackgroundException {
         for(Path next : files) {
             if(!next.getSession().isConnected()) {
-                break;
+                throw new ConnectionCanceledException();
             }
             if(acl.isModified()) {
                 // Existing entry has been modified

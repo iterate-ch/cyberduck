@@ -23,6 +23,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public abstract class ReadPermissionWorker extends Worker<List<Permission>> {
     }
 
     @Override
-    public List<Permission> run() {
+    public List<Permission> run() throws BackgroundException {
         List<Permission> permissions = new ArrayList<Permission>();
         for(Path next : files) {
             if(next.attributes().getPermission().equals(Permission.EMPTY)) {

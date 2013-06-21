@@ -22,6 +22,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
     }
 
     @Override
-    public List<Acl.UserAndRole> run() {
+    public List<Acl.UserAndRole> run() throws BackgroundException {
         List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
         for(Path next : files) {
             if(Acl.EMPTY.equals(next.attributes().getAcl())) {

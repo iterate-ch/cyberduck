@@ -19,8 +19,10 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -57,8 +59,11 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
     }
 
     @Override
-    public Map<String, String> run() {
+    public Map<String, String> run() throws BackgroundException {
         for(Path next : files) {
+            if(!next.getSession().isConnected()) {
+                throw new ConnectionCanceledException();
+            }
             for(Map.Entry<String, String> entry : metadata.entrySet()) {
                 // Prune metadata from entries which are unique to a single file. For example md5-hash.
                 if(StringUtils.isBlank(entry.getValue())) {

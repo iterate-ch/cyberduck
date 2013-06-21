@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import java.util.List;
 
@@ -41,8 +42,8 @@ public abstract class Worker<T> {
         return name.toString();
     }
 
-    public T run() {
-        throw new UnsupportedOperationException();
+    public T run() throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     public abstract void cleanup(T result);

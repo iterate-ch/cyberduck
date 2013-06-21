@@ -19,9 +19,11 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -53,16 +55,16 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
     }
 
     @Override
-    public Permission run() {
+    public Permission run() throws BackgroundException {
         for(Path next : files) {
             this.write(next);
         }
         return permission;
     }
 
-    private void write(final Path file) {
+    private void write(final Path file) throws BackgroundException {
         if(!file.getSession().isConnected()) {
-            return;
+            throw new ConnectionCanceledException();
         }
         if(recursive && file.attributes().isFile()) {
             // Do not write executable bit for files if not already set when recursively updating directory.
@@ -88,7 +90,7 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
         }
         if(recursive) {
             if(file.attributes().isDirectory()) {
-                for(Path child : file.children()) {
+                for(Path child : file.list()) {
                     this.write(child);
                 }
             }

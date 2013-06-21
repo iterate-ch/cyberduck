@@ -20,12 +20,10 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -47,7 +45,8 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
             }
 
             @Override
-            protected AttributedList<Path> list(AttributedList<Path> children) {
+            public AttributedList<Path> list() {
+                final AttributedList<Path> children = new AttributedList<Path>();
                 children.add(new NullPath("b", Path.FILE_TYPE) {
                     @Override
                     public void writeUnixPermission(Permission p) {

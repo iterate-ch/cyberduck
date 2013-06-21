@@ -19,9 +19,9 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -43,7 +43,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
     private long total;
 
     @Override
-    public Long run() {
+    public Long run() throws BackgroundException {
         for(Path next : files) {
             next.attributes().setSize(this.calculateSize(next));
         }
@@ -57,10 +57,10 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
      * @param p Directory or file
      * @return The size of the file or the sum of all containing files if a directory
      */
-    private long calculateSize(final AbstractPath p) {
+    private long calculateSize(final Path p) throws BackgroundException {
         long size = 0;
         if(p.attributes().isDirectory()) {
-            for(AbstractPath next : p.children()) {
+            for(Path next : p.list()) {
                 size += this.calculateSize(next);
             }
         }

@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -42,7 +43,7 @@ public abstract class ReadSizeWorker extends Worker<Long> {
     private long total;
 
     @Override
-    public Long run() {
+    public Long run() throws BackgroundException {
         for(Path next : files) {
             if(-1 == next.attributes().getSize()) {
                 next.readSize();

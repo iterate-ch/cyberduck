@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -43,7 +44,7 @@ public abstract class ChecksumWorker extends Worker<List<String>> {
     }
 
     @Override
-    public List<String> run() {
+    public List<String> run() throws BackgroundException {
         List<String> checksum = new ArrayList<String>();
         for(Path file : files) {
             if(StringUtils.isBlank(file.attributes().getChecksum())) {
