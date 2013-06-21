@@ -121,7 +121,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             if(null == parser) {
                 String system = null; //Unknown
                 try {
-                    system = this.getClient().getSystemType();
+                    system = client.getSystemType();
                 }
                 catch(IOException e) {
                     log.warn("SYST command failed:" + e.getMessage());
