@@ -170,8 +170,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     /**
      * Hide files beginning with '.'
-     *
-     * @see ch.cyberduck.core.HiddenFilesPathFilter#accept(ch.cyberduck.core.AbstractPath)
      */
     private boolean showHiddenFiles;
 
@@ -412,10 +410,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     public void run() throws BackgroundException {
                         Transfer transfer = new DownloadTransfer(downloads);
                         TransferOptions options = new TransferOptions();
-                        options.closeSession = false;
                         transfer.start(new TransferPrompt() {
                             @Override
-                            public TransferAction prompt() {
+                            public TransferAction prompt() throws BackgroundException {
                                 return TransferAction.ACTION_COMPARISON;
                             }
                         }, options);
@@ -2022,15 +2019,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void pathPopupSelectionChanged(final NSPopUpButton sender) {
         final String selected = sender.selectedItem().representedObject();
-        final Path previous = this.workdir();
         if(selected != null) {
-            final Path path = PathFactory.createPath(session, selected, Path.DIRECTORY_TYPE);
-            this.setWorkdir(path);
-            if(previous.getParent().equals(path)) {
-                this.setWorkdir(path, previous);
+            final Path workdir = this.workdir();
+            Path p = workdir;
+            while(!p.getParent().getAbsolute().equals(p.getAbsolute())) {
+                p = p.getParent();
+            }
+            this.setWorkdir(p);
+            if(workdir.getParent().equals(p)) {
+                this.setWorkdir(p, workdir);
             }
             else {
-                this.setWorkdir(path);
+                this.setWorkdir(p);
             }
         }
     }
@@ -2066,24 +2066,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(this.session.getEncoding().equals(encoding)) {
                 return;
             }
-            this.background(new BrowserBackgroundAction(this) {
-                @Override
-                public void run() throws BackgroundException {
-                    session.close();
-                }
-
-                @Override
-                public void cleanup() {
-                    session.getHost().setEncoding(encoding);
-                    reloadButtonClicked(null);
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
-                            session.getHost().getHostname());
-                }
-            });
+            session.getHost().setEncoding(encoding);
+            this.mount(session.getHost());
         }
     }
 
@@ -2319,8 +2303,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             Iterator<Path> iter;
             boolean shouldWarn = false;
             for(iter = selected.iterator(); iter.hasNext(); ) {
-                Path item = iter.next();
-                if(item.exists()) {
+                final Path item = iter.next();
+                if(this.lookup(item.getReference()) != null) {
                     if(i < 10) {
                         alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
                     }
@@ -2469,7 +2453,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private void deletePathsImpl(final List<Path> files) {
         this.background(new WorkerBackgroundAction<Boolean>(this,
-                new DeleteWorker(files) {
+                new DeleteWorker(LoginControllerFactory.get(BrowserController.this), files) {
                     @Override
                     public void cleanup(final Boolean result) {
                         if(result) {
@@ -2794,8 +2778,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final List<Path> roots = new Collection<Path>();
             NSObject next;
             while((next = iterator.nextObject()) != null) {
-                roots.add(PathFactory.createPath(session,
-                        destination.getAbsolute(), LocalFactory.createLocal(next.toString())));
+                roots.add(PathFactory.createPath(session, destination, LocalFactory.createLocal(next.toString())));
             }
             transfer(new UploadTransfer(roots));
         }
@@ -2840,7 +2823,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.transfer(transfer, selected, this.getSession().getMaxConnections() == 1,
                 new TransferPrompt() {
                     @Override
-                    public TransferAction prompt() {
+                    public TransferAction prompt() throws BackgroundException {
                         return TransferPromptController.create(BrowserController.this, transfer).prompt();
                     }
                 }
@@ -2854,7 +2837,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     protected void transfer(final Transfer transfer, final List<Path> selected, final boolean browser) {
         this.transfer(transfer, selected, browser, new TransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt() throws BackgroundException {
                 return TransferPromptController.create(BrowserController.this, transfer).prompt();
             }
         });
@@ -2930,13 +2913,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 @Override
                 public void run() throws BackgroundException {
                     TransferOptions options = new TransferOptions();
-                    options.closeSession = false;
                     transfer.start(prompt, options);
                 }
 
                 @Override
                 public void cancel() {
-                    transfer.cancel();
+                    try {
+                        transfer.cancel();
+                    }
+                    catch(BackgroundException e) {
+                        this.error(e);
+                    }
                     super.cancel();
                 }
 
@@ -3028,14 +3015,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return true if a connection is being opened or is already initialized
      */
     public boolean hasSession() {
-        return this.session != null;
+        return session != null;
     }
 
     /**
      * @return This browser's session or null if not mounted
      */
-    public Session getSession() {
-        return this.session;
+    public Session<?> getSession() {
+        return session;
     }
 
     /**
@@ -3050,7 +3037,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public boolean isConnected() {
         if(this.isMounted()) {
-            return this.session.isConnected();
+            return session.isConnected();
         }
         return false;
     }
@@ -3176,7 +3163,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 Path current = PathFactory.createPath(this.getSession(),
                         next.getAbsolute(), next.attributes().getType());
                 Path renamed = PathFactory.createPath(this.getSession(),
-                        parent.getAbsolute(), current.getName(), next.attributes().getType());
+                        parent, current.getName(), next.attributes().getType());
                 files.put(current, renamed);
             }
             pasteboard.clear();
@@ -3205,9 +3192,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 final Session session = this.getTransferSession();
                 final List<Path> roots = new Collection<Path>();
                 for(int i = 0; i < elements.count().intValue(); i++) {
-                    Path p = PathFactory.createPath(session,
-                            workdir.getAbsolute(),
-                            LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                    Path p = PathFactory.createPath(session, workdir, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                     roots.add(p);
                 }
                 final Transfer t = new UploadTransfer(roots);
@@ -3365,7 +3350,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return The current working directory or null if no file system is mounted
      */
     protected Path workdir() {
-        return this.workdir;
+        return workdir;
     }
 
     public void setWorkdir(final Path directory) {
@@ -3386,48 +3371,23 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param selected  Selected files in browser
      */
     public void setWorkdir(final Path directory, final List<Path> selected) {
-        if(null == directory) {
-            // Clear the browser view if no working directory is given
-            this.workdir = null;
-            this.reloadData(false);
-            return;
-        }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set working directory to %s", directory.getAbsolute()));
+            log.debug(String.format("Set working directory to %s", directory));
         }
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
-        this.background(new BrowserBackgroundAction(this) {
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                        directory.getName());
-            }
-
-            @Override
-            public void run() throws BackgroundException {
-                if(getSession().cache().isCached(directory.getReference())) {
-                    // Reset the readable attribute
-                    directory.children().attributes().setReadable(true);
-                }
-                // Get the directory listing in the background
-                AttributedList children = directory.children();
-                if(children.attributes().isReadable() || !children.isEmpty()) {
-                    // Update the working directory if listing is successful
-                    workdir = directory;
-                    // Update the current working directory
-                    addPathToHistory(workdir());
-                }
-            }
-
-            @Override
-            public void cleanup() {
-                // Change to last selected browser view
-                browserSwitchClicked(Preferences.instance().getInteger("browser.view"), selected);
-            }
-        });
+        // Update the working directory if listing is successful
+        workdir = directory;
+        if(workdir != null) {
+            // Update the current working directory
+            addPathToHistory(workdir);
+            // Change to last selected browser view
+            browserSwitchClicked(Preferences.instance().getInteger("browser.view"), selected);
+        }
+        else {
+            reloadData(false);
+        }
     }
-
 
     /**
      * Keeps a ordered backward history of previously visited paths
@@ -3632,7 +3592,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      *
      */
-    private Session session;
+    private Session<?> session;
 
     /**
      * Open connection in browser
@@ -3651,26 +3611,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 final Session session = init(host);
 
                 background(new BrowserBackgroundAction(BrowserController.this) {
-                    private Path mount;
+                    private Path workdir;
 
                     @Override
                     public void run() throws BackgroundException {
                         // Mount this session
-                        mount = session.mount();
+                        workdir = session.mount();
                     }
 
                     @Override
                     public void cleanup() {
                         browserListModel.clear();
                         browserOutlineModel.clear();
-                        if(session.isConnected()) {
-                            // Set the working directory
-                            setWorkdir(mount);
-                        }
-                        else {
-                            // Connection attempt failed
-                            log.warn("Mount failed:" + host);
-                        }
+                        // Set the working directory
+                        setWorkdir(workdir);
                     }
 
                     @Override

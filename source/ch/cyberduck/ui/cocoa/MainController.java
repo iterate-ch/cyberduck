@@ -609,18 +609,18 @@ public class MainController extends BundleController implements NSApplication.De
         return false;
     }
 
-    private boolean upload(Local f) {
+    private boolean upload(final Local f) {
         return this.upload(Collections.singletonList(f));
     }
 
     private boolean upload(final List<Local> files) {
         // Selected bookmark
         Host open = null;
-        String workdir = String.valueOf(Path.DELIMITER);
+        Path workdir = null;
         for(BrowserController controller : MainController.getBrowsers()) {
             if(controller.isMounted()) {
                 open = controller.getSession().getHost();
-                workdir = controller.workdir().getAbsolute();
+                workdir = controller.workdir();
                 if(1 == MainController.getBrowsers().size()) {
                     // If only one browser window upload to current working directory with no bookmark selection
                     this.upload(open, files, workdir);
@@ -673,7 +673,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         final TransferController t = TransferController.instance();
         final Host mount = open;
-        final String destination = workdir;
+        final Path destination = workdir;
         AlertController alert = new AlertController(t, NSAlert.alert("Select Bookmark",
                 MessageFormat.format("Upload {0} to the selected bookmark.",
                         files.size() == 1 ? files.iterator().next().getName()
@@ -688,17 +688,20 @@ public class MainController extends BundleController implements NSApplication.De
                     for(Host bookmark : BookmarkCollection.defaultCollection()) {
                         // Determine selected bookmark
                         if(bookmark.getUuid().equals(selected)) {
-                            String parent = destination;
                             if(bookmark.equals(mount)) {
                                 // Use current working directory of browser for destination
+                                upload(bookmark, files, destination);
                             }
                             else {
                                 // No mounted browser
                                 if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
-                                    parent = bookmark.getDefaultPath();
+                                    upload(bookmark, files, PathFactory.createPath(SessionFactory.createSession(bookmark),
+                                            bookmark.getDefaultPath(), Path.DIRECTORY_TYPE));
+                                }
+                                else {
+                                    upload(bookmark, files, destination);
                                 }
                             }
-                            upload(bookmark, files, parent);
                             break;
                         }
                     }
@@ -715,7 +718,7 @@ public class MainController extends BundleController implements NSApplication.De
         return true;
     }
 
-    private void upload(Host bookmark, List<Local> files, String destination) {
+    private void upload(final Host bookmark, final List<Local> files, final Path destination) {
         final Session session = SessionFactory.createSession(bookmark);
         List<Path> roots = new ArrayList<Path>();
         for(Local file : files) {

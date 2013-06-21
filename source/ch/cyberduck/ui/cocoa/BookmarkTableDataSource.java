@@ -292,7 +292,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
                 return cache.put(host, identifier, NSString.stringWithString(host.getNickname()));
             }
-            throw new IllegalArgumentException("Unknown identifier: " + identifier);
+            throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
         }
         return cached;
     }
@@ -418,14 +418,13 @@ public class BookmarkTableDataSource extends ListDataSource {
                 }
                 else {
                     // The bookmark this file has been dropped onto
-                    Host h = source.get(row.intValue());
+                    final Host h = source.get(row.intValue());
                     if(null == session) {
                         session = SessionFactory.createSession(h);
                     }
                     // Upload to the remote host this bookmark points to
                     roots.add(PathFactory.createPath(session,
-                            h.getDefaultPath(),
-                            LocalFactory.createLocal(filename)));
+                            PathFactory.createPath(session, h.getDefaultPath(), Path.DIRECTORY_TYPE), LocalFactory.createLocal(filename)));
                 }
             }
             if(!roots.isEmpty()) {

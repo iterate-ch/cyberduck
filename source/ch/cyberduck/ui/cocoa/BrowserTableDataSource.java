@@ -119,19 +119,24 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // Check first if it hasn't been already requested so we don't spawn
             // a multitude of unnecessary threads
             final Cache cache = controller.getSession().cache();
+            if(cache.isCached(path.getReference())) {
+                return cache.get(path.getReference()).filter(controller.getComparator(), controller.getFileFilter());
+            }
             if(!isLoadingListingInBackground.contains(path)) {
-                if(cache.isCached(path.getReference())) {
-                    return cache.get(path.getReference()).filter(
-                            controller.getComparator(), controller.getFileFilter()
-                    );
-                }
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
                 controller.background(new BrowserBackgroundAction(controller) {
                     @Override
                     public void run() throws BackgroundException {
-                        path.children();
+                        try {
+                            final AttributedList<Path> children = path.list();
+                            cache.put(path.getReference(), children);
+                        }
+                        catch(BackgroundException e) {
+                            cache.put(path.getReference(), AttributedList.<Path>emptyList());
+                            throw e;
+                        }
                     }
 
                     @Override
@@ -168,7 +173,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(identifier.equals(FILENAME_COLUMN)) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
                 final Path renamed = PathFactory.createPath(controller.getSession(),
-                        item.getParent().getAbsolute(), value.toString(), item.attributes().getType());
+                        item.getParent(), value.toString(), item.attributes().getType());
                 controller.renamePath(item, renamed);
             }
         }
@@ -239,7 +244,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         item.attributes().isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : Locale.localizedString("None") : Locale.localizedString("None"),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
-            throw new IllegalArgumentException("Unknown identifier: " + identifier);
+            throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
         }
         return cached;
     }
@@ -308,8 +313,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final List<Path> roots = new Collection<Path>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         Path p = PathFactory.createPath(session,
-                                destination.getAbsolute(),
-                                LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                                destination, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                         roots.add(p);
                     }
                     final Transfer t = new UploadTransfer(roots);
@@ -333,7 +337,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard.copy()) {
                         final Path copy = PathFactory.createPath(target,
-                                destination.getAbsolute(), next.getName(), next.attributes().getType());
+                                destination, next.getName(), next.attributes().getType());
                         files.put(next, copy);
                     }
                     controller.duplicatePaths(files, pasteboard.getSession().equals(controller.getSession()));
@@ -343,7 +347,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard.copy(controller.getSession())) {
                         Path renamed = PathFactory.createPath(controller.getSession(),
-                                destination.getAbsolute(), next.getName(), next.attributes().getType());
+                                destination, next.getName(), next.attributes().getType());
                         files.put(next, renamed);
                     }
                     controller.renamePaths(files);
