@@ -467,7 +467,8 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     }
 
     public boolean isMultipartUploadSupported() {
-        if(host.getHostname().endsWith(Protocol.S3_SSL.getDefaultHostname())) {
+        // Only for AWS
+        if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
             return Preferences.instance().getBoolean("s3.upload.multipart");
         }
         return false;
@@ -508,6 +509,27 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     @Override
     public boolean isChecksumSupported() {
         return true;
+    }
+
+    /**
+     * @return True if the service supports object versioning.
+     */
+    @Override
+    public boolean isVersioningSupported() {
+        // Only for AWS
+        return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
+    }
+
+    @Override
+    public boolean isLifecycleSupported() {
+        // Only for AWS
+        return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
+    }
+
+    @Override
+    public boolean isRevertSupported() {
+        // Only for AWS
+        return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
     }
 
     /**
@@ -602,24 +624,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
         }
-    }
-
-    /**
-     * @return True if the service supports object versioning.
-     */
-    @Override
-    public boolean isVersioningSupported() {
-        return true;
-    }
-
-    @Override
-    public boolean isLifecycleSupported() {
-        return true;
-    }
-
-    @Override
-    public boolean isRevertSupported() {
-        return this.isVersioningSupported();
     }
 
     /**
