@@ -22,7 +22,6 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AbstractIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
@@ -32,10 +31,8 @@ import ch.cyberduck.core.threading.BackgroundException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -454,31 +451,12 @@ public abstract class Session<C> implements TranscriptListener {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
-        ConnectionListener[] l = connectionListeners.toArray(new ConnectionListener[connectionListeners.size()]);
+        final ConnectionListener[] l = connectionListeners.toArray(new ConnectionListener[connectionListeners.size()]);
         for(ConnectionListener listener : l) {
             listener.connectionWillOpen();
         }
-
         // Update status flag
         opening = true;
-
-        // Configuring proxy if any
-        ProxyFactory.get().configure(host);
-
-        final Resolver resolver = new Resolver(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()));
-        this.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
-                host.getHostname()));
-
-        // Try to resolve the hostname first
-        try {
-            resolver.resolve();
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        // The IP address could successfully be determined
-        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
-                host.getProtocol().getName(), host.getHostname()));
     }
 
     /**
@@ -491,19 +469,13 @@ public abstract class Session<C> implements TranscriptListener {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did open to %s", host));
         }
-        // Update last accessed timestamp
-        host.setTimestamp(new Date());
         // Update status flag
         opening = false;
 
-        final HistoryCollection history = HistoryCollection.defaultCollection();
-        history.add(new Host(host.getAsDictionary()));
-
-        for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
+        final ConnectionListener[] l = connectionListeners.toArray(new ConnectionListener[connectionListeners.size()]);
+        for(ConnectionListener listener : l) {
             listener.connectionDidOpen();
         }
-        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
-                host.getProtocol().getName()));
     }
 
     /**

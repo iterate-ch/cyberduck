@@ -1,9 +1,15 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Date;
 
 /**
  * @version $Id$
@@ -54,8 +60,41 @@ public class ConnectionCheckService {
             // Close the underlying socket first
             session.interrupt();
         }
+
+        final Host host = session.getHost();
+        session.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
+                host.getProtocol().getName(), host.getHostname()));
+
+        // Configuring proxy if any
+        ProxyFactory.get().configure(host);
+
+        final Resolver resolver = new Resolver(
+                HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()));
+
+        session.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
+                host.getHostname()));
+
+        // Try to resolve the hostname first
+        try {
+            resolver.resolve();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+        // The IP address could successfully be determined
+
         session.open();
+
+        session.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
+                host.getProtocol().getName()));
+
+        // Update last accessed timestamp
+        host.setTimestamp(new Date());
+
         LoginService login = new LoginService(prompt);
         login.login(session);
+
+        final HistoryCollection history = HistoryCollection.defaultCollection();
+        history.add(new Host(host.getAsDictionary()));
     }
 }
