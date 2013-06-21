@@ -15,6 +15,23 @@ import static org.junit.Assert.*;
  */
 public class DAVSessionTest extends AbstractTestCase {
 
+    @Test
+    public void testConnect() throws Exception {
+        final Host host = new Host(Protocol.WEBDAV_SSL, "svn.cyberduck.ch", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host);
+        assertNotNull(session.open());
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledLoginController());
+        assertNotNull(session.mount());
+        assertTrue(session.isConnected());
+        session.close();
+        assertNull(session.getClient());
+        assertFalse(session.isConnected());
+    }
+
     @Test(expected = BackgroundException.class)
     public void testSsl() throws Exception {
         final Host host = new Host(Protocol.WEBDAV_SSL, "test.cyberduck.ch", new Credentials(
