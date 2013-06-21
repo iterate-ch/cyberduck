@@ -62,13 +62,15 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     @Override
     public TransferStatus prepare(final Path file) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
-        if(file.attributes().getSize() == -1) {
-            file.readSize();
-        }
-        if(file.getSession().isReadTimestampSupported()) {
-            if(file.attributes().getModificationDate() == -1) {
-                if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
-                    file.readTimestamp();
+        if(file.attributes().isFile()) {
+            if(file.attributes().getSize() == -1) {
+                file.readSize();
+            }
+            if(file.getSession().isReadTimestampSupported()) {
+                if(file.attributes().getModificationDate() == -1) {
+                    if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
+                        file.readTimestamp();
+                    }
                 }
             }
         }
