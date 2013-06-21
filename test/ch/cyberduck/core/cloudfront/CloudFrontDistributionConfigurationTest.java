@@ -2,6 +2,7 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -57,6 +58,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         ));
         final S3Session session = new S3Session(host);
         session.open();
+        session.login(new DisabledLoginController());
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session);
         final S3Path container = new S3Path(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD);
