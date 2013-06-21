@@ -27,9 +27,6 @@ public abstract class Attributes {
 
     /**
      * @return File type
-     * @see AbstractPath#FILE_TYPE
-     * @see AbstractPath#DIRECTORY_TYPE
-     * @see AbstractPath#SYMBOLIC_LINK_TYPE
      * @see #isDirectory()
      * @see #isFile()
      * @see #isSymbolicLink()
