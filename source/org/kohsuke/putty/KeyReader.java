@@ -1,8 +1,8 @@
 package org.kohsuke.putty;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 
@@ -24,13 +24,8 @@ public class KeyReader {
     /**
      * Skips an integer without reading it.
      */
-    public void skip() {
-        try {
-            di.skipBytes(di.readInt());
-        }
-        catch(IOException e) {
-            throw new AssertionError(e);
-        }
+    public void skip() throws IOException {
+        di.skipBytes(di.readInt());
     }
 
     private byte[] read() throws IOException {
