@@ -161,7 +161,7 @@ public class TransferTableDataSource extends ListDataSource {
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
                 return cache.put(item, identifier, NSString.stringWithString(item.getName()));
             }
-            throw new IllegalArgumentException("Unknown identifier: " + identifier);
+            throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
         }
         return cached;
     }
