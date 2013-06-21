@@ -23,11 +23,11 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainFactory;
-import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
@@ -115,7 +115,7 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    protected void prompt(final LoginController controller) throws LoginCanceledException {
+    protected void prompt(final LoginController controller) throws BackgroundException {
         final Credentials credentials = this.getHost().getCredentials();
         final ProviderCredentials provider = this.getProviderCredentials(credentials);
         if(provider instanceof OAuth2Credentials) {
@@ -167,7 +167,7 @@ public class GSSession extends S3Session {
                     Preferences.instance().setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
                 }
                 catch(IOException e) {
-                    throw new LoginCanceledException();
+                    throw new DefaultIOExceptionMappingService().map(e);
                 }
             }
             else {

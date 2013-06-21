@@ -132,7 +132,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @param controller Prompt
      * @throws LoginCanceledException Login prompt dismissed with cancel
      */
-    protected void prompt(final LoginController controller) throws LoginCanceledException {
+    protected void prompt(final LoginController controller) throws BackgroundException {
         controller.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
     }
 
