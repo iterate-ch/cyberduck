@@ -1,7 +1,7 @@
 package ch.cyberduck.core.exception;
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,24 +15,16 @@ import java.text.MessageFormat;
 public abstract class AbstractIOExceptionMappingService<T extends Exception> implements IOExceptionMappingService<T> {
     private static Logger log = Logger.getLogger(AbstractIOExceptionMappingService.class);
 
-    public BackgroundException map(final T failure, final Host host) {
-        return this.map("Connection failed", failure, host);
-    }
-
-    public BackgroundException map(final String message, final T failure, final Host host) {
-        return this.map(message, failure, host, null);
+    public BackgroundException map(final String message, final T failure) {
+        final BackgroundException exception = this.map(failure);
+        exception.setMessage(StringUtils.chomp(Locale.localizedString(message, "Error")));
+        return exception;
     }
 
     public BackgroundException map(final String message, final T failure, final Path directory) {
-        return this.map(MessageFormat.format(StringUtils.chomp(message), directory.getName()), failure,
-                directory.getHost(), directory);
-    }
-
-    private BackgroundException map(final String message, final T failure, final Host host, final Path directory) {
         final BackgroundException exception = this.map(failure);
-        exception.setHost(host);
         exception.setPath(directory);
-        exception.setTitle(message);
+        exception.setMessage(MessageFormat.format(StringUtils.chomp(Locale.localizedString(message, "Error")), directory.getName()));
         return exception;
     }
 
@@ -58,6 +50,8 @@ public abstract class AbstractIOExceptionMappingService<T extends Exception> imp
     }
 
     protected BackgroundException wrap(final T e, final StringBuilder buffer) {
-        return new BackgroundException(buffer.toString(), e);
+        final BackgroundException exception = new BackgroundException(buffer.toString(), e);
+        exception.setMessage(Locale.localizedString("Connection failed"));
+        return exception;
     }
 }
