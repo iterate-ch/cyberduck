@@ -100,6 +100,49 @@ import java.util.concurrent.TimeUnit;
 public class BrowserController extends WindowController implements NSToolbar.Delegate, QLPreviewPanelController {
     private static Logger log = Logger.getLogger(BrowserController.class);
 
+    private TranscriptController transcript;
+
+    private ConnectionListener listener;
+
+    private String laststatus;
+
+    private QuickLook quicklook = QuickLookFactory.get();
+
+    private List<Path> selected = Collections.emptyList();
+
+    /**
+     * No file filter.
+     */
+    private static final Filter<Path> NULL_FILTER = new NullPathFilter<Path>();
+
+    /**
+     * Filter hidden files.
+     */
+    private static final Filter<Path> HIDDEN_FILTER = new HiddenFilesPathFilter<Path>();
+
+    /**
+     * Hide files beginning with '.'
+     */
+    private boolean showHiddenFiles;
+
+    private Filter<Path> filenameFilter;
+
+    {
+        if(Preferences.instance().getBoolean("browser.showHidden")) {
+            this.filenameFilter = new NullPathFilter<Path>();
+            this.showHiddenFiles = true;
+        }
+        else {
+            this.filenameFilter = new HiddenFilesPathFilter<Path>();
+            this.showHiddenFiles = false;
+        }
+    }
+
+    /**
+     * Navigation history
+     */
+    private Navigation navigation;
+
     public BrowserController() {
         this.loadBundle();
     }
@@ -139,8 +182,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
-    private QuickLook quicklook = QuickLookFactory.get();
-
     private NSToolbar toolbar;
 
     @Override
@@ -167,34 +208,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     protected Comparator<Path> getComparator() {
         return this.getSelectedBrowserDelegate().getSortingComparator();
     }
-
-    /**
-     * Hide files beginning with '.'
-     */
-    private boolean showHiddenFiles;
-
-    private Filter<Path> filenameFilter;
-
-    {
-        if(Preferences.instance().getBoolean("browser.showHidden")) {
-            this.filenameFilter = new NullPathFilter<Path>();
-            this.showHiddenFiles = true;
-        }
-        else {
-            this.filenameFilter = new HiddenFilesPathFilter<Path>();
-            this.showHiddenFiles = false;
-        }
-    }
-
-    /**
-     * No file filter.
-     */
-    private static final Filter<Path> NULL_FILTER = new NullPathFilter<Path>();
-
-    /**
-     * Filter hidden files.
-     */
-    private static final Filter<Path> HIDDEN_FILTER = new HiddenFilesPathFilter<Path>();
 
     protected Filter<Path> getFileFilter() {
         return this.filenameFilter;
@@ -371,8 +384,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
-    private List<Path> selected = Collections.emptyList();
-
     protected void setSelectedPaths(final List<Path> selected) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set selected paths to %s", selected));
@@ -485,8 +496,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         window.setDelegate(this.id());
         super.setWindow(window);
     }
-
-    private TranscriptController transcript;
 
     @Outlet
     private NSDrawer logDrawer;
@@ -1929,7 +1938,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void backButtonClicked(final ID sender) {
-        final Path selected = this.getPreviousPath();
+        final Path selected = navigation.back();
         if(selected != null) {
             final Path previous = this.workdir();
             if(previous.getParent().equals(selected)) {
@@ -1943,7 +1952,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void forwardButtonClicked(final ID sender) {
-        final Path selected = this.getForwardPath();
+        final Path selected = navigation.forward();
         if(selected != null) {
             this.setWorkdir(selected);
         }
@@ -2001,9 +2010,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.addPathToNavigation(p);
         }
 
-        this.navigationButton.setEnabled_forSegment(this.isMounted() && this.getBackHistory().size() > 1,
+        this.navigationButton.setEnabled_forSegment(this.isMounted() && navigation.getBack().size() > 1,
                 NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.navigationButton.setEnabled_forSegment(this.isMounted() && this.getForwardHistory().size() > 0,
+        this.navigationButton.setEnabled_forSegment(this.isMounted() && navigation.getForward().size() > 0,
                 NAVIGATION_RIGHT_SEGMENT_BUTTON);
         this.upButton.setEnabled_forSegment(this.isMounted() && !this.workdir().isRoot(),
                 NAVIGATION_UP_SEGMENT_BUTTON);
@@ -3380,7 +3389,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         workdir = directory;
         if(workdir != null) {
             // Update the current working directory
-            addPathToHistory(workdir);
+            navigation.add(workdir);
             // Change to last selected browser view
             browserSwitchClicked(Preferences.instance().getInteger("browser.view"), selected);
         }
@@ -3388,100 +3397,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             reloadData(false);
         }
     }
-
-    /**
-     * Keeps a ordered backward history of previously visited paths
-     */
-    private List<Path> backHistory = new Collection<Path>();
-
-    /**
-     * Keeps a ordered forward history of previously visited paths
-     */
-    private List<Path> forwardHistory = new Collection<Path>();
-
-    /**
-     * @param p Directory
-     */
-    public void addPathToHistory(final Path p) {
-        if(backHistory.size() > 0) {
-            // Do not add if this was a reload
-            if(p.equals(backHistory.get(backHistory.size() - 1))) {
-                return;
-            }
-        }
-        backHistory.add(p);
-    }
-
-    /**
-     * Returns the prevously browsed path and moves it to the forward history
-     *
-     * @return The previously browsed path or null if there is none
-     */
-    public Path getPreviousPath() {
-        int size = backHistory.size();
-        if(size > 1) {
-            forwardHistory.add(backHistory.get(size - 1));
-            Path p = backHistory.get(size - 2);
-            //delete the fetched path - otherwise we produce a loop
-            backHistory.remove(size - 1);
-            backHistory.remove(size - 2);
-            return p;
-        }
-        else if(1 == size) {
-            forwardHistory.add(backHistory.get(size - 1));
-            return backHistory.get(size - 1);
-        }
-        return null;
-    }
-
-    /**
-     * @return The last path browsed before #getPreviousPath was called
-     * @see #getPreviousPath()
-     */
-    public Path getForwardPath() {
-        int size = forwardHistory.size();
-        if(size > 0) {
-            Path p = forwardHistory.get(size - 1);
-            forwardHistory.remove(size - 1);
-            return p;
-        }
-        return null;
-    }
-
-    /**
-     * @return The ordered array of previously visited directories
-     */
-    public List<Path> getBackHistory() {
-        return backHistory;
-    }
-
-    /**
-     * Remove all entries from the back path history
-     */
-    public void clearBackHistory() {
-        backHistory.clear();
-    }
-
-    /**
-     * @return The ordered array of previously visited directories
-     */
-    public List<Path> getForwardHistory() {
-        return forwardHistory;
-    }
-
-    /**
-     * Remove all entries from the forward path history
-     */
-    public void clearForwardHistory() {
-        forwardHistory.clear();
-    }
-
-    /**
-     *
-     */
-    private ConnectionListener listener = null;
-
-    private String laststatus = null;
 
     /**
      * Initializes a session for the passed host. Setting up the listeners and adding any callback
@@ -3571,8 +3486,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
         });
         transcript.clear();
-        backHistory.clear();
-        forwardHistory.clear();
+        navigation.clear();
         session.addTranscriptListener(new TranscriptListener() {
             @Override
             public void log(final boolean request, final String message) {
@@ -4128,10 +4042,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return this.isBrowser() && this.isMounted() && !this.workdir().isRoot();
         }
         else if(action.equals(Foundation.selector("backButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && this.getBackHistory().size() > 1;
+            return this.isBrowser() && this.isMounted() && navigation.getBack().size() > 1;
         }
         else if(action.equals(Foundation.selector("forwardButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && this.getForwardHistory().size() > 0;
+            return this.isBrowser() && this.isMounted() && navigation.getForward().size() > 0;
         }
         else if(action.equals(Foundation.selector("printDocument:"))) {
             return this.isBrowser() && this.isMounted();
