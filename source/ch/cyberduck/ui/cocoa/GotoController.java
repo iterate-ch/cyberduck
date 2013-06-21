@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -56,15 +56,18 @@ public class GotoController extends AlertController {
 
         @Override
         public NSInteger numberOfItemsInComboBox(NSComboBox combo) {
-            if(!((BrowserController) parent).isMounted()) {
+            final BrowserController controller = (BrowserController) parent;
+            if(!controller.isMounted()) {
                 return new NSInteger(0);
             }
-            return new NSInteger(((BrowserController) parent).workdir().children(comparator, filter).size());
+            return new NSInteger(controller.getSession().cache().get(controller.workdir().getReference()).filter(comparator, filter).size());
         }
 
         @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return (NSObject) ((BrowserController) parent).workdir().children(comparator, filter).get(row.intValue()).getReference().unique();
+            final BrowserController controller = (BrowserController) parent;
+            return (NSObject) controller.getSession().cache().get(controller.workdir().getReference()).filter(comparator, filter).get(
+                    row.intValue()).getReference().unique();
         }
     }
 
@@ -119,7 +122,7 @@ public class GotoController extends AlertController {
         final BrowserController c = (BrowserController) parent;
         final Path dir;
         if(!filename.startsWith(String.valueOf(Path.DELIMITER))) {
-            dir = PathFactory.createPath(this.getSession(), workdir.getAbsolute(), filename, Path.DIRECTORY_TYPE);
+            dir = PathFactory.createPath(this.getSession(), workdir, filename, Path.DIRECTORY_TYPE);
         }
         else {
             dir = PathFactory.createPath(this.getSession(), filename, Path.DIRECTORY_TYPE);

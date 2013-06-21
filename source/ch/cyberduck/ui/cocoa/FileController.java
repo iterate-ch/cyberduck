@@ -91,9 +91,9 @@ public abstract class FileController extends AlertController {
             return false;
         }
         if(StringUtils.isNotBlank(filenameField.stringValue())) {
-            Path file = PathFactory.createPath(this.getSession(), this.getWorkdir().getAbsolute(),
+            Path file = PathFactory.createPath(this.getSession(), this.getWorkdir(),
                     filenameField.stringValue(), Path.FILE_TYPE);
-            return !file.exists();
+            return ((BrowserController) parent).lookup(file.getReference()) == null;
         }
         return false;
     }

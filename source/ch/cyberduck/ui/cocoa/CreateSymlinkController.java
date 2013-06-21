@@ -62,8 +62,7 @@ public class CreateSymlinkController extends FileController {
 
     protected void createSymlink(final Path selected, final String symlink, final boolean edit) {
         final BrowserController c = (BrowserController) parent;
-        final Path link = PathFactory.createPath(this.getSession(),
-                this.getWorkdir().getAbsolute(), symlink, Path.FILE_TYPE);
+        final Path link = PathFactory.createPath(this.getSession(), this.getWorkdir(), symlink, Path.FILE_TYPE);
         c.background(new BrowserBackgroundAction(c) {
             @Override
             public void run() throws BackgroundException {
