@@ -40,6 +40,9 @@ public class SwiftContainerListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
     public List<FilesContainer> list(final CFSession session) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("List containers for %s", session));
+        }
         try {
             final List<FilesContainer> containers = new ArrayList<FilesContainer>();
             final FilesClient client = session.getClient();

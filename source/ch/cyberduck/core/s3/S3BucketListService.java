@@ -42,6 +42,9 @@ public class S3BucketListService {
     private static final Logger log = Logger.getLogger(S3BucketListService.class);
 
     public List<StorageBucket> list(final S3Session session) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("List containers for %s", session));
+        }
         try {
             final List<StorageBucket> buckets = new ArrayList<StorageBucket>();
             if(session.getHost().getCredentials().isAnonymousLogin()) {
