@@ -26,13 +26,10 @@ import ch.cyberduck.core.threading.BackgroundException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.StorageBucket;
-import org.jets3t.service.model.StorageOwner;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,12 +38,12 @@ import java.util.List;
 public class S3BucketListService {
     private static final Logger log = Logger.getLogger(S3BucketListService.class);
 
-    public List<StorageBucket> list(final S3Session session) throws BackgroundException {
+    public List<Path> list(final S3Session session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List containers for %s", session));
         }
         try {
-            final List<StorageBucket> buckets = new ArrayList<StorageBucket>();
+            final List<Path> buckets = new ArrayList<Path>();
             if(session.getHost().getCredentials().isAnonymousLogin()) {
                 if(log.isInfoEnabled()) {
                     log.info("Anonymous cannot list buckets");
@@ -69,15 +66,8 @@ public class S3BucketListService {
                 if(!session.getClient().isBucketAccessible(bucketname)) {
                     throw new ServiceException(String.format("Bucket %s not accessible", bucketname));
                 }
-                final S3Bucket bucket = new S3Bucket(bucketname);
-                try {
-                    StorageOwner owner = session.getClient().getBucketAcl(bucketname).getOwner();
-                    bucket.setOwner(owner);
-                }
-                catch(ServiceException e) {
-                    // ACL not readable by anonymous user.
-                    log.warn(e.getMessage());
-                }
+                final S3Path bucket = new S3Path(session,
+                        bucketname, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                 buckets.add(bucket);
             }
             else {
@@ -87,20 +77,22 @@ public class S3BucketListService {
                     if(!session.getClient().isBucketAccessible(bucketname)) {
                         throw new ServiceException(String.format("Bucket %s not accessible", bucketname));
                     }
-                    final S3Bucket bucket = new S3Bucket(bucketname);
-                    try {
-                        StorageOwner owner = session.getClient().getBucketAcl(bucketname).getOwner();
-                        bucket.setOwner(owner);
-                    }
-                    catch(ServiceException e) {
-                        // ACL not readable by anonymous or IAM user.
-                        log.warn(e.getMessage());
-                    }
+                    final S3Path bucket = new S3Path(session,
+                            bucketname, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     buckets.add(bucket);
                 }
                 else {
                     // List all buckets owned
-                    Collections.addAll(buckets, session.getClient().listAllBuckets());
+                    for(StorageBucket b : session.getClient().listAllBuckets()) {
+                        final S3Path bucket = new S3Path(session,
+                                b.getName(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        bucket.attributes().setOwner(b.getOwner().getDisplayName());
+                        bucket.attributes().setCreationDate(b.getCreationDate().getTime());
+                        if(b.isLocationKnown()) {
+                            bucket.attributes().setRegion(b.getLocation());
+                        }
+                        buckets.add(bucket);
+                    }
                 }
             }
             return buckets;

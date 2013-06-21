@@ -55,7 +55,6 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
-import org.jets3t.service.model.StorageOwner;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.OAuth2Credentials;
@@ -68,7 +67,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -313,70 +311,25 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         return this.getHost().getHostname(true);
     }
 
-    /**
-     * Caching the user's buckets
-     */
-    private Map<Path, StorageBucket> buckets = new HashMap<Path, StorageBucket>();
-
-    /**
-     * @param reload Disregard cache
-     * @return List of buckets
-     */
-    public List<Path> getContainers(final boolean reload) throws BackgroundException {
-        if(buckets.isEmpty() || reload) {
-            buckets.clear();
-            for(StorageBucket bucket : new S3BucketListService().list(this)) {
-                final S3Path container = new S3Path(this, bucket.getName(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                if(null != bucket.getOwner()) {
-                    container.attributes().setOwner(bucket.getOwner().getDisplayName());
-                }
-                if(null != bucket.getCreationDate()) {
-                    container.attributes().setCreationDate(bucket.getCreationDate().getTime());
-                }
-                buckets.put(container, bucket);
-            }
-        }
-        return new ArrayList<Path>(buckets.keySet());
-    }
-
-    /**
-     * Set to false if permission error response indicates this
-     * feature is not implemented.
-     */
-    private boolean bucketLocationSupported = true;
-
-    @Override
-    public boolean isLocationSupported() {
-        return bucketLocationSupported;
-    }
-
-    protected void setBucketLocationSupported(boolean bucketLocationSupported) {
-        this.bucketLocationSupported = bucketLocationSupported;
-    }
-
     @Override
     public String getLocation(final Path container) throws BackgroundException {
-        if(this.isLocationSupported()) {
-            try {
-                if(null == container.attributes().getRegion()) {
-                    if(this.getHost().getCredentials().isAnonymousLogin()) {
-                        log.info("Anonymous cannot access bucket location");
-                        return null;
-                    }
-                    String location = client.getBucketLocation(container.getContainer().getName());
-                    if(StringUtils.isBlank(location)) {
-                        location = "US"; //Default location US is null
-                    }
-                    container.attributes().setRegion(location);
-                }
-                return container.attributes().getRegion();
-            }
-            catch(ServiceException e) {
-                log.warn("Bucket location not supported:" + e.getMessage());
-                this.setBucketLocationSupported(false);
-            }
+        if(this.getHost().getCredentials().isAnonymousLogin()) {
+            log.info("Anonymous cannot access bucket location");
+            return null;
         }
-        return null;
+        try {
+            if(null == container.attributes().getRegion()) {
+                String location = client.getBucketLocation(container.getContainer().getName());
+                if(StringUtils.isBlank(location)) {
+                    location = "US"; //Default location US is null
+                }
+                container.attributes().setRegion(location);
+            }
+            return container.attributes().getRegion();
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+        }
     }
 
     @Override
@@ -392,9 +345,9 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
 
     @Override
     public void login(final LoginController prompt) throws BackgroundException {
-        for(Path bucket : this.getContainers(true)) {
+        for(Path bucket : new S3BucketListService().list(this)) {
             if(log.isDebugEnabled()) {
-                log.debug("Bucket:" + bucket);
+                log.debug(String.format("Found bucket %s", bucket));
             }
         }
     }
@@ -463,6 +416,11 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
 
     @Override
     public boolean isAclSupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isLocationSupported() {
         return true;
     }
 
@@ -568,7 +526,7 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
             client.setBucketLoggingStatus(container.getName(), status, true);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
         }
     }
 
@@ -728,7 +686,7 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
+        return new ArrayList<Acl.User>(Arrays.asList(
                 new Acl.CanonicalUser(),
                 new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier(), false),
                 new Acl.EmailUser() {
@@ -738,24 +696,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
                     }
                 })
         );
-        for(final StorageBucket container : buckets.values()) {
-            final StorageOwner owner = container.getOwner();
-            if(null == owner) {
-                log.warn(String.format("Owner not known for container %s", container));
-                continue;
-            }
-            final Acl.CanonicalUser user = new Acl.CanonicalUser(owner.getId(), owner.getDisplayName(), false) {
-                @Override
-                public String getPlaceholder() {
-                    return this.getDisplayName() + " (" + Locale.localizedString("Owner") + ")";
-                }
-            };
-            if(users.contains(user)) {
-                continue;
-            }
-            users.add(0, user);
-        }
-        return users;
     }
 
     @Override

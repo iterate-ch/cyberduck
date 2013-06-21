@@ -6,12 +6,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 
-import org.jets3t.service.model.StorageBucket;
 import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -32,7 +31,8 @@ public class S3BucketListServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open();
-        final List<StorageBucket> list = new S3BucketListService().list(session);
-        final S3Path container = new S3Path(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
+        final List<Path> list = new S3BucketListService().list(session);
+        assertFalse(list.isEmpty());
+        assertTrue(list.contains(new S3Path(session, "test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE)));
     }
 }

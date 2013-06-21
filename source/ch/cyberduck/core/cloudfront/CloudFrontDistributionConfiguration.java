@@ -27,6 +27,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.CloudFrontServiceExceptionMappingService;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.threading.BackgroundException;
 
@@ -523,7 +524,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
         }
         if(this.isLoggingSupported(method)) {
-            distribution.setContainers(session.getContainers(false));
+            distribution.setContainers(new S3BucketListService().list(session));
         }
         return distribution;
     }

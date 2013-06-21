@@ -803,7 +803,7 @@ public class S3Path extends CloudPath {
 
             if(this.isRoot()) {
                 // List all buckets
-                return new AttributedList<Path>(session.getContainers(true));
+                return new AttributedList<Path>(new S3BucketListService().list(session));
             }
             else {
                 // Keys can be listed by prefix. By choosing a common prefix
@@ -1199,7 +1199,8 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public void copy(Path copy, BandwidthThrottle throttle, StreamListener listener, final TransferStatus status)
+    public void copy(final Path copy, final BandwidthThrottle throttle,
+                     final StreamListener listener, final TransferStatus status)
             throws BackgroundException {
         if(copy.getSession().equals(session)) {
             // Copy on same server
