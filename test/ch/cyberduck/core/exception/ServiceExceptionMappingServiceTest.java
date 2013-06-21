@@ -29,7 +29,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
         assertEquals("message.", new ServiceExceptionMappingService().map(new ServiceException("message")).getDetail());
         assertEquals("Exceeded 403 retry limit (1).", new ServiceExceptionMappingService().map(
                 new ServiceException("Exceeded 403 retry limit (1).")).getDetail());
-        assertEquals("Unknown", new ServiceExceptionMappingService().map(
+        assertEquals("Connection failed", new ServiceExceptionMappingService().map(
                 new ServiceException("Exceeded 403 retry limit (1).")).getMessage());
     }
 
