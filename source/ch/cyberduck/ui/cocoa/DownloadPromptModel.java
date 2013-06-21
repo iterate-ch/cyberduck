@@ -41,25 +41,24 @@ public class DownloadPromptModel extends TransferPromptModel {
     /**
      * Filtering what files are displayed. Used to decide which files to include in the prompt dialog
      */
-    private Filter<Path> filter = new PromptFilter() {
+    private PromptFilter filter = new PromptFilter() {
         /**
-         *
-         * @param child File
+         * @param path File
          * @return True for files that already exist in the download folder
          */
         @Override
-        public boolean accept(Path child) {
-            if(child.getLocal().exists()) {
-                if(child.attributes().isFile()) {
-                    if(child.getLocal().attributes().getSize() == 0) {
+        public boolean accept(final Path path) {
+            if(path.getLocal().exists()) {
+                if(path.attributes().isFile()) {
+                    if(path.getLocal().attributes().getSize() == 0) {
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Skip prompt for zero sized file %s", child.getName()));
+                            log.debug(String.format("Skip prompt for zero sized file %s", path.getName()));
                         }
                         // Do not prompt for zero sized files
                         return false;
                     }
                 }
-                return super.accept(child);
+                return super.accept(path);
             }
             return false;
         }

@@ -18,10 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -38,7 +39,7 @@ public class SyncPromptModel extends TransferPromptModel {
     }
 
     @Override
-    public void add(Path p) {
+    public void add(Path p) throws BackgroundException {
         for(Path child : transfer.children(p)) {
             super.add(child);
         }
@@ -68,16 +69,16 @@ public class SyncPromptModel extends TransferPromptModel {
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(SIZE_COLUMN)) {
-                Comparison compare = ((SyncTransfer) transfer).compare(item);
+                final Comparison compare = ((SyncTransfer) transfer).compare(item);
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         SizeFormatterFactory.get().format(
                                 compare.equals(Comparison.REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(SYNC_COLUMN)) {
-                Comparison compare = ((SyncTransfer) transfer).compare(item);
+                final Comparison compare = ((SyncTransfer) transfer).compare(item);
                 if(item.attributes().isDirectory()) {
-                    if(item.exists() && item.getLocal().exists()) {
+                    if(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists()) {
                         return null;
                     }
                 }
@@ -91,7 +92,7 @@ public class SyncPromptModel extends TransferPromptModel {
             }
             if(identifier.equals(WARNING_COLUMN)) {
                 if(item.attributes().isFile()) {
-                    if(item.exists()) {
+                    if(transfer.cache().lookup(item.getReference()) != null) {
                         if(item.attributes().getSize() == 0) {
                             return tableViewCache.put(item, identifier, IconCache.iconNamed("alert.tiff"));
                         }
@@ -105,7 +106,7 @@ public class SyncPromptModel extends TransferPromptModel {
                 return null;
             }
             if(identifier.equals(CREATE_COLUMN)) {
-                if(!(item.exists() && item.getLocal().exists())) {
+                if(!(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists())) {
                     return tableViewCache.put(item, identifier, IconCache.iconNamed("plus.tiff", 16));
                 }
                 return null;

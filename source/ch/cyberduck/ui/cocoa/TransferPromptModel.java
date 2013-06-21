@@ -71,12 +71,12 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @param c        The parent window to attach the prompt
      * @param transfer Transfer
      */
-    public TransferPromptModel(TransferPromptController c, final Transfer transfer) {
+    public TransferPromptModel(final TransferPromptController c, final Transfer transfer) {
         this.controller = c;
         this.transfer = transfer;
     }
 
-    public void add(Path p) {
+    public void add(final Path p) throws BackgroundException {
         roots.add(p);
     }
 
@@ -194,7 +194,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSString.stringWithString(item.getName()));
             }
-            throw new IllegalArgumentException("Unknown identifier: " + identifier);
+            throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
         }
         return cached;
     }
