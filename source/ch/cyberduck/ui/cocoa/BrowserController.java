@@ -141,7 +141,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * Navigation history
      */
-    private Navigation navigation;
+    private Navigation navigation = new Navigation();
 
     public BrowserController() {
         this.loadBundle();
