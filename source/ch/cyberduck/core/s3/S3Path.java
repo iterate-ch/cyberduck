@@ -1204,14 +1204,14 @@ public class S3Path extends CloudPath {
     @Override
     public void copy(Path copy, BandwidthThrottle throttle, StreamListener listener, final TransferStatus status)
             throws BackgroundException {
-        if(((Path) copy).getSession().equals(session)) {
+        if(copy.getSession().equals(session)) {
             // Copy on same server
             try {
                 session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                         this.getName(), copy));
 
                 if(this.attributes().isFile()) {
-                    StorageObject destination = new StorageObject(((S3Path) copy).getKey());
+                    final StorageObject destination = new StorageObject(copy.getKey());
                     // Keep same storage class
                     destination.setStorageClass(this.attributes().getStorageClass());
                     // Keep encryption setting
@@ -1223,7 +1223,7 @@ public class S3Path extends CloudPath {
                     destination.setAcl(this.convert(this.attributes().getAcl()));
                     // Copying object applying the metadata of the original
                     session.getClient().copyObject(this.getContainer().getName(), this.getKey(),
-                            ((S3Path) copy).getContainer().getName(), destination, false);
+                            copy.getContainer().getName(), destination, false);
                     listener.bytesSent(this.attributes().getSize());
                     status.setComplete();
                 }

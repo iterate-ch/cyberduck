@@ -1,21 +1,21 @@
 package ch.cyberduck.core.cf;
 
 /*
- *  Copyright (c) 2008 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.AttributedList;
@@ -585,7 +585,7 @@ public class CFPath extends CloudPath {
 
     @Override
     public void copy(final Path copy, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
-        if(((Path) copy).getSession().equals(session)) {
+        if(copy.getSession().equals(session)) {
             // Copy on same server
             try {
                 session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
@@ -594,7 +594,7 @@ public class CFPath extends CloudPath {
                 if(this.attributes().isFile()) {
                     session.getClient().copyObject(session.getRegion(this.getContainer()),
                             this.getContainer().getName(), this.getKey(),
-                            ((CFPath) copy).getContainer().getName(), ((CFPath) copy).getKey());
+                            copy.getContainer().getName(), copy.getKey());
                     listener.bytesSent(this.attributes().getSize());
                     status.setComplete();
                 }

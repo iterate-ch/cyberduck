@@ -289,7 +289,7 @@ public class DAVPath extends HttpPath {
 
     @Override
     public void copy(Path copy, BandwidthThrottle throttle, StreamListener listener, final TransferStatus status) throws BackgroundException {
-        if(((Path) copy).getSession().equals(session)) {
+        if(copy.getSession().equals(session)) {
             // Copy on same server
             try {
 
