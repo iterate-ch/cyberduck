@@ -64,18 +64,13 @@ public class GSWebsiteDistributionConfiguration implements DistributionConfigura
         }
         catch(ServiceException e) {
             // Not found. Website configuration not enbabled.
-            String status = Locale.localizedString(e.getErrorCode());
-            if(status.equals(e.getErrorCode())) {
-                // No localization found. Use english text
-                status = e.getErrorMessage();
-            }
             return new Distribution(
                     null,
                     container.getName(),
                     method,
                     false, //Disabled
                     String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()),
-                    status);
+                    e.getErrorMessage());
         }
     }
 
