@@ -19,11 +19,12 @@ package ch.cyberduck.core.synchronization;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.threading.BackgroundException;
 
 /**
  * @version $Id$
  */
 public interface ComparisonService {
 
-    Comparison compare(Path p);
+    Comparison compare(Path p) throws BackgroundException;
 }

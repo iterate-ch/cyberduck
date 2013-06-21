@@ -20,6 +20,7 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
 
@@ -30,7 +31,7 @@ public class ChecksumComparisonService implements ComparisonService {
     private static Logger log = Logger.getLogger(ComparisonService.class);
 
     @Override
-    public Comparison compare(final Path p) {
+    public Comparison compare(final Path p) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare checksum for %s", p.getAbsolute()));
         }

@@ -20,6 +20,7 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.threading.BackgroundException;
 
 /**
  * @version $Id$
@@ -41,7 +42,7 @@ public class CombinedComparisionService implements ComparisonService {
      * @see Comparison#LOCAL_NEWER
      */
     @Override
-    public Comparison compare(final Path p) {
+    public Comparison compare(final Path p) throws BackgroundException {
         if(p.getLocal().exists() && p.exists()) {
             if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                 // MD5/ETag Checksum is supported
