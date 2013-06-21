@@ -28,7 +28,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver {
             }
             // Create symbolic link only if supported by the host
             if(file.getSession().isCreateSymlinkSupported()) {
-                final AbstractPath target = local.getSymlinkTarget();
+                final Local target = local.getSymlinkTarget();
                 // Only create symbolic link if target is included in the upload
                 for(Path root : files) {
                     if(this.findTarget(target, root)) {
@@ -44,7 +44,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver {
     public boolean include(final Path file) {
         final Local local = file.getLocal();
         if(local.attributes().isSymbolicLink()) {
-            final AbstractPath target = local.getSymlinkTarget();
+            final Local target = local.getSymlinkTarget();
             // Do not transfer files referenced from symlinks pointing to files also included
             for(Path root : files) {
                 if(this.findTarget(target, root)) {

@@ -10,6 +10,7 @@ import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -20,7 +21,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class AbstractDownloadFilter extends TransferPathFilter {
+public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractDownloadFilter.class);
 
     private SymlinkResolver symlinkResolver;
@@ -39,7 +40,7 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Path file) {
+    public boolean accept(final Path file) throws BackgroundException {
         if(file.attributes().isDirectory()) {
             if(file.getLocal().exists()) {
                 return false;
@@ -59,7 +60,7 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file) {
+    public TransferStatus prepare(final Path file) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(file.attributes().getSize() == -1) {
             file.readSize();
@@ -85,7 +86,7 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
                 }
                 else {
                     // A server will resolve the symbolic link when the file is requested.
-                    final Path target = (Path) file.getSymlinkTarget();
+                    final Path target = file.getSymlinkTarget();
                     if(target.attributes().getSize() == -1) {
                         target.readSize();
                     }
@@ -112,7 +113,7 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
      * Update timestamp and permission
      */
     @Override
-    public void complete(final Path file, final TransferOptions options, final TransferStatus status) {
+    public void complete(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }

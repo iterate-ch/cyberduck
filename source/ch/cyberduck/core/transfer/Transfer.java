@@ -26,11 +26,11 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,7 +102,7 @@ public abstract class Transfer implements Serializable {
         return queued;
     }
 
-    protected Session session;
+    protected Session<?> session;
 
     /**
      * In Bytes per second
@@ -117,7 +117,7 @@ public abstract class Transfer implements Serializable {
     private boolean reset;
 
     /**
-     * Last transfered in milliseconds
+     * Last transferred timestamp
      */
     private Date timestamp;
 
@@ -317,7 +317,7 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return Creation date of transfer
+     * @return Time when transfer did end
      */
     public Date getTimestamp() {
         return timestamp;
@@ -349,8 +349,8 @@ public abstract class Transfer implements Serializable {
         return roots;
     }
 
-    public List<Session> getSessions() {
-        return Collections.singletonList(this.session);
+    public List<Session<?>> getSessions() {
+        return new ArrayList<Session<?>>(Collections.singletonList(session));
     }
 
     public String getName() {
@@ -362,11 +362,11 @@ public abstract class Transfer implements Serializable {
      * @param action Transfer action for duplicate files
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
-    public TransferPathFilter filter(TransferPrompt prompt, final TransferAction action) {
+    public TransferPathFilter filter(TransferPrompt prompt, final TransferAction action) throws BackgroundException {
         if(action.equals(TransferAction.ACTION_CANCEL)) {
             return null;
         }
-        throw new IllegalArgumentException("Unknown transfer action:" + action);
+        throw new ConnectionCanceledException(String.format("Unknown transfer action %s", action));
     }
 
     /**
@@ -398,9 +398,9 @@ public abstract class Transfer implements Serializable {
      * @param parent The directory to list the children
      * @return A list of child items
      */
-    public abstract AttributedList<Path> children(final Path parent);
+    public abstract AttributedList<Path> children(final Path parent) throws BackgroundException;
 
-    public boolean isSelected(Path item) {
+    public boolean isSelected(final Path item) {
         if(status.containsKey(item)) {
             return status.get(item).isSelected();
         }
@@ -411,7 +411,7 @@ public abstract class Transfer implements Serializable {
      * @param item File
      * @return True if file should not be transferred
      */
-    public boolean isSkipped(Path item) {
+    public boolean isSkipped(final Path item) {
         return false;
     }
 
@@ -421,7 +421,7 @@ public abstract class Transfer implements Serializable {
      * @param item     File
      * @param selected Selected files in transfer prompt
      */
-    public void setSelected(Path item, final boolean selected) {
+    public void setSelected(final Path item, final boolean selected) {
         TransferStatus s = new TransferStatus();
         s.setSelected(selected);
         status.put(item, s);
@@ -434,7 +434,7 @@ public abstract class Transfer implements Serializable {
      * @param status  Transfer status
      */
     private void transfer(final Path file, final TransferPathFilter filter,
-                          final TransferOptions options, final TransferStatus status) {
+                          final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(!status.isSelected()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skip %s not selected in prompt", file.getAbsolute()));
@@ -442,9 +442,7 @@ public abstract class Transfer implements Serializable {
             status.setComplete();
             return;
         }
-        if(!this.check()) {
-            return;
-        }
+        this.check();
         if(filter.accept(file)) {
             // Notification
             this.fireWillTransferPath(file);
@@ -460,16 +458,10 @@ public abstract class Transfer implements Serializable {
         else {
             status.setComplete();
         }
-        if(!this.check()) {
-            return;
-        }
+        this.check();
         if(file.attributes().isDirectory()) {
             boolean failure = false;
-            final AttributedList<Path> children = this.children(file);
-            if(!children.attributes().isReadable()) {
-                failure = true;
-            }
-            for(Path child : children) {
+            for(Path child : this.children(file)) {
                 // Recursive
                 this.transfer(child, filter, options, this.status.get(child));
                 if(!this.status.get(child).isComplete()) {
@@ -494,21 +486,14 @@ public abstract class Transfer implements Serializable {
      * @param options Quarantine option
      * @param status  Transfer status
      */
-    public abstract void transfer(Path file, TransferOptions options, TransferStatus status);
+    public abstract void transfer(Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
 
     /**
      * @param prompt  Callback
      * @param options Transfer options
      */
-    private void transfer(final TransferPrompt prompt, final TransferOptions options) {
-        for(Session s : this.getSessions()) {
-            if(!this.open(s)) {
-                return;
-            }
-        }
-        if(!this.check()) {
-            return;
-        }
+    private void transfer(final TransferPrompt prompt, final TransferOptions options) throws BackgroundException {
+        this.check();
         // Determine the filter to match files against
         final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
         if(log.isDebugEnabled()) {
@@ -522,9 +507,7 @@ public abstract class Transfer implements Serializable {
             return;
         }
         this.clear(options);
-        if(!this.check()) {
-            return;
-        }
+        this.check();
         // Get the transfer filter from the concrete transfer class
         final TransferPathFilter filter = this.filter(prompt, action);
         if(null == filter) {
@@ -543,11 +526,6 @@ public abstract class Transfer implements Serializable {
             this.transfer(next, filter, options, status.get(next));
         }
         this.clear(options);
-        if(options.closeSession) {
-            for(Session s : this.getSessions()) {
-                this.close(s);
-            }
-        }
     }
 
     /**
@@ -556,13 +534,11 @@ public abstract class Transfer implements Serializable {
      * @param p      File
      * @param filter Filter to apply to exclude files from transfer
      */
-    private void prepare(final Path p, final TransferPathFilter filter) {
+    private void prepare(final Path p, final TransferPathFilter filter) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer status for path %s", p.getAbsolute()));
         }
-        if(!this.check()) {
-            return;
-        }
+        this.check();
         if(!this.isSelected(p)) {
             return;
         }
@@ -596,26 +572,23 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return False if the transfer has been canceled or the socket is
-     *         no longer connected
+     * @throws ConnectionCanceledException If the transfer has been canceled or the socket is
+     *                                     no longer connected
      */
-    protected boolean check() {
+    protected void check() throws ConnectionCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Check connection for transfer %s", this.getName()));
         }
         // Bail out if canceled
         if(this.isCanceled()) {
-            log.warn(String.format("Canceled transfer %s in progress", this.getName()));
-            return false;
+            throw new ConnectionCanceledException(String.format("Canceled transfer %s in progress", this.getName()));
         }
         for(Session s : this.getSessions()) {
             if(!s.isConnected()) {
                 // Bail out if no more connected
-                log.warn(String.format("Disconnected transfer %s in progress", this.getName()));
-                return false;
+                throw new ConnectionCanceledException(String.format("Disconnected transfer %s in progress", this.getName()));
             }
         }
-        return true;
     }
 
     /**
@@ -626,10 +599,6 @@ public abstract class Transfer implements Serializable {
     public void clear(final TransferOptions options) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Clear cache with options %s", options));
-        }
-        if(options.closeSession) {
-            // We have our own session independent of any browser.
-            this.cache().clear();
         }
     }
 
@@ -645,7 +614,7 @@ public abstract class Transfer implements Serializable {
      * @param prompt  Transfer prompt callback
      * @param options Transfer options
      */
-    public void start(final TransferPrompt prompt, final TransferOptions options) {
+    public void start(final TransferPrompt prompt, final TransferOptions options) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start transfer with prompt %s", prompt));
         }
@@ -676,7 +645,7 @@ public abstract class Transfer implements Serializable {
     /**
      * @see Session#interrupt()
      */
-    public void interrupt() {
+    public void interrupt() throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Interrupt transfer %s", this.getName()));
         }
@@ -690,7 +659,7 @@ public abstract class Transfer implements Serializable {
      * skipped when processed. If the transfer is already in a <code>canceled</code>
      * state, the underlying session's socket is interrupted to force exit.
      */
-    public void cancel() {
+    public void cancel() throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel transfer %s", this.getName()));
         }
@@ -703,24 +672,6 @@ public abstract class Transfer implements Serializable {
         }
         canceled = true;
         Queue.instance().remove(this);
-    }
-
-    protected void close(final Session session) {
-        session.close();
-    }
-
-    protected boolean open(final Session session) {
-        try {
-            log.debug(String.format("Checking connnection for %s", session));
-            // We manually open the connection here first as otherwise
-            // every transfer will try again if it should fail
-            session.check();
-        }
-        catch(IOException e) {
-            log.warn(e.getMessage());
-            return false;
-        }
-        return true;
     }
 
     /**

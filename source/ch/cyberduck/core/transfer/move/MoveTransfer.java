@@ -26,6 +26,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -81,7 +82,7 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> children(final Path parent) {
+    public AttributedList<Path> children(final Path parent) throws BackgroundException {
         // Move operation on parent directory will move all children already
         return AttributedList.emptyList();
     }
@@ -92,7 +93,7 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) {
+    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -103,7 +104,7 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
+    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }

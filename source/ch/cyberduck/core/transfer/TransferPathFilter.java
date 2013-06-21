@@ -1,12 +1,15 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.threading.BackgroundException;
 
 /**
  * @version $Id$
  */
-public abstract class TransferPathFilter implements Filter<Path> {
+public interface TransferPathFilter {
+
+    boolean accept(Path file) throws BackgroundException;
+
     /**
      * Called before the file will actually get transferred. Should prepare for the transfer
      * such as calculating its size.
@@ -15,8 +18,9 @@ public abstract class TransferPathFilter implements Filter<Path> {
      *
      * @param p File
      * @return Transfer status
+     * @see ch.cyberduck.core.Filter#accept(Object)
      */
-    public abstract TransferStatus prepare(Path p);
+    TransferStatus prepare(Path p) throws BackgroundException;
 
     /**
      * Post processing of completed transfer.
@@ -25,5 +29,5 @@ public abstract class TransferPathFilter implements Filter<Path> {
      * @param options Options
      * @param status  Transfer status
      */
-    public abstract void complete(Path p, TransferOptions options, TransferStatus status);
+    void complete(Path p, TransferOptions options, TransferStatus status) throws BackgroundException;
 }

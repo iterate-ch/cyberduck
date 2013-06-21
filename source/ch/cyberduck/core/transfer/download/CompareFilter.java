@@ -4,6 +4,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.log4j.Logger;
@@ -21,7 +22,7 @@ public class CompareFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Path file) {
+    public boolean accept(final Path file) throws BackgroundException {
         if(super.accept(file)) {
             final Comparison comparison = compareService.compare(file);
             switch(comparison) {

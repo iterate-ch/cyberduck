@@ -25,7 +25,7 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver {
                 return false;
             }
             // Create symbolic link only if choosen in the preferences. Otherwise download target file
-            final AbstractPath target = file.getSymlinkTarget();
+            final Path target = file.getSymlinkTarget();
             // Only create symbolic link if target is included in the download
             for(Path root : files) {
                 if(this.findTarget(target, root)) {
@@ -39,7 +39,7 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver {
     @Override
     public boolean include(final Path file) {
         if(file.attributes().isSymbolicLink()) {
-            final AbstractPath target = file.getSymlinkTarget();
+            final Path target = file.getSymlinkTarget();
             // Do not transfer files referenced from symlinks pointing to files also included
             for(Path root : files) {
                 if(this.findTarget(target, root)) {

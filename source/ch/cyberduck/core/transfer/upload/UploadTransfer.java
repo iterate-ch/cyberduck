@@ -30,6 +30,7 @@ import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -94,7 +95,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> children(final Path parent) {
+    public AttributedList<Path> children(final Path parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", parent));
         }
@@ -113,7 +114,7 @@ public class UploadTransfer extends Transfer {
             else {
                 final AttributedList<Path> children = new AttributedList<Path>();
                 for(Local local : parent.getLocal().list().filter(filter)) {
-                    children.add(PathFactory.createPath(session, parent.getAbsolute(), local));
+                    children.add(PathFactory.createPath(session, parent, local));
                 }
                 this.cache().put(parent.getReference(), children);
             }
@@ -132,7 +133,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) {
+    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -157,9 +158,7 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path upload : this.getRoots()) {
-                if(!this.check()) {
-                    return null;
-                }
+                this.check();
                 if(upload.exists()) {
                     if(upload.getLocal().attributes().isDirectory()) {
                         if(this.children(upload).isEmpty()) {
@@ -200,7 +199,7 @@ public class UploadTransfer extends Transfer {
 
 
     @Override
-    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
+    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -232,7 +231,7 @@ public class UploadTransfer extends Transfer {
             }, status);
             if(status.isComplete()) {
                 if(temporary) {
-                    file.rename(PathFactory.createPath(file.getSession(), file.getParent().getAbsolute(),
+                    file.rename(PathFactory.createPath(file.getSession(), file.getParent(),
                             original, file.attributes().getType()));
                     file.setPath(file.getParent(), original);
                 }

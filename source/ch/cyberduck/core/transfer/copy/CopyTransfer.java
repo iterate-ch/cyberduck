@@ -33,6 +33,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -127,8 +128,8 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public List<Session> getSessions() {
-        final ArrayList<Session> sessions = new ArrayList<Session>(super.getSessions());
+    public List<Session<?>> getSessions() {
+        final ArrayList<Session<?>> sessions = new ArrayList<Session<?>>(super.getSessions());
         if(destination != null) {
             sessions.add(destination);
         }
@@ -141,7 +142,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(TransferPrompt prompt, final TransferAction action) {
+    public TransferPathFilter filter(TransferPrompt prompt, final TransferAction action) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -152,19 +153,24 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> children(final Path source) {
-        final AttributedList<Path> list = source.children();
-        final Path target = files.get(source);
-        for(Path p : list) {
-            files.put(p, PathFactory.createPath(destination,
-                    target.getAbsolute(), p.getName(), p.attributes().getType()));
+    public AttributedList<Path> children(final Path source) throws BackgroundException {
+        if(this.cache().containsKey(source.getReference())) {
+            return this.cache().get(source.getReference());
         }
-        destination.cache().put(target.getReference(), AttributedList.<Path>emptyList());
-        return list;
+        else {
+            final AttributedList<Path> list = source.list();
+            this.cache().put(source.getReference(), list);
+            final Path target = files.get(source);
+            for(Path p : list) {
+                files.put(p, PathFactory.createPath(destination, target, p.getName(), p.attributes().getType()));
+            }
+            destination.cache().put(target.getReference(), AttributedList.<Path>emptyList());
+            return list;
+        }
     }
 
     @Override
-    public void transfer(final Path source, final TransferOptions options, final TransferStatus status) {
+    public void transfer(final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }

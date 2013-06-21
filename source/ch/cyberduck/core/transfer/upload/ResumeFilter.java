@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -18,7 +19,7 @@ public class ResumeFilter extends AbstractUploadFilter {
      * Append to existing file.
      */
     @Override
-    public TransferStatus prepare(final Path file) {
+    public TransferStatus prepare(final Path file) throws BackgroundException {
         final TransferStatus status = super.prepare(file);
         if(file.getSession().isUploadResumable()) {
             final PathAttributes attributes = file.attributes();

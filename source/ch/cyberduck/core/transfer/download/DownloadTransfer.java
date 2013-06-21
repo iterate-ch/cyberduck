@@ -30,6 +30,7 @@ import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -79,26 +80,33 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> children(final Path parent) {
+    public AttributedList<Path> children(final Path parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", parent));
         }
+        if(this.cache().containsKey(parent.getReference())) {
+            return this.cache().get(parent.getReference()).filter(null, filter);
+        }
+        final AttributedList<Path> list;
         if(parent.attributes().isSymbolicLink() && new DownloadSymlinkResolver(this.getRoots()).resolve(parent)) {
             if(log.isDebugEnabled()) {
                 log.debug("Do not list children for symbolic link:" + parent);
             }
-            return AttributedList.emptyList();
+            list = AttributedList.emptyList();
         }
-        final AttributedList<Path> list = parent.children(filter);
-        for(Path download : list) {
-            // Change download path relative to parent local folder
-            download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));
+        else {
+            list = parent.list().filter(filter);
+            for(Path download : list) {
+                // Change download path relative to parent local folder
+                download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));
+            }
         }
+        this.cache().put(parent.getReference(), list);
         return list;
     }
 
     @Override
-    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) {
+    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -168,7 +176,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
+    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }

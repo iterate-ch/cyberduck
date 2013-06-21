@@ -36,11 +36,6 @@ public final class TransferOptions {
     public boolean reloadRequested = false;
 
     /**
-     * Close session after transfer
-     */
-    public boolean closeSession = true;
-
-    /**
      * Add quarantine flag to downloaded file
      */
     public boolean quarantine =
@@ -55,7 +50,6 @@ public final class TransferOptions {
         sb.append("TransferOptions");
         sb.append("{resumeRequested=").append(resumeRequested);
         sb.append(", reloadRequested=").append(reloadRequested);
-        sb.append(", closeSession=").append(closeSession);
         sb.append(", quarantine=").append(quarantine);
         sb.append('}');
         return sb.toString();

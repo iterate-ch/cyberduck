@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -20,12 +21,12 @@ public class RenameFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Path file) {
+    public boolean accept(final Path file) throws BackgroundException {
         return true;
     }
 
     @Override
-    public TransferStatus prepare(final Path file) {
+    public TransferStatus prepare(final Path file) throws BackgroundException {
         if(file.getLocal().exists()) {
             final String parent = file.getLocal().getParent().getAbsolute();
             final String filename = file.getName();

@@ -1,12 +1,13 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -17,7 +18,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class AbstractUploadFilter extends TransferPathFilter {
+public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
 
     private SymlinkResolver symlinkResolver;
@@ -27,7 +28,7 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Path file) {
+    public boolean accept(final Path file) throws BackgroundException {
         final PathAttributes attributes = file.attributes();
         if(attributes.isDirectory()) {
             // Do not attempt to create a directory that already exists
@@ -50,7 +51,7 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file) {
+    public TransferStatus prepare(final Path file) throws BackgroundException {
         final PathAttributes attributes = file.attributes();
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
             if(file.exists()) {
@@ -93,7 +94,7 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
                 }
                 else {
                     // Will resolve the symbolic link when the file is requested.
-                    final AbstractPath target = file.getLocal().getSymlinkTarget();
+                    final Local target = file.getLocal().getSymlinkTarget();
                     status.setLength(target.attributes().getSize());
                 }
             }
@@ -111,7 +112,7 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
     }
 
     @Override
-    public void complete(final Path file, final TransferOptions options, final TransferStatus status) {
+    public void complete(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }

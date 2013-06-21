@@ -29,6 +29,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -158,7 +159,7 @@ public class SyncTransfer extends Transfer {
     };
 
     @Override
-    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) {
+    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -178,7 +179,7 @@ public class SyncTransfer extends Transfer {
                         = _delegateUpload.filter(null, TransferAction.ACTION_OVERWRITE);
 
                 @Override
-                public TransferStatus prepare(final Path p) {
+                public TransferStatus prepare(final Path p) throws BackgroundException {
                     final Comparison compare = SyncTransfer.this.compare(p);
                     if(compare.equals(Comparison.REMOTE_NEWER)) {
                         return _delegateFilterDownload.prepare(p);
@@ -190,7 +191,7 @@ public class SyncTransfer extends Transfer {
                 }
 
                 @Override
-                public boolean accept(final Path p) {
+                public boolean accept(final Path p) throws BackgroundException {
                     final Comparison compare = SyncTransfer.this.compare(p);
                     if(compare.equals(Comparison.EQUAL)) {
                         return false;
@@ -213,7 +214,7 @@ public class SyncTransfer extends Transfer {
                 }
 
                 @Override
-                public void complete(final Path p, final TransferOptions options, final TransferStatus status) {
+                public void complete(final Path p, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                     final Comparison compare = SyncTransfer.this.compare(p);
                     if(compare.equals(Comparison.REMOTE_NEWER)) {
                         _delegateFilterDownload.complete(p, options, status);
@@ -234,7 +235,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> children(final Path parent) {
+    public AttributedList<Path> children(final Path parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", parent));
         }
@@ -244,6 +245,13 @@ public class SyncTransfer extends Transfer {
         }
         if(parent.getLocal().exists()) {
             children.addAll(_delegateUpload.children(parent));
+        }
+        for(Path path : children) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Compare path %s with local", path));
+            }
+            final Comparison result = new CombinedComparisionService().compare(path);
+            comparisons.put(path.getReference(), result);
         }
         return new AttributedList<Path>(children);
     }
@@ -256,26 +264,25 @@ public class SyncTransfer extends Transfer {
      */
     @Override
     public boolean isSkipped(final Path path) {
-        boolean skipped = false;
-        final Comparison comparison = this.compare(path);
+        final Comparison comparison = comparisons.get(path.getReference());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Comparison for file %s is %s", path, comparison));
+        }
         // Updating default skip settings for actual transfer
         if(Comparison.EQUAL.equals(comparison)) {
-            skipped = path.attributes().isFile();
+            return path.attributes().isFile();
         }
         else {
             if(path.attributes().isFile()) {
                 if(comparison.equals(Comparison.REMOTE_NEWER)) {
-                    skipped = this.getTransferAction().equals(ACTION_UPLOAD);
+                    return this.getTransferAction().equals(ACTION_UPLOAD);
                 }
                 else if(comparison.equals(Comparison.LOCAL_NEWER)) {
-                    skipped = this.getTransferAction().equals(ACTION_DOWNLOAD);
+                    return this.getTransferAction().equals(ACTION_DOWNLOAD);
                 }
             }
+            return false;
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Skip file %s:%s", path.getAbsolute(), skipped));
-        }
-        return skipped;
     }
 
     /**
@@ -340,7 +347,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, TransferOptions options, final TransferStatus status) {
+    public void transfer(final Path file, TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -382,18 +389,13 @@ public class SyncTransfer extends Transfer {
 
     /**
      * @param p The path to compare
-     * @return Comparison.REMOTE_NEWER, Comparison.LOCAL_NEWER or COMPARISON_EQUAL
+     * @return Comparison.REMOTE_NEWER, Comparison.LOCAL_NEWER or Comparison.EQUAL
      */
     public Comparison compare(final Path p) {
         if(comparisons.containsKey(p.getReference())) {
             return comparisons.get(p.getReference());
         }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare path %s with local", p.getName()));
-        }
-        final Comparison result = new CombinedComparisionService().compare(p);
-        comparisons.put(p.getReference(), result);
-        return result;
+        return Comparison.EQUAL;
     }
 
 

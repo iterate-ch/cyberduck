@@ -32,7 +32,7 @@ public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Path>
                 if(upload.equals(n)) {
                     // The selected file has the same name; if uploaded as a root element
                     // it would overwrite the earlier
-                    final String parent = upload.getParent().getAbsolute();
+                    final Path parent = upload.getParent();
                     final String filename = upload.getName();
                     String proposal;
                     int no = 0;
