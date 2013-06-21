@@ -511,7 +511,7 @@ public abstract class Session<C> implements TranscriptListener {
      *
      * @see ConnectionListener
      */
-    public void fireConnectionWillCloseEvent() {
+    protected void fireConnectionWillCloseEvent() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will close to %s", host));
         }
@@ -527,7 +527,7 @@ public abstract class Session<C> implements TranscriptListener {
      *
      * @see ConnectionListener
      */
-    public void fireConnectionDidCloseEvent() {
+    protected void fireConnectionDidCloseEvent() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did close to %s", host));
         }
