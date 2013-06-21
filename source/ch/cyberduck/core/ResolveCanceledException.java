@@ -27,8 +27,4 @@ public class ResolveCanceledException extends ConnectionCanceledException {
     public ResolveCanceledException() {
         super();
     }
-
-    public ResolveCanceledException(String s) {
-        super(s);
-    }
 }

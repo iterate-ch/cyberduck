@@ -18,29 +18,25 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.IOException;
+import ch.cyberduck.core.threading.BackgroundException;
 
 /**
  * To be used if a connection attempt is interrupted by the user
  *
  * @version $Id$
  */
-public class ConnectionCanceledException extends IOException {
+public class ConnectionCanceledException extends BackgroundException {
     private static final long serialVersionUID = 1731598032382782206L;
 
     public ConnectionCanceledException() {
         super();
     }
 
-    public ConnectionCanceledException(final String message) {
-        super(message);
+    public ConnectionCanceledException(final String detail) {
+        super(detail, null);
     }
 
-    public ConnectionCanceledException(final Throwable cause) {
+    public ConnectionCanceledException(final Exception cause) {
         super(cause);
-    }
-
-    public ConnectionCanceledException(final String message, final Throwable cause) {
-        super(message, cause);
     }
 }

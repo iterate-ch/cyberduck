@@ -1,7 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.i18n.Locale;
-
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -29,6 +27,6 @@ public class LoginCanceledException extends ConnectionCanceledException {
     private static final long serialVersionUID = 3299339665746039518L;
 
     public LoginCanceledException() {
-        super(Locale.localizedString("Login canceled", "Credentials"));
+        super();
     }
 }
