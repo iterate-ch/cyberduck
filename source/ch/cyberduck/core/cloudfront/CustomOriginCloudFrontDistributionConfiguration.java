@@ -1,7 +1,6 @@
 package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
@@ -18,18 +17,18 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
     private static Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
 
-    private LoginController controller;
+    private LoginController prompt;
     private S3Session session;
 
-    public CustomOriginCloudFrontDistributionConfiguration(final S3Session session, final LoginController controller) {
+    public CustomOriginCloudFrontDistributionConfiguration(final S3Session session, final LoginController prompt) {
         super(session);
         this.session = session;
-        this.controller = controller;
+        this.prompt = prompt;
     }
 
     @Override
@@ -51,25 +50,17 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
         try {
-            controller.check(session.getHost(), this.getName(), null, true, false, false);
+            prompt.check(session.getHost(), this.getName(), null, true, false, false);
             final T call = run.call();
-            controller.success(session.getHost());
+            prompt.success(session.getHost());
             return call;
         }
+        catch(LoginFailureException failure) {
+            prompt.fail(session.getHost().getProtocol(), session.getHost().getCredentials(), failure.getMessage());
+            return this.authenticated(run);
+        }
         catch(BackgroundException e) {
-            final Throwable failure = e.getCause();
-            if(failure instanceof LoginFailureException) {
-                try {
-                    controller.fail(session.getHost().getProtocol(), session.getHost().getCredentials(), failure.getMessage());
-                }
-                catch(LoginCanceledException canceled) {
-                    throw new BackgroundException(canceled);
-                }
-                return this.authenticated(run);
-            }
-            else {
-                throw e;
-            }
+            throw e;
         }
         catch(Exception e) {
             throw new BackgroundException(e);

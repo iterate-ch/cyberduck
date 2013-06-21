@@ -2,7 +2,6 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
@@ -18,7 +17,6 @@ import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,9 +96,6 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 return new Distribution(null, this.getOrigin(container, method), method, false,
                         String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)), status);
             }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read website configuration", e, session.getHost());
-            }
         }
         else {
             return super.read(container, method);
@@ -134,10 +129,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 }
             }
             catch(S3ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot write website configuration", e, session.getHost());
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot write website configuration", e, session.getHost());
+                throw new ServiceExceptionMappingService().map("Cannot write website configuration", e);
             }
         }
         else {

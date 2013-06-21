@@ -155,10 +155,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             return new Distribution(this.getOrigin(container, method), method);
         }
         catch(CloudFrontServiceException e) {
-            throw new CloudFrontServiceExceptionMappingService().map("Cannot read CDN configuration", e, session.getHost());
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read CDN configuration", e, session.getHost());
+            throw new CloudFrontServiceExceptionMappingService().map("Cannot read CDN configuration", e);
         }
     }
 
@@ -220,10 +217,10 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             }
         }
         catch(CloudFrontServiceException e) {
-            throw new CloudFrontServiceExceptionMappingService().map("Cannot write CDN configuration", e, session.getHost());
+            throw new CloudFrontServiceExceptionMappingService().map("Cannot write CDN configuration", e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e, session.getHost());
+            throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e);
         }
     }
 
@@ -290,7 +287,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             }
         }
         catch(CloudFrontServiceException e) {
-            throw new CloudFrontServiceExceptionMappingService().map("Cannot write CDN configuration", e, session.getHost());
+            throw new CloudFrontServiceExceptionMappingService().map("Cannot write CDN configuration", e);
         }
     }
 
@@ -299,7 +296,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @param recursive Recursivly for folders
      * @return Key to files
      */
-    protected List<String> getInvalidationKeys(List<Path> files, boolean recursive) {
+    protected List<String> getInvalidationKeys(final List<Path> files, final boolean recursive) throws BackgroundException {
         List<String> keys = new ArrayList<String>();
         for(Path file : files) {
             if(file.isContainer()) {
@@ -310,7 +307,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             }
             if(file.attributes().isDirectory()) {
                 if(recursive) {
-                    keys.addAll(this.getInvalidationKeys(file.children(), recursive));
+                    keys.addAll(this.getInvalidationKeys(file.list(), recursive));
                 }
             }
         }
@@ -321,27 +318,32 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @param distribution Configuration
      * @return Status message from service
      */
-    private String readInvalidationStatus(Distribution distribution) throws IOException, CloudFrontServiceException {
+    private String readInvalidationStatus(final Distribution distribution) throws BackgroundException {
         boolean complete = false;
         int inprogress = 0;
-        List<InvalidationSummary> summaries = client.listInvalidations(distribution.getId());
-        for(InvalidationSummary s : summaries) {
-            if("Completed".equals(s.getStatus())) {
-                // No schema for status enumeration. Fail.
-                complete = true;
+        try {
+            final List<InvalidationSummary> summaries = client.listInvalidations(distribution.getId());
+            for(InvalidationSummary s : summaries) {
+                if("Completed".equals(s.getStatus())) {
+                    // No schema for status enumeration. Fail.
+                    complete = true;
+                }
+                else {
+                    // InProgress
+                    inprogress++;
+                }
             }
-            else {
-                // InProgress
-                inprogress++;
+            if(inprogress > 0) {
+                return MessageFormat.format(Locale.localizedString("{0} invalidations in progress", "S3"), inprogress);
             }
+            if(complete) {
+                return MessageFormat.format(Locale.localizedString("{0} invalidations completed", "S3"), summaries.size());
+            }
+            return Locale.localizedString("None");
         }
-        if(inprogress > 0) {
-            return MessageFormat.format(Locale.localizedString("{0} invalidations in progress", "S3"), inprogress);
+        catch(CloudFrontServiceException e) {
+            throw new CloudFrontServiceExceptionMappingService().map("Cannot read CDN configuration", e);
         }
-        if(complete) {
-            return MessageFormat.format(Locale.localizedString("{0} invalidations completed", "S3"), summaries.size());
-        }
-        return Locale.localizedString("None");
     }
 
     /**
@@ -358,12 +360,12 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @throws CloudFrontServiceException  CloudFront failure details
      * @throws ConnectionCanceledException Authentication canceled
      */
-    private org.jets3t.service.model.cloudfront.Distribution createDistribution(boolean enabled,
-                                                                                Distribution.Method method,
+    private org.jets3t.service.model.cloudfront.Distribution createDistribution(final boolean enabled,
+                                                                                final Distribution.Method method,
                                                                                 final String origin,
-                                                                                String[] cnames,
-                                                                                LoggingStatus logging,
-                                                                                String defaultRootObject)
+                                                                                final String[] cnames,
+                                                                                final LoggingStatus logging,
+                                                                                final String defaultRootObject)
             throws ConnectionCanceledException, CloudFrontServiceException {
 
         final String reference = String.valueOf(System.currentTimeMillis());
@@ -465,7 +467,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     private Distribution convert(final org.jets3t.service.model.cloudfront.Distribution d,
-                                 Distribution.Method method) throws IOException, CloudFrontServiceException {
+                                 Distribution.Method method) throws BackgroundException {
         // Retrieve distributions configuration to access current logging status settings.
         final DistributionConfig distributionConfig = this.getDistributionConfig(d);
         final String loggingTarget;
@@ -508,15 +510,18 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     /**
      * @param distribution Distribution configuration
      * @return Configuration
-     * @throws CloudFrontServiceException CloudFront failure details
-     * @throws IOException                Service error
      */
     private DistributionConfig getDistributionConfig(final org.jets3t.service.model.cloudfront.Distribution distribution)
-            throws IOException, CloudFrontServiceException {
+            throws BackgroundException {
 
-        if(distribution.isStreamingDistribution()) {
-            return client.getStreamingDistributionConfig(distribution.getId());
+        try {
+            if(distribution.isStreamingDistribution()) {
+                return client.getStreamingDistributionConfig(distribution.getId());
+            }
+            return client.getDistributionConfig(distribution.getId());
         }
-        return client.getDistributionConfig(distribution.getId());
+        catch(CloudFrontServiceException e) {
+            throw new CloudFrontServiceExceptionMappingService().map("Cannot read CDN configuration", e);
+        }
     }
 }
