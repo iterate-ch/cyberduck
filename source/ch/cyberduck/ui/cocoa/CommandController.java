@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.ftp.FTPException;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
@@ -38,8 +37,6 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;
-
-import java.io.IOException;
 
 /**
  * @version $Id$
@@ -114,15 +111,7 @@ public class CommandController extends SheetController implements TranscriptList
 
                 @Override
                 public void run() throws BackgroundException {
-                    try {
-                        session.sendCommand(command);
-                    }
-                    catch(FTPException e) {
-                        ; //ignore
-                    }
-                    catch(IOException e) {
-                        log.warn(e.getMessage());
-                    }
+                    session.sendCommand(command);
                 }
 
                 @Override
