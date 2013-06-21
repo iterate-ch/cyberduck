@@ -24,6 +24,7 @@ import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.ui.threading.ControllerMainAction;
@@ -99,12 +100,17 @@ public abstract class AbstractController implements Controller {
                             return runnable.call();
                         }
                     }
-                    catch(Exception e) {
+                    catch(BackgroundException e) {
                         log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
                     }
                     finally {
                         // Increase the run counter
-                        runnable.finish();
+                        try {
+                            runnable.finish();
+                        }
+                        catch(BackgroundException e) {
+                            log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+                        }
                         // Invoke the cleanup on the main thread to let the action synchronize the user interface
                         invoke(new ControllerMainAction(AbstractController.this) {
                             @Override
