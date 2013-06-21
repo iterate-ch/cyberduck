@@ -36,7 +36,7 @@ public interface BackgroundAction<T> extends Callable<T> {
      * @return True if proceed to runnning
      * @see #run()
      */
-    boolean prepare();
+    boolean prepare() throws BackgroundException;
 
     void run() throws BackgroundException;
 
@@ -51,7 +51,7 @@ public interface BackgroundAction<T> extends Callable<T> {
      *
      * @see #run
      */
-    void finish();
+    void finish() throws BackgroundException;
 
     boolean isRunning();
 

@@ -36,55 +36,48 @@ public class BackgroundException extends Exception {
 
     private static final long serialVersionUID = -6114495291207129418L;
 
-    private String title = Locale.localizedString("Unknown");
+    private String message = Locale.localizedString("Unknown");
     private String detail;
 
     private Path path;
 
-    private Host host;
-
-    public BackgroundException(final Exception cause) {
-        this(null, null, cause.getMessage(), cause);
+    public BackgroundException() {
+        this(null, Locale.localizedString("Unknown"), null);
     }
 
-    public BackgroundException(final String detail, final Exception cause) {
-        this(null, null, detail, cause);
+    public BackgroundException(final Exception cause) {
+        this(null, cause.getMessage(), cause);
+    }
+
+    public BackgroundException(final String detail) {
+        this(null, detail, null);
     }
 
     public BackgroundException(final Host host, final Exception cause) {
-        this(host, null, Locale.localizedString("Unknown"), cause);
+        this(null, Locale.localizedString("Unknown"), cause);
     }
 
-    public BackgroundException(final Host host, final String detail, final Exception cause) {
-        this(host, null, detail, cause);
+    public BackgroundException(final String detail, final Exception cause) {
+        this(null, detail, cause);
     }
 
     public BackgroundException(final Path path, final String detail, final Exception cause) {
-        this(null, path, detail, cause);
-    }
-
-    public BackgroundException(final Host host, final Path path, final String detail, final Exception cause) {
         super(cause);
-        this.host = host;
         this.path = path;
         this.detail = detail;
     }
 
-    public void setTitle(final String title) {
-        this.title = title;
+    public void setMessage(final String title) {
+        this.message = title;
     }
 
     public void setPath(final Path path) {
         this.path = path;
     }
 
-    public void setHost(final Host host) {
-        this.host = host;
-    }
-
     @Override
     public String getMessage() {
-        return Locale.localizedString(title, "Error");
+        return Locale.localizedString(message, "Error");
     }
 
     /**
@@ -129,13 +122,6 @@ public class BackgroundException extends Exception {
         return path;
     }
 
-    /**
-     * @return The session this exception occurred
-     */
-    public Host getHost() {
-        return host;
-    }
-
     @Override
     public boolean equals(Object o) {
         if(this == o) {
@@ -154,9 +140,6 @@ public class BackgroundException extends Exception {
         if(path != null ? !path.equals(that.path) : that.path != null) {
             return false;
         }
-        if(host != null ? !host.equals(that.host) : that.host != null) {
-            return false;
-        }
         return true;
     }
 
@@ -164,7 +147,6 @@ public class BackgroundException extends Exception {
     public int hashCode() {
         int result = detail != null ? detail.hashCode() : 0;
         result = 31 * result + (path != null ? path.hashCode() : 0);
-        result = 31 * result + (host != null ? host.hashCode() : 0);
         result = 31 * result + (this.getCause() != null ? this.getCause().hashCode() : 0);
         return result;
     }

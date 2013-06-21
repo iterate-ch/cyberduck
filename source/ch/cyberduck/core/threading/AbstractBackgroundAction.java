@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -67,9 +68,9 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     @Override
-    public boolean prepare() {
+    public boolean prepare() throws BackgroundException {
         if(this.isCanceled()) {
-            return false;
+            throw new ConnectionCanceledException();
         }
         running = true;
         BackgroundActionListener[] l = listeners.toArray(
@@ -81,7 +82,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     @Override
-    public void finish() {
+    public void finish() throws BackgroundException {
         running = false;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);

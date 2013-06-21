@@ -19,10 +19,9 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.ErrorListener;
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ConnectionCheckService;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.Session;
@@ -32,11 +31,9 @@ import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLPeerUnverifiedException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.security.cert.CertificateException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Timer;
@@ -47,16 +44,16 @@ import java.util.concurrent.CyclicBarrier;
 /**
  * @version $Id$
  */
-public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean>
-        implements ErrorListener, TranscriptListener {
+public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean> implements TranscriptListener {
     private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
-    private static final String lineSeparator = System.getProperty("line.separator");
+
+    private static final String lineSeparator
+            = System.getProperty("line.separator");
 
     /**
      * Contains all exceptions thrown while this action was running
      */
-    private List<BackgroundException> exceptions
-            = new Collection<BackgroundException>();
+    private BackgroundException exception;
 
     /**
      * This action encountered one or more exceptions
@@ -85,8 +82,14 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     private static final int TRANSCRIPT_MAX_LENGTH =
             Preferences.instance().getInteger("transcript.length");
 
-    public List<BackgroundException> getExceptions() {
-        return exceptions;
+    private LoginController prompt;
+
+    protected RepeatableBackgroundAction(final LoginController prompt) {
+        this.prompt = prompt;
+    }
+
+    public BackgroundException getException() {
+        return exception;
     }
 
     public String getTranscript() {
@@ -120,15 +123,25 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     @Override
     public boolean prepare() {
-        for(Session session : this.getSessions()) {
-            if(session != null) {
-                session.addErrorListener(this);
-                session.addTranscriptListener(this);
+        try {
+            if(super.prepare()) {
+                for(Session session : this.getSessions()) {
+                    session.addTranscriptListener(this);
+                }
+                // Clear the transcript and exceptions
+                transcript = new StringBuilder();
+                final ConnectionCheckService c = new ConnectionCheckService(prompt);
+                for(Session session : this.getSessions()) {
+                    c.check(session);
+                }
+                return true;
             }
         }
-        // Clear the transcript and exceptions
-        transcript = new StringBuilder();
-        return super.prepare();
+        catch(BackgroundException failure) {
+            log.warn(String.format("Failure starting background action: %s", failure));
+            this.error(failure);
+        }
+        return false;
     }
 
     /**
@@ -136,7 +149,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      *
      * @return The session if any or null if invalid
      */
-    protected abstract List<Session> getSessions();
+    protected abstract List<Session<?>> getSessions();
 
     /**
      * The number of times a new connection attempt should be made. Takes into
@@ -146,15 +159,10 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     public int retry() {
         if(!this.isCanceled()) {
-            for(BackgroundException e : exceptions) {
-                final Throwable cause = e.getCause();
-                // Check for an exception we consider possibly temporary
-                if(cause instanceof SocketException
-                        || cause instanceof SocketTimeoutException
-                        || cause instanceof UnknownHostException) {
-                    // The initial connection attempt does not count
-                    return repeatAttempts - repeatCount;
-                }
+            // Check for an exception we consider possibly temporary
+            if(this.isNetworkFailure()) {
+                // The initial connection attempt does not count
+                return repeatAttempts - repeatCount;
             }
         }
         return 0;
@@ -162,13 +170,13 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     protected void reset() {
         failed = false;
-        exceptions.clear();
+        exception = null;
     }
 
     protected void diagnose() {
-        List<BackgroundException> exceptions = this.getExceptions();
-        final Host host = exceptions.get(exceptions.size() - 1).getHost();
-        ReachabilityFactory.get().diagnose(host);
+        for(Session session : this.getSessions()) {
+            ReachabilityFactory.get().diagnose(session.getHost());
+        }
     }
 
     /**
@@ -181,11 +189,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     }
 
     public boolean isNetworkFailure() {
-        for(BackgroundException e : this.getExceptions()) {
-            final Throwable cause = e.getCause();
-            if(cause instanceof SocketException || cause instanceof UnknownHostException) {
-                return true;
-            }
+        final Throwable cause = exception.getCause();
+        if(cause instanceof SocketException
+                || cause instanceof SocketTimeoutException
+                || cause instanceof UnknownHostException) {
+            return true;
         }
         return false;
     }
@@ -196,6 +204,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             return super.call();
         }
         catch(BackgroundException failure) {
+            log.warn(String.format("Failure executing background action: %s", failure));
             this.error(failure);
         }
         return false;
@@ -203,35 +212,19 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     public void error(final BackgroundException failure) {
         // Do not report an error when the action was canceled intentionally
-        Throwable cause = failure.getCause();
-        if(cause instanceof ConnectionCanceledException) {
-            log.warn(cause.getMessage());
+        if(failure instanceof ConnectionCanceledException) {
             // Do not report as failed if instanceof ConnectionCanceledException
             return;
         }
-        if(cause instanceof CertificateException) {
-            log.warn(cause.getMessage());
-            // Server certificate not accepted
-            return;
+        for(Session session : this.getSessions()) {
+            Growl.instance().notify(failure.getMessage(), session.getHost().getHostname());
         }
-        if(cause instanceof SSLPeerUnverifiedException) {
-            log.warn(cause.getMessage());
-            // Server certificate not accepted
-            return;
-        }
-        final String description
-                = (null == failure.getPath()) ? failure.getHost().getHostname() : failure.getPath().getName();
-        if(exceptions.size() < Preferences.instance().getInteger("growl.limit")) {
-            Growl.instance().notify(failure.getMessage(), description);
-        }
-        if(!exceptions.contains(failure)) {
-            exceptions.add(failure);
-        }
+        exception = failure;
         failed = true;
     }
 
     @Override
-    public void finish() {
+    public void finish() throws BackgroundException {
         while(this.hasFailed() && this.retry() > 0) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Retry failed background action %s", this));
@@ -247,15 +240,18 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             }
         }
         for(Session session : this.getSessions()) {
-            if(session != null) {
-                // It is important _not_ to do this in #cleanup as otherwise
-                // the listeners are still registered when the next BackgroundAction
-                // is already running
-                session.removeTranscriptListener(this);
-                session.removeErrorListener(this);
-            }
+            // It is important _not_ to do this in #cleanup as otherwise
+            // the listeners are still registered when the next BackgroundAction
+            // is already running
+            session.removeTranscriptListener(this);
         }
-        super.finish();
+        try {
+            super.finish();
+        }
+        catch(BackgroundException failure) {
+            log.warn(String.format("Failure finishing background action: %s", failure));
+            this.error(failure);
+        }
     }
 
     /**
@@ -284,9 +280,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     return;
                 }
                 for(Session session : getSessions()) {
-                    if(session != null) {
-                        session.message(MessageFormat.format(pattern, delay--, RepeatableBackgroundAction.this.retry()));
-                    }
+                    session.message(MessageFormat.format(pattern, delay--, RepeatableBackgroundAction.this.retry()));
                 }
             }
 
@@ -328,9 +322,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     @Override
     public String toString() {
         for(Session session : this.getSessions()) {
-            if(session != null) {
-                return session.getHost().getHostname();
-            }
+            return session.getHost().getHostname();
         }
         return Locale.localizedString("Unknown");
     }
