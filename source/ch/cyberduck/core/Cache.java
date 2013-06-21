@@ -50,7 +50,7 @@ public class Cache {
      * evaluated first.
      *
      * @param reference A child object of a cached directory listing in the cache
-     * @return Null if the path is no more cached.
+     * @return Null if the path is not in the cache
      * @see ch.cyberduck.core.AttributedList#get(PathReference)
      */
     public Path lookup(final PathReference reference) {
