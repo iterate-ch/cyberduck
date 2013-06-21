@@ -117,7 +117,7 @@ public abstract class CloudSession<C> extends HttpSession<C> {
      * @return Bucket geographical location
      */
     public String getLocation(final Path container) throws BackgroundException {
-        throw new BackgroundException("Not supported");
+        return null;
     }
 
     /**
