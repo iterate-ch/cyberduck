@@ -63,21 +63,10 @@ import java.util.UUID;
 public class CloudFrontDistributionConfiguration implements DistributionConfiguration {
     private static Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
-    private CloudFrontService client;
-
     private S3Session session;
 
     public CloudFrontDistributionConfiguration(final S3Session session) {
         this.session = session;
-        this.client = new CloudFrontService(
-                new AWSCredentials(session.getHost().getCredentials().getUsername(),
-                        session.getHost().getCredentials().getPassword())) {
-
-            @Override
-            protected HttpClient initHttpConnection() {
-                return session.http();
-            }
-        };
     }
 
     @Override
@@ -118,12 +107,21 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             if(log.isDebugEnabled()) {
                 log.debug(String.format("List %s distributions", method));
             }
+            final CloudFrontService client = new CloudFrontService(
+                    new AWSCredentials(session.getHost().getCredentials().getUsername(),
+                            session.getHost().getCredentials().getPassword())) {
+
+                @Override
+                protected HttpClient initHttpConnection() {
+                    return session.http();
+                }
+            };
             if(method.equals(Distribution.STREAMING)) {
                 for(org.jets3t.service.model.cloudfront.Distribution d : client.listStreamingDistributions(this.getOrigin(container, method))) {
                     for(Origin o : d.getConfig().getOrigins()) {
                         if(o instanceof S3Origin) {
                             // We currently only support one distribution per bucket
-                            return this.convert(d, method);
+                            return this.convert(client, d, method);
                         }
                     }
                 }
@@ -134,7 +132,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     for(Origin o : d.getConfig().getOrigins()) {
                         if(o instanceof S3Origin) {
                             // We currently only support one distribution per bucket
-                            return this.convert(d, method);
+                            return this.convert(client, d, method);
                         }
                     }
                 }
@@ -146,7 +144,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                         if(o instanceof CustomOrigin) {
                             if(o.getDomainName().equals(this.getOrigin(container, method))) {
                                 // We currently only support one distribution per bucket
-                                return this.convert(d, method);
+                                return this.convert(client, d, method);
                             }
                         }
                     }
@@ -174,6 +172,16 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                             Preferences.instance().getProperty("cloudfront.logging.prefix"));
                 }
             }
+            final CloudFrontService client = new CloudFrontService(
+                    new AWSCredentials(session.getHost().getCredentials().getUsername(),
+                            session.getHost().getCredentials().getPassword())) {
+
+                @Override
+                protected HttpClient initHttpConnection() {
+                    return session.http();
+                }
+            };
+
             StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
             if(enabled) {
                 session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
@@ -186,7 +194,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No existing distribution found for method %s", method));
                 }
-                this.createDistribution(enabled, method, this.getOrigin(container, method), cnames, loggingStatus, defaultRootObject);
+                this.createDistribution(client, enabled, method, this.getOrigin(container, method), cnames, loggingStatus, defaultRootObject);
             }
             else {
                 boolean modified = false;
@@ -208,7 +216,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     modified = true;
                 }
                 if(modified) {
-                    this.updateDistribution(enabled, method, this.getOrigin(container, method), d.getId(), d.getEtag(), d.getReference(),
+                    this.updateDistribution(client, enabled, method, this.getOrigin(container, method), d.getId(), d.getEtag(), d.getReference(),
                             cnames, loggingStatus, defaultRootObject);
                 }
                 else {
@@ -269,6 +277,16 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             session.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
                     container.getName()));
 
+            final CloudFrontService client = new CloudFrontService(
+                    new AWSCredentials(session.getHost().getCredentials().getUsername(),
+                            session.getHost().getCredentials().getPassword())) {
+
+                @Override
+                protected HttpClient initHttpConnection() {
+                    return session.http();
+                }
+            };
+
             final long reference = System.currentTimeMillis();
             final Distribution d = this.read(container, method);
             if(null == d) {
@@ -318,7 +336,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @param distribution Configuration
      * @return Status message from service
      */
-    private String readInvalidationStatus(final Distribution distribution) throws BackgroundException {
+    private String readInvalidationStatus(final CloudFrontService client,
+                                          final Distribution distribution) throws BackgroundException {
         boolean complete = false;
         int inprogress = 0;
         try {
@@ -360,7 +379,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @throws CloudFrontServiceException  CloudFront failure details
      * @throws ConnectionCanceledException Authentication canceled
      */
-    private org.jets3t.service.model.cloudfront.Distribution createDistribution(final boolean enabled,
+    private org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client,
+                                                                                final boolean enabled,
                                                                                 final Distribution.Method method,
                                                                                 final String origin,
                                                                                 final String[] cnames,
@@ -416,7 +436,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @throws CloudFrontServiceException CloudFront failure details
      * @throws IOException                I/O error
      */
-    private void updateDistribution(boolean enabled, Distribution.Method method, final String origin,
+    private void updateDistribution(final CloudFrontService client,
+                                    boolean enabled, Distribution.Method method, final String origin,
                                     final String distributionId, final String etag, final String reference,
                                     final String[] cnames, final LoggingStatus logging, final String defaultRootObject)
             throws CloudFrontServiceException, IOException {
@@ -466,10 +487,11 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         return CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER;
     }
 
-    private Distribution convert(final org.jets3t.service.model.cloudfront.Distribution d,
+    private Distribution convert(final CloudFrontService client,
+                                 final org.jets3t.service.model.cloudfront.Distribution d,
                                  Distribution.Method method) throws BackgroundException {
         // Retrieve distributions configuration to access current logging status settings.
-        final DistributionConfig distributionConfig = this.getDistributionConfig(d);
+        final DistributionConfig distributionConfig = this.getDistributionConfig(client, d);
         final String loggingTarget;
         if(null == distributionConfig.getLoggingStatus()) {
             // Default logging target to origin itself
@@ -499,7 +521,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 loggingTarget,
                 distributionConfig.getDefaultRootObject());
         if(this.isInvalidationSupported(method)) {
-            distribution.setInvalidationStatus(this.readInvalidationStatus(distribution));
+            distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
         }
         if(this.isLoggingSupported(method)) {
             distribution.setContainers(session.getContainers(false));
@@ -511,7 +533,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @param distribution Distribution configuration
      * @return Configuration
      */
-    private DistributionConfig getDistributionConfig(final org.jets3t.service.model.cloudfront.Distribution distribution)
+    private DistributionConfig getDistributionConfig(final CloudFrontService client,
+                                                     final org.jets3t.service.model.cloudfront.Distribution distribution)
             throws BackgroundException {
 
         try {
