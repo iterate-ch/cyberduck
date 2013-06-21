@@ -2,7 +2,6 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -12,7 +11,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.HashMap;

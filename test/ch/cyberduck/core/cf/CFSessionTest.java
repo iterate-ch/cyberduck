@@ -11,13 +11,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CFSessionTest extends AbstractTestCase {
 
     @Test
     public void testFile() {
-        final CFSession session = new CFSession(new Host(Protocol.S3_SSL, "h"));
+        final CFSession session = new CFSession(new Host(Protocol.SWIFT, "h"));
         assertFalse(session.isCreateFileSupported(new CFPath(session, "/", Path.VOLUME_TYPE)));
         assertTrue(session.isCreateFileSupported(new CFPath(session, "/container", Path.VOLUME_TYPE)));
     }

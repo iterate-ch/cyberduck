@@ -3,7 +3,6 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
@@ -13,7 +12,6 @@ import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Collections;

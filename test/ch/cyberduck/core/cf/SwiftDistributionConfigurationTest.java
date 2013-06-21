@@ -3,19 +3,20 @@ package ch.cyberduck.core.cf;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftDistributionConfigurationTest extends AbstractTestCase {
 
@@ -32,7 +33,8 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final CFSession session = new CFSession(new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
-        session.connect();
+        session.open();
+        session.login(new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
@@ -59,9 +61,11 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final CFSession session = new CFSession(host);
-        session.connect();
+        session.open();
+        session.login(new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
+        final CFPath container = new CFPath(session, PathFactory.createPath(session, String.valueOf(Path.DELIMITER),
+                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE), "test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("region-a.geo-1");
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD);
         assertNotNull(test);
@@ -80,7 +84,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertEquals("region-a.geo-1.objects.hpcloudsvc.com", test.getOrigin());
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test(expected = ConnectionCanceledException.class)
     public void testReadDisconnect() throws Exception {
         final Host host = new Host(Protocol.SWIFT, "region-a.geo-1.identity.hpcloudsvc.com", 35357);
         host.setCredentials(new Credentials(
@@ -90,12 +94,6 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("region-a.geo-1");
-        try {
-            configuration.read(container, Distribution.DOWNLOAD);
-        }
-        catch(BackgroundException e) {
-            assertEquals(ConnectionCanceledException.class, e.getCause().getClass());
-            throw e;
-        }
+        configuration.read(container, Distribution.DOWNLOAD);
     }
 }

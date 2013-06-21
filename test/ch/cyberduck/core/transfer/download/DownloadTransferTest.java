@@ -3,20 +3,18 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -31,7 +29,7 @@ import static org.junit.Assert.*;
 public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
-    public void testSerialize() {
+    public void testSerialize() throws Exception {
         Transfer t = new DownloadTransfer(new NullPath("t", Path.FILE_TYPE));
         t.addSize(4L);
         t.addTransferred(3L);
@@ -45,7 +43,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testSerializeComplete() {
+    public void testSerializeComplete() throws Exception {
         Transfer t = new DownloadTransfer(new NullPath("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
@@ -69,7 +67,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         };
         t.start(new TransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt() throws BackgroundException {
                 return TransferAction.ACTION_OVERWRITE;
             }
         }, new TransferOptions());
@@ -80,10 +78,11 @@ public class DownloadTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testChildren() {
+    public void testChildren() throws Exception {
         final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
             @Override
-            protected AttributedList<Path> list(AttributedList<Path> children) {
+            public AttributedList<Path> list() {
+                final AttributedList<Path> children = new AttributedList<Path>();
                 children.add(new NullPath("/t/c", Path.FILE_TYPE));
                 return children;
             }
@@ -94,7 +93,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testDownloadPath() {
+    public void testDownloadPath() throws Exception {
         final NullPath root = new NullPath("/t", Path.FILE_TYPE);
         assertNull(root.getLocal());
         List<Path> roots = new ArrayList<Path>();
@@ -104,7 +103,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCustomDownloadPath() {
+    public void testCustomDownloadPath() throws Exception {
         final NullPath root = new NullPath("/t", Path.FILE_TYPE);
         final NullLocal l = new NullLocal(null, "n");
         root.setLocal(l);

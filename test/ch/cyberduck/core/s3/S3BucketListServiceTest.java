@@ -31,7 +31,7 @@ public class S3BucketListServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.connect();
+        session.open();
         final List<StorageBucket> list = new S3BucketListService().list(session);
         final S3Path container = new S3Path(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
     }

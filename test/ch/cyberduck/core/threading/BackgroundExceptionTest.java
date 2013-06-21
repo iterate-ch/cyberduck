@@ -5,12 +5,13 @@ import ch.cyberduck.core.LoginCanceledException;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.SocketException;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class BackgroundExceptionTest extends AbstractTestCase {
 
@@ -18,14 +19,21 @@ public class BackgroundExceptionTest extends AbstractTestCase {
     public void testGetMessage() throws Exception {
         final BackgroundException e = new BackgroundException(new LoginCanceledException());
         assertEquals("Unknown", e.getMessage());
-        assertEquals("I/O Error", e.getReadableTitle());
+        assertEquals("Error", e.getTitle());
+    }
+
+    @Test
+    public void testGetMessageIO() throws Exception {
+        final BackgroundException e = new BackgroundException(new IOException());
+        assertEquals("Unknown", e.getMessage());
+        assertEquals("I/O Error", e.getTitle());
     }
 
     @Test
     public void testIOMessage() throws Exception {
         final BackgroundException e = new BackgroundException(new SocketException("s"));
         assertEquals("Unknown", e.getMessage());
-        assertEquals("s", e.getDetailedCauseMessage());
-        assertEquals("Network Error", e.getReadableTitle());
+        assertEquals("s", e.getDetail());
+        assertEquals("Network Error", e.getTitle());
     }
 }

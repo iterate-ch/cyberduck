@@ -75,7 +75,8 @@ public class FTPPathTest extends AbstractTestCase {
 
         assertTrue(success);
         assertFalse(list.isEmpty());
-
+        assertTrue(list.get(0).attributes().isSymbolicLink());
+        assertEquals("/www/basic/mk", list.get(0).getSymlinkTarget().getAbsolute());
     }
 
     @Test
@@ -93,7 +94,6 @@ public class FTPPathTest extends AbstractTestCase {
 
         assertFalse(success);
         assertTrue(list.isEmpty());
-
     }
 
     @Test

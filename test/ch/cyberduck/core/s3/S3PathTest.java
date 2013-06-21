@@ -38,7 +38,7 @@ public class S3PathTest extends AbstractTestCase {
         S3Path p = new S3Path(session, "/bucket/f/key", Path.FILE_TYPE) {
             @Override
             public Path getContainer() {
-                return new S3Path(session, "/", "bucket", Path.VOLUME_TYPE);
+                return new S3Path(session, "/bucket", Path.VOLUME_TYPE);
             }
         };
         assertEquals("https://bucket.s3.amazonaws.com/f/key", p.toURL());
@@ -50,7 +50,7 @@ public class S3PathTest extends AbstractTestCase {
         S3Path p = new S3Path(session, "/bucket/f/key", Path.FILE_TYPE) {
             @Override
             public Path getContainer() {
-                return new S3Path(session, "/", "bucket", Path.VOLUME_TYPE);
+                return new S3Path(session, "/bucket", Path.VOLUME_TYPE);
             }
         };
         assertEquals("http://bucket.s3.amazonaws.com/f/key", p.toHttpURL());

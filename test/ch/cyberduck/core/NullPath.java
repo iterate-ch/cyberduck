@@ -1,9 +1,9 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -13,11 +13,11 @@ import java.io.OutputStream;
 public class NullPath extends Path {
 
     public NullPath(final String path, final int type) {
-        super(path, type);
+        super(new NullSession(new Host("test")), path, type);
     }
 
     @Override
-    protected AttributedList<Path> list(final AttributedList<Path> children) {
+    public AttributedList<Path> list() {
         return AttributedList.emptyList();
     }
 
@@ -27,27 +27,12 @@ public class NullPath extends Path {
     }
 
     @Override
-    public Path getParent() {
-        return new NullPath(Path.getParent(this.getAbsolute(), Path.DELIMITER), Path.DIRECTORY_TYPE);
-    }
-
-    @Override
-    public AbstractPath getSymlinkTarget() {
-        if(this.attributes().isSymbolicLink()) {
-            return new NullPath(symlink, this.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-        }
-        return null;
-    }
-
-    private final NullSession session = new NullSession(new Host("test"));
-
-    @Override
     public Session getSession() {
-        return session;
+        return new NullSession(new Host("test"));
     }
 
     @Override
-    public InputStream read(final TransferStatus status) throws IOException {
+    public InputStream read(final TransferStatus status) throws BackgroundException {
         throw new UnsupportedOperationException();
     }
 
@@ -57,7 +42,7 @@ public class NullPath extends Path {
     }
 
     @Override
-    public OutputStream write(final TransferStatus status) throws IOException {
+    public OutputStream write(final TransferStatus status) throws BackgroundException {
         throw new UnsupportedOperationException();
     }
 
@@ -72,12 +57,12 @@ public class NullPath extends Path {
     }
 
     @Override
-    public void delete() {
+    public void delete(final LoginController prompt) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void rename(final AbstractPath renamed) {
+    public void rename(final Path renamed) {
         //
     }
 }

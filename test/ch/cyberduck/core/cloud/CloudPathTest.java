@@ -1,17 +1,19 @@
 package ch.cyberduck.core.cloud;
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -24,6 +26,7 @@ public class CloudPathTest extends AbstractTestCase {
 
     @Test
     public void testIsContainer() throws Exception {
+        assertFalse(new TestCloudPath("/", Path.VOLUME_TYPE).isContainer());
         assertTrue(new TestCloudPath("/t", Path.VOLUME_TYPE).isContainer());
         assertTrue(new TestCloudPath("/t/", Path.VOLUME_TYPE).isContainer());
         assertFalse(new TestCloudPath("/t/a", Path.VOLUME_TYPE).isContainer());
@@ -49,7 +52,7 @@ public class CloudPathTest extends AbstractTestCase {
     private static class TestCloudPath extends CloudPath {
 
         private TestCloudPath(String path, int type) {
-            super(path, type);
+            super(new NullSession(new Host("h")), path, type);
         }
 
         @Override
@@ -58,7 +61,7 @@ public class CloudPathTest extends AbstractTestCase {
         }
 
         @Override
-        protected AttributedList<Path> list(AttributedList<Path> children) {
+        public AttributedList<Path> list() {
             throw new UnsupportedOperationException();
         }
 
@@ -68,7 +71,7 @@ public class CloudPathTest extends AbstractTestCase {
         }
 
         @Override
-        public InputStream read(TransferStatus status) throws IOException {
+        public InputStream read(TransferStatus status) throws BackgroundException {
             throw new UnsupportedOperationException();
         }
 
@@ -78,7 +81,7 @@ public class CloudPathTest extends AbstractTestCase {
         }
 
         @Override
-        public OutputStream write(TransferStatus status) throws IOException {
+        public OutputStream write(TransferStatus status) throws BackgroundException {
             throw new UnsupportedOperationException();
         }
 
@@ -93,12 +96,12 @@ public class CloudPathTest extends AbstractTestCase {
         }
 
         @Override
-        public void delete() {
+        public void delete(final LoginController prompt) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void rename(AbstractPath renamed) {
+        public void rename(Path renamed) {
             throw new UnsupportedOperationException();
         }
     }

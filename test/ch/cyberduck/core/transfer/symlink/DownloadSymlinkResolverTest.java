@@ -1,11 +1,9 @@
 package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -31,9 +29,9 @@ public class DownloadSymlinkResolverTest extends AbstractTestCase {
         files.add(new NullPath("/a", Path.DIRECTORY_TYPE));
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(files);
         NullPath p = new NullPath("/a/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
-        p.setSymlinkTarget("/a/c");
+        p.setSymlinkTarget(new NullPath("/a/c", Path.FILE_TYPE));
         assertTrue(resolver.resolve(p));
-        p.setSymlinkTarget("/b/c");
+        p.setSymlinkTarget(new NullPath("/b/c", Path.FILE_TYPE));
         assertFalse(resolver.resolve(p));
     }
 
@@ -43,7 +41,7 @@ public class DownloadSymlinkResolverTest extends AbstractTestCase {
         files.add(new NullPath("/a", Path.DIRECTORY_TYPE));
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(files);
         NullPath p = new NullPath("/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
-        p.setSymlinkTarget("/a");
+        p.setSymlinkTarget(new NullPath("/a", Path.FILE_TYPE));
         assertTrue(resolver.resolve(p));
     }
 

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.transfer.download;
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
@@ -41,7 +40,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                     }
 
                     @Override
-                    public void rename(final AbstractPath renamed) {
+                    public void rename(final Local renamed) {
                         fail();
                     }
                 };
@@ -61,7 +60,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 }
 
                 @Override
-                public void rename(final AbstractPath renamed) {
+                public void rename(final Local renamed) {
                     assertEquals(String.format("t (%s)", UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false)), renamed.getName());
                 }
             };

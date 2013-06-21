@@ -1,11 +1,13 @@
 package ch.cyberduck.core;
 
-import java.io.IOException;
+import ch.cyberduck.core.ftp.FTPClient;
+import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.threading.BackgroundException;
 
 /**
  * @version $Id$
  */
-public class NullSession extends Session {
+public class NullSession extends FTPSession {
 
     public NullSession(Host h) {
         super(h);
@@ -17,22 +19,17 @@ public class NullSession extends Session {
     }
 
     @Override
-    public <C> C getClient() throws ConnectionCanceledException {
-        throw new UnsupportedOperationException();
+    public FTPClient open() throws BackgroundException {
+        return null;
     }
 
     @Override
-    public void connect() throws IOException {
+    public void login(final LoginController prompt) throws BackgroundException {
         //
     }
 
     @Override
-    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
-        //
-    }
-
-    @Override
-    public void close() {
+    public void logout() {
         //
     }
 }

@@ -1,6 +1,14 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullProtocol;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
@@ -75,14 +83,14 @@ public class RenameExistingFilterTest extends AbstractTestCase {
             public Path getParent() {
                 return new NullPath("p", Path.DIRECTORY_TYPE) {
                     @Override
-                    protected AttributedList<Path> list(final AttributedList<Path> children) {
+                    public AttributedList<Path> list() {
                         final AttributedList<Path> l = new AttributedList<Path>();
                         l.add(new NullPath("t", Path.FILE_TYPE));
                         return l;
                     }
 
                     @Override
-                    public void rename(final AbstractPath renamed) {
+                    public void rename(final Path renamed) {
                         assertNotSame(this.getName(), renamed.getName());
                     }
                 };

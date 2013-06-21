@@ -11,14 +11,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3SessionTest extends AbstractTestCase {
 
     @Test
     public void testFile() {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, "h"));
-        assertFalse(session.isCreateFileSupported(new S3Path(session, "/", Path.VOLUME_TYPE)));
-        assertTrue(session.isCreateFileSupported(new S3Path(session, "/container", Path.VOLUME_TYPE)));
+        assertFalse(session.isCreateFileSupported(new S3Path(session, null, "/", Path.VOLUME_TYPE)));
+        assertTrue(session.isCreateFileSupported(new S3Path(session, new S3Path(session, null, "/", Path.VOLUME_TYPE), "/container", Path.VOLUME_TYPE)));
     }
 }

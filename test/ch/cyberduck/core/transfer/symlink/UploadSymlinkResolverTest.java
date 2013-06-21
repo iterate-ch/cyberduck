@@ -1,6 +1,5 @@
 package ch.cyberduck.core.transfer.symlink;
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Host;
@@ -65,7 +64,7 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
                     }
 
                     @Override
-                    public AbstractPath getSymlinkTarget() {
+                    public Local getSymlinkTarget() {
                         return new NullLocal(null, "a/c");
                     }
                 };
@@ -96,7 +95,7 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
                     }
 
                     @Override
-                    public AbstractPath getSymlinkTarget() {
+                    public Local getSymlinkTarget() {
                         return new NullLocal(null, "b/c");
                     }
                 };

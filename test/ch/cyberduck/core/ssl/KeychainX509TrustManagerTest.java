@@ -28,7 +28,7 @@ public class KeychainX509TrustManagerTest extends AbstractTestCase {
     public void testCheckServerTrusted() throws Exception {
         final KeychainX509TrustManager m = new KeychainX509TrustManager(new TrustManagerHostnameCallback() {
             @Override
-            public String getHostname() {
+            public String getTarget() {
                 return "cyberduck.ch";
             }
         });

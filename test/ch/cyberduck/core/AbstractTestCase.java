@@ -111,18 +111,8 @@ public class AbstractTestCase {
             }
 
             @Override
-            protected LoginController create(final Session s) {
-                return create();
-            }
-
-            @Override
             protected LoginController create() {
-                return new AbstractLoginController() {
-                    @Override
-                    public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final boolean enableKeychain, final boolean enablePublicKey, final boolean enableAnonymous) throws LoginCanceledException {
-                        throw new LoginCanceledException();
-                    }
-                };
+                return new DisabledLoginController();
             }
         });
     }
@@ -141,7 +131,7 @@ public class AbstractTestCase {
             }
 
             @Override
-            protected Path create(final Session session, final String parent, final String name, final int type) {
+            protected Path create(final Session session, final Path parent, final String name, final int type) {
                 return new NullPath(parent + name, type) {
                     @Override
                     public boolean exists() {
@@ -151,7 +141,7 @@ public class AbstractTestCase {
             }
 
             @Override
-            protected Path create(final Session session, final String parent, final Local file) {
+            protected Path create(final Session session, final Path parent, final Local file) {
                 return new NullPath(parent + file.getName(), file.attributes().getType()) {
                     @Override
                     public boolean exists() {
@@ -200,4 +190,5 @@ public class AbstractTestCase {
             queue.take().get();
         }
     }
+
 }

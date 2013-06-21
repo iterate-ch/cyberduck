@@ -11,7 +11,6 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPPath;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.junit.Test;
 
@@ -21,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CustomOriginCloudFrontDistributionConfigurationTest extends AbstractTestCase {
 
@@ -34,7 +33,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
                     public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final boolean enableKeychain, final boolean enablePublicKey, final boolean enableAnonymous) throws LoginCanceledException {
                         throw new LoginCanceledException();
                     }
-                }).getMethods(new SFTPPath(new SFTPSession(new Host("h")), "/bbb", Path.VOLUME_TYPE)));
+                }).getMethods(new SFTPPath(new SFTPSession(new Host(Protocol.SFTP, "h")), "/bbb", Path.VOLUME_TYPE)));
     }
 
     @Test
@@ -77,7 +76,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         assertEquals(null, distribution.getId());
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test(expected = LoginCanceledException.class)
     public void testReadMissingCredentials() throws Exception {
         final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
         final S3Session session = new S3Session(host);
@@ -95,13 +94,6 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
             }
         });
         final SFTPPath container = new SFTPPath(new SFTPSession(bookmark), "test.cyberduck.ch", Path.VOLUME_TYPE);
-        try {
-            configuration.read(container, Distribution.CUSTOM);
-        }
-        catch(BackgroundException e) {
-            assertEquals(LoginCanceledException.class, e.getCause().getClass());
-            throw e;
-        }
+        configuration.read(container, Distribution.CUSTOM);
     }
-
 }

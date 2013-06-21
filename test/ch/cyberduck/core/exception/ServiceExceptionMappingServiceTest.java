@@ -2,7 +2,6 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Host;
 
 import org.jets3t.service.ServiceException;
 import org.junit.Test;
@@ -37,25 +36,25 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
     @Test
     public void testDNSFailure() {
         assertEquals("custom",
-                new ServiceExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h")), new Host("h")).getMessage());
+                new ServiceExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getMessage());
         assertEquals("h.",
-                new ServiceExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h")), new Host("h")).getDetail());
+                new ServiceExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getDetail());
     }
 
     @Test
     public void testCustomMessage() {
         assertEquals("custom",
-                new ServiceExceptionMappingService().map("custom", new ServiceException("message"), new Host("h")).getMessage());
+                new ServiceExceptionMappingService().map("custom", new ServiceException("message")).getMessage());
         assertEquals("message.",
-                new ServiceExceptionMappingService().map("custom", new ServiceException("message"), new Host("h")).getDetail());
+                new ServiceExceptionMappingService().map("custom", new ServiceException("message")).getDetail());
     }
 
     @Test
     public void testIAMFailure() {
         assertEquals("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9",
-                new ServiceExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message"), new Host("h")).getMessage());
+                new ServiceExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message")).getMessage());
         assertEquals("message.",
-                new ServiceExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message"), new Host("h")).getDetail());
+                new ServiceExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message")).getDetail());
     }
 
     @Test
