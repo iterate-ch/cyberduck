@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.local.Local;
 
 import org.apache.log4j.Logger;
@@ -69,7 +70,7 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
 
     @Override
     public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                       final byte[] serverHostKey) throws IOException {
+                                       final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
         final int result = database.verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
         if(KnownHosts.HOSTKEY_IS_OK == result) {
             return true; // We are happy

@@ -183,7 +183,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
 
     @Override
     public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                       final byte[] serverHostKey) throws IOException {
+                                       final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
             return super.verifyServerHostKey(hostname, port, serverHostKeyAlgorithm, serverHostKey);
