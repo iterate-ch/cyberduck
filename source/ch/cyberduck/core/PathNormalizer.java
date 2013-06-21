@@ -5,9 +5,13 @@ import org.apache.commons.lang.StringUtils;
 import com.ibm.icu.text.Normalizer;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class PathNormalizer {
+public final class PathNormalizer {
+
+    private PathNormalizer() {
+        //
+    }
 
     public static String normalize(final String path) {
         return normalize(path, true);
