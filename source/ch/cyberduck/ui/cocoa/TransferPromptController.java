@@ -26,6 +26,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -169,7 +170,7 @@ public abstract class TransferPromptController extends SheetController implement
     }
 
     @Override
-    public TransferAction prompt() {
+    public TransferAction prompt() throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for transfer action of %s", transfer.getName()));
         }
