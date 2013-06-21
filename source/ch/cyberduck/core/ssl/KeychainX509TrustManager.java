@@ -71,7 +71,7 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
     private void checkCertificates(final X509Certificate[] certs)
             throws CertificateException {
 
-        final String hostname = callback.getHostname();
+        final String hostname = callback.getTarget();
         if(Arrays.asList(this.getAcceptedIssuers()).containsAll(Arrays.asList(certs))) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Certificate for %s previously trusted", hostname));
@@ -156,7 +156,7 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
                     }
                 }
             }
-            final String hostname = callback.getHostname();
+            final String hostname = callback.getTarget();
             X509Certificate cert = KeychainFactory.get().chooseCertificate(list.toArray(new String[list.size()]), hostname,
                     MessageFormat.format(Locale.localizedString("Select the certificate to use when connecting to {0}."), hostname));
             if(null == cert) {

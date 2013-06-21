@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class SSLSession extends Session implements TrustManagerHostnameCallback {
+public abstract class SSLSession<C> extends Session<C> implements TrustManagerHostnameCallback {
 
     private X509TrustManager trust;
 
@@ -43,7 +43,7 @@ public abstract class SSLSession extends Session implements TrustManagerHostname
         this.trust = manager;
     }
 
-    public String getHostname() {
+    public String getTarget() {
         return this.getHost().getHostname(true);
     }
 
