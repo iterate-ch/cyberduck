@@ -382,7 +382,7 @@ public class InfoController extends ToolbarWindowController {
                 public void run() throws BackgroundException {
                     for(Path next : files) {
                         next.attributes().setEncryption(encryptionButton.state() == NSCell.NSOnState ?
-                                ((CloudSession) controller.getSession()).getSupportedEncryptionAlgorithms().iterator().next() : null);
+                                ((CloudSession<?>) controller.getSession()).getSupportedEncryptionAlgorithms().iterator().next() : null);
                         // Copy item in place to write new attributes
                         next.copy(next, new TransferStatus());
                     }
@@ -510,9 +510,8 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
-                    ((CloudSession) controller.getSession()).setVersioning(getSelected().getContainer(),
-                            bucketMfaButton.state() == NSCell.NSOnState,
-                            bucketVersioningButton.state() == NSCell.NSOnState);
+                    ((CloudSession) controller.getSession()).setVersioning(getSelected().getContainer(), LoginControllerFactory.get(InfoController.this),
+                            bucketMfaButton.state() == NSCell.NSOnState, bucketVersioningButton.state() == NSCell.NSOnState);
                 }
 
                 @Override
@@ -538,10 +537,9 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
-                    ((CloudSession) controller.getSession()).setVersioning(getSelected().getContainer(),
+                    ((CloudSession) controller.getSession()).setVersioning(getSelected().getContainer(), LoginControllerFactory.get(InfoController.this),
                             bucketMfaButton.state() == NSCell.NSOnState,
-                            bucketVersioningButton.state() == NSCell.NSOnState
-                    );
+                            bucketVersioningButton.state() == NSCell.NSOnState);
                 }
 
                 @Override
@@ -1393,7 +1391,7 @@ public class InfoController extends ToolbarWindowController {
         }
     };
 
-    private InfoController(final BrowserController controller, List<Path> files) {
+    private InfoController(final BrowserController controller, final List<Path> files) {
         this.controller = controller;
         this.controller.addListener(browserWindowListener);
         this.files = files;
@@ -1858,7 +1856,7 @@ public class InfoController extends ToolbarWindowController {
         final Session session = controller.getSession();
         final Path container = this.getSelected().getContainer();
 
-        final DistributionConfiguration cdn = session.cdn();
+        final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                 cdn.getName()));
         distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("None"));
@@ -2011,7 +2009,7 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
 
         if(this.toggleS3Settings(false)) {
-            for(String redundancy : ((CloudSession) controller.getSession()).getSupportedStorageClasses()) {
+            for(String redundancy : ((CloudSession<?>) controller.getSession()).getSupportedStorageClasses()) {
                 storageClassPopup.addItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 storageClassPopup.lastItem().setRepresentedObject(redundancy);
             }
@@ -2074,7 +2072,7 @@ public class InfoController extends ToolbarWindowController {
                     if(s.isLoggingSupported()) {
                         logging = s.isLogging(container);
                         loggingBucket = s.getLoggingTarget(container);
-                        for(AbstractPath c : getSelected().getContainer().getParent().children()) {
+                        for(Path c : getSelected().getContainer().getParent().list()) {
                             containers.add(c.getName());
                         }
                     }
@@ -2300,7 +2298,7 @@ public class InfoController extends ToolbarWindowController {
                 }
                 else {
                     final Path renamed = PathFactory.createPath(controller.getSession(),
-                            current.getParent().getAbsolute(), filenameField.stringValue(), current.attributes().getType());
+                            current.getParent(), filenameField.stringValue(), current.attributes().getType());
                     controller.renamePath(current, renamed);
                     this.initWebUrl();
                 }
@@ -2475,7 +2473,7 @@ public class InfoController extends ToolbarWindowController {
         Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
         distributionEnableButton.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
-        final DistributionConfiguration cdn = session.cdn();
+        final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
         distributionLoggingButton.setEnabled(stop && enable && cdn.isLoggingSupported(method));
         if(ObjectUtils.equals(session.iam().getUserCredentials(session.analytics().getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
@@ -2506,7 +2504,7 @@ public class InfoController extends ToolbarWindowController {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = getSelected().getContainer();
-                    final DistributionConfiguration cdn = session.cdn();
+                    final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
                     cdn.invalidate(container, method, files, false);
                 }
 
@@ -2542,7 +2540,7 @@ public class InfoController extends ToolbarWindowController {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = getSelected().getContainer();
-                    final DistributionConfiguration cdn = session.cdn();
+                    final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
                     if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
                         cdn.write(container,
                                 distributionEnableButton.state() == NSCell.NSOnState,
@@ -2581,6 +2579,7 @@ public class InfoController extends ToolbarWindowController {
             final Path container = getSelected().getContainer();
             final Distribution.Method method
                     = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+            final List<Path> rootDocuments = new ArrayList<Path>();
 
             controller.background(new BrowserBackgroundAction(controller) {
                 private Distribution distribution = new Distribution(container.getName(), method);
@@ -2588,10 +2587,12 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void run() throws BackgroundException {
                     final Session session = controller.getSession();
-                    final DistributionConfiguration cdn = session.cdn();
+                    final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
                     distribution = cdn.read(container, method);
-                    // Make sure container items are cached for default root object.
-                    container.children();
+                    if(cdn.isDefaultRootSupported(distribution.getMethod())) {
+                        // Make sure container items are cached for default root object.
+                        rootDocuments.addAll(container.list());
+                    }
                 }
 
                 @Override
@@ -2599,7 +2600,7 @@ public class InfoController extends ToolbarWindowController {
                     try {
                         final Session session = controller.getSession();
                         final Path container = getSelected().getContainer();
-                        final DistributionConfiguration cdn = session.cdn();
+                        final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
                         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                                 cdn.getName(distribution.getMethod())));
                         distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
@@ -2673,7 +2674,7 @@ public class InfoController extends ToolbarWindowController {
                             }
                         }
                         if(cdn.isDefaultRootSupported(distribution.getMethod())) {
-                            for(AbstractPath next : getSelected().getContainer().children()) {
+                            for(Path next : rootDocuments) {
                                 if(next.attributes().isFile()) {
                                     distributionDefaultRootPopup.addItemWithTitle(next.getName());
                                     distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
