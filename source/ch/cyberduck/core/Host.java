@@ -186,7 +186,7 @@ public final class Host implements Serializable {
      * @param port     The port number to connect to
      */
     public Host(Protocol protocol, String hostname, int port) {
-        this(protocol, hostname, port, null);
+        this(protocol, hostname, port, (String) null);
     }
 
     /**
@@ -200,6 +200,20 @@ public final class Host implements Serializable {
         this.setPort(port);
         this.setHostname(hostname);
         this.setDefaultPath(defaultpath);
+    }
+
+
+    /**
+     * @param protocol    Scheme
+     * @param hostname    The hostname of the server
+     * @param port        Port number
+     * @param credentials Login credentials
+     */
+    public Host(Protocol protocol, String hostname, int port, Credentials credentials) {
+        this.setProtocol(protocol);
+        this.setPort(port);
+        this.setHostname(hostname);
+        this.credentials = credentials;
     }
 
     /**
