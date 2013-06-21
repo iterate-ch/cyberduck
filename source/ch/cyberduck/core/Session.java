@@ -88,7 +88,7 @@ public abstract class Session<C> implements TranscriptListener {
         return client;
     }
 
-    public abstract C connect() throws BackgroundException;
+    protected abstract C connect() throws BackgroundException;
 
     public C open() throws BackgroundException {
         this.fireConnectionWillOpenEvent();
