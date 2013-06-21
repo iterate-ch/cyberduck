@@ -23,7 +23,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
+import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import java.util.Collections;
 import java.util.List;
@@ -72,23 +75,19 @@ public abstract class CloudSession<C> extends HttpSession<C> {
         return this.isLoggingSupported();
     }
 
-    public boolean isLogging(final Path container) throws BackgroundException {
+    public LoggingConfiguration getLogging(final Path container) throws BackgroundException {
+        return new LoggingConfiguration(false);
+    }
+
+    public void setLogging(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
         throw new BackgroundException("Not supported");
     }
 
-    public void setLogging(final Path container, final boolean enabled, String destination) throws BackgroundException {
-        throw new BackgroundException("Not supported");
+    public LifecycleConfiguration getLifecycle(final Path container) throws BackgroundException {
+        return new LifecycleConfiguration();
     }
 
-    public String getLoggingTarget(final Path container) throws BackgroundException {
-        throw new BackgroundException("Not supported");
-    }
-
-    public Integer getTransition(final Path container) throws BackgroundException {
-        throw new BackgroundException("Not supported");
-    }
-
-    public Integer getExpiration(final Path container) throws BackgroundException {
+    public void setLifecycle(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
         throw new BackgroundException("Not supported");
     }
 
@@ -100,11 +99,12 @@ public abstract class CloudSession<C> extends HttpSession<C> {
         return false;
     }
 
-    public boolean isVersioning(final Path container) throws BackgroundException {
-        throw new BackgroundException("Not supported");
+    public VersioningConfiguration getVersioning(final Path container) throws BackgroundException {
+        return new VersioningConfiguration(false);
     }
 
-    public void setVersioning(final Path container, final LoginController prompt, boolean mfa, boolean versioning) throws BackgroundException {
+    public void setVersioning(final Path container, final LoginController prompt,
+                              final VersioningConfiguration configuration) throws BackgroundException {
         throw new BackgroundException("Not supported");
     }
 
@@ -118,10 +118,6 @@ public abstract class CloudSession<C> extends HttpSession<C> {
      */
     public String getLocation(final Path container) throws BackgroundException {
         throw new BackgroundException("Not supported");
-    }
-
-    public boolean isMultiFactorAuthentication(final Path container) throws BackgroundException {
-        return false;
     }
 
     /**

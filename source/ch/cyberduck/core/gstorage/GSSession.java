@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.threading.BackgroundException;
 
@@ -224,36 +225,29 @@ public class GSSession extends S3Session {
     }
 
     /**
-     * @param container   The bucket name
-     * @param enabled     True if logging should be toggled on
-     * @param destination Logging bucket name or null to choose container itself as target
+     * @param container The bucket name
      */
     @Override
-    public void setLogging(final Path container, final boolean enabled, String destination) throws BackgroundException {
-        if(this.isLoggingSupported()) {
-            try {
-                // Logging target bucket
-                final GSBucketLoggingStatus status = new GSBucketLoggingStatus(
-                        StringUtils.isNotBlank(destination) ? destination : container.getName(), null);
-                if(enabled) {
-                    status.setLogfilePrefix(Preferences.instance().getProperty("google.logging.prefix"));
-                }
-                // Grant write for Google to logging target bucket
-                final AccessControlList acl = client.getBucketAcl(container.getName());
-                final GroupByEmailAddressGrantee grantee = new GroupByEmailAddressGrantee(
-                        "cloud-storage-analytics@google.com");
-                if(!acl.getPermissionsForGrantee(grantee).contains(Permission.PERMISSION_WRITE)) {
-                    acl.grantPermission(grantee, Permission.PERMISSION_WRITE);
-                    client.putBucketAcl(container.getName(), acl);
-                }
-                client.setBucketLoggingStatusImpl(container.getName(), status);
+    public void setLogging(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
+        try {
+            // Logging target bucket
+            final GSBucketLoggingStatus status = new GSBucketLoggingStatus(
+                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName(), null);
+            if(configuration.isEnabled()) {
+                status.setLogfilePrefix(Preferences.instance().getProperty("google.logging.prefix"));
             }
-            catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
+            // Grant write for Google to logging target bucket
+            final AccessControlList acl = client.getBucketAcl(container.getName());
+            final GroupByEmailAddressGrantee grantee = new GroupByEmailAddressGrantee(
+                    "cloud-storage-analytics@google.com");
+            if(!acl.getPermissionsForGrantee(grantee).contains(Permission.PERMISSION_WRITE)) {
+                acl.grantPermission(grantee, Permission.PERMISSION_WRITE);
+                client.putBucketAcl(container.getName(), acl);
             }
-            finally {
-                loggingStatus.remove(container);
-            }
+            client.setBucketLoggingStatusImpl(container.getName(), status);
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
         }
     }
 

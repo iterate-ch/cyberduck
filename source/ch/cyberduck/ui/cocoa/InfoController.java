@@ -27,12 +27,15 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
+import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.versioning.VersioningConfiguration;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
 import ch.cyberduck.ui.action.ChecksumWorker;
 import ch.cyberduck.ui.action.ReadAclWorker;
@@ -419,8 +422,10 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void run() throws BackgroundException {
                     ((CloudSession) controller.getSession()).setLogging(getSelected().getContainer(),
-                            bucketLoggingButton.state() == NSCell.NSOnState,
-                            null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject());
+                            new LoggingConfiguration(
+                                    bucketLoggingButton.state() == NSCell.NSOnState,
+                                    null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
+                            ));
                 }
 
                 @Override
@@ -511,7 +516,10 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void run() throws BackgroundException {
                     ((CloudSession) controller.getSession()).setVersioning(getSelected().getContainer(), LoginControllerFactory.get(InfoController.this),
-                            bucketMfaButton.state() == NSCell.NSOnState, bucketVersioningButton.state() == NSCell.NSOnState);
+                            new VersioningConfiguration(
+                                    bucketMfaButton.state() == NSCell.NSOnState,
+                                    bucketVersioningButton.state() == NSCell.NSOnState)
+                    );
                 }
 
                 @Override
@@ -537,9 +545,12 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
-                    ((CloudSession) controller.getSession()).setVersioning(getSelected().getContainer(), LoginControllerFactory.get(InfoController.this),
-                            bucketMfaButton.state() == NSCell.NSOnState,
-                            bucketVersioningButton.state() == NSCell.NSOnState);
+                    ((CloudSession) controller.getSession()).setVersioning(getSelected().getContainer(),
+                            LoginControllerFactory.get(InfoController.this),
+                            new VersioningConfiguration(
+                                    bucketMfaButton.state() == NSCell.NSOnState,
+                                    bucketVersioningButton.state() == NSCell.NSOnState)
+                    );
                 }
 
                 @Override
@@ -626,8 +637,10 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void run() throws BackgroundException {
                     ((S3Session) controller.getSession()).setLifecycle(getSelected().getContainer(),
-                            lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
-                            lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
+                            new LifecycleConfiguration(
+                                    lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
+                                    lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null)
+                    );
                 }
 
                 @Override
@@ -2052,14 +2065,11 @@ public class InfoController extends ToolbarWindowController {
             final Path selected = getSelected();
             controller.background(new BrowserBackgroundAction(controller) {
                 String location;
-                boolean logging;
-                String loggingBucket;
-                boolean versioning;
-                boolean mfa;
+                LoggingConfiguration logging;
+                VersioningConfiguration versioning;
                 List<String> containers = new ArrayList<String>();
                 String encryption;
-                Integer expiration;
-                Integer transition;
+                LifecycleConfiguration lifecycle;
                 Credentials credentials;
 
                 @Override
@@ -2070,19 +2080,16 @@ public class InfoController extends ToolbarWindowController {
                         location = s.getLocation(container);
                     }
                     if(s.isLoggingSupported()) {
-                        logging = s.isLogging(container);
-                        loggingBucket = s.getLoggingTarget(container);
+                        logging = s.getLogging(container);
                         for(Path c : getSelected().getContainer().getParent().list()) {
                             containers.add(c.getName());
                         }
                     }
                     if(s.isVersioningSupported()) {
-                        versioning = s.isVersioning(container);
-                        mfa = s.isMultiFactorAuthentication(container);
+                        versioning = s.getVersioning(container);
                     }
                     if(s.isLifecycleSupported()) {
-                        expiration = s.getExpiration(container);
-                        transition = s.getTransition(container);
+                        lifecycle = s.getLifecycle(container);
                     }
                     if(s.isAnalyticsSupported()) {
                         credentials = s.iam().getUserCredentials(s.analytics().getName());
@@ -2095,7 +2102,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     try {
-                        bucketLoggingButton.setState(logging ? NSCell.NSOnState : NSCell.NSOffState);
+                        bucketLoggingButton.setState(logging.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                         if(!containers.isEmpty()) {
                             bucketLoggingPopup.removeAllItems();
                         }
@@ -2103,8 +2110,8 @@ public class InfoController extends ToolbarWindowController {
                             bucketLoggingPopup.addItemWithTitle(c);
                             bucketLoggingPopup.lastItem().setRepresentedObject(c);
                         }
-                        if(logging) {
-                            bucketLoggingPopup.selectItemWithTitle(loggingBucket);
+                        if(logging.isEnabled()) {
+                            bucketLoggingPopup.selectItemWithTitle(logging.getLoggingTarget());
                         }
                         else {
                             // Default to write log files to origin bucket
@@ -2113,8 +2120,8 @@ public class InfoController extends ToolbarWindowController {
                         if(StringUtils.isNotBlank(location)) {
                             bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
                         }
-                        bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
-                        bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
+                        bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
+                        bucketMfaButton.setState(versioning.isMultifactor() ? NSCell.NSOnState : NSCell.NSOffState);
                         encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
                         if(null != credentials) {
                             bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
@@ -2124,27 +2131,27 @@ public class InfoController extends ToolbarWindowController {
                             ));
                         }
                         bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
-                        lifecycleDeleteCheckbox.setState(expiration != null ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(expiration != null) {
-                            final NSInteger index = lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(expiration));
+                        lifecycleDeleteCheckbox.setState(lifecycle.getExpiration() != null ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(lifecycle.getExpiration() != null) {
+                            final NSInteger index = lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration()));
                             if(-1 == index.intValue()) {
-                                lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(expiration)));
+                                lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getExpiration())));
                                 lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
                                 lifecycleDeletePopup.lastItem().setTarget(id());
-                                lifecycleDeletePopup.lastItem().setRepresentedObject(String.valueOf(expiration));
+                                lifecycleDeletePopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getExpiration()));
                             }
-                            lifecycleDeletePopup.selectItemAtIndex(lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(expiration)));
+                            lifecycleDeletePopup.selectItemAtIndex(lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration())));
                         }
-                        lifecycleTransitionCheckbox.setState(transition != null ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(transition != null) {
-                            final NSInteger index = lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(transition));
+                        lifecycleTransitionCheckbox.setState(lifecycle.getTransition() != null ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(lifecycle.getTransition() != null) {
+                            final NSInteger index = lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition()));
                             if(-1 == index.intValue()) {
-                                lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(transition)));
+                                lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getTransition())));
                                 lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
                                 lifecycleTransitionPopup.lastItem().setTarget(id());
-                                lifecycleTransitionPopup.lastItem().setRepresentedObject(String.valueOf(transition));
+                                lifecycleTransitionPopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getTransition()));
                             }
-                            lifecycleTransitionPopup.selectItemAtIndex(lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(transition)));
+                            lifecycleTransitionPopup.selectItemAtIndex(lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition())));
                         }
                     }
                     finally {

@@ -29,7 +29,10 @@ import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
+import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -332,11 +335,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
                 }
                 buckets.put(container, bucket);
             }
-            if(reload) {
-                loggingStatus.clear();
-                lifecycleStatus.clear();
-                versioningStatus.clear();
-            }
         }
         return new ArrayList<Path>(buckets.keySet());
     }
@@ -493,17 +491,12 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     }
 
     /**
-     * Set to false if permission error response indicates this
-     * feature is not implemented.
-     */
-    private boolean loggingSupported = true;
-
-    /**
      * @return True if the service supports bucket logging.
      */
     @Override
     public boolean isLoggingSupported() {
-        return loggingSupported;
+        // Only for AWS
+        return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
     }
 
     @Override
@@ -512,37 +505,9 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
     }
 
-    protected void setLoggingSupported(boolean loggingSupported) {
-        this.loggingSupported = loggingSupported;
-    }
-
     @Override
     public boolean isChecksumSupported() {
         return true;
-    }
-
-    /**
-     * Cache versioning status result.
-     */
-    protected Map<Path, StorageBucketLoggingStatus> loggingStatus
-            = new HashMap<Path, StorageBucketLoggingStatus>();
-
-    private void readLogging(final Path container) throws BackgroundException {
-        if(!loggingStatus.containsKey(container)) {
-            try {
-                if(this.getHost().getCredentials().isAnonymousLogin()) {
-                    log.info("Anonymous cannot access logging status");
-                    return;
-                }
-                final StorageBucketLoggingStatus status
-                        = client.getBucketLoggingStatusImpl(container.getName());
-                loggingStatus.put(container, status);
-            }
-            catch(ServiceException e) {
-                log.warn("Bucket logging not supported:" + e.getMessage());
-                this.setLoggingSupported(false);
-            }
-        }
     }
 
     /**
@@ -550,146 +515,92 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
      * @return True if the bucket logging status is enabled.
      */
     @Override
-    public boolean isLogging(final Path container) throws BackgroundException {
-        if(this.isLoggingSupported()) {
-            this.readLogging(container);
-            if(loggingStatus.containsKey(container)) {
-                return loggingStatus.get(container).isLoggingEnabled();
-            }
+    public LoggingConfiguration getLogging(final Path container) throws BackgroundException {
+        if(this.getHost().getCredentials().isAnonymousLogin()) {
+            log.info("Anonymous cannot access logging status");
+            return new LoggingConfiguration(false);
         }
-        return false;
+        try {
+            final StorageBucketLoggingStatus status
+                    = client.getBucketLoggingStatusImpl(container.getName());
+            return new LoggingConfiguration(status.isLoggingEnabled(),
+                    status.getTargetBucketName());
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+        }
     }
 
     /**
      * @param container The bucket name
-     * @return Null if bucket logging is not supported
      */
     @Override
-    public String getLoggingTarget(final Path container) throws BackgroundException {
-        if(this.isLoggingSupported()) {
-            this.readLogging(container);
-            if(loggingStatus.containsKey(container)) {
-                return loggingStatus.get(container).getTargetBucketName();
+    public void setLogging(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
+        try {
+            // Logging target bucket
+            final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
+                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName(), null);
+            if(configuration.isEnabled()) {
+                status.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
             }
-            return container.getName();
+            client.setBucketLoggingStatus(container.getName(), status, true);
         }
-        return null;
-    }
-
-    /**
-     * @param container   The bucket name
-     * @param enabled     True if logging should be toggled on
-     * @param destination Logging bucket name or null to choose container itself as target
-     */
-    @Override
-    public void setLogging(final Path container, final boolean enabled, final String destination) throws BackgroundException {
-        if(this.isLoggingSupported()) {
-            try {
-                // Logging target bucket
-                final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
-                        StringUtils.isNotBlank(destination) ? destination : container.getName(), null);
-                if(enabled) {
-                    status.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
-                }
-                client.setBucketLoggingStatus(container.getName(), status, true);
-            }
-            catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
-            }
-            finally {
-                loggingStatus.remove(container);
-            }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
         }
     }
 
-    public Integer getTransition(final Path container) throws BackgroundException {
-        if(this.isLifecycleSupported()) {
-            this.readLifecycle(container);
-            if(lifecycleStatus.containsKey(container)) {
-                for(LifecycleConfig.Rule rule : lifecycleStatus.get(container).getRules()) {
+    public LifecycleConfiguration getLifecycle(final Path container) throws BackgroundException {
+        if(this.getHost().getCredentials().isAnonymousLogin()) {
+            log.info("Anonymous cannot access logging status");
+            return new LifecycleConfiguration();
+        }
+        try {
+            final LifecycleConfig status = client.getLifecycleConfig(container.getName());
+            if(null != status) {
+                Integer transition = null;
+                Integer expiration = null;
+                for(LifecycleConfig.Rule rule : status.getRules()) {
                     if(rule.getTransition() != null) {
-                        if(rule.getTransition().getDays() != null) {
-                            return rule.getTransition().getDays();
-                        }
+                        transition = rule.getTransition().getDays();
                     }
-                }
-            }
-        }
-        return null;
-    }
-
-    public Integer getExpiration(final Path container) throws BackgroundException {
-        if(this.isLifecycleSupported()) {
-            this.readLifecycle(container);
-            if(lifecycleStatus.containsKey(container)) {
-                for(LifecycleConfig.Rule rule : lifecycleStatus.get(container).getRules()) {
                     if(rule.getExpiration() != null) {
-                        if(rule.getExpiration().getDays() != null) {
-                            return rule.getExpiration().getDays();
-                        }
+                        expiration = rule.getExpiration().getDays();
                     }
                 }
+                return new LifecycleConfiguration(transition, expiration);
             }
+            return new LifecycleConfiguration();
         }
-        return null;
-    }
-
-    protected Map<Path, LifecycleConfig> lifecycleStatus
-            = new HashMap<Path, LifecycleConfig>();
-
-    public void readLifecycle(final Path container) throws BackgroundException {
-        if(this.isLifecycleSupported()) {
-            if(!lifecycleStatus.containsKey(container)) {
-                try {
-                    if(this.getHost().getCredentials().isAnonymousLogin()) {
-                        log.info("Anonymous cannot access logging status");
-                        return;
-                    }
-                    final LifecycleConfig status = client.getLifecycleConfig(container.getName());
-                    if(null != status) {
-                        lifecycleStatus.put(container, status);
-                    }
-                }
-                catch(ServiceException e) {
-                    log.warn("Bucket logging not supported:" + e.getMessage());
-                    this.setLoggingSupported(false);
-                }
-            }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map(e);
         }
     }
 
     /**
-     * @param container  The bucket name
-     * @param transition Days Null to disable
-     * @param expiration Days Null to disable
+     * @param container The bucket name
      */
-    public void setLifecycle(final Path container, final Integer transition, final Integer expiration) throws BackgroundException {
-        if(this.isLifecycleSupported()) {
-            try {
-                if(transition != null || expiration != null) {
-                    final LifecycleConfig config = new LifecycleConfig();
-                    // Unique identifier for the rule. The value cannot be longer than 255 characters. When you specify an empty prefix, the rule applies to all objects in the bucket
-                    final LifecycleConfig.Rule rule = config.newRule(UUID.randomUUID().toString(), StringUtils.EMPTY, true);
-                    if(transition != null) {
-                        rule.newTransition().setDays(transition);
-                    }
-                    if(expiration != null) {
-                        rule.newExpiration().setDays(expiration);
-                    }
-                    if(!config.equals(lifecycleStatus.get(container))) {
-                        client.setLifecycleConfig(container.getName(), config);
-                    }
+    @Override
+    public void setLifecycle(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
+        try {
+            if(configuration.getTransition() != null || configuration.getExpiration() != null) {
+                final LifecycleConfig config = new LifecycleConfig();
+                // Unique identifier for the rule. The value cannot be longer than 255 characters. When you specify an empty prefix, the rule applies to all objects in the bucket
+                final LifecycleConfig.Rule rule = config.newRule(UUID.randomUUID().toString(), StringUtils.EMPTY, true);
+                if(configuration.getTransition() != null) {
+                    rule.newTransition().setDays(configuration.getTransition());
                 }
-                else {
-                    client.deleteLifecycleConfig(container.getName());
+                if(configuration.getExpiration() != null) {
+                    rule.newExpiration().setDays(configuration.getExpiration());
                 }
+                client.setLifecycleConfig(container.getName(), config);
             }
-            catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
+            else {
+                client.deleteLifecycleConfig(container.getName());
             }
-            finally {
-                lifecycleStatus.remove(container);
-            }
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
         }
     }
 
@@ -712,114 +623,85 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     }
 
     /**
-     * Cache versioning status result.
-     */
-    private Map<Path, S3BucketVersioningStatus> versioningStatus
-            = new HashMap<Path, S3BucketVersioningStatus>();
-
-    /**
      * @param container The bucket name
      * @return True if enabled
      */
     @Override
-    public boolean isVersioning(final Path container) throws BackgroundException {
-        if(this.isVersioningSupported()) {
-            if(!versioningStatus.containsKey(container)) {
-                try {
-                    final S3BucketVersioningStatus status
-                            = client.getBucketVersioningStatus(container.getName());
-                    versioningStatus.put(container, status);
-                }
-                catch(ServiceException e) {
-                    throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
-                }
-            }
-            if(versioningStatus.containsKey(container)) {
-                return versioningStatus.get(container).isVersioningEnabled();
-            }
+    public VersioningConfiguration getVersioning(final Path container) throws BackgroundException {
+        try {
+            final S3BucketVersioningStatus status
+                    = client.getBucketVersioningStatus(container.getName());
+
+            return new VersioningConfiguration(status.isVersioningEnabled(),
+                    status.isMultiFactorAuthDeleteRequired());
         }
-        return false;
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+        }
     }
 
     /**
      * @param container The bucket name
-     * @return True if MFA is required to delete objects in this bucket.
+     * @param prompt    Login prompt for multi factor authentication
      */
     @Override
-    public boolean isMultiFactorAuthentication(final Path container) throws BackgroundException {
-        if(this.isVersioning(container)) {
-            return versioningStatus.get(container).isMultiFactorAuthDeleteRequired();
-        }
-        return false;
-    }
-
-    /**
-     * @param container  The bucket name
-     * @param prompt     Login prompt for multi factor authentication
-     * @param mfa        Multi factor authentication
-     * @param versioning True if enabled
-     */
-    @Override
-    public void setVersioning(final Path container, final LoginController prompt, final boolean mfa, final boolean versioning) throws BackgroundException {
-        if(this.isVersioningSupported()) {
-            try {
-                if(this.isMultiFactorAuthentication(container)) {
-                    // The bucket is already MFA protected.
-                    final Credentials factor = this.mfa(prompt);
-                    if(versioning) {
-                        if(this.isVersioning(container)) {
-                            log.debug("Versioning already enabled for bucket " + container);
-                        }
-                        else {
-                            // Enable versioning if not already active.
-                            log.debug("Enable bucket versioning with MFA " + factor.getUsername() + " for " + container);
-                            client.enableBucketVersioningWithMFA(container.getName(),
-                                    factor.getUsername(), factor.getPassword());
-                        }
+    public void setVersioning(final Path container, final LoginController prompt,
+                              final VersioningConfiguration configuration) throws BackgroundException {
+        try {
+            final VersioningConfiguration current = this.getVersioning(container);
+            if(configuration.isMultifactor()) {
+                // The bucket is already MFA protected.
+                final Credentials factor = this.mfa(prompt);
+                if(configuration.isEnabled()) {
+                    if(current.isEnabled()) {
+                        log.debug("Versioning already enabled for bucket " + container);
                     }
                     else {
-                        log.debug("Suspend bucket versioning with MFA " + factor.getUsername() + " for " + container);
-                        client.suspendBucketVersioningWithMFA(container.getName(),
+                        // Enable versioning if not already active.
+                        log.debug("Enable bucket versioning with MFA " + factor.getUsername() + " for " + container);
+                        client.enableBucketVersioningWithMFA(container.getName(),
                                 factor.getUsername(), factor.getPassword());
-                    }
-                    if(versioning && !mfa) {
-                        log.debug(String.format("Disable MFA %s for %s", factor.getUsername(), container));
-                        // User has choosen to disable MFA
-                        final Credentials factor2 = this.mfa(prompt);
-                        client.disableMFAForVersionedBucket(container.getName(),
-                                factor2.getUsername(), factor2.getPassword());
                     }
                 }
                 else {
-                    if(versioning) {
-                        if(mfa) {
-                            final Credentials factor = this.mfa(prompt);
-                            log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), container));
-                            client.enableBucketVersioningWithMFA(container.getName(),
-                                    factor.getUsername(), factor.getPassword());
-                        }
-                        else {
-                            if(this.isVersioning(container)) {
-                                log.debug(String.format("Versioning already enabled for bucket %s", container));
-                            }
-                            else {
-                                log.debug(String.format("Enable bucket versioning for %s", container));
-                                client.enableBucketVersioning(container.getName());
-                            }
-                        }
-                    }
-                    else {
-                        log.debug(String.format("Susped bucket versioning for %s", container));
-                        client.suspendBucketVersioning(container.getName());
-                    }
+                    log.debug("Suspend bucket versioning with MFA " + factor.getUsername() + " for " + container);
+                    client.suspendBucketVersioningWithMFA(container.getName(),
+                            factor.getUsername(), factor.getPassword());
+                }
+                if(configuration.isEnabled() && !configuration.isMultifactor()) {
+                    log.debug(String.format("Disable MFA %s for %s", factor.getUsername(), container));
+                    // User has choosen to disable MFA
+                    final Credentials factor2 = this.mfa(prompt);
+                    client.disableMFAForVersionedBucket(container.getName(),
+                            factor2.getUsername(), factor2.getPassword());
                 }
             }
-            catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
+            else {
+                if(configuration.isEnabled()) {
+                    if(configuration.isMultifactor()) {
+                        final Credentials factor = this.mfa(prompt);
+                        log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), container));
+                        client.enableBucketVersioningWithMFA(container.getName(),
+                                factor.getUsername(), factor.getPassword());
+                    }
+                    else {
+                        if(current.isEnabled()) {
+                            log.debug(String.format("Versioning already enabled for bucket %s", container));
+                        }
+                        else {
+                            log.debug(String.format("Enable bucket versioning for %s", container));
+                            client.enableBucketVersioning(container.getName());
+                        }
+                    }
+                }
+                else {
+                    log.debug(String.format("Susped bucket versioning for %s", container));
+                    client.suspendBucketVersioning(container.getName());
+                }
             }
-            finally {
-                versioningStatus.remove(container);
-            }
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
         }
     }
 
