@@ -24,8 +24,8 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundException;
 
 /**
-* @version $Id$
-*/
+ * @version $Id$
+ */
 public abstract class FilesystemBackgroundAction<T> extends AbstractBackgroundAction<T> {
     private Object lock;
 
@@ -39,7 +39,7 @@ public abstract class FilesystemBackgroundAction<T> extends AbstractBackgroundAc
     }
 
     public void run() throws BackgroundException {
-        throw new UnsupportedOperationException();
+        throw new BackgroundException("Not supported");
     }
 
     @Override

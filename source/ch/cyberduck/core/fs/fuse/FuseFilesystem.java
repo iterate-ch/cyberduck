@@ -20,6 +20,7 @@ package ch.cyberduck.core.fs.fuse;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
@@ -33,20 +34,10 @@ import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-import ch.cyberduck.ui.cocoa.foundation.NSDate;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSNumber;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -54,7 +45,6 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSError;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -207,28 +197,33 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
         }
 
         public void didMount(NSNotification notification) {
-            log.debug("didMount");
+            log.warn(String.format("Mount finished with %s", notification));
             unmount = new CountDownLatch(1);
             try {
                 Local folder = LocalFactory.createLocal(mountpoint, session.home().getAbsolute());
                 reveal.reveal(folder);
             }
-            catch(IOException e) {
+            catch(BackgroundException e) {
                 log.warn(e.getMessage());
             }
         }
 
         public void didUnmount(NSNotification notification) {
-            log.debug("didUnmount");
-            session.close();
+            log.warn(String.format("Unmount failed with %s", notification));
+            try {
+                session.close();
+            }
+            catch(BackgroundException e) {
+                log.warn(e.getMessage());
+            }
             unmount.countDown();
         }
 
         public void mountFailed(NSNotification notification) {
-            log.warn("mountFailed");
+            log.warn(String.format("Mount failed with %s", notification));
             NSDictionary userInfo = notification.userInfo();
             NSError error = Rococoa.cast(userInfo.objectForKey(GMUserFileSystem.kGMUserFileSystemErrorKey), NSError.class);
-            session.error(Locale.localizedString("Mount failed", "Error"), null);
+            log.error(Locale.localizedString("Mount failed", "Error"), null);
         }
 
         public NSDictionary attributesOfFileSystemForPath_error(String path, long error) {
@@ -253,10 +248,10 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 final Path directory = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
 
                 @Override
-                public NSArray call() {
+                public NSArray call() throws BackgroundException {
                     if(directory.exists()) {
                         final NSMutableArray contents = NSMutableArray.array();
-                        for(AbstractPath child : directory.children()) {
+                        for(AbstractPath child : directory.list()) {
                             contents.addObject(child.getName());
                         }
                         return contents;
@@ -287,7 +282,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final NSMutableDictionary attributes = NSMutableDictionary.dictionary();
             final Future<NSDictionary> future = background(new FilesystemBackgroundAction<NSDictionary>(session) {
                 @Override
-                public NSDictionary call() {
+                public NSDictionary call() throws BackgroundException {
                     final Path selected = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
                     if(selected.isRoot()) {
                         attributes.setObjectForKey(NSFileManager.NSFileTypeDirectory,
@@ -295,7 +290,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                         return attributes;
                     }
                     final Path directory = selected.getParent();
-                    final AbstractPath file = directory.children().get(new NSObjectPathReference(NSString.stringWithString(path)));
+                    final AbstractPath file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
                     if(null == file) {
                         log.error("Lookup failed for:" + path);
                         return null;
@@ -335,13 +330,13 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("setAttributes_ofItemAtPath_userData_error:" + path);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() {
+                public Boolean call() throws BackgroundException {
                     final Path selected = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
                     if(selected.isRoot()) {
                         return false;
                     }
                     final Path directory = selected.getParent();
-                    final AbstractPath file = directory.children().get(new NSObjectPathReference(NSString.stringWithString(path)));
+                    final AbstractPath file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
                     if(null == file) {
                         log.error("Lookup failed for:" + path);
                         return false;
@@ -383,7 +378,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("createDirectoryAtPath_attributes_error:" + path);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() {
+                public Boolean call() throws BackgroundException {
                     final Path directory = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
                     if(session.isCreateFolderSupported(directory.getParent())) {
                         directory.mkdir();
@@ -408,7 +403,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("createFileAtPath_attributes_userData_error:" + path);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() {
+                public Boolean call() throws BackgroundException {
                     final Path file = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
                     if(session.isCreateFileSupported(file.getParent())) {
                         file.touch();
@@ -433,9 +428,9 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("removeDirectoryAtPath_error:" + path);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() {
+                public Boolean call() throws BackgroundException {
                     final Path file = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
-                    file.delete();
+                    file.delete(new DisabledLoginController());
                     return true;
                 }
             });
@@ -455,12 +450,12 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("removeItemAtPath_error:" + path);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() {
+                public Boolean call() throws BackgroundException {
                     final Path file = PathFactory.createPath(session, path, Path.FILE_TYPE);
                     if(!file.exists()) {
                         return false;
                     }
-                    file.delete();
+                    file.delete(new DisabledLoginController());
                     return true;
                 }
             });
@@ -480,7 +475,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("moveItemAtPath_toPath_error:" + source);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() {
+                public Boolean call() throws BackgroundException {
                     final Path file = PathFactory.createPath(session, source, Path.FILE_TYPE);
                     if(!file.exists()) {
                         return false;
