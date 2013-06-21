@@ -90,14 +90,4 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
             }
         });
     }
-
-    @Override
-    public boolean isCanceled() {
-        for(Session s : this.getSessions()) {
-            if(!s.isConnected()) {
-                return true;
-            }
-        }
-        return super.isCanceled();
-    }
 }
