@@ -74,9 +74,7 @@ public class Resolver implements Runnable {
      * @throws ResolveCanceledException If the lookup has been interrupted
      * @see #cancel
      */
-    public InetAddress resolve()
-            throws UnknownHostException, ResolveCanceledException {
-
+    public InetAddress resolve() throws UnknownHostException, ResolveCanceledException {
         if(this.isResolved()) {
             // Return immediatly if successful before
             return this.resolved;
