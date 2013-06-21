@@ -20,8 +20,12 @@ package ch.cyberduck.ui.cocoa.threading;
  */
 
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.BrowserController;
 
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,10 +33,11 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundAction {
+    private static final Logger log = Logger.getLogger(BrowserBackgroundAction.class);
 
     private BrowserController controller;
 
-    public BrowserBackgroundAction(BrowserController controller) {
+    public BrowserBackgroundAction(final BrowserController controller) {
         super(controller);
         this.controller = controller;
     }
@@ -42,8 +47,9 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     }
 
     @Override
-    public List<Session> getSessions() {
-        return Collections.singletonList(controller.getSession());
+    public List<Session<?>> getSessions() {
+        final Session<?> session = controller.getSession();
+        return new ArrayList<Session<?>>(Collections.singletonList(session));
     }
 
     @Override
@@ -62,14 +68,19 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     public void cancel() {
         if(this.isRunning()) {
             for(Session s : this.getSessions()) {
-                s.interrupt();
+                try {
+                    s.interrupt();
+                }
+                catch(BackgroundException e) {
+                    this.error(e);
+                }
             }
         }
         super.cancel();
     }
 
     @Override
-    public void finish() {
+    public void finish() throws BackgroundException {
         super.finish();
         controller.invoke(new WindowMainAction(controller) {
             @Override
@@ -83,7 +94,7 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     @Override
     public boolean isCanceled() {
         for(Session s : this.getSessions()) {
-            if(null == s) {
+            if(!s.isConnected()) {
                 return true;
             }
         }
