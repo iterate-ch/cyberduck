@@ -186,7 +186,7 @@ public class S3Path extends CloudPath {
             }
             else if(attributes().isFile() || attributes().isPlaceholder()) {
                 AccessControlList list;
-                if(session.isVersioning(this.getContainer())) {
+                if(session.getVersioning(this.getContainer()).isEnabled()) {
                     list = session.getClient().getVersionedObjectAcl(this.attributes().getVersionId(),
                             this.getContainer().getName(), this.getKey());
                 }
@@ -302,10 +302,9 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public void writeMetadata(Map<String, String> meta) throws BackgroundException {
+    public void writeMetadata(final Map<String, String> meta) throws BackgroundException {
         if(attributes().isFile() || attributes().isPlaceholder()) {
             try {
-
                 session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
                         this.getName()));
 
@@ -348,13 +347,11 @@ public class S3Path extends CloudPath {
 
     @Override
     public void readSize() throws BackgroundException {
-        if(attributes().isFile()) {
-            session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                    this.getName()));
+        session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                this.getName()));
 
-            final StorageObject details = this.getDetails();
-            attributes().setSize(details.getContentLength());
-        }
+        final StorageObject details = this.getDetails();
+        attributes().setSize(details.getContentLength());
     }
 
     @Override
@@ -832,7 +829,7 @@ public class S3Path extends CloudPath {
                 final AttributedList<Path> children = new AttributedList<Path>();
                 children.addAll(this.listObjects(this.getContainer(), prefix, String.valueOf(Path.DELIMITER)));
                 if(Preferences.instance().getBoolean("s3.revisions.enable")) {
-                    if(session.isVersioning(this.getContainer())) {
+                    if(session.getVersioning(this.getContainer()).isEnabled()) {
                         String priorLastKey = null;
                         String priorLastVersionId = null;
                         do {
@@ -1143,7 +1140,7 @@ public class S3Path extends CloudPath {
      * @throws ServiceException            Service error
      */
     protected void delete(final LoginController prompt, final Path container, final List<ObjectKeyAndVersion> keys) throws ServiceException, BackgroundException {
-        if(session.isMultiFactorAuthentication(container)) {
+        if(session.getVersioning(container).isMultifactor()) {
             final Credentials factor = session.mfa(prompt);
             session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
                     keys.toArray(new ObjectKeyAndVersion[keys.size()]),
