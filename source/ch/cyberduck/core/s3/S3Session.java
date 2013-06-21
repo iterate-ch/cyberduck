@@ -649,7 +649,7 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
                               final VersioningConfiguration configuration) throws BackgroundException {
         try {
             final VersioningConfiguration current = this.getVersioning(container);
-            if(configuration.isMultifactor()) {
+            if(current.isMultifactor()) {
                 // The bucket is already MFA protected.
                 final Credentials factor = this.mfa(prompt);
                 if(configuration.isEnabled()) {
