@@ -18,7 +18,10 @@ package ch.cyberduck.core.cf;
  * feedback@cyberduck.ch
  */
 
-import org.apache.http.HttpException;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.FilesExceptionMappingService;
+import ch.cyberduck.core.threading.BackgroundException;
+
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -27,6 +30,7 @@ import java.util.List;
 
 import com.rackspacecloud.client.cloudfiles.FilesClient;
 import com.rackspacecloud.client.cloudfiles.FilesContainer;
+import com.rackspacecloud.client.cloudfiles.FilesException;
 import com.rackspacecloud.client.cloudfiles.FilesRegion;
 
 /**
@@ -35,7 +39,7 @@ import com.rackspacecloud.client.cloudfiles.FilesRegion;
 public class SwiftContainerListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
-    public List<FilesContainer> list(final CFSession session) throws IOException {
+    public List<FilesContainer> list(final CFSession session) throws BackgroundException {
         try {
             final List<FilesContainer> containers = new ArrayList<FilesContainer>();
             final FilesClient client = session.getClient();
@@ -47,10 +51,11 @@ public class SwiftContainerListService {
             }
             return containers;
         }
-        catch(HttpException failure) {
-            final IOException e = new IOException(failure.getMessage());
-            e.initCause(failure);
-            throw e;
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Listing directory failed", e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 }

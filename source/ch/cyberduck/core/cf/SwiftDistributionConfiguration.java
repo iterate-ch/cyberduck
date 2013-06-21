@@ -1,17 +1,15 @@
 package ch.cyberduck.core.cf;
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.HttpExceptionMappingService;
+import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -22,10 +20,11 @@ import java.util.List;
 
 import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
 import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
+import com.rackspacecloud.client.cloudfiles.FilesException;
 import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftDistributionConfiguration implements DistributionConfiguration {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
@@ -62,11 +61,11 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             session.getClient().cdnUpdateContainer(session.getRegion(container),
                     container.getName(), -1, enabled, logging);
         }
-        catch(HttpException e) {
-            throw new HttpExceptionMappingService().map("Cannot write CDN configuration", e, session.getHost());
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Cannot write CDN configuration", e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e, session.getHost());
+            throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e);
         }
     }
 
@@ -93,9 +92,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
                     distribution.setDefaultRootObject(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
-                distribution.setContainers(Collections.singletonList(PathFactory.createPath(session, String.valueOf(Path.DELIMITER), ".CDN_ACCESS_LOGS",
-                        Path.VOLUME_TYPE | Path.DIRECTORY_TYPE))
-                );
+                distribution.setContainers(Collections.<Path>singletonList(new CFPath(session, null, ".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
                 return distribution;
             }
             catch(FilesNotFoundException e) {
@@ -104,11 +101,11 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                         method, false, null, Locale.localizedString("CDN Disabled", "Mosso"));
             }
         }
-        catch(HttpException e) {
-            throw new HttpExceptionMappingService().map("Cannot read CDN configuration", e, session.getHost());
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Cannot read CDN configuration", e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read CDN configuration", e, session.getHost());
+            throw new DefaultIOExceptionMappingService().map("Cannot read CDN configuration", e);
         }
     }
 
@@ -128,11 +125,11 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 }
             }
         }
-        catch(HttpException e) {
-            throw new HttpExceptionMappingService().map("Cannot write CDN configuration", e, session.getHost());
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Cannot write CDN configuration", e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e, session.getHost());
+            throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e);
         }
     }
 
