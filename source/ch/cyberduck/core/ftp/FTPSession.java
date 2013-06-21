@@ -18,19 +18,27 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ProtocolCommandListener;
-import org.apache.commons.net.ftp.Configurable;
 import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
@@ -52,7 +60,7 @@ import java.util.TimeZone;
  *
  * @version $Id$
  */
-public class FTPSession extends SSLSession {
+public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
     private FTPClient client;
@@ -69,15 +77,7 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    public FTPClient getClient() throws ConnectionCanceledException {
-        if(null == client) {
-            throw new ConnectionCanceledException();
-        }
-        return client;
-    }
-
-    @Override
-    public Path mount() {
+    public Path mount() throws BackgroundException {
         final Path workdir = super.mount();
         if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
             if(null == host.getTimezone()) {
@@ -130,10 +130,6 @@ public class FTPSession extends SSLSession {
                     log.info(String.format("Using timezone %s", tz));
                 }
                 parser = new FTPParserFactory().createFileEntryParser(system, tz);
-                if(parser instanceof Configurable) {
-                    // Configure with default configuration
-                    ((Configurable) parser).configure(null);
-                }
                 if(StringUtils.isNotBlank(system)) {
                     String ukey = system.toUpperCase(java.util.Locale.ENGLISH);
                     if(ukey.contains(FTPClientConfig.SYST_NT)) {
@@ -159,9 +155,9 @@ public class FTPSession extends SSLSession {
      * @param workdir Directory listing
      * @return Matching timezones
      */
-    private List<TimeZone> calculateTimezone(final Path workdir) {
+    private List<TimeZone> calculateTimezone(final Path workdir) throws BackgroundException {
         // Determine the server offset from UTC
-        final AttributedList<Path> list = workdir.children();
+        final AttributedList<Path> list = workdir.list();
         if(list.isEmpty()) {
             log.warn("Cannot determine timezone with empty directory listing");
             return Collections.emptyList();
@@ -245,52 +241,33 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    public void close() {
+    public void logout() throws BackgroundException {
         try {
-            if(this.isConnected()) {
-                this.fireConnectionWillCloseEvent();
-                this.getClient().logout();
-            }
+            client.logout();
+            client.removeProtocolCommandListener(listener);
         }
         catch(IOException e) {
-            log.error(String.format("Error closing connection: %s", e.getMessage()));
-        }
-        finally {
-            if(null != client) {
-                client.removeProtocolCommandListener(listener);
-            }
-            client = null;
-            this.fireConnectionDidCloseEvent();
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt() throws BackgroundException {
         try {
-            this.fireConnectionWillCloseEvent();
-            this.getClient().disconnect();
+            client.disconnect();
         }
         catch(IOException e) {
-            log.error(String.format("Error closing connection: %s", e.getMessage()));
-        }
-        finally {
-            if(null != client) {
-                client.removeProtocolCommandListener(listener);
-            }
-            client = null;
-            this.fireConnectionDidCloseEvent();
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
     @Override
-    public void check() throws IOException {
+    public void noop() throws BackgroundException {
         try {
-            super.check();
+            client.sendNoOp();
         }
-        catch(FTPConnectionClosedException e) {
-            log.warn("Connection already closed:" + e.getMessage());
-            this.interrupt();
-            this.connect();
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
@@ -328,50 +305,36 @@ public class FTPSession extends SSLSession {
 
     /**
      * @return True if the feaatures AUTH TLS, PBSZ and PROT are supported.
-     * @throws IOException Error reading FEAT response
+     * @throws BackgroundException Error reading FEAT response
      */
-    private boolean isTLSSupported() throws IOException {
-        return this.getClient().isFeatureSupported("AUTH TLS")
-                && this.getClient().isFeatureSupported("PBSZ")
-                && this.getClient().isFeatureSupported("PROT");
+    private boolean isTLSSupported() throws BackgroundException {
+        try {
+            return client.isFeatureSupported("AUTH TLS")
+                    && client.isFeatureSupported("PBSZ")
+                    && client.isFeatureSupported("PROT");
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override
-    public void connect() throws IOException {
-        if(this.isConnected()) {
-            return;
-        }
-        this.fireConnectionWillOpenEvent();
-
+    public FTPClient connect() throws BackgroundException {
         final CustomTrustSSLProtocolSocketFactory f
                 = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
 
-        this.client = new FTPClient(f, f.getSSLContext());
-
-        final FTPClient client = this.getClient();
-        this.configure(client);
-        client.connect(host.getHostname(true), host.getPort());
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
+        client = new FTPClient(f, f.getSSLContext());
+        try {
+            this.configure(client);
+            client.connect(host.getHostname(true), host.getPort());
+            client.setTcpNoDelay(false);
+            return client;
         }
-        client.setTcpNoDelay(false);
-        this.login();
-
-        if(this.getHost().getProtocol().isSecure()) {
-            client.execPBSZ(0);
-            // Negotiate data connection security
-            client.execPROT(Preferences.instance().getProperty("ftp.tls.datachannel"));
-        }
-
-        this.fireConnectionDidOpenEvent();
-        if("UTF-8".equals(this.getEncoding())) {
-            if(client.isFeatureSupported("UTF8")) {
-                if(!FTPReply.isPositiveCompletion(client.sendCommand("OPTS UTF8 ON"))) {
-                    log.warn("Failed to negogiate UTF-8 charset:" + client.getReplyString());
-                }
-            }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
+
 
     protected FTPConnectMode getConnectMode() {
         if(null == this.host.getFTPConnectMode()) {
@@ -398,16 +361,14 @@ public class FTPSession extends SSLSession {
     /**
      * Propose protocol change if AUTH TLS is available.
      *
-     * @param login       Prompt
-     * @param credentials Login credentials
-     * @throws IOException I/O failure
+     * @param login Prompt
      */
     @Override
-    protected void warn(final LoginController login, final Credentials credentials) throws IOException {
+    protected void warn(final LoginController login) throws BackgroundException {
         Host host = this.getHost();
         if(this.isUnsecureswitch()
-                && !credentials.isAnonymousLogin()
                 && !host.getProtocol().isSecure()
+                && !host.getCredentials().isAnonymousLogin()
                 && !Preferences.instance().getBoolean("connection.unsecure." + host.getHostname())
                 && this.isTLSSupported()) {
             try {
@@ -422,9 +383,14 @@ public class FTPSession extends SSLSession {
                 // Protocol switch
                 host.setProtocol(Protocol.FTP_TLS);
                 // Reconfigure client for TLS
-                this.configure(this.getClient());
-                this.getClient().execAUTH();
-                this.getClient().sslNegotiation();
+                try {
+                    this.configure(client);
+                    client.execAUTH();
+                    client.sslNegotiation();
+                }
+                catch(IOException f) {
+                    throw new DefaultIOExceptionMappingService().map(f);
+                }
             }
             finally {
                 // Do not warn again upon subsequent login
@@ -434,21 +400,41 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    protected void login(LoginController controller, Credentials credentials) throws IOException {
-        final FTPClient client = this.getClient();
-        if(client.login(credentials.getUsername(), credentials.getPassword())) {
-            this.message(Locale.localizedString("Login successful", "Credentials"));
+    public void login(final LoginController prompt) throws BackgroundException {
+        try {
+            if(client.login(host.getCredentials().getUsername(), host.getCredentials().getPassword())) {
+                this.message(Locale.localizedString("Login successful", "Credentials"));
+                if(this.getHost().getProtocol().isSecure()) {
+                    client.execPBSZ(0);
+                    // Negotiate data connection security
+                    client.execPROT(Preferences.instance().getProperty("ftp.tls.datachannel"));
+                }
+                if("UTF-8".equals(this.getEncoding())) {
+                    if(client.isFeatureSupported("UTF8")) {
+                        if(!FTPReply.isPositiveCompletion(client.sendCommand("OPTS UTF8 ON"))) {
+                            log.warn("Failed to negotiate UTF-8 charset:" + client.getReplyString());
+                        }
+                    }
+                }
+            }
+            else {
+                throw new LoginFailureException(client.getReplyString());
+            }
         }
-        else {
-            this.message(Locale.localizedString("Login failed", "Credentials"));
-            controller.fail(host.getProtocol(), credentials, client.getReplyString());
-            this.login();
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
     @Override
-    public Path workdir() throws IOException {
-        final String directory = this.getClient().printWorkingDirectory();
+    public Path workdir() throws BackgroundException {
+        final String directory;
+        try {
+            directory = client.printWorkingDirectory();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
         return new FTPPath(this, directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
@@ -459,10 +445,13 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    public void sendCommand(final String command) throws IOException {
-        if(this.isConnected()) {
-            this.message(command);
-            this.getClient().sendSiteCommand(command);
+    public void sendCommand(final String command) throws BackgroundException {
+        this.message(command);
+        try {
+            client.sendSiteCommand(command);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 

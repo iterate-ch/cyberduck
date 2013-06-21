@@ -20,7 +20,8 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.exception.ServiceExceptionMappingService;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,7 +31,6 @@ import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageOwner;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +41,7 @@ import java.util.List;
 public class S3BucketListService {
     private static final Logger log = Logger.getLogger(S3BucketListService.class);
 
-    public List<StorageBucket> list(final S3Session session) throws IOException {
+    public List<StorageBucket> list(final S3Session session) throws BackgroundException {
         try {
             final List<StorageBucket> buckets = new ArrayList<StorageBucket>();
             if(session.getHost().getCredentials().isAnonymousLogin()) {
@@ -52,11 +52,8 @@ public class S3BucketListService {
                 String bucketname = this.getContainer(session.getHost());
                 if(StringUtils.isEmpty(bucketname)) {
                     if(StringUtils.isNotBlank(session.getHost().getDefaultPath())) {
-                        Path d = PathFactory.createPath(session, session.getHost().getDefaultPath(), Path.DIRECTORY_TYPE);
-                        while(!d.getParent().isRoot()) {
-                            d = d.getParent();
-                        }
-                        bucketname = d.getName();
+                        S3Path d = new S3Path(session, session.getHost().getDefaultPath(), Path.DIRECTORY_TYPE);
+                        bucketname = d.getContainer().getName();
                     }
                     log.info(String.format("Using default path to determine bucket name %s", bucketname));
                 }
@@ -67,8 +64,7 @@ public class S3BucketListService {
                     bucketname = session.getHost().getHostname(true);
                 }
                 if(!session.getClient().isBucketAccessible(bucketname)) {
-                    session.error("Cannot read container configuration",
-                            new ServiceException(String.format("Bucket %s not accessible", bucketname)));
+                    throw new ServiceException(String.format("Bucket %s not accessible", bucketname));
                 }
                 final S3Bucket bucket = new S3Bucket(bucketname);
                 try {
@@ -86,8 +82,7 @@ public class S3BucketListService {
                 final String bucketname = this.getContainer(session.getHost());
                 if(StringUtils.isNotEmpty(bucketname)) {
                     if(!session.getClient().isBucketAccessible(bucketname)) {
-                        session.error("Cannot read container configuration",
-                                new ServiceException(String.format("Bucket %s not accessible", bucketname)));
+                        throw new ServiceException(String.format("Bucket %s not accessible", bucketname));
                     }
                     final S3Bucket bucket = new S3Bucket(bucketname);
                     try {
@@ -108,9 +103,7 @@ public class S3BucketListService {
             return buckets;
         }
         catch(ServiceException failure) {
-            final IOException e = new IOException(failure.getMessage());
-            e.initCause(failure);
-            throw e;
+            throw new ServiceExceptionMappingService().map("Listing directory failed", failure);
         }
     }
 

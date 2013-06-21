@@ -52,11 +52,6 @@ public class AttributedListAttributes<E extends AbstractPath> {
     private boolean invalid = false;
 
     /**
-     * File listing is not readable; permission issue
-     */
-    private boolean readable = true;
-
-    /**
      * Initialize with default values
      *
      * @see ch.cyberduck.core.NullComparator
@@ -105,17 +100,6 @@ public class AttributedListAttributes<E extends AbstractPath> {
         return hidden;
     }
 
-    public void setReadable(final boolean readable) {
-        this.readable = readable;
-    }
-
-    /**
-     * @return True if the readable attribute is set to <code>Boolean.TRUE</code>.
-     */
-    public boolean isReadable() {
-        return readable;
-    }
-
     /**
      * Mark cached listing as superseded
      *
@@ -123,10 +107,6 @@ public class AttributedListAttributes<E extends AbstractPath> {
      */
     public void setInvalid(final boolean invalid) {
         this.invalid = invalid;
-        if(invalid) {
-            // Reset readable attribute.
-            readable = true;
-        }
     }
 
     /**

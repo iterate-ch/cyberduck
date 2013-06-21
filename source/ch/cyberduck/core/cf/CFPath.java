@@ -18,23 +18,26 @@ package ch.cyberduck.core.cf;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpException;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
@@ -54,7 +57,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.rackspacecloud.client.cloudfiles.FilesContainer;
 import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
+import com.rackspacecloud.client.cloudfiles.FilesException;
 import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
 import com.rackspacecloud.client.cloudfiles.FilesObject;
 import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
@@ -65,27 +70,27 @@ import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
  * @version $Id$
  */
 public class CFPath extends CloudPath {
-    private static Logger log = Logger.getLogger(CFPath.class);
+    private static final Logger log = Logger.getLogger(CFPath.class);
 
     private final CFSession session;
 
-    public CFPath(CFSession s, String parent, String name, int type) {
+    public CFPath(CFSession s, Path parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
-    public CFPath(CFSession s, String path, int type) {
-        super(path, type);
-        this.session = s;
+    public CFPath(CFSession session, String path, int type) {
+        super(session, path, type);
+        this.session = session;
     }
 
-    public CFPath(CFSession s, String parent, Local file) {
+    public CFPath(CFSession s, Path parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
     public <T> CFPath(CFSession s, T dict) {
-        super(dict);
+        super(s, dict);
         this.session = s;
     }
 
@@ -95,90 +100,83 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public boolean exists() {
+    public boolean exists() throws BackgroundException {
         if(super.exists()) {
             return true;
         }
         if(this.isContainer()) {
             try {
-                return this.getSession().getClient().containerExists(session.getRegion(this.getContainer()),
+                return session.getClient().containerExists(session.getRegion(this.getContainer()),
                         this.getName());
             }
-            catch(HttpException e) {
-                log.warn(String.format("Container %s does not exist", this.getName()));
-                return false;
-            }
-            catch(ConnectionCanceledException e) {
-                log.warn(e.getMessage());
+            catch(FilesException e) {
+                throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
             }
             catch(IOException e) {
-                log.warn(e.getMessage());
+                throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
             }
         }
         return super.exists();
     }
 
     @Override
-    public void readSize() {
+    public void readSize() throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                     this.getName()));
 
             if(this.isContainer()) {
                 attributes().setSize(
-                        this.getSession().getClient().getContainerInfo(session.getRegion(this.getContainer()),
+                        session.getClient().getContainerInfo(session.getRegion(this.getContainer()),
                                 this.getContainer().getName()).getTotalSize()
                 );
             }
             else if(this.attributes().isFile()) {
                 attributes().setSize(
-                        Long.valueOf(this.getSession().getClient().getObjectMetaData(session.getRegion(this.getContainer()),
+                        Long.valueOf(session.getClient().getObjectMetaData(session.getRegion(this.getContainer()),
                                 this.getContainer().getName(), this.getKey()).getContentLength())
                 );
             }
         }
-        catch(HttpException e) {
-            this.error("Cannot read file attributes", e);
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
         }
         catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
         }
     }
 
     @Override
-    public void readChecksum() {
+    public void readChecksum() throws BackgroundException {
         if(this.attributes().isFile()) {
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
 
-                final String checksum = this.getSession().getClient().getObjectMetaData(session.getRegion(this.getContainer()),
+                final String checksum = session.getClient().getObjectMetaData(session.getRegion(this.getContainer()),
                         this.getContainer().getName(), this.getKey()).getETag();
                 attributes().setChecksum(checksum);
                 attributes().setETag(checksum);
             }
-            catch(HttpException e) {
-                this.error("Cannot read file attributes", e);
+            catch(FilesException e) {
+                throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
             }
         }
     }
 
     @Override
-    public void readTimestamp() {
+    public void readTimestamp() throws BackgroundException {
         if(this.attributes().isFile()) {
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                         this.getName()));
 
                 try {
                     attributes().setModificationDate(
-                            ServiceUtils.parseRfc822Date(this.getSession().getClient().getObjectMetaData(
+                            ServiceUtils.parseRfc822Date(session.getClient().getObjectMetaData(
                                     session.getRegion(this.getContainer()), this.getContainer().getName(),
                                     this.getKey()).getLastModified()).getTime()
                     );
@@ -187,24 +185,29 @@ public class CFPath extends CloudPath {
                     log.error("Failure parsing timestamp", e);
                 }
             }
-            catch(HttpException e) {
-                this.error("Cannot read file attributes", e);
+            catch(FilesException e) {
+                throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
             }
         }
     }
 
     @Override
-    public AttributedList<Path> list(final AttributedList<Path> children) {
+    public AttributedList<Path> list() throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
+            final AttributedList<Path> children = new AttributedList<Path>();
             if(this.isRoot()) {
-                return new AttributedList<Path>(this.getSession().getContainers(true));
+                for(FilesContainer b : new SwiftContainerListService().list(session)) {
+                    final CFPath container = new CFPath(session, String.format("/%s", b.getName()),
+                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                    container.attributes().setRegion(b.getRegion().getRegionId());
+                    children.add(container);
+                }
             }
             else {
                 final int limit = Preferences.instance().getInteger("cf.list.limit");
@@ -212,12 +215,12 @@ public class CFPath extends CloudPath {
                 List<FilesObject> list;
                 do {
                     final Path container = this.getContainer();
-                    list = this.getSession().getClient().listObjectsStartingWith(session.getRegion(container), container.getName(),
+                    list = session.getClient().listObjectsStartingWith(session.getRegion(container), container.getName(),
                             this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                     for(FilesObject object : list) {
-                        final Path file = new CFPath(this.getSession(), container.getName(), object.getName(),
+                        final Path file = new CFPath(session, this,
+                                Path.getName(PathNormalizer.normalize(object.getName())),
                                 "application/directory".equals(object.getMimeType()) ? DIRECTORY_TYPE : FILE_TYPE);
-                        file.setParent(this);
                         if(file.attributes().isFile()) {
                             file.attributes().setSize(object.getSize());
                             file.attributes().setChecksum(object.getMd5sum());
@@ -238,53 +241,46 @@ public class CFPath extends CloudPath {
                             }
                         }
                         file.attributes().setOwner(this.attributes().getOwner());
-
                         children.add(file);
-
                         marker = object.getName();
                     }
                 }
                 while(list.size() == limit);
             }
+            return children;
         }
-        catch(HttpException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(!session.cache().containsKey(this.getReference())) {
-                this.error(e.getMessage(), e);
-            }
+        catch(FilesException e) {
+            log.warn(String.format("Directory listing failure for %s with failure %s", this, e.getMessage()));
+            throw new FilesExceptionMappingService().map("Listing directory failed", e, this);
         }
         catch(IOException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(!session.cache().containsKey(this.getReference())) {
-                this.error(e.getMessage(), e);
-            }
+            log.warn(String.format("Directory listing failure for %s with failure %s", this, e.getMessage()));
+            throw new DefaultIOExceptionMappingService().map(e, this);
         }
-        return children;
     }
 
     @Override
-    public InputStream read(final TransferStatus status) throws IOException {
+    public InputStream read(final TransferStatus status) throws BackgroundException {
         try {
             if(status.isResume()) {
-                return this.getSession().getClient().getObject(session.getRegion(this.getContainer()),
+                return session.getClient().getObject(session.getRegion(this.getContainer()),
                         this.getContainer().getName(), this.getKey(),
                         status.getCurrent(), status.getLength());
             }
-            return this.getSession().getClient().getObject(session.getRegion(this.getContainer()),
+            return session.getClient().getObject(session.getRegion(this.getContainer()),
                     this.getContainer().getName(), this.getKey());
         }
-        catch(HttpException e) {
-            IOException failure = new IOException(e.getMessage());
-            failure.initCause(e);
-            throw failure;
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Download failed", e, this);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e, this);
         }
     }
 
     @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status) {
+                         final TransferStatus status) throws BackgroundException {
         OutputStream out = null;
         InputStream in = null;
         try {
@@ -293,7 +289,7 @@ public class CFPath extends CloudPath {
             this.download(in, out, throttle, listener, status);
         }
         catch(IOException e) {
-            this.error("Download failed", e);
+            throw new DefaultIOExceptionMappingService().map("Download failed", e, this);
         }
         finally {
             IOUtils.closeQuietly(in);
@@ -302,11 +298,11 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
         try {
             String md5sum = null;
             if(Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
                 md5sum = this.getLocal().attributes().getChecksum();
             }
@@ -337,7 +333,7 @@ public class CFPath extends CloudPath {
                 IOUtils.closeQuietly(out);
             }
             if(null != digest && null != out) {
-                this.getSession().message(MessageFormat.format(
+                session.message(MessageFormat.format(
                         Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
                 // Obtain locally-calculated MD5 hash.
                 String expectedETag = ServiceUtils.toHex(digest.digest());
@@ -357,17 +353,21 @@ public class CFPath extends CloudPath {
                 }
             }
         }
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Upload failed", e, this);
+        }
         catch(IOException e) {
-            this.error("Upload failed", e);
+            throw new DefaultIOExceptionMappingService().map("Upload failed", e, this);
         }
     }
 
     @Override
-    public OutputStream write(final TransferStatus status) throws IOException {
+    public OutputStream write(final TransferStatus status) throws BackgroundException {
         return this.write(status, null);
     }
 
-    private ResponseOutputStream<String> write(final TransferStatus status, final String md5sum) throws IOException {
+    private ResponseOutputStream<String> write(final TransferStatus status, final String md5sum)
+            throws BackgroundException {
         final HashMap<String, String> metadata = new HashMap<String, String>();
         // Default metadata for new files
         for(String m : Preferences.instance().getList("cf.metadata.default")) {
@@ -399,17 +399,18 @@ public class CFPath extends CloudPath {
              * @return The ETag returned by the server for the uploaded object
              */
             @Override
-            public String call(AbstractHttpEntity entity) throws IOException {
+            public String call(AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    return CFPath.this.getSession().getClient().storeObject(
+                    return session.getClient().storeObject(
                             session.getRegion(getContainer()), getContainer().getName(),
                             CFPath.this.getKey(), entity,
                             metadata, md5sum);
                 }
-                catch(HttpException e) {
-                    IOException failure = new IOException(e.getMessage());
-                    failure.initCause(e);
-                    throw failure;
+                catch(FilesException e) {
+                    throw new FilesExceptionMappingService().map("Upload failed", e, CFPath.this);
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Upload failed", e, CFPath.this);
                 }
             }
 
@@ -422,54 +423,51 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public void mkdir() {
+    public void mkdir() throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
             if(this.isContainer()) {
                 // Create container at top level
-                this.getSession().getClient().createContainer(session.getRegion(this.getContainer()), this.getName());
+                session.getClient().createContainer(session.getRegion(this.getContainer()), this.getName());
             }
             else {
                 // Create virtual directory
-                this.getSession().getClient().createPath(session.getRegion(this.getContainer()), this.getContainer().getName(), this.getKey());
+                session.getClient().createPath(session.getRegion(this.getContainer()), this.getContainer().getName(), this.getKey());
             }
         }
-        catch(HttpException e) {
-            this.error("Cannot create folder {0}", e);
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Cannot create folder {0}", e, this);
         }
         catch(IOException e) {
-            this.error("Cannot create folder {0}", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, this);
         }
     }
 
     @Override
-    public void delete() {
+    public void delete(final LoginController prompt) throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     this.getName()));
-            ;
             if(attributes().isFile()) {
-                this.getSession().getClient().deleteObject(session.getRegion(this.getContainer()),
+                session.getClient().deleteObject(session.getRegion(this.getContainer()),
                         this.getContainer().getName(), this.getKey());
             }
             else if(attributes().isDirectory()) {
-                for(AbstractPath i : this.children()) {
-                    if(!this.getSession().isConnected()) {
-                        break;
+                for(Path i : this.list()) {
+                    if(!session.isConnected()) {
+                        throw new ConnectionCanceledException();
                     }
-                    i.delete();
+                    i.delete(prompt);
                 }
                 if(this.isContainer()) {
-                    this.getSession().getClient().deleteContainer(session.getRegion(this.getContainer()),
+                    session.getClient().deleteContainer(session.getRegion(this.getContainer()),
                             this.getContainer().getName());
                 }
                 else {
                     try {
-                        this.getSession().getClient().deleteObject(session.getRegion(this.getContainer()),
+                        session.getClient().deleteObject(session.getRegion(this.getContainer()),
                                 this.getContainer().getName(), this.getKey());
                     }
                     catch(FilesNotFoundException e) {
@@ -479,51 +477,49 @@ public class CFPath extends CloudPath {
                 }
             }
         }
-        catch(HttpException e) {
-            this.error("Cannot delete {0}", e);
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Cannot delete {0}", e, this);
         }
         catch(IOException e) {
-            this.error("Cannot delete {0}", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, this);
         }
     }
 
     @Override
-    public void readMetadata() {
+    public void readMetadata() throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
                     this.getName()));
 
             if(this.attributes().isFile()) {
                 final FilesObjectMetaData meta
-                        = this.getSession().getClient().getObjectMetaData(session.getRegion(this.getContainer()),
+                        = session.getClient().getObjectMetaData(session.getRegion(this.getContainer()),
                         this.getContainer().getName(), this.getKey());
                 this.attributes().setMetadata(meta.getMetaData());
             }
             if(this.attributes().isVolume()) {
                 final FilesContainerMetaData meta
-                        = this.getSession().getClient().getContainerMetaData(session.getRegion(this.getContainer()),
+                        = session.getClient().getContainerMetaData(session.getRegion(this.getContainer()),
                         this.getContainer().getName());
                 this.attributes().setMetadata(meta.getMetaData());
             }
         }
-        catch(HttpException e) {
-            this.error("Cannot read file attributes", e);
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
         }
         catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
         }
     }
 
     @Override
-    public void writeMetadata(final Map<String, String> meta) {
+    public void writeMetadata(final Map<String, String> meta) throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
                     this.getName()));
 
             if(this.attributes().isFile()) {
-                this.getSession().getClient().updateObjectMetadata(session.getRegion(this.getContainer()),
+                session.getClient().updateObjectMetadata(session.getRegion(this.getContainer()),
                         this.getContainer().getName(), this.getKey(), meta);
             }
             else if(this.attributes().isVolume()) {
@@ -534,15 +530,15 @@ public class CFPath extends CloudPath {
                         meta.put(entry.getKey(), StringUtils.EMPTY);
                     }
                 }
-                this.getSession().getClient().updateContainerMetadata(session.getRegion(this.getContainer()),
+                session.getClient().updateContainerMetadata(session.getRegion(this.getContainer()),
                         this.getContainer().getName(), meta);
             }
         }
-        catch(HttpException e) {
-            this.error("Cannot write file attributes", e);
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
         }
         catch(IOException e) {
-            this.error("Cannot write file attributes", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
         }
         finally {
             this.attributes().clear(false, false, false, true);
@@ -550,29 +546,27 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public void rename(final AbstractPath renamed) {
+    public void rename(final Path renamed) throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
             if(this.attributes().isFile()) {
-                this.getSession().getClient().copyObject(session.getRegion(this.getContainer()),
+                session.getClient().copyObject(session.getRegion(this.getContainer()),
                         this.getContainer().getName(), this.getKey(),
-                        ((CFPath) renamed).getContainer().getName(), ((CFPath) renamed).getKey());
-                this.getSession().getClient().deleteObject(session.getRegion(this.getContainer()),
+                        renamed.getContainer().getName(), renamed.getKey());
+                session.getClient().deleteObject(session.getRegion(this.getContainer()),
                         this.getContainer().getName(), this.getKey());
             }
             else if(this.attributes().isDirectory()) {
-                for(Path i : this.children()) {
-                    if(!this.getSession().isConnected()) {
-                        break;
+                for(Path i : this.list()) {
+                    if(!session.isConnected()) {
+                        throw new ConnectionCanceledException();
                     }
-                    i.rename(new CFPath(this.getSession(), renamed.getAbsolute(),
-                            i.getName(), i.attributes().getType()));
+                    i.rename(new CFPath(session, renamed, i.getName(), i.attributes().getType()));
                 }
                 try {
-                    this.getSession().getClient().deleteObject(session.getRegion(this.getContainer()),
+                    session.getClient().deleteObject(session.getRegion(this.getContainer()),
                             this.getContainer().getName(), this.getKey());
                 }
                 catch(FilesNotFoundException e) {
@@ -581,36 +575,35 @@ public class CFPath extends CloudPath {
                 }
             }
         }
-        catch(HttpException e) {
-            this.error("Cannot rename {0}", e);
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map("Cannot rename {0}", e, this);
         }
         catch(IOException e) {
-            this.error("Cannot rename {0}", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, this);
         }
     }
 
     @Override
-    public void copy(final AbstractPath copy, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
-        if(((Path) copy).getSession().equals(this.getSession())) {
+    public void copy(final Path copy, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
+        if(((Path) copy).getSession().equals(session)) {
             // Copy on same server
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                         this.getName(), copy));
 
                 if(this.attributes().isFile()) {
-                    this.getSession().getClient().copyObject(session.getRegion(this.getContainer()),
+                    session.getClient().copyObject(session.getRegion(this.getContainer()),
                             this.getContainer().getName(), this.getKey(),
                             ((CFPath) copy).getContainer().getName(), ((CFPath) copy).getKey());
                     listener.bytesSent(this.attributes().getSize());
                     status.setComplete();
                 }
             }
-            catch(HttpException e) {
-                this.error("Cannot copy {0}", e);
+            catch(FilesException e) {
+                throw new FilesExceptionMappingService().map("Cannot copy {0}", e, this);
             }
             catch(IOException e) {
-                this.error("Cannot copy {0}", e);
+                throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, this);
             }
         }
         else {

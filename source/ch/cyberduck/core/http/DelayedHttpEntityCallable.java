@@ -19,15 +19,15 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
-import org.apache.http.entity.AbstractHttpEntity;
+import ch.cyberduck.core.threading.BackgroundException;
 
-import java.io.IOException;
+import org.apache.http.entity.AbstractHttpEntity;
 
 /**
  * @version $Id$
  */
 public interface DelayedHttpEntityCallable<T> {
-    T call(AbstractHttpEntity entity) throws IOException;
+    T call(AbstractHttpEntity entity) throws BackgroundException;
 
     long getContentLength();
 }

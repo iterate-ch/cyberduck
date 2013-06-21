@@ -99,11 +99,6 @@ public class FinderLocal extends Local {
         super.setPath(this.resolveAlias(stringByExpandingTildeInPath(name)));
     }
 
-    @Override
-    public void setPath(final String parent, final String name) {
-        super.setPath(stringByExpandingTildeInPath(parent), name);
-    }
-
     /**
      * @return Name of the file as displayed in the Finder. E.g. a ':' is replaced with '/'.
      */
@@ -177,7 +172,7 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public AbstractPath getSymlinkTarget() {
+    public Local getSymlinkTarget() {
         return new FinderLocal(this.getParent().getAbsolute(),
                 NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(this.getAbsolute(), null));
     }

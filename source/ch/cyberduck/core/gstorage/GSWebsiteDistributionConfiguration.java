@@ -4,7 +4,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -15,13 +14,12 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.GSWebsiteConfig;
 import org.jets3t.service.model.WebsiteConfig;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GSWebsiteDistributionConfiguration implements DistributionConfiguration {
 
@@ -79,9 +77,6 @@ public class GSWebsiteDistributionConfiguration implements DistributionConfigura
                     String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()),
                     status);
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read website configuration", e, session.getHost());
-        }
     }
 
     @Override
@@ -103,7 +98,6 @@ public class GSWebsiteDistributionConfiguration implements DistributionConfigura
     public void write(final Path container, final boolean enabled, final Distribution.Method method,
                       final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
         try {
-            session.check();
             // Configure Website Index Document
             StringBuilder name = new StringBuilder(Locale.localizedString("Website", "S3")).append(" ").append(method.toString());
             if(enabled) {
@@ -126,10 +120,7 @@ public class GSWebsiteDistributionConfiguration implements DistributionConfigura
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot write website configuration", e, session.getHost());
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot write website configuration", e, session.getHost());
+            throw new ServiceExceptionMappingService().map("Cannot write website configuration", e);
         }
     }
 

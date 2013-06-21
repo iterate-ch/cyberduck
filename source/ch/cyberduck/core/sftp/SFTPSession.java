@@ -19,8 +19,10 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,17 +40,15 @@ import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.ConnectionMonitor;
 import ch.ethz.ssh2.InteractiveCallback;
 import ch.ethz.ssh2.PacketListener;
-import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.SFTPv3Client;
 import ch.ethz.ssh2.StreamGobbler;
-import ch.ethz.ssh2.channel.ChannelClosedException;
 import ch.ethz.ssh2.crypto.PEMDecoder;
 import ch.ethz.ssh2.crypto.PEMDecryptException;
 
 /**
  * @version $Id$
  */
-public class SFTPSession extends Session {
+public class SFTPSession extends Session<Connection> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
     private Connection connection;
@@ -58,154 +58,111 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    public Connection getClient() throws ConnectionCanceledException {
-        if(null == connection) {
-            throw new ConnectionCanceledException();
-        }
-        return connection;
-    }
-
-    @Override
     public boolean isSecure() {
         if(super.isSecure()) {
-            try {
-                return this.getClient().isAuthenticationComplete();
-            }
-            catch(ConnectionCanceledException e) {
-                return false;
-            }
+            return connection.isAuthenticationComplete();
         }
         return false;
     }
 
     private SFTPv3Client client;
 
-    /**
-     * If never called before opens a new SFTP subsystem. If called before, the cached
-     * SFTP subsystem is returned. May not be used concurrently.
-     *
-     * @return Client instance
-     * @throws IOException If opening SFTP channel fails
-     */
-    protected SFTPv3Client sftp() throws IOException {
-        if(null == client) {
-            if(!this.isConnected()) {
-                throw new ConnectionCanceledException();
-            }
-            if(!this.getClient().isAuthenticationComplete()) {
-                throw new LoginCanceledException();
-            }
-            this.message(Locale.localizedString("Starting SFTP subsystem", "Status"));
-            client = new SFTPv3Client(this.getClient(), new PacketListener() {
+    @Override
+    public Connection connect() throws BackgroundException {
+        try {
+            connection = new Connection(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()), host.getPort(),
+                    new PreferencesUseragentProvider().get());
+            connection.setTCPNoDelay(true);
+            connection.addConnectionMonitor(new ConnectionMonitor() {
                 @Override
-                public void read(String packet) {
-                    SFTPSession.this.log(false, packet);
-                }
-
-                @Override
-                public void write(String packet) {
-                    SFTPSession.this.log(true, packet);
+                public void connectionLost(Throwable reason) {
+                    log.warn(String.format("Connection lost:%s", (null == reason) ? "Unknown" : reason.getMessage()));
+                    connection.close(null, true);
                 }
             });
-            this.message(Locale.localizedString("SFTP subsystem ready", "Status"));
-            client.setCharset(this.getEncoding());
-        }
-        return client;
-    }
 
-    /**
-     * Opens a new, dedicated SCP channel for this SSH session
-     *
-     * @return Client instance
-     * @throws IOException If opening SCP channel fails
-     */
-    protected SCPClient openScp() throws IOException {
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
+            final int timeout = this.timeout();
+            connection.connect(HostKeyControllerFactory.get(this), timeout, timeout);
+            return connection;
         }
-        if(!this.getClient().isAuthenticationComplete()) {
-            throw new LoginCanceledException();
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
-        final SCPClient client = new SCPClient(this.getClient());
-        client.setCharset(this.getEncoding());
-        return client;
     }
 
     @Override
-    public void connect() throws IOException {
-        if(this.isConnected()) {
-            return;
-        }
-        this.fireConnectionWillOpenEvent();
-
-        connection = new Connection(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()), host.getPort(), this.getUserAgent());
-        connection.setTCPNoDelay(true);
-        connection.addConnectionMonitor(new ConnectionMonitor() {
-            @Override
-            public void connectionLost(Throwable reason) {
-                log.warn(String.format("Connection lost:%s", (null == reason) ? "Unknown" : reason.getMessage()));
-                interrupt();
+    public void login(final LoginController prompt) throws BackgroundException {
+        try {
+            if(connection.isAuthenticationComplete()) {
+                // Already authenticated
+                return;
             }
-        });
+            if(host.getCredentials().isPublicKeyAuthentication()) {
+                if(this.loginUsingPublicKeyAuthentication(prompt, host.getCredentials())) {
+                    log.info("Login successful");
+                }
+            }
+            else if(this.loginUsingChallengeResponseAuthentication(prompt, host.getCredentials())) {
+                log.info("Login successful");
+            }
+            else if(this.loginUsingPasswordAuthentication(host.getCredentials())) {
+                log.info("Login successful");
+            }
+            // Check if authentication is partial
+            if(connection.isAuthenticationPartialSuccess()) {
+                final Credentials additional = new Credentials(host.getCredentials().getUsername(), null, false) {
+                    @Override
+                    public String getUsernamePlaceholder() {
+                        return host.getCredentials().getUsernamePlaceholder();
+                    }
 
-        final int timeout = this.timeout();
-        this.getClient().connect(HostKeyControllerFactory.get(this), timeout, timeout);
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
+                    @Override
+                    public String getPasswordPlaceholder() {
+                        return getHost().getProtocol().getPasswordPlaceholder();
+                    }
+                };
+                prompt.prompt(host.getProtocol(), additional,
+                        Locale.localizedString("Partial authentication success", "Credentials"),
+                        Locale.localizedString("Provide additional login credentials", "Credentials") + ".", false, false, false);
+                if(this.loginUsingChallengeResponseAuthentication(prompt, additional)) {
+                    this.message(Locale.localizedString("Login successful", "Credentials"));
+                }
+                else {
+                    prompt.fail(host.getProtocol(), host.getCredentials());
+                }
+            }
+            if(connection.isAuthenticationComplete()) {
+                this.message(Locale.localizedString("Starting SFTP subsystem", "Status"));
+                try {
+                    client = new SFTPv3Client(connection, new PacketListener() {
+                        @Override
+                        public void read(String packet) {
+                            SFTPSession.this.log(false, packet);
+                        }
+
+                        @Override
+                        public void write(String packet) {
+                            SFTPSession.this.log(true, packet);
+                        }
+                    });
+                    this.message(Locale.localizedString("SFTP subsystem ready", "Status"));
+                    client.setCharset(this.getEncoding());
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map(e);
+                }
+            }
+            else {
+                prompt.fail(host.getProtocol(), host.getCredentials());
+            }
         }
-        this.login();
-        if(!this.getClient().isAuthenticationComplete()) {
-            throw new LoginCanceledException();
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
-        // Make sure subsystem is available
-        this.sftp();
-        this.fireConnectionDidOpenEvent();
     }
 
-    @Override
-    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
-        if(this.getClient().isAuthenticationComplete()) {
-            this.message(Locale.localizedString("Login successful", "Credentials"));
-            // Already authenticated
-            return;
-        }
-        if(credentials.isPublicKeyAuthentication()) {
-            if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
-                this.message(Locale.localizedString("Login successful", "Credentials"));
-                return;
-            }
-        }
-        else if(this.loginUsingChallengeResponseAuthentication(controller, credentials)) {
-            this.message(Locale.localizedString("Login successful", "Credentials"));
-            return;
-        }
-        else if(this.loginUsingPasswordAuthentication(controller, credentials)) {
-            this.message(Locale.localizedString("Login successful", "Credentials"));
-            return;
-        }
-        if(this.getClient().isAuthenticationPartialSuccess()) {
-            final Credentials additional = new Credentials(credentials.getUsername(), null, false) {
-                @Override
-                public String getUsernamePlaceholder() {
-                    return credentials.getUsernamePlaceholder();
-                }
-
-                @Override
-                public String getPasswordPlaceholder() {
-                    return getHost().getProtocol().getPasswordPlaceholder();
-                }
-            };
-            controller.prompt(host.getProtocol(), additional,
-                    Locale.localizedString("Partial authentication success", "Credentials"),
-                    Locale.localizedString("Provide additional login credentials", "Credentials") + ".", false, false, false);
-            if(this.loginUsingChallengeResponseAuthentication(controller, additional)) {
-                this.message(Locale.localizedString("Login successful", "Credentials"));
-                return;
-            }
-        }
-        this.message(Locale.localizedString("Login failed", "Credentials"));
-        controller.fail(host.getProtocol(), credentials);
-        this.login();
+    public SFTPv3Client sftp() {
+        return client;
     }
 
     /**
@@ -217,11 +174,11 @@ public class SFTPSession extends Session {
      * @throws IOException Error reading private key
      */
     private boolean loginUsingPublicKeyAuthentication(final LoginController controller, final Credentials credentials)
-            throws IOException {
+            throws IOException, LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using public key authentication with credentials %s", credentials));
         }
-        if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
+        if(connection.isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
             if(credentials.isPublicKeyAuthentication()) {
                 final Local identity = credentials.getIdentity();
                 final CharArrayWriter privatekey = new CharArrayWriter();
@@ -270,7 +227,7 @@ public class SFTPSession extends Session {
                         return this.loginUsingPublicKeyAuthentication(controller, credentials);
                     }
                 }
-                return this.getClient().authenticateWithPublicKey(credentials.getUsername(),
+                return connection.authenticateWithPublicKey(credentials.getUsername(),
                         privatekey.toCharArray(), credentials.getPassword());
             }
         }
@@ -280,17 +237,15 @@ public class SFTPSession extends Session {
     /**
      * Authenticate with plain password.
      *
-     * @param controller  Login prompt
      * @param credentials Username and password
      * @return True if authentication succeeded
-     * @throws IOException Login failed or canceled
      */
-    private boolean loginUsingPasswordAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
+    private boolean loginUsingPasswordAuthentication(final Credentials credentials) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using password authentication with credentials %s", credentials));
         }
-        if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "password")) {
-            return this.getClient().authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
+        if(connection.isAuthMethodAvailable(credentials.getUsername(), "password")) {
+            return connection.authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
         }
         return false;
     }
@@ -301,12 +256,11 @@ public class SFTPSession extends Session {
      * @param controller  Login prompt
      * @param credentials Username and password
      * @return True if authentication succeeded
-     * @throws IOException Login failed or canceled
      */
     private boolean loginUsingChallengeResponseAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
         log.debug("loginUsingChallengeResponseAuthentication:" + credentials);
-        if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
-            return this.getClient().authenticateWithKeyboardInteractive(credentials.getUsername(),
+        if(connection.isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
+            return connection.authenticateWithKeyboardInteractive(credentials.getUsername(),
                     /**
                      * The logic that one has to implement if "keyboard-interactive" authentication shall be
                      * supported.
@@ -320,7 +274,7 @@ public class SFTPSession extends Session {
                          */
                         @Override
                         public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
-                                                         boolean[] echo) throws IOException {
+                                                         boolean[] echo) throws LoginCanceledException {
                             log.debug("replyToChallenge:" + name);
                             // In its first callback the server prompts for the password
                             if(0 == promptCount) {
@@ -345,86 +299,41 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    public void close() {
-        try {
-            this.fireConnectionWillCloseEvent();
-            if(client != null) {
-                client.close();
-            }
-            this.getClient().close();
-        }
-        catch(ConnectionCanceledException e) {
-            log.warn(e.getMessage());
-        }
-        finally {
+    public void logout() throws BackgroundException {
+        if(client != null) {
+            client.close();
             client = null;
-            connection = null;
-            this.fireConnectionDidCloseEvent();
         }
+        connection.close();
     }
 
     @Override
-    public void interrupt() {
-        log.debug("interrupt");
-        try {
-            this.fireConnectionWillCloseEvent();
-            this.getClient().close(null, true);
-        }
-        catch(ConnectionCanceledException e) {
-            log.warn(e.getMessage());
-        }
-        finally {
-            client = null;
-            connection = null;
-            this.fireConnectionDidCloseEvent();
-        }
+    public void interrupt() throws BackgroundException {
+        connection.close(null, true);
+        super.interrupt();
     }
 
     @Override
-    public void check() throws IOException {
-        try {
-            super.check();
-        }
-        catch(ChannelClosedException e) {
-            log.warn("Connection already closed:" + e.getMessage());
-            this.interrupt();
-            this.connect();
-        }
-        SFTPv3Client subsystem = this.sftp();
-        if(!subsystem.isConnected()) {
-            log.warn("Connection to subsystem already closed");
-            this.interrupt();
-            this.connect();
-        }
-        else {
-            try {
-                subsystem.canonicalPath(".");
-            }
-            catch(IOException e) {
-                log.warn("Connection already closed:" + e.getMessage());
-                this.interrupt();
-                this.connect();
-            }
-        }
-    }
-
-    @Override
-    public Path workdir() throws IOException {
+    public Path workdir() throws BackgroundException {
         // "." as referring to the current directory
-        final String directory = this.sftp().canonicalPath(".");
+        final String directory;
+        try {
+            directory = client.canonicalPath(".");
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
         return new SFTPPath(this, directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 
     @Override
-    protected void noop() throws IOException {
-        if(this.isConnected()) {
-            try {
-                this.getClient().sendIgnorePacket();
-            }
-            catch(IllegalStateException e) {
-                throw new ConnectionCanceledException(e);
-            }
+    public void noop() throws BackgroundException {
+        try {
+            connection.sendIgnorePacket();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
@@ -444,17 +353,18 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    public void sendCommand(final String command) throws IOException {
-        final ch.ethz.ssh2.Session sess = this.getClient().openSession();
+    public void sendCommand(final String command) throws BackgroundException {
+        ch.ethz.ssh2.Session sess = null;
         try {
-            this.message(command);
+            sess = connection.openSession();
 
-            sess.execCommand(command, host.getEncoding());
-
-            BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
-            BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStderr())));
+            final BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
+            final BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStderr())));
 
             try {
+                this.message(command);
+                sess.execCommand(command, host.getEncoding());
+
                 // Here is the output from stdout
                 while(true) {
                     String line = stdoutReader.readLine();
@@ -478,16 +388,24 @@ public class SFTPSession extends Session {
                     error.append(line).append(".");
                 }
                 if(StringUtils.isNotBlank(error.toString())) {
-                    this.error(error.toString(), null);
+                    throw new BackgroundException(error.toString(), null);
                 }
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
             }
             finally {
                 IOUtils.closeQuietly(stdoutReader);
                 IOUtils.closeQuietly(stderrReader);
             }
         }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
         finally {
-            sess.close();
+            if(sess != null) {
+                sess.close();
+            }
         }
     }
 

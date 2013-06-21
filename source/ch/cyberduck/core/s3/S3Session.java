@@ -25,9 +25,11 @@ import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
+import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -71,29 +73,21 @@ import java.util.UUID;
 /**
  * @version $Id$
  */
-public class S3Session extends CloudSession {
+public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
-    private RequestEntityRestStorageService client;
+    protected RequestEntityRestStorageService client;
 
     public S3Session(Host h) {
         super(h);
-    }
-
-    @Override
-    public RequestEntityRestStorageService getClient() throws ConnectionCanceledException {
-        if(null == client) {
-            throw new ConnectionCanceledException();
-        }
-        return client;
     }
 
     /**
      * Exposing protected methods
      */
     public class RequestEntityRestStorageService extends RestS3Service {
-        public RequestEntityRestStorageService(ProviderCredentials credentials) throws ServiceException {
-            super(credentials, S3Session.this.getUserAgent(), null, S3Session.this.getProperties());
+        public RequestEntityRestStorageService(final Jets3tProperties configuration) {
+            super(null, new PreferencesUseragentProvider().get(), null, configuration);
         }
 
         @Override
@@ -185,7 +179,7 @@ public class S3Session extends CloudSession {
         @Override
         public void authorizeHttpRequest(HttpUriRequest httpMethod, HttpContext context)
                 throws ServiceException {
-            if(authorize(httpMethod, credentials)) {
+            if(authorize(httpMethod, getProviderCredentials())) {
                 return;
             }
             super.authorizeHttpRequest(httpMethod, context);
@@ -193,10 +187,10 @@ public class S3Session extends CloudSession {
 
         @Override
         protected boolean isRecoverable403(HttpUriRequest httpRequest, Exception exception) {
-            if(credentials instanceof OAuth2Credentials) {
+            if(getProviderCredentials() instanceof OAuth2Credentials) {
                 OAuth2Tokens tokens;
                 try {
-                    tokens = ((OAuth2Credentials) credentials).getOAuth2Tokens();
+                    tokens = ((OAuth2Credentials) getProviderCredentials()).getOAuth2Tokens();
                 }
                 catch(IOException e) {
                     return false;
@@ -235,7 +229,7 @@ public class S3Session extends CloudSession {
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
-        return new XmlResponsesSaxParser(configuration, false);
+        return new XmlResponsesSaxParser(client.getJetS3tProperties(), false);
     }
 
     /**
@@ -264,25 +258,14 @@ public class S3Session extends CloudSession {
     }
 
     @Override
-    protected void configure(final AbstractHttpClient client) {
+    protected void configure(AbstractHttpClient client) {
         super.configure(client);
         // Activates 'Expect: 100-Continue' handshake for the entity enclosing methods
         HttpProtocolParams.setUseExpectContinue(client.getParams(), true);
     }
 
-    /**
-     *
-     */
-    protected Jets3tProperties configuration = new Jets3tProperties();
-
-    /**
-     * @return Client configuration
-     */
-    protected Jets3tProperties getProperties() {
-        return configuration;
-    }
-
-    protected void configure(final String hostname) {
+    protected Jets3tProperties configure(final String hostname) {
+        final Jets3tProperties configuration = new Jets3tProperties();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure for endpoint %s", hostname));
         }
@@ -310,11 +293,12 @@ public class S3Session extends CloudSession {
         // The maximum number of concurrent communication threads that will be started by
         // the multi-threaded service for upload and download operations.
         configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
+        return configuration;
     }
 
     @Override
     public String getHostnameForContainer(final Path bucket) {
-        if(configuration.getBoolProperty("s3service.disable-dns-buckets", false)) {
+        if(this.configure(this.getHost().getHostname(true)).getBoolProperty("s3service.disable-dns-buckets", false)) {
             return this.getHost().getHostname(true);
         }
         if(!ServiceUtils.isBucketNameValidDNSName(bucket.getContainer().getName())) {
@@ -334,14 +318,12 @@ public class S3Session extends CloudSession {
     /**
      * @param reload Disregard cache
      * @return List of buckets
-     * @throws IOException I/O failure
      */
-    public List<Path> getContainers(final boolean reload) throws IOException {
+    public List<Path> getContainers(final boolean reload) throws BackgroundException {
         if(buckets.isEmpty() || reload) {
             buckets.clear();
             for(StorageBucket bucket : new S3BucketListService().list(this)) {
-                final Path container = PathFactory.createPath(this, String.valueOf(Path.DELIMITER), bucket.getName(),
-                        Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                final S3Path container = new S3Path(this, bucket.getName(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                 if(null != bucket.getOwner()) {
                     container.attributes().setOwner(bucket.getOwner().getDisplayName());
                 }
@@ -375,7 +357,7 @@ public class S3Session extends CloudSession {
     }
 
     @Override
-    public String getLocation(final Path container) {
+    public String getLocation(final Path container) throws BackgroundException {
         if(this.isLocationSupported()) {
             try {
                 if(null == container.attributes().getRegion()) {
@@ -383,8 +365,7 @@ public class S3Session extends CloudSession {
                         log.info("Anonymous cannot access bucket location");
                         return null;
                     }
-                    this.check();
-                    String location = this.getClient().getBucketLocation(container.getContainer().getName());
+                    String location = client.getBucketLocation(container.getContainer().getName());
                     if(StringUtils.isBlank(location)) {
                         location = "US"; //Default location US is null
                     }
@@ -396,56 +377,45 @@ public class S3Session extends CloudSession {
                 log.warn("Bucket location not supported:" + e.getMessage());
                 this.setBucketLocationSupported(false);
             }
-            catch(IOException e) {
-                this.error("Cannot read container configuration", e);
-            }
         }
         return null;
     }
 
     @Override
-    public void connect() throws IOException {
-        if(this.isConnected()) {
-            return;
-        }
-        this.fireConnectionWillOpenEvent();
-
-        // Configure connection options
-        this.configure(host.getHostname());
-
-        // Prompt the login credentials first
-        this.login();
-
-        this.fireConnectionDidOpenEvent();
+    public RequestEntityRestStorageService connect() throws BackgroundException {
+        client = new RequestEntityRestStorageService(configure(host.getHostname())) {
+            @Override
+            public ProviderCredentials getProviderCredentials() {
+                return S3Session.this.getProviderCredentials(host.getCredentials());
+            }
+        };
+        return client;
     }
 
     @Override
-    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
-        try {
-            this.client = new RequestEntityRestStorageService(this.getProviderCredentials(credentials));
-            for(Path bucket : this.getContainers(true)) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Bucket:" + bucket);
-                }
-            }
-        }
-        catch(ServiceException e) {
-            if(this.isLoginFailure(e)) {
-                this.message(Locale.localizedString("Login failed", "Credentials"));
-                controller.fail(host.getProtocol(), credentials);
-                this.login();
-            }
-            else {
-                IOException failure = new IOException(e.getMessage());
-                failure.initCause(e);
-                throw failure;
+    public void login(final LoginController prompt) throws BackgroundException {
+        for(Path bucket : this.getContainers(true)) {
+            if(log.isDebugEnabled()) {
+                log.debug("Bucket:" + bucket);
             }
         }
     }
 
     protected ProviderCredentials getProviderCredentials(final Credentials credentials) {
-        return credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
-                credentials.getPassword());
+        if(credentials.isAnonymousLogin()) {
+            return null;
+        }
+        return new AWSCredentials(credentials.getUsername(), credentials.getPassword()) {
+            @Override
+            public String getAccessKey() {
+                return host.getCredentials().getUsername();
+            }
+
+            @Override
+            public String getSecretKey() {
+                return host.getCredentials().getPassword();
+            }
+        };
     }
 
     /**
@@ -475,37 +445,6 @@ public class S3Session extends CloudSession {
 
         Preferences.instance().setProperty("s3.mfa.serialnumber", credentials.getUsername());
         return credentials;
-    }
-
-    /**
-     * Check for Invalid Access ID or Invalid Secret Key
-     *
-     * @param e Error response
-     * @return True if the error code of the S3 exception is a login failure
-     */
-    protected boolean isLoginFailure(final ServiceException e) {
-        if(403 == e.getResponseCode()) {
-            return true;
-        }
-        if(null == e.getErrorCode()) {
-            return false;
-        }
-        return e.getErrorCode().equals("InvalidAccessKeyId") // Invalid Access ID
-                || e.getErrorCode().equals("SignatureDoesNotMatch"); // Invalid Secret Key
-    }
-
-    @Override
-    public void close() {
-        try {
-            if(this.isConnected()) {
-                this.fireConnectionWillCloseEvent();
-                super.close();
-            }
-        }
-        finally {
-            client = null;
-            this.fireConnectionDidCloseEvent();
-        }
     }
 
     /**
@@ -588,24 +527,20 @@ public class S3Session extends CloudSession {
     protected Map<Path, StorageBucketLoggingStatus> loggingStatus
             = new HashMap<Path, StorageBucketLoggingStatus>();
 
-    private void readLogging(Path container) {
+    private void readLogging(final Path container) throws BackgroundException {
         if(!loggingStatus.containsKey(container)) {
             try {
                 if(this.getHost().getCredentials().isAnonymousLogin()) {
                     log.info("Anonymous cannot access logging status");
                     return;
                 }
-                this.check();
                 final StorageBucketLoggingStatus status
-                        = this.getClient().getBucketLoggingStatusImpl(container.getName());
+                        = client.getBucketLoggingStatusImpl(container.getName());
                 loggingStatus.put(container, status);
             }
             catch(ServiceException e) {
                 log.warn("Bucket logging not supported:" + e.getMessage());
                 this.setLoggingSupported(false);
-            }
-            catch(IOException e) {
-                this.error("Cannot read container configuration", e);
             }
         }
     }
@@ -615,7 +550,7 @@ public class S3Session extends CloudSession {
      * @return True if the bucket logging status is enabled.
      */
     @Override
-    public boolean isLogging(final Path container) {
+    public boolean isLogging(final Path container) throws BackgroundException {
         if(this.isLoggingSupported()) {
             this.readLogging(container);
             if(loggingStatus.containsKey(container)) {
@@ -630,7 +565,7 @@ public class S3Session extends CloudSession {
      * @return Null if bucket logging is not supported
      */
     @Override
-    public String getLoggingTarget(final Path container) {
+    public String getLoggingTarget(final Path container) throws BackgroundException {
         if(this.isLoggingSupported()) {
             this.readLogging(container);
             if(loggingStatus.containsKey(container)) {
@@ -647,7 +582,7 @@ public class S3Session extends CloudSession {
      * @param destination Logging bucket name or null to choose container itself as target
      */
     @Override
-    public void setLogging(final Path container, final boolean enabled, final String destination) {
+    public void setLogging(final Path container, final boolean enabled, final String destination) throws BackgroundException {
         if(this.isLoggingSupported()) {
             try {
                 // Logging target bucket
@@ -656,14 +591,10 @@ public class S3Session extends CloudSession {
                 if(enabled) {
                     status.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
                 }
-                this.check();
-                this.getClient().setBucketLoggingStatus(container.getName(), status, true);
+                client.setBucketLoggingStatus(container.getName(), status, true);
             }
             catch(ServiceException e) {
-                this.error("Cannot write file attributes", e);
-            }
-            catch(IOException e) {
-                this.error("Cannot write file attributes", e);
+                throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
             }
             finally {
                 loggingStatus.remove(container);
@@ -671,7 +602,7 @@ public class S3Session extends CloudSession {
         }
     }
 
-    public Integer getTransition(final Path container) {
+    public Integer getTransition(final Path container) throws BackgroundException {
         if(this.isLifecycleSupported()) {
             this.readLifecycle(container);
             if(lifecycleStatus.containsKey(container)) {
@@ -687,7 +618,7 @@ public class S3Session extends CloudSession {
         return null;
     }
 
-    public Integer getExpiration(final Path container) {
+    public Integer getExpiration(final Path container) throws BackgroundException {
         if(this.isLifecycleSupported()) {
             this.readLifecycle(container);
             if(lifecycleStatus.containsKey(container)) {
@@ -706,7 +637,7 @@ public class S3Session extends CloudSession {
     protected Map<Path, LifecycleConfig> lifecycleStatus
             = new HashMap<Path, LifecycleConfig>();
 
-    public void readLifecycle(final Path container) {
+    public void readLifecycle(final Path container) throws BackgroundException {
         if(this.isLifecycleSupported()) {
             if(!lifecycleStatus.containsKey(container)) {
                 try {
@@ -714,8 +645,7 @@ public class S3Session extends CloudSession {
                         log.info("Anonymous cannot access logging status");
                         return;
                     }
-                    this.check();
-                    final LifecycleConfig status = this.getClient().getLifecycleConfig(container.getName());
+                    final LifecycleConfig status = client.getLifecycleConfig(container.getName());
                     if(null != status) {
                         lifecycleStatus.put(container, status);
                     }
@@ -723,9 +653,6 @@ public class S3Session extends CloudSession {
                 catch(ServiceException e) {
                     log.warn("Bucket logging not supported:" + e.getMessage());
                     this.setLoggingSupported(false);
-                }
-                catch(IOException e) {
-                    this.error("Cannot read container configuration", e);
                 }
             }
         }
@@ -736,10 +663,9 @@ public class S3Session extends CloudSession {
      * @param transition Days Null to disable
      * @param expiration Days Null to disable
      */
-    public void setLifecycle(final Path container, final Integer transition, final Integer expiration) {
+    public void setLifecycle(final Path container, final Integer transition, final Integer expiration) throws BackgroundException {
         if(this.isLifecycleSupported()) {
             try {
-                this.check();
                 if(transition != null || expiration != null) {
                     final LifecycleConfig config = new LifecycleConfig();
                     // Unique identifier for the rule. The value cannot be longer than 255 characters. When you specify an empty prefix, the rule applies to all objects in the bucket
@@ -751,18 +677,15 @@ public class S3Session extends CloudSession {
                         rule.newExpiration().setDays(expiration);
                     }
                     if(!config.equals(lifecycleStatus.get(container))) {
-                        this.getClient().setLifecycleConfig(container.getName(), config);
+                        client.setLifecycleConfig(container.getName(), config);
                     }
                 }
                 else {
-                    this.getClient().deleteLifecycleConfig(container.getName());
+                    client.deleteLifecycleConfig(container.getName());
                 }
             }
             catch(ServiceException e) {
-                this.error("Cannot write file attributes", e);
-            }
-            catch(IOException e) {
-                this.error("Cannot write file attributes", e);
+                throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
             }
             finally {
                 lifecycleStatus.remove(container);
@@ -799,20 +722,16 @@ public class S3Session extends CloudSession {
      * @return True if enabled
      */
     @Override
-    public boolean isVersioning(final Path container) {
+    public boolean isVersioning(final Path container) throws BackgroundException {
         if(this.isVersioningSupported()) {
             if(!versioningStatus.containsKey(container)) {
                 try {
-                    this.check();
                     final S3BucketVersioningStatus status
-                            = this.getClient().getBucketVersioningStatus(container.getName());
+                            = client.getBucketVersioningStatus(container.getName());
                     versioningStatus.put(container, status);
                 }
                 catch(ServiceException e) {
-                    this.error("Cannot read container configuration", e);
-                }
-                catch(IOException e) {
-                    this.error("Cannot read container configuration", e);
+                    throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
                 }
             }
             if(versioningStatus.containsKey(container)) {
@@ -827,7 +746,7 @@ public class S3Session extends CloudSession {
      * @return True if MFA is required to delete objects in this bucket.
      */
     @Override
-    public boolean isMultiFactorAuthentication(final Path container) {
+    public boolean isMultiFactorAuthentication(final Path container) throws BackgroundException {
         if(this.isVersioning(container)) {
             return versioningStatus.get(container).isMultiFactorAuthDeleteRequired();
         }
@@ -836,72 +755,67 @@ public class S3Session extends CloudSession {
 
     /**
      * @param container  The bucket name
+     * @param prompt     Login prompt for multi factor authentication
      * @param mfa        Multi factor authentication
      * @param versioning True if enabled
      */
     @Override
-    public void setVersioning(final Path container, final boolean mfa, final boolean versioning) {
+    public void setVersioning(final Path container, final LoginController prompt, final boolean mfa, final boolean versioning) throws BackgroundException {
         if(this.isVersioningSupported()) {
             try {
-                this.check();
                 if(this.isMultiFactorAuthentication(container)) {
                     // The bucket is already MFA protected.
-                    LoginController c = LoginControllerFactory.get(this);
-                    final Credentials auth = this.mfa(c);
+                    final Credentials factor = this.mfa(prompt);
                     if(versioning) {
                         if(this.isVersioning(container)) {
                             log.debug("Versioning already enabled for bucket " + container);
                         }
                         else {
                             // Enable versioning if not already active.
-                            log.debug("Enable bucket versioning with MFA " + auth.getUsername() + " for " + container);
-                            this.getClient().enableBucketVersioningWithMFA(container.getName(),
-                                    auth.getUsername(), auth.getPassword());
+                            log.debug("Enable bucket versioning with MFA " + factor.getUsername() + " for " + container);
+                            client.enableBucketVersioningWithMFA(container.getName(),
+                                    factor.getUsername(), factor.getPassword());
                         }
                     }
                     else {
-                        log.debug("Suspend bucket versioning with MFA " + auth.getUsername() + " for " + container);
-                        this.getClient().suspendBucketVersioningWithMFA(container.getName(),
-                                auth.getUsername(), auth.getPassword());
+                        log.debug("Suspend bucket versioning with MFA " + factor.getUsername() + " for " + container);
+                        client.suspendBucketVersioningWithMFA(container.getName(),
+                                factor.getUsername(), factor.getPassword());
                     }
                     if(versioning && !mfa) {
-                        log.debug("Disable MFA " + auth.getUsername() + " for " + container);
+                        log.debug(String.format("Disable MFA %s for %s", factor.getUsername(), container));
                         // User has choosen to disable MFA
-                        final Credentials auth2 = this.mfa(c);
-                        this.getClient().disableMFAForVersionedBucket(container.getName(),
-                                auth2.getUsername(), auth2.getPassword());
+                        final Credentials factor2 = this.mfa(prompt);
+                        client.disableMFAForVersionedBucket(container.getName(),
+                                factor2.getUsername(), factor2.getPassword());
                     }
                 }
                 else {
                     if(versioning) {
                         if(mfa) {
-                            LoginController c = LoginControllerFactory.get(this);
-                            final Credentials auth = this.mfa(c);
-                            log.debug("Enable bucket versioning with MFA " + auth.getUsername() + " for " + container);
-                            this.getClient().enableBucketVersioningWithMFA(container.getName(),
-                                    auth.getUsername(), auth.getPassword());
+                            final Credentials factor = this.mfa(prompt);
+                            log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), container));
+                            client.enableBucketVersioningWithMFA(container.getName(),
+                                    factor.getUsername(), factor.getPassword());
                         }
                         else {
                             if(this.isVersioning(container)) {
-                                log.debug("Versioning already enabled for bucket " + container);
+                                log.debug(String.format("Versioning already enabled for bucket %s", container));
                             }
                             else {
-                                log.debug("Enable bucket versioning for " + container);
-                                this.getClient().enableBucketVersioning(container.getName());
+                                log.debug(String.format("Enable bucket versioning for %s", container));
+                                client.enableBucketVersioning(container.getName());
                             }
                         }
                     }
                     else {
-                        log.debug("Susped bucket versioning for " + container);
-                        this.getClient().suspendBucketVersioning(container.getName());
+                        log.debug(String.format("Susped bucket versioning for %s", container));
+                        client.suspendBucketVersioning(container.getName());
                     }
                 }
             }
             catch(ServiceException e) {
-                this.error("Cannot write file attributes", e);
-            }
-            catch(IOException e) {
-                this.error("Cannot write file attributes", e);
+                throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
             }
             finally {
                 versioningStatus.remove(container);
@@ -959,13 +873,13 @@ public class S3Session extends CloudSession {
     }
 
     @Override
-    public DistributionConfiguration cdn() {
+    public DistributionConfiguration cdn(final LoginController prompt) {
         if(host.getHostname().endsWith(Protocol.S3_SSL.getDefaultHostname())) {
             return new WebsiteCloudFrontDistributionConfiguration(this);
         }
         else {
             // Amazon CloudFront custom origin
-            return super.cdn();
+            return super.cdn(prompt);
         }
     }
 

@@ -21,6 +21,7 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.s3.S3Path;
@@ -47,7 +48,7 @@ import java.util.Set;
 public class GSPath extends S3Path {
     private static Logger log = Logger.getLogger(GSPath.class);
 
-    public GSPath(GSSession s, String parent, String name, int type) {
+    public GSPath(GSSession s, Path parent, String name, int type) {
         super(s, parent, name, type);
     }
 
@@ -55,7 +56,7 @@ public class GSPath extends S3Path {
         super(s, path, type);
     }
 
-    public GSPath(GSSession s, String parent, Local file) {
+    public GSPath(GSSession s, Path parent, Local file) {
         super(s, parent, file);
     }
 

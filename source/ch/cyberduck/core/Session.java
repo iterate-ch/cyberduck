@@ -22,6 +22,7 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AbstractIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
@@ -32,7 +33,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -43,13 +43,15 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public abstract class Session implements TranscriptListener {
+public abstract class Session<C> implements TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
     /**
      * Encapsulating all the information of the remote host
      */
     protected Host host;
+
+    private C client;
 
     /**
      * Caching files listings of previously listed directories
@@ -60,8 +62,6 @@ public abstract class Session implements TranscriptListener {
             return String.format("Cache for %s", Session.this.toString());
         }
     };
-
-    private UseragentProvider ua;
 
     private boolean unsecurewarning =
             Preferences.instance().getBoolean("connection.unsecure.warning");
@@ -75,9 +75,6 @@ public abstract class Session implements TranscriptListener {
     private Set<ProgressListener> progressListeners
             = Collections.synchronizedSet(new HashSet<ProgressListener>());
 
-    private Set<ErrorListener> errorListeners
-            = Collections.synchronizedSet(new HashSet<ErrorListener>());
-
     /**
      * Connection attempt being made.
      */
@@ -85,35 +82,30 @@ public abstract class Session implements TranscriptListener {
 
     protected Session(final Host h) {
         this.host = h;
-        this.ua = new PreferencesUseragentProvider();
     }
 
     /**
      * @return The client implementation.
-     * @throws ConnectionCanceledException If the connection is alreay closed
      */
-    public abstract <C> C getClient() throws ConnectionCanceledException;
+    public C getClient() {
+        return client;
+    }
 
-    public String getUserAgent() {
-        return ua.get();
+    public abstract C connect() throws BackgroundException;
+
+    public C open() throws BackgroundException {
+        this.fireConnectionWillOpenEvent();
+        client = this.connect();
+        this.fireConnectionDidOpenEvent();
+        return client;
     }
 
     /**
-     * Assert that the connection to the remote host is still alive.
-     * Open connection if needed.
+     * Send the authentication credentials to the server. The connection must be opened first.
      *
-     * @throws IOException The connection to the remote host failed.
+     * @param prompt Prompt
      */
-    public void check() throws IOException {
-        try {
-            final ConnectionCheckService c = new ConnectionCheckService();
-            c.check(this);
-        }
-        catch(IOException e) {
-            this.interrupt();
-            throw e;
-        }
-    }
+    public abstract void login(LoginController prompt) throws BackgroundException;
 
     /**
      * @return The timeout in milliseconds
@@ -135,20 +127,12 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * Opens the TCP connection to the server
-     *
-     * @throws IOException            I/O failure
-     * @throws LoginCanceledException Login prompt dismissed with cancel
-     */
-    public abstract void connect() throws IOException;
-
-    /**
      * Prompt for username and password if not available.
      *
      * @param controller Prompt
      * @throws LoginCanceledException Login prompt dismissed with cancel
      */
-    protected void prompt(final LoginController controller) throws IOException {
+    protected void prompt(final LoginController controller) throws LoginCanceledException {
         controller.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
     }
 
@@ -161,49 +145,19 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * Attempts to login using the credentials provided from the login controller.
+     * Warning if credentials are sent plaintext.
      *
-     * @throws IOException I/O failure
+     * @param login Prompt
+     * @throws LoginCanceledException If connection should be dropped
      */
-    protected void login() throws IOException {
-        this.login(LoginControllerFactory.get(this));
-    }
-
-    /**
-     * @param controller Prompt
-     * @throws IOException I/O failure
-     */
-    protected void login(final LoginController controller) throws IOException {
-        this.prompt(controller);
-
-        final Credentials credentials = host.getCredentials();
-        this.warn(controller, credentials);
-
-        this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
-                credentials.getUsername()));
-        this.login(controller, credentials);
-
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        controller.success(host);
-    }
-
-    /**
-     * Warning if credenials are sent plaintext.
-     *
-     * @param login       Prompt
-     * @param credentials Login credentials
-     * @throws ConnectionCanceledException If connection should be dropped
-     */
-    protected void warn(final LoginController login, final Credentials credentials) throws IOException {
+    protected void warn(final LoginController login) throws BackgroundException {
         if(this.isUnsecurewarning()
                 && !host.getProtocol().isSecure()
-                && !credentials.isAnonymousLogin()
+                && !host.getCredentials().isAnonymousLogin()
                 && !Preferences.instance().getBoolean("connection.unsecure." + host.getHostname())) {
             try {
                 login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
-                        MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"), credentials.getPasswordPlaceholder()),
+                        MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"), host.getCredentials().getPasswordPlaceholder()),
                         "connection.unsecure." + host.getHostname());
             }
             finally {
@@ -214,42 +168,24 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * Send the authentication credentials to the server. The connection must be opened first.
-     *
-     * @param controller  Prompt
-     * @param credentials Login credentials
-     * @throws IOException            I/O failure
-     * @throws LoginCanceledException
-     * @see #connect
-     */
-    protected abstract void login(LoginController controller, Credentials credentials) throws IOException;
-
-    /**
      * Mount the default path of the configured host or the home directory as returned by the server
      * when not given.
-     *
-     * @return Null if mount fails. Check the error listener for details.
      */
-    public Path mount() {
+    public Path mount() throws BackgroundException {
         this.message(MessageFormat.format(Locale.localizedString("Mounting {0}", "Status"),
                 host.getHostname()));
         try {
-            this.check();
-            if(!this.isConnected()) {
-                return null;
-            }
-            final Path directory = this.home();
-            // Open connection and retrieve direcotry listing of default path
-            if(directory.children().attributes().isReadable()) {
-                return directory;
-            }
+            final Path home = this.home();
+            // Retrieve directory listing of default path
+            this.cache().put(home.getReference(), home.list());
+            return home;
+        }
+        catch(BackgroundException e) {
             // The default path does not exist or is not readable due to possible permission issues
             // Fallback to default working directory
-            return this.workdir();
-        }
-        catch(IOException e) {
-            log.warn(String.format("Connection failed to host %s:%s", host, e.getMessage()));
-            return null;
+            final Path workdir = this.workdir();
+            this.cache().put(workdir.getReference(), workdir.list());
+            return workdir;
         }
         finally {
             // Reset current working directory in bookmark
@@ -259,9 +195,8 @@ public abstract class Session implements TranscriptListener {
 
     /**
      * @return Home directory
-     * @throws IOException I/O failure
      */
-    public Path home() throws IOException {
+    public Path home() throws BackgroundException {
         final String directory;
         if(StringUtils.isNotBlank(host.getWorkdir())) {
             directory = host.getWorkdir();
@@ -275,11 +210,11 @@ public abstract class Session implements TranscriptListener {
                 final Path workdir = this.workdir();
                 if(host.getDefaultPath().startsWith(Path.HOME)) {
                     // Relative path to the home directory
-                    return PathFactory.createPath(this, workdir.getAbsolute(), host.getDefaultPath().substring(1), Path.DIRECTORY_TYPE);
+                    return PathFactory.createPath(this, workdir, host.getDefaultPath().substring(1), Path.DIRECTORY_TYPE);
                 }
                 else {
                     // Relative path
-                    return PathFactory.createPath(this, workdir.getAbsolute(), host.getDefaultPath(), Path.DIRECTORY_TYPE);
+                    return PathFactory.createPath(this, workdir, host.getDefaultPath(), Path.DIRECTORY_TYPE);
                 }
             }
         }
@@ -293,11 +228,22 @@ public abstract class Session implements TranscriptListener {
 
     /**
      * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
-     * @throws ConnectionCanceledException If the underlying connection has already been closed before
      */
-    public Path workdir() throws IOException {
+    public Path workdir() throws BackgroundException {
         return PathFactory.createPath(this, String.valueOf(Path.DELIMITER),
                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+    }
+
+    /**
+     * Logout and close client connection
+     *
+     * @throws BackgroundException
+     */
+    public void close() throws BackgroundException {
+        this.fireConnectionWillCloseEvent();
+        this.logout();
+        client = null;
+        this.fireConnectionDidCloseEvent();
     }
 
     /**
@@ -306,7 +252,7 @@ public abstract class Session implements TranscriptListener {
      *
      * @see #isConnected()
      */
-    public abstract void close();
+    public abstract void logout() throws BackgroundException;
 
     /**
      * @return the host this session connects to
@@ -410,10 +356,8 @@ public abstract class Session implements TranscriptListener {
 
     /**
      * Send a 'no operation' command
-     *
-     * @throws IOException I/O failure
      */
-    protected void noop() throws IOException {
+    public void noop() throws BackgroundException {
         //
     }
 
@@ -422,7 +366,7 @@ public abstract class Session implements TranscriptListener {
      * Close the underlying socket regardless of its state; will throw a socket exception
      * on the thread owning the socket
      */
-    public void interrupt() {
+    public void interrupt() throws BackgroundException {
         this.close();
     }
 
@@ -437,11 +381,10 @@ public abstract class Session implements TranscriptListener {
      * Sends an arbitrary command to the server
      *
      * @param command Command to send
-     * @throws IOException I/O failure
      * @see #isSendCommandSupported()
      */
-    public void sendCommand(String command) throws IOException {
-        throw new UnsupportedOperationException();
+    public void sendCommand(String command) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     /**
@@ -457,15 +400,8 @@ public abstract class Session implements TranscriptListener {
      * @param archive Archive format description
      * @param files   List of files to archive
      */
-    public void archive(final Archive archive, final List<Path> files) {
-        try {
-            this.check();
-
-            this.sendCommand(archive.getCompressCommand(files));
-        }
-        catch(IOException e) {
-            this.error("Cannot create archive", e);
-        }
+    public void archive(final Archive archive, final List<Path> files) throws BackgroundException {
+        this.sendCommand(archive.getCompressCommand(files));
     }
 
     /**
@@ -481,28 +417,15 @@ public abstract class Session implements TranscriptListener {
      * @param archive Archive format description
      * @param file    File to decompress
      */
-    public void unarchive(final Archive archive, final Path file) {
-        try {
-            this.check();
-
-            this.sendCommand(archive.getDecompressCommand(file));
-        }
-        catch(IOException e) {
-            this.error("Cannot expand archive", e);
-        }
+    public void unarchive(final Archive archive, final Path file) throws BackgroundException {
+        this.sendCommand(archive.getDecompressCommand(file));
     }
 
     /**
      * @return boolean True if the session has not yet been closed.
      */
     public boolean isConnected() {
-        try {
-            this.getClient();
-        }
-        catch(ConnectionCanceledException e) {
-            return false;
-        }
-        return true;
+        return client != null;
     }
 
     /**
@@ -524,11 +447,10 @@ public abstract class Session implements TranscriptListener {
     /**
      * Notifies all connection listeners that an attempt is made to open this session
      *
-     * @throws ResolveCanceledException      If the name resolution has been canceled by the user
-     * @throws java.net.UnknownHostException If the name resolution failed
+     * @throws BackgroundException If the name resolution has been canceled by the user
      * @see ConnectionListener
      */
-    protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
+    protected void fireConnectionWillOpenEvent() throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
@@ -548,7 +470,12 @@ public abstract class Session implements TranscriptListener {
                 host.getHostname()));
 
         // Try to resolve the hostname first
-        resolver.resolve();
+        try {
+            resolver.resolve();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
         // The IP address could successfully be determined
         this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
@@ -584,7 +511,7 @@ public abstract class Session implements TranscriptListener {
      *
      * @see ConnectionListener
      */
-    protected void fireConnectionWillCloseEvent() {
+    public void fireConnectionWillCloseEvent() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will close to %s", host));
         }
@@ -600,7 +527,7 @@ public abstract class Session implements TranscriptListener {
      *
      * @see ConnectionListener
      */
-    protected void fireConnectionDidCloseEvent() {
+    public void fireConnectionDidCloseEvent() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did close to %s", host));
         }
@@ -676,7 +603,7 @@ public abstract class Session implements TranscriptListener {
 
     /**
      * @return If CDN distribution configuration is supported
-     * @see #cdn()
+     * @see #cdn(LoginController)
      */
     public boolean isCDNSupported() {
         return true;
@@ -699,12 +626,12 @@ public abstract class Session implements TranscriptListener {
         return new QloudstatAnalyticsProvider();
     }
 
-    public DistributionConfiguration cdn() {
+    public DistributionConfiguration cdn(final LoginController prompt) {
         return new CustomOriginCloudFrontDistributionConfiguration(new S3Session(
                 // Configure with the same host as S3 to get the same credentials from the keychain.
                 new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCdnCredentials())),
                 // Use login context of current session
-                LoginControllerFactory.get(this));
+                prompt);
     }
 
     /**
@@ -740,36 +667,6 @@ public abstract class Session implements TranscriptListener {
         }
     }
 
-    public void addErrorListener(final ErrorListener listener) {
-        errorListeners.add(listener);
-    }
-
-    public void removeErrorListener(final ErrorListener listener) {
-        errorListeners.remove(listener);
-    }
-
-    public void error(final String message, final Exception e) {
-        this.error(null, message, e);
-    }
-
-    /**
-     * Notifies all error listeners of this error without sending this error to Growl
-     *
-     * @param path    The path related to this error
-     * @param message The error message to be displayed in the alert sheet
-     * @param e       The cause of the error
-     */
-    public void error(final Path path, final String message, final Exception e) {
-        this.error(new BackgroundException(this.getHost(), path, message, e));
-    }
-
-    public void error(final BackgroundException failure) {
-        this.message(failure.getMessage());
-        for(ErrorListener listener : errorListeners.toArray(new ErrorListener[errorListeners.size()])) {
-            listener.error(failure);
-        }
-    }
-
     /**
      * @return The directory listing cache for this session
      */
@@ -801,6 +698,6 @@ public abstract class Session implements TranscriptListener {
     }
 
     public String toString() {
-        return String.format("Session for %s", host.toURL());
+        return String.format("Session %s", host.toURL());
     }
 }

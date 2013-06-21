@@ -455,7 +455,7 @@ public final class Host implements Serializable {
     /**
      * @param defaultpath The path to change the working directory to upon connecting
      */
-    public void setDefaultPath(String defaultpath) {
+    public void setDefaultPath(final String defaultpath) {
         this.defaultpath = StringUtils.isBlank(defaultpath) ? null :
                 StringUtils.remove(StringUtils.remove(defaultpath, CharUtils.LF), CharUtils.CR).trim();
     }
@@ -471,7 +471,7 @@ public final class Host implements Serializable {
         return workdir;
     }
 
-    public void setWorkdir(String workdir) {
+    public void setWorkdir(final String workdir) {
         this.workdir = workdir;
     }
 
@@ -890,6 +890,4 @@ public final class Host implements Serializable {
             return getProtocol().getPasswordPlaceholder();
         }
     }
-
-
 }

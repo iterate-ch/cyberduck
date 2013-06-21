@@ -23,14 +23,17 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainFactory;
+import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -80,11 +83,11 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    protected void configure(String hostname) {
-        super.configure(hostname);
-        Jets3tProperties configuration = super.getProperties();
+    protected Jets3tProperties configure(final String hostname) {
+        final Jets3tProperties configuration = super.configure(hostname);
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
         configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+        return configuration;
     }
 
     @Override
@@ -112,7 +115,7 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    protected void prompt(LoginController controller) throws IOException {
+    protected void prompt(final LoginController controller) throws LoginCanceledException {
         final Credentials credentials = this.getHost().getCredentials();
         final ProviderCredentials provider = this.getProviderCredentials(credentials);
         if(provider instanceof OAuth2Credentials) {
@@ -150,19 +153,22 @@ public class GSSession extends S3Session {
                 this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                         credentials.getUsername()));
 
-                // Swap the given authorization token for access/refresh tokens
-                oauth.retrieveOAuth2TokensFromAuthorization(credentials.getPassword());
+                try {
+                    // Swap the given authorization token for access/refresh tokens
+                    oauth.retrieveOAuth2TokensFromAuthorization(credentials.getPassword());
+                    final OAuth2Tokens tokens = oauth.getOAuth2Tokens();
+                    // Save for future use
+                    KeychainFactory.get().addPassword(this.getHost().getProtocol().getScheme(),
+                            this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token", tokens.getAccessToken());
+                    KeychainFactory.get().addPassword(this.getHost().getProtocol().getScheme(),
+                            this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token", tokens.getRefreshToken());
 
-                final OAuth2Tokens tokens = oauth.getOAuth2Tokens();
-
-                // Save for future use
-                KeychainFactory.get().addPassword(this.getHost().getProtocol().getScheme(),
-                        this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token", tokens.getAccessToken());
-                KeychainFactory.get().addPassword(this.getHost().getProtocol().getScheme(),
-                        this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token", tokens.getRefreshToken());
-
-                // Save expiry
-                Preferences.instance().setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
+                    // Save expiry
+                    Preferences.instance().setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
+                }
+                catch(IOException e) {
+                    throw new LoginCanceledException();
+                }
             }
             else {
                 // Re-use authentication tokens from last use
@@ -223,7 +229,7 @@ public class GSSession extends S3Session {
      * @param destination Logging bucket name or null to choose container itself as target
      */
     @Override
-    public void setLogging(final Path container, final boolean enabled, String destination) {
+    public void setLogging(final Path container, final boolean enabled, String destination) throws BackgroundException {
         if(this.isLoggingSupported()) {
             try {
                 // Logging target bucket
@@ -232,22 +238,18 @@ public class GSSession extends S3Session {
                 if(enabled) {
                     status.setLogfilePrefix(Preferences.instance().getProperty("google.logging.prefix"));
                 }
-                this.check();
                 // Grant write for Google to logging target bucket
-                final AccessControlList acl = this.getClient().getBucketAcl(container.getName());
+                final AccessControlList acl = client.getBucketAcl(container.getName());
                 final GroupByEmailAddressGrantee grantee = new GroupByEmailAddressGrantee(
                         "cloud-storage-analytics@google.com");
                 if(!acl.getPermissionsForGrantee(grantee).contains(Permission.PERMISSION_WRITE)) {
                     acl.grantPermission(grantee, Permission.PERMISSION_WRITE);
-                    this.getClient().putBucketAcl(container.getName(), acl);
+                    client.putBucketAcl(container.getName(), acl);
                 }
-                this.getClient().setBucketLoggingStatusImpl(container.getName(), status);
+                client.setBucketLoggingStatusImpl(container.getName(), status);
             }
             catch(ServiceException e) {
-                this.error("Cannot write file attributes", e);
-            }
-            catch(IOException e) {
-                this.error("Cannot write file attributes", e);
+                throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
             }
             finally {
                 loggingStatus.remove(container);
@@ -332,7 +334,7 @@ public class GSSession extends S3Session {
 
     @Override
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
-        return new XmlResponsesSaxParser(configuration, false) {
+        return new XmlResponsesSaxParser(this.configure(host.getHostname()), false) {
             @Override
             public AccessControlListHandler parseAccessControlListResponse(InputStream inputStream) throws ServiceException {
                 return this.parseAccessControlListResponse(inputStream, new GSAccessControlListHandler());
@@ -388,7 +390,7 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public DistributionConfiguration cdn() {
+    public DistributionConfiguration cdn(final LoginController prompt) {
         return new GSWebsiteDistributionConfiguration(this);
     }
 }

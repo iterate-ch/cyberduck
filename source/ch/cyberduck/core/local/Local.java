@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -120,8 +121,8 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public void symlink(String target) {
-        throw new UnsupportedOperationException();
+    public void symlink(String target) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     @Override
@@ -134,7 +135,6 @@ public abstract class Local extends AbstractPath {
     /**
      * Delete the file
      */
-    @Override
     public void delete() {
         if(!new File(path).delete()) {
             log.warn(String.format("Delete %s failed", path));
@@ -189,7 +189,7 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public AbstractPath getSymlinkTarget() {
+    public Local getSymlinkTarget() {
         try {
             return LocalFactory.createLocal(this, new File(path).getCanonicalPath());
         }
@@ -234,7 +234,10 @@ public abstract class Local extends AbstractPath {
         return new File(path).exists();
     }
 
-    @Override
+    public void setPath(final String parent, final String name) {
+        this.setPath(parent + this.getPathDelimiter() + name);
+    }
+
     protected void setPath(final String name) {
         String normalized = name;
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
@@ -264,8 +267,7 @@ public abstract class Local extends AbstractPath {
         }
     }
 
-    @Override
-    public void rename(final AbstractPath renamed) {
+    public void rename(final Local renamed) {
         if(!new File(path).renameTo(new File(renamed.getAbsolute()))) {
             log.error(String.format("Rename failed for %s", renamed.getAbsolute()));
         }

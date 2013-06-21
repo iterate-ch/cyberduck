@@ -20,8 +20,10 @@ package ch.cyberduck.core.cloud;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +31,7 @@ import java.util.List;
 /**
  * @version $Id: CloudSession.java 7011 2010-09-18 15:20:05Z dkocher $
  */
-public abstract class CloudSession extends HttpSession {
+public abstract class CloudSession<C> extends HttpSession<C> {
 
     protected CloudSession(Host h) {
         super(h);
@@ -70,24 +72,24 @@ public abstract class CloudSession extends HttpSession {
         return this.isLoggingSupported();
     }
 
-    public boolean isLogging(final Path container) {
-        throw new UnsupportedOperationException();
+    public boolean isLogging(final Path container) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
-    public void setLogging(final Path container, final boolean enabled, String destination) {
-        throw new UnsupportedOperationException();
+    public void setLogging(final Path container, final boolean enabled, String destination) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
-    public String getLoggingTarget(final Path container) {
-        throw new UnsupportedOperationException();
+    public String getLoggingTarget(final Path container) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
-    public Integer getTransition(final Path container) {
-        throw new UnsupportedOperationException();
+    public Integer getTransition(final Path container) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
-    public Integer getExpiration(final Path container) {
-        throw new UnsupportedOperationException();
+    public Integer getExpiration(final Path container) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     public boolean isVersioningSupported() {
@@ -98,12 +100,12 @@ public abstract class CloudSession extends HttpSession {
         return false;
     }
 
-    public boolean isVersioning(final Path container) {
-        throw new UnsupportedOperationException();
+    public boolean isVersioning(final Path container) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
-    public void setVersioning(final Path container, boolean mfa, boolean versioning) {
-        throw new UnsupportedOperationException();
+    public void setVersioning(final Path container, final LoginController prompt, boolean mfa, boolean versioning) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     public boolean isLocationSupported() {
@@ -114,12 +116,12 @@ public abstract class CloudSession extends HttpSession {
      * @param container Bucket
      * @return Bucket geographical location
      */
-    public String getLocation(final Path container) {
-        throw new UnsupportedOperationException();
+    public String getLocation(final Path container) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
-    public boolean isMultiFactorAuthentication(final Path container) {
-        throw new UnsupportedOperationException();
+    public boolean isMultiFactorAuthentication(final Path container) throws BackgroundException {
+        return false;
     }
 
     /**

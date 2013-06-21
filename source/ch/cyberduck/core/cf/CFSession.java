@@ -20,27 +20,26 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.threading.BackgroundException;
+
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.rackspacecloud.client.cloudfiles.FilesAuthenticationResponse;
-import com.rackspacecloud.client.cloudfiles.FilesAuthorizationException;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
-import com.rackspacecloud.client.cloudfiles.FilesContainer;
+import com.rackspacecloud.client.cloudfiles.FilesException;
 import com.rackspacecloud.client.cloudfiles.FilesRegion;
 
 /**
@@ -48,90 +47,59 @@ import com.rackspacecloud.client.cloudfiles.FilesRegion;
  *
  * @version $Id$
  */
-public class CFSession extends CloudSession {
+public class CFSession extends CloudSession<FilesClient> {
+    private static final Logger log = Logger.getLogger(CFSession.class);
 
     private FilesClient client;
 
-    /**
-     * Authentication key
-     */
-    private FilesAuthenticationResponse authentication;
-
-    /**
-     * Caching the root containers
-     */
-    private Map<Path, FilesRegion> containers = new HashMap<Path, FilesRegion>();
+    private Map<String, FilesRegion> regions
+            = new HashMap<String, FilesRegion>();
 
     public CFSession(Host h) {
         super(h);
     }
 
     @Override
-    public FilesClient getClient() throws ConnectionCanceledException {
-        if(null == client) {
-            throw new ConnectionCanceledException();
-        }
+    public FilesClient connect() throws BackgroundException {
+        client = new FilesClient(this.http());
         return client;
     }
 
+    protected FilesRegion getRegion(final Path container) throws BackgroundException {
+        final String location = container.attributes().getRegion();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Lookup region for container %s in region %s", container, location));
+        }
+        if(regions.containsKey(location)) {
+            return regions.get(location);
+        }
+        log.warn(String.format("Unknown region %s in authentication context", location));
+        if(regions.containsKey(null)) {
+            final FilesRegion region = regions.get(null);
+            log.info(String.format("Use default region %s", region));
+            return region;
+        }
+        if(regions.isEmpty()) {
+            throw new ConnectionCanceledException("No default region in authentication context");
+        }
+        final FilesRegion region = regions.values().iterator().next();
+        log.warn(String.format("Fallback to first region found %s", region));
+        return region;
+    }
+
     @Override
-    public void connect() throws IOException {
-        if(this.isConnected()) {
-            return;
-        }
-        this.fireConnectionWillOpenEvent();
-        this.client = new FilesClient(this.http());
-        this.login();
-        this.fireConnectionDidOpenEvent();
-    }
-
-
-    protected FilesRegion getRegion(final Path container) throws IOException {
-        if(containers.isEmpty()) {
-            this.getContainers(true);
-        }
-        // Return default region
-        return this.getClient().getRegions().iterator().next();
-    }
-
-    public List<Path> getContainers(final boolean reload) throws IOException {
-        if(containers.isEmpty() || reload) {
-            containers.clear();
-            for(FilesContainer b : new SwiftContainerListService().list(this)) {
-                final Path container = PathFactory.createPath(this, String.valueOf(Path.DELIMITER), b.getName(),
-                        Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                container.attributes().setRegion(b.getRegion().getRegionId());
-                containers.put(container, b.getRegion());
+    public void login(final LoginController prompt) throws BackgroundException {
+        try {
+            final FilesAuthenticationResponse authentication = client.authenticate(new AuthenticationService().getRequest(host));
+            for(FilesRegion region : authentication.getRegions()) {
+                regions.put(region.getRegionId(), region);
             }
         }
-        return new ArrayList<Path>(containers.keySet());
-    }
-
-    @Override
-    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
-        final FilesClient client = this.getClient();
-        try {
-            authentication = client.authenticate(new AuthenticationService().getRequest(host));
+        catch(FilesException e) {
+            throw new FilesExceptionMappingService().map(e);
         }
-        catch(FilesAuthorizationException e) {
-            this.message(Locale.localizedString("Login failed", "Credentials"));
-            controller.fail(host.getProtocol(), credentials);
-            this.login();
-        }
-    }
-
-    @Override
-    public void close() {
-        try {
-            if(this.isConnected()) {
-                this.fireConnectionWillCloseEvent();
-                super.close();
-            }
-        }
-        finally {
-            // No logout required
-            client = null;
-            this.fireConnectionDidCloseEvent();
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
@@ -155,15 +123,10 @@ public class CFSession extends CloudSession {
 
     @Override
     public boolean isCDNSupported() {
-        try {
-            for(FilesRegion region : this.getClient().getRegions()) {
-                if(null != region.getCDNManagementUrl()) {
-                    return true;
-                }
+        for(FilesRegion region : this.getClient().getRegions()) {
+            if(null != region.getCDNManagementUrl()) {
+                return true;
             }
-        }
-        catch(ConnectionCanceledException e) {
-            return false;
         }
         return false;
     }
@@ -176,12 +139,7 @@ public class CFSession extends CloudSession {
     }
 
     @Override
-    public String getLocation(final Path container) {
-        return container.attributes().getRegion();
-    }
-
-    @Override
-    public DistributionConfiguration cdn() {
+    public DistributionConfiguration cdn(final LoginController prompt) {
         return new SwiftDistributionConfiguration(this);
     }
 

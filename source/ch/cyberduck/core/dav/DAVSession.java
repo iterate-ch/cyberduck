@@ -19,13 +19,14 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
@@ -39,7 +40,7 @@ import com.googlecode.sardine.impl.methods.HttpPropFind;
 /**
  * @version $Id$
  */
-public class DAVSession extends HttpSession {
+public class DAVSession extends HttpSession<DAVClient> {
 
     private DAVClient client;
 
@@ -48,74 +49,48 @@ public class DAVSession extends HttpSession {
     }
 
     @Override
-    public DAVClient getClient() throws ConnectionCanceledException {
-        if(null == client) {
-            throw new ConnectionCanceledException();
-        }
+    public DAVClient connect() throws BackgroundException {
+        client = new DAVClient(this.http());
         return client;
     }
 
     @Override
-    public void connect() throws IOException {
-        if(this.isConnected()) {
-            return;
-        }
-        this.fireConnectionWillOpenEvent();
-
-        this.client = new DAVClient(this.http());
-        this.login();
-
-        this.fireConnectionDidOpenEvent();
-    }
-
-    @Override
-    protected void warn(LoginController login, Credentials credentials) throws IOException {
+    protected void warn(LoginController login) {
         // Do not warn yet but in the credentials provider depending on the choosen realm.
     }
 
     @Override
-    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
-        this.client.setCredentials(credentials.getUsername(), credentials.getPassword(),
+    public void login(final LoginController prompt) throws BackgroundException {
+        client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 Preferences.instance().getProperty("webdav.ntlm.workstation"),
                 Preferences.instance().getProperty("webdav.ntlm.domain"));
-        if(credentials.validate(host.getProtocol())) {
+        if(host.getCredentials().validate(host.getProtocol())) {
             // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-            this.client.enablePreemptiveAuthentication(this.getHost().getHostname());
+            client.enablePreemptiveAuthentication(this.getHost().getHostname());
         }
         try {
-            this.client.execute(new HttpHead(this.home().toURL()), new VoidResponseHandler());
-            this.message(Locale.localizedString("Login successful", "Credentials"));
-        }
-        catch(SardineException e) {
-            if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
-                // Possibly only HEAD requests are not allowed
-                this.client.execute(new HttpPropFind(this.home().toURL()), new VoidResponseHandler());
+            try {
+                client.execute(new HttpHead(this.home().toURL()), new VoidResponseHandler());
                 this.message(Locale.localizedString("Login successful", "Credentials"));
             }
-            else if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                this.message(Locale.localizedString("Login failed", "Credentials"));
-                controller.fail(host.getProtocol(), credentials, e.getResponsePhrase());
-                this.login();
-            }
-            else {
-                throw e;
-            }
-        }
-    }
-
-    @Override
-    public void close() {
-        try {
-            if(this.isConnected()) {
-                this.fireConnectionWillCloseEvent();
-                super.close();
+            catch(SardineException e) {
+                if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN
+                        || e.getStatusCode() == HttpStatus.SC_NOT_FOUND
+                        || e.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
+                    // Possibly only HEAD requests are not allowed
+                    client.execute(new HttpPropFind(this.home().toURL()), new VoidResponseHandler());
+                }
+                else {
+                    throw new SardineExceptionMappingService().map(e);
+                }
             }
         }
-        finally {
-            // No logout required
-            client = null;
-            this.fireConnectionDidCloseEvent();
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 

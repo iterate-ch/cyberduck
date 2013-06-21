@@ -19,11 +19,13 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.http.ResponseOutputStream;
@@ -31,12 +33,12 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
@@ -52,32 +54,33 @@ import java.util.List;
 import java.util.Map;
 
 import com.googlecode.sardine.DavResource;
+import com.googlecode.sardine.impl.SardineException;
 
 /**
  * @version $Id$
  */
 public class DAVPath extends HttpPath {
-    private static Logger log = Logger.getLogger(DAVPath.class);
+    private static final Logger log = Logger.getLogger(DAVPath.class);
 
     private final DAVSession session;
 
-    public DAVPath(DAVSession s, String parent, String name, int type) {
+    public DAVPath(DAVSession s, Path parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
     public DAVPath(DAVSession s, String path, int type) {
-        super(path, type);
+        super(s, path, type);
         this.session = s;
     }
 
-    public DAVPath(DAVSession s, String parent, Local file) {
+    public DAVPath(DAVSession s, Path parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
     public <T> DAVPath(DAVSession s, T dict) {
-        super(dict);
+        super(s, dict);
         this.session = s;
     }
 
@@ -87,39 +90,43 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public void readSize() {
+    public void readSize() throws BackgroundException {
         if(this.attributes().isFile()) {
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         this.getName()));
 
                 this.readAttributes();
             }
+            catch(SardineException e) {
+                throw new SardineExceptionMappingService().map("Cannot read file attributes", e, this);
+            }
             catch(IOException e) {
-                log.warn("Cannot read file attributes");
+                throw new DefaultIOExceptionMappingService().map(e, this);
             }
         }
     }
 
     @Override
-    public void readTimestamp() {
+    public void readTimestamp() throws BackgroundException {
         if(this.attributes().isFile()) {
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                         this.getName()));
 
                 this.readAttributes();
             }
+            catch(SardineException e) {
+                throw new SardineExceptionMappingService().map("Cannot read file attributes", e, this);
+            }
             catch(IOException e) {
-                log.warn("Cannot read file attributes");
+                throw new DefaultIOExceptionMappingService().map(e, this);
             }
         }
     }
 
     private void readAttributes() throws IOException {
-        final List<DavResource> resources = this.getSession().getClient().list(this.toURL());
+        final List<DavResource> resources = session.getClient().list(this.toURL());
         for(final DavResource resource : resources) {
             this.readAttributes(resource);
         }
@@ -140,107 +147,122 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public boolean exists() {
+    public boolean exists() throws BackgroundException {
         if(super.exists()) {
             return true;
         }
         if(this.attributes().isDirectory()) {
             // Parent directory may not be accessible. Issue #5662
             try {
-                return this.getSession().getClient().exists(this.toURL());
+                return session.getClient().exists(this.toURL());
+            }
+            catch(SardineException e) {
+                throw new SardineExceptionMappingService().map("Cannot read file attributes", e, this);
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                throw new DefaultIOExceptionMappingService().map(e, this);
             }
         }
         return false;
     }
 
     @Override
-    public void delete() {
+    public void delete(final LoginController prompt) throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     this.getName()));
-
-            this.getSession().getClient().delete(this.toURL());
+            session.getClient().delete(this.toURL());
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Cannot delete {0}", e, this);
         }
         catch(IOException e) {
-            this.error("Cannot delete {0}", e);
+            throw new DefaultIOExceptionMappingService().map(e, this);
         }
     }
 
     @Override
-    public AttributedList<Path> list(final AttributedList<Path> children) {
+    public AttributedList<Path> list() throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
-            final List<DavResource> resources = this.getSession().getClient().list(this.toURL());
+            final AttributedList<Path> children = new AttributedList<Path>();
+
+            final List<DavResource> resources = session.getClient().list(this.toURL());
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
                 final URI uri = resource.getHref();
-                DAVPath p = new DAVPath(this.getSession(), uri.getPath(),
-                        resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
-                p.setParent(this);
+                final DAVPath p = new DAVPath(session, this,
+                        Path.getName(uri.getPath()), resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
                 p.readAttributes(resource);
                 children.add(p);
             }
+            return children;
+        }
+        catch(SardineException e) {
+            log.warn(String.format("Directory listing failure for %s with failure %s", this, e.getMessage()));
+            throw new SardineExceptionMappingService().map("Listing directory failed", e, this);
         }
         catch(IOException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
+            log.warn(String.format("Directory listing failure for %s with failure %s", this, e.getMessage()));
+            throw new DefaultIOExceptionMappingService().map(e, this);
         }
-        return children;
     }
 
     @Override
-    public void mkdir() {
+    public void mkdir() throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
-            this.getSession().getClient().createDirectory(this.toURL());
+            session.getClient().createDirectory(this.toURL());
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Cannot create folder {0}", e, this);
         }
         catch(IOException e) {
-            this.error("Cannot create folder {0}", e);
+            throw new DefaultIOExceptionMappingService().map(e, this);
         }
     }
 
     @Override
-    public void readMetadata() {
+    public void readMetadata() throws BackgroundException {
         if(attributes().isFile()) {
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
                         this.getName()));
 
-                final List<DavResource> resources = this.getSession().getClient().list(this.toURL());
+                final List<DavResource> resources = session.getClient().list(this.toURL());
                 for(DavResource resource : resources) {
                     this.attributes().setMetadata(resource.getCustomProps());
                 }
             }
+            catch(SardineException e) {
+                throw new SardineExceptionMappingService().map("Cannot read file attributes", e, this);
+            }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                throw new DefaultIOExceptionMappingService().map(e, this);
             }
         }
     }
 
     @Override
-    public void writeMetadata(Map<String, String> meta) {
+    public void writeMetadata(Map<String, String> meta) throws BackgroundException {
         if(attributes().isFile()) {
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+
+                session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().setCustomProps(this.toURL(),
+                session.getClient().setCustomProps(this.toURL(),
                         meta, Collections.<java.lang.String>emptyList());
             }
+            catch(SardineException e) {
+                throw new SardineExceptionMappingService().map("Cannot write file attributes", e, this);
+            }
             catch(IOException e) {
-                this.error("Cannot write file attributes", e);
+                throw new DefaultIOExceptionMappingService().map(e, this);
             }
             finally {
                 this.attributes().clear(false, false, false, true);
@@ -249,36 +271,42 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public void rename(AbstractPath renamed) {
+    public void rename(final Path renamed) throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+
+            session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed.getName()));
 
-            this.getSession().getClient().move(this.toURL(), renamed.toURL());
+            session.getClient().move(this.toURL(), renamed.toURL());
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Cannot rename {0}", e, this);
         }
         catch(IOException e) {
-            this.error("Cannot rename {0}", e);
+            throw new DefaultIOExceptionMappingService().map(e, this);
         }
     }
 
     @Override
-    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener, final TransferStatus status) {
-        if(((Path) copy).getSession().equals(this.getSession())) {
+    public void copy(Path copy, BandwidthThrottle throttle, StreamListener listener, final TransferStatus status) throws BackgroundException {
+        if(((Path) copy).getSession().equals(session)) {
             // Copy on same server
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+
+                session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                         this.getName(), copy));
 
                 if(attributes().isFile()) {
-                    this.getSession().getClient().copy(this.toURL(), copy.toURL());
+                    session.getClient().copy(this.toURL(), copy.toURL());
                     listener.bytesSent(this.attributes().getSize());
                     status.setComplete();
                 }
             }
+            catch(SardineException e) {
+                throw new SardineExceptionMappingService().map("Cannot copy {0}", e, this);
+            }
             catch(IOException e) {
-                this.error("Cannot copy {0}", e);
+                throw new DefaultIOExceptionMappingService().map(e, this);
             }
         }
         else {
@@ -288,17 +316,25 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public InputStream read(final TransferStatus status) throws IOException {
+    public InputStream read(final TransferStatus status) throws BackgroundException {
         Map<String, String> headers = new HashMap<String, String>();
         if(status.isResume()) {
             headers.put(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-");
         }
-        return this.getSession().getClient().get(this.toURL(), headers);
+        try {
+            return session.getClient().get(this.toURL(), headers);
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Download failed", e, this);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download failed", e, this);
+        }
     }
 
     @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status) {
+                         final TransferStatus status) throws BackgroundException {
         OutputStream out = null;
         InputStream in = null;
         try {
@@ -306,8 +342,11 @@ public class DAVPath extends HttpPath {
             out = this.getLocal().getOutputStream(status.isResume());
             this.download(in, out, throttle, listener, status);
         }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Download failed", e, this);
+        }
         catch(IOException e) {
-            this.error("Download failed", e);
+            throw new DefaultIOExceptionMappingService().map("Download failed", e, this);
         }
         finally {
             IOUtils.closeQuietly(in);
@@ -316,7 +355,7 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
         try {
             InputStream in = null;
             ResponseOutputStream<Void> out = null;
@@ -340,13 +379,16 @@ public class DAVPath extends HttpPath {
                 out.getResponse();
             }
         }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Upload failed", e, this);
+        }
         catch(IOException e) {
-            this.error("Upload failed", e);
+            throw new DefaultIOExceptionMappingService().map("Upload failed", e, this);
         }
     }
 
     @Override
-    public ResponseOutputStream<Void> write(final TransferStatus status) throws IOException {
+    public ResponseOutputStream<Void> write(final TransferStatus status) throws BackgroundException {
         final Map<String, String> headers = new HashMap<String, String>();
         if(status.isResume()) {
             headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
@@ -358,31 +400,34 @@ public class DAVPath extends HttpPath {
         if(Preferences.instance().getBoolean("webdav.expect-continue")) {
             headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
         }
-        try {
-            return this.write(headers, status);
-        }
-        catch(HttpResponseException e) {
-            if(e.getStatusCode() == HttpStatus.SC_EXPECTATION_FAILED) {
-                // Retry with the Expect header removed
-                headers.remove(HTTP.EXPECT_DIRECTIVE);
-                return this.write(headers, status);
-            }
-            else {
-                throw e;
-            }
-        }
+        return this.write(headers, status);
     }
 
-    private ResponseOutputStream<Void> write(final Map<String, String> headers, final TransferStatus status) throws IOException {
+    private ResponseOutputStream<Void> write(final Map<String, String> headers, final TransferStatus status)
+            throws BackgroundException {
         // Submit store call to background thread
         final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
             /**
-             *
              * @return The ETag returned by the server for the uploaded object
              */
             @Override
-            public Void call(AbstractHttpEntity entity) throws IOException {
-                getSession().getClient().put(toURL(), entity, headers);
+            public Void call(AbstractHttpEntity entity) throws BackgroundException {
+                try {
+                    session.getClient().put(toURL(), entity, headers);
+                }
+                catch(SardineException e) {
+                    if(e.getStatusCode() == HttpStatus.SC_EXPECTATION_FAILED) {
+                        // Retry with the Expect header removed
+                        headers.remove(HTTP.EXPECT_DIRECTIVE);
+                        return this.call(entity);
+                    }
+                    else {
+                        throw new SardineExceptionMappingService().map("Upload failed", e, DAVPath.this);
+                    }
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Upload failed", e, DAVPath.this);
+                }
                 return null;
             }
 

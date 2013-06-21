@@ -67,12 +67,12 @@ public abstract class PathFactory<S extends Session> {
                             }
 
                             @Override
-                            protected Path create(FTPSession session, String parent, String name, int type) {
+                            protected Path create(FTPSession session, Path parent, String name, int type) {
                                 return new FTPPath(session, parent, name, type);
                             }
 
                             @Override
-                            protected Path create(FTPSession session, String parent, Local file) {
+                            protected Path create(FTPSession session, Path parent, Local file) {
                                 return new FTPPath(session, parent, file);
                             }
 
@@ -90,12 +90,12 @@ public abstract class PathFactory<S extends Session> {
                             }
 
                             @Override
-                            protected Path create(SFTPSession session, String parent, String name, int type) {
+                            protected Path create(SFTPSession session, Path parent, String name, int type) {
                                 return new SFTPPath(session, parent, name, type);
                             }
 
                             @Override
-                            protected Path create(SFTPSession session, String parent, Local file) {
+                            protected Path create(SFTPSession session, Path parent, Local file) {
                                 return new SFTPPath(session, parent, file);
                             }
 
@@ -113,12 +113,12 @@ public abstract class PathFactory<S extends Session> {
                             }
 
                             @Override
-                            protected Path create(DAVSession session, String parent, String name, int type) {
+                            protected Path create(DAVSession session, Path parent, String name, int type) {
                                 return new DAVPath(session, parent, name, type);
                             }
 
                             @Override
-                            protected Path create(DAVSession session, String parent, Local file) {
+                            protected Path create(DAVSession session, Path parent, Local file) {
                                 return new DAVPath(session, parent, file);
                             }
 
@@ -136,12 +136,12 @@ public abstract class PathFactory<S extends Session> {
                             }
 
                             @Override
-                            protected Path create(S3Session session, String parent, String name, int type) {
+                            protected Path create(S3Session session, Path parent, String name, int type) {
                                 return new S3Path(session, parent, name, type);
                             }
 
                             @Override
-                            protected Path create(S3Session session, String parent, Local file) {
+                            protected Path create(S3Session session, Path parent, Local file) {
                                 return new S3Path(session, parent, file);
                             }
 
@@ -159,12 +159,12 @@ public abstract class PathFactory<S extends Session> {
                             }
 
                             @Override
-                            protected Path create(GSSession session, String parent, String name, int type) {
+                            protected Path create(GSSession session, Path parent, String name, int type) {
                                 return new GSPath(session, parent, name, type);
                             }
 
                             @Override
-                            protected Path create(GSSession session, String parent, Local file) {
+                            protected Path create(GSSession session, Path parent, Local file) {
                                 return new GSPath(session, parent, file);
                             }
 
@@ -182,12 +182,12 @@ public abstract class PathFactory<S extends Session> {
                             }
 
                             @Override
-                            protected Path create(CFSession session, String parent, String name, int type) {
+                            protected Path create(CFSession session, Path parent, String name, int type) {
                                 return new CFPath(session, parent, name, type);
                             }
 
                             @Override
-                            protected Path create(CFSession session, String parent, Local file) {
+                            protected Path create(CFSession session, Path parent, Local file) {
                                 return new CFPath(session, parent, file);
                             }
 
@@ -207,13 +207,13 @@ public abstract class PathFactory<S extends Session> {
 
     protected abstract Path create(S session, String path, int type);
 
-    protected abstract Path create(S session, String parent, String name, int type);
+    protected abstract Path create(S session, Path parent, String name, int type);
 
-    protected abstract Path create(S session, String parent, Local file);
+    protected abstract Path create(S session, Path parent, Local file);
 
     protected abstract <T> Path create(S session, T dict);
 
-    public static <S extends Session> Path createPath(S session, String parent, String name, int type) {
+    public static <S extends Session> Path createPath(S session, Path parent, String name, int type) {
         return factories.get(session.getHost().getProtocol()).create(session, parent, name, type);
     }
 
@@ -221,7 +221,7 @@ public abstract class PathFactory<S extends Session> {
         return factories.get(session.getHost().getProtocol()).create(session, path, type);
     }
 
-    public static <S extends Session> Path createPath(S session, String parent, Local file) {
+    public static <S extends Session> Path createPath(S session, Path parent, Local file) {
         return factories.get(session.getHost().getProtocol()).create(session, parent, file);
     }
 

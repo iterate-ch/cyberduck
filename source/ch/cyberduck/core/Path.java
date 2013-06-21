@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
@@ -29,6 +30,7 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -47,8 +49,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -61,19 +61,14 @@ public abstract class Path extends AbstractPath implements Serializable {
     private static final Logger log = Logger.getLogger(Path.class);
 
     /**
-     * To lookup a copy of the path in the cache.
-     */
-    private PathReference reference;
-
-    /**
      * The absolute remote path
      */
     private String path;
 
     /**
-     * Reference to the parent created lazily if needed
+     * Reference to the parent
      */
-    private Path parent;
+    protected Path parent;
 
     /**
      * The local path to be used if file is copied
@@ -81,23 +76,24 @@ public abstract class Path extends AbstractPath implements Serializable {
     private Local local;
 
     /**
+     * An absolute reference here the symbolic link is pointing to
+     */
+    private Path symlink;
+
+    /**
      * Attributes denoting this path
      */
     private PathAttributes attributes;
 
-    protected <T> Path(T serialized) {
+    protected <T> Path(final Session session, T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         String pathObj = dict.stringForKey("Remote");
         if(pathObj != null) {
-            this.path = pathObj;
+            this.setPath(session, pathObj);
         }
         String localObj = dict.stringForKey("Local");
         if(localObj != null) {
             this.local = LocalFactory.createLocal(localObj);
-        }
-        String symlinkObj = dict.stringForKey("Symlink");
-        if(symlinkObj != null) {
-            this.symlink = symlinkObj;
         }
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
@@ -117,10 +113,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     protected <S> S getAsDictionary(Serializer dict) {
         dict.setStringForKey(this.getAbsolute(), "Remote");
         if(local != null) {
-            dict.setStringForKey(local.toString(), "Local");
-        }
-        if(StringUtils.isNotBlank(symlink)) {
-            dict.setStringForKey(symlink, "Symlink");
+            dict.setStringForKey(local.getAbsolute(), "Local");
         }
         dict.setObjectForKey(attributes, "Attributes");
         return dict.getSerialized();
@@ -133,7 +126,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param name   the file relative to param path
      * @param type   File type
      */
-    public Path(final String parent, final String name, final int type) {
+    public Path(final Path parent, final String name, final int type) {
         this.setPath(parent, name);
         this.attributes = new PathAttributes(type);
     }
@@ -141,11 +134,11 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * A remote path where nothing is known about a local equivalent.
      *
-     * @param path The absolute path of the remote file
-     * @param type File type
+     * @param absolute The absolute path of the remote file
+     * @param type     File type
      */
-    public Path(final String path, final int type) {
-        this.setPath(path);
+    public Path(final Session session, final String absolute, final int type) {
+        this.setPath(session, absolute);
         this.attributes = new PathAttributes(type);
     }
 
@@ -155,20 +148,22 @@ public abstract class Path extends AbstractPath implements Serializable {
      * The remote filename will be extracted from the local file.
      *
      * @param parent The absolute path to the parent directory on the remote host
-     * @param local  The associated local file
+     * @param file   The associated local file
      */
-    public Path(final String parent, final Local local) {
-        this.setPath(parent, local);
+    public Path(final Path parent, final Local file) {
+        this.setPath(parent, file.getName());
+        this.setLocal(file);
         this.attributes = new PathAttributes(local.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
     }
 
-    /**
-     * @param parent The parent directory
-     * @param file   The local file corresponding with this remote path
-     */
-    public void setPath(final String parent, final Local file) {
-        this.setPath(parent, file.getName());
-        this.setLocal(file);
+    private void setPath(final Session session, final String absolute) {
+        if(absolute.equals(String.valueOf(Path.DELIMITER))) {
+            this.setPath((Path) null, Path.getName(PathNormalizer.normalize(absolute, true)));
+        }
+        else {
+            this.setPath(PathFactory.createPath(session, Path.getParent(PathNormalizer.normalize(absolute, true), Path.DELIMITER), Path.DIRECTORY_TYPE),
+                    Path.getName(PathNormalizer.normalize(absolute, true)));
+        }
     }
 
     /**
@@ -176,33 +171,17 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param name   The filename
      */
     public void setPath(final Path parent, final String name) {
-        super.setPath(parent.getAbsolute(), name);
-        this.setParent(parent);
-    }
-
-    /**
-     * Normalizes the name before updatings this path. Resets its parent directory
-     *
-     * @param name Must be an absolute pathname
-     */
-    @Override
-    protected void setPath(final String name) {
-        this.path = PathNormalizer.normalize(name);
-        this.parent = null;
-        this.reference = null;
-    }
-
-    /**
-     * Set reference to parent path.
-     *
-     * @param parent The parent directory with attributes already populated.
-     */
-    public void setParent(final Path parent) {
-        if(this.isChild(parent)) {
-            this.parent = parent;
+        this.parent = parent;
+        if(null == parent) {
+            this.path = name;
         }
         else {
-            log.warn(String.format("Attempt to set invalid parent directory %s", parent));
+            if(parent.isRoot()) {
+                this.path = parent.getAbsolute() + name;
+            }
+            else {
+                this.path = parent.getAbsolute() + Path.DELIMITER + name;
+            }
         }
     }
 
@@ -228,41 +207,24 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return True if this path denotes a container
      */
     public boolean isContainer() {
-        return this.equals(this.getContainer());
+        return this.isRoot();
     }
 
     /**
      * @return Default path or root with volume attributes set
      */
     public Path getContainer() {
-        if(StringUtils.isNotBlank(this.getHost().getDefaultPath())) {
-            return PathFactory.createPath(this.getSession(), PathNormalizer.normalize(this.getHost().getDefaultPath(), true),
-                    VOLUME_TYPE | DIRECTORY_TYPE);
+        Path container = this;
+        while(!container.isContainer()) {
+            container = container.getParent();
         }
-        return PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
-                VOLUME_TYPE | DIRECTORY_TYPE);
+        return container;
     }
 
-    /**
-     * Create a parent path with default attributes if it is not referenced yet.
-     *
-     * @return The parent directory
-     */
     @Override
     public Path getParent() {
-        if(null == parent) {
-            if(this.isRoot()) {
-                return this;
-            }
-            final String name = getParent(this.getAbsolute(), this.getPathDelimiter());
-            if(String.valueOf(DELIMITER).equals(name)) {
-                parent = PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
-                        VOLUME_TYPE | DIRECTORY_TYPE);
-            }
-            else {
-                parent = PathFactory.createPath(this.getSession(), name,
-                        DIRECTORY_TYPE);
-            }
+        if(this.isRoot()) {
+            return this;
         }
         return parent;
     }
@@ -272,20 +234,12 @@ public abstract class Path extends AbstractPath implements Serializable {
      * if you need a different strategy to compare hashcode and equality for caching
      * in a model.
      *
-     * @return Reference to the path to be used in table models an file listing
-     *         cache.
+     * @return Reference to the path to be used in table models an file listing cache.
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
     @Override
     public PathReference getReference() {
-        if(null == reference) {
-            reference = PathReferenceFactory.createPathReference(this);
-        }
-        return reference;
-    }
-
-    public void setReference(final PathReference<Path> reference) {
-        this.reference = reference;
+        return PathReferenceFactory.createPathReference(this);
     }
 
     @Override
@@ -305,55 +259,14 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     @Override
-    public AttributedList<Path> children() {
-        return this.children(null);
+    public abstract AttributedList<Path> list() throws BackgroundException;
+
+    public void writeUnixOwner(String owner) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
-    @Override
-    public AttributedList<Path> children(final Filter<? extends AbstractPath> filter) {
-        return this.children(null, filter);
-    }
-
-    @Override
-    public AttributedList<Path> children(final Comparator<? extends AbstractPath> comparator,
-                                         final Filter<? extends AbstractPath> filter) {
-        final Cache cache = this.getSession().cache();
-        if(!cache.isCached(this.getReference())) {
-            cache.put(this.getReference(), this.list());
-        }
-        return cache.get(this.getReference()).filter(comparator, filter);
-    }
-
-    @Override
-    public AttributedList<Path> list() {
-        return this.list(new AttributedList<Path>() {
-            @Override
-            public boolean add(Path path) {
-                if(!path.isChild(Path.this)) {
-                    log.warn(String.format("Skip adding child %s to directory listing", path));
-                    return false;
-                }
-                return super.add(path);
-            }
-
-            @Override
-            public boolean addAll(Collection<? extends Path> c) {
-                for(Path path : c) {
-                    this.add(path);
-                }
-                return true;
-            }
-        });
-    }
-
-    protected abstract AttributedList<Path> list(AttributedList<Path> children);
-
-    public void writeOwner(String owner) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void writeGroup(String group) {
-        throw new UnsupportedOperationException();
+    public void writeUnixGroup(String group) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     /**
@@ -362,20 +275,20 @@ public abstract class Path extends AbstractPath implements Serializable {
      * No checksum calculation by default. Might be supported by specific
      * provider implementation.
      */
-    public void readChecksum() {
+    public void readChecksum() throws BackgroundException {
         //
     }
 
     /**
      * Default implementation updating size from directory listing
      */
-    public void readSize() {
+    public void readSize() throws BackgroundException {
         //
     }
 
     @Override
-    public void writeTimestamp(long created, long modified, long accessed) {
-        throw new UnsupportedOperationException();
+    public void writeTimestamp(long created, long modified, long accessed) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     /**
@@ -383,7 +296,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      *
      * @see ch.cyberduck.core.Attributes#getModificationDate()
      */
-    public void readTimestamp() {
+    public void readTimestamp() throws BackgroundException {
         //
     }
 
@@ -393,42 +306,42 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @see Attributes#getPermission()
      * @see Session#isUnixPermissionsSupported()
      */
-    public void readUnixPermission() {
+    public void readUnixPermission() throws BackgroundException {
         //
     }
 
     @Override
-    public void writeUnixPermission(Permission permission) {
-        throw new UnsupportedOperationException();
+    public void writeUnixPermission(Permission permission) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     /**
      * @param acl       The permissions to apply
      * @param recursive Include subdirectories and files
      */
-    public void writeAcl(Acl acl, boolean recursive) {
-        throw new UnsupportedOperationException();
+    public void writeAcl(Acl acl, boolean recursive) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     /**
      * Read the ACL of the bucket or object
      */
-    public void readAcl() {
+    public void readAcl() throws BackgroundException {
         //
     }
 
     /**
      * Read modifiable HTTP header metatdata key and values
      */
-    public void readMetadata() {
+    public void readMetadata() throws BackgroundException {
         //
     }
 
     /**
      * @param meta Modifiable HTTP header metatdata key and values
      */
-    public void writeMetadata(Map<String, String> meta) {
-        throw new UnsupportedOperationException();
+    public void writeMetadata(Map<String, String> meta) throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     /**
@@ -453,7 +366,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     @Override
     public String getAbsolute() {
-        return this.path;
+        return path;
     }
 
     /**
@@ -472,12 +385,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         return local;
     }
 
-    /**
-     * An absolute reference here the symbolic link is pointing to
-     */
-    protected String symlink;
-
-    public void setSymlinkTarget(final String name) {
+    public void setSymlinkTarget(final Path name) {
         this.symlink = name;
     }
 
@@ -486,18 +394,10 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
      */
     @Override
-    public AbstractPath getSymlinkTarget() {
+    public Path getSymlinkTarget() {
         final PathAttributes attributes = this.attributes();
         if(attributes.isSymbolicLink()) {
-            // Symbolic link target may be an absolute or relative path
-            if(symlink.startsWith(String.valueOf(DELIMITER))) {
-                return PathFactory.createPath(this.getSession(), symlink,
-                        attributes.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
-            }
-            else {
-                return PathFactory.createPath(this.getSession(), this.getParent().getAbsolute(), symlink,
-                        attributes.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
-            }
+            return symlink;
         }
         return null;
     }
@@ -509,9 +409,14 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param target Target file of symbolic link
      */
     @Override
-    public void symlink(String target) {
+    public void symlink(String target) throws BackgroundException {
         // No op.
     }
+
+    /**
+     * @param renamed Must be an absolute path
+     */
+    public abstract void rename(Path renamed) throws BackgroundException;
 
     /**
      * @return The session this path uses to send commands
@@ -522,17 +427,16 @@ public abstract class Path extends AbstractPath implements Serializable {
      * Upload an empty file.
      */
     @Override
-    public boolean touch() {
+    public boolean touch() throws BackgroundException {
         final Local temp = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), UUID.randomUUID().toString());
         temp.touch();
         this.setLocal(temp);
         TransferOptions options = new TransferOptions();
-        options.closeSession = false;
         UploadTransfer upload = new UploadTransfer(this);
         try {
             upload.start(new TransferPrompt() {
                 @Override
-                public TransferAction prompt() {
+                public TransferAction prompt() throws BackgroundException {
                     return TransferAction.ACTION_OVERWRITE;
                 }
             }, options);
@@ -545,18 +449,24 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     * Remove this file from the remote host. Does not affect any corresponding local file
+     *
+     * @param prompt Login prompt for multi factor authentication
+     */
+    public abstract void delete(final LoginController prompt) throws BackgroundException;
+
+    /**
      * Versioning support.
      */
-    public void revert() {
-        throw new UnsupportedOperationException();
+    public void revert() throws BackgroundException {
+        throw new BackgroundException("Not supported");
     }
 
     /**
      * @param status Transfer status
      * @return Stream to read from to download file
-     * @throws IOException Read not completed due to a I/O problem
      */
-    public abstract InputStream read(final TransferStatus status) throws IOException;
+    public abstract InputStream read(final TransferStatus status) throws BackgroundException;
 
     /**
      * @param throttle The bandwidth limit
@@ -564,14 +474,13 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param status   Transfer status
      */
     public abstract void download(BandwidthThrottle throttle, StreamListener listener,
-                                  TransferStatus status);
+                                  TransferStatus status) throws BackgroundException;
 
     /**
      * @param status Transfer status
      * @return Stream to write to for upload
-     * @throws IOException Open file for writing fails
      */
-    public abstract OutputStream write(TransferStatus status) throws IOException;
+    public abstract OutputStream write(TransferStatus status) throws BackgroundException;
 
     /**
      * @param throttle The bandwidth limit
@@ -579,7 +488,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param status   Transfer status
      */
     public abstract void upload(BandwidthThrottle throttle, StreamListener listener,
-                                TransferStatus status);
+                                TransferStatus status) throws BackgroundException;
 
     /**
      * @param out      Remote stream
@@ -591,7 +500,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     protected void upload(final OutputStream out, final InputStream in,
                           final BandwidthThrottle throttle,
-                          final StreamListener l, final TransferStatus status) throws IOException {
+                          final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
         this.upload(out, in, throttle, l, status.getCurrent(), -1, status);
     }
 
@@ -608,14 +517,12 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param offset   Start reading at offset in file
      * @param limit    Transfer only up to this length
      * @param status   Transfer status
-     * @throws IOResumeException           If the input stream fails to skip the appropriate
-     *                                     number of bytes
-     * @throws IOException                 Write not completed due to a I/O problem
-     * @throws ConnectionCanceledException When transfer is interrupted by user setting the
-     *                                     status flag to cancel.
+     * @throws IOResumeException If the input stream fails to skip the appropriate
+     *                           number of bytes
+     * @throws IOException       Write not completed due to a I/O problem
      */
     protected void upload(final OutputStream out, final InputStream in, final BandwidthThrottle throttle,
-                          final StreamListener l, long offset, final long limit, final TransferStatus status) throws IOException {
+                          final StreamListener l, long offset, final long limit, final TransferStatus status) throws IOException, ConnectionCanceledException {
         if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
@@ -643,12 +550,10 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param throttle The bandwidth limit
      * @param l        The stream listener to notify about bytes received and sent
      * @param status   Transfer status
-     * @throws IOException                 Write not completed due to a I/O problem
-     * @throws ConnectionCanceledException When transfer is interrupted by user setting the
-     *                                     status flag to cancel.
+     * @throws IOException Write not completed due to a I/O problem
      */
     protected void download(final InputStream in, final OutputStream out, final BandwidthThrottle throttle,
-                            final StreamListener l, final TransferStatus status) throws IOException {
+                            final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
@@ -666,13 +571,11 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param listener The stream listener to notify about bytes received and sent
      * @param limit    Transfer only up to this length
      * @param status   Transfer status
-     * @throws IOException                 Write not completed due to a I/O problem
-     * @throws ConnectionCanceledException When transfer is interrupted by user setting the
-     *                                     status flag to cancel.
+     * @throws IOException Write not completed due to a I/O problem
      */
     protected void transfer(final InputStream in, final OutputStream out,
                             final StreamListener listener, final long limit,
-                            final TransferStatus status) throws IOException {
+                            final TransferStatus status) throws IOException, ConnectionCanceledException {
         final BufferedInputStream bi = new BufferedInputStream(in);
         final BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
@@ -713,11 +616,11 @@ public abstract class Path extends AbstractPath implements Serializable {
             bo.flush();
         }
         if(status.isCanceled()) {
-            throw new ConnectionCanceledException("Interrupted transfer");
+            throw new ConnectionCanceledException();
         }
     }
 
-    public void copy(AbstractPath copy, final TransferStatus status) {
+    public void copy(Path copy, final TransferStatus status) throws BackgroundException {
         this.copy(copy, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new AbstractStreamListener(), status);
     }
@@ -731,8 +634,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param listener Callback
      * @param status   Transfer status
      */
-    public void copy(final AbstractPath copy, final BandwidthThrottle throttle,
-                     final StreamListener listener, final TransferStatus status) {
+    public void copy(final Path copy, final BandwidthThrottle throttle,
+                     final StreamListener listener, final TransferStatus status) throws BackgroundException {
         InputStream in = null;
         OutputStream out = null;
         try {
@@ -740,12 +643,12 @@ public abstract class Path extends AbstractPath implements Serializable {
                     this.getName(), copy));
             if(this.attributes().isFile()) {
                 this.transfer(in = new ThrottledInputStream(this.read(status), throttle),
-                        out = new ThrottledOutputStream(((Path) copy).write(status), throttle),
+                        out = new ThrottledOutputStream(copy.write(status), throttle),
                         listener, -1, status);
             }
         }
         catch(IOException e) {
-            this.error("Cannot copy {0}", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, this);
         }
         finally {
             IOUtils.closeQuietly(in);
@@ -759,11 +662,11 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return True if the path is cached.
      */
     @Override
-    public boolean exists() {
+    public boolean exists() throws BackgroundException {
         if(this.isRoot()) {
             return true;
         }
-        return this.getParent().children().contains(this.getReference());
+        return this.getParent().list().contains(this.getReference());
     }
 
     /**
@@ -892,23 +795,5 @@ public abstract class Path extends AbstractPath implements Serializable {
             urls.add(new DescriptiveUrl(http, MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")));
         }
         return urls;
-    }
-
-
-    /**
-     * Append an error message without any stacktrace information
-     *
-     * @param message Failure description
-     */
-    protected void error(String message) {
-        this.error(message, null);
-    }
-
-    /**
-     * @param message   Failure description
-     * @param throwable The cause of the message
-     */
-    protected void error(String message, Exception throwable) {
-        this.getSession().error(this, message, throwable);
     }
 }

@@ -18,8 +18,9 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
@@ -27,9 +28,11 @@ import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -67,23 +70,23 @@ public class FTPPath extends Path {
 
     private final FTPSession session;
 
-    public FTPPath(FTPSession s, String parent, String name, int type) {
+    public FTPPath(FTPSession s, Path parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
     public FTPPath(FTPSession s, String path, int type) {
-        super(path, type);
+        super(s, path, type);
         this.session = s;
     }
 
-    public FTPPath(FTPSession s, String parent, Local file) {
+    public FTPPath(FTPSession s, Path parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
     public <T> FTPPath(FTPSession s, T dict) {
-        super(dict);
+        super(s, dict);
         this.session = s;
     }
 
@@ -102,16 +105,15 @@ public class FTPPath extends Path {
     /**
      * @param action Action that needs to open a data connection
      * @return True if action was successful
-     * @throws IOException I/O error
      */
-    private <T> T data(final DataConnectionAction<T> action) throws IOException {
+    private <T> T data(final DataConnectionAction<T> action) throws BackgroundException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
-            if(this.getSession().getConnectMode().equals(FTPConnectMode.PASV)) {
-                this.getSession().getClient().enterLocalPassiveMode();
+            if(session.getConnectMode().equals(FTPConnectMode.PASV)) {
+                session.getClient().enterLocalPassiveMode();
             }
-            else if(this.getSession().getConnectMode().equals(FTPConnectMode.PORT)) {
-                this.getSession().getClient().enterLocalActiveMode();
+            else if(session.getConnectMode().equals(FTPConnectMode.PORT)) {
+                session.getClient().enterLocalActiveMode();
             }
             return action.run();
         }
@@ -119,55 +121,57 @@ public class FTPPath extends Path {
             log.warn("Timeout opening data socket:" + failure.getMessage());
             // Fallback handling
             if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
-                this.getSession().interrupt();
-                this.getSession().check();
+                session.interrupt();
+                session.open();
                 try {
                     return this.fallback(action);
                 }
                 catch(IOException e) {
-                    this.getSession().interrupt();
+                    session.interrupt();
                     log.warn("Connect mode fallback failed:" + e.getMessage());
                     // Throw original error message
-                    throw failure;
                 }
             }
-            throw failure;
+            throw new DefaultIOExceptionMappingService().map(failure, this);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e, this);
         }
     }
 
     /**
      * @param action Action that needs to open a data connection
      * @return True if action was successful
-     * @throws IOException I/O error
      */
-    private <T> T fallback(final DataConnectionAction<T> action) throws IOException {
+    private <T> T fallback(final DataConnectionAction<T> action) throws ConnectionCanceledException, IOException {
         // Fallback to other connect mode
-        if(this.getSession().getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
+        if(session.getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
             log.warn("Fallback to active data connection");
-            this.getSession().getClient().enterLocalActiveMode();
+            session.getClient().enterLocalActiveMode();
         }
-        else if(this.getSession().getClient().getDataConnectionMode() == FTPClient.ACTIVE_LOCAL_DATA_CONNECTION_MODE) {
+        else if(session.getClient().getDataConnectionMode() == FTPClient.ACTIVE_LOCAL_DATA_CONNECTION_MODE) {
             log.warn("Fallback to passive data connection");
-            this.getSession().getClient().enterLocalPassiveMode();
+            session.getClient().enterLocalPassiveMode();
         }
         return action.run();
     }
 
     @Override
-    public AttributedList<Path> list(final AttributedList<Path> children) {
+    public AttributedList<Path> list() throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
+            final AttributedList<Path> children = new AttributedList<Path>();
+
             // Cached file parser determined from SYST response with the timezone set from the bookmark
-            final FTPFileEntryParser parser = this.getSession().getFileParser();
+            final FTPFileEntryParser parser = session.getFileParser();
             boolean success = false;
             try {
-                if(this.getSession().isStatListSupportedEnabled()) {
-                    int response = this.getSession().getClient().stat(this.getAbsolute());
+                if(session.isStatListSupportedEnabled()) {
+                    int response = session.getClient().stat(this.getAbsolute());
                     if(FTPReply.isPositiveCompletion(response)) {
-                        String[] reply = this.getSession().getClient().getReplyStrings();
+                        final String[] reply = session.getClient().getReplyStrings();
                         final List<String> result = new ArrayList<String>(reply.length);
                         for(final String line : reply) {
                             //Some servers include the status code for every line.
@@ -186,51 +190,51 @@ public class FTPPath extends Path {
                         success = this.parseListResponse(children, parser, result);
                     }
                     else {
-                        this.getSession().setStatListSupportedEnabled(false);
+                        session.setStatListSupportedEnabled(false);
                     }
                 }
             }
             catch(IOException e) {
                 log.warn("Command STAT failed with I/O error:" + e.getMessage());
-                this.getSession().interrupt();
-                this.getSession().check();
+                session.interrupt();
+                session.open();
             }
             if(!success || children.isEmpty()) {
                 success = this.data(new DataConnectionAction<Boolean>() {
                     @Override
                     public Boolean run() throws IOException {
-                        if(!getSession().getClient().changeWorkingDirectory(getAbsolute())) {
-                            throw new FTPException(getSession().getClient().getReplyString());
+                        if(!session.getClient().changeWorkingDirectory(getAbsolute())) {
+                            throw new FTPException(session.getClient().getReplyString());
                         }
-                        if(!getSession().getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
+                        if(!session.getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
                             // Set transfer type for traditional data socket file listings. The data transfer is over the
                             // data connection in type ASCII or type EBCDIC.
-                            throw new FTPException(getSession().getClient().getReplyString());
+                            throw new FTPException(session.getClient().getReplyString());
                         }
                         boolean success = false;
                         // STAT listing failed or empty
-                        if(getSession().isMlsdListSupportedEnabled()
+                        if(session.isMlsdListSupportedEnabled()
                                 // Note that there is no distinct FEAT output for MLSD.
                                 // The presence of the MLST feature indicates that both MLST and MLSD are supported.
-                                && getSession().getClient().isFeatureSupported(FTPCommand.MLST)) {
-                            success = parseMlsdResponse(children, getSession().getClient().list(FTPCommand.MLSD));
+                                && session.getClient().isFeatureSupported(FTPCommand.MLST)) {
+                            success = parseMlsdResponse(children, session.getClient().list(FTPCommand.MLSD));
                             if(!success) {
-                                getSession().setMlsdListSupportedEnabled(false);
+                                session.setMlsdListSupportedEnabled(false);
                             }
                         }
                         if(!success) {
                             // MLSD listing failed or not enabled
-                            if(getSession().isExtendedListEnabled()) {
+                            if(session.isExtendedListEnabled()) {
                                 try {
-                                    success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, "-a"));
+                                    success = parseListResponse(children, parser, session.getClient().list(FTPCommand.LIST, "-a"));
                                 }
                                 catch(FTPException e) {
-                                    getSession().setExtendedListEnabled(false);
+                                    session.setExtendedListEnabled(false);
                                 }
                             }
                             if(!success) {
                                 // LIST -a listing failed or not enabled
-                                success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST));
+                                success = parseListResponse(children, parser, session.getClient().list(FTPCommand.LIST));
                             }
                         }
                         return success;
@@ -239,12 +243,12 @@ public class FTPPath extends Path {
             }
             for(Path child : children) {
                 if(child.attributes().isSymbolicLink()) {
-                    if(this.getSession().getClient().changeWorkingDirectory(child.getAbsolute())) {
+                    if(session.getClient().changeWorkingDirectory(child.getAbsolute())) {
                         child.attributes().setType(SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE);
                     }
                     else {
                         // Try if CWD to symbolic link target succeeds
-                        if(this.getSession().getClient().changeWorkingDirectory(child.getSymlinkTarget().getAbsolute())) {
+                        if(session.getClient().changeWorkingDirectory(child.getSymlinkTarget().getAbsolute())) {
                             // Workdir change succeeded
                             child.attributes().setType(SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE);
                         }
@@ -258,15 +262,12 @@ public class FTPPath extends Path {
                 // LIST listing failed
                 log.error("No compatible file listing method found");
             }
+            return children;
         }
         catch(IOException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(!session.cache().containsKey(this.getReference())) {
-                this.error(e.getMessage(), e);
-            }
+            log.warn(String.format("Directory listing failure for %s with failure %s", this, e.getMessage()));
+            throw new DefaultIOExceptionMappingService().map("Listing directory failed", e, this);
         }
-        return children;
     }
 
     /**
@@ -346,9 +347,7 @@ public class FTPPath extends Path {
                 continue;
             }
             for(String name : file.keySet()) {
-                final Path parsed = new FTPPath(this.getSession(), this.getAbsolute(),
-                        StringUtils.removeStart(name, this.getAbsolute() + Path.DELIMITER), FILE_TYPE);
-                parsed.setParent(this);
+                final Path parsed = new FTPPath(session, this, Path.getName(name), FILE_TYPE);
                 // size       -- Size in octets
                 // modify     -- Last modification time
                 // create     -- Creation time
@@ -418,9 +417,9 @@ public class FTPPath extends Path {
                         parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
                     }
                     if(facts.containsKey("charset")) {
-                        if(!facts.get("charset").equalsIgnoreCase(this.getSession().getEncoding())) {
+                        if(!facts.get("charset").equalsIgnoreCase(session.getEncoding())) {
                             log.error(String.format("Incompatible charset %s but session is configured with %s",
-                                    facts.get("charset"), this.getSession().getEncoding()));
+                                    facts.get("charset"), session.getEncoding()));
                         }
                     }
                     children.add(parsed);
@@ -465,14 +464,18 @@ public class FTPPath extends Path {
                 }
                 continue;
             }
-            final Path parsed = new FTPPath(this.getSession(), this.getAbsolute(),
-                    StringUtils.removeStart(name, this.getAbsolute() + Path.DELIMITER),
-                    f.getType() == FTPFile.DIRECTORY_TYPE ? DIRECTORY_TYPE : FILE_TYPE);
-            parsed.setParent(this);
+            final Path parsed = new FTPPath(session, this,
+                    Path.getName(name), f.getType() == FTPFile.DIRECTORY_TYPE ? DIRECTORY_TYPE : FILE_TYPE);
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
-                    parsed.setSymlinkTarget(f.getLink());
                     parsed.attributes().setType(SYMBOLIC_LINK_TYPE | FILE_TYPE);
+                    // Symbolic link target may be an absolute or relative path
+                    if(f.getLink().startsWith(String.valueOf(Path.DELIMITER))) {
+                        parsed.setSymlinkTarget(new FTPPath(session, f.getLink(), SYMBOLIC_LINK_TYPE | FILE_TYPE));
+                    }
+                    else {
+                        parsed.setSymlinkTarget(new FTPPath(session, this, f.getLink(), SYMBOLIC_LINK_TYPE | FILE_TYPE));
+                    }
                     break;
             }
             if(parsed.attributes().isFile()) {
@@ -480,7 +483,7 @@ public class FTPPath extends Path {
             }
             parsed.attributes().setOwner(f.getUser());
             parsed.attributes().setGroup(f.getGroup());
-            if(this.getSession().isPermissionSupported(parser)) {
+            if(session.isPermissionSupported(parser)) {
                 parsed.attributes().setPermission(new Permission(
                         new boolean[][]{
                                 {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
@@ -508,61 +511,58 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void mkdir() {
+    public void mkdir() throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
-            if(!this.getSession().getClient().makeDirectory(this.getAbsolute())) {
-                throw new FTPException(this.getSession().getClient().getReplyString());
+            if(!session.getClient().makeDirectory(this.getAbsolute())) {
+                throw new FTPException(session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
-            this.error("Cannot create folder {0}", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, this);
         }
     }
 
     @Override
-    public void rename(AbstractPath renamed) {
+    public void rename(final Path renamed) throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
-            if(!this.getSession().getClient().rename(this.getAbsolute(), renamed.getAbsolute())) {
-                throw new FTPException(this.getSession().getClient().getReplyString());
+            if(!session.getClient().rename(this.getAbsolute(), renamed.getAbsolute())) {
+                throw new FTPException(session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
-            this.error("Cannot rename {0}", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, this);
         }
     }
 
     @Override
-    public void readSize() {
+    public void readSize() throws BackgroundException {
         if(this.attributes().isFile()) {
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         this.getName()));
 
-                if(this.getSession().getClient().isFeatureSupported(FTPClient.SIZE)) {
-                    if(!getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                        throw new FTPException(getSession().getClient().getReplyString());
+                if(session.getClient().isFeatureSupported(FTPClient.SIZE)) {
+                    if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+                        throw new FTPException(session.getClient().getReplyString());
                     }
-                    this.attributes().setSize(this.getSession().getClient().size(this.getAbsolute()));
+                    this.attributes().setSize(session.getClient().size(this.getAbsolute()));
                 }
                 if(-1 == attributes().getSize()) {
                     // Read the size from the directory listing
-                    final AttributedList<Path> l = this.getParent().children();
+                    final AttributedList<Path> l = this.getParent().list();
                     if(l.contains(this.getReference())) {
                         attributes().setSize(l.get(this.getReference()).attributes().getSize());
                     }
                 }
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
             }
         }
     }
@@ -596,15 +596,14 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void readTimestamp() {
+    public void readTimestamp() throws BackgroundException {
         if(this.attributes().isFile()) {
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                         this.getName()));
 
-                if(this.getSession().getClient().isFeatureSupported(FTPCommand.MDTM)) {
-                    final String timestamp = this.getSession().getClient().getModificationTime(this.getAbsolute());
+                if(session.getClient().isFeatureSupported(FTPCommand.MDTM)) {
+                    final String timestamp = session.getClient().getModificationTime(this.getAbsolute());
                     if(null != timestamp) {
                         attributes().setModificationDate(this.parseTimestamp(timestamp));
                     }
@@ -615,100 +614,97 @@ public class FTPPath extends Path {
                 }
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
 
             }
         }
     }
 
     @Override
-    public void delete() {
+    public void delete(final LoginController prompt) throws BackgroundException {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     this.getName()));
 
             if(attributes().isFile() || attributes().isSymbolicLink()) {
-                if(!this.getSession().getClient().deleteFile(this.getAbsolute())) {
-                    throw new FTPException(this.getSession().getClient().getReplyString());
+                if(!session.getClient().deleteFile(this.getAbsolute())) {
+                    throw new FTPException(session.getClient().getReplyString());
                 }
             }
             else if(attributes().isDirectory()) {
-                for(AbstractPath child : this.children()) {
-                    if(!this.getSession().isConnected()) {
-                        break;
+                for(Path child : this.list()) {
+                    if(!session.isConnected()) {
+                        throw new ConnectionCanceledException();
                     }
-                    child.delete();
+                    child.delete(prompt);
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                if(!this.getSession().getClient().removeDirectory(this.getAbsolute())) {
-                    throw new FTPException(this.getSession().getClient().getReplyString());
+                if(!session.getClient().removeDirectory(this.getAbsolute())) {
+                    throw new FTPException(session.getClient().getReplyString());
                 }
             }
         }
         catch(IOException e) {
-            this.error("Cannot delete {0}", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, this);
+
         }
     }
 
     @Override
-    public void writeOwner(String owner) {
+    public void writeUnixOwner(String owner) throws BackgroundException {
         String command = "chown";
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
                     this.getName(), owner));
 
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                if(!this.getSession().getClient().sendSiteCommand(command + " " + owner + " " + this.getAbsolute())) {
-                    throw new FTPException(this.getSession().getClient().getReplyString());
+                if(!session.getClient().sendSiteCommand(command + " " + owner + " " + this.getAbsolute())) {
+                    throw new FTPException(session.getClient().getReplyString());
                 }
             }
             else if(attributes().isDirectory()) {
-                if(!this.getSession().getClient().sendSiteCommand(command + " " + owner + " " + this.getAbsolute())) {
-                    throw new FTPException(this.getSession().getClient().getReplyString());
+                if(!session.getClient().sendSiteCommand(command + " " + owner + " " + this.getAbsolute())) {
+                    throw new FTPException(session.getClient().getReplyString());
                 }
             }
         }
         catch(IOException e) {
-            this.error("Cannot change owner", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot change owner", e, this);
         }
     }
 
     @Override
-    public void writeGroup(String group) {
+    public void writeUnixGroup(String group) throws BackgroundException {
         String command = "chgrp";
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
                     this.getName(), group));
 
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                if(!this.getSession().getClient().sendSiteCommand(command + " " + group + " " + this.getAbsolute())) {
-                    throw new FTPException(this.getSession().getClient().getReplyString());
+                if(!session.getClient().sendSiteCommand(command + " " + group + " " + this.getAbsolute())) {
+                    throw new FTPException(session.getClient().getReplyString());
                 }
             }
             else if(attributes().isDirectory()) {
-                if(!this.getSession().getClient().sendSiteCommand(command + " " + group + " " + this.getAbsolute())) {
-                    throw new FTPException(this.getSession().getClient().getReplyString());
+                if(!session.getClient().sendSiteCommand(command + " " + group + " " + this.getAbsolute())) {
+                    throw new FTPException(session.getClient().getReplyString());
                 }
             }
         }
         catch(IOException e) {
-            this.error("Cannot change group", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot change group", e, this);
         }
     }
 
     @Override
-    public void writeUnixPermission(Permission permission) {
+    public void writeUnixPermission(Permission permission) throws BackgroundException {
         try {
-            this.getSession().check();
             this.writeUnixPermissionImpl(permission);
         }
         catch(IOException e) {
-            this.error("Cannot change permissions", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot change permissions", e, this);
         }
     }
 
@@ -716,10 +712,10 @@ public class FTPPath extends Path {
 
     private void writeUnixPermissionImpl(Permission permission) throws IOException {
         if(chmodSupported) {
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+            session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                     this.getName(), permission.getOctalString()));
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                if(this.getSession().getClient().sendSiteCommand("CHMOD " + permission.getOctalString() + " " + this.getAbsolute())) {
+                if(session.getClient().sendSiteCommand("CHMOD " + permission.getOctalString() + " " + this.getAbsolute())) {
                     this.attributes().setPermission(permission);
                 }
                 else {
@@ -727,7 +723,7 @@ public class FTPPath extends Path {
                 }
             }
             else if(attributes().isDirectory()) {
-                if(this.getSession().getClient().sendSiteCommand("CHMOD " + permission.getOctalString() + " " + this.getAbsolute())) {
+                if(session.getClient().sendSiteCommand("CHMOD " + permission.getOctalString() + " " + this.getAbsolute())) {
                     this.attributes().setPermission(permission);
                 }
                 else {
@@ -738,34 +734,34 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void writeTimestamp(long created, long modified, long accessed) {
+    public void writeTimestamp(long created, long modified, long accessed) throws BackgroundException {
         try {
             this.writeModificationDateImpl(created, modified);
         }
         catch(IOException e) {
-            this.error("Cannot change timestamp", e);
+            throw new DefaultIOExceptionMappingService().map("Cannot change timestamp", e, this);
         }
     }
 
     private void writeModificationDateImpl(long created, long modified) throws IOException {
-        this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
+        session.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), UserDateFormatterFactory.get().getShortFormat(modified)));
 
         final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
-        if(this.getSession().getClient().isFeatureSupported(FTPCommand.MFMT)) {
-            if(this.getSession().getClient().setModificationTime(this.getAbsolute(),
+        if(session.getClient().isFeatureSupported(FTPCommand.MFMT)) {
+            if(session.getClient().setModificationTime(this.getAbsolute(),
                     formatter.format(modified, TimeZone.getTimeZone("UTC")))) {
                 this.attributes().setModificationDate(modified);
             }
         }
         else {
-            if(this.getSession().isUtimeSupported()) {
+            if(session.isUtimeSupported()) {
                 // The utime() function sets the access and modification times of the named
                 // file from the structures in the argument array timep.
                 // The access time is set to the value of the first element,
                 // and the modification time is set to the value of the second element
                 // Accessed date, modified date, created date
-                if(this.getSession().getClient().sendSiteCommand("UTIME " + this.getAbsolute()
+                if(session.getClient().sendSiteCommand("UTIME " + this.getAbsolute()
                         + " " + formatter.format(new Date(modified), TimeZone.getTimeZone("UTC"))
                         + " " + formatter.format(new Date(modified), TimeZone.getTimeZone("UTC"))
                         + " " + formatter.format(new Date(created), TimeZone.getTimeZone("UTC"))
@@ -774,7 +770,7 @@ public class FTPPath extends Path {
                     this.attributes().setCreationDate(created);
                 }
                 else {
-                    this.getSession().setUtimeSupported(false);
+                    session.setUtimeSupported(false);
                     log.warn("UTIME not supported");
                 }
             }
@@ -784,7 +780,7 @@ public class FTPPath extends Path {
 
     @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status) {
+                         final TransferStatus status) throws BackgroundException {
         try {
             InputStream in = null;
             OutputStream out = null;
@@ -799,58 +795,62 @@ public class FTPPath extends Path {
             }
         }
         catch(IOException e) {
-            this.error("Download failed", e);
+            throw new DefaultIOExceptionMappingService().map("Download failed", e, this);
         }
     }
 
     @Override
-    public InputStream read(final TransferStatus status) throws IOException {
-        final FTPSession session = getSession();
-        if(!session.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
-            throw new FTPException(session.getClient().getReplyString());
-        }
-        if(status.isResume()) {
-            // Where a server process supports RESTart in STREAM mode
-            if(!session.getClient().isFeatureSupported("REST STREAM")) {
-                status.setResume(false);
+    public InputStream read(final TransferStatus status) throws BackgroundException {
+        try {
+            if(!session.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
+                throw new FTPException(session.getClient().getReplyString());
             }
-            else {
-                session.getClient().setRestartOffset(status.getCurrent());
-            }
-        }
-        final InputStream in = this.data(new DataConnectionAction<InputStream>() {
-            @Override
-            public InputStream run() throws IOException {
-                return session.getClient().retrieveFileStream(getAbsolute());
-            }
-        });
-        return new CountingInputStream(in) {
-            @Override
-            public void close() throws IOException {
-                try {
-                    super.close();
+            if(status.isResume()) {
+                // Where a server process supports RESTart in STREAM mode
+                if(!session.getClient().isFeatureSupported("REST STREAM")) {
+                    status.setResume(false);
                 }
-                finally {
-                    if(this.getByteCount() == status.getLength()) {
-                        // Read 226 status
-                        if(!session.getClient().completePendingCommand()) {
-                            throw new FTPException(session.getClient().getReplyString());
-                        }
-                    }
-                    else {
-                        // Interrupted transfer
-                        if(!session.getClient().abort()) {
-                            log.error("Error closing data socket:" + session.getClient().getReplyString());
-                        }
-                    }
+                else {
+                    session.getClient().setRestartOffset(status.getCurrent());
                 }
             }
-        };
+            final InputStream in = this.data(new DataConnectionAction<InputStream>() {
+                @Override
+                public InputStream run() throws IOException {
+                    return session.getClient().retrieveFileStream(getAbsolute());
+                }
+            });
+            return new CountingInputStream(in) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        if(this.getByteCount() == status.getLength()) {
+                            // Read 226 status
+                            if(!session.getClient().completePendingCommand()) {
+                                throw new FTPException(session.getClient().getReplyString());
+                            }
+                        }
+                        else {
+                            // Interrupted transfer
+                            if(!session.getClient().abort()) {
+                                log.error("Error closing data socket:" + session.getClient().getReplyString());
+                            }
+                        }
+                    }
+                }
+            };
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download failed", e, this);
+        }
     }
 
     @Override
     public void upload(final BandwidthThrottle throttle, final StreamListener listener,
-                       final TransferStatus status) {
+                       final TransferStatus status) throws BackgroundException {
         try {
             InputStream in = null;
             OutputStream out = null;
@@ -865,48 +865,52 @@ public class FTPPath extends Path {
             }
         }
         catch(IOException e) {
-            this.error("Upload failed", e);
+            throw new DefaultIOExceptionMappingService().map("Upload failed", e, this);
         }
     }
 
     @Override
-    public OutputStream write(final TransferStatus status) throws IOException {
-        final FTPSession session = getSession();
-        if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-            throw new FTPException(session.getClient().getReplyString());
-        }
-        final OutputStream out = this.data(new DataConnectionAction<OutputStream>() {
-            @Override
-            public OutputStream run() throws IOException {
-                if(status.isResume()) {
-                    return session.getClient().appendFileStream(getAbsolute());
-                }
-                else {
-                    return session.getClient().storeFileStream(getAbsolute());
-                }
+    public OutputStream write(final TransferStatus status) throws BackgroundException {
+        try {
+            if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+                throw new FTPException(session.getClient().getReplyString());
             }
-        });
-        return new CountingOutputStream(out) {
-            @Override
-            public void close() throws IOException {
-                try {
-                    super.close();
-                }
-                finally {
-                    if(this.getByteCount() == status.getLength()) {
-                        // Read 226 status
-                        if(!session.getClient().completePendingCommand()) {
-                            throw new FTPException(session.getClient().getReplyString());
-                        }
+            final OutputStream out = this.data(new DataConnectionAction<OutputStream>() {
+                @Override
+                public OutputStream run() throws IOException {
+                    if(status.isResume()) {
+                        return session.getClient().appendFileStream(getAbsolute());
                     }
                     else {
-                        // Interrupted transfer
-                        if(!session.getClient().abort()) {
-                            log.error("Error closing data socket:" + session.getClient().getReplyString());
+                        return session.getClient().storeFileStream(getAbsolute());
+                    }
+                }
+            });
+            return new CountingOutputStream(out) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        if(this.getByteCount() == status.getLength()) {
+                            // Read 226 status
+                            if(!session.getClient().completePendingCommand()) {
+                                throw new FTPException(session.getClient().getReplyString());
+                            }
+                        }
+                        else {
+                            // Interrupted transfer
+                            if(!session.getClient().abort()) {
+                                log.error("Error closing data socket:" + session.getClient().getReplyString());
+                            }
                         }
                     }
                 }
-            }
-        };
+            };
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Upload failed", e, this);
+        }
     }
 }

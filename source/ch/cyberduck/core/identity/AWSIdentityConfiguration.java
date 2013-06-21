@@ -71,7 +71,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
             log.warn(String.format("User %s already removed", username));
         }
         catch(AmazonServiceException e) {
-            throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e, host);
+            throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e);
         }
     }
 
@@ -138,7 +138,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                     id, key.getAccessKey().getSecretAccessKey());
         }
         catch(AmazonServiceException e) {
-            throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e, host);
+            throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e);
         }
     }
 }

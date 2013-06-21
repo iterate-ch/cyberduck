@@ -18,10 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import ch.cyberduck.core.threading.BackgroundException;
 
-import java.util.Comparator;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @version $Id$
@@ -75,44 +76,7 @@ public abstract class AbstractPath {
      *
      * @return Directory listing from server
      */
-    public abstract AttributedList<? extends AbstractPath> list();
-
-    /**
-     * Get the cached directory listing if any or return #list instead.
-     * No sorting and filtering applied.
-     *
-     * @return Cached directory listing as returned by the server
-     * @see #list()
-     */
-    public AttributedList<? extends AbstractPath> children() {
-        return this.children(null);
-    }
-
-    /**
-     * Get the cached directory listing if any or return #list instead.
-     * No sorting applied.
-     *
-     * @param filter Filter to apply to directory listing
-     * @return Cached directory listing as returned by the server filtered
-     * @see #list()
-     */
-    public AttributedList<? extends AbstractPath> children(Filter<? extends AbstractPath> filter) {
-        return this.children(null, filter);
-    }
-
-    /**
-     * Request a sorted and filtered file listing from the server. Has to be a directory.
-     * A cached listing is returned if possible
-     *
-     * @param comparator The comparator to sort the listing with
-     * @param filter     The filter to exlude certain files
-     * @return The children of this path or an empty list if it is not accessible for some reason
-     * @see #list()
-     */
-    public AttributedList<? extends AbstractPath> children(final Comparator<? extends AbstractPath> comparator,
-                                                           final Filter<? extends AbstractPath> filter) {
-        return this.list().filter(comparator, filter);
-    }
+    public abstract AttributedList<? extends AbstractPath> list() throws BackgroundException;
 
     public abstract char getPathDelimiter();
 
@@ -125,6 +89,9 @@ public abstract class AbstractPath {
     }
 
     public static String getParent(final String absolute, final char delimiter) {
+        if(absolute.equals(String.valueOf(delimiter))) {
+            return null;
+        }
         int index = absolute.length() - 1;
         if(absolute.charAt(index) == delimiter) {
             if(index > 0) {
@@ -137,6 +104,14 @@ public abstract class AbstractPath {
         }
         //if (index == 0) parent is root
         return String.valueOf(delimiter);
+    }
+
+    public static String getName(final String path) {
+        //StringUtils.removeStart(absolute, this.getAbsolute() + Path.DELIMITER);
+        if(String.valueOf(Path.DELIMITER).equals(path)) {
+            return path;
+        }
+        return FilenameUtils.getName(path);
     }
 
     public abstract String getAbsolute();
@@ -153,10 +128,15 @@ public abstract class AbstractPath {
         return this.getName();
     }
 
+    /**
+     * @return The parent directory or self if this is the root of the hierarchy
+     */
     public abstract AbstractPath getParent();
 
-    public abstract boolean exists();
-
+    /**
+     * @return True if the path denoted exists
+     */
+    public abstract boolean exists() throws BackgroundException;
 
     /**
      * @return the extension if any or null otherwise
@@ -168,29 +148,6 @@ public abstract class AbstractPath {
         }
         return extension;
     }
-
-    /**
-     * @param parent The parent directory
-     * @param name   The relative filename
-     */
-    public void setPath(final String parent, final String name) {
-        final String p;
-        if(StringUtils.isBlank(parent)) {
-            p = String.valueOf(this.getPathDelimiter());
-        }
-        else {
-            p = parent;
-        }
-        // Determine if the parent path already ends with a delimiter
-        if(p.endsWith(String.valueOf(this.getPathDelimiter()))) {
-            this.setPath(p + name);
-        }
-        else {
-            this.setPath(p + this.getPathDelimiter() + name);
-        }
-    }
-
-    protected abstract void setPath(String name);
 
     /**
      * @param directory Parent directory
@@ -209,7 +166,7 @@ public abstract class AbstractPath {
             // Any other path is a child
             return true;
         }
-        if(this.getParent().equals(directory.getParent())) {
+        if(ObjectUtils.equals(this.getParent(), directory.getParent())) {
             // Cannot be a child if the same parent
             return false;
         }
@@ -231,39 +188,29 @@ public abstract class AbstractPath {
     /**
      * Create a new empty file.
      */
-    public abstract boolean touch();
+    public abstract boolean touch() throws BackgroundException;
 
     /**
      * #getAbsolute -> target
      *
      * @param target Where this file should point to
      */
-    public abstract void symlink(String target);
+    public abstract void symlink(String target) throws BackgroundException;
 
     /**
      * Create a new folder.
      */
-    public abstract void mkdir();
+    public abstract void mkdir() throws BackgroundException;
 
     /**
      * @param permission@see Session#isUnixPermissionsSupported()
      */
-    public abstract void writeUnixPermission(Permission permission);
+    public abstract void writeUnixPermission(Permission permission) throws BackgroundException;
 
     /**
      * @param created  Creation timestamp of file
      * @param modified Modification timestamp of file
      * @param accessed @see ch.cyberduck.core.Session#isTimestampSupported()
      */
-    public abstract void writeTimestamp(long created, long modified, long accessed);
-
-    /**
-     * Remove this file from the remote host. Does not affect any corresponding local file
-     */
-    public abstract void delete();
-
-    /**
-     * @param renamed Must be an absolute path
-     */
-    public abstract void rename(AbstractPath renamed);
+    public abstract void writeTimestamp(long created, long modified, long accessed) throws BackgroundException;
 }

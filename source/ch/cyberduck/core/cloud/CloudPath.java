@@ -20,6 +20,7 @@ package ch.cyberduck.core.cloud;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.local.Local;
 
@@ -32,49 +33,28 @@ import java.util.Set;
  */
 public abstract class CloudPath extends HttpPath {
 
-    public <T> CloudPath(T dict) {
-        super(dict);
-        if(this.isContainer()) {
-            this.attributes().setType(VOLUME_TYPE | DIRECTORY_TYPE);
-        }
+    public <T> CloudPath(final Session session, T dict) {
+        super(session, dict);
     }
 
-    protected CloudPath(String parent, String name, int type) {
+    protected CloudPath(Path parent, String name, int type) {
         super(parent, name, type);
-        if(this.isContainer()) {
-            this.attributes().setType(VOLUME_TYPE | DIRECTORY_TYPE);
-        }
     }
 
-    protected CloudPath(String path, int type) {
-        super(path, type);
-        if(this.isContainer()) {
-            this.attributes().setType(VOLUME_TYPE | DIRECTORY_TYPE);
-        }
+    protected CloudPath(Session session, String path, int type) {
+        super(session, path, type);
     }
 
-    protected CloudPath(String parent, final Local local) {
+    protected CloudPath(Path parent, final Local local) {
         super(parent, local);
-        if(this.isContainer()) {
-            this.attributes().setType(VOLUME_TYPE | DIRECTORY_TYPE);
-        }
     }
 
     @Override
     public boolean isContainer() {
-        return !StringUtils.contains(StringUtils.substring(this.getAbsolute(), 1), this.getPathDelimiter());
-    }
-
-    @Override
-    public Path getContainer() {
         if(this.isRoot()) {
-            return null;
+            return false;
         }
-        Path container = this;
-        while(!container.isContainer()) {
-            container = container.getParent();
-        }
-        return container;
+        return this.getParent().isRoot();
     }
 
     /**
@@ -85,10 +65,7 @@ public abstract class CloudPath extends HttpPath {
         if(this.isContainer()) {
             return null;
         }
-        if(this.getAbsolute().startsWith(String.valueOf(Path.DELIMITER) + this.getContainer().getName())) {
-            return this.getAbsolute().substring(this.getContainer().getName().length() + 2);
-        }
-        return null;
+        return StringUtils.removeStart(this.getAbsolute(), String.valueOf(Path.DELIMITER) + this.getContainer().getName() + String.valueOf(Path.DELIMITER));
     }
 
     @Override

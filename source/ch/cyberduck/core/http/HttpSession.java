@@ -19,14 +19,14 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpException;
@@ -65,7 +65,7 @@ import java.security.cert.X509Certificate;
 /**
  * @version $Id$
  */
-public abstract class HttpSession extends SSLSession {
+public abstract class HttpSession<C> extends SSLSession<C> {
     private static final Logger log = Logger.getLogger(HttpSession.class);
 
     private AbstractHttpClient client;
@@ -77,11 +77,19 @@ public abstract class HttpSession extends SSLSession {
 
     protected HttpSession(final Host h) {
         super(h);
+    }
 
+    @Override
+    public void logout() throws BackgroundException {
+        // No logout required
+    }
+
+    @Override
+    protected void fireConnectionWillOpenEvent() throws BackgroundException {
         final HttpParams params = new BasicHttpParams();
         HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, getEncoding());
-        HttpProtocolParams.setUserAgent(params, getUserAgent());
+        HttpProtocolParams.setUserAgent(params, new PreferencesUseragentProvider().get());
 
         AuthParams.setCredentialCharset(params, Preferences.instance().getProperty("http.credentials.charset"));
 
@@ -156,25 +164,16 @@ public abstract class HttpSession extends SSLSession {
             }
         });
         this.configure(client);
+        super.fireConnectionWillOpenEvent();
     }
 
     @Override
-    public String getHostname() {
+    public String getTarget() {
         return target;
     }
 
     public AbstractHttpClient http() {
         return client;
-    }
-
-    @Override
-    public void connect() throws IOException {
-        //
-    }
-
-    @Override
-    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
-        //
     }
 
     protected void configure(final AbstractHttpClient client) {
@@ -203,9 +202,7 @@ public abstract class HttpSession extends SSLSession {
     }
 
     @Override
-    public void close() {
-        // When HttpClient instance is no longer needed, shut down the connection manager to ensure
-        // immediate deallocation of all system resources
+    public void fireConnectionDidCloseEvent() {
         client.getConnectionManager().shutdown();
     }
 }

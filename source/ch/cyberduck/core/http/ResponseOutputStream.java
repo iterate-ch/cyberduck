@@ -19,8 +19,9 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.threading.BackgroundException;
+
 import java.io.FilterOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 
 /**
@@ -37,5 +38,5 @@ public abstract class ResponseOutputStream<T> extends FilterOutputStream {
      *
      * @return A specific response header
      */
-    public abstract T getResponse() throws IOException;
+    public abstract T getResponse() throws BackgroundException;
 }

@@ -21,16 +21,17 @@ package ch.cyberduck.core.http;
 
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
@@ -41,28 +42,28 @@ import java.util.concurrent.ThreadFactory;
 public abstract class HttpPath extends Path {
     private static Logger log = Logger.getLogger(HttpPath.class);
 
-    protected <T> HttpPath(T dict) {
-        super(dict);
+    protected <T> HttpPath(Session s, T dict) {
+        super(s, dict);
     }
 
-    protected HttpPath(String parent, String name, int type) {
+    protected HttpPath(Path parent, String name, int type) {
         super(parent, name, type);
     }
 
-    protected HttpPath(String path, int type) {
-        super(path, type);
+    protected HttpPath(Session session, String path, int type) {
+        super(session, path, type);
     }
 
-    protected HttpPath(String parent, final Local local) {
+    protected HttpPath(Path parent, final Local local) {
         super(parent, local);
     }
 
     private abstract class FutureHttpResponse<T> implements Runnable {
 
-        IOException exception;
+        BackgroundException exception;
         T response;
 
-        public IOException getException() {
+        public BackgroundException getException() {
             return exception;
         }
 
@@ -77,9 +78,9 @@ public abstract class HttpPath extends Path {
      * @param command Callable writing entity to stream and returning checksum
      * @param <T>     Type of returned checksum
      * @return Outputstream to write entity into.
-     * @throws IOException Transport error
      */
-    protected <T> ResponseOutputStream<T> write(final DelayedHttpEntityCallable<T> command) throws IOException {
+    protected <T> ResponseOutputStream<T> write(final DelayedHttpEntityCallable<T> command)
+            throws BackgroundException {
         /**
          * Signal on enter streaming
          */
@@ -103,7 +104,7 @@ public abstract class HttpPath extends Path {
                     try {
                         response = command.call(entity);
                     }
-                    catch(IOException e) {
+                    catch(BackgroundException e) {
                         exception = e;
                     }
                     finally {
@@ -127,19 +128,16 @@ public abstract class HttpPath extends Path {
                 /**
                  * Only available after this stream is closed.
                  * @return Response from server for upload
-                 * @throws IOException Transport error
                  */
                 @Override
-                public T getResponse() throws IOException {
+                public T getResponse() throws BackgroundException {
                     try {
                         // Block the calling thread until after the full response from the server
                         // has been consumed.
                         exit.await();
                     }
                     catch(InterruptedException e) {
-                        IOException failure = new IOException(e.getMessage());
-                        failure.initCause(e);
-                        throw failure;
+                        throw new BackgroundException(e);
                     }
                     if(null != target.getException()) {
                         throw target.getException();
@@ -150,9 +148,7 @@ public abstract class HttpPath extends Path {
         }
         catch(InterruptedException e) {
             log.error("Error waiting for output stream:" + e.getMessage());
-            IOException failure = new IOException(e.getMessage());
-            failure.initCause(e);
-            throw failure;
+            throw new BackgroundException(e);
         }
     }
 
