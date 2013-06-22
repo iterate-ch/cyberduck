@@ -258,9 +258,14 @@ public final class TransferController extends WindowController implements NSTool
         Preferences.instance().setProperty("queue.logDrawer.isOpen", false);
     }
 
-    public void setLogDrawer(NSDrawer logDrawer) {
-        this.logDrawer = logDrawer;
-        this.transcript = new TranscriptController();
+    public void setLogDrawer(NSDrawer drawer) {
+        this.logDrawer = drawer;
+        this.transcript = new TranscriptController() {
+            @Override
+            public boolean isOpen() {
+                return logDrawer.state() == NSDrawer.OpenState;
+            }
+        };
         this.logDrawer.setContentView(this.transcript.getLogView());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("drawerWillOpen:"),

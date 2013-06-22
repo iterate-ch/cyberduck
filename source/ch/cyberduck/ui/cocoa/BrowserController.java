@@ -195,7 +195,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.window().makeFirstResponder(this.quickConnectPopup);
         this._updateBrowserColumns(this.browserListView);
         this._updateBrowserColumns(this.browserOutlineView);
-        if(Preferences.instance().getBoolean("browser.logDrawer.isOpen")) {
+        if(Preferences.instance().getBoolean("browser.transcript.open")) {
             this.logDrawer.open();
         }
         if(LicenseFactory.find().equals(LicenseFactory.EMPTY_LICENSE)) {
@@ -503,26 +503,31 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void drawerWillOpen(NSNotification notification) {
         logDrawer.setContentSize(new NSSize(
                 logDrawer.contentSize().width.doubleValue(),
-                Preferences.instance().getDouble("browser.logDrawer.size.height")
+                Preferences.instance().getDouble("browser.transcript.size.height")
         ));
     }
 
     public void drawerDidOpen(NSNotification notification) {
-        Preferences.instance().setProperty("browser.logDrawer.isOpen", true);
+        Preferences.instance().setProperty("browser.transcript.open", true);
     }
 
     public void drawerWillClose(NSNotification notification) {
-        Preferences.instance().setProperty("browser.logDrawer.size.height",
+        Preferences.instance().setProperty("browser.transcript.size.height",
                 logDrawer.contentSize().height.intValue());
     }
 
     public void drawerDidClose(NSNotification notification) {
-        Preferences.instance().setProperty("browser.logDrawer.isOpen", false);
+        Preferences.instance().setProperty("browser.transcript.open", false);
     }
 
-    public void setLogDrawer(NSDrawer logDrawer) {
-        this.logDrawer = logDrawer;
-        this.transcript = new TranscriptController();
+    public void setLogDrawer(NSDrawer drawer) {
+        this.logDrawer = drawer;
+        this.transcript = new TranscriptController() {
+            @Override
+            public boolean isOpen() {
+                return logDrawer.state() == NSDrawer.OpenState;
+            }
+        };
         this.logDrawer.setContentView(this.transcript.getLogView());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("drawerWillOpen:"),
@@ -540,6 +545,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 Foundation.selector("drawerDidClose:"),
                 NSDrawer.DrawerDidCloseNotification,
                 this.logDrawer);
+    }
+
+    public TranscriptController getTranscript() {
+        return transcript;
     }
 
     private NSButton donateButton;
@@ -3487,19 +3496,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         });
         transcript.clear();
         navigation.clear();
-        session.addTranscriptListener(new TranscriptListener() {
-            @Override
-            public void log(final boolean request, final String message) {
-                if(logDrawer.state() == NSDrawer.OpenState) {
-                    invoke(new WindowMainAction(BrowserController.this) {
-                        @Override
-                        public void run() {
-                            transcript.log(request, message);
-                        }
-                    });
-                }
-            }
-        });
         return session;
     }
 

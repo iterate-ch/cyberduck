@@ -305,8 +305,8 @@ public abstract class Preferences {
          */
         defaults.put("browser.confirmMove", String.valueOf(false));
 
-        defaults.put("browser.logDrawer.isOpen", String.valueOf(false));
-        defaults.put("browser.logDrawer.size.height", String.valueOf(200));
+        defaults.put("browser.transcript.open", String.valueOf(false));
+        defaults.put("browser.transcript.size.height", String.valueOf(200));
 
         /**
          * Filename (Short Date Format)Extension

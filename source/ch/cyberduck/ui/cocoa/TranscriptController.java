@@ -34,7 +34,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 /**
  * @version $Id$
  */
-public class TranscriptController extends BundleController implements TranscriptListener {
+public abstract class TranscriptController extends BundleController implements TranscriptListener {
 
     protected static final NSDictionary FIXED_WITH_FONT_REQUEST_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(
@@ -82,12 +82,16 @@ public class TranscriptController extends BundleController implements Transcript
         this.loadBundle();
     }
 
+    public abstract boolean isOpen();
+
     @Override
     public void log(final boolean request, final String transcript) {
-        this.write(request ? FIXED_WITH_FONT_REQUEST_ATTRIBUTES : FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
+        if(this.isOpen()) {
+            this.write(request ? FIXED_WITH_FONT_REQUEST_ATTRIBUTES : FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
+        }
     }
 
-    public void write(final NSDictionary font, final String transcript) {
+    private void write(final NSDictionary font, final String transcript) {
         logTextView.textStorage().appendAttributedString(
                 NSAttributedString.attributedStringWithAttributes(transcript + "\n", font)
         );

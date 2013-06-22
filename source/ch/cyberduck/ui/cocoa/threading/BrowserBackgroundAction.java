@@ -19,9 +19,11 @@ package ch.cyberduck.ui.cocoa.threading;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.BrowserController;
+import ch.cyberduck.ui.cocoa.TranscriptController;
 
 import org.apache.log4j.Logger;
 
@@ -37,9 +39,12 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
 
     private BrowserController controller;
 
+    private TranscriptController transcript;
+
     public BrowserBackgroundAction(final BrowserController controller) {
         super(controller);
         this.controller = controller;
+        this.transcript = controller.getTranscript();
     }
 
     public BrowserController getController() {
@@ -50,6 +55,18 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     public List<Session<?>> getSessions() {
         final Session<?> session = controller.getSession();
         return new ArrayList<Session<?>>(Collections.singletonList(session));
+    }
+
+    @Override
+    public void log(final boolean request, final String message) {
+        if(Preferences.instance().getBoolean("browser.transcript.open")) {
+            controller.invoke(new WindowMainAction(controller) {
+                @Override
+                public void run() {
+                    transcript.log(request, message);
+                }
+            });
+        }
     }
 
     @Override
