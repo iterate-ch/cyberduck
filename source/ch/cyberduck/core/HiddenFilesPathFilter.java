@@ -23,13 +23,13 @@ import java.util.regex.Pattern;
 /**
  * @version $Id$
  */
-public class HiddenFilesPathFilter<E extends AbstractPath> implements Filter<E> {
+public class HiddenFilesPathFilter implements Filter<Path> {
 
     private Pattern pattern = Pattern.compile(
             Preferences.instance().getProperty("browser.hidden.regex"));
 
     @Override
-    public boolean accept(E file) {
+    public boolean accept(Path file) {
         if(null == pattern) {
             return true;
         }

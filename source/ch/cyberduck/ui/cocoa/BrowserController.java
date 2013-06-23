@@ -118,7 +118,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * Filter hidden files.
      */
-    private static final Filter<Path> HIDDEN_FILTER = new HiddenFilesPathFilter<Path>();
+    private static final Filter<Path> HIDDEN_FILTER = new HiddenFilesPathFilter();
 
     /**
      * Hide files beginning with '.'
@@ -133,7 +133,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = new HiddenFilesPathFilter<Path>();
+            this.filenameFilter = new HiddenFilesPathFilter();
             this.showHiddenFiles = false;
         }
     }
