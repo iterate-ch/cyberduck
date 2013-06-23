@@ -32,6 +32,10 @@ public class NotificationCenter extends Growl {
         }
     }
 
+    private NotificationCenter() {
+        //
+    }
+
     @Override
     public void setup() {
         //
