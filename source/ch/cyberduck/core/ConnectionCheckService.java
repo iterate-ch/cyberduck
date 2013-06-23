@@ -3,6 +3,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -84,6 +85,8 @@ public class ConnectionCheckService {
         // The IP address could successfully be determined
 
         session.open();
+
+        Growl.instance().notify("Connection opened", host.getHostname());
 
         session.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 host.getProtocol().getName()));

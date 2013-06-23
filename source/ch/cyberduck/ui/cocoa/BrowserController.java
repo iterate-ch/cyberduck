@@ -3456,8 +3456,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
 
-                        Growl.instance().notify("Connection opened", host.getHostname());
-
                         // Set the window title
                         window.setRepresentedFilename(
                                 HistoryCollection.defaultCollection().getFile(host).getAbsolute());

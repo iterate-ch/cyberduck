@@ -3173,9 +3173,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 AsyncDelegate mainAction = delegate
                     {
                         _controller.View.RefreshBookmark(_controller.getSession().getHost());
-                        ch.cyberduck.ui.growl.Growl.instance().notify("Connection opened",
-                                                                      _host.getHostname());
-
                         _controller.View.SecureConnection = _controller._session.isSecure();
                         _controller.View.CertBasedConnection =
                             _controller._session is SSLSession;
