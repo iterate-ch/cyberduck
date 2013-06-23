@@ -192,7 +192,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    protected void readAttributes(final SFTPv3FileAttributes attributes) throws BackgroundException {
+    protected void readAttributes(final SFTPv3FileAttributes attributes) throws IOException {
         if(null != attributes.size) {
             if(this.attributes().isFile()) {
                 this.attributes().setSize(attributes.size);
@@ -224,26 +224,21 @@ public class SFTPPath extends Path {
             this.attributes().setAccessedDate(Long.parseLong(attributes.atime.toString()) * 1000L);
         }
         if(attributes.isSymlink()) {
-            try {
-                final String target = session.sftp().readLink(this.getAbsolute());
-                final int type;
-                SFTPv3FileAttributes targetAttributes = session.sftp().stat(target);
-                if(targetAttributes.isDirectory()) {
-                    type = SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE;
-                }
-                else {
-                    type = SYMBOLIC_LINK_TYPE | FILE_TYPE;
-                }
-                if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                    this.setSymlinkTarget(new SFTPPath(session, target, type));
-                }
-                else {
-                    this.setSymlinkTarget(new SFTPPath(session, this.getParent(), target, type));
-                }
+            final String target = session.sftp().readLink(this.getAbsolute());
+            final int type;
+            SFTPv3FileAttributes targetAttributes = session.sftp().stat(target);
+            if(targetAttributes.isDirectory()) {
+                type = SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE;
             }
-            catch(IOException e) {
-                log.warn(String.format("Cannot read symbolic link target of %s:%s", this.getAbsolute(), e.getMessage()));
-                this.attributes().setType(FILE_TYPE);
+            else {
+                type = SYMBOLIC_LINK_TYPE | FILE_TYPE;
+            }
+            this.attributes().setType(type);
+            if(target.startsWith(String.valueOf(Path.DELIMITER))) {
+                this.setSymlinkTarget(new SFTPPath(session, target, this.attributes().isFile() ? FILE_TYPE : DIRECTORY_TYPE));
+            }
+            else {
+                this.setSymlinkTarget(new SFTPPath(session, this.getParent(), target, this.attributes().isFile() ? FILE_TYPE : DIRECTORY_TYPE));
             }
         }
     }
@@ -259,12 +254,10 @@ public class SFTPPath extends Path {
 
     @Override
     public void readSize() throws BackgroundException {
-        if(this.attributes().isFile()) {
-            session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                    this.getName()));
+        session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                this.getName()));
 
-            this.readAttributes();
-        }
+        this.readAttributes();
     }
 
     @Override

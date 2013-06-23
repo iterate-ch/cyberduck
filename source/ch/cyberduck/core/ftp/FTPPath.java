@@ -468,14 +468,14 @@ public class FTPPath extends Path {
                     Path.getName(name), f.getType() == FTPFile.DIRECTORY_TYPE ? DIRECTORY_TYPE : FILE_TYPE);
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
-                    parsed.attributes().setType(SYMBOLIC_LINK_TYPE | FILE_TYPE);
                     // Symbolic link target may be an absolute or relative path
                     if(f.getLink().startsWith(String.valueOf(Path.DELIMITER))) {
-                        parsed.setSymlinkTarget(new FTPPath(session, f.getLink(), SYMBOLIC_LINK_TYPE | FILE_TYPE));
+                        parsed.setSymlinkTarget(new FTPPath(session, f.getLink(), parsed.attributes().getType()));
                     }
                     else {
-                        parsed.setSymlinkTarget(new FTPPath(session, this, f.getLink(), SYMBOLIC_LINK_TYPE | FILE_TYPE));
+                        parsed.setSymlinkTarget(new FTPPath(session, this, f.getLink(), parsed.attributes().getType()));
                     }
+                    parsed.attributes().setType(SYMBOLIC_LINK_TYPE | FILE_TYPE);
                     break;
             }
             if(parsed.attributes().isFile()) {
@@ -542,28 +542,26 @@ public class FTPPath extends Path {
 
     @Override
     public void readSize() throws BackgroundException {
-        if(this.attributes().isFile()) {
-            try {
-                session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                        this.getName()));
+        try {
+            session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                    this.getName()));
 
-                if(session.getClient().isFeatureSupported(FTPClient.SIZE)) {
-                    if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                        throw new FTPException(session.getClient().getReplyString());
-                    }
-                    this.attributes().setSize(session.getClient().size(this.getAbsolute()));
+            if(session.getClient().isFeatureSupported(FTPClient.SIZE)) {
+                if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+                    throw new FTPException(session.getClient().getReplyString());
                 }
-                if(-1 == attributes().getSize()) {
-                    // Read the size from the directory listing
-                    final AttributedList<Path> l = this.getParent().list();
-                    if(l.contains(this.getReference())) {
-                        attributes().setSize(l.get(this.getReference()).attributes().getSize());
-                    }
+                this.attributes().setSize(session.getClient().size(this.getAbsolute()));
+            }
+            if(-1 == attributes().getSize()) {
+                // Read the size from the directory listing
+                final AttributedList<Path> l = this.getParent().list();
+                if(l.contains(this.getReference())) {
+                    attributes().setSize(l.get(this.getReference()).attributes().getSize());
                 }
             }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
-            }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
         }
     }
 
@@ -597,26 +595,24 @@ public class FTPPath extends Path {
 
     @Override
     public void readTimestamp() throws BackgroundException {
-        if(this.attributes().isFile()) {
-            try {
-                session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                        this.getName()));
+        try {
+            session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+                    this.getName()));
 
-                if(session.getClient().isFeatureSupported(FTPCommand.MDTM)) {
-                    final String timestamp = session.getClient().getModificationTime(this.getAbsolute());
-                    if(null != timestamp) {
-                        attributes().setModificationDate(this.parseTimestamp(timestamp));
-                    }
-                }
-                if(-1 == attributes().getModificationDate()) {
-                    // Read the timestamp from the directory listing
-                    super.readTimestamp();
+            if(session.getClient().isFeatureSupported(FTPCommand.MDTM)) {
+                final String timestamp = session.getClient().getModificationTime(this.getAbsolute());
+                if(null != timestamp) {
+                    attributes().setModificationDate(this.parseTimestamp(timestamp));
                 }
             }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
-
+            if(-1 == attributes().getModificationDate()) {
+                // Read the timestamp from the directory listing
+                super.readTimestamp();
             }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
+
         }
     }
 
