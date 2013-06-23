@@ -26,22 +26,21 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MD5ChecksumCompute implements ChecksumCompute {
     private static final Logger log = Logger.getLogger(MD5ChecksumCompute.class);
 
     @Override
-    public String compute(InputStream in) {
+    public String compute(final InputStream in) throws IOException {
         try {
             return ServiceUtils.toHex(ServiceUtils.computeMD5Hash(in));
         }
         catch(NoSuchAlgorithmException e) {
-            log.error(String.format("Checksum failure %s", e.getMessage()));
+            throw new IOException(String.format("Checksum failure %s", e.getMessage()), e);
         }
         catch(IOException e) {
-            log.error(String.format("Checksum failure %s", e.getMessage()));
+            throw new IOException(String.format("Checksum failure %s", e.getMessage()), e);
         }
-        return null;
     }
 }

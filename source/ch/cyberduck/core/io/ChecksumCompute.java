@@ -18,12 +18,13 @@ package ch.cyberduck.core.io;
  * dkocher@cyberduck.ch
  */
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface ChecksumCompute {
 
-    String compute(InputStream in);
+    String compute(InputStream in) throws IOException;
 }
