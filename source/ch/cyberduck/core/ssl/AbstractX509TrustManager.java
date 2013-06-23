@@ -25,12 +25,9 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.net.Socket;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
-import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -43,7 +40,7 @@ import java.util.Set;
  *
  * @version $Id$
  */
-public abstract class AbstractX509TrustManager implements X509TrustManager, X509KeyManager {
+public abstract class AbstractX509TrustManager implements X509TrustManager {
     private static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
 
     /**
@@ -118,42 +115,5 @@ public abstract class AbstractX509TrustManager implements X509TrustManager, X509
             }
         }
         return manager;
-    }
-
-    @Override
-    public String[] getClientAliases(String keyType, Principal[] issuers) {
-        return this.init().getClientAliases(keyType, issuers);
-    }
-
-    /**
-     * Choose an alias to authenticate the client side of a secure socket given the public key type and the list of
-     * certificate issuer authorities recognized by the peer (if any).
-     */
-    @Override
-    public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
-        return this.init().chooseClientAlias(keyType, issuers, socket);
-    }
-
-    @Override
-    public String[] getServerAliases(String keyType, Principal[] issuers) {
-        return this.init().getServerAliases(keyType, issuers);
-    }
-
-    @Override
-    public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
-        return this.init().chooseServerAlias(keyType, issuers, socket);
-    }
-
-    /**
-     * Returns the certificate chain associated with the given alias.
-     */
-    @Override
-    public X509Certificate[] getCertificateChain(String alias) {
-        return this.init().getCertificateChain(alias);
-    }
-
-    @Override
-    public PrivateKey getPrivateKey(String alias) {
-        return this.init().getPrivateKey(alias);
     }
 }

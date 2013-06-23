@@ -1,0 +1,118 @@
+package ch.cyberduck.core.ssl;
+
+/*
+ *  Copyright (c) 2008 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  Bug fixes, suggestions and comments should be sent to:
+ *  dkocher@cyberduck.ch
+ */
+
+import org.apache.log4j.Logger;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.X509KeyManager;
+import java.io.IOException;
+import java.net.Socket;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+/**
+ * Default implementation for certificate trust settings.
+ *
+ * @version $Id$
+ */
+public abstract class AbstractX509KeyManager implements X509KeyManager {
+    private static Logger log = Logger.getLogger(AbstractX509KeyManager.class);
+
+    private X509KeyManager manager;
+
+    protected AbstractX509KeyManager() throws IOException {
+        try {
+            // Get the key manager factory for the default algorithm.
+            KeyManagerFactory factory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
+            // Load default key store
+            store.load(null);
+            // Load default key manager factory using key store
+            factory.init(store, null);
+            for(KeyManager keyManager : factory.getKeyManagers()) {
+                if(keyManager instanceof X509KeyManager) {
+                    // Get the first X509KeyManager in the list
+                    manager = (X509KeyManager) keyManager;
+                    break;
+                }
+            }
+            if(null == manager) {
+                throw new NoSuchAlgorithmException("The default algorithm :" +
+                        KeyManagerFactory.getDefaultAlgorithm() + " did not produce a X509 Key manager");
+            }
+        }
+        catch(CertificateException e) {
+            throw new IOException(e.getMessage(), e);
+        }
+        catch(UnrecoverableKeyException e) {
+            throw new IOException(e.getMessage(), e);
+        }
+        catch(NoSuchAlgorithmException e) {
+            throw new IOException(e.getMessage(), e);
+        }
+        catch(KeyStoreException e) {
+            throw new IOException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public String[] getClientAliases(String keyType, Principal[] issuers) {
+        return manager.getClientAliases(keyType, issuers);
+    }
+
+    /**
+     * Choose an alias to authenticate the client side of a secure socket given the public key type and the list of
+     * certificate issuer authorities recognized by the peer (if any).
+     */
+    @Override
+    public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
+        return manager.chooseClientAlias(keyType, issuers, socket);
+    }
+
+    @Override
+    public String[] getServerAliases(String keyType, Principal[] issuers) {
+        return manager.getServerAliases(keyType, issuers);
+    }
+
+    @Override
+    public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
+        return manager.chooseServerAlias(keyType, issuers, socket);
+    }
+
+    /**
+     * Returns the certificate chain associated with the given alias.
+     */
+    @Override
+    public X509Certificate[] getCertificateChain(String alias) {
+        return manager.getCertificateChain(alias);
+    }
+
+    @Override
+    public PrivateKey getPrivateKey(String alias) {
+        return manager.getPrivateKey(alias);
+    }
+}
