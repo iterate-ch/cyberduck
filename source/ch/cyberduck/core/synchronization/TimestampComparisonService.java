@@ -42,10 +42,12 @@ public class TimestampComparisonService implements ComparisonService {
             log.debug(String.format("Compare timestamp for %s", p.getAbsolute()));
         }
         final PathAttributes attributes = p.attributes();
-        if(-1 == attributes.getModificationDate()) {
-            if(p.getSession().isReadTimestampSupported()) {
-                // Make sure we have a UTC timestamp
-                p.readTimestamp();
+        if(attributes.isFile()) {
+            if(-1 == attributes.getModificationDate()) {
+                if(p.getSession().isReadTimestampSupported()) {
+                    // Make sure we have a UTC timestamp
+                    p.readTimestamp();
+                }
             }
         }
         if(-1 == attributes.getModificationDate()) {
