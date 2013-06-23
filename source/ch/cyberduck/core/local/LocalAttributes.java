@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -144,7 +143,7 @@ public class LocalAttributes extends Attributes {
             try {
                 return new MD5ChecksumCompute().compute(new FileInputStream(path));
             }
-            catch(FileNotFoundException e) {
+            catch(IOException e) {
                 log.error(String.format("Error computing checksum for path %s", path), e);
                 return null;
             }
