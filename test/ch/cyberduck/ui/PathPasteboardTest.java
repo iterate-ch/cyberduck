@@ -7,15 +7,19 @@ import ch.cyberduck.core.Protocol;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PathPasteboardTest extends AbstractTestCase {
 
     @Test
     public void testGetPasteboard() throws Exception {
-        assertNotNull(PathPasteboard.getPasteboard(new NullSession(new Host(Protocol.SFTP, "l"))));
+        final NullSession s = new NullSession(new Host(Protocol.SFTP, "l"));
+        final PathPasteboard pasteboard = PathPasteboard.getPasteboard(s);
+        assertNotNull(pasteboard);
+        assertEquals(pasteboard, PathPasteboard.getPasteboard(s));
+        assertSame(pasteboard, PathPasteboard.getPasteboard(s));
     }
 }
