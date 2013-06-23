@@ -2,23 +2,18 @@ package ch.cyberduck.ui.growl;
 
 import ch.cyberduck.core.AbstractTestCase;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.concurrent.Callable;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GrowlTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        GrowlNative.register();
-    }
-
     @Test
     public void testNotify() throws Exception {
+        GrowlNative.register();
         final Growl growl = GrowlFactory.get();
         this.repeat(new Callable<Object>() {
             @Override
