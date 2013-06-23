@@ -20,16 +20,7 @@ package ch.cyberduck.core.ssl;
 
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -71,49 +62,6 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
      */
     @Override
     public X509Certificate[] getAcceptedIssuers() {
-        return this.accepted.toArray(new X509Certificate[this.accepted.size()]);
-    }
-
-    private static X509KeyManager manager;
-
-    private X509KeyManager init() {
-        if(null == manager) {
-            try {
-                // Get the key manager factory for the default algorithm.
-                KeyManagerFactory factory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
-                // Load default key store
-                store.load(null);
-                // Load default key manager factory using key store
-                factory.init(store, null);
-                for(KeyManager keyManager : factory.getKeyManagers()) {
-                    if(keyManager instanceof X509KeyManager) {
-                        // Get the first X509KeyManager in the list
-                        manager = (X509KeyManager) keyManager;
-                        break;
-                    }
-                }
-                if(null == manager) {
-                    throw new NoSuchAlgorithmException("The default algorithm :" +
-                            KeyManagerFactory.getDefaultAlgorithm() + " did not produce a X509 Key manager");
-                }
-            }
-            catch(CertificateException e) {
-                log.error(e.getMessage());
-            }
-            catch(UnrecoverableKeyException e) {
-                log.error(e.getMessage());
-            }
-            catch(NoSuchAlgorithmException e) {
-                log.error(e.getMessage());
-            }
-            catch(KeyStoreException e) {
-                log.error(e.getMessage());
-            }
-            catch(IOException e) {
-                log.error(e.getMessage());
-            }
-        }
-        return manager;
+        return accepted.toArray(new X509Certificate[accepted.size()]);
     }
 }
