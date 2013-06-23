@@ -77,15 +77,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     protected HttpSession(final Host h) {
         super(h);
-    }
 
-    @Override
-    public void logout() throws BackgroundException {
-        // No logout required
-    }
-
-    @Override
-    protected void fireConnectionWillOpenEvent() throws BackgroundException {
         final HttpParams params = new BasicHttpParams();
         HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, getEncoding());
@@ -164,7 +156,11 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             }
         });
         this.configure(client);
-        super.fireConnectionWillOpenEvent();
+    }
+
+    @Override
+    public void logout() throws BackgroundException {
+        // No logout required
     }
 
     @Override
