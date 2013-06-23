@@ -122,6 +122,7 @@ public final class PathPasteboard extends Collection<Path> implements Pasteboard
      * Delete this pasteboard
      */
     public void delete() {
+        this.clear();
         instances.remove(session);
     }
 }
