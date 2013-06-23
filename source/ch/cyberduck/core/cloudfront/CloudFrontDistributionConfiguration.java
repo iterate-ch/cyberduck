@@ -65,8 +65,19 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     private S3Session session;
 
+    final CloudFrontService client;
+
     public CloudFrontDistributionConfiguration(final S3Session session) {
         this.session = session;
+        this.client = new CloudFrontService(
+                new AWSCredentials(session.getHost().getCredentials().getUsername(),
+                        session.getHost().getCredentials().getPassword())) {
+
+            @Override
+            protected HttpClient initHttpConnection() {
+                return session.http();
+            }
+        };
     }
 
     @Override
@@ -107,15 +118,6 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             if(log.isDebugEnabled()) {
                 log.debug(String.format("List %s distributions", method));
             }
-            final CloudFrontService client = new CloudFrontService(
-                    new AWSCredentials(session.getHost().getCredentials().getUsername(),
-                            session.getHost().getCredentials().getPassword())) {
-
-                @Override
-                protected HttpClient initHttpConnection() {
-                    return session.http();
-                }
-            };
             if(method.equals(Distribution.STREAMING)) {
                 for(org.jets3t.service.model.cloudfront.Distribution d : client.listStreamingDistributions(this.getOrigin(container, method))) {
                     for(Origin o : d.getConfig().getOrigins()) {
@@ -172,17 +174,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                             Preferences.instance().getProperty("cloudfront.logging.prefix"));
                 }
             }
-            final CloudFrontService client = new CloudFrontService(
-                    new AWSCredentials(session.getHost().getCredentials().getUsername(),
-                            session.getHost().getCredentials().getPassword())) {
-
-                @Override
-                protected HttpClient initHttpConnection() {
-                    return session.http();
-                }
-            };
-
-            StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
+            final StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
             if(enabled) {
                 session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
             }
@@ -276,17 +268,6 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         try {
             session.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
                     container.getName()));
-
-            final CloudFrontService client = new CloudFrontService(
-                    new AWSCredentials(session.getHost().getCredentials().getUsername(),
-                            session.getHost().getCredentials().getPassword())) {
-
-                @Override
-                protected HttpClient initHttpConnection() {
-                    return session.http();
-                }
-            };
-
             final long reference = System.currentTimeMillis();
             final Distribution d = this.read(container, method);
             if(null == d) {
