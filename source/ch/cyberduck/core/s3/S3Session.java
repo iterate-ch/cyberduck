@@ -294,6 +294,7 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         // The maximum number of concurrent communication threads that will be started by
         // the multi-threaded service for upload and download operations.
         configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
+        configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
         return configuration;
     }
 
