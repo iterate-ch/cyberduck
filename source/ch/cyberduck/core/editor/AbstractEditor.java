@@ -71,7 +71,7 @@ public abstract class AbstractEditor implements Editor {
     public AbstractEditor(final Application application, final Path path) {
         this.application = application;
         this.edited = path;
-        edited.setLocal(TemporaryFileServiceFactory.get().get(edited));
+        this.edited.setLocal(TemporaryFileServiceFactory.get().get(edited));
     }
 
     /**
