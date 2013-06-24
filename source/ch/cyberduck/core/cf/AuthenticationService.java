@@ -51,7 +51,9 @@ public class AuthenticationService {
             );
         }
         url.append(host.getHostname());
-        url.append(":").append(host.getPort());
+        if(!(host.getProtocol().getScheme().getPort() == host.getPort())) {
+            url.append(":").append(host.getPort());
+        }
         if(StringUtils.isBlank(host.getProtocol().getContext())) {
             // Default to 1.0
             url.append(PathNormalizer.normalize(Preferences.instance().getProperty("cf.authentication.context")));

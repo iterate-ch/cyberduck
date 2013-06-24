@@ -56,4 +56,13 @@ public class AuthenticationServiceTest extends AbstractTestCase {
         assertEquals(FilesClient.AuthVersion.v20, s.getRequest(host).getVersion());
         assertEquals(Authentication20AccessKeySecretKeyRequest.class, s.getRequest(host).getClass());
     }
+
+    @Test
+    public void testDefault() throws Exception {
+        AuthenticationService s = new AuthenticationService();
+        final Host host = new Host(Protocol.SWIFT, "myidentityservice.example.net");
+        assertEquals(URI.create("https://myidentityservice.example.net/v1.0"), s.getRequest(host).getURI());
+        assertEquals(FilesClient.AuthVersion.v10, s.getRequest(host).getVersion());
+        assertEquals(Authentication10UsernameKeyRequest.class, s.getRequest(host).getClass());
+    }
 }
