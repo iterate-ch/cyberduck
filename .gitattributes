@@ -2149,8 +2149,7 @@ profiles/Dump[!!-~]Truck.cyberduckprofile -text svneol=unset#application/xml
 profiles/Dunkel[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text
 profiles/Eucalyptus[!!-~]Walrus[!!-~]S3.cyberduckprofile -text
 profiles/GreenQloud.cyberduckprofile -text
-profiles/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage[!!-~](US[!!-~]East).cyberduckprofile -text
-profiles/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage[!!-~](US[!!-~]West).cyberduckprofile -text svneol=unset#application/xml
+profiles/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.cyberduckprofile -text
 profiles/Internap[!!-~]XIPCloud[!!-~]Storage.cyberduckprofile -text
 profiles/Rackspace[!!-~]UK.cyberduckprofile -text
 profiles/Rackspace[!!-~]US.cyberduckprofile -text svneol=unset#application/xml
