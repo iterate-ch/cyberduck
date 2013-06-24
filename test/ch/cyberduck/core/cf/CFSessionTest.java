@@ -6,6 +6,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.junit.Test;
 
@@ -31,6 +32,24 @@ public class CFSessionTest extends AbstractTestCase {
         session.close();
         assertNull(session.getClient());
         assertFalse(session.isConnected());
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testLoginFailure() throws Exception {
+        final Host host = new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
+                "a", "s"
+        ));
+        final CFSession session = new CFSession(host);
+        assertNotNull(session.open());
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        try {
+            session.login(new DisabledLoginController());
+            fail();
+        }
+        catch(LoginFailureException e) {
+            throw e;
+        }
     }
 
     @Test
