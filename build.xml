@@ -269,6 +269,7 @@
         <property name="sonar.links.homepage" value="http://cyberduck.ch"/>
         <property name="sonar.links.ci" value="https://ci.cyberduck.ch"/>
         <property name="sonar.links.issue" value="https://trac.cyberduck.ch"/>
+        <property name="sonar.scm.url" value="scm:svn:http://svn.cyberduck.ch/trunk"/>
         <property name="sonar.links.scm" value="https://svn.cyberduck.ch"/>
         <property name="sonar.links.scm_dev" value="https://svn.cyberduck.ch"/>
         <sonar:sonar xmlns:sonar="antlib:org.sonar.ant"/>
