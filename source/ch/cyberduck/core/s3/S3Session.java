@@ -711,8 +711,8 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     }
 
     @Override
-    public IdentityConfiguration iam() {
-        return new AWSIdentityConfiguration(this.getHost());
+    public IdentityConfiguration iam(final LoginController prompt) {
+        return new AWSIdentityConfiguration(host, prompt);
     }
 
     @Override

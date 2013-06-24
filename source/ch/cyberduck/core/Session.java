@@ -581,7 +581,7 @@ public abstract class Session<C> implements TranscriptListener {
         return true;
     }
 
-    public IdentityConfiguration iam() {
+    public IdentityConfiguration iam(final LoginController prompt) {
         return new AbstractIdentityConfiguration() {
             @Override
             public Credentials getUserCredentials(final String username) {
