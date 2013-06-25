@@ -48,7 +48,7 @@ public class CredentialsTest extends AbstractTestCase {
         Credentials c = new DefaultCredentials("user", "");
         assertTrue(c.validate(Protocol.FTP));
         assertFalse(c.validate(Protocol.WEBDAV));
-        assertFalse(c.validate(Protocol.SFTP));
+        assertTrue(c.validate(Protocol.SFTP));
     }
 
     @Test
