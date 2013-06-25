@@ -31,9 +31,12 @@ import ch.cyberduck.core.threading.BackgroundException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -670,6 +673,101 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     public String toString() {
-        return String.format("Session %s", host.toURL());
+        return String.format("Session %s", host);
+    }
+
+    /**
+     * URL pointing to the resource using the protocol of the current session.
+     *
+     * @return Null if there is a encoding failure
+     */
+    public String toURL(final Path path) {
+        return this.toURL(path, true);
+    }
+
+    /**
+     * @param credentials Include username
+     * @return Null if there is a encoding failure
+     */
+    public String toURL(final Path path, final boolean credentials) {
+        return String.format("%s%s", this.getHost().toURL(credentials), URIEncoder.encode(path.getAbsolute()));
+    }
+
+    /**
+     * @return The URL accessible with HTTP using the
+     *         hostname configuration from the bookmark
+     */
+    public String toHttpURL(final Path path) {
+        return this.toHttpURL(path, this.getHost().getWebURL());
+    }
+
+    /**
+     * @param uri The scheme and hostname to prepend to the path
+     * @return The HTTP accessible URL of this path including the default path
+     *         prepended from the bookmark
+     */
+    protected String toHttpURL(final Path path, final String uri) {
+        try {
+            return new URI(uri + this.getWebPath(path.getAbsolute())).normalize().toString();
+        }
+        catch(URISyntaxException e) {
+            log.error(String.format("Failure parsing URI %s", uri), e);
+        }
+        return null;
+    }
+
+    /**
+     * Remove the document root from the path
+     *
+     * @param path Absolute path
+     * @return Without any document root path component
+     */
+    private String getWebPath(final String path) {
+        String documentRoot = this.getHost().getDefaultPath();
+        if(StringUtils.isNotBlank(documentRoot)) {
+            if(path.contains(documentRoot)) {
+                return URIEncoder.encode(PathNormalizer.normalize(path.substring(path.indexOf(documentRoot) + documentRoot.length()), true));
+            }
+        }
+        return URIEncoder.encode(PathNormalizer.normalize(path, true));
+    }
+
+    /**
+     * Includes both native protocol and HTTP URLs
+     *
+     * @return A list of URLs pointing to the resource.
+     * @see #getHttpURLs(Path)
+     */
+    public Set<DescriptiveUrl> getURLs(final Path path) {
+        Set<DescriptiveUrl> list = new LinkedHashSet<DescriptiveUrl>();
+        list.add(new DescriptiveUrl(this.toURL(path), MessageFormat.format(Locale.localizedString("{0} URL"),
+                this.getHost().getProtocol().getScheme().toString().toUpperCase(java.util.Locale.ENGLISH))));
+        list.addAll(this.getHttpURLs(path));
+        return list;
+    }
+
+    /**
+     * URLs to open in web browser.
+     * Including URLs to CDN.
+     *
+     * @return All possible URLs to the same resource that can be opened in a web browser.
+     */
+    public Set<DescriptiveUrl> getHttpURLs(final Path path) {
+        final Set<DescriptiveUrl> urls = new LinkedHashSet<DescriptiveUrl>();
+        // Include default Web URL
+        final String http = this.toHttpURL(path);
+        if(StringUtils.isNotBlank(http)) {
+            urls.add(new DescriptiveUrl(http, MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")));
+        }
+        return urls;
+    }
+
+    /**
+     * URL that requires authentication in the web browser.
+     *
+     * @return Empty.
+     */
+    public DescriptiveUrl toAuthenticatedUrl(final Path path) {
+        return new DescriptiveUrl(null, null);
     }
 }

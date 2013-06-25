@@ -20,6 +20,7 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
@@ -200,5 +201,10 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     @Override
     public void fireConnectionDidCloseEvent() {
         client.getConnectionManager().shutdown();
+    }
+
+    @Override
+    public String toURL(final Path path) {
+        return this.toURL(path, false);
     }
 }

@@ -304,6 +304,19 @@ public class MainController extends BundleController implements NSApplication.De
         this.urlMenu = urlMenu;
         this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
+            protected Session<?> getSession() {
+                final List<BrowserController> b = MainController.getBrowsers();
+                for(BrowserController controller : b) {
+                    if(controller.window().isKeyWindow()) {
+                        if(controller.isMounted()) {
+                            return controller.getSession();
+                        }
+                    }
+                }
+                return null;
+            }
+
+            @Override
             protected List<Path> getSelected() {
                 final List<BrowserController> b = MainController.getBrowsers();
                 for(BrowserController controller : b) {
@@ -330,6 +343,19 @@ public class MainController extends BundleController implements NSApplication.De
     public void setOpenUrlMenu(NSMenu openUrlMenu) {
         this.openUrlMenu = openUrlMenu;
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
+            @Override
+            protected Session<?> getSession() {
+                final List<BrowserController> b = MainController.getBrowsers();
+                for(BrowserController controller : b) {
+                    if(controller.window().isKeyWindow()) {
+                        if(controller.isMounted()) {
+                            return controller.getSession();
+                        }
+                    }
+                }
+                return null;
+            }
+
             @Override
             protected List<Path> getSelected() {
                 final List<BrowserController> b = MainController.getBrowsers();

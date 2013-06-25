@@ -237,11 +237,12 @@ public class HostTest extends AbstractTestCase {
 
         Host host = new Host("localhost");
         host.setDefaultPath("/usr/home/dkocher/public_html");
-        Path path = PathFactory.createPath(SessionFactory.createSession(host),
+        final Session session = SessionFactory.createSession(host);
+        Path path = PathFactory.createPath(session,
                 "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
-        assertEquals("http://localhost/file", path.toHttpURL());
+        assertEquals("http://localhost/file", session.toHttpURL(path));
         host.setWebURL("http://127.0.0.1/~dkocher");
-        assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
+        assertEquals("http://127.0.0.1/~dkocher/file", session.toHttpURL(path));
 
     }
 
@@ -250,11 +251,12 @@ public class HostTest extends AbstractTestCase {
 
         Host host = new Host("localhost");
         host.setDefaultPath("public_html");
-        Path path = PathFactory.createPath(SessionFactory.createSession(host),
+        final Session session = SessionFactory.createSession(host);
+        Path path = PathFactory.createPath(session,
                 "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
-        assertEquals("http://localhost/file", path.toHttpURL());
+        assertEquals("http://localhost/file", session.toHttpURL(path));
         host.setWebURL("http://127.0.0.1/~dkocher");
-        assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
+        assertEquals("http://127.0.0.1/~dkocher/file", session.toHttpURL(path));
 
     }
 
@@ -262,11 +264,12 @@ public class HostTest extends AbstractTestCase {
     public void testDefaultPathRoot() {
         Host host = new Host("localhost");
         host.setDefaultPath("/");
-        Path path = PathFactory.createPath(SessionFactory.createSession(host),
+        final Session session = SessionFactory.createSession(host);
+        Path path = PathFactory.createPath(session,
                 "/file", Path.DIRECTORY_TYPE);
-        assertEquals("http://localhost/file", path.toHttpURL());
+        assertEquals("http://localhost/file", session.toHttpURL(path));
         host.setWebURL("http://127.0.0.1/~dkocher");
-        assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
+        assertEquals("http://127.0.0.1/~dkocher/file", session.toHttpURL(path));
     }
 
     @Test

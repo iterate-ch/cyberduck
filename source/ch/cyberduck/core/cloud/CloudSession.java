@@ -19,6 +19,7 @@ package ch.cyberduck.core.cloud;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id: CloudSession.java 7011 2010-09-18 15:20:05Z dkocher $
@@ -147,5 +149,11 @@ public abstract class CloudSession<C> extends HttpSession<C> {
      */
     public List<String> getSupportedEncryptionAlgorithms() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public Set<DescriptiveUrl> getURLs(final Path path) {
+        // Storage URL is not accessible
+        return this.getHttpURLs(path);
     }
 }

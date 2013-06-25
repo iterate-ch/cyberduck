@@ -20,13 +20,10 @@ package ch.cyberduck.core.gstorage;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.s3.S3Path;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
@@ -38,9 +35,6 @@ import org.jets3t.service.acl.gs.GroupByEmailAddressGrantee;
 import org.jets3t.service.acl.gs.GroupByIdGrantee;
 import org.jets3t.service.acl.gs.UserByEmailAddressGrantee;
 import org.jets3t.service.acl.gs.UserByIdGrantee;
-
-import java.text.MessageFormat;
-import java.util.Set;
 
 /**
  * @version $Id$
@@ -62,51 +56,6 @@ public class GSPath extends S3Path {
 
     public <T> GSPath(GSSession s, T dict) {
         super(s, dict);
-    }
-
-    /**
-     * This creates an URL that uses Cookie-based Authentication. The ACLs for the given Google user account
-     * has to be setup first.
-     * <p/>
-     * Google Storage lets you provide browser-based authenticated downloads to users who do not have
-     * Google Storage accounts. To do this, you apply Google account-based ACLs to the object and then
-     * you provide users with a URL that is scoped to the object.
-     *
-     * @return URL to be displayed in browser
-     */
-    @Override
-    public DescriptiveUrl toAuthenticatedUrl() {
-        if(this.attributes().isFile()) {
-            // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
-            return new DescriptiveUrl("https://sandbox.google.com/storage" + this.getAbsolute());
-        }
-        return new DescriptiveUrl(null, null);
-    }
-
-    @Override
-    protected DescriptiveUrl toSignedUrl(int seconds) {
-        return new DescriptiveUrl(null, null);
-    }
-
-    /**
-     * Torrent links are not supported.
-     *
-     * @return Always null.
-     */
-    @Override
-    public DescriptiveUrl toTorrentUrl() {
-        return new DescriptiveUrl(null, null);
-    }
-
-    @Override
-    public Set<DescriptiveUrl> getHttpURLs() {
-        Set<DescriptiveUrl> urls = super.getHttpURLs();
-        DescriptiveUrl url = this.toAuthenticatedUrl();
-        if(StringUtils.isNotBlank(url.getUrl())) {
-            urls.add(new DescriptiveUrl(url.getUrl(),
-                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Authenticated"))));
-        }
-        return urls;
     }
 
     @Override

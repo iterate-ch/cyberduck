@@ -21,6 +21,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
@@ -50,7 +51,7 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public DAVClient connect() throws BackgroundException {
-        client = new DAVClient(this.http());
+        client = new DAVClient(host, this.http());
         return client;
     }
 
@@ -71,7 +72,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         try {
             try {
-                client.execute(new HttpHead(this.home().toURL()), new VoidResponseHandler());
+                client.execute(new HttpHead(this.toURL(this.home())), new VoidResponseHandler());
                 this.message(Locale.localizedString("Login successful", "Credentials"));
             }
             catch(SardineException e) {
@@ -79,7 +80,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                         || e.getStatusCode() == HttpStatus.SC_NOT_FOUND
                         || e.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
                     // Possibly only HEAD requests are not allowed
-                    client.execute(new HttpPropFind(this.home().toURL()), new VoidResponseHandler());
+                    client.execute(new HttpPropFind(this.toURL(this.home())), new VoidResponseHandler());
                 }
                 else {
                     throw new SardineExceptionMappingService().map(e);
@@ -107,5 +108,10 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public boolean isMetadataSupported() {
         return true;
+    }
+
+    @Override
+    public String toHttpURL(final Path path) {
+        return this.toURL(path);
     }
 }

@@ -69,8 +69,6 @@ public abstract class AbstractPath {
      */
     public abstract PathReference getReference();
 
-    public abstract String toURL();
-
     /**
      * Fetch the directory listing
      *

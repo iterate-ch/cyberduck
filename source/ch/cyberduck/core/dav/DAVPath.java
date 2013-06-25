@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -126,7 +127,7 @@ public class DAVPath extends HttpPath {
     }
 
     private void readAttributes() throws IOException {
-        final List<DavResource> resources = session.getClient().list(this.toURL());
+        final List<DavResource> resources = session.getClient().list(URIEncoder.encode(this.getAbsolute()));
         for(final DavResource resource : resources) {
             this.readAttributes(resource);
         }
@@ -154,7 +155,7 @@ public class DAVPath extends HttpPath {
         if(this.attributes().isDirectory()) {
             // Parent directory may not be accessible. Issue #5662
             try {
-                return session.getClient().exists(this.toURL());
+                return session.getClient().exists(URIEncoder.encode(this.getAbsolute()));
             }
             catch(SardineException e) {
                 throw new SardineExceptionMappingService().map("Cannot read file attributes", e, this);
@@ -171,7 +172,7 @@ public class DAVPath extends HttpPath {
         try {
             session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     this.getName()));
-            session.getClient().delete(this.toURL());
+            session.getClient().delete(URIEncoder.encode(this.getAbsolute()));
         }
         catch(SardineException e) {
             throw new SardineExceptionMappingService().map("Cannot delete {0}", e, this);
@@ -189,7 +190,7 @@ public class DAVPath extends HttpPath {
 
             final AttributedList<Path> children = new AttributedList<Path>();
 
-            final List<DavResource> resources = session.getClient().list(this.toURL());
+            final List<DavResource> resources = session.getClient().list(URIEncoder.encode(this.getAbsolute()));
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
                 final URI uri = resource.getHref();
@@ -216,7 +217,7 @@ public class DAVPath extends HttpPath {
             session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
-            session.getClient().createDirectory(this.toURL());
+            session.getClient().createDirectory(URIEncoder.encode(this.getAbsolute()));
         }
         catch(SardineException e) {
             throw new SardineExceptionMappingService().map("Cannot create folder {0}", e, this);
@@ -233,7 +234,7 @@ public class DAVPath extends HttpPath {
                 session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
                         this.getName()));
 
-                final List<DavResource> resources = session.getClient().list(this.toURL());
+                final List<DavResource> resources = session.getClient().list(URIEncoder.encode(this.getAbsolute()));
                 for(DavResource resource : resources) {
                     this.attributes().setMetadata(resource.getCustomProps());
                 }
@@ -255,7 +256,7 @@ public class DAVPath extends HttpPath {
                 session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
                         this.getName()));
 
-                session.getClient().setCustomProps(this.toURL(),
+                session.getClient().setCustomProps(URIEncoder.encode(this.getAbsolute()),
                         meta, Collections.<java.lang.String>emptyList());
             }
             catch(SardineException e) {
@@ -277,7 +278,7 @@ public class DAVPath extends HttpPath {
             session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed.getName()));
 
-            session.getClient().move(this.toURL(), renamed.toURL());
+            session.getClient().move(URIEncoder.encode(this.getAbsolute()), URIEncoder.encode(renamed.getAbsolute()));
         }
         catch(SardineException e) {
             throw new SardineExceptionMappingService().map("Cannot rename {0}", e, this);
@@ -297,7 +298,7 @@ public class DAVPath extends HttpPath {
                         this.getName(), copy));
 
                 if(attributes().isFile()) {
-                    session.getClient().copy(this.toURL(), copy.toURL());
+                    session.getClient().copy(URIEncoder.encode(this.getAbsolute()), URIEncoder.encode(copy.getAbsolute()));
                     listener.bytesSent(this.attributes().getSize());
                     status.setComplete();
                 }
@@ -322,7 +323,7 @@ public class DAVPath extends HttpPath {
             headers.put(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-");
         }
         try {
-            return session.getClient().get(this.toURL(), headers);
+            return session.getClient().get(URIEncoder.encode(this.getAbsolute()), headers);
         }
         catch(SardineException e) {
             throw new SardineExceptionMappingService().map("Download failed", e, this);
@@ -413,7 +414,7 @@ public class DAVPath extends HttpPath {
             @Override
             public Void call(AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    session.getClient().put(toURL(), entity, headers);
+                    session.getClient().put(URIEncoder.encode(getAbsolute()), entity, headers);
                 }
                 catch(SardineException e) {
                     if(e.getStatusCode() == HttpStatus.SC_EXPECTATION_FAILED) {
@@ -437,18 +438,5 @@ public class DAVPath extends HttpPath {
             }
         };
         return this.write(command);
-    }
-
-    @Override
-    public String toURL() {
-        if(this.attributes().isDirectory()) {
-            return super.toURL() + Path.DELIMITER;
-        }
-        return super.toURL();
-    }
-
-    @Override
-    public String toHttpURL() {
-        return this.toURL();
     }
 }

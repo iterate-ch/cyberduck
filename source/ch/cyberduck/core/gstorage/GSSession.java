@@ -21,6 +21,7 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.LoginController;
@@ -67,6 +68,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Google Storage for Developers is a new service for developers to store and
@@ -386,5 +388,51 @@ public class GSSession extends S3Session {
     @Override
     public DistributionConfiguration cdn(final LoginController prompt) {
         return new GSWebsiteDistributionConfiguration(this);
+    }
+
+    @Override
+    protected DescriptiveUrl toSignedUrl(final Path path, int seconds) {
+        return new DescriptiveUrl(null, null);
+    }
+
+    /**
+     * Torrent links are not supported.
+     *
+     * @return Always null.
+     */
+    @Override
+    public DescriptiveUrl toTorrentUrl(final Path path) {
+        return new DescriptiveUrl(null, null);
+    }
+
+
+    /**
+     * This creates an URL that uses Cookie-based Authentication. The ACLs for the given Google user account
+     * has to be setup first.
+     * <p/>
+     * Google Storage lets you provide browser-based authenticated downloads to users who do not have
+     * Google Storage accounts. To do this, you apply Google account-based ACLs to the object and then
+     * you provide users with a URL that is scoped to the object.
+     *
+     * @return URL to be displayed in browser
+     */
+    @Override
+    public DescriptiveUrl toAuthenticatedUrl(final Path path) {
+        if(path.attributes().isFile()) {
+            // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
+            return new DescriptiveUrl(String.format("https://sandbox.google.com/storage%s", path.getAbsolute()));
+        }
+        return new DescriptiveUrl(null, null);
+    }
+
+    @Override
+    public Set<DescriptiveUrl> getHttpURLs(final Path path) {
+        Set<DescriptiveUrl> urls = super.getHttpURLs(path);
+        DescriptiveUrl url = this.toAuthenticatedUrl(path);
+        if(StringUtils.isNotBlank(url.getUrl())) {
+            urls.add(new DescriptiveUrl(url.getUrl(),
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Authenticated"))));
+        }
+        return urls;
     }
 }

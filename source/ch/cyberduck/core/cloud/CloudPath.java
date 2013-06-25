@@ -18,15 +18,12 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.local.Local;
 
 import org.apache.commons.lang.StringUtils;
-
-import java.util.Set;
 
 /**
  * @version $Id$
@@ -66,11 +63,5 @@ public abstract class CloudPath extends HttpPath {
             return null;
         }
         return StringUtils.removeStart(this.getAbsolute(), String.valueOf(Path.DELIMITER) + this.getContainer().getName() + String.valueOf(Path.DELIMITER));
-    }
-
-    @Override
-    public Set<DescriptiveUrl> getURLs() {
-        // Storage URL is not accessible
-        return this.getHttpURLs();
     }
 }

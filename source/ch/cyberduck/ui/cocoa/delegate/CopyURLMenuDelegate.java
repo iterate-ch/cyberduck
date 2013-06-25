@@ -49,11 +49,8 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
     }
 
     @Override
-    protected abstract List<Path> getSelected();
-
-    @Override
     protected List<DescriptiveUrl> getURLs(Path selected) {
-        return new ArrayList<DescriptiveUrl>(selected.getURLs());
+        return new ArrayList<DescriptiveUrl>(this.getSession().getURLs(selected));
     }
 
     @Override

@@ -18,29 +18,43 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
+
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.AbstractHttpClient;
 
 import java.io.IOException;
+import java.net.URI;
 
 import com.googlecode.sardine.impl.SardineImpl;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVClient extends SardineImpl {
 
     private AbstractHttpClient http;
 
-    public DAVClient(final AbstractHttpClient http) {
+    private Host host;
+
+    public DAVClient(final Host host, final AbstractHttpClient http) {
         super(http);
         this.http = http;
+        this.host = host;
     }
 
     @Override
     public <T> T execute(final HttpRequestBase request, final ResponseHandler<T> responseHandler) throws IOException {
+        request.setURI(URI.create(host.toURL(false) + request.getURI().getPath()));
         return super.execute(request, responseHandler);
+    }
+
+    @Override
+    protected HttpResponse execute(final HttpRequestBase request) throws IOException {
+        request.setURI(URI.create(host.toURL(false) + request.getURI().getPath()));
+        return super.execute(request);
     }
 
     public void disconnect() {

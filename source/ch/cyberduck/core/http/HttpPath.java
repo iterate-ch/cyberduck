@@ -151,9 +151,4 @@ public abstract class HttpPath extends Path {
             throw new BackgroundException(e);
         }
     }
-
-    @Override
-    public String toURL() {
-        return this.toURL(false);
-    }
 }

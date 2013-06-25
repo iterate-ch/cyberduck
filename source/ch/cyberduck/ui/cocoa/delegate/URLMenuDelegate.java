@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
@@ -57,6 +58,8 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName)
     );
+
+    protected abstract Session<?> getSession();
 
     /**
      * @return Path selected in the browser or current working directory.

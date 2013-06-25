@@ -1761,7 +1761,7 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             this.updateField(webUrlField, Locale.localizedString("Unknown"));
-            String url = this.getSelected().toHttpURL();
+            String url = controller.getSession().toHttpURL(this.getSelected());
             if(StringUtils.isNotBlank(url)) {
                 webUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
                 webUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
@@ -2034,8 +2034,7 @@ public class InfoController extends ToolbarWindowController {
                 }
                 if(file.attributes().isFile()) {
                     if(file instanceof S3Path) {
-                        final S3Path s3 = (S3Path) file;
-                        final DescriptiveUrl url = s3.toSignedUrl();
+                        final DescriptiveUrl url = ((S3Session) controller.getSession()).toSignedUrl(file);
                         if(StringUtils.isNotBlank(url.getUrl())) {
                             s3PublicUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(url.getUrl())
@@ -2045,7 +2044,7 @@ public class InfoController extends ToolbarWindowController {
                         if(StringUtils.isNotBlank(url.getHelp())) {
                             s3PublicUrlValidityField.setStringValue(url.getHelp());
                         }
-                        final DescriptiveUrl torrent = s3.toTorrentUrl();
+                        final DescriptiveUrl torrent = ((S3Session) controller.getSession()).toTorrentUrl(file);
                         if(StringUtils.isNotBlank(torrent.getUrl())) {
                             s3torrentUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(torrent.getUrl())
@@ -2251,7 +2250,7 @@ public class InfoController extends ToolbarWindowController {
             else {
                 for(Path file : files) {
                     if(file.attributes().isFile()) {
-                        final DescriptiveUrl url = file.toAuthenticatedUrl();
+                        final DescriptiveUrl url = controller.getSession().toAuthenticatedUrl(file);
                         if(StringUtils.isNotBlank(url.getUrl())) {
                             aclUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(url.getUrl())

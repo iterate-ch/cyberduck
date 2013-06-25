@@ -25,6 +25,7 @@ import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
@@ -64,11 +65,14 @@ import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -718,5 +722,145 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     @Override
     public AnalyticsProvider analytics() {
         return new QloudstatAnalyticsProvider();
+    }
+
+    /**
+     * Overwritten to provide publicly accessible URL of given object
+     *
+     * @return Using scheme from protocol
+     */
+    @Override
+    public String toURL(final Path path) {
+        return this.toURL(path, this.getHost().getProtocol().getScheme().toString());
+    }
+
+    /**
+     * Overwritten to provide publicy accessible URL of given object
+     *
+     * @return Plain HTTP link
+     */
+    @Override
+    public String toHttpURL(final Path path) {
+        return this.toURL(path, Scheme.http.name());
+    }
+
+    /**
+     * Properly URI encode and prepend the bucket name.
+     *
+     * @param scheme Protocol
+     * @return URL to be displayed in browser
+     */
+    private String toURL(final Path path, final String scheme) {
+        final StringBuilder url = new StringBuilder(scheme);
+        url.append("://");
+        if(path.isRoot()) {
+            url.append(this.getHost().getHostname());
+        }
+        else {
+            final String hostname = this.getHostnameForContainer(path.getContainer());
+            if(hostname.startsWith(path.getContainer().getName())) {
+                url.append(hostname);
+                if(!path.isContainer()) {
+                    url.append(URIEncoder.encode(path.getKey()));
+                }
+            }
+            else {
+                url.append(this.getHost().getHostname());
+                url.append(URIEncoder.encode(path.getAbsolute()));
+            }
+        }
+        return url.toString();
+    }
+
+    /**
+     * Query string authentication. Query string authentication is useful for giving HTTP or browser access to
+     * resources that would normally require authentication. The signature in the query string secures the request
+     *
+     * @return A signed URL with a limited validity over time.
+     */
+    public DescriptiveUrl toSignedUrl(final Path path) {
+        return toSignedUrl(path, Preferences.instance().getInteger("s3.url.expire.seconds"));
+    }
+
+    /**
+     * @param seconds Expire after seconds elapsed
+     * @return Temporary URL to be displayed in browser
+     */
+    protected DescriptiveUrl toSignedUrl(final Path path, final int seconds) {
+        Calendar expiry = Calendar.getInstance();
+        expiry.add(Calendar.SECOND, seconds);
+        return new DescriptiveUrl(this.createSignedUrl(path, seconds),
+                MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed", "S3"))
+                        + " (" + MessageFormat.format(Locale.localizedString("Expires on {0}", "S3") + ")",
+                        UserDateFormatterFactory.get().getShortFormat(expiry.getTimeInMillis()))
+        );
+    }
+
+    /**
+     * Query String Authentication generates a signed URL string that will grant
+     * access to an S3 resource (bucket or object)
+     * to whoever uses the URL up until the time specified.
+     *
+     * @param expiry Validity of URL
+     * @return Temporary URL to be displayed in browser
+     */
+    private String createSignedUrl(final Path path, final int expiry) {
+        if(path.attributes().isFile()) {
+            if(this.getHost().getCredentials().isAnonymousLogin()) {
+                log.info("Anonymous cannot create signed URL");
+                return null;
+            }
+            // Determine expiry time for URL
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.SECOND, expiry);
+            long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
+
+            // Generate URL
+            return this.getClient().createSignedUrl("GET",
+                    path.getContainer().getName(), path.getKey(), null,
+                    null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
+        }
+        return null;
+    }
+
+    /**
+     * Generates a URL string that will return a Torrent file for an object in S3,
+     * which file can be downloaded and run in a BitTorrent client.
+     *
+     * @return Torrent URL
+     */
+    public DescriptiveUrl toTorrentUrl(final Path path) {
+        if(path.attributes().isFile()) {
+            return new DescriptiveUrl(this.getClient().createTorrentUrl(path.getContainer().getName(),
+                    path.getKey()));
+        }
+        return new DescriptiveUrl(null, null);
+    }
+
+    @Override
+    public Set<DescriptiveUrl> getHttpURLs(final Path path) {
+        final Set<DescriptiveUrl> urls = super.getHttpURLs(path);
+        // Always include HTTP URL
+        urls.add(new DescriptiveUrl(this.toURL(path, Scheme.http.name()),
+                MessageFormat.format(Locale.localizedString("{0} URL"), Scheme.http.name().toUpperCase(java.util.Locale.ENGLISH))));
+        DescriptiveUrl hour = this.toSignedUrl(path, 60 * 60);
+        if(StringUtils.isNotBlank(hour.getUrl())) {
+            urls.add(hour);
+        }
+        // Default signed URL expiring in 24 hours.
+        DescriptiveUrl day = this.toSignedUrl(path, Preferences.instance().getInteger("s3.url.expire.seconds"));
+        if(StringUtils.isNotBlank(day.getUrl())) {
+            urls.add(day);
+        }
+        DescriptiveUrl week = this.toSignedUrl(path, 7 * 24 * 60 * 60);
+        if(StringUtils.isNotBlank(week.getUrl())) {
+            urls.add(week);
+        }
+        DescriptiveUrl torrent = this.toTorrentUrl(path);
+        if(StringUtils.isNotBlank(torrent.getUrl())) {
+            urls.add(new DescriptiveUrl(torrent.getUrl(),
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Torrent"))));
+        }
+        return urls;
     }
 }
