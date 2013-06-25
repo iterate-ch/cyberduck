@@ -21,6 +21,7 @@ import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -52,6 +53,9 @@ public class CFSession extends CloudSession<FilesClient> {
 
     private Map<String, FilesRegion> regions
             = new HashMap<String, FilesRegion>();
+
+    private Map<Path, Distribution> distributions
+            = new HashMap<Path, Distribution>();
 
     public CFSession(Host h) {
         super(h);
@@ -101,6 +105,12 @@ public class CFSession extends CloudSession<FilesClient> {
         }
     }
 
+    @Override
+    public void logout() throws BackgroundException {
+        regions.clear();
+        distributions.clear();
+    }
+
     /**
      * @return No Content-Range support
      */
@@ -132,17 +142,34 @@ public class CFSession extends CloudSession<FilesClient> {
     @Override
     public boolean isLocationSupported() {
         return new AuthenticationService().getRequest(this.getHost()).getVersion().equals(
-                FilesClient.AuthVersion.v20
-        );
+                FilesClient.AuthVersion.v20);
     }
+
 
     @Override
     public DistributionConfiguration cdn(final LoginController prompt) {
-        return new SwiftDistributionConfiguration(this);
+        return new SwiftDistributionConfiguration(this) {
+            @Override
+            public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
+                return super.read(container, method);
+            }
+        };
     }
 
     @Override
     public IdentityConfiguration iam(final LoginController prompt) {
         return new DefaultCredentialsIdentityConfiguration(host);
+    }
+
+
+    /**
+     * @return Publicy accessible URL of given object
+     */
+    @Override
+    public String toHttpURL(final Path path) {
+        if(distributions.containsKey(path)) {
+            return distributions.get(path).getURL(path);
+        }
+        return null;
     }
 }
