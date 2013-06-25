@@ -401,7 +401,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     defaultRootObject, cacheBehavior, new CacheBehavior[]{});
             return client.createDistribution(config);
         }
-        throw new RuntimeException("Invalid distribution method:" + method);
+        throw new ConnectionCanceledException(String.format("Invalid distribution method %s", method));
     }
 
     /**
@@ -421,7 +421,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                                     boolean enabled, Distribution.Method method, final String origin,
                                     final String distributionId, final String etag, final String reference,
                                     final String[] cnames, final LoggingStatus logging, final String defaultRootObject)
-            throws CloudFrontServiceException, IOException {
+            throws CloudFrontServiceException, IOException, ConnectionCanceledException {
 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", method.toString(), origin));
@@ -456,7 +456,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             client.updateDistributionConfig(distributionId, config);
         }
         else {
-            throw new RuntimeException("Invalid distribution method:" + method);
+            throw new ConnectionCanceledException(String.format("Invalid distribution method %s", method));
         }
     }
 
