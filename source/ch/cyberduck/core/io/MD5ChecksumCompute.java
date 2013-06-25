@@ -18,7 +18,6 @@ package ch.cyberduck.core.io;
  * dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
@@ -29,7 +28,6 @@ import java.security.NoSuchAlgorithmException;
  * @version $Id$
  */
 public class MD5ChecksumCompute implements ChecksumCompute {
-    private static final Logger log = Logger.getLogger(MD5ChecksumCompute.class);
 
     @Override
     public String compute(final InputStream in) throws IOException {
