@@ -18,6 +18,8 @@ package ch.cyberduck.core.exception;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractTestCase;
+
 import org.junit.Test;
 
 import com.amazonaws.AmazonServiceException;
@@ -27,12 +29,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class AmazonServiceExceptionMappingServiceTest {
+public class AmazonServiceExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testLoginFailure() throws Exception {
         final AmazonServiceException f = new AmazonServiceException("message", null);
-        f.setErrorCode("403");
+        f.setStatusCode(403);
         assertTrue(new AmazonServiceExceptionMappingService().map(f) instanceof LoginFailureException);
     }
 }
