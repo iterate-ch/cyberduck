@@ -95,4 +95,16 @@ public class S3SessionTest extends AbstractTestCase {
         assertTrue(o.isLocationSupported());
         assertFalse(o.isRevertSupported());
     }
+
+    @Test
+    public void testUri() throws Exception {
+        final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        assertEquals("https://test.cyberduck.ch.s3.amazonaws.com/key", aws.toURL(new S3Path(aws, "/test.cyberduck.ch/key", Path.FILE_TYPE)));
+    }
+
+    @Test
+    public void testHttpUri() throws Exception {
+        final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        assertEquals("http://test.cyberduck.ch.s3.amazonaws.com/key", aws.toHttpURL(new S3Path(aws, "/test.cyberduck.ch/key", Path.FILE_TYPE)));
+    }
 }

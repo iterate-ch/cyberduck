@@ -805,22 +805,19 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
      * @return Temporary URL to be displayed in browser
      */
     private String createSignedUrl(final Path path, final int expiry) {
-        if(path.attributes().isFile()) {
-            if(this.getHost().getCredentials().isAnonymousLogin()) {
-                log.info("Anonymous cannot create signed URL");
-                return null;
-            }
-            // Determine expiry time for URL
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.SECOND, expiry);
-            long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
-
-            // Generate URL
-            return this.getClient().createSignedUrl("GET",
-                    path.getContainer().getName(), path.getKey(), null,
-                    null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
+        if(this.getHost().getCredentials().isAnonymousLogin()) {
+            log.info("Anonymous cannot create signed URL");
+            return null;
         }
-        return null;
+        // Determine expiry time for URL
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.SECOND, expiry);
+        long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
+
+        // Generate URL
+        return this.getClient().createSignedUrl("GET",
+                path.getContainer().getName(), path.getKey(), null,
+                null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
     }
 
     /**
