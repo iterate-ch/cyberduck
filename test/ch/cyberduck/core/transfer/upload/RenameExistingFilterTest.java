@@ -24,7 +24,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testAccept() throws Exception {
         RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
-        assertTrue(f.accept(new NullPath("t", Path.FILE_TYPE) {
+        assertTrue(f.accept(new NullSession(new Host("h")), new NullPath("t", Path.FILE_TYPE) {
             @Override
             public Session getSession() {
                 return new NullSession(new Host("t")) {
@@ -46,7 +46,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
             }
         })
         );
-        assertFalse(f.accept(new NullPath("t", Path.FILE_TYPE) {
+        assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("t", Path.FILE_TYPE) {
             @Override
             public Session getSession() {
                 return new NullSession(new Host("t")) {
@@ -97,6 +97,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
             }
         };
         p.setLocal(new NullLocal("/Downloads", "n"));
-        f.prepare(p);
+        f.prepare(new NullSession(new Host("h")), p);
     }
 }

@@ -2,9 +2,11 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
@@ -41,7 +43,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         };
         p.attributes().setSize(2L);
-        assertFalse(f.accept(p));
+        assertFalse(f.accept(new NullSession(new Host("h")), p));
     }
 
     @Test
@@ -59,7 +61,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         };
         p.attributes().setSize(2L);
-        assertTrue(f.accept(p));
+        assertTrue(f.accept(new NullSession(new Host("h")), p));
     }
 
     @Test
@@ -92,7 +94,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         };
         p.attributes().setSize(2L);
-        final TransferStatus status = f.prepare(p);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), p);
         assertTrue(status.isResume());
         assertEquals(1L, status.getCurrent(), 0L);
     }
@@ -102,7 +104,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
         Path p = new NullPath("a", Path.DIRECTORY_TYPE);
         p.setLocal(new NullLocal(null, "a"));
-        final TransferStatus status = f.prepare(p);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), p);
         assertFalse(status.isResume());
     }
 }

@@ -1,8 +1,10 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.local.Local;
@@ -46,7 +48,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 };
             }
         };
-        f.prepare(p);
+        f.prepare(new NullSession(new Host("h")), p);
     }
 
     @Test
@@ -70,7 +72,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 return local;
             }
         };
-        f.prepare(p);
+        f.prepare(new NullSession(new Host("h")), p);
         assertEquals("t", p.getLocal().getName());
     }
 }

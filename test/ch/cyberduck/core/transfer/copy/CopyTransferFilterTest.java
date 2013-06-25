@@ -33,7 +33,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
             }
         });
         CopyTransferFilter f = new CopyTransferFilter(files);
-        assertTrue(f.accept(source));
+        assertTrue(f.accept(new NullSession(new Host("h")), source));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
             }
         });
         CopyTransferFilter f = new CopyTransferFilter(files);
-        assertFalse(f.accept(source));
+        assertFalse(f.accept(new NullSession(new Host("h")), source));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         source.attributes().setSize(1L);
         files.put(source, new NullPath("a", Path.FILE_TYPE));
         CopyTransferFilter f = new CopyTransferFilter(files);
-        final TransferStatus status = f.prepare(source);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
         assertEquals(1L, status.getLength());
     }
 
@@ -82,7 +82,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         };
         files.put(source, target);
         CopyTransferFilter f = new CopyTransferFilter(files);
-        final TransferStatus status = f.prepare(source);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
         assertEquals(0L, status.getLength());
     }
 
@@ -113,11 +113,11 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         CopyTransferFilter f = new CopyTransferFilter(files);
         Preferences.instance().setProperty("queue.upload.preserveDate", true);
         final TransferStatus status = new TransferStatus();
-        f.complete(source, new TransferOptions(), status);
+        f.complete(new NullSession(new Host("h")), source, new TransferOptions(), status);
         assertFalse(permissionWrite[0]);
         assertFalse(timestampWrite[0]);
         status.setComplete();
-        f.complete(source, new TransferOptions(), status);
+        f.complete(new NullSession(new Host("h")), source, new TransferOptions(), status);
         assertTrue(permissionWrite[0]);
         assertTrue(timestampWrite[0]);
     }

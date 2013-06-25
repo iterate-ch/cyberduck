@@ -1,8 +1,10 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
@@ -32,7 +34,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final NullPath p = new NullPath("a", Path.FILE_TYPE);
         p.setLocal(new NullLocal(null, "a"));
         p.attributes().setSize(8L);
-        assertTrue(f.accept(p));
+        assertTrue(f.accept(new NullSession(new Host("h")), p));
     }
 
     @Test
@@ -46,9 +48,9 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 return t;
             }
         };
-        assertTrue(f.accept(p));
+        assertTrue(f.accept(new NullSession(new Host("h")), p));
         p.getLocal().mkdir();
-        assertFalse(f.accept(p));
+        assertFalse(f.accept(new NullSession(new Host("h")), p));
     }
 
     @Test
@@ -57,7 +59,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final NullPath p = new NullPath("a", Path.FILE_TYPE);
         p.setLocal(new NullLocal(null, "a"));
         p.attributes().setSize(8L);
-        final TransferStatus status = f.prepare(p);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), p);
         assertEquals(8L, status.getLength(), 0L);
     }
 }
