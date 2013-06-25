@@ -20,6 +20,8 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.threading.BackgroundException;
 
+import org.apache.http.HttpStatus;
+
 import com.amazonaws.AmazonServiceException;
 
 /**
@@ -32,6 +34,9 @@ public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMap
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         this.append(buffer, e.getErrorCode());
+        if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
+            return new LoginFailureException(buffer.toString(), e);
+        }
         return this.wrap(e, buffer);
     }
 }
