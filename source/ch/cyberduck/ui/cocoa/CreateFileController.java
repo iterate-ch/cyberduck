@@ -67,7 +67,7 @@ public class CreateFileController extends FileController {
             public void run() throws BackgroundException {
                 if(file.touch()) {
                     if(edit) {
-                        Editor editor = EditorFactory.instance().create(c, file);
+                        Editor editor = EditorFactory.instance().create(c, c.getSession(), file);
                         editor.open();
                     }
                 }

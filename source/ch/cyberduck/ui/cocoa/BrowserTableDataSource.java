@@ -559,7 +559,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(dock) {
                 for(Path p : pasteboard) {
                     // Drag to application icon in dock.
-                    WatchEditor editor = new WatchEditor(controller, null, p);
+                    WatchEditor editor = new WatchEditor(controller, controller.getSession(), null, p);
                     editor.watch();
                 }
             }

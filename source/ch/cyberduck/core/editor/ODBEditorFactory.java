@@ -21,6 +21,7 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.Controller;
 
@@ -68,8 +69,8 @@ public class ODBEditorFactory extends EditorFactory {
     }
 
     @Override
-    public Editor create(final Controller c, final Application application, final Path path) {
-        return new ODBEditor(c, application, path);
+    public Editor create(final Controller c, final Session session, final Application application, final Path path) {
+        return new ODBEditor(c, session, application, path);
     }
 
     @Override

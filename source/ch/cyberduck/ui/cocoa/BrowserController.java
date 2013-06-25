@@ -2586,7 +2586,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void editMenuClicked(final NSMenuItem sender) {
         for(Path selected : this.getSelectedPaths()) {
-            final Editor editor = EditorFactory.instance().create(this,
+            final Editor editor = EditorFactory.instance().create(this, session,
                     new Application(sender.representedObject(), null), selected);
             editor.open();
         }
@@ -2595,7 +2595,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void editButtonClicked(final ID sender) {
         for(Path selected : this.getSelectedPaths()) {
-            final Editor editor = EditorFactory.instance().create(this, selected);
+            final Editor editor = EditorFactory.instance().create(this, session, selected);
             editor.open();
         }
     }
@@ -2613,7 +2613,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void infoButtonClicked(final ID sender) {
         if(this.getSelectionCount() > 0) {
-            InfoController c = InfoController.Factory.create(BrowserController.this, this.getSelectedPaths());
+            InfoController c = InfoController.Factory.create(this, this.getSelectedPaths());
             c.window().makeKeyAndOrderFront(null);
         }
     }

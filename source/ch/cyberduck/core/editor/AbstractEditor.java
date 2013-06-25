@@ -20,7 +20,8 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Session;import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
@@ -136,7 +137,7 @@ public abstract class AbstractEditor implements Editor {
     @Override
     public void open() {
         final BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
-            private final Transfer download = new DownloadTransfer(session, edited) {
+            private final Transfer download = new DownloadTransfer(edited) {
                 @Override
                 public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
                     return getAction();
@@ -199,7 +200,7 @@ public abstract class AbstractEditor implements Editor {
                 }
                 checksum = edited.getLocal().attributes().getChecksum();
                 final TransferOptions options = new TransferOptions();
-                final Transfer upload = new UploadTransfer(session, edited) {
+                final Transfer upload = new UploadTransfer(edited) {
                     @Override
                     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
                         return TransferAction.ACTION_OVERWRITE;
