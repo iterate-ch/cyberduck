@@ -36,7 +36,7 @@ public class FTPSessionTest extends AbstractTestCase {
 
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(Protocol.FTP_TLS, "localhost", new Credentials(
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
@@ -53,7 +53,7 @@ public class FTPSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
-        final Host host = new Host(Protocol.FTP_TLS, "localhost", new Credentials(
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
                 "u", "p"
         ));
         final FTPSession session = new FTPSession(host);
