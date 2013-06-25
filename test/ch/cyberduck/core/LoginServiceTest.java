@@ -1,7 +1,6 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.junit.Test;
 
@@ -26,22 +25,23 @@ public class LoginServiceTest extends AbstractTestCase {
                 "u", "p"
         ));
         final AtomicBoolean warned = new AtomicBoolean(false);
-        final FTPSession session = new FTPSession(host) {
+        final FTPSession session = new FTPSession(host);
+        session.open();
+        LoginService l = new LoginService(new DisabledLoginController() {
             @Override
-            protected void warn(final LoginController login) throws BackgroundException {
+            public void warn(final String title, final String message, final String preference) throws LoginCanceledException {
                 warned.set(true);
                 throw new LoginCanceledException();
             }
-        };
-        session.open();
-        LoginService l = new LoginService(new DisabledLoginController());
+        });
         try {
             l.login(session);
             fail();
         }
         catch(LoginCanceledException e) {
             assertEquals("Unknown", e.getMessage());
+            assertTrue(warned.get());
+            throw e;
         }
-        assertTrue(warned.get());
     }
 }
