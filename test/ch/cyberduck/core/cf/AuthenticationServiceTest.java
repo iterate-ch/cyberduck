@@ -50,7 +50,8 @@ public class AuthenticationServiceTest extends AbstractTestCase {
     @Test
     public void testProfile() throws Exception {
         AuthenticationService s = new AuthenticationService();
-        final Profile profile = ProfileReaderFactory.get().read(LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile"));
+        final Profile profile = ProfileReaderFactory.get().read(
+                LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         assertEquals(URI.create("https://region-b.geo-1.identity.hpcloudsvc.com:35357/v2.0/tokens"), s.getRequest(host).getURI());
         assertEquals(FilesClient.AuthVersion.v20, s.getRequest(host).getVersion());
