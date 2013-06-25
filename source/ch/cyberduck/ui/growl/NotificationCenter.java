@@ -24,7 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSUserNotificationCenter;
 /**
  * @version $Id$
  */
-public class NotificationCenter extends Growl {
+public class NotificationCenter implements Growl {
 
     public static void register() {
         if(Factory.VERSION_PLATFORM.matches("10\\.8.*")) {

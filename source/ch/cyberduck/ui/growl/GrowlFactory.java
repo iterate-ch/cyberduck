@@ -34,7 +34,8 @@ public abstract class GrowlFactory extends Factory<Growl> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, GrowlFactory> factories = new HashMap<Platform, GrowlFactory>();
+    protected static final Map<Platform, GrowlFactory> factories
+            = new HashMap<Platform, GrowlFactory>();
 
     public static void addFactory(Platform platform, GrowlFactory f) {
         factories.put(platform, f);
@@ -49,7 +50,7 @@ public abstract class GrowlFactory extends Factory<Growl> {
         }
     }
 
-    private static final class Disabled extends Growl {
+    private static final class Disabled implements Growl {
         @Override
         public void setup() {
             log.warn("Growl notifications disabled");

@@ -21,21 +21,14 @@ package ch.cyberduck.ui.growl;
 /**
  * @version $Id$
  */
-public abstract class Growl {
-
-    /**
-     * @return The singleton instance of me.
-     */
-    public static Growl instance() {
-        return GrowlFactory.get();
-    }
+public interface Growl {
 
     /**
      * Register application
      */
-    public abstract void setup();
+    void setup();
 
-    public abstract void notify(String title, String description);
+    void notify(String title, String description);
 
-    public abstract void notifyWithImage(String title, String description, String image);
+    void notifyWithImage(String title, String description, String image);
 }

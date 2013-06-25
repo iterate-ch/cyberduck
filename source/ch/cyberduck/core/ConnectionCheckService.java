@@ -4,6 +4,7 @@ import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.growl.Growl;
+import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -89,7 +90,7 @@ public class ConnectionCheckService {
 
         session.open(key);
 
-        Growl.instance().notify("Connection opened", host.getHostname());
+        GrowlFactory.get().notify("Connection opened", host.getHostname());
 
         session.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 host.getProtocol().getName()));
