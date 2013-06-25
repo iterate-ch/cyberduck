@@ -701,7 +701,8 @@ public abstract class Session<C> implements TranscriptListener {
      *         hostname configuration from the bookmark
      */
     public String toHttpURL(final Path path) {
-        return URI.create(this.getHost().getWebURL() + URIEncoder.encode(PathRelativizer.relativize(this.getHost().getDefaultPath(),
+        return URI.create(this.getHost().getWebURL() + URIEncoder.encode(PathRelativizer.relativize(
+                PathNormalizer.normalize(this.getHost().getDefaultPath(), true),
                 path.getAbsolute()))).normalize().toString();
     }
 
