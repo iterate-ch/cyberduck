@@ -15,9 +15,9 @@
 	<key>Username Placeholder</key>
 	<string>Username</string>
 	<key>Password Placeholder</key>
+    <string>API Key</string>
     <key>Context</key>
     <string>/v2.0/tokens</string>
-	<string>API Key</string>
 	<key>Disk</key>
 	<string>
     AAABAAEAgIAAAAEAIAAoEAEAFgAAACgAAACAAAAAAAEAAAEAIAAAAAAAAAAAABMLAAATCwAA
