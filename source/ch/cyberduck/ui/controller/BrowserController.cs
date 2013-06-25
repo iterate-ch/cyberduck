@@ -286,7 +286,7 @@ namespace Ch.Cyberduck.Ui.Controller
             UpdateOpenIcon();
 
             View.ToolbarVisible = Preferences.instance().getBoolean("browser.toolbar");
-            View.LogDrawerVisible = Preferences.instance().getBoolean("browser.logDrawer.isOpen");
+            View.LogDrawerVisible = Preferences.instance().getBoolean("browser.transcript.open");
 
             View.GetEditorsForSelection += View_GetEditorsForSelection;
             View.GetBookmarks += View_GetBookmarks;
@@ -1481,7 +1481,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ToggleLogDrawer()
         {
             View.LogDrawerVisible = !View.LogDrawerVisible;
-            Preferences.instance().setProperty("browser.logDrawer.isOpen", View.LogDrawerVisible);
+            Preferences.instance().setProperty("browser.transcript.open", View.LogDrawerVisible);
         }
 
         private void View_ShowHiddenFiles()
