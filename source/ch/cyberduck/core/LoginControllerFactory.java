@@ -38,6 +38,7 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
             = new HashMap<Platform, LoginControllerFactory>();
 
     /**
+     * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static LoginController get(final Controller c) {

@@ -59,7 +59,7 @@ public final class PromptLoginController extends AbstractLoginController {
     private static class Factory extends LoginControllerFactory {
         @Override
         protected LoginController create() {
-            return new PromptLoginController(TransferController.instance());
+            return null;
         }
 
         @Override
