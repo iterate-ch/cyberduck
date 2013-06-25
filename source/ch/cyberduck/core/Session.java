@@ -32,7 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
@@ -698,38 +697,8 @@ public abstract class Session<C> implements TranscriptListener {
      *         hostname configuration from the bookmark
      */
     public String toHttpURL(final Path path) {
-        return this.toHttpURL(path, this.getHost().getWebURL());
-    }
-
-    /**
-     * @param uri The scheme and hostname to prepend to the path
-     * @return The HTTP accessible URL of this path including the default path
-     *         prepended from the bookmark
-     */
-    protected String toHttpURL(final Path path, final String uri) {
-        try {
-            return new URI(uri + this.getWebPath(path.getAbsolute())).normalize().toString();
-        }
-        catch(URISyntaxException e) {
-            log.error(String.format("Failure parsing URI %s", uri), e);
-        }
-        return null;
-    }
-
-    /**
-     * Remove the document root from the path
-     *
-     * @param path Absolute path
-     * @return Without any document root path component
-     */
-    private String getWebPath(final String path) {
-        String documentRoot = this.getHost().getDefaultPath();
-        if(StringUtils.isNotBlank(documentRoot)) {
-            if(path.contains(documentRoot)) {
-                return URIEncoder.encode(PathNormalizer.normalize(path.substring(path.indexOf(documentRoot) + documentRoot.length()), true));
-            }
-        }
-        return URIEncoder.encode(PathNormalizer.normalize(path, true));
+        return URI.create(this.getHost().getWebURL() + URIEncoder.encode(PathRelativizer.relativize(this.getHost().getDefaultPath(),
+                path.getAbsolute()))).normalize().toString();
     }
 
     /**
