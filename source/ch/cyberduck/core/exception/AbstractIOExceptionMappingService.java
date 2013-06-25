@@ -23,7 +23,6 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
@@ -31,7 +30,6 @@ import java.text.MessageFormat;
  * @version $Id$
  */
 public abstract class AbstractIOExceptionMappingService<T extends Exception> implements IOExceptionMappingService<T> {
-    private static Logger log = Logger.getLogger(AbstractIOExceptionMappingService.class);
 
     public BackgroundException map(final String message, final T failure) {
         final BackgroundException exception = this.map(failure);

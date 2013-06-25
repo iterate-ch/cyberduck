@@ -78,6 +78,9 @@ public final class PromptLoginController extends AbstractLoginController {
     public void warn(final String title, final String message,
                      final String continueButton, final String disconnectButton, final String preference)
             throws LoginCanceledException {
+        if(log.isDebugEnabled()) {
+            log.debug("Display insecure connection alert");
+        }
         final NSAlert alert = NSAlert.alert(title, message,
                 continueButton, // Default Button
                 null, // Alternate button
@@ -106,6 +109,9 @@ public final class PromptLoginController extends AbstractLoginController {
                        final String title, final String reason,
                        final boolean enableKeychain, final boolean enablePublicKey,
                        final boolean enableAnonymous) throws LoginCanceledException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Prompt for credentials for %s", protocol));
+        }
         final SheetController c = new SheetController(parent) {
             @Override
             protected String getBundleName() {

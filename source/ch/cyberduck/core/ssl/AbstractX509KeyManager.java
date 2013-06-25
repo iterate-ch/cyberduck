@@ -18,8 +18,6 @@ package ch.cyberduck.core.ssl;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.X509KeyManager;
@@ -40,7 +38,6 @@ import java.security.cert.X509Certificate;
  * @version $Id$
  */
 public abstract class AbstractX509KeyManager implements X509KeyManager {
-    private static Logger log = Logger.getLogger(AbstractX509KeyManager.class);
 
     private X509KeyManager manager;
 

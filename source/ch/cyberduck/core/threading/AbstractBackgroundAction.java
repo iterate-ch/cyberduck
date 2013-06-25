@@ -22,6 +22,8 @@ import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.log4j.Logger;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T> {
+    private static final Logger log = Logger.getLogger(AbstractBackgroundAction.class);
 
     @Override
     public void init() {
@@ -41,6 +44,9 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
 
     @Override
     public void cancel() {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cancel background task %s", this));
+        }
         canceled = true;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
@@ -69,6 +75,9 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
 
     @Override
     public boolean prepare() throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Prepare background task %s", this));
+        }
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
@@ -83,6 +92,9 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
 
     @Override
     public void finish() throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Finish background task %s", this));
+        }
         running = false;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
@@ -93,6 +105,9 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
 
     @Override
     public T call() throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run background task %s", this));
+        }
         this.run();
         return null;
     }

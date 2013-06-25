@@ -22,8 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -32,7 +30,6 @@ import java.net.UnknownHostException;
  * @version $Id$
  */
 public class BackgroundException extends Exception {
-    private static Logger log = Logger.getLogger(BackgroundException.class);
 
     private static final long serialVersionUID = -6114495291207129418L;
 
