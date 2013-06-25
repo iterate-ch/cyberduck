@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import java.util.TimeZone;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPParserSelector {
     private static final Logger log = Logger.getLogger(FTPParserSelector.class);
@@ -35,6 +35,9 @@ public class FTPParserSelector {
     }
 
     public CompositeFileEntryParser getParser(final String system, TimeZone zone) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Select parser for system %s in zone %s", system, zone));
+        }
         final CompositeFileEntryParser parser;
         if(null == zone) {
             parser = new FTPParserFactory().createFileEntryParser(system,
