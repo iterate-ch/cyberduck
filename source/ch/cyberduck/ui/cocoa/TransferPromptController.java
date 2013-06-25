@@ -261,7 +261,7 @@ public abstract class TransferPromptController extends SheetController implement
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            p.toURL(false),
+                            transfer.getSessions().iterator().next().toURL(p, false),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     if(p.attributes().getSize() == -1) {
                         remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
