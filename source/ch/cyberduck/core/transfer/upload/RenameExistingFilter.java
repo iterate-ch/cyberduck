@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -23,7 +24,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public boolean accept(final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         return file.getSession().isRenameSupported(file);
     }
 
@@ -31,7 +32,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      * Rename existing file on server if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Path file) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
         Path renamed = file;
         while(renamed.exists()) {
             String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
@@ -44,6 +45,6 @@ public class RenameExistingFilter extends AbstractUploadFilter {
         if(!renamed.equals(file)) {
             file.rename(renamed);
         }
-        return super.prepare(file);
+        return super.prepare(session, file);
     }
 }

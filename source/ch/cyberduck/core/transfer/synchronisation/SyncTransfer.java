@@ -179,19 +179,19 @@ public class SyncTransfer extends Transfer {
                         = _delegateUpload.filter(null, TransferAction.ACTION_OVERWRITE);
 
                 @Override
-                public TransferStatus prepare(final Path p) throws BackgroundException {
+                public TransferStatus prepare(final Session session, final Path p) throws BackgroundException {
                     final Comparison compare = SyncTransfer.this.compare(p);
                     if(compare.equals(Comparison.REMOTE_NEWER)) {
-                        return _delegateFilterDownload.prepare(p);
+                        return _delegateFilterDownload.prepare(session, p);
                     }
                     if(compare.equals(Comparison.LOCAL_NEWER)) {
-                        return _delegateFilterUpload.prepare(p);
+                        return _delegateFilterUpload.prepare(session, p);
                     }
                     return new TransferStatus();
                 }
 
                 @Override
-                public boolean accept(final Path p) throws BackgroundException {
+                public boolean accept(final Session session, final Path p) throws BackgroundException {
                     final Comparison compare = SyncTransfer.this.compare(p);
                     if(compare.equals(Comparison.EQUAL)) {
                         return false;
@@ -201,26 +201,26 @@ public class SyncTransfer extends Transfer {
                             return false;
                         }
                         // Ask the download delegate for inclusion
-                        return _delegateFilterDownload.accept(p);
+                        return _delegateFilterDownload.accept(session, p);
                     }
                     else if(compare.equals(Comparison.LOCAL_NEWER)) {
                         if(getTransferAction().equals(ACTION_DOWNLOAD)) {
                             return false;
                         }
                         // Ask the upload delegate for inclusion
-                        return _delegateFilterUpload.accept(p);
+                        return _delegateFilterUpload.accept(session, p);
                     }
                     return false;
                 }
 
                 @Override
-                public void complete(final Path p, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                public void complete(final Session session, final Path p, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                     final Comparison compare = SyncTransfer.this.compare(p);
                     if(compare.equals(Comparison.REMOTE_NEWER)) {
-                        _delegateFilterDownload.complete(p, options, status);
+                        _delegateFilterDownload.complete(session, p, options, status);
                     }
                     else if(compare.equals(Comparison.LOCAL_NEWER)) {
-                        _delegateFilterUpload.complete(p, options, status);
+                        _delegateFilterUpload.complete(session, p, options, status);
                     }
                     comparisons.remove(p.getReference());
                     cache.remove(p.getReference());

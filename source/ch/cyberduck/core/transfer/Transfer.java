@@ -331,7 +331,7 @@ public abstract class Transfer implements Serializable {
     }
 
     public String getRemote() {
-        return this.getRoot().getParent().toURL(false);
+        return session.toURL(this.getRoot().getParent(), false);
     }
 
     /**
@@ -443,14 +443,14 @@ public abstract class Transfer implements Serializable {
             return;
         }
         this.check();
-        if(filter.accept(file)) {
+        if(filter.accept(session, file)) {
             // Notification
             this.fireWillTransferPath(file);
             // Transfer
             this.transfer(file, options, status);
             if(file.attributes().isFile()) {
                 // Post process of file
-                filter.complete(file, options, status);
+                filter.complete(session, file, options, status);
             }
             // Notification
             this.fireDidTransferPath(file);
@@ -474,7 +474,7 @@ public abstract class Transfer implements Serializable {
                 status.setComplete();
             }
             // Post process of directory
-            filter.complete(file, options, status);
+            filter.complete(session, file, options, status);
             this.cache().remove(file.getReference());
         }
     }
@@ -544,12 +544,12 @@ public abstract class Transfer implements Serializable {
         }
         final TransferStatus s;
         // Only prepare the path it will be actually transferred
-        if(filter.accept(p)) {
+        if(filter.accept(session, p)) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Accepted in %s transfer", p.getAbsolute()));
             }
             session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
-            s = filter.prepare(p);
+            s = filter.prepare(session, p);
             // Add transfer length to total bytes
             this.addSize(s.getLength());
             // Add skipped bytes

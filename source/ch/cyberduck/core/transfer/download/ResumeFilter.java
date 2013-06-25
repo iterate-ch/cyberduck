@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -15,7 +16,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         if(file.attributes().isDirectory()) {
             if(file.getLocal().exists()) {
                 return false;
@@ -25,12 +26,12 @@ public class ResumeFilter extends AbstractDownloadFilter {
             // No need to resume completed transfers
             return false;
         }
-        return super.accept(file);
+        return super.accept(session, file);
     }
 
     @Override
-    public TransferStatus prepare(final Path file) throws BackgroundException {
-        final TransferStatus status = super.prepare(file);
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+        final TransferStatus status = super.prepare(session, file);
         if(file.getSession().isDownloadResumable()) {
             if(file.attributes().isFile()) {
                 if(file.getLocal().exists()) {

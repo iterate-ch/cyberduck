@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -22,7 +23,7 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Path source) throws BackgroundException {
+    public boolean accept(final Session session, final Path source) throws BackgroundException {
         if(source.attributes().isDirectory()) {
             final Path destination = files.get(source);
             // Do not attempt to create a directory that already exists
@@ -34,7 +35,7 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path source) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path source) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(source.attributes().isFile()) {
             if(source.attributes().getSize() == -1) {
@@ -47,7 +48,7 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public void complete(final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void complete(final Session session, final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(status.isComplete()) {
             final Path destination = files.get(source);
             if(destination.getSession().isUnixPermissionsSupported()) {

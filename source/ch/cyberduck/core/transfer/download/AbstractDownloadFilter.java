@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.IconService;
@@ -40,7 +41,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         if(file.attributes().isDirectory()) {
             if(file.getLocal().exists()) {
                 return false;
@@ -60,7 +61,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(file.attributes().isFile()) {
             if(file.attributes().getSize() == -1) {
@@ -115,7 +116,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
      * Update timestamp and permission
      */
     @Override
-    public void complete(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void complete(final Session session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
@@ -126,11 +127,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
             if(options.quarantine) {
                 // Set quarantine attributes
-                quarantine.setQuarantine(file.getLocal(), file.getHost().toURL(), file.toURL());
+                quarantine.setQuarantine(file.getLocal(), file.getHost().toURL(), session.toURL(file));
             }
             if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
                 // Set quarantine attributes
-                quarantine.setWhereFrom(file.getLocal(), file.toURL());
+                quarantine.setWhereFrom(file.getLocal(), session.toURL(file));
             }
             if(options.open) {
                 launcher.open(file.getLocal());

@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
@@ -22,13 +23,13 @@ public class CompareFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public boolean accept(final Path file) throws BackgroundException {
-        if(super.accept(file)) {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
+        if(super.accept(session, file)) {
             final Comparison comparison = compareService.compare(file);
             switch(comparison) {
                 case LOCAL_NEWER:
                 case EQUAL:
-                    return super.accept(file);
+                    return super.accept(session, file);
                 case REMOTE_NEWER:
                     return false;
             }

@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
@@ -24,7 +25,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         return true;
     }
 
@@ -32,7 +33,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
      * Rename existing file on disk if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Path file) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
         Local renamed = file.getLocal();
         while(renamed.exists()) {
             String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.download.file.rename.format"),
@@ -44,6 +45,6 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
         if(!renamed.equals(file.getLocal())) {
             file.getLocal().rename(renamed);
         }
-        return super.prepare(file);
+        return super.prepare(session, file);
     }
 }

@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -20,13 +21,13 @@ public class RenameFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public boolean accept(final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         return true;
     }
 
     @Override
-    public TransferStatus prepare(final Path file) throws BackgroundException {
-        final TransferStatus status = super.prepare(file);
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+        final TransferStatus status = super.prepare(session, file);
         if(file.exists()) {
             final Path parent = file.getParent();
             final String filename = file.getName();

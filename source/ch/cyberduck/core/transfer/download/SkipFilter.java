@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -14,10 +15,10 @@ public class SkipFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         if(file.getLocal().exists()) {
             return false;
         }
-        return super.accept(file);
+        return super.accept(session, file);
     }
 }

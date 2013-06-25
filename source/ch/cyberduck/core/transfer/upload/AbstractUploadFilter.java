@@ -6,6 +6,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -28,7 +29,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         final PathAttributes attributes = file.attributes();
         if(attributes.isDirectory()) {
             // Do not attempt to create a directory that already exists
@@ -51,7 +52,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
         final PathAttributes attributes = file.attributes();
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
             if(file.exists()) {
@@ -112,7 +113,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public void complete(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void complete(final Session session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
