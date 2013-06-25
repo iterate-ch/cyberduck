@@ -57,11 +57,6 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public boolean isUnsecurewarning() {
-        return false;
-    }
-
-    @Override
     public void login(final LoginController prompt) throws BackgroundException {
         client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
                 // Windows credentials. Provide empty string for NTLM domain by default.

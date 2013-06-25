@@ -30,13 +30,9 @@ public abstract class AbstractLoginController implements LoginController {
     private static final Logger log = Logger.getLogger(AbstractLoginController.class);
 
     @Override
-    public void warn(String title, String message, String preference) throws LoginCanceledException {
-        this.warn(title, message, Locale.localizedString("Continue", "Credentials"),
-                Locale.localizedString("Disconnect", "Credentials"), preference);
-    }
-
-    @Override
-    public void warn(String title, String message, String continueButton, String disconnectButton, String preference)
+    public void warn(final String title, final String message,
+                     final String continueButton, final String disconnectButton,
+                     final String preference)
             throws LoginCanceledException {
         // No warning by default
     }

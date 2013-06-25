@@ -750,8 +750,8 @@ public abstract class Preferences {
         /**
          * Warning when opening connections sending credentials in plaintext
          */
-        defaults.put("connection.unsecure.warning", String.valueOf(true));
-        defaults.put("connection.unsecure.switch", String.valueOf(true));
+        defaults.put(String.format("connection.unsecure.warning.%s", Scheme.ftp), String.valueOf(true));
+        defaults.put(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(false));
 
         defaults.put("connection.ssl.protocols", "SSLv3, TLSv1");
 

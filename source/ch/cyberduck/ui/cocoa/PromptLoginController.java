@@ -75,7 +75,8 @@ public final class PromptLoginController extends AbstractLoginController {
     }
 
     @Override
-    public void warn(String title, String message, String continueButton, String disconnectButton, String preference)
+    public void warn(final String title, final String message,
+                     final String continueButton, final String disconnectButton, final String preference)
             throws LoginCanceledException {
         final NSAlert alert = NSAlert.alert(title, message,
                 continueButton, // Default Button

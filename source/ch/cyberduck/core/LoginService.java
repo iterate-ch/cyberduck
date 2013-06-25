@@ -7,7 +7,7 @@ import ch.cyberduck.core.threading.BackgroundException;
 import java.text.MessageFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LoginService {
 
@@ -25,8 +25,9 @@ public class LoginService {
      */
     public void login(final Session session) throws BackgroundException {
         session.prompt(prompt);
-        session.warn(prompt);
-
+        if(this.alert(session)) {
+            session.warn(prompt);
+        }
         session.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                 session.getHost().getCredentials().getUsername()));
         try {
@@ -39,5 +40,19 @@ public class LoginService {
             prompt.fail(session.getHost().getProtocol(), session.getHost().getCredentials(), e.getDetail());
             this.login(session);
         }
+    }
+
+    private boolean alert(final Session session) {
+        if(session.getHost().getProtocol().isSecure()) {
+            return false;
+        }
+        if(session.getHost().getCredentials().isAnonymousLogin()) {
+            return false;
+        }
+        if(Preferences.instance().getBoolean(String.format("connection.unsecure.%s", session.getHost().getHostname()))) {
+            return false;
+        }
+        return Preferences.instance().getBoolean(
+                String.format("connection.unsecure.warning.%s", session.getHost().getProtocol().getScheme()));
     }
 }

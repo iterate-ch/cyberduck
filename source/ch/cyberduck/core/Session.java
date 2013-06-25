@@ -62,9 +62,6 @@ public abstract class Session<C> implements TranscriptListener {
         }
     };
 
-    private boolean unsecurewarning =
-            Preferences.instance().getBoolean("connection.unsecure.warning");
-
     private Set<ConnectionListener> connectionListeners
             = Collections.synchronizedSet(new HashSet<ConnectionListener>(0));
 
@@ -139,14 +136,6 @@ public abstract class Session<C> implements TranscriptListener {
         controller.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
     }
 
-    public boolean isUnsecurewarning() {
-        return unsecurewarning;
-    }
-
-    public void setUnsecurewarning(boolean unsecurewarning) {
-        this.unsecurewarning = unsecurewarning;
-    }
-
     /**
      * Warning if credentials are sent plaintext.
      *
@@ -154,20 +143,13 @@ public abstract class Session<C> implements TranscriptListener {
      * @throws LoginCanceledException If connection should be dropped
      */
     protected void warn(final LoginController login) throws BackgroundException {
-        if(this.isUnsecurewarning()
-                && !host.getProtocol().isSecure()
-                && !host.getCredentials().isAnonymousLogin()
-                && !Preferences.instance().getBoolean("connection.unsecure." + host.getHostname())) {
-            try {
-                login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
-                        MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"), host.getCredentials().getPasswordPlaceholder()),
-                        "connection.unsecure." + host.getHostname());
-            }
-            finally {
-                // Do not warn again upon subsequent login
-                this.setUnsecurewarning(false);
-            }
-        }
+        login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"),
+                host.getProtocol().getName()),
+                MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"),
+                        host.getCredentials().getPasswordPlaceholder()),
+                Locale.localizedString("Continue", "Credentials"),
+                Locale.localizedString("Disconnect", "Credentials"),
+                String.format("connection.unsecure.%s", host.getHostname()));
     }
 
     /**
@@ -261,7 +243,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @return the host this session connects to
      */
     public Host getHost() {
-        return this.host;
+        return host;
     }
 
     /**

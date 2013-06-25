@@ -29,7 +29,7 @@ public class LoginServiceTest extends AbstractTestCase {
         session.open();
         LoginService l = new LoginService(new DisabledLoginController() {
             @Override
-            public void warn(final String title, final String message, final String preference) throws LoginCanceledException {
+            public void warn(final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 warned.set(true);
                 throw new LoginCanceledException();
             }

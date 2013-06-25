@@ -4,9 +4,11 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.junit.Test;
 
@@ -67,5 +69,31 @@ public class FTPSessionTest extends AbstractTestCase {
         catch(LoginFailureException e) {
             throw e;
         }
+    }
+
+    @Test
+    public void testConnectionTlsUpgrade() throws Exception {
+        final Host host = new Host(Protocol.FTP, "test.cyberduck.ch", new Credentials(
+                "u", "p"
+        ));
+        final FTPSession session = new FTPSession(host) {
+            @Override
+            protected void warn(final LoginController login) throws BackgroundException {
+                super.warn(login);
+                assertEquals(Protocol.FTP_TLS, host.getProtocol());
+            }
+
+            protected boolean isTLSSupported() throws BackgroundException {
+                final boolean s = super.isTLSSupported();
+                assertTrue(s);
+                return true;
+            }
+        };
+        assertNotNull(session.open());
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        assertEquals(Protocol.FTP, host.getProtocol());
+        session.login(new DisabledLoginController());
+        assertEquals(Protocol.FTP_TLS, host.getProtocol());
     }
 }

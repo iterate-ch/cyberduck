@@ -162,7 +162,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         client.setDefaultPort(Protocol.FTP.getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
         client.setRemoteVerificationEnabled(Preferences.instance().getBoolean("ftp.datachannel.verify"));
-        if(this.getHost().getProtocol().isSecure()) {
+        if(host.getProtocol().isSecure()) {
             List<String> protocols = new ArrayList<String>();
             for(String protocol : Preferences.instance().getProperty("connection.ssl.protocols").split(",")) {
                 protocols.add(protocol.trim());
@@ -181,7 +181,7 @@ public class FTPSession extends SSLSession<FTPClient> {
      * @return True if the feaatures AUTH TLS, PBSZ and PROT are supported.
      * @throws BackgroundException Error reading FEAT response
      */
-    private boolean isTLSSupported() throws BackgroundException {
+    protected boolean isTLSSupported() throws BackgroundException {
         try {
             return client.isFeatureSupported("AUTH TLS")
                     && client.isFeatureSupported("PBSZ")
@@ -202,7 +202,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             this.configure(client);
             client.connect(host.getHostname(true), host.getPort());
             client.setTcpNoDelay(false);
-            final TimeZone zone = this.getHost().getTimezone();
+            final TimeZone zone = host.getTimezone();
             if(log.isInfoEnabled()) {
                 log.info(String.format("Reset parser to timezone %s", zone));
             }
@@ -237,17 +237,6 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     }
 
-    private boolean unsecureswitch =
-            Preferences.instance().getBoolean("connection.unsecure.switch");
-
-    public boolean isUnsecureswitch() {
-        return unsecureswitch;
-    }
-
-    public void setUnsecureswitch(boolean unsecureswitch) {
-        this.unsecureswitch = unsecureswitch;
-    }
-
     /**
      * Propose protocol change if AUTH TLS is available.
      *
@@ -255,11 +244,7 @@ public class FTPSession extends SSLSession<FTPClient> {
      */
     @Override
     protected void warn(final LoginController login) throws BackgroundException {
-        if(this.isUnsecureswitch()
-                && !host.getProtocol().isSecure()
-                && !host.getCredentials().isAnonymousLogin()
-                && !Preferences.instance().getBoolean("connection.unsecure." + host.getHostname())
-                && this.isTLSSupported()) {
+        if(this.isTLSSupported()) {
             try {
                 login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
                         MessageFormat.format(Locale.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"), Protocol.FTP_TLS.getName()),
@@ -271,8 +256,8 @@ public class FTPSession extends SSLSession<FTPClient> {
             catch(LoginCanceledException e) {
                 // Protocol switch
                 host.setProtocol(Protocol.FTP_TLS);
-                // Reconfigure client for TLS
                 try {
+                    // Reconfigure client for TLS
                     this.configure(client);
                     client.execAUTH();
                     client.sslNegotiation();
@@ -280,10 +265,6 @@ public class FTPSession extends SSLSession<FTPClient> {
                 catch(IOException f) {
                     throw new DefaultIOExceptionMappingService().map(f);
                 }
-            }
-            finally {
-                // Do not warn again upon subsequent login
-                this.setUnsecureswitch(false);
             }
         }
     }
@@ -293,7 +274,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         try {
             if(client.login(host.getCredentials().getUsername(), host.getCredentials().getPassword())) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
-                if(this.getHost().getProtocol().isSecure()) {
+                if(host.getProtocol().isSecure()) {
                     client.execPBSZ(0);
                     // Negotiate data connection security
                     client.execPROT(Preferences.instance().getProperty("ftp.tls.datachannel"));
