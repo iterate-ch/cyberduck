@@ -259,7 +259,10 @@ public abstract class Protocol {
 
         @Override
         public boolean validate(Credentials credentials) {
-            return StringUtils.isNotBlank(credentials.getUsername());
+            if(credentials.isPublicKeyAuthentication()) {
+                return StringUtils.isNotBlank(credentials.getUsername());
+            }
+            return super.validate(credentials);
         }
 
         @Override
