@@ -62,7 +62,7 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
             encoded = this.encode(new String(Base64.encodeBase64(setup.getBytes("UTF-8")), "UTF-8"));
         }
         catch(UnsupportedEncodingException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            return null;
         }
         return String.format("%s?setup=%s", uri, encoded);
     }
@@ -76,7 +76,7 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
             return b.toString().replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
         }
         catch(UnsupportedEncodingException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            return null;
         }
     }
 }
