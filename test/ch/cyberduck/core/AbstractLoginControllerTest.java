@@ -16,7 +16,24 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
     }
 
     @Test(expected = LoginCanceledException.class)
-    public void testCheck() throws Exception {
+    public void testCheckFTP() throws Exception {
+        LoginController c = new AbstractLoginController() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException {
+                assertEquals(Protocol.FTP, protocol);
+                assertEquals("t", title);
+                assertEquals("r. No login credentials could be found in the Keychain.", reason);
+                assertTrue(enableKeychain);
+                assertTrue(enablePublicKey);
+                assertFalse(enableAnonymous);
+                throw new LoginCanceledException();
+            }
+        };
+        c.check(new Host(Protocol.FTP, "h"), "t", "r", true, true, false);
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testCheckSFTP() throws Exception {
         LoginController c = new AbstractLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException {
