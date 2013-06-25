@@ -67,14 +67,23 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                         container.getName(), Collections.singletonMap("X-Container-Meta-Web-Index", defaultRootObject));
             }
             try {
-                session.getClient().getCDNContainerInfo(session.getRegion(container),
-                        container.getName());
+                final FilesCDNContainer info
+                        = session.getClient().getCDNContainerInfo(session.getRegion(container), container.getName());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Found existing CDN configuration %s", info));
+                }
             }
             catch(FilesNotFoundException e) {
                 // Not found.
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Enable CDN configuration for %s", container));
+                }
                 session.getClient().cdnEnableContainer(session.getRegion(container), container.getName());
             }
             // Toggle content distribution for the container without changing the TTL expiration
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Update CDN configuration for %s", container));
+            }
             session.getClient().cdnUpdateContainer(session.getRegion(container),
                     container.getName(), -1, enabled, logging);
         }
@@ -114,6 +123,9 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             }
             catch(FilesNotFoundException e) {
                 // Not found.
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("No CDN configuration for %s", container));
+                }
                 return new Distribution(null, session.getRegion(container).getStorageUrl().getHost(),
                         method, false, null, Locale.localizedString("CDN Disabled", "Mosso"));
             }
