@@ -19,6 +19,7 @@ package ch.cyberduck.core.cf;
 
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
@@ -62,7 +63,7 @@ public class CFSession extends CloudSession<FilesClient> {
     }
 
     @Override
-    public FilesClient connect() throws BackgroundException {
+    public FilesClient connect(final HostKeyController key) throws BackgroundException {
         client = new FilesClient(this.http());
         return client;
     }
@@ -151,7 +152,9 @@ public class CFSession extends CloudSession<FilesClient> {
         return new SwiftDistributionConfiguration(this) {
             @Override
             public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
-                return super.read(container, method);
+                final Distribution distribution = super.read(container, method);
+                distributions.put(container, distribution);
+                return distribution;
             }
         };
     }
