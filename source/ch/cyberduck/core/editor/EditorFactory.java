@@ -22,6 +22,7 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -85,8 +86,8 @@ public abstract class EditorFactory extends Factory<Editor> {
      * @param path File to edit
      * @return New editor instance for the given file type.
      */
-    public Editor create(final Controller c, final Path path) {
-        return this.create(c, this.getEditor(path.getName()), path);
+    public Editor create(final Controller c, final Session session, final Path path) {
+        return this.create(c, session, this.getEditor(path.getName()), path);
     }
 
     /**
@@ -95,7 +96,7 @@ public abstract class EditorFactory extends Factory<Editor> {
      * @param path        File to edit
      * @return New editor instance for the given file type.
      */
-    public abstract Editor create(Controller c, Application application, Path path);
+    public abstract Editor create(Controller c, Session session, Application application, Path path);
 
     /**
      * Determine the default editor set
@@ -109,9 +110,8 @@ public abstract class EditorFactory extends Factory<Editor> {
     }
 
     /**
-     *
      * @param filename@return The bundle identifier of the application for this file or null if no
-     *         suitable and installed editor is found.
+     *                        suitable and installed editor is found.
      */
     public Application getEditor(final String filename) {
         if(Preferences.instance().getBoolean("editor.alwaysUseDefault")) {
@@ -129,9 +129,8 @@ public abstract class EditorFactory extends Factory<Editor> {
     }
 
     /**
-     *
      * @param filename@return Installed applications suitable to edit the given file type. Does always include
-     *         the default editor set in the Preferences
+     *                        the default editor set in the Preferences
      */
     public List<Application> getEditors(final String filename) {
         if(log.isDebugEnabled()) {

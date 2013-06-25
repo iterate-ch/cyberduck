@@ -19,7 +19,9 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.Local;
@@ -66,13 +68,12 @@ public class WatchEditorTest extends AbstractTestCase {
             public void invoke(final MainAction runnable, final boolean wait) {
                 //
             }
-        }, new Application("com.apple.TextEdit", null), path);
+        }, new NullSession(new Host("h")), new Application("com.apple.TextEdit", null), path);
         assertEquals(new Application("com.apple.TextEdit", null), ((AbstractEditor) e).getApplication());
         assertEquals("t", ((AbstractEditor) e).getEdited().getName());
         final Local local = ((AbstractEditor) e).getEdited().getLocal();
         assertEquals("t-1", local.getName());
         assertEquals("f2", local.getParent().getName());
         assertEquals("f1", local.getParent().getParent().getName());
-        assertEquals(path.getHost().getUuid(), local.getParent().getParent().getParent().getName());
     }
 }

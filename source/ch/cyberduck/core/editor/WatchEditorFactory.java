@@ -20,6 +20,7 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -79,8 +80,8 @@ public class WatchEditorFactory extends EditorFactory {
     }
 
     @Override
-    public Editor create(final Controller c, final Application application, final Path path) {
-        return new WatchEditor(c, application, path);
+    public Editor create(final Controller c, final Session session, final Application application, final Path path) {
+        return new WatchEditor(c, session, application, path);
     }
 
     @Override

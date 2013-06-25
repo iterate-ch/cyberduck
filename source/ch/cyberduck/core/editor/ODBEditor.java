@@ -19,6 +19,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.Controller;
@@ -34,8 +35,8 @@ public class ODBEditor extends BrowserBackgroundEditor {
 
     private BrowserController controller;
 
-    public ODBEditor(Controller c, Application application, final Path path) {
-        super(c, application, path);
+    public ODBEditor(final Controller c, final Session session, final Application application, final Path path) {
+        super(c, session, application, path);
         Native.load("ODBEdit");
         this.controller = (BrowserController) c;
     }

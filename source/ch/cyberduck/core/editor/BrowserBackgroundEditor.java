@@ -19,6 +19,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -41,8 +42,9 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * @param application Editor
      * @param path        Remote file
      */
-    public BrowserBackgroundEditor(final Controller controller, final Application application, final Path path) {
-        super(application, path);
+    public BrowserBackgroundEditor(final Controller controller, final Session session,
+                                   final Application application, final Path path) {
+        super(application, session, path);
         this.controller = controller;
     }
 

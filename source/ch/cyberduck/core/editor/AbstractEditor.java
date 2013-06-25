@@ -20,7 +20,7 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.Session;import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
@@ -68,10 +68,13 @@ public abstract class AbstractEditor implements Editor {
      */
     private String checksum;
 
-    public AbstractEditor(final Application application, final Path path) {
+    private Session session;
+
+    public AbstractEditor(final Application application, final Session session, final Path path) {
         this.application = application;
         this.edited = path;
         this.edited.setLocal(TemporaryFileServiceFactory.get().get(edited));
+        this.session = session;
     }
 
     /**
@@ -133,7 +136,7 @@ public abstract class AbstractEditor implements Editor {
     @Override
     public void open() {
         final BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
-            private final Transfer download = new DownloadTransfer(edited) {
+            private final Transfer download = new DownloadTransfer(session, edited) {
                 @Override
                 public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
                     return getAction();
@@ -150,8 +153,6 @@ public abstract class AbstractEditor implements Editor {
                 options.open = false;
                 download.start(null, options);
                 if(download.isComplete()) {
-                    edited.getSession().message(MessageFormat.format(
-                            Locale.localizedString("Compute MD5 hash of {0}", "Status"), edited.getName()));
                     checksum = local.attributes().getChecksum();
                 }
             }
@@ -190,8 +191,6 @@ public abstract class AbstractEditor implements Editor {
             @Override
             public void run() throws BackgroundException {
                 // If checksum still the same no need for save
-                edited.getSession().message(MessageFormat.format(
-                        Locale.localizedString("Compute MD5 hash of {0}", "Status"), edited.getName()));
                 if(checksum.equals(edited.getLocal().attributes().getChecksum())) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("File %s not modified", edited.getLocal()));
@@ -200,7 +199,7 @@ public abstract class AbstractEditor implements Editor {
                 }
                 checksum = edited.getLocal().attributes().getChecksum();
                 final TransferOptions options = new TransferOptions();
-                final Transfer upload = new UploadTransfer(edited) {
+                final Transfer upload = new UploadTransfer(session, edited) {
                     @Override
                     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
                         return TransferAction.ACTION_OVERWRITE;

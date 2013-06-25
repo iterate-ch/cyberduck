@@ -19,6 +19,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.FileWatcher;
@@ -46,8 +47,8 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
      * @param application Editor application
      * @param path        Remote file
      */
-    public WatchEditor(final Controller c, final Application application, final Path path) {
-        super(c, application, path);
+    public WatchEditor(final Controller c, final Session session, final Application application, final Path path) {
+        super(c, session, application, path);
     }
 
     @Override

@@ -21,6 +21,7 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.Controller;
 
@@ -57,11 +58,11 @@ public class MultipleEditorFactory extends EditorFactory {
     }
 
     @Override
-    public Editor create(final Controller c, final Application application, final Path path) {
+    public Editor create(final Controller c, final Session session, final Application application, final Path path) {
         if(odbEditorFactory.getConfigured().contains(application)) {
-            return odbEditorFactory.create(c, application, path);
+            return odbEditorFactory.create(c, session, application, path);
         }
-        return watchEditorFactory.create(c, application, path);
+        return watchEditorFactory.create(c, session, application, path);
     }
 
     @Override
