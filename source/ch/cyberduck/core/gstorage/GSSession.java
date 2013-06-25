@@ -379,7 +379,7 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public IdentityConfiguration iam() {
+    public IdentityConfiguration iam(final LoginController prompt) {
         return new DefaultCredentialsIdentityConfiguration(this.getHost());
     }
 
