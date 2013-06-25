@@ -20,6 +20,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -95,10 +96,7 @@ public class FTPPath extends Path {
         return session;
     }
 
-    /**
-     *
-     */
-    private abstract static class DataConnectionAction<T> {
+    protected abstract static class DataConnectionAction<T> {
         public abstract T run() throws IOException;
     }
 
@@ -106,7 +104,7 @@ public class FTPPath extends Path {
      * @param action Action that needs to open a data connection
      * @return True if action was successful
      */
-    private <T> T data(final DataConnectionAction<T> action) throws BackgroundException {
+    protected <T> T data(final DataConnectionAction<T> action) throws BackgroundException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
             if(session.getConnectMode().equals(FTPConnectMode.PASV)) {
@@ -118,11 +116,12 @@ public class FTPPath extends Path {
             return action.run();
         }
         catch(SocketTimeoutException failure) {
-            log.warn("Timeout opening data socket:" + failure.getMessage());
+            log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
             // Fallback handling
             if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
                 session.interrupt();
                 session.open();
+                session.login(new DisabledLoginController());
                 try {
                     return this.fallback(action);
                 }
@@ -143,7 +142,7 @@ public class FTPPath extends Path {
      * @param action Action that needs to open a data connection
      * @return True if action was successful
      */
-    private <T> T fallback(final DataConnectionAction<T> action) throws ConnectionCanceledException, IOException {
+    protected <T> T fallback(final DataConnectionAction<T> action) throws ConnectionCanceledException, IOException {
         // Fallback to other connect mode
         if(session.getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
             log.warn("Fallback to active data connection");
@@ -198,6 +197,7 @@ public class FTPPath extends Path {
                 log.warn("Command STAT failed with I/O error:" + e.getMessage());
                 session.interrupt();
                 session.open();
+                session.login(new DisabledLoginController());
             }
             if(!success || children.isEmpty()) {
                 success = this.data(new DataConnectionAction<Boolean>() {
