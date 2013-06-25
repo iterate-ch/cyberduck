@@ -33,6 +33,8 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
 
     private UseragentProvider ua = new PreferencesUseragentProvider();
 
+    private AmazonIdentityManagementClient client;
+
     /**
      * Prefix in preferences
      */
@@ -41,6 +43,29 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     public AWSIdentityConfiguration(final Host host, final LoginController prompt) {
         this.host = host;
         this.prompt = prompt;
+        final int timeout = Preferences.instance().getInteger("connection.timeout.seconds") * 1000;
+        final ClientConfiguration configuration = new ClientConfiguration();
+        configuration.setConnectionTimeout(timeout);
+        configuration.setSocketTimeout(timeout);
+        configuration.setUserAgent(ua.get());
+        configuration.setMaxErrorRetry(0);
+        configuration.setMaxConnections(1);
+        configuration.setProxyHost(ProxyFactory.get().getHTTPSProxyHost(host));
+        configuration.setProxyPort(ProxyFactory.get().getHTTPSProxyPort(host));
+        // Create new IAM credentials
+        client = new AmazonIdentityManagementClient(
+                new com.amazonaws.auth.AWSCredentials() {
+                    @Override
+                    public String getAWSAccessKeyId() {
+                        return host.getCredentials().getUsername();
+                    }
+
+                    @Override
+                    public String getAWSSecretKey() {
+                        return host.getCredentials().getPassword();
+                    }
+                }, configuration
+        );
     }
 
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
@@ -69,32 +94,18 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
             public Void call() throws Exception {
                 Preferences.instance().deleteProperty(String.format("%s%s", prefix, username));
                 try {
-                    // Create new IAM credentials
-                    AmazonIdentityManagementClient iam = new AmazonIdentityManagementClient(
-                            new com.amazonaws.auth.AWSCredentials() {
-                                @Override
-                                public String getAWSAccessKeyId() {
-                                    return host.getCredentials().getUsername();
-                                }
-
-                                @Override
-                                public String getAWSSecretKey() {
-                                    return host.getCredentials().getPassword();
-                                }
-                            }
-                    );
                     final ListAccessKeysResult keys
-                            = iam.listAccessKeys(new ListAccessKeysRequest().withUserName(username));
+                            = client.listAccessKeys(new ListAccessKeysRequest().withUserName(username));
 
                     for(AccessKeyMetadata key : keys.getAccessKeyMetadata()) {
-                        iam.deleteAccessKey(new DeleteAccessKeyRequest(key.getAccessKeyId()).withUserName(username));
+                        client.deleteAccessKey(new DeleteAccessKeyRequest(key.getAccessKeyId()).withUserName(username));
                     }
 
-                    final ListUserPoliciesResult policies = iam.listUserPolicies(new ListUserPoliciesRequest(username));
+                    final ListUserPoliciesResult policies = client.listUserPolicies(new ListUserPoliciesRequest(username));
                     for(String policy : policies.getPolicyNames()) {
-                        iam.deleteUserPolicy(new DeleteUserPolicyRequest(username, policy));
+                        client.deleteUserPolicy(new DeleteUserPolicyRequest(username, policy));
                     }
-                    iam.deleteUser(new DeleteUserRequest(username));
+                    client.deleteUser(new DeleteUserRequest(username));
                 }
                 catch(NoSuchEntityException e) {
                     log.warn(String.format("User %s already removed", username));
@@ -136,34 +147,12 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
             public Void call() throws Exception {
                 try {
                     // Create new IAM credentials
-                    final int timeout = Preferences.instance().getInteger("connection.timeout.seconds") * 1000;
-                    final ClientConfiguration configuration = new ClientConfiguration();
-                    configuration.setConnectionTimeout(timeout);
-                    configuration.setSocketTimeout(timeout);
-                    configuration.setUserAgent(ua.get());
-                    configuration.setMaxErrorRetry(0);
-                    configuration.setMaxConnections(1);
-                    configuration.setProxyHost(ProxyFactory.get().getHTTPSProxyHost(host));
-                    configuration.setProxyPort(ProxyFactory.get().getHTTPSProxyPort(host));
-                    AmazonIdentityManagementClient iam = new AmazonIdentityManagementClient(
-                            new com.amazonaws.auth.AWSCredentials() {
-                                @Override
-                                public String getAWSAccessKeyId() {
-                                    return host.getCredentials().getUsername();
-                                }
-
-                                @Override
-                                public String getAWSSecretKey() {
-                                    return host.getCredentials().getPassword();
-                                }
-                            }, configuration
-                    );
-                    final User user = iam.createUser(new CreateUserRequest().withUserName(username)).getUser();
-                    final CreateAccessKeyResult key = iam.createAccessKey(
+                    final User user = client.createUser(new CreateUserRequest().withUserName(username)).getUser();
+                    final CreateAccessKeyResult key = client.createAccessKey(
                             new CreateAccessKeyRequest().withUserName(user.getUserName()));
 
                     // Write policy document to get read access
-                    iam.putUserPolicy(new PutUserPolicyRequest(user.getUserName(), "Policy", policy));
+                    client.putUserPolicy(new PutUserPolicyRequest(user.getUserName(), "Policy", policy));
                     // Map virtual user name to IAM access key
                     final String id = key.getAccessKey().getAccessKeyId();
                     Preferences.instance().setProperty(String.format("%s%s", prefix, username), id);
