@@ -476,10 +476,10 @@ public class InfoController extends ToolbarWindowController {
                     final Session session = controller.getSession();
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                        session.iam().createUser(session.analytics().getName(), document);
+                        session.iam(LoginControllerFactory.get(InfoController.this)).createUser(session.analytics().getName(), document);
                     }
                     else {
-                        session.iam().deleteUser(session.analytics().getName());
+                        session.iam(LoginControllerFactory.get(InfoController.this)).deleteUser(session.analytics().getName());
                     }
                 }
 
@@ -1372,13 +1372,6 @@ public class InfoController extends ToolbarWindowController {
                     super.windowWillClose(notification);
                 }
             };
-            controller.getSession().addConnectionListener(new ConnectionAdapter() {
-                @Override
-                public void connectionDidClose() {
-                    c.window().close();
-                    controller.getSession().removeConnectionListener(this);
-                }
-            });
             open.put(controller, c);
             return c;
         }
@@ -1869,7 +1862,7 @@ public class InfoController extends ToolbarWindowController {
         final Session session = controller.getSession();
         final Path container = this.getSelected().getContainer();
 
-        final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
+        final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(InfoController.this));
         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                 cdn.getName()));
         distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("None"));
@@ -1981,7 +1974,7 @@ public class InfoController extends ToolbarWindowController {
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
-        if(ObjectUtils.equals(session.iam().getUserCredentials(session.analytics().getName()), credentials)) {
+        if(ObjectUtils.equals(session.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(session.analytics().getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             bucketAnalyticsButton.setEnabled(false);
         }
@@ -2092,7 +2085,7 @@ public class InfoController extends ToolbarWindowController {
                         lifecycle = s.getLifecycle(container);
                     }
                     if(s.isAnalyticsSupported()) {
-                        credentials = s.iam().getUserCredentials(s.analytics().getName());
+                        credentials = s.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(s.analytics().getName());
                     }
                     if(numberOfFiles() == 1) {
                         encryption = selected.attributes().getEncryption();
@@ -2480,9 +2473,9 @@ public class InfoController extends ToolbarWindowController {
         Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
         distributionEnableButton.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
-        final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
+        final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(InfoController.this));
         distributionLoggingButton.setEnabled(stop && enable && cdn.isLoggingSupported(method));
-        if(ObjectUtils.equals(session.iam().getUserCredentials(session.analytics().getName()), credentials)) {
+        if(ObjectUtils.equals(session.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(session.analytics().getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             distributionAnalyticsButton.setEnabled(false);
         }
@@ -2511,7 +2504,7 @@ public class InfoController extends ToolbarWindowController {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = getSelected().getContainer();
-                    final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
+                    final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(InfoController.this));
                     cdn.invalidate(container, method, files, false);
                 }
 
@@ -2547,7 +2540,7 @@ public class InfoController extends ToolbarWindowController {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = getSelected().getContainer();
-                    final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
+                    final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(InfoController.this));
                     if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
                         cdn.write(container,
                                 distributionEnableButton.state() == NSCell.NSOnState,
@@ -2594,7 +2587,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void run() throws BackgroundException {
                     final Session session = controller.getSession();
-                    final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
+                    final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(InfoController.this));
                     distribution = cdn.read(container, method);
                     if(cdn.isDefaultRootSupported(distribution.getMethod())) {
                         // Make sure container items are cached for default root object.
@@ -2607,7 +2600,7 @@ public class InfoController extends ToolbarWindowController {
                     try {
                         final Session session = controller.getSession();
                         final Path container = getSelected().getContainer();
-                        final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(controller));
+                        final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(InfoController.this));
                         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                                 cdn.getName(distribution.getMethod())));
                         distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
@@ -2633,7 +2626,7 @@ public class InfoController extends ToolbarWindowController {
                             distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
                         }
                         if(cdn.isAnalyticsSupported(distribution.getMethod())) {
-                            final Credentials credentials = session.iam().getUserCredentials(controller.getSession().analytics().getName());
+                            final Credentials credentials = session.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(controller.getSession().analytics().getName());
                             distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
                             if(credentials != null) {
                                 distributionAnalyticsSetupUrlField.setAttributedStringValue(
@@ -2739,10 +2732,10 @@ public class InfoController extends ToolbarWindowController {
                     final Session session = controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                        session.iam().createUser(session.analytics().getName(), document);
+                        session.iam(LoginControllerFactory.get(InfoController.this)).createUser(session.analytics().getName(), document);
                     }
                     else {
-                        session.iam().deleteUser(session.analytics().getName());
+                        session.iam(LoginControllerFactory.get(InfoController.this)).deleteUser(session.analytics().getName());
                     }
                 }
 
