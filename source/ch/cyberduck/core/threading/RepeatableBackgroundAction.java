@@ -28,7 +28,7 @@ import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.growl.Growl;
+import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
@@ -221,7 +221,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             return;
         }
         for(Session session : this.getSessions()) {
-            Growl.instance().notify(failure.getMessage(), session.getHost().getHostname());
+            GrowlFactory.get().notify(failure.getMessage(), session.getHost().getHostname());
         }
         exception = failure;
         failed = true;

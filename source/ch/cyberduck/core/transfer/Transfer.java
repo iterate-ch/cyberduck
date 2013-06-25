@@ -27,7 +27,7 @@ import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 import ch.cyberduck.core.threading.BackgroundException;
-import ch.cyberduck.ui.growl.Growl;
+import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
@@ -245,7 +245,7 @@ public abstract class Transfer implements Serializable {
             log.debug(String.format("Transfer %s queued", this.getName()));
         }
         for(Session s : this.getSessions()) {
-            Growl.instance().notify("Transfer queued", s.getHost().getHostname());
+            GrowlFactory.get().notify("Transfer queued", s.getHost().getHostname());
             s.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
         }
         queued = true;
@@ -269,7 +269,7 @@ public abstract class Transfer implements Serializable {
             log.debug("fireTransferDidEnd:" + this);
         }
         if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
-            Growl.instance().notify(this.getStatus(), this.getName());
+            GrowlFactory.get().notify(this.getStatus(), this.getName());
         }
         running = false;
         queued = false;

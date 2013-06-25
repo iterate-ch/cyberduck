@@ -64,7 +64,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
-import ch.cyberduck.ui.growl.Growl;
+import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -954,7 +954,7 @@ public class MainController extends BundleController implements NSApplication.De
             @Override
             public void run() throws BackgroundException {
                 // Make sure we register to Growl first
-                Growl.instance().setup();
+                GrowlFactory.get().setup();
             }
 
             @Override
@@ -980,7 +980,7 @@ public class MainController extends BundleController implements NSApplication.De
                     invoke(new DefaultMainAction() {
                         @Override
                         public void run() {
-                            Growl.instance().notifyWithImage("Bonjour", RendezvousFactory.instance().getDisplayedName(identifier), "rendezvous");
+                            GrowlFactory.get().notifyWithImage("Bonjour", RendezvousFactory.instance().getDisplayedName(identifier), "rendezvous");
                         }
                     });
                 }
