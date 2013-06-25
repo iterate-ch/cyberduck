@@ -19,11 +19,10 @@ package ch.cyberduck.core.cloud;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.local.Local;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @version $Id$
@@ -62,6 +61,7 @@ public abstract class CloudPath extends HttpPath {
         if(this.isContainer()) {
             return null;
         }
-        return StringUtils.removeStart(this.getAbsolute(), String.valueOf(Path.DELIMITER) + this.getContainer().getName() + String.valueOf(Path.DELIMITER));
+        return PathRelativizer.relativize(this.getContainer().getAbsolute() + String.valueOf(Path.DELIMITER),
+                this.getAbsolute());
     }
 }
