@@ -63,7 +63,7 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
     }
 
     @Override
-    public void configure(FTPClientConfig config) {
+    public void configure(final FTPClientConfig config) {
         for(FTPFileEntryParser parser : ftpFileEntryParsers) {
             if(parser instanceof Configurable) {
                 ((Configurable) parser).configure(config);
