@@ -2,33 +2,29 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.ui.cocoa.AlertHostKeyController;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPSessionTest extends AbstractTestCase {
 
     @Test
-    @Ignore
     public void testConnect() throws Exception {
-        AlertHostKeyController.register();
-//        HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new PreferencesHostKeyVerifier());
-
         final Host host = new Host(Protocol.SFTP, "localhost", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());
@@ -37,6 +33,18 @@ public class SFTPSessionTest extends AbstractTestCase {
         session.close();
         assertNull(session.getClient());
         assertFalse(session.isConnected());
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testLoginCancel() throws Exception {
+        final Host host = new Host(Protocol.SFTP, "localhost", new Credentials(
+                "u", "p"
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledLoginController());
     }
 
     @Test
