@@ -142,7 +142,7 @@ public class CFSession extends CloudSession<FilesClient> {
     }
 
     @Override
-    public IdentityConfiguration iam() {
+    public IdentityConfiguration iam(final LoginController prompt) {
         return new DefaultCredentialsIdentityConfiguration(host);
     }
 }
