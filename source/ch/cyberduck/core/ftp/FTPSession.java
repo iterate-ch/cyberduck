@@ -1,21 +1,20 @@
 package ch.cyberduck.core.ftp;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.Host;
@@ -36,22 +35,18 @@ import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundException;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
-import org.apache.commons.net.ftp.parser.ParserInitializationException;
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -64,12 +59,7 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     private FTPClient client;
 
-    private TimeZone tz;
-
-    /**
-     * Listing parser
-     */
-    private FTPFileEntryParser parser;
+    private CompositeFileEntryParser parser;
 
     public FTPSession(Host h) {
         super(h);
@@ -87,66 +77,18 @@ public class FTPSession extends SSLSession<FTPClient> {
                     host.setTimezone(tz);
                     break;
                 }
-                if(!matches.isEmpty()) {
-                    // Reset parser to use newly determined timezone
-                    parser = null;
-                }
             }
         }
         return workdir;
-    }
-
-    protected TimeZone getTimezone() throws IOException {
-        if(null == host.getTimezone()) {
-            return TimeZone.getTimeZone(
-                    Preferences.instance().getProperty("ftp.timezone.default"));
-        }
-        return host.getTimezone();
     }
 
     /**
      * @return Directory listing parser depending on response for SYST command
      * @throws IOException Failure initializing parser
      */
-    protected FTPFileEntryParser getFileParser() throws IOException {
-        try {
-            if(!this.getTimezone().equals(tz)) {
-                tz = this.getTimezone();
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Reset parser to timezone %s", tz));
-                }
-                parser = null;
-            }
-            if(null == parser) {
-                String system = null; //Unknown
-                try {
-                    system = client.getSystemType();
-                }
-                catch(IOException e) {
-                    log.warn("SYST command failed:" + e.getMessage());
-                }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Using timezone %s", tz));
-                }
-                parser = new FTPParserFactory().createFileEntryParser(system, tz);
-                if(StringUtils.isNotBlank(system)) {
-                    String ukey = system.toUpperCase(java.util.Locale.ENGLISH);
-                    if(ukey.contains(FTPClientConfig.SYST_NT)) {
-                        // Workaround for #5572.
-                        this.setStatListSupportedEnabled(false);
-                    }
-                }
-            }
-            return parser;
-        }
-        catch(ParserInitializationException e) {
-            IOException failure = new IOException(e.getMessage());
-            failure.initCause(e);
-            throw failure;
-        }
+    public CompositeFileEntryParser getParser() throws IOException {
+        return parser;
     }
-
-    private Map<FTPFileEntryParser, Boolean> parsers = new HashMap<FTPFileEntryParser, Boolean>(1);
 
     /**
      * @param p Parser
@@ -156,7 +98,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         FTPFileEntryParser delegate;
         if(p instanceof CompositeFileEntryParser) {
             // Get the actual parser
-            delegate = ((CompositeFileEntryParser) p).getCachedFtpFileEntryParser();
+            delegate = ((CompositeFileEntryParser) p).getCurrent();
             if(null == delegate) {
                 log.warn("Composite FTP parser has no cached delegate yet");
                 return false;
@@ -166,15 +108,10 @@ public class FTPSession extends SSLSession<FTPClient> {
             // Not a composite parser
             delegate = p;
         }
-        if(null == parsers.get(delegate)) {
-            // Cache the value as it might get queried frequently
-            parsers.put(delegate, delegate instanceof UnixFTPEntryParser
-                    || delegate instanceof LaxUnixFTPEntryParser
-                    || delegate instanceof NetwareFTPEntryParser
-                    || delegate instanceof RumpusFTPEntryParser
-            );
-        }
-        return parsers.get(delegate);
+        return delegate instanceof UnixFTPEntryParser
+                || delegate instanceof LaxUnixFTPEntryParser
+                || delegate instanceof NetwareFTPEntryParser
+                || delegate instanceof RumpusFTPEntryParser;
     }
 
     @Override
@@ -265,6 +202,22 @@ public class FTPSession extends SSLSession<FTPClient> {
             this.configure(client);
             client.connect(host.getHostname(true), host.getPort());
             client.setTcpNoDelay(false);
+            final TimeZone zone = this.getHost().getTimezone();
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Reset parser to timezone %s", zone));
+            }
+            String system = null; //Unknown
+            try {
+                system = client.getSystemType();
+                if(system.toUpperCase(java.util.Locale.ENGLISH).contains(FTPClientConfig.SYST_NT)) {
+                    // Workaround for #5572.
+                    this.setStatListSupportedEnabled(false);
+                }
+            }
+            catch(IOException e) {
+                log.warn("SYST command failed:" + e.getMessage());
+            }
+            parser = new FTPParserSelector().getParser(system, zone);
             return client;
         }
         catch(IOException e) {

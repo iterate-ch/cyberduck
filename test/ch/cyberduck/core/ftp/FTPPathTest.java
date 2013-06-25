@@ -43,7 +43,7 @@ public class FTPPathTest extends AbstractTestCase {
 
     @Test
     public void test3243() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/SunnyD", Path.DIRECTORY_TYPE);
@@ -60,7 +60,7 @@ public class FTPPathTest extends AbstractTestCase {
 
     @Test
     public void testParseSymbolicLink() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/", Path.DIRECTORY_TYPE);
@@ -79,7 +79,7 @@ public class FTPPathTest extends AbstractTestCase {
 
     @Test
     public void test3763() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/www", Path.DIRECTORY_TYPE);
@@ -329,7 +329,7 @@ public class FTPPathTest extends AbstractTestCase {
                     "- [RWCEAFMS] Petersm                             0 May 05  2004 /data/FTP_pub/WelcomeTo_PeakFTP"
             };
 
-            boolean success = path.parseListResponse(children, new FTPParserFactory().createFileEntryParser("NETWARE  Type : L8"),
+            boolean success = path.parseListResponse(children, new FTPParserSelector().getParser("NETWARE  Type : L8"),
                     Arrays.asList(replies));
             assertTrue(success);
             assertEquals(1, children.size());
@@ -350,7 +350,7 @@ public class FTPPathTest extends AbstractTestCase {
                     "drwx------+111 mi       public       198 Dec 17 12:29 unsorted"
             };
 
-            boolean success = path.parseListResponse(children, new FTPParserFactory().createFileEntryParser("UNIX"),
+            boolean success = path.parseListResponse(children, new FTPParserSelector().getParser("UNIX"),
                     Arrays.asList(replies));
             assertTrue(success);
             assertEquals(1, children.size());

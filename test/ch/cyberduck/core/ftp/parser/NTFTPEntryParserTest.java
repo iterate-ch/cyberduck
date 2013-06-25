@@ -16,7 +16,7 @@
 package ch.cyberduck.core.ftp.parser;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.ftp.FTPParserFactory;
+import ch.cyberduck.core.ftp.FTPParserSelector;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -68,7 +68,7 @@ public class NTFTPEntryParserTest extends AbstractTestCase {
 
     @Before
     public void configure() {
-        this.parser = new FTPParserFactory().createFileEntryParser("WINDOWS");
+        this.parser = new FTPParserSelector().getParser("WINDOWS");
         this.df = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.US);
     }
 

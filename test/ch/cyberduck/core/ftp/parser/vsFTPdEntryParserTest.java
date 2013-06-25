@@ -20,7 +20,7 @@ package ch.cyberduck.core.ftp.parser;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.ftp.FTPParserFactory;
+import ch.cyberduck.core.ftp.FTPParserSelector;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -40,7 +40,7 @@ public class vsFTPdEntryParserTest extends AbstractTestCase {
 
     @Before
     public void configure() {
-        this.parser = new FTPParserFactory().createFileEntryParser("UNIX Type: L8");
+        this.parser = new FTPParserSelector().getParser("UNIX Type: L8");
     }
 
     @Test

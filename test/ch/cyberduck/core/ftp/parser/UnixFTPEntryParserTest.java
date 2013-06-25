@@ -19,7 +19,7 @@ package ch.cyberduck.core.ftp.parser;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.ftp.FTPParserFactory;
+import ch.cyberduck.core.ftp.FTPParserSelector;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -37,7 +37,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     @Test
     public void testParseTimestamp() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -68,7 +68,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     }
 
     public void testParseFTPEntryExpected() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -91,7 +91,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
      */
     @Test
     public void testParseNameWithBeginningWhitespace() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -106,7 +106,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
      */
     @Test
     public void testParseNameWithEndingWhitespace() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -123,7 +123,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
      */
     @Test
     public void testSizeWithIndicator() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -167,7 +167,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     @Test
     public void testCurrentYear() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -187,7 +187,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
      */
     @Test
     public void testLeadingWhitespace() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -231,7 +231,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     @Test
     public void testLowerCaseMonths() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -249,7 +249,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     @Test
     public void testUpperCaseMonths() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -266,7 +266,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     @Test
     public void testSolarisAcl() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -284,7 +284,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     }
 
     public void testUnknownTimestampFormat() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -327,7 +327,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     @Test
     @Ignore
     public void testLeapYear() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -340,7 +340,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     @Test
     public void testCarriageReturn() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -354,7 +354,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     @Test
     public void testSetuid() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -373,7 +373,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     @Test
     public void testSetgid() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -392,7 +392,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     @Test
     public void testStickyBit() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         FTPFile parsed;
 
@@ -411,7 +411,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     @Test
     public void testWindowsNTSystem() {
-        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("Windows_NT version 5.0");
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("Windows_NT version 5.0");
 
         FTPFile parsed;
 

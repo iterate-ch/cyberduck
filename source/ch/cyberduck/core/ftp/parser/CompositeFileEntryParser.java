@@ -21,12 +21,11 @@ import java.util.List;
 public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements Configurable {
     private static Logger log = Logger.getLogger(CompositeFileEntryParser.class);
 
-    private final List<? extends FTPFileEntryParser> ftpFileEntryParsers;
-    private FTPFileEntryParser cachedFtpFileEntryParser;
+    private final List<? extends FTPFileEntryParser> parsers;
+    private FTPFileEntryParser current;
 
-    public CompositeFileEntryParser(List<? extends FTPFileEntryParser> ftpFileEntryParsers) {
-        this.cachedFtpFileEntryParser = null;
-        this.ftpFileEntryParsers = ftpFileEntryParsers;
+    public CompositeFileEntryParser(List<? extends FTPFileEntryParser> parsers) {
+        this.parsers = parsers;
     }
 
     @Override
@@ -34,22 +33,22 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Parse %s", line));
         }
-        if(cachedFtpFileEntryParser != null) {
-            final FTPFile parsed = cachedFtpFileEntryParser.parseFTPEntry(line);
+        if(current != null) {
+            final FTPFile parsed = current.parseFTPEntry(line);
             if(null != parsed) {
                 return parsed;
             }
             if(log.isInfoEnabled()) {
-                log.info(String.format("Switching parser implementation because %s failed", cachedFtpFileEntryParser));
+                log.info(String.format("Switching parser implementation because %s failed", current));
             }
-            cachedFtpFileEntryParser = null;
+            current = null;
         }
-        for(FTPFileEntryParser parser : ftpFileEntryParsers) {
+        for(FTPFileEntryParser parser : parsers) {
             FTPFile matched = parser.parseFTPEntry(line);
             if(matched != null) {
-                cachedFtpFileEntryParser = parser;
+                current = parser;
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Caching %s parser implementation", cachedFtpFileEntryParser));
+                    log.info(String.format("Caching %s parser implementation", current));
                 }
                 return matched;
             }
@@ -58,13 +57,13 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
         return null;
     }
 
-    public FTPFileEntryParser getCachedFtpFileEntryParser() {
-        return cachedFtpFileEntryParser;
+    public FTPFileEntryParser getCurrent() {
+        return current;
     }
 
     @Override
     public void configure(final FTPClientConfig config) {
-        for(FTPFileEntryParser parser : ftpFileEntryParsers) {
+        for(FTPFileEntryParser parser : parsers) {
             if(parser instanceof Configurable) {
                 ((Configurable) parser).configure(config);
             }

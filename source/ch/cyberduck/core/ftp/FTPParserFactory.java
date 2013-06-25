@@ -1,21 +1,20 @@
 package ch.cyberduck.core.ftp;
 
 /*
- *  Copyright (c) 2007 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
@@ -25,9 +24,7 @@ import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.TrellixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.UnitreeFTPEntryParser;
 
-import org.apache.commons.net.ftp.Configurable;
 import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory;
 import org.apache.commons.net.ftp.parser.MVSFTPEntryParser;
 import org.apache.commons.net.ftp.parser.NTFTPEntryParser;
@@ -44,7 +41,15 @@ import java.util.TimeZone;
  */
 public class FTPParserFactory implements FTPFileEntryParserFactory {
 
-    public FTPFileEntryParser createFileEntryParser(String system, TimeZone timezone) throws ParserInitializationException {
+    public CompositeFileEntryParser createFileEntryParser(final FTPClientConfig config) throws ParserInitializationException {
+        return this.createFileEntryParser(config.getServerSystemKey(), TimeZone.getTimeZone(config.getServerTimeZoneId()));
+    }
+
+    public CompositeFileEntryParser createFileEntryParser(String system) throws ParserInitializationException {
+        return this.createFileEntryParser(system, TimeZone.getDefault());
+    }
+
+    public CompositeFileEntryParser createFileEntryParser(String system, TimeZone timezone) throws ParserInitializationException {
         if(null != system) {
             String ukey = system.toUpperCase(java.util.Locale.ENGLISH);
             if(ukey.contains(FTPClientConfig.SYST_UNIX)) {
@@ -73,20 +78,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return this.createUnixFTPEntryParser(timezone);
     }
 
-    public FTPFileEntryParser createFileEntryParser(String system) throws ParserInitializationException {
-        final FTPFileEntryParser parser = this.createFileEntryParser(system, TimeZone.getDefault());
-        if(parser instanceof Configurable) {
-            // Configure with default configuration
-            ((Configurable) parser).configure(null);
-        }
-        return parser;
-    }
-
-    public FTPFileEntryParser createFileEntryParser(FTPClientConfig config) throws ParserInitializationException {
-        return this.createFileEntryParser(config.getServerSystemKey(), TimeZone.getTimeZone(config.getServerTimeZoneId()));
-    }
-
-    private FTPFileEntryParser createUnixFTPEntryParser(final TimeZone timezone) {
+    private CompositeFileEntryParser createUnixFTPEntryParser(final TimeZone timezone) {
         return new CompositeFileEntryParser(Arrays.asList(
                 new LaxUnixFTPEntryParser() {
                     @Override
@@ -124,9 +116,8 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         ));
     }
 
-    private FTPFileEntryParser createNetwareFTPEntryParser(final TimeZone timezone) {
+    private CompositeFileEntryParser createNetwareFTPEntryParser(final TimeZone timezone) {
         return new CompositeFileEntryParser(Arrays.asList(
-
                 new NetwareFTPEntryParser() {
                     @Override
                     protected FTPClientConfig getDefaultConfiguration() {
@@ -139,7 +130,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         ));
     }
 
-    private FTPFileEntryParser createNTFTPEntryParser(final TimeZone timezone) {
+    private CompositeFileEntryParser createNTFTPEntryParser(final TimeZone timezone) {
         return new CompositeFileEntryParser(Arrays.asList(
                 new NTFTPEntryParser() {
                     @Override
@@ -153,18 +144,20 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         ));
     }
 
-    private FTPFileEntryParser createOS2FTPEntryParser(final TimeZone timezone) {
-        return new OS2FTPEntryParser() {
-            @Override
-            protected FTPClientConfig getDefaultConfiguration() {
-                final FTPClientConfig config = super.getDefaultConfiguration();
-                config.setServerTimeZoneId(timezone.getID());
-                return config;
-            }
-        };
+    private CompositeFileEntryParser createOS2FTPEntryParser(final TimeZone timezone) {
+        return new CompositeFileEntryParser(Arrays.asList(
+                new OS2FTPEntryParser() {
+                    @Override
+                    protected FTPClientConfig getDefaultConfiguration() {
+                        final FTPClientConfig config = super.getDefaultConfiguration();
+                        config.setServerTimeZoneId(timezone.getID());
+                        return config;
+                    }
+                }
+        ));
     }
 
-    private FTPFileEntryParser createOS400FTPEntryParser(final TimeZone timezone) {
+    private CompositeFileEntryParser createOS400FTPEntryParser(final TimeZone timezone) {
         return new CompositeFileEntryParser(Arrays.asList(
                 new OS400FTPEntryParser() {
                     @Override
@@ -178,14 +171,16 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         ));
     }
 
-    private FTPFileEntryParser createMVSEntryParser(final TimeZone timezone) {
-        return new MVSFTPEntryParser() {
-            @Override
-            protected FTPClientConfig getDefaultConfiguration() {
-                final FTPClientConfig config = super.getDefaultConfiguration();
-                config.setServerTimeZoneId(timezone.getID());
-                return config;
-            }
-        };
+    private CompositeFileEntryParser createMVSEntryParser(final TimeZone timezone) {
+        return new CompositeFileEntryParser(Arrays.asList(
+                new MVSFTPEntryParser() {
+                    @Override
+                    protected FTPClientConfig getDefaultConfiguration() {
+                        final FTPClientConfig config = super.getDefaultConfiguration();
+                        config.setServerTimeZoneId(timezone.getID());
+                        return config;
+                    }
+                }
+        ));
     }
 }
