@@ -57,8 +57,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    protected void warn(LoginController login) {
-        // Do not warn yet but in the credentials provider depending on the choosen realm.
+    public boolean isUnsecurewarning() {
+        return false;
     }
 
     @Override
