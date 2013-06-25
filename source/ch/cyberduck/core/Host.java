@@ -478,7 +478,7 @@ public final class Host implements Serializable {
      * @return Null if no default path is set
      */
     public String getDefaultPath() {
-        return this.defaultpath;
+        return defaultpath;
     }
 
     public String getWorkdir() {
@@ -532,7 +532,7 @@ public final class Host implements Serializable {
      * @see Protocol#SFTP
      */
     public Protocol getProtocol() {
-        return this.protocol;
+        return protocol;
     }
 
     public String getUuid() {
@@ -624,7 +624,7 @@ public final class Host implements Serializable {
                 return this.punycode;
             }
         }
-        return this.hostname;
+        return hostname;
     }
 
     /**
@@ -659,7 +659,7 @@ public final class Host implements Serializable {
      * @return The port number a socket should be opened to
      */
     public int getPort() {
-        return this.port;
+        return port;
     }
 
     /**
@@ -754,7 +754,7 @@ public final class Host implements Serializable {
      * @return The custom timezone or null if not set
      */
     public TimeZone getTimezone() {
-        return this.timezone;
+        return timezone;
     }
 
     /**
@@ -768,7 +768,7 @@ public final class Host implements Serializable {
      * @return Notice
      */
     public String getComment() {
-        return this.comment;
+        return comment;
     }
 
     /**
