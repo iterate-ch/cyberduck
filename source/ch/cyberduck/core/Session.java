@@ -66,13 +66,13 @@ public abstract class Session<C> implements TranscriptListener {
             Preferences.instance().getBoolean("connection.unsecure.warning");
 
     private Set<ConnectionListener> connectionListeners
-            = Collections.synchronizedSet(new HashSet<ConnectionListener>());
+            = Collections.synchronizedSet(new HashSet<ConnectionListener>(0));
 
     private Set<TranscriptListener> transcriptListeners
-            = Collections.synchronizedSet(new HashSet<TranscriptListener>());
+            = Collections.synchronizedSet(new HashSet<TranscriptListener>(0));
 
     private Set<ProgressListener> progressListeners
-            = Collections.synchronizedSet(new HashSet<ProgressListener>());
+            = Collections.synchronizedSet(new HashSet<ProgressListener>(0));
 
     /**
      * Connection attempt being made.
