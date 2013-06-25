@@ -243,7 +243,6 @@ public class HostTest extends AbstractTestCase {
         assertEquals("http://localhost/file", session.toHttpURL(path));
         host.setWebURL("http://127.0.0.1/~dkocher");
         assertEquals("http://127.0.0.1/~dkocher/file", session.toHttpURL(path));
-
     }
 
     @Test
@@ -257,7 +256,6 @@ public class HostTest extends AbstractTestCase {
         assertEquals("http://localhost/file", session.toHttpURL(path));
         host.setWebURL("http://127.0.0.1/~dkocher");
         assertEquals("http://127.0.0.1/~dkocher/file", session.toHttpURL(path));
-
     }
 
     @Test
