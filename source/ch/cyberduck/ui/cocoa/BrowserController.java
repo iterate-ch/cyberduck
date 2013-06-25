@@ -66,7 +66,6 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
-import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -677,6 +676,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.urlMenu = urlMenu;
         this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
+            protected Session<?> getSession() {
+                return BrowserController.this.getSession();
+            }
+
+            @Override
             protected List<Path> getSelected() {
                 final List<Path> s = BrowserController.this.getSelectedPaths();
                 if(s.isEmpty()) {
@@ -697,6 +701,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void setOpenUrlMenu(NSMenu openUrlMenu) {
         this.openUrlMenu = openUrlMenu;
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
+            @Override
+            protected Session<?> getSession() {
+                return BrowserController.this.getSession();
+            }
+
             @Override
             protected List<Path> getSelected() {
                 final List<Path> s = BrowserController.this.getSelectedPaths();
@@ -2590,10 +2599,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void openBrowserButtonClicked(final ID sender) {
         if(this.getSelectionCount() == 1) {
-            openUrl(this.getSelectedPath().toHttpURL());
+            openUrl(session.toHttpURL(this.getSelectedPath()));
         }
         else {
-            openUrl(this.workdir().toHttpURL());
+            openUrl(session.toHttpURL(this.workdir()));
         }
     }
 
