@@ -18,7 +18,6 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginCanceledException;
@@ -50,7 +49,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +81,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
             if(null == host.getTimezone()) {
                 // No custom timezone set
-                final List<TimeZone> matches = this.calculateTimezone(workdir);
+                final List<TimeZone> matches = new FTPTimezoneCalculator().get(workdir);
                 for(TimeZone tz : matches) {
                     // Save in bookmark. User should have the option to choose from determined zones.
                     host.setTimezone(tz);
@@ -146,68 +144,6 @@ public class FTPSession extends SSLSession<FTPClient> {
             failure.initCause(e);
             throw failure;
         }
-    }
-
-    /**
-     * Best guess of available timezones given the offset of the modification
-     * date in the directory listing from the UTC timestamp returned from <code>MDTM</code>
-     * if available. Result is error prone because of additional daylight saving offsets.
-     *
-     * @param workdir Directory listing
-     * @return Matching timezones
-     */
-    private List<TimeZone> calculateTimezone(final Path workdir) throws BackgroundException {
-        // Determine the server offset from UTC
-        final AttributedList<Path> list = workdir.list();
-        if(list.isEmpty()) {
-            log.warn("Cannot determine timezone with empty directory listing");
-            return Collections.emptyList();
-        }
-        for(Path test : list) {
-            if(test.attributes().isFile()) {
-                long local = test.attributes().getModificationDate();
-                if(-1 == local) {
-                    log.warn("No modification date in directory listing to calculate timezone");
-                    continue;
-                }
-                // Subtract seconds
-                local -= local % 60000;
-                // Read the modify fact which must be UTC
-                test.readTimestamp();
-                long utc = test.attributes().getModificationDate();
-                if(-1 == utc) {
-                    log.warn("No UTC support on server");
-                    continue;
-                }
-                // Subtract seconds
-                utc -= utc % 60000;
-                long offset = local - utc;
-                log.info(String.format("Calculated UTC offset is %dms", offset));
-                final List<TimeZone> zones = new ArrayList<TimeZone>();
-                if(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getOffset(utc) == offset) {
-                    log.info("Offset equals local timezone offset.");
-                    zones.add(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")));
-                    return zones;
-                }
-                // The offset should be the raw GMT offset without the daylight saving offset.
-                // However the determied offset *does* include daylight saving time and therefore
-                // the call to TimeZone#getAvailableIDs leads to errorneous results.
-                final String[] timezones = TimeZone.getAvailableIDs((int) offset);
-                for(String timezone : timezones) {
-                    log.info(String.format("Matching timezone identifier %s", timezone));
-                    final TimeZone match = TimeZone.getTimeZone(timezone);
-                    log.info(String.format("Determined timezone %s", match));
-                    zones.add(match);
-                }
-                if(zones.isEmpty()) {
-                    log.warn("Failed to calculate timezone for offset:" + offset);
-                    continue;
-                }
-                return zones;
-            }
-        }
-        log.warn("No file in directory listing to calculate timezone");
-        return Collections.emptyList();
     }
 
     private Map<FTPFileEntryParser, Boolean> parsers = new HashMap<FTPFileEntryParser, Boolean>(1);
