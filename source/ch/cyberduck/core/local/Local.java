@@ -37,7 +37,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 
 import com.ibm.icu.text.Normalizer;
 
@@ -321,15 +320,8 @@ public abstract class Local extends AbstractPath {
         return this.getAbsolute();
     }
 
-    @Override
     public String toURL() {
-        try {
-            return new File(path).toURI().toURL().toString();
-        }
-        catch(MalformedURLException e) {
-            log.error(e.getMessage());
-            return null;
-        }
+        return String.format("file:%s", this.getAbsolute());
     }
 
     public InputStream getInputStream() throws FileNotFoundException {

@@ -104,4 +104,10 @@ public class FinderLocalTest extends AbstractTestCase {
         assertTrue(l.exists());
         l.delete();
     }
+
+
+    @Test
+    public void testToUrl() throws Exception {
+        assertEquals("file:/c/file", new FinderLocal("/c/file").toURL());
+    }
 }
