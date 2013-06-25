@@ -20,6 +20,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -39,7 +40,7 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testGetExceptions() throws Exception {
-        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new DisabledLoginController()) {
+        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new DisabledLoginController(), new DefaultHostKeyController()) {
 
             @Override
             protected List<Session<?>> getSessions() {
@@ -61,7 +62,7 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testRetrySocket() throws Exception {
-        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new DisabledLoginController()) {
+        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new DisabledLoginController(), new DefaultHostKeyController()) {
             @Override
             protected List<Session<?>> getSessions() {
                 return Collections.emptyList();

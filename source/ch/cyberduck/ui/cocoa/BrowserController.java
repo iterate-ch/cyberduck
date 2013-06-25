@@ -103,8 +103,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private ConnectionListener listener;
 
-    private String laststatus;
-
     private QuickLook quicklook = QuickLookFactory.get();
 
     private List<Path> selected = Collections.emptyList();
@@ -2150,12 +2148,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     public void updateStatusLabel() {
-        String label;
         if(this.getSelectedTabView() == TAB_BOOKMARKS) {
-            label = this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks");
+            this.updateStatusLabel(
+                    this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks"));
         }
-        else {
+        else if(this.getSelectedTabView() == TAB_LIST_VIEW
+                || this.getSelectedTabView() == TAB_OUTLINE_VIEW) {
             final BackgroundAction current = this.getActions().getCurrent();
+            String label;
             if(null == current) {
                 if(this.isConnected()) {
                     label = MessageFormat.format(Locale.localizedString("{0} Files"),
@@ -2166,27 +2166,31 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
             }
             else {
-                if(StringUtils.isNotBlank(laststatus)) {
-                    label = laststatus;
-                }
-                else {
-                    label = current.getActivity();
-                }
+                label = current.getActivity();
             }
+            this.updateStatusLabel(label);
         }
-        this.updateStatusLabel(label);
     }
 
     /**
      * @param label Status message
      */
-    public void updateStatusLabel(String label) {
+    public void updateStatusLabel(final String label) {
         if(StringUtils.isNotBlank(label)) {
             // Update the status label at the bottom of the browser window
             statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         else {
             statusLabel.setStringValue(StringUtils.EMPTY);
+        }
+        if(this.isMounted()) {
+            securityLabel.setImage(session.isSecure() ? IconCache.iconNamed("locked.tiff")
+                    : IconCache.iconNamed("unlocked.tiff"));
+            securityLabel.setEnabled(session instanceof SSLSession);
+        }
+        else {
+            securityLabel.setImage(null);
+            securityLabel.setEnabled(false);
         }
     }
 
@@ -3426,81 +3430,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private Session init(final Host host) {
         if(this.hasSession()) {
             PathPasteboard.getPasteboard(session).delete();
-            session.removeConnectionListener(listener);
         }
         session = SessionFactory.createSession(host);
         this.setWorkdir(null);
         this.setEncoding(session.getEncoding());
-        session.addProgressListener(new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                invoke(new WindowMainAction(BrowserController.this) {
-                    @Override
-                    public void run() {
-                        laststatus = message;
-                        updateStatusLabel(message);
-                    }
-                });
-            }
-        });
-        session.addConnectionListener(listener = new ConnectionAdapter() {
-            @Override
-            public void connectionWillOpen() {
-                invoke(new WindowMainAction(BrowserController.this) {
-                    @Override
-                    public void run() {
-                        // Update status icon
-                        bookmarkTable.setNeedsDisplay();
-                        window.setTitle(host.getNickname());
-                        window.setRepresentedFilename(StringUtils.EMPTY);
-                    }
-                });
-            }
-
-            @Override
-            public void connectionDidOpen() {
-                invoke(new WindowMainAction(BrowserController.this) {
-                    @Override
-                    public void run() {
-                        // Update status icon
-                        bookmarkTable.setNeedsDisplay();
-
-                        // Set the window title
-                        window.setRepresentedFilename(
-                                HistoryCollection.defaultCollection().getFile(host).getAbsolute());
-
-                        if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                            window.setDocumentEdited(true);
-                        }
-                        securityLabel.setImage(session.isSecure() ? IconCache.iconNamed("locked.tiff")
-                                : IconCache.iconNamed("unlocked.tiff"));
-                        securityLabel.setEnabled(session instanceof SSLSession);
-                    }
-                });
-            }
-
-            @Override
-            public void connectionDidClose() {
-                invoke(new WindowMainAction(BrowserController.this) {
-                    @Override
-                    public void run() {
-                        // Update status icon
-                        bookmarkTable.setNeedsDisplay();
-
-                        if(!isMounted()) {
-                            window.setTitle(Preferences.instance().getProperty("application.name"));
-                            window.setRepresentedFilename(StringUtils.EMPTY);
-                        }
-                        window.setDocumentEdited(false);
-
-                        securityLabel.setImage(null);
-                        securityLabel.setEnabled(false);
-
-                        updateStatusLabel();
-                    }
-                });
-            }
-        });
         transcript.clear();
         navigation.clear();
         return session;
@@ -3647,6 +3580,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 session.cache().clear();
                 session.getHost().getCredentials().setPassword(null);
 
+                window.setDocumentEdited(false);
+                window.setTitle(Preferences.instance().getProperty("application.name"));
+                window.setRepresentedFilename(StringUtils.EMPTY);
+
                 disconnected.run();
             }
 
@@ -3705,6 +3642,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * Unmount this session
      */
     private void disconnect() {
+        InfoController c = InfoController.Factory.get(BrowserController.this);
+        if(null != c) {
+            c.window().close();
+        }
         this.background(new BrowserBackgroundAction(this) {
             @Override
             public void run() throws BackgroundException {
@@ -3713,6 +3654,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             @Override
             public void cleanup() {
+                window.setDocumentEdited(false);
                 if(Preferences.instance().getBoolean("browser.disconnect.showBookmarks")) {
                     BrowserController.this.toggleBookmarks(true);
                 }
@@ -4531,10 +4473,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     @Override
     protected void invalidate() {
-        if(this.hasSession()) {
-            this.session.removeConnectionListener(this.listener);
-        }
-
         bookmarkTable.setDelegate(null);
         bookmarkTable.setDataSource(null);
         bookmarkModel.invalidate();

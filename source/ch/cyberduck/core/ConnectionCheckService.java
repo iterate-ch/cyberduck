@@ -20,8 +20,11 @@ public class ConnectionCheckService {
 
     private LoginController prompt;
 
-    public ConnectionCheckService(final LoginController prompt) {
+    private HostKeyController key;
+
+    public ConnectionCheckService(final LoginController prompt, final HostKeyController key) {
         this.prompt = prompt;
+        this.key = key;
     }
 
     /**
@@ -84,7 +87,7 @@ public class ConnectionCheckService {
         }
         // The IP address could successfully be determined
 
-        session.open();
+        session.open(key);
 
         Growl.instance().notify("Connection opened", host.getHostname());
 

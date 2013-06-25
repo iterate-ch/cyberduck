@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.local.Local;
 
 import org.apache.log4j.Logger;
@@ -31,7 +32,7 @@ import ch.ethz.ssh2.KnownHosts;
 /**
  * @version $Id$
  */
-public abstract class MemoryHostKeyVerifier extends HostKeyController {
+public abstract class MemoryHostKeyVerifier implements HostKeyController {
     private static Logger log = Logger.getLogger(MemoryHostKeyVerifier.class);
 
     /**
@@ -69,8 +70,8 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
     }
 
     @Override
-    public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                       final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
+    public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm,
+                          final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
         final int result = database.verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
         if(KnownHosts.HOSTKEY_IS_OK == result) {
             return true; // We are happy
@@ -83,6 +84,30 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
         }
         return false;
     }
+
+    /**
+     * @param hostname               Hostname
+     * @param port                   Port number
+     * @param serverHostKeyAlgorithm Algorithm
+     * @param serverHostKey          Key blob
+     * @return True if accepted.
+     * @throws ch.cyberduck.core.ConnectionCanceledException
+     *          Canceled by user
+     */
+    protected abstract boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
+                                                    final byte[] serverHostKey) throws ConnectionCanceledException;
+
+    /**
+     * @param hostname               Hostname
+     * @param port                   Port number
+     * @param serverHostKeyAlgorithm Algorithm
+     * @param serverHostKey          Key blob
+     * @return True if accepted.
+     * @throws ch.cyberduck.core.ConnectionCanceledException
+     *          Canceled by user
+     */
+    protected abstract boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
+                                                    final byte[] serverHostKey) throws ConnectionCanceledException;
 
     protected void allow(final String hostname, final String serverHostKeyAlgorithm,
                          final byte[] serverHostKey, boolean always) {

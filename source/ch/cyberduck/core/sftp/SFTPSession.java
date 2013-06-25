@@ -41,6 +41,7 @@ import ch.ethz.ssh2.ConnectionMonitor;
 import ch.ethz.ssh2.InteractiveCallback;
 import ch.ethz.ssh2.PacketListener;
 import ch.ethz.ssh2.SFTPv3Client;
+import ch.ethz.ssh2.ServerHostKeyVerifier;
 import ch.ethz.ssh2.StreamGobbler;
 import ch.ethz.ssh2.crypto.PEMDecoder;
 import ch.ethz.ssh2.crypto.PEMDecryptException;
@@ -68,7 +69,7 @@ public class SFTPSession extends Session<Connection> {
     private SFTPv3Client client;
 
     @Override
-    public Connection connect() throws BackgroundException {
+    public Connection connect(final HostKeyController key) throws BackgroundException {
         try {
             connection = new Connection(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()), host.getPort(),
                     new PreferencesUseragentProvider().get());
@@ -82,7 +83,13 @@ public class SFTPSession extends Session<Connection> {
             });
 
             final int timeout = this.timeout();
-            connection.connect(HostKeyControllerFactory.get(this), timeout, timeout);
+            connection.connect(new ServerHostKeyVerifier() {
+                @Override
+                public boolean verifyServerHostKey(final String hostname, final int port,
+                                                   final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws Exception {
+                    return key.verify(hostname, port, serverHostKeyAlgorithm, serverHostKey);
+                }
+            }, timeout, timeout);
             return connection;
         }
         catch(IOException e) {

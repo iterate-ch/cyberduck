@@ -20,6 +20,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
@@ -319,7 +320,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public FTPClient connect() throws BackgroundException {
+    public FTPClient connect(final HostKeyController key) throws BackgroundException {
         final CustomTrustSSLProtocolSocketFactory f
                 = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
 
@@ -365,7 +366,6 @@ public class FTPSession extends SSLSession<FTPClient> {
      */
     @Override
     protected void warn(final LoginController login) throws BackgroundException {
-        Host host = this.getHost();
         if(this.isUnsecureswitch()
                 && !host.getProtocol().isSecure()
                 && !host.getCredentials().isAnonymousLogin()

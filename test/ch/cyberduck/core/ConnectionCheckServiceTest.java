@@ -19,7 +19,7 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
     public void testCheckUnknown() throws Exception {
-        ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController());
+        ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController());
         try {
             s.check(new FTPSession(new Host("unknownhost.local")));
         }
@@ -54,13 +54,13 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
                 return l;
             }
         });
-        ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController());
+        ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController());
         s.check(new DAVSession(new Host(Protocol.WEBDAV_SSL, "54.228.253.92", new Credentials("user", "p"))));
     }
 
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
-        ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController());
+        ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController());
         s.check(new FTPSession(new Host("")));
     }
 

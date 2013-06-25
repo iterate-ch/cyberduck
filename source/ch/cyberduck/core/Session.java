@@ -90,11 +90,15 @@ public abstract class Session<C> implements TranscriptListener {
         return client;
     }
 
-    protected abstract C connect() throws BackgroundException;
+    protected abstract C connect(final HostKeyController key) throws BackgroundException;
 
     public C open() throws BackgroundException {
+        return this.open(new DefaultHostKeyController());
+    }
+
+    public C open(final HostKeyController key) throws BackgroundException {
         this.fireConnectionWillOpenEvent();
-        client = this.connect();
+        client = this.connect(key);
         this.fireConnectionDidOpenEvent();
         return client;
     }

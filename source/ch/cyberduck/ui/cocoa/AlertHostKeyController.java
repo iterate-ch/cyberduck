@@ -19,14 +19,13 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.HostKeyControllerFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.sftp.HostKeyController;
-import ch.cyberduck.core.sftp.HostKeyControllerFactory;
 import ch.cyberduck.core.sftp.MemoryHostKeyVerifier;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -56,22 +55,12 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     private static class Factory extends HostKeyControllerFactory {
         @Override
         protected HostKeyController create() {
-            return new AlertHostKeyController(TransferController.instance());
+            return null;
         }
 
         @Override
         public HostKeyController create(Controller c) {
             return new AlertHostKeyController((WindowController) c);
-        }
-
-        @Override
-        public HostKeyController create(Session s) {
-            for(BrowserController c : MainController.getBrowsers()) {
-                if(c.getSession() == s) {
-                    return this.create(c);
-                }
-            }
-            return this.create();
         }
     }
 
@@ -182,11 +171,11 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     }
 
     @Override
-    public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                       final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
+    public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm,
+                          final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
-            return super.verifyServerHostKey(hostname, port, serverHostKeyAlgorithm, serverHostKey);
+            return super.verify(hostname, port, serverHostKeyAlgorithm, serverHostKey);
         }
         finally {
             pool.drain();

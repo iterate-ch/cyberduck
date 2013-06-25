@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.HostKeyControllerFactory;
 import ch.cyberduck.core.LoginControllerFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
@@ -36,7 +37,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
     private WindowController controller;
 
     public AlertRepeatableBackgroundAction(final WindowController controller) {
-        super(LoginControllerFactory.get(controller));
+        super(LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
         this.controller = controller;
     }
 

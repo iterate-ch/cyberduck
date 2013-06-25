@@ -20,6 +20,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
@@ -50,7 +51,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public DAVClient connect() throws BackgroundException {
+    public DAVClient connect(final HostKeyController key) throws BackgroundException {
         client = new DAVClient(host, this.http());
         return client;
     }

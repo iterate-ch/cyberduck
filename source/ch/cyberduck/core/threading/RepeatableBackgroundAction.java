@@ -21,6 +21,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.ConnectionCheckService;
+import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ReachabilityFactory;
@@ -84,8 +85,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     private LoginController prompt;
 
-    protected RepeatableBackgroundAction(final LoginController prompt) {
+    private HostKeyController key;
+
+    public RepeatableBackgroundAction(final LoginController prompt, final HostKeyController key) {
         this.prompt = prompt;
+        this.key = key;
     }
 
     public BackgroundException getException() {
@@ -130,7 +134,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 }
                 // Clear the transcript and exceptions
                 transcript = new StringBuilder();
-                final ConnectionCheckService c = new ConnectionCheckService(prompt);
+                final ConnectionCheckService c = new ConnectionCheckService(prompt, key);
                 for(Session session : this.getSessions()) {
                     c.check(session);
                 }

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sftp;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -19,9 +19,6 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.ui.Controller;
 
 import java.util.HashMap;
@@ -34,8 +31,6 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
 
     public abstract HostKeyController create(Controller c);
 
-    public abstract HostKeyController create(Session s);
-
     /**
      * Registered factories
      */
@@ -43,14 +38,14 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
             = new HashMap<Platform, HostKeyControllerFactory>();
 
     /**
-     * @param s Connection
+     * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static HostKeyController get(Session s) {
+    public static HostKeyController get(final Controller c) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return factories.get(NATIVE_PLATFORM).create(s);
+        return factories.get(NATIVE_PLATFORM).create(c);
     }
 
     public static void addFactory(Platform p, HostKeyControllerFactory f) {

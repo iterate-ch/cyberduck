@@ -19,8 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -72,16 +70,10 @@ public class ProgressController extends BundleController {
         this.init();
     }
 
-    private ProgressListener pl;
-
     private TransferListener tl;
 
     @Override
     protected void invalidate() {
-        for(Session s : transfer.getSessions()) {
-            s.removeProgressListener(pl);
-        }
-        transfer.removeListener(tl);
         filesPopup.menu().setDelegate(null);
         super.invalidate();
     }
@@ -107,21 +99,6 @@ public class ProgressController extends BundleController {
                 invoke(new DefaultMainAction() {
                     @Override
                     public void run() {
-                        pl = new ProgressListener() {
-                            @Override
-                            public void message(final String message) {
-                                messageText = message;
-                                invoke(new DefaultMainAction() {
-                                    @Override
-                                    public void run() {
-                                        setMessageText();
-                                    }
-                                });
-                            }
-                        };
-                        for(Session s : transfer.getSessions()) {
-                            s.addProgressListener(pl);
-                        }
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
@@ -137,9 +114,6 @@ public class ProgressController extends BundleController {
                 invoke(new DefaultMainAction() {
                     @Override
                     public void run() {
-                        for(Session s : transfer.getSessions()) {
-                            s.removeProgressListener(pl);
-                        }
                         progressBar.stopAnimation(null);
                         progressBar.setIndeterminate(true);
                         progressBar.setHidden(true);

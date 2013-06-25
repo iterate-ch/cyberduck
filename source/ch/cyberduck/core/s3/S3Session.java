@@ -338,7 +338,7 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     }
 
     @Override
-    public RequestEntityRestStorageService connect() throws BackgroundException {
+    public RequestEntityRestStorageService connect(final HostKeyController key) throws BackgroundException {
         client = new RequestEntityRestStorageService(configure(host.getHostname())) {
             @Override
             public ProviderCredentials getProviderCredentials() {

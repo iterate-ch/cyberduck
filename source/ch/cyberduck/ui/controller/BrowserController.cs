@@ -2111,18 +2111,18 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_PathSelectionChanged()
         {
             string selected = View.SelectedComboboxPath;
-            Path previous = Workdir;
-            if (selected != null)
-            {
-                Path path = PathFactory.createPath(_session, selected, AbstractPath.DIRECTORY_TYPE);
-                SetWorkdir(path);
-                if (previous.getParent().equals(path))
-                {
-                    SetWorkdir(path, previous);
+            if(selected != null) {
+                final Path workdir = Workdir;
+                Path p = workdir;
+                while(!p.getParent().getAbsolute().equals(p.getAbsolute())) {
+                    p = p.getParent();
                 }
-                else
-                {
-                    SetWorkdir(path);
+                SetWorkdir(p);
+                if(workdir.getParent().equals(p)) {
+                    SetWorkdir(p, workdir);
+                }
+                else {
+                    SetWorkdir(p);
                 }
             }
         }
