@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.cocoa.BrowserController;
 
 import org.apache.log4j.Logger;
 
@@ -31,9 +32,12 @@ import org.apache.log4j.Logger;
 public class ODBEditor extends BrowserBackgroundEditor {
     private static final Logger log = Logger.getLogger(ODBEditor.class);
 
+    private BrowserController controller;
+
     public ODBEditor(Controller c, Application application, final Path path) {
         super(c, application, path);
         Native.load("ODBEdit");
+        this.controller = (BrowserController) c;
     }
 
     /**
@@ -41,7 +45,7 @@ public class ODBEditor extends BrowserBackgroundEditor {
      */
     @Override
     public void edit() {
-        if(!this.edit(this.getEdited().getLocal().getAbsolute(), this.getEdited().toURL(), this.getApplication().getIdentifier())) {
+        if(!this.edit(this.getEdited().getLocal().getAbsolute(), controller.getSession().toURL(this.getEdited()), this.getApplication().getIdentifier())) {
             log.warn(String.format("Edit failed for %s", this.getEdited().getLocal().getAbsolute()));
         }
     }
