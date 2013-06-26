@@ -18,7 +18,6 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -48,10 +47,6 @@ public class BackgroundException extends Exception {
 
     public BackgroundException(final String detail) {
         this(null, detail, null);
-    }
-
-    public BackgroundException(final Host host, final Exception cause) {
-        this(null, Locale.localizedString("Unknown"), cause);
     }
 
     public BackgroundException(final String detail, final Exception cause) {
