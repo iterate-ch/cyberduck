@@ -74,7 +74,14 @@ public abstract class Session<C> implements TranscriptListener {
     /**
      * Connection attempt being made.
      */
-    private boolean opening;
+    private State state = State.closed;
+
+    public enum State {
+        opening,
+        open,
+        closing,
+        closed
+    }
 
     protected Session(final Host h) {
         this.host = h;
@@ -417,8 +424,8 @@ public abstract class Session<C> implements TranscriptListener {
      * @return True if a connection attempt is currently being made. False if the connection
      *         has already been established or is closed.
      */
-    public boolean isOpening() {
-        return opening;
+    public State getState() {
+        return state;
     }
 
     public void addConnectionListener(final ConnectionListener listener) {
@@ -444,7 +451,7 @@ public abstract class Session<C> implements TranscriptListener {
             listener.connectionWillOpen();
         }
         // Update status flag
-        opening = true;
+        state = State.opening;
     }
 
     /**
@@ -458,8 +465,7 @@ public abstract class Session<C> implements TranscriptListener {
             log.debug(String.format("Connection did open to %s", host));
         }
         // Update status flag
-        opening = false;
-
+        state = State.open;
         final ConnectionListener[] l = connectionListeners.toArray(new ConnectionListener[connectionListeners.size()]);
         for(ConnectionListener listener : l) {
             listener.connectionDidOpen();
@@ -495,7 +501,7 @@ public abstract class Session<C> implements TranscriptListener {
             listener.connectionDidClose();
         }
         // Update status flag
-        opening = false;
+        state = State.closed;
     }
 
     public void addTranscriptListener(final TranscriptListener listener) {

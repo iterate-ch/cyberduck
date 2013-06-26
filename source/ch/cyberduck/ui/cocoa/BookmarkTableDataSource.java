@@ -73,15 +73,27 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     protected BrowserController controller;
 
-    public BookmarkTableDataSource(final BrowserController controller,
-                                   final AbstractHostCollection source) {
-        this.controller = controller;
-        this.setSource(source);
-    }
+    private HostFilter filter;
+
+    /**
+     * Second cache because it is expensive to create proxy instances
+     */
+    private AttributeCache<Host> cache = new AttributeCache<Host>(
+            Preferences.instance().getInteger("bookmark.model.cache.size")
+    );
 
     private AbstractHostCollection source = AbstractHostCollection.empty();
 
+    /**
+     * Subset of the original source
+     */
+    private AbstractHostCollection filtered;
+
     private CollectionListener<Host> listener;
+
+    public BookmarkTableDataSource(final BrowserController controller) {
+        this.controller = controller;
+    }
 
     public void setSource(final AbstractHostCollection source) {
         this.source.removeListener(listener); //Remove previous listener
@@ -152,8 +164,6 @@ public class BookmarkTableDataSource extends ListDataSource {
         super.invalidate();
     }
 
-    private HostFilter filter;
-
     /**
      * Display only a subset of all bookmarks
      *
@@ -163,11 +173,6 @@ public class BookmarkTableDataSource extends ListDataSource {
         this.filter = filter;
         this.filtered = null;
     }
-
-    /**
-     * Subset of the original source
-     */
-    private AbstractHostCollection filtered;
 
     /**
      * @return The filtered collection currently to be displayed within the constraints
@@ -247,13 +252,6 @@ public class BookmarkTableDataSource extends ListDataSource {
         return new NSInteger(this.getSource().size());
     }
 
-    /**
-     * Second cache because it is expensive to create proxy instances
-     */
-    private AttributeCache<Host> cache = new AttributeCache<Host>(
-            Preferences.instance().getInteger("bookmark.model.cache.size")
-    );
-
     @Override
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         if(row.intValue() >= this.numberOfRowsInTableView(view).intValue()) {
@@ -280,11 +278,12 @@ public class BookmarkTableDataSource extends ListDataSource {
                 if(controller.hasSession()) {
                     final Session session = controller.getSession();
                     if(host.equals(session.getHost())) {
-                        if(session.isConnected()) {
-                            return IconCacheFactory.<NSImage>get().iconNamed("statusGreen.tiff", 16);
-                        }
-                        if(session.isOpening()) {
-                            return IconCacheFactory.<NSImage>get().iconNamed("statusYellow.tiff", 16);
+                        switch(session.getState()) {
+                            case open:
+                                return IconCacheFactory.<NSImage>get().iconNamed("statusGreen.tiff", 16);
+                            case opening:
+                            case closing:
+                                return IconCacheFactory.<NSImage>get().iconNamed("statusYellow.tiff", 16);
                         }
                     }
                 }
