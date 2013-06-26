@@ -5,6 +5,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -74,7 +75,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test
     public void testConnectionTlsUpgrade() throws Exception {
         final Host host = new Host(Protocol.FTP, "test.cyberduck.ch", new Credentials(
-                "u", "p"
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host) {
             @Override
@@ -93,7 +94,8 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertEquals(Protocol.FTP, host.getProtocol());
-        session.login(new DisabledLoginController());
+        LoginService l = new LoginService(new DisabledLoginController());
+        l.login(session);
         assertEquals(Protocol.FTP_TLS, host.getProtocol());
     }
 }
