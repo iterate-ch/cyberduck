@@ -8,7 +8,7 @@ import ch.cyberduck.core.local.Local;
 public class NullLocal extends Local {
 
     public NullLocal(final String parent, final String name) {
-        super(parent, name);
+        super(parent + "/" + name);
     }
 
     @Override

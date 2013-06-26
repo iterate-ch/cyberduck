@@ -43,20 +43,20 @@ import java.io.File;
 public class FinderLocal extends Local {
     private static final Logger log = Logger.getLogger(FinderLocal.class);
 
-    public FinderLocal(Local parent, String name) {
-        super(parent, name);
+    public FinderLocal(final Local parent, final String name) {
+        this(parent.getAbsolute() + "/" + name);
     }
 
-    public FinderLocal(String parent, String name) {
-        super(parent, name);
+    public FinderLocal(final String parent, final String name) {
+        this(parent + "/" + name);
     }
 
-    public FinderLocal(String path) {
+    public FinderLocal(final File path) {
         super(path);
     }
 
-    public FinderLocal(File path) {
-        super(path);
+    public FinderLocal(final String path) {
+        super(resolveAlias(stringByExpandingTildeInPath(path)));
     }
 
     public static void register() {
@@ -92,11 +92,6 @@ public class FinderLocal extends Local {
         protected Local create(final File path) {
             return new FinderLocal(path);
         }
-    }
-
-    @Override
-    protected void setPath(final String name) {
-        super.setPath(this.resolveAlias(stringByExpandingTildeInPath(name)));
     }
 
     /**
@@ -164,7 +159,7 @@ public class FinderLocal extends Local {
      * @param absolute The absolute path of the alias file.
      * @return The absolute path this alias is pointing to.
      */
-    private native String resolveAlias(String absolute);
+    private static native String resolveAlias(String absolute);
 
     @Override
     public FinderLocalAttributes attributes() {

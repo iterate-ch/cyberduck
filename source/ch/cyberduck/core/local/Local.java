@@ -52,39 +52,27 @@ public abstract class Local extends AbstractPath {
     private String path;
 
     /**
-     * @param parent Parent directory
-     * @param name   Filename
+     * @param name Absolute path
      */
-    public Local(final Local parent, final String name) {
-        this(parent.getAbsolute(), name);
-    }
-
-    /**
-     * @param parent Parent directory
-     * @param name   Filename
-     */
-    public Local(final String parent, final String name) {
-        this.setPath(parent, name);
-    }
-
-    /**
-     * @param path Absolute path
-     */
-    public Local(final String path) {
-        this.setPath(path);
+    public Local(final String name) {
+        String normalized = name;
+        if(Preferences.instance().getBoolean("local.normalize.unicode")) {
+            if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
+                // Canonical decomposition followed by canonical composition (default)
+                normalized = Normalizer.normalize(name, Normalizer.NFC, Normalizer.UNICODE_3_2);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Normalized local path %s to %s", name, normalized));
+                }
+            }
+        }
+        path = normalized;
     }
 
     /**
      * @param path File reference
      */
     public Local(final File path) {
-        try {
-            this.setPath(path.getCanonicalPath());
-        }
-        catch(IOException e) {
-            log.error(String.format("Error getting canonical path:%s", e.getMessage()));
-            this.setPath(path.getAbsolutePath());
-        }
+        this(path.getAbsolutePath());
     }
 
     @Override
@@ -231,24 +219,6 @@ public abstract class Local extends AbstractPath {
     @Override
     public boolean exists() {
         return new File(path).exists();
-    }
-
-    public void setPath(final String parent, final String name) {
-        this.setPath(parent + this.getPathDelimiter() + name);
-    }
-
-    protected void setPath(final String name) {
-        String normalized = name;
-        if(Preferences.instance().getBoolean("local.normalize.unicode")) {
-            if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
-                // Canonical decomposition followed by canonical composition (default)
-                normalized = Normalizer.normalize(name, Normalizer.NFC, Normalizer.UNICODE_3_2);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Normalized local path %s to %s", name, normalized));
-                }
-            }
-        }
-        path = normalized;
     }
 
     @Override
