@@ -16,6 +16,7 @@ public class CredentialsTest extends AbstractTestCase {
     public void testEquals() {
         assertEquals(new DefaultCredentials("a", "b"), new DefaultCredentials("a", "b"));
         assertNotSame(new DefaultCredentials("a", "b"), new DefaultCredentials("a", "c"));
+        assertFalse(new DefaultCredentials("a", "b").equals(new DefaultCredentials("a", "c")));
     }
 
     @Test
