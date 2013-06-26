@@ -6,8 +6,10 @@ import org.junit.Test;
 
 import java.util.concurrent.Callable;
 
+import static org.junit.Assert.assertFalse;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NotificationCenterTest extends AbstractTestCase {
 
@@ -15,6 +17,7 @@ public class NotificationCenterTest extends AbstractTestCase {
     public void testNotify() throws Exception {
         NotificationCenter.register();
         final Growl growl = GrowlFactory.get();
+        assertFalse(growl instanceof GrowlNative);
         this.repeat(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
