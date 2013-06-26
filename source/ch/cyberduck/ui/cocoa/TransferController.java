@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -1233,7 +1234,7 @@ public final class TransferController extends WindowController implements NSTool
         }
 
         @Override
-        public boolean prepare() {
+        public void prepare() throws ConnectionCanceledException {
             transfer.addListener(tl = new TransferAdapter() {
                 @Override
                 public void transferQueued() {
@@ -1257,8 +1258,6 @@ public final class TransferController extends WindowController implements NSTool
             });
             // Attach listeners
             super.prepare();
-            // Always continue. Current status might be canceled if interrupted before.
-            return true;
         }
 
         @Override
