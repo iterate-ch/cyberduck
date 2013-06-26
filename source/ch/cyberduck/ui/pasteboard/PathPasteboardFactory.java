@@ -8,12 +8,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PathPasteboardFactory {
 
     private static Map<Session, PathPasteboard> pasteboards
             = new HashMap<Session, PathPasteboard>();
+
+    private PathPasteboardFactory() {
+        //
+    }
 
     /**
      * Factory to create a pasteboard for a session
