@@ -1,5 +1,22 @@
 package ch.cyberduck.core;
 
+/*
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ */
+
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -65,18 +82,18 @@ public class ConnectionCheckService {
             session.interrupt();
         }
 
-        final Host host = session.getHost();
+        final Host bookmark = session.getHost();
         session.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
-                host.getProtocol().getName(), host.getHostname()));
+                bookmark.getProtocol().getName(), bookmark.getHostname()));
 
         // Configuring proxy if any
-        ProxyFactory.get().configure(host);
+        ProxyFactory.get().configure(bookmark);
 
         final Resolver resolver = new Resolver(
-                HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()));
+                HostnameConfiguratorFactory.get(bookmark.getProtocol()).lookup(bookmark.getHostname()));
 
         session.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
-                host.getHostname()));
+                bookmark.getHostname()));
 
         // Try to resolve the hostname first
         try {
@@ -89,18 +106,23 @@ public class ConnectionCheckService {
 
         session.open(key);
 
-        GrowlFactory.get().notify("Connection opened", host.getHostname());
+        GrowlFactory.get().notify("Connection opened", bookmark.getHostname());
 
         session.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
-                host.getProtocol().getName()));
+                bookmark.getProtocol().getName()));
 
         // Update last accessed timestamp
-        host.setTimestamp(new Date());
+        bookmark.setTimestamp(new Date());
 
         LoginService login = new LoginService(prompt);
         login.login(session);
 
         final HistoryCollection history = HistoryCollection.defaultCollection();
-        history.add(new Host(host.getAsDictionary()));
+        history.add(new Host(bookmark.getAsDictionary()));
+
+        // Notify changed bookmark
+        if(BookmarkCollection.defaultCollection().contains(bookmark)) {
+            BookmarkCollection.defaultCollection().collectionItemChanged(bookmark);
+        }
     }
 }

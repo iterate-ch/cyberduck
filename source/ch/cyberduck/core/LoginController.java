@@ -78,13 +78,6 @@ public interface LoginController {
     void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException;
 
     /**
-     * Callback upon successful login. Save credentials.
-     *
-     * @param host Hostname
-     */
-    void success(Host host);
-
-    /**
      * Call this to allow the user to reenter the new login credentials.
      * A concrete subclass should display a login prompt.
      *

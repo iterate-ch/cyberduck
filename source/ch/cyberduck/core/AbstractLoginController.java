@@ -105,17 +105,6 @@ public abstract class AbstractLoginController implements LoginController {
     }
 
     @Override
-    public void success(final Host host) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Login success to host %s as %s", host.getHostname(), host.getCredentials().getUsername()));
-        }
-        KeychainFactory.get().save(host);
-        if(BookmarkCollection.defaultCollection().contains(host)) {
-            BookmarkCollection.defaultCollection().collectionItemChanged(host);
-        }
-    }
-
-    @Override
     public void fail(final Protocol protocol, final Credentials credentials)
             throws LoginCanceledException {
         if(log.isDebugEnabled()) {

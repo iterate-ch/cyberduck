@@ -71,9 +71,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
         try {
             prompt.check(host, "AWS Identity and Access Management", null, true, false, false);
-            final T call = run.call();
-            prompt.success(host);
-            return call;
+            return run.call();
         }
         catch(LoginFailureException failure) {
             prompt.fail(host.getProtocol(), host.getCredentials(), failure.getMessage());

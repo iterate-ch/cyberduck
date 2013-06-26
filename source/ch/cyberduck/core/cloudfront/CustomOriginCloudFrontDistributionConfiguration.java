@@ -69,9 +69,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
         try {
             prompt.check(session.getHost(), this.getName(), null, true, false, false);
-            final T call = run.call();
-            prompt.success(session.getHost());
-            return call;
+            return run.call();
         }
         catch(LoginFailureException failure) {
             prompt.fail(session.getHost().getProtocol(), session.getHost().getCredentials(), failure.getMessage());
