@@ -19,13 +19,13 @@ package ch.cyberduck.ui.cocoa.threading;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.TranscriptController;
-
-import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,16 +35,23 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundAction {
-    private static final Logger log = Logger.getLogger(BrowserBackgroundAction.class);
 
     private BrowserController controller;
 
     private TranscriptController transcript;
 
+    private ProgressListener listener;
+
     public BrowserBackgroundAction(final BrowserController controller) {
         super(controller);
         this.controller = controller;
         this.transcript = controller.getTranscript();
+        this.listener = new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                controller.setStatus(message);
+            }
+        };
     }
 
     public BrowserController getController() {
@@ -70,15 +77,19 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     }
 
     @Override
-    public boolean prepare() {
-        controller.invoke(new WindowMainAction(controller) {
-            @Override
-            public void run() {
-                controller.getStatusSpinner().startAnimation(null);
-                controller.updateStatusLabel(BrowserBackgroundAction.this.getActivity());
-            }
-        });
-        return super.prepare();
+    public void prepare() throws ConnectionCanceledException {
+        controller.getProgress().startAnimation(null);
+        controller.setStatus(this.getActivity());
+        controller.getSession().addProgressListener(listener);
+        super.prepare();
+    }
+
+    @Override
+    public void finish() throws BackgroundException {
+        controller.getProgress().stopAnimation(null);
+        controller.setStatus(null);
+        controller.getSession().removeProgressListener(listener);
+        super.finish();
     }
 
     @Override
@@ -94,17 +105,5 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
             }
         }
         super.cancel();
-    }
-
-    @Override
-    public void finish() throws BackgroundException {
-        super.finish();
-        controller.invoke(new WindowMainAction(controller) {
-            @Override
-            public void run() {
-                controller.getStatusSpinner().stopAnimation(null);
-                controller.updateStatusLabel();
-            }
-        });
     }
 }

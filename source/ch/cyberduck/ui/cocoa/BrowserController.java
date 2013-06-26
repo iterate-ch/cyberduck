@@ -100,9 +100,15 @@ import java.util.concurrent.TimeUnit;
 public class BrowserController extends WindowController implements NSToolbar.Delegate, QLPreviewPanelController {
     private static Logger log = Logger.getLogger(BrowserController.class);
 
-    private TranscriptController transcript;
+    /**
+     *
+     */
+    private Session<?> session;
 
-    private ConnectionListener listener;
+    /**
+     * Log Drawer
+     */
+    private TranscriptController transcript;
 
     private QuickLook quicklook = QuickLookFactory.get();
 
@@ -275,7 +281,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 view = quickConnectPopup;
             }
         }
-        this.updateStatusLabel();
+        this.setStatus();
         this.window().makeFirstResponder(view);
     }
 
@@ -358,7 +364,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             scroll = false;
         }
         this.setSelectedPaths(selected);
-        this.updateStatusLabel();
         // Update path navigation
         this.validateNavigationButtons();
     }
@@ -429,6 +434,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
                     @Override
                     public void cleanup() {
+                        super.cleanup();
                         final Collection<Local> previews = new Collection<Local>();
                         for(Path download : downloads) {
                             previews.add(download.getLocal());
@@ -437,8 +443,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         quicklook.select(previews);
                         // Open Quick Look Preview Panel
                         quicklook.open();
-                        // Revert status label
-                        BrowserController.this.updateStatusLabel();
                         // Restore the focus to our window to demo the selection changing, scrolling
                         // (left/right) and closing (space) functionality
                         BrowserController.this.window().makeKeyWindow();
@@ -845,7 +849,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void reloadBookmarks() {
         bookmarkTable.reloadData();
-        this.updateStatusLabel();
+        this.setStatus();
     }
 
     private NSSegmentedControl bookmarkSwitchView;
@@ -1265,7 +1269,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
              */
             @Override
             public void outlineViewItemDidExpand(NSNotification notification) {
-                updateStatusLabel();
+                setStatus();
             }
 
             /**
@@ -1273,7 +1277,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
              */
             @Override
             public void outlineViewItemDidCollapse(NSNotification notification) {
-                updateStatusLabel();
+                setStatus();
             }
 
             @Override
@@ -1512,9 +1516,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void setBookmarkTable(NSTableView view) {
         this.bookmarkTable = view;
         this.bookmarkTable.setSelectionHighlightStyle(NSTableView.NSTableViewSelectionHighlightStyleSourceList);
-        this.bookmarkTable.setDataSource((this.bookmarkModel = new BookmarkTableDataSource(
-                this, BookmarkCollection.defaultCollection())
-        ).id());
+        this.bookmarkTable.setDataSource((this.bookmarkModel = new BookmarkTableDataSource(this)).id());
+        this.bookmarkModel.setSource(BookmarkCollection.defaultCollection());
         this.bookmarkTable.setDelegate((this.bookmarkTableDelegate = new AbstractTableDelegate<Host>() {
             @Override
             public String tooltip(Host bookmark) {
@@ -2131,7 +2134,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.statusSpinner.setIndeterminate(true);
     }
 
-    public NSProgressIndicator getStatusSpinner() {
+    public NSProgressIndicator getProgress() {
         return statusSpinner;
     }
 
@@ -2153,50 +2156,38 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.statusLabel = statusLabel;
     }
 
-    public void updateStatusLabel() {
+    public void setStatus() {
         if(this.getSelectedTabView() == TAB_BOOKMARKS) {
-            this.updateStatusLabel(
-                    this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks"));
+            this.setStatus(String.format("%s %s", this.bookmarkTable.numberOfRows(), Locale.localizedString("Bookmarks")));
         }
         else if(this.getSelectedTabView() == TAB_LIST_VIEW
                 || this.getSelectedTabView() == TAB_OUTLINE_VIEW) {
             final BackgroundAction current = this.getActions().getCurrent();
-            String label;
             if(null == current) {
                 if(this.isConnected()) {
-                    label = MessageFormat.format(Locale.localizedString("{0} Files"),
-                            String.valueOf(this.getSelectedBrowserView().numberOfRows()));
+                    this.setStatus(MessageFormat.format(Locale.localizedString("{0} Files"),
+                            String.valueOf(this.getSelectedBrowserView().numberOfRows())));
                 }
                 else {
-                    label = Locale.localizedString("Disconnected", "Status");
+                    this.setStatus(Locale.localizedString("Disconnected", "Status"));
                 }
             }
             else {
-                label = current.getActivity();
+                this.setStatus(current.getActivity());
             }
-            this.updateStatusLabel(label);
         }
     }
 
     /**
      * @param label Status message
      */
-    public void updateStatusLabel(final String label) {
+    public void setStatus(final String label) {
         if(StringUtils.isNotBlank(label)) {
             // Update the status label at the bottom of the browser window
             statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         else {
             statusLabel.setStringValue(StringUtils.EMPTY);
-        }
-        if(this.isMounted()) {
-            securityLabel.setImage(session.isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
-                    : IconCacheFactory.<NSImage>get().iconNamed("unlocked.tiff"));
-            securityLabel.setEnabled(session instanceof SSLSession);
-        }
-        else {
-            securityLabel.setImage(null);
-            securityLabel.setEnabled(false);
         }
     }
 
@@ -2213,7 +2204,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void securityLabelClicked(final ID sender) {
         if(session instanceof SSLSession) {
-            List<X509Certificate> certificates = ((SSLSession) this.session).getAcceptedIssuers();
+            final SSLSession<?> secured = (SSLSession) session;
+            List<X509Certificate> certificates = secured.getAcceptedIssuers();
             if(0 == certificates.size()) {
                 log.warn("No accepted certificates found");
                 return;
@@ -2920,7 +2912,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                             invoke(new WindowMainAction(BrowserController.this) {
                                 @Override
                                 public void run() {
-                                    BrowserController.this.updateStatusLabel(meter.getProgress());
+                                    setStatus(meter.getProgress());
                                 }
                             });
                         }
@@ -2962,12 +2954,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         this.error(e);
                     }
                     super.cancel();
-                }
-
-                @Override
-                public void cleanup() {
-                    updateStatusLabel();
-                    super.cleanup();
                 }
 
                 @Override
@@ -3434,21 +3420,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return A session object bound to this browser controller
      */
     private Session init(final Host host) {
-        if(this.hasSession()) {
-            PathPasteboardFactory.delete(session);
-        }
         session = SessionFactory.createSession(host);
-        this.setWorkdir(null);
-        this.setEncoding(session.getEncoding());
         transcript.clear();
         navigation.clear();
+        this.setWorkdir(null);
+        this.setEncoding(session.getEncoding());
         return session;
     }
-
-    /**
-     *
-     */
-    private Session<?> session;
 
     /**
      * Open connection in browser
@@ -3457,7 +3435,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void mount(final Host host) {
         if(log.isDebugEnabled()) {
-            log.debug("mount:" + host);
+            log.debug(String.format("Mount session for %s", host));
         }
         this.unmount(new Runnable() {
             @Override
@@ -3470,6 +3448,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     private Path workdir;
 
                     @Override
+                    public void init() {
+                        super.init();
+                        window.setTitle(host.getNickname());
+                        window.setRepresentedFilename(StringUtils.EMPTY);
+                        // Update status icon
+                        bookmarkTable.setNeedsDisplay();
+                    }
+
+                    @Override
                     public void run() throws BackgroundException {
                         // Mount this session
                         workdir = session.mount();
@@ -3477,10 +3464,23 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
                     @Override
                     public void cleanup() {
+                        // Clear second level cache
                         browserListModel.clear();
                         browserOutlineModel.clear();
+                        // Update status icon
+                        bookmarkTable.setNeedsDisplay();
                         // Set the working directory
                         setWorkdir(workdir);
+                        if(isMounted()) {
+                            // Set the window title
+                            window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(host).getAbsolute());
+                            if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                                window.setDocumentEdited(true);
+                            }
+                            securityLabel.setImage(session.isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
+                                    : IconCacheFactory.<NSImage>get().iconNamed("unlocked.tiff"));
+                            securityLabel.setEnabled(session instanceof SSLSession);
+                        }
                     }
 
                     @Override
@@ -3589,6 +3589,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 window.setDocumentEdited(false);
                 window.setTitle(Preferences.instance().getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
+
+                // Update status icon
+                bookmarkTable.setNeedsDisplay();
 
                 disconnected.run();
             }
