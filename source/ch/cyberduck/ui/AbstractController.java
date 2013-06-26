@@ -95,10 +95,9 @@ public abstract class AbstractController implements Controller {
                         log.debug(String.format("Acquired lock for background runnable %s", runnable));
                     }
                     try {
-                        if(runnable.prepare()) {
-                            // Execute the action of the runnable
-                            return runnable.call();
-                        }
+                        runnable.prepare();
+                        // Execute the action of the runnable
+                        return runnable.call();
                     }
                     catch(BackgroundException e) {
                         log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
