@@ -87,10 +87,10 @@ public final class MainApplication {
              */
             {
                 AutoreleaseActionOperationBatcher.register();
-                NSImageIconCache.register();
                 FinderLocal.register();
                 UserDefaultsPreferences.register();
                 BundleLocale.register();
+                NSImageIconCache.register();
                 GrowlNative.register();
                 NotificationCenter.register();
                 if(null == Updater.getFeed()) {
