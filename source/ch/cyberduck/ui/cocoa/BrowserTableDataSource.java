@@ -136,7 +136,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         }
                         catch(BackgroundException e) {
                             cache.put(path.getReference(), AttributedList.<Path>emptyList());
-                            throw e;
+                            if(path.attributes().getPermission().isReadable()
+                                    && path.attributes().getPermission().isExecutable()) {
+                                throw e;
+                            }
+                            else {
+                                log.warn(String.format("Ignore directory listing failure %s", e.getMessage()));
+                            }
                         }
                     }
 
