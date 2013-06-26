@@ -19,8 +19,8 @@ import static org.junit.Assert.*;
 public class SFTPSessionTest extends AbstractTestCase {
 
     @Test
-    public void testConnect() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "localhost", new Credentials(
+    public void testLoginPassword() throws Exception {
+        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
@@ -37,7 +37,7 @@ public class SFTPSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testLoginCancel() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "localhost", new Credentials(
+        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
                 "u", "p"
         ));
         final SFTPSession session = new SFTPSession(host);
