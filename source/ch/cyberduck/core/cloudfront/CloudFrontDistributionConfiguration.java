@@ -178,7 +178,6 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                             Preferences.instance().getProperty("cloudfront.logging.prefix"));
                 }
             }
-            final StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
             final Distribution d = this.read(container, method);
             if(null == d) {
                 if(log.isDebugEnabled()) {
