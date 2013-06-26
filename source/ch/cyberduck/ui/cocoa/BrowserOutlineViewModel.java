@@ -23,7 +23,6 @@ import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
@@ -34,6 +33,7 @@ import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -179,7 +179,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                         return super.validateDrop(view, destination, row, draggingInfo);
                     }
                 }
-                for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
+                for(Path next : PathPasteboardFactory.getPasteboard(controller.getSession())) {
                     if(destination.equals(next)) {
                         // Do not allow dragging onto myself. Fix #4320
                         return NSDraggingInfo.NSDragOperationNone;

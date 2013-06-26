@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.ui.Pasteboard;
+import ch.cyberduck.ui.pasteboard.Pasteboard;
 
 /**
  * @version $Id$

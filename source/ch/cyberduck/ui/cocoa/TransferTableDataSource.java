@@ -29,7 +29,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCollection;
 import ch.cyberduck.core.transfer.TransferFilter;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
-import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
@@ -38,6 +37,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.pasteboard.PathPasteboard;
+import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -177,7 +178,7 @@ public class TransferTableDataSource extends ListDataSource {
             view.setDropRow(row, NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.NSDragOperationCopy;
         }
-        if(!PathPasteboard.allPasteboards().isEmpty()) {
+        if(!PathPasteboardFactory.allPasteboards().isEmpty()) {
             view.setDropRow(row, NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.NSDragOperationCopy;
         }
@@ -203,7 +204,7 @@ public class TransferTableDataSource extends ListDataSource {
             }
             return false;
         }
-        final List<PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+        final List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
         if(pasteboards.isEmpty()) {
             return false;
         }

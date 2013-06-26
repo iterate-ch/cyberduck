@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.ui.pasteboard;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -26,30 +26,26 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @version $Id$
  */
 public final class PathPasteboard extends Collection<Path> implements Pasteboard<Path> {
 
-    private static Map<Session, PathPasteboard> instances = new HashMap<Session, PathPasteboard>() {
-        @Override
-        public boolean isEmpty() {
-            for(PathPasteboard pasteboard : this.values()) {
-                if(!pasteboard.isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    };
-
     private static final long serialVersionUID = -6390582952938739270L;
 
     private boolean cut;
+
+    private Session session;
+
+    public PathPasteboard(Session session) {
+        this.session = session;
+    }
+
+    public Session getSession() {
+        return session;
+    }
 
     public void setCut(boolean cut) {
         this.cut = cut;
@@ -65,36 +61,6 @@ public final class PathPasteboard extends Collection<Path> implements Pasteboard
 
     public boolean isCopy() {
         return !cut;
-    }
-
-    /**
-     * Factory to create a pasteboard for a session
-     *
-     * @param session Session instance
-     * @return Pasteboard for a given session
-     */
-    public static PathPasteboard getPasteboard(final Session session) {
-        if(!instances.containsKey(session)) {
-            instances.put(session, new PathPasteboard(session));
-        }
-        return instances.get(session);
-    }
-
-    /**
-     * @return All available pasteboards
-     */
-    public static List<PathPasteboard> allPasteboards() {
-        return new ArrayList<PathPasteboard>(instances.values());
-    }
-
-    private Session session;
-
-    private PathPasteboard(Session session) {
-        this.session = session;
-    }
-
-    public Session getSession() {
-        return session;
     }
 
     /**
@@ -116,13 +82,5 @@ public final class PathPasteboard extends Collection<Path> implements Pasteboard
             content.add(PathFactory.createPath(session, path.getAsDictionary()));
         }
         return content;
-    }
-
-    /**
-     * Delete this pasteboard
-     */
-    public void delete() {
-        this.clear();
-        instances.remove(session);
     }
 }

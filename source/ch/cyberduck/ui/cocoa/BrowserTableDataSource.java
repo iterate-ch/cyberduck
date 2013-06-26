@@ -32,7 +32,6 @@ import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
-import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSDraggingSource;
@@ -49,6 +48,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.pasteboard.PathPasteboard;
+import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -324,7 +325,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
                 return false;
             }
-            List<PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+            List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
             for(PathPasteboard pasteboard : pasteboards) {
                 // A file dragged within the browser has been received
                 if(pasteboard.isEmpty()) {
@@ -405,7 +406,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 return NSDraggingInfo.NSDragOperationCopy;
             }
             // Files dragged from browser
-            for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
+            for(Path next : PathPasteboardFactory.getPasteboard(controller.getSession())) {
                 if(destination.equals(next)) {
                     // Do not allow dragging onto myself
                     return NSDraggingInfo.NSDragOperationNone;
@@ -421,7 +422,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             log.debug("Operation Mask:" + info.draggingSourceOperationMask().intValue());
             this.setDropRowAndDropOperation(view, destination, row);
-            List<PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+            List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
             for(PathPasteboard pasteboard : pasteboards) {
                 if(pasteboard.isEmpty()) {
                     continue;
@@ -465,7 +466,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
                 final NSMutableArray fileTypes = NSMutableArray.array();
-                final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
+                final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(controller.getSession());
                 for(int i = 0; i < items.count().intValue(); i++) {
                     final Path path = controller.lookup(new NSObjectPathReference(items.objectAtIndex(new NSUInteger(i))));
                     if(null == path) {
@@ -512,7 +513,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     @Override
     public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
         log.trace("draggedImage_endedAt_operation:" + operation);
-        final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
+        final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(controller.getSession());
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             controller.deletePaths(pasteboard);
         }
@@ -537,7 +538,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != url) {
             final Local destination = LocalFactory.createLocal(url.path());
-            final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
+            final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(controller.getSession());
             for(Path p : pasteboard) {
                 final Local local = LocalFactory.createLocal(destination, p.getName());
                 p.setLocal(local);

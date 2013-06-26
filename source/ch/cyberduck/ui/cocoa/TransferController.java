@@ -44,7 +44,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
-import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -57,6 +56,8 @@ import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
+import ch.cyberduck.ui.pasteboard.PathPasteboard;
+import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -872,7 +873,7 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void paste(final ID sender) {
-        for(PathPasteboard pasteboard : PathPasteboard.allPasteboards()) {
+        for(PathPasteboard pasteboard : PathPasteboardFactory.allPasteboards()) {
             if(pasteboard.isEmpty()) {
                 continue;
             }
@@ -1076,7 +1077,7 @@ public final class TransferController extends WindowController implements NSTool
     public boolean validateMenuItem(NSMenuItem item) {
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
-            final List<PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+            final List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
             if(pasteboards.size() == 1) {
                 for(PathPasteboard pasteboard : pasteboards) {
                     if(pasteboard.size() == 1) {
@@ -1111,7 +1112,7 @@ public final class TransferController extends WindowController implements NSTool
      */
     private boolean validateItem(final Selector action) {
         if(action.equals(Foundation.selector("paste:"))) {
-            return !PathPasteboard.allPasteboards().isEmpty();
+            return !PathPasteboardFactory.allPasteboards().isEmpty();
         }
         if(action.equals(Foundation.selector("stopButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {

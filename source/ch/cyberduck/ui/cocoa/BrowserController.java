@@ -47,7 +47,6 @@ import ch.cyberduck.core.transfer.move.MoveTransfer;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.action.DeleteWorker;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
@@ -66,6 +65,8 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
+import ch.cyberduck.ui.pasteboard.PathPasteboard;
+import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -3129,7 +3130,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void copy(final ID sender) {
-        PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
+        PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(this.getSession());
         pasteboard.clear();
         pasteboard.setCopy(true);
         final List<Path> s = this.getSelectedPaths();
@@ -3157,7 +3158,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void cut(final ID sender) {
-        PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
+        PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(this.getSession());
         pasteboard.clear();
         pasteboard.setCut(true);
         for(Path s : this.getSelectedPaths()) {
@@ -3173,7 +3174,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void paste(final ID sender) {
-        final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
+        final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(this.getSession());
         if(pasteboard.isEmpty()) {
             NSPasteboard pboard = NSPasteboard.generalPasteboard();
             this.upload(pboard);
@@ -3429,7 +3430,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private Session init(final Host host) {
         if(this.hasSession()) {
-            PathPasteboard.getPasteboard(session).delete();
+            PathPasteboardFactory.delete(session);
         }
         session = SessionFactory.createSession(host);
         this.setWorkdir(null);
@@ -3723,7 +3724,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final String title = "Paste {0}";
             item.setTitle(MessageFormat.format(Locale.localizedString(title), StringUtils.EMPTY).trim());
             if(this.isMounted()) {
-                final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
+                final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(session);
                 if(pasteboard.isEmpty()) {
                     if(NSPasteboard.generalPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                         NSObject o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
@@ -3839,7 +3840,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else if(action.equals(Foundation.selector("paste:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
+                PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(this.getSession());
                 if(pasteboard.isEmpty()) {
                     NSPasteboard pboard = NSPasteboard.generalPasteboard();
                     if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
