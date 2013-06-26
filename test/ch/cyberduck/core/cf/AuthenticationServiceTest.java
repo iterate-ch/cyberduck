@@ -15,6 +15,7 @@ import java.net.URI;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
 import com.rackspacecloud.client.cloudfiles.method.Authentication10UsernameKeyRequest;
 import com.rackspacecloud.client.cloudfiles.method.Authentication20AccessKeySecretKeyRequest;
+import com.rackspacecloud.client.cloudfiles.method.Authentication20RAXUsernameKeyRequest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,7 +26,7 @@ public class AuthenticationServiceTest extends AbstractTestCase {
 
     @Test
     public void testGetRequest() throws Exception {
-        AuthenticationService s = new AuthenticationService();
+        final AuthenticationService s = new AuthenticationService();
         assertEquals(FilesClient.AuthVersion.v20,
                 s.getRequest(new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials("u", "P"))).getVersion());
         assertEquals(FilesClient.AuthVersion.v20,
@@ -48,8 +49,8 @@ public class AuthenticationServiceTest extends AbstractTestCase {
     }
 
     @Test
-    public void testProfile() throws Exception {
-        AuthenticationService s = new AuthenticationService();
+    public void testProfileHPCloud() throws Exception {
+        final AuthenticationService s = new AuthenticationService();
         final Profile profile = ProfileReaderFactory.get().read(
                 LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
@@ -59,8 +60,20 @@ public class AuthenticationServiceTest extends AbstractTestCase {
     }
 
     @Test
+    public void testProfileLondon() throws Exception {
+        final AuthenticationService s = new AuthenticationService();
+        final Profile profile = ProfileReaderFactory.get().read(
+                LocalFactory.createLocal("profiles/Rackspace UK.cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname());
+        assertEquals("/v2.0/tokens", profile.getContext());
+        assertEquals(URI.create("https://lon.identity.api.rackspacecloud.com/v2.0/tokens"), s.getRequest(host).getURI());
+        assertEquals(FilesClient.AuthVersion.v20, s.getRequest(host).getVersion());
+        assertEquals(Authentication20RAXUsernameKeyRequest.class, s.getRequest(host).getClass());
+    }
+
+    @Test
     public void testDefault() throws Exception {
-        AuthenticationService s = new AuthenticationService();
+        final AuthenticationService s = new AuthenticationService();
         final Host host = new Host(Protocol.SWIFT, "myidentityservice.example.net");
         assertEquals(URI.create("https://myidentityservice.example.net/v1.0"), s.getRequest(host).getURI());
         assertEquals(FilesClient.AuthVersion.v10, s.getRequest(host).getVersion());

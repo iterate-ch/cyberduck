@@ -84,6 +84,13 @@ public class AuthenticationService {
                     // Prompt for tenant
                     tenant = null;
                 }
+                if(host.getHostname(true).endsWith(Protocol.CLOUDFILES.getDefaultHostname())) {
+                    // Fix access to lon.identity.api.rackspacecloud.com
+                    return new Authentication20RAXUsernameKeyRequest(
+                            URI.create(url.toString()),
+                            credentials.getUsername(), credentials.getPassword(), tenant
+                    );
+                }
                 return new Authentication20AccessKeySecretKeyRequest(
                         URI.create(url.toString()),
                         user, host.getCredentials().getPassword(), tenant

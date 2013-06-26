@@ -5,8 +5,11 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.serializer.ProfileReaderFactory;
 
 import org.junit.Test;
 
@@ -20,6 +23,25 @@ public class CFSessionTest extends AbstractTestCase {
     @Test
     public void testConnectRackspace() throws Exception {
         final Host host = new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
+                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+        ));
+        final CFSession session = new CFSession(host);
+        assertNotNull(session.open());
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledLoginController());
+        assertNotNull(session.mount());
+        assertTrue(session.isConnected());
+        session.close();
+        assertNull(session.getClient());
+        assertFalse(session.isConnected());
+    }
+
+    @Test
+    public void testConnectRackspaceLon() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                LocalFactory.createLocal("profiles/Rackspace UK.cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final CFSession session = new CFSession(host);
