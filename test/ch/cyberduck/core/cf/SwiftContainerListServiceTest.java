@@ -11,9 +11,6 @@ import org.junit.Test;
 
 import java.util.List;
 
-import com.rackspacecloud.client.cloudfiles.FilesContainer;
-import com.rackspacecloud.client.cloudfiles.FilesRegion;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -31,9 +28,11 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
                         )));
         session.open();
         session.login(new DisabledLoginController());
-        final List<FilesContainer> list = new SwiftContainerListService().list(session);
+        final List<Path> list = new SwiftContainerListService().list(session);
         final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
-        assertFalse(list.contains(new FilesContainer(new FilesRegion("ORD", null, null), "test.cyberduck.ch")));
-        assertTrue(list.contains(new FilesContainer(new FilesRegion("DFW", null, null), "test.cyberduck.ch")));
+        container.attributes().setRegion("DFW");
+        assertTrue(list.contains(container));
+        container.attributes().setRegion("ORD");
+        assertFalse(list.contains(container));
     }
 }

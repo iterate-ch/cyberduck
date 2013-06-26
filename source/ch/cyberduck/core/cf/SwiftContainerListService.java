@@ -17,6 +17,7 @@ package ch.cyberduck.core.cf;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -38,16 +39,19 @@ import com.rackspacecloud.client.cloudfiles.FilesRegion;
 public class SwiftContainerListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
-    public List<FilesContainer> list(final CFSession session) throws BackgroundException {
+    public List<Path> list(final CFSession session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List containers for %s", session));
         }
         try {
-            final List<FilesContainer> containers = new ArrayList<FilesContainer>();
+            final List<Path> containers = new ArrayList<Path>();
             final FilesClient client = session.getClient();
             for(FilesRegion region : client.getRegions()) {
                 // List all containers
-                for(FilesContainer container : client.listContainers(region)) {
+                for(FilesContainer f : client.listContainers(region)) {
+                    final Path container = new CFPath(session, String.format("/%s", f.getName()),
+                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                    container.attributes().setRegion(f.getRegion().getRegionId());
                     containers.add(container);
                 }
             }

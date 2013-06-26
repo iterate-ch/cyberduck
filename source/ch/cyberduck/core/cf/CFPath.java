@@ -56,7 +56,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.rackspacecloud.client.cloudfiles.FilesContainer;
 import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
 import com.rackspacecloud.client.cloudfiles.FilesException;
 import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
@@ -199,16 +198,11 @@ public class CFPath extends CloudPath {
             session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
-            final AttributedList<Path> children = new AttributedList<Path>();
             if(this.isRoot()) {
-                for(FilesContainer b : new SwiftContainerListService().list(session)) {
-                    final CFPath container = new CFPath(session, String.format("/%s", b.getName()),
-                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                    container.attributes().setRegion(b.getRegion().getRegionId());
-                    children.add(container);
-                }
+                return new AttributedList<Path>(new SwiftContainerListService().list(session));
             }
             else {
+                final AttributedList<Path> children = new AttributedList<Path>();
                 final int limit = Preferences.instance().getInteger("cf.list.limit");
                 String marker = null;
                 List<FilesObject> list;
@@ -245,8 +239,8 @@ public class CFPath extends CloudPath {
                     }
                 }
                 while(list.size() == limit);
+                return children;
             }
-            return children;
         }
         catch(FilesException e) {
             log.warn(String.format("Directory listing failure for %s with failure %s", this, e.getMessage()));
