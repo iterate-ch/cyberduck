@@ -18,6 +18,8 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCanceledException;
+
 import java.util.concurrent.Callable;
 
 /**
@@ -33,10 +35,9 @@ public interface BackgroundAction<T> extends Callable<T> {
     /**
      * Called just before #run.
      *
-     * @return True if proceed to runnning
      * @see #run()
      */
-    boolean prepare() throws BackgroundException;
+    void prepare() throws ConnectionCanceledException;
 
     void run() throws BackgroundException;
 

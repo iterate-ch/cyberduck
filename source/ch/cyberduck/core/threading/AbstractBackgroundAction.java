@@ -74,7 +74,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     @Override
-    public boolean prepare() throws BackgroundException {
+    public void prepare() throws ConnectionCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prepare background task %s", this));
         }
@@ -87,7 +87,6 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         for(BackgroundActionListener listener : l) {
             listener.start(this);
         }
-        return true;
     }
 
     @Override

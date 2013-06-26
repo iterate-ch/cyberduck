@@ -126,26 +126,24 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     }
 
     @Override
-    public boolean prepare() {
+    public void prepare() throws ConnectionCanceledException {
+        super.prepare();
         try {
-            if(super.prepare()) {
-                for(Session session : this.getSessions()) {
-                    session.addTranscriptListener(this);
-                }
-                // Clear the transcript and exceptions
-                transcript = new StringBuilder();
-                final ConnectionCheckService c = new ConnectionCheckService(prompt, key);
-                for(Session session : this.getSessions()) {
-                    c.check(session);
-                }
-                return true;
+            for(Session session : this.getSessions()) {
+                session.addTranscriptListener(this);
+            }
+            // Clear the transcript and exceptions
+            transcript = new StringBuilder();
+            final ConnectionCheckService c = new ConnectionCheckService(prompt, key);
+            for(Session session : this.getSessions()) {
+                c.check(session);
             }
         }
         catch(BackgroundException failure) {
             log.warn(String.format("Failure starting background action: %s", failure));
             this.error(failure);
+            throw new ConnectionCanceledException();
         }
-        return false;
     }
 
     /**
