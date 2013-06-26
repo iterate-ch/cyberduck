@@ -91,7 +91,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     public void deleteUser(final String username) throws BackgroundException {
         this.authenticated(new Callable<Void>() {
             @Override
-            public Void call() throws Exception {
+            public Void call() throws BackgroundException {
                 Preferences.instance().deleteProperty(String.format("%s%s", prefix, username));
                 try {
                     final ListAccessKeysResult keys
@@ -144,7 +144,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     public void createUser(final String username, final String policy) throws BackgroundException {
         this.authenticated(new Callable<Void>() {
             @Override
-            public Void call() throws Exception {
+            public Void call() throws BackgroundException {
                 try {
                     // Create new IAM credentials
                     final User user = client.createUser(new CreateUserRequest().withUserName(username)).getUser();
