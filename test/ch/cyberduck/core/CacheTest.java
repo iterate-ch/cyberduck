@@ -1,6 +1,5 @@
 package ch.cyberduck.core;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -89,5 +88,12 @@ public class CacheTest extends AbstractTestCase {
         assertTrue(cache.get(reference).attributes().isInvalid());
         assertTrue(cache.containsKey(reference));
         assertFalse(cache.isCached(reference));
+    }
+
+    @Test
+    public void testGet() throws Exception {
+        Cache cache = new Cache();
+        final Path file = new NullPath("name", Path.FILE_TYPE);
+        assertEquals(AttributedList.<Path>emptyList(), cache.get(file.getReference()));
     }
 }
