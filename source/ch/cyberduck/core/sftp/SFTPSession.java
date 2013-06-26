@@ -86,7 +86,8 @@ public class SFTPSession extends Session<Connection> {
             connection.connect(new ServerHostKeyVerifier() {
                 @Override
                 public boolean verifyServerHostKey(final String hostname, final int port,
-                                                   final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws Exception {
+                                                   final String serverHostKeyAlgorithm, final byte[] serverHostKey)
+                        throws IOException, ConnectionCanceledException {
                     return key.verify(hostname, port, serverHostKeyAlgorithm, serverHostKey);
                 }
             }, timeout, timeout);
