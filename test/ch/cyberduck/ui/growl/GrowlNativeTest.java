@@ -2,6 +2,7 @@ package ch.cyberduck.ui.growl;
 
 import ch.cyberduck.core.AbstractTestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.Callable;
@@ -12,6 +13,7 @@ import java.util.concurrent.Callable;
 public class GrowlNativeTest extends AbstractTestCase {
 
     @Test
+    @Ignore
     public void testNotify() throws Exception {
         final Growl growl = new GrowlNative();
         this.repeat(new Callable<Object>() {
