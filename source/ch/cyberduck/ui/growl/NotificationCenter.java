@@ -32,6 +32,9 @@ public class NotificationCenter implements Growl {
         }
     }
 
+    private NSUserNotificationCenter center
+            = NSUserNotificationCenter.defaultUserNotificationCenter();
+
     protected NotificationCenter() {
         //
     }
@@ -46,7 +49,7 @@ public class NotificationCenter implements Growl {
         final NSUserNotification notification = NSUserNotification.notification();
         notification.setTitle(title);
         notification.setInformativeText(description);
-        NSUserNotificationCenter.defaultUserNotificationCenter().scheduleNotification(notification);
+        center.scheduleNotification(notification);
     }
 
     @Override
