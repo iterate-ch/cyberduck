@@ -6,6 +6,8 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
 
+import java.util.concurrent.Callable;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -16,7 +18,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test
     public void testAccept() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
+        final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         // Local file does not exist
         assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.FILE_TYPE) {
             @Override
@@ -45,7 +47,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test
     public void testSize() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
+        final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         assertEquals(1L, f.prepare(new NullSession(new Host("h")), new NullPath("/t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
@@ -66,18 +68,17 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test
     public void testPermissionsNoChange() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
+        final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         final NullPath file = new NullPath("/t", Path.FILE_TYPE);
         file.setLocal(new NullLocal(null, "a"));
         assertFalse(f.prepare(new NullSession(new Host("h")), file).isComplete());
-        Preferences.instance().setProperty("queue.upload.changePermissions", false);
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }
 
     @Test
     public void testPermissionsExistsNoChange() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
+        final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         final NullPath file = new NullPath("/t", Path.FILE_TYPE) {
             @Override
             public boolean exists() {
@@ -86,14 +87,13 @@ public class OverwriteFilterTest extends AbstractTestCase {
         };
         file.setLocal(new NullLocal(null, "a"));
         assertFalse(f.prepare(new NullSession(new Host("h")), file).isComplete());
-        Preferences.instance().setProperty("queue.upload.changePermissions", true);
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }
 
     @Test
     public void testPermissionsExists() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
+        final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         final Acl acl = new Acl(new Acl.UserAndRole(new Acl.User("t") {
             @Override
             public String getPlaceholder() {
@@ -133,10 +133,14 @@ public class OverwriteFilterTest extends AbstractTestCase {
             }
         };
         file.setLocal(new NullLocal(null, "a"));
-        assertFalse(f.prepare(new NullSession(new Host("h")), file).isComplete());
-        Preferences.instance().setProperty("queue.upload.changePermissions", true);
-        Preferences.instance().setProperty("queue.upload.permissions.useDefault", false);
-        assertEquals(acl, file.attributes().getAcl());
-        assertEquals(permission, file.attributes().getPermission());
+        this.repeat(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                assertFalse(f.prepare(new NullSession(new Host("h")), file).isComplete());
+                assertEquals(acl, file.attributes().getAcl());
+                assertEquals(permission, file.attributes().getPermission());
+                return null;
+            }
+        }, 10);
     }
 }
