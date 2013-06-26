@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.ui.comparator;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -20,30 +20,27 @@ package ch.cyberduck.ui;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.text.NaturalOrderComparator;
+
+import java.util.Comparator;
 
 /**
  * @version $Id$
  */
-public class SizeComparator extends BrowserComparator {
-    private static final long serialVersionUID = -8659327370467434757L;
+public class FilenameComparator extends BrowserComparator {
+    private static final long serialVersionUID = -6726865487297853350L;
 
-    public SizeComparator(boolean ascending) {
-        super(ascending, new FilenameComparator(ascending));
+    private Comparator<String> impl = new NaturalOrderComparator();
+
+    public FilenameComparator(boolean ascending) {
+        super(ascending, null);
     }
 
     @Override
     protected int compareFirst(Path p1, Path p2) {
-        if(p1.attributes().getSize() > p2.attributes().getSize()) {
-            return ascending ? 1 : -1;
+        if(ascending) {
+            return impl.compare(p1.getName(), p2.getName());
         }
-        else if(p1.attributes().getSize() < p2.attributes().getSize()) {
-            return ascending ? -1 : 1;
-        }
-        return 0;
-    }
-
-    @Override
-    public String getIdentifier() {
-        return "size";
+        return -impl.compare(p1.getName(), p2.getName());
     }
 }

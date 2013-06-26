@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.ui.comparator;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -39,8 +39,4 @@ public class OwnerComparator extends BrowserComparator {
         return -p1.attributes().getOwner().compareToIgnoreCase(p2.attributes().getOwner());
     }
 
-    @Override
-    public String getIdentifier() {
-        return "owner";
-    }
 }

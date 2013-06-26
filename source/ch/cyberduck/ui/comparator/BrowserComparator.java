@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.ui.comparator;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -32,60 +32,59 @@ public abstract class BrowserComparator implements Comparator<Path>, Serializabl
     private static final long serialVersionUID = -5905031111032653689L;
 
     protected boolean ascending;
-    private BrowserComparator second;
+
+    private BrowserComparator fallback;
 
     /**
      * @param ascending The items should be sorted in a ascending manner.
      *                  Usually this means lower numbers first or natural language sorting
      *                  for alphabetic comparators
-     * @param second    Second level comparator
+     * @param fallback  Second level comparator
      */
-    public BrowserComparator(boolean ascending, BrowserComparator second) {
+    public BrowserComparator(final boolean ascending, final BrowserComparator fallback) {
         this.ascending = ascending;
-        this.second = second;
+        this.fallback = fallback;
     }
 
     public boolean isAscending() {
         return this.ascending;
     }
 
-    /**
-     * @param object Other comparator
-     * @return True if the same identifier and ascending boolean value
-     * @see #getIdentifier()
-     * @see #isAscending()
-     */
     @Override
-    public boolean equals(Object object) {
-        if(object instanceof BrowserComparator) {
-            BrowserComparator other = (BrowserComparator) object;
-            if(other.getIdentifier().equals(this.getIdentifier())) {
-                return other.isAscending() == this.isAscending();
-            }
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
         }
-        return false;
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final BrowserComparator that = (BrowserComparator) o;
+        if(ascending != that.ascending) {
+            return false;
+        }
+        if(fallback != null ? !fallback.equals(that.fallback) : that.fallback != null) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
         int result = (ascending ? 1 : 0);
-        result = 31 * result + (second != null ? second.hashCode() : 0);
+        result = 31 * result + (fallback != null ? fallback.hashCode() : 0);
         return result;
     }
 
     @Override
-    public int compare(Path p1, Path p2) {
-        int result = compareFirst(p1, p2);
-        if(0 == result && null != second) {
-            return second.compareFirst(p1, p2);
+    public int compare(final Path p1, final Path p2) {
+        int result = this.compareFirst(p1, p2);
+        if(0 == result) {
+            if(null != fallback) {
+                return fallback.compareFirst(p1, p2);
+            }
         }
         return result;
     }
 
-    protected abstract int compareFirst(Path p1, Path p2);
-
-    /**
-     * @return An unique identifier for this comparator
-     */
-    public abstract String getIdentifier();
+    protected abstract int compareFirst(final Path p1, final Path p2);
 }

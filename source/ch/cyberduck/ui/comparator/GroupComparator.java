@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.ui.comparator;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -24,34 +24,19 @@ import ch.cyberduck.core.Path;
 /**
  * @version $Id$
  */
-public class TimestampComparator extends BrowserComparator {
-    private static final long serialVersionUID = 2242337528465570314L;
+public class GroupComparator extends BrowserComparator {
+    private static final long serialVersionUID = 6549899374390308835L;
 
-    public TimestampComparator(boolean ascending) {
+    public GroupComparator(boolean ascending) {
         super(ascending, new FilenameComparator(ascending));
     }
 
     @Override
     protected int compareFirst(Path p1, Path p2) {
-        long d1 = p1.attributes().getModificationDate();
-        if(-1 == d1) {
-            return 0;
-        }
-        long d2 = p2.attributes().getModificationDate();
-        if(-1 == d2) {
-            return 0;
-        }
-        if(d1 == d2) {
-            return 0;
-        }
         if(ascending) {
-            return d1 > d2 ? 1 : -1;
+            return p1.attributes().getGroup().compareToIgnoreCase(p2.attributes().getGroup());
         }
-        return d1 > d2 ? -1 : 1;
+        return -p1.attributes().getGroup().compareToIgnoreCase(p2.attributes().getGroup());
     }
 
-    @Override
-    public String getIdentifier() {
-        return "modified";
-    }
 }

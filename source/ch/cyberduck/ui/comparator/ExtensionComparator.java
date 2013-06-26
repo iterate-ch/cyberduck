@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.ui.comparator;
 
 /*
  * Copyright (c) 2002-2011 David Kocher. All rights reserved.
@@ -64,8 +64,4 @@ public class ExtensionComparator extends BrowserComparator {
         return ascending ? -1 : 1;
     }
 
-    @Override
-    public String getIdentifier() {
-        return "icon";
-    }
 }

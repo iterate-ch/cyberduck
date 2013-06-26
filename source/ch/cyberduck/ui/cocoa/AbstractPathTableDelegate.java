@@ -22,14 +22,14 @@ import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.ui.ExtensionComparator;
-import ch.cyberduck.ui.FileTypeComparator;
-import ch.cyberduck.ui.FilenameComparator;
-import ch.cyberduck.ui.GroupComparator;
-import ch.cyberduck.ui.OwnerComparator;
-import ch.cyberduck.ui.PermissionsComparator;
-import ch.cyberduck.ui.SizeComparator;
-import ch.cyberduck.ui.TimestampComparator;
+import ch.cyberduck.ui.comparator.ExtensionComparator;
+import ch.cyberduck.ui.comparator.FileTypeComparator;
+import ch.cyberduck.ui.comparator.FilenameComparator;
+import ch.cyberduck.ui.comparator.GroupComparator;
+import ch.cyberduck.ui.comparator.OwnerComparator;
+import ch.cyberduck.ui.comparator.PermissionsComparator;
+import ch.cyberduck.ui.comparator.SizeComparator;
+import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import org.apache.log4j.Logger;
 

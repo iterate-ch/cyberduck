@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.ui.comparator;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -20,28 +20,25 @@ package ch.cyberduck.ui;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
 
 /**
  * @version $Id$
  */
-public class GroupComparator extends BrowserComparator {
-    private static final long serialVersionUID = 6549899374390308835L;
+public class SizeComparator extends BrowserComparator {
+    private static final long serialVersionUID = -8659327370467434757L;
 
-    public GroupComparator(boolean ascending) {
+    public SizeComparator(boolean ascending) {
         super(ascending, new FilenameComparator(ascending));
     }
 
     @Override
     protected int compareFirst(Path p1, Path p2) {
-        if(ascending) {
-            return p1.attributes().getGroup().compareToIgnoreCase(p2.attributes().getGroup());
+        if(p1.attributes().getSize() > p2.attributes().getSize()) {
+            return ascending ? 1 : -1;
         }
-        return -p1.attributes().getGroup().compareToIgnoreCase(p2.attributes().getGroup());
-    }
-
-    @Override
-    public String getIdentifier() {
-        return BrowserTableDataSource.GROUP_COLUMN;
+        else if(p1.attributes().getSize() < p2.attributes().getSize()) {
+            return ascending ? -1 : 1;
+        }
+        return 0;
     }
 }

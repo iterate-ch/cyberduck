@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.ui.comparator;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -42,10 +42,5 @@ public class PermissionsComparator extends BrowserComparator {
             return ascending ? -1 : 1;
         }
         return 0;
-    }
-
-    @Override
-    public String getIdentifier() {
-        return "permissions";
     }
 }
