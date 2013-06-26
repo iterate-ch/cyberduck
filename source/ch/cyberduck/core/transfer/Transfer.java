@@ -449,8 +449,13 @@ public abstract class Transfer implements Serializable {
             // Transfer
             this.transfer(file, options, status);
             if(file.attributes().isFile()) {
-                // Post process of file
-                filter.complete(session, file, options, status);
+                // Post process of file.
+                try {
+                    filter.complete(session, file, options, status);
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Ignore failure in completion filter for %s", file));
+                }
             }
             // Notification
             this.fireDidTransferPath(file);
@@ -473,8 +478,13 @@ public abstract class Transfer implements Serializable {
             if(!failure) {
                 status.setComplete();
             }
-            // Post process of directory
-            filter.complete(session, file, options, status);
+            // Post process of directory.
+            try {
+                filter.complete(session, file, options, status);
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Ignore failure in completion filter for %s", file));
+            }
             this.cache().remove(file.getReference());
         }
     }
