@@ -14,7 +14,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.GSWebsiteConfig;
 import org.jets3t.service.model.WebsiteConfig;
 
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -93,14 +92,6 @@ public class GSWebsiteDistributionConfiguration implements DistributionConfigura
     public void write(final Path container, final boolean enabled, final Distribution.Method method,
                       final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
         try {
-            // Configure Website Index Document
-            StringBuilder name = new StringBuilder(Locale.localizedString("Website", "S3")).append(" ").append(method.toString());
-            if(enabled) {
-                session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
-            }
-            else {
-                session.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
-            }
             if(enabled) {
                 String suffix = "index.html";
                 if(StringUtils.isNotBlank(defaultRootObject)) {

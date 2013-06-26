@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -56,12 +55,6 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     public void write(final Path container, final boolean enabled, final Distribution.Method method,
                       final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
         try {
-            if(enabled) {
-                session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), "CDN"));
-            }
-            else {
-                session.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), "CDN"));
-            }
             if(StringUtils.isNotBlank(defaultRootObject)) {
                 session.getClient().updateContainerMetadata(session.getRegion(container),
                         container.getName(), Collections.singletonMap("X-Container-Meta-Web-Index", defaultRootObject));
@@ -98,8 +91,6 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     @Override
     public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
-                    container.getName()));
             try {
                 final FilesCDNContainer info = session.getClient().getCDNContainerInfo(session.getRegion(container),
                         container.getName());
@@ -141,8 +132,6 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     @Override
     public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final boolean recursive) throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
-                    container.getName()));
             for(Path file : files) {
                 if(file.isContainer()) {
                     session.getClient().purgeCDNContainer(session.getRegion(file.getContainer()),
