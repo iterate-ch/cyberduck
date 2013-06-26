@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.resources;
+package ch.cyberduck.ui.resources;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
@@ -24,7 +24,6 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.resources.NSImageIconCache;
 
 import org.junit.Ignore;
 import org.junit.Test;
