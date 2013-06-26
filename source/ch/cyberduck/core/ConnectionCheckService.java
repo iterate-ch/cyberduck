@@ -3,7 +3,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
-import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.commons.lang.StringUtils;
