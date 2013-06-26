@@ -127,31 +127,21 @@ public class SyncTransfer extends Transfer {
         return this.action;
     }
 
-    public static final TransferAction ACTION_DOWNLOAD = new TransferAction() {
-        public String toString() {
-            return "download";
-        }
-
+    public static final TransferAction ACTION_DOWNLOAD = new TransferAction("download") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Download");
         }
     };
-    public static final TransferAction ACTION_UPLOAD = new TransferAction() {
-        public String toString() {
-            return "upload";
-        }
 
+    public static final TransferAction ACTION_UPLOAD = new TransferAction("upload") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Upload");
         }
     };
-    public static final TransferAction ACTION_MIRROR = new TransferAction() {
-        public String toString() {
-            return "mirror";
-        }
 
+    public static final TransferAction ACTION_MIRROR = new TransferAction("mirror") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Mirror");
