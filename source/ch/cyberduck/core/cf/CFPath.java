@@ -398,7 +398,7 @@ public class CFPath extends CloudPath {
              * @return The ETag returned by the server for the uploaded object
              */
             @Override
-            public String call(AbstractHttpEntity entity) throws BackgroundException {
+            public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     return session.getClient().storeObject(
                             session.getRegion(getContainer()), getContainer().getName(),

@@ -412,7 +412,7 @@ public class DAVPath extends HttpPath {
              * @return The ETag returned by the server for the uploaded object
              */
             @Override
-            public Void call(AbstractHttpEntity entity) throws BackgroundException {
+            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     session.getClient().put(URIEncoder.encode(getAbsolute()), entity, headers);
                 }

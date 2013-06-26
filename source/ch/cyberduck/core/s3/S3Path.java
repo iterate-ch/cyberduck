@@ -780,11 +780,11 @@ public class S3Path extends CloudPath {
                 Collections.<String, String>emptyMap());
     }
 
-    private ResponseOutputStream<StorageObject> write(final StorageObject part, final long contentLength,
+    private ResponseOutputStream<StorageObject> write(final StorageObject part, final Long contentLength,
                                                       final Map<String, String> requestParams) throws BackgroundException {
         DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override
-            public StorageObject call(AbstractHttpEntity entity) throws BackgroundException {
+            public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     session.getClient().putObjectWithRequestEntityImpl(getContainer().getName(), part, entity, requestParams);
                 }
