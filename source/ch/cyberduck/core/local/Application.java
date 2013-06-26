@@ -26,6 +26,10 @@ public class Application {
     private String identifier;
     private String name;
 
+    public Application(final String identifier) {
+        this(identifier, null);
+    }
+
     public Application(final String identifier, final String name) {
         this.identifier = identifier;
         this.name = name;
