@@ -31,7 +31,6 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.ui.FilenameComparator;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
@@ -39,6 +38,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.comparator.FilenameComparator;
 
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -51,9 +51,6 @@ import java.util.List;
  */
 public abstract class TransferPromptModel extends OutlineDataSource {
 
-    /**
-     *
-     */
     protected final Transfer transfer;
 
     /**
@@ -62,9 +59,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     protected final AttributedList<Path> roots
             = new AttributedList<Path>();
 
-    /**
-     *
-     */
     private TransferPromptController controller;
 
     /**
