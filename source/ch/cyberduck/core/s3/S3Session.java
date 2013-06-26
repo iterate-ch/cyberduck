@@ -98,6 +98,10 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         @Override
         protected HttpClient initHttpConnection() {
             final AbstractHttpClient client = S3Session.this.http();
+            if(Preferences.instance().getBoolean("s3.expect-continue")) {
+                // Activates 'Expect: 100-Continue' handshake for the entity enclosing methods
+                HttpProtocolParams.setUseExpectContinue(client.getParams(), true);
+            }
             client.setHttpRequestRetryHandler(new RestUtils.JetS3tRetryHandler(5, this));
             return client;
         }
@@ -260,13 +264,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
 
     protected String getProjectId() {
         return null;
-    }
-
-    @Override
-    protected void configure(AbstractHttpClient client) {
-        super.configure(client);
-        // Activates 'Expect: 100-Continue' handshake for the entity enclosing methods
-        HttpProtocolParams.setUseExpectContinue(client.getParams(), true);
     }
 
     protected Jets3tProperties configure(final String hostname) {

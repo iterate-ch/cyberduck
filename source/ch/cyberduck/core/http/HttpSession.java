@@ -156,24 +156,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 target = ((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName();
             }
         });
-        this.configure(client);
-    }
-
-    @Override
-    public void logout() throws BackgroundException {
-        // No logout required
-    }
-
-    @Override
-    public String getTarget() {
-        return target;
-    }
-
-    public AbstractHttpClient http() {
-        return client;
-    }
-
-    protected void configure(final AbstractHttpClient client) {
         client.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
@@ -196,6 +178,20 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             client.addRequestInterceptor(new RequestAcceptEncoding());
             client.addResponseInterceptor(new ResponseContentEncoding());
         }
+    }
+
+    @Override
+    public void logout() throws BackgroundException {
+        // No logout required
+    }
+
+    @Override
+    public String getTarget() {
+        return target;
+    }
+
+    public AbstractHttpClient http() {
+        return client;
     }
 
     @Override
