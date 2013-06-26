@@ -70,11 +70,6 @@ public class FTPClient extends FTPSClient {
     private List<String> features = Collections.emptyList();
 
     /**
-     * Query feature set.
-     */
-    private boolean featSupported = Preferences.instance().getBoolean("ftp.command.feat");
-
-    /**
      * Get the server supplied features
      *
      * @return string containing server features, or null if no features or not
@@ -83,13 +78,8 @@ public class FTPClient extends FTPSClient {
      */
     public List<String> listFeatures() throws IOException {
         if(features.isEmpty()) {
-            if(featSupported) {
-                if(FTPReply.isPositiveCompletion(this.feat())) {
-                    features = Arrays.asList(this.getReplyStrings());
-                }
-                else {
-                    featSupported = false;
-                }
+            if(FTPReply.isPositiveCompletion(this.feat())) {
+                features = Arrays.asList(this.getReplyStrings());
             }
         }
         return features;
