@@ -21,10 +21,13 @@ package ch.cyberduck.ui.growl;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.library.Native;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public final class GrowlNative implements Growl {
+    private static final Logger log = Logger.getLogger(GrowlFactory.class);
 
     protected GrowlNative() {
         Native.load("Growl");
@@ -35,6 +38,12 @@ public final class GrowlNative implements Growl {
             if(Factory.VERSION_PLATFORM.matches("10\\.(5|6|7).*")) {
                 GrowlFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
             }
+            else {
+                log.warn(String.format("Skip registering Growl on %s", Factory.VERSION_PLATFORM));
+            }
+        }
+        else {
+            log.warn("Skip registering Growl.");
         }
     }
 

@@ -21,14 +21,20 @@ package ch.cyberduck.ui.growl;
 import ch.cyberduck.ui.cocoa.foundation.NSUserNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSUserNotificationCenter;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class NotificationCenter implements Growl {
+    private static final Logger log = Logger.getLogger(NotificationCenter.class);
 
     public static void register() {
         if(Factory.VERSION_PLATFORM.matches("10\\.8.*")) {
             GrowlFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
+        }
+        else {
+            log.warn(String.format("Skip registering notifications on %s", Factory.VERSION_PLATFORM));
         }
     }
 

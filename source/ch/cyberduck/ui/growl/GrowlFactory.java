@@ -29,7 +29,7 @@ import java.util.Map;
  * @version $Id: GrowlFactory.java 5451 2009-10-09 08:34:10Z dkocher $
  */
 public abstract class GrowlFactory extends Factory<Growl> {
-    private static Logger log = Logger.getLogger(GrowlFactory.class);
+    private static final Logger log = Logger.getLogger(GrowlFactory.class);
 
     /**
      * Registered factories
