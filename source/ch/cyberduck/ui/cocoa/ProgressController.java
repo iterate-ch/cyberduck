@@ -247,17 +247,6 @@ public class ProgressController extends BundleController {
                     NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    private static final NSDictionary DARK_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                    NSColor.darkGrayColor(),
-                    TableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
-            NSArray.arrayWithObjects(
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName)
-    );
-
     private boolean highlighted;
 
     public boolean isHighlighted() {
