@@ -37,14 +37,12 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
  */
 public class CommandController extends SheetController implements TranscriptListener, NSLayoutManager.Delegate {
-    private static Logger log = Logger.getLogger(CommandController.class);
 
     @Outlet
     private NSTextField inputField;
