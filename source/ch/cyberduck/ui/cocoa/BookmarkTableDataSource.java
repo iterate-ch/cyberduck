@@ -113,7 +113,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
 
             @Override
-            public void collectionItemAdded(Host item) {
+            public void collectionItemAdded(final Host item) {
                 cache.remove(item);
                 invoke(new WindowMainAction(controller) {
                     @Override
@@ -124,7 +124,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
 
             @Override
-            public void collectionItemRemoved(Host item) {
+            public void collectionItemRemoved(final Host item) {
                 cache.remove(item);
                 invoke(new WindowMainAction(controller) {
                     @Override
@@ -135,7 +135,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
 
             @Override
-            public void collectionItemChanged(Host item) {
+            public void collectionItemChanged(final Host item) {
                 cache.remove(item);
                 if(null != delayed) {
                     delayed.cancel(false);
@@ -229,17 +229,17 @@ public class BookmarkTableDataSource extends ListDataSource {
                 }
 
                 @Override
-                public void collectionItemAdded(Host item) {
+                public void collectionItemAdded(final Host item) {
                     source.add(item);
                 }
 
                 @Override
-                public void collectionItemRemoved(Host item) {
+                public void collectionItemRemoved(final Host item) {
                     source.remove(item);
                 }
 
                 @Override
-                public void collectionItemChanged(Host item) {
+                public void collectionItemChanged(final Host item) {
                     source.collectionItemChanged(item);
                 }
             });
