@@ -40,7 +40,7 @@ public final class IOKitSleepPreventer implements SleepPreventer {
         Native.load("IOKitSleepPreventer");
     }
 
-    private IOKitSleepPreventer() {
+    protected IOKitSleepPreventer() {
         //
     }
 

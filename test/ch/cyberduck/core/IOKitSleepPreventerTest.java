@@ -5,14 +5,13 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class IOKitSleepPreventerTest extends AbstractTestCase {
 
     @Test
     public void testRelease() throws Exception {
-        IOKitSleepPreventer.register();
-        final SleepPreventer s = SleepPreventerFactory.get();
+        final SleepPreventer s = new IOKitSleepPreventer();
         final String lock = s.lock();
         assertNotNull(lock);
         s.release(lock);
