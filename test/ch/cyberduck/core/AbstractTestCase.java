@@ -87,9 +87,9 @@ public class AbstractTestCase {
     public static void setup() {
         AutoreleaseActionOperationBatcher.register();
         FinderLocal.register();
-        NSImageIconCache.register();
         UserDefaultsPreferences.register();
         BundleLocale.register();
+        NSImageIconCache.register();
         PlistDeserializer.register();
         PlistSerializer.register();
         PlistWriter.register();
