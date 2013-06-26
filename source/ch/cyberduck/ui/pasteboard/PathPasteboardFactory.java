@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class PathPasteboardFactory {
+public final class PathPasteboardFactory {
 
     private static Map<Session, PathPasteboard> pasteboards
             = new HashMap<Session, PathPasteboard>();
