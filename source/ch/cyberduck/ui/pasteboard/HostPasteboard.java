@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui.pasteboard;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.ui.pasteboard.Pasteboard;
 
 /**
  * @version $Id$
@@ -42,6 +41,6 @@ public final class HostPasteboard extends Collection<Host> implements Pasteboard
     }
 
     private HostPasteboard() {
-        ;
+        //
     }
 }
