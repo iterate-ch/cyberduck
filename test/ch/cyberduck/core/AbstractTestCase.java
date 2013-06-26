@@ -34,6 +34,7 @@ import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
+import ch.cyberduck.ui.resources.NSImageIconCache;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -86,6 +87,7 @@ public class AbstractTestCase {
     public static void setup() {
         AutoreleaseActionOperationBatcher.register();
         FinderLocal.register();
+        NSImageIconCache.register();
         UserDefaultsPreferences.register();
         BundleLocale.register();
         PlistDeserializer.register();
