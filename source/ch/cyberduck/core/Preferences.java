@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang.StringUtils;
@@ -378,13 +379,13 @@ public abstract class Preferences {
         /**
          * Action when duplicate file exists
          */
-        defaults.put("queue.download.fileExists", "ask");
-        defaults.put("queue.upload.fileExists", "ask");
+        defaults.put("queue.download.fileExists", TransferAction.ACTION_CALLBACK.name());
+        defaults.put("queue.upload.fileExists", TransferAction.ACTION_CALLBACK.name());
         /**
          * When triggered manually using 'Reload' in the Transfer window
          */
-        defaults.put("queue.download.reload.fileExists", "ask");
-        defaults.put("queue.upload.reload.fileExists", "ask");
+        defaults.put("queue.download.reload.fileExists", TransferAction.ACTION_CALLBACK.name());
+        defaults.put("queue.upload.reload.fileExists", TransferAction.ACTION_CALLBACK.name());
 
         defaults.put("queue.upload.changePermissions", String.valueOf(true));
         defaults.put("queue.upload.permissions.useDefault", String.valueOf(false));

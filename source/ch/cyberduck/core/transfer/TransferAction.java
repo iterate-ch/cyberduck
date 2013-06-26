@@ -28,31 +28,30 @@ import java.util.Map;
  */
 public abstract class TransferAction {
 
-    public TransferAction() {
-        actions.put(this.toString(), this);
-    }
-
-    protected static final Map<String, TransferAction> actions
+    private static final Map<String, TransferAction> registry
             = new HashMap<String, TransferAction>();
 
-    @Override
-    public abstract String toString();
+    public static TransferAction forName(String name) {
+        return registry.get(name);
+    }
+
+    private String name;
+
+    public TransferAction(final String name) {
+        registry.put(name, this);
+        this.name = name;
+    }
 
     public abstract String getLocalizableString();
 
-    public static TransferAction forName(String name) {
-        return actions.get(name);
+    public String name() {
+        return name;
     }
 
     /**
      * Overwrite any prior existing file
      */
-    public static final TransferAction ACTION_OVERWRITE = new TransferAction() {
-        @Override
-        public String toString() {
-            return "overwrite";
-        }
-
+    public static final TransferAction ACTION_OVERWRITE = new TransferAction("overwrite") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Overwrite");
@@ -62,12 +61,7 @@ public abstract class TransferAction {
     /**
      * Append to any exsisting file when writing
      */
-    public static final TransferAction ACTION_RESUME = new TransferAction() {
-        @Override
-        public String toString() {
-            return "resume";
-        }
-
+    public static final TransferAction ACTION_RESUME = new TransferAction("resume") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Resume");
@@ -77,12 +71,7 @@ public abstract class TransferAction {
     /**
      * Create a new file with a similar name
      */
-    public static final TransferAction ACTION_RENAME = new TransferAction() {
-        @Override
-        public String toString() {
-            return "similar";
-        }
-
+    public static final TransferAction ACTION_RENAME = new TransferAction("similar") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Rename");
@@ -92,12 +81,7 @@ public abstract class TransferAction {
     /**
      * Create a new file with a similar name
      */
-    public static final TransferAction ACTION_RENAME_EXISTING = new TransferAction() {
-        @Override
-        public String toString() {
-            return "rename";
-        }
-
+    public static final TransferAction ACTION_RENAME_EXISTING = new TransferAction("rename") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Rename existing");
@@ -107,12 +91,7 @@ public abstract class TransferAction {
     /**
      * Do not transfer file
      */
-    public static final TransferAction ACTION_SKIP = new TransferAction() {
-        @Override
-        public String toString() {
-            return "skip";
-        }
-
+    public static final TransferAction ACTION_SKIP = new TransferAction("skip") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Skip");
@@ -122,12 +101,7 @@ public abstract class TransferAction {
     /**
      * Prompt the user about existing files
      */
-    public static final TransferAction ACTION_CALLBACK = new TransferAction() {
-        @Override
-        public String toString() {
-            return "ask";
-        }
-
+    public static final TransferAction ACTION_CALLBACK = new TransferAction("ask") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Prompt");
@@ -137,24 +111,14 @@ public abstract class TransferAction {
     /**
      * Automatically decide the transfer action using the comparision service for paths.
      */
-    public static final TransferAction ACTION_COMPARISON = new TransferAction() {
-        @Override
-        public String toString() {
-            return "compare";
-        }
-
+    public static final TransferAction ACTION_COMPARISON = new TransferAction("compare") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Compare");
         }
     };
 
-    public static final TransferAction ACTION_CANCEL = new TransferAction() {
-        @Override
-        public String toString() {
-            return "cancel";
-        }
-
+    public static final TransferAction ACTION_CANCEL = new TransferAction("cancel") {
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Cancel");
