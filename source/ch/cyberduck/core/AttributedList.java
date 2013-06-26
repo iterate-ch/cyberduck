@@ -54,7 +54,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      * @param collection Default content
      */
     public AttributedList(java.util.Collection<E> collection) {
-        this.addAll(collection);
+        super.addAll(collection);
     }
 
     public static <T extends AbstractPath> AttributedList<T> emptyList() {
