@@ -26,7 +26,7 @@ import ch.cyberduck.core.library.Native;
  */
 public final class GrowlNative implements Growl {
 
-    private GrowlNative() {
+    protected GrowlNative() {
         Native.load("Growl");
     }
 

@@ -9,12 +9,11 @@ import java.util.concurrent.Callable;
 /**
  * @version $Id$
  */
-public class GrowlTest extends AbstractTestCase {
+public class GrowlNativeTest extends AbstractTestCase {
 
     @Test
     public void testNotify() throws Exception {
-        GrowlNative.register();
-        final Growl growl = GrowlFactory.get();
+        final Growl growl = new GrowlNative();
         this.repeat(new Callable<Object>() {
             @Override
             public Object call() throws Exception {

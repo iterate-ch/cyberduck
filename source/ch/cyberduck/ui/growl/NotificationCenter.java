@@ -32,7 +32,7 @@ public class NotificationCenter implements Growl {
         }
     }
 
-    private NotificationCenter() {
+    protected NotificationCenter() {
         //
     }
 
