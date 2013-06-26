@@ -45,9 +45,7 @@ public abstract class GrowlFactory extends Factory<Growl> {
         if(factories.containsKey(VERSION_PLATFORM)) {
             return factories.get(VERSION_PLATFORM).create();
         }
-        else {
-            return new Disabled();
-        }
+        return new Disabled();
     }
 
     private static final class Disabled implements Growl {
