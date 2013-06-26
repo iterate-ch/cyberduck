@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -70,10 +72,13 @@ public class ProgressController extends BundleController {
         this.init();
     }
 
-    private TransferListener tl;
+    private ProgressListener progressListener;
+
+    private TransferListener transferListener;
 
     @Override
     protected void invalidate() {
+        transfer.removeListener(transferListener);
         filesPopup.menu().setDelegate(null);
         super.invalidate();
     }
@@ -85,7 +90,7 @@ public class ProgressController extends BundleController {
 
     private void init() {
         this.loadBundle();
-        this.transfer.addListener(tl = new TransferAdapter() {
+        this.transfer.addListener(transferListener = new TransferAdapter() {
             /**
              * Timer to update the progress indicator
              */
@@ -99,6 +104,21 @@ public class ProgressController extends BundleController {
                 invoke(new DefaultMainAction() {
                     @Override
                     public void run() {
+                        progressListener = new ProgressListener() {
+                            @Override
+                            public void message(final String message) {
+                                messageText = message;
+                                invoke(new DefaultMainAction() {
+                                    @Override
+                                    public void run() {
+                                        setMessageText();
+                                    }
+                                });
+                            }
+                        };
+                        for(Session s : transfer.getSessions()) {
+                            s.addProgressListener(progressListener);
+                        }
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
@@ -114,6 +134,9 @@ public class ProgressController extends BundleController {
                 invoke(new DefaultMainAction() {
                     @Override
                     public void run() {
+                        for(Session s : transfer.getSessions()) {
+                            s.removeProgressListener(progressListener);
+                        }
                         progressBar.stopAnimation(null);
                         progressBar.setIndeterminate(true);
                         progressBar.setHidden(true);
