@@ -1,13 +1,11 @@
 package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Local;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -35,32 +33,28 @@ public class DownloadRootPathsNormalizerTest extends AbstractTestCase {
     public void testNameClash() throws Exception {
         DownloadRootPathsNormalizer n = new DownloadRootPathsNormalizer();
         final List<Path> list = new ArrayList<Path>();
-        list.add(new NullPath("/f/a", Path.FILE_TYPE) {
-            private Local local = new NullLocal(null, this.getName()) {
+        final NullPath fa = new NullPath("/f/a", Path.FILE_TYPE);
+        list.add(fa);
+        {
+            Local local = new NullLocal(null, fa.getName()) {
                 @Override
                 public boolean exists() {
                     return false;
                 }
             };
-
-            @Override
-            public Local getLocal() {
-                return local;
-            }
-        });
-        list.add(new NullPath("/g/a", Path.FILE_TYPE) {
-            private Local local = new NullLocal(null, this.getName()) {
+            fa.setLocal(local);
+        }
+        final NullPath ga = new NullPath("/g/a", Path.FILE_TYPE);
+        list.add(ga);
+        {
+            Local local = new NullLocal(null, ga.getName()) {
                 @Override
                 public boolean exists() {
                     return false;
                 }
             };
-
-            @Override
-            public Local getLocal() {
-                return local;
-            }
-        });
+            ga.setLocal(local);
+        }
         final List<Path> normalized = n.normalize(list);
         assertEquals(2, normalized.size());
         assertEquals(new NullLocal(null, "/a"), normalized.get(0).getLocal());

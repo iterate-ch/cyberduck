@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.LocalFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +45,7 @@ public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<Pat
                         if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                             proposal += "." + FilenameUtils.getExtension(filename);
                         }
-                        download.getLocal().setPath(parent, proposal);
+                        download.setLocal(LocalFactory.createLocal(parent, proposal));
                     }
                     while(download.getLocal().exists());
                     if(log.isInfoEnabled()) {
