@@ -116,7 +116,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
      * Update timestamp and permission
      */
     @Override
-    public void complete(final Session session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void complete(final Session session, final Path file, final TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
