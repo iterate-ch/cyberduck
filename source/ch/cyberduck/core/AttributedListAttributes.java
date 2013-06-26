@@ -26,7 +26,6 @@ import java.util.List;
  * Container for file listing attributes, such as a sorting comparator and filter
  *
  * @see Filter
- * @see ch.cyberduck.ui.BrowserComparator
  */
 public class AttributedListAttributes<E extends AbstractPath> {
 
