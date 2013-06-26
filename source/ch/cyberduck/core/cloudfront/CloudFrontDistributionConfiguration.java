@@ -45,6 +45,7 @@ import org.jets3t.service.model.cloudfront.Origin;
 import org.jets3t.service.model.cloudfront.S3Origin;
 import org.jets3t.service.model.cloudfront.StreamingDistributionConfig;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
@@ -71,7 +72,13 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         this.session = session;
         this.client = new CloudFrontService(
                 new AWSCredentials(session.getHost().getCredentials().getUsername(),
-                        session.getHost().getCredentials().getPassword())) {
+                        session.getHost().getCredentials().getPassword())
+        ) {
+            @Override
+            public ProviderCredentials getAWSCredentials() {
+                return new AWSCredentials(session.getHost().getCredentials().getUsername(),
+                        session.getHost().getCredentials().getPassword());
+            }
 
             @Override
             protected HttpClient initHttpConnection() {
@@ -112,9 +119,6 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     @Override
     public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
-                    container.getName()));
-
             if(log.isDebugEnabled()) {
                 log.debug(String.format("List %s distributions", method));
             }
@@ -175,12 +179,6 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 }
             }
             final StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
-            if(enabled) {
-                session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
-            }
-            else {
-                session.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
-            }
             final Distribution d = this.read(container, method);
             if(null == d) {
                 if(log.isDebugEnabled()) {
@@ -266,8 +264,6 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     @Override
     public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final boolean recursive) throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
-                    container.getName()));
             final long reference = System.currentTimeMillis();
             final Distribution d = this.read(container, method);
             if(null == d) {

@@ -36,7 +36,6 @@ import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -126,14 +125,6 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                       final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
         if(method.equals(Distribution.WEBSITE)) {
             try {
-                // Configure Website Index Document
-                StringBuilder name = new StringBuilder(Locale.localizedString("Website", "S3")).append(" ").append(method.toString());
-                if(enabled) {
-                    session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
-                }
-                else {
-                    session.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
-                }
                 if(enabled) {
                     String suffix = "index.html";
                     if(StringUtils.isNotBlank(defaultRootObject)) {
