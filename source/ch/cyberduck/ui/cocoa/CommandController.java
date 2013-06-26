@@ -20,8 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.application.NSLayoutManager;
 import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
@@ -30,9 +32,9 @@ import ch.cyberduck.ui.cocoa.application.NSTextView;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -73,7 +75,7 @@ public class CommandController extends SheetController implements TranscriptList
 
     public void setImage(NSImageView image) {
         this.image = image;
-        this.image.setImage(IconCache.instance().iconForApplication("com.apple.Terminal", 128));
+        this.image.setImage(IconCacheFactory.<NSImage>get().applicationIcon(new Application("com.apple.Terminal"), 128));
     }
 
     @Override

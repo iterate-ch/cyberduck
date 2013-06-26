@@ -24,23 +24,14 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundException;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSComboBox;
-import ch.cyberduck.ui.cocoa.application.NSControl;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
-import ch.cyberduck.ui.cocoa.application.NSPanel;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -134,7 +125,7 @@ public class ConnectionController extends SheetController {
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
             item.setRepresentedObject(String.valueOf(protocol.hashCode()));
-            item.setImage(IconCache.iconNamed(protocol.icon(), 16));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
         }
         final Protocol defaultProtocol
                 = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
@@ -306,12 +297,12 @@ public class ConnectionController extends SheetController {
                 @Override
                 public void cleanup() {
                     alertIcon.setEnabled(!reachable);
-                    alertIcon.setImage(reachable ? null : IconCache.iconNamed("alert.tiff"));
+                    alertIcon.setImage(reachable ? null : IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
                 }
             });
         }
         else {
-            alertIcon.setImage(IconCache.iconNamed("alert.tiff"));
+            alertIcon.setImage(IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
             alertIcon.setEnabled(false);
         }
     }

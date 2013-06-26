@@ -25,9 +25,10 @@ import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 /**
  * @version $Id$
@@ -83,10 +84,10 @@ public class SyncPromptModel extends TransferPromptModel {
                     }
                 }
                 if(compare.equals(Comparison.REMOTE_NEWER)) {
-                    return tableViewCache.put(item, identifier, IconCache.iconNamed("transfer-download.tiff", 16));
+                    return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("transfer-download.tiff", 16));
                 }
                 if(compare.equals(Comparison.LOCAL_NEWER)) {
-                    return tableViewCache.put(item, identifier, IconCache.iconNamed("transfer-upload.tiff", 16));
+                    return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("transfer-upload.tiff", 16));
                 }
                 return null;
             }
@@ -94,12 +95,12 @@ public class SyncPromptModel extends TransferPromptModel {
                 if(item.attributes().isFile()) {
                     if(transfer.cache().lookup(item.getReference()) != null) {
                         if(item.attributes().getSize() == 0) {
-                            return tableViewCache.put(item, identifier, IconCache.iconNamed("alert.tiff"));
+                            return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
                         }
                     }
                     if(item.getLocal().exists()) {
                         if(item.getLocal().attributes().getSize() == 0) {
-                            return tableViewCache.put(item, identifier, IconCache.iconNamed("alert.tiff"));
+                            return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
                         }
                     }
                 }
@@ -107,7 +108,7 @@ public class SyncPromptModel extends TransferPromptModel {
             }
             if(identifier.equals(CREATE_COLUMN)) {
                 if(!(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists())) {
-                    return tableViewCache.put(item, identifier, IconCache.iconNamed("plus.tiff", 16));
+                    return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16));
                 }
                 return null;
             }

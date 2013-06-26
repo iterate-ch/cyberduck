@@ -23,8 +23,9 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -42,7 +43,7 @@ public class FolderController extends FileController {
                 null,
                 Locale.localizedString("Cancel", "Folder")
         ));
-        alert.setIcon(IconCache.iconNamed("newfolder.tiff", 64));
+        alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
     }
 
     @Override

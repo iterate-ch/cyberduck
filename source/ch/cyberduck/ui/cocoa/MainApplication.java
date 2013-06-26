@@ -46,6 +46,7 @@ import ch.cyberduck.ui.cocoa.quicklook.DeprecatedQuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.growl.GrowlNative;
 import ch.cyberduck.ui.growl.NotificationCenter;
+import ch.cyberduck.ui.resources.NSImageIconCache;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -86,6 +87,7 @@ public final class MainApplication {
              */
             {
                 AutoreleaseActionOperationBatcher.register();
+                NSImageIconCache.register();
                 FinderLocal.register();
                 UserDefaultsPreferences.register();
                 BundleLocale.register();

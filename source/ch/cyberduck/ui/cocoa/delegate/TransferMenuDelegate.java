@@ -23,9 +23,10 @@ import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
@@ -73,7 +74,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
         else {
             item.setRepresentedObject(path.getAbsolute());
         }
-        item.setImage(IconCache.instance().iconForPath(path, 16, false));
+        item.setImage(IconCacheFactory.<NSImage>get().fileIcon(path, 16));
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 

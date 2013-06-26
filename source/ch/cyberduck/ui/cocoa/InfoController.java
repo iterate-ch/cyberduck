@@ -53,10 +53,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -870,7 +870,7 @@ public class InfoController extends ToolbarWindowController {
         this.aclAddButton = b;
         this.aclAddButton.setTarget(this.id());
         this.aclAddButton.addItemWithTitle(StringUtils.EMPTY);
-        this.aclAddButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
+        this.aclAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
         for(Acl.User user : controller.getSession().getAvailableAclUsers()) {
             this.aclAddButton.addItemWithTitle(user.getPlaceholder());
             this.aclAddButton.lastItem().setAction(Foundation.selector("aclAddButtonClicked:"));
@@ -1114,7 +1114,7 @@ public class InfoController extends ToolbarWindowController {
         this.metadataAddButton = b;
         this.metadataAddButton.setTarget(this.id());
         this.metadataAddButton.addItemWithTitle(StringUtils.EMPTY);
-        this.metadataAddButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
+        this.metadataAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
         this.metadataAddButton.addItemWithTitle(Locale.localizedString("Custom Header", "S3"));
         this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddCustomClicked:"));
         this.metadataAddButton.lastItem().setTarget(this.id());
@@ -1456,30 +1456,30 @@ public class InfoController extends ToolbarWindowController {
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             if(session instanceof CloudSession) {
                 // Give icon and label of the given session
-                item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
             }
             else {
                 // CloudFront is the default for custom distributions
-                item.setImage(IconCache.iconNamed(Protocol.S3_SSL.disk(), 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(Protocol.S3_SSL.disk(), 32));
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
             if(session instanceof CloudSession) {
                 // Set icon of cloud service provider
                 item.setLabel(session.getHost().getProtocol().getName());
-                item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
             }
             else {
                 // Currently these settings are only available for Amazon S3
                 item.setLabel(Protocol.S3_SSL.getName());
-                item.setImage(IconCache.iconNamed(Protocol.S3_SSL.disk(), 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(Protocol.S3_SSL.disk(), 32));
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
-            item.setImage(IconCache.iconNamed("pencil.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_ACL)) {
-            item.setImage(IconCache.iconNamed("permissions.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("permissions.tiff", 32));
         }
         return item;
     }
@@ -1739,10 +1739,15 @@ public class InfoController extends ToolbarWindowController {
                     file.attributes().getOwner(), TRUNCATE_MIDDLE_ATTRIBUTES);
             // Icon
             if(count > 1) {
-                iconImageView.setImage(IconCache.iconNamed("NSMultipleDocuments", 32));
+                iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSMultipleDocuments", 32));
             }
             else {
-                iconImageView.setImage(IconCache.instance().iconForPath(this.getSelected(), 32));
+                if(this.getSelected().attributes().isVolume()) {
+                    iconImageView.setImage(IconCacheFactory.<NSImage>get().volumeIcon(controller.getSession().getHost().getProtocol(), 32));
+                }
+                else {
+                    iconImageView.setImage(IconCacheFactory.<NSImage>get().fileIcon(this.getSelected(), 32));
+                }
             }
         }
         // Sum of files

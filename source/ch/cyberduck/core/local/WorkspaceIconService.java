@@ -20,7 +20,7 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -46,8 +46,7 @@ public final class WorkspaceIconService implements IconService {
 
     @Override
     public boolean set(final Local file, final String image) {
-        return this.update(file, IconCache.iconNamed(image));
-
+        return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(image));
     }
 
     protected boolean update(final Local file, final NSImage icon) {

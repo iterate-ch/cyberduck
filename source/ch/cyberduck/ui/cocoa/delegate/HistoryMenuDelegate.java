@@ -27,12 +27,13 @@ import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
 import ch.cyberduck.ui.cocoa.application.NSColor;
 import ch.cyberduck.ui.cocoa.application.NSFont;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -103,7 +104,7 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
                 item.setRepresentedObject(h.getUuid());
                 item.setTarget(this.id());
                 item.setEnabled(true);
-                item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
             }
             else {
                 // Dummy menu item with timestamp

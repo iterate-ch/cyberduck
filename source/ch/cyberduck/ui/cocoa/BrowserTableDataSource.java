@@ -46,10 +46,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -181,7 +181,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     protected NSImage iconForPath(final Path item) {
-        return IconCache.instance().iconForPath(item, 16);
+        if(item.attributes().isVolume()) {
+            return IconCacheFactory.<NSImage>get().volumeIcon(controller.getSession().getHost().getProtocol(), 16);
+        }
+        return IconCacheFactory.<NSImage>get().fileIcon(item, 16);
     }
 
     /**

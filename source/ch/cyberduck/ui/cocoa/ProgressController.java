@@ -35,7 +35,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.rococoa.Foundation;
@@ -274,7 +274,7 @@ public class ProgressController extends BundleController {
         for(Path path : transfer.getRoots()) {
             NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(path.getName(), Foundation.selector("reveal:"), StringUtils.EMPTY);
             item.setRepresentedObject(path.getAbsolute());
-            item.setImage(IconCache.instance().iconForPath(path, 16, false));
+            item.setImage(IconCacheFactory.<NSImage>get().fileIcon(path, 16));
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer);
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
@@ -343,9 +343,9 @@ public class ProgressController extends BundleController {
     @Outlet
     private NSImageView statusIconView;
 
-    private static final NSImage RED_ICON = IconCache.iconNamed("statusRed.tiff");
-    private static final NSImage GREEN_ICON = IconCache.iconNamed("statusGreen.tiff");
-    private static final NSImage YELLOW_ICON = IconCache.iconNamed("statusYellow.tiff");
+    private static final NSImage RED_ICON = IconCacheFactory.<NSImage>get().iconNamed("statusRed.tiff");
+    private static final NSImage GREEN_ICON = IconCacheFactory.<NSImage>get().iconNamed("statusGreen.tiff");
+    private static final NSImage YELLOW_ICON = IconCacheFactory.<NSImage>get().iconNamed("statusYellow.tiff");
 
     public void setStatusIconView(final NSImageView statusIconView) {
         this.statusIconView = statusIconView;
@@ -357,7 +357,7 @@ public class ProgressController extends BundleController {
 
     public void setIconImageView(final NSImageView iconImageView) {
         this.iconImageView = iconImageView;
-        this.iconImageView.setImage(IconCache.iconNamed(transfer.getImage(), 32));
+        this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed(transfer.getImage(), 32));
     }
 
     /**

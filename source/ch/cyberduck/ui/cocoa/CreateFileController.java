@@ -25,8 +25,9 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -44,7 +45,7 @@ public class CreateFileController extends FileController {
                 EditorFactory.instance().getDefaultEditor() != null ? Locale.localizedString("Edit", "File") : null,
                 Locale.localizedString("Cancel", "File")
         ));
-        alert.setIcon(IconCache.documentIcon(null, 64));
+        alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(null, 64));
     }
 
     @Override

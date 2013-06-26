@@ -41,9 +41,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.pasteboard.HostPasteboard;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -264,7 +264,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         final NSObject cached = cache.get(host, identifier);
         if(null == cached) {
             if(identifier.equals(ICON_COLUMN)) {
-                return IconCache.iconNamed(host.getProtocol().disk(),
+                return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(),
                         Preferences.instance().getInteger("bookmark.icon.size"));
             }
             if(identifier.equals(BOOKMARK_COLUMN)) {
@@ -281,10 +281,10 @@ public class BookmarkTableDataSource extends ListDataSource {
                     final Session session = controller.getSession();
                     if(host.equals(session.getHost())) {
                         if(session.isConnected()) {
-                            return IconCache.iconNamed("statusGreen.tiff", 16);
+                            return IconCacheFactory.<NSImage>get().iconNamed("statusGreen.tiff", 16);
                         }
                         if(session.isOpening()) {
-                            return IconCache.iconNamed("statusYellow.tiff", 16);
+                            return IconCacheFactory.<NSImage>get().iconNamed("statusYellow.tiff", 16);
                         }
                     }
                 }

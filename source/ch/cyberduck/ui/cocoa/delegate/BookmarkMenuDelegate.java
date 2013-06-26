@@ -22,9 +22,10 @@ import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -74,17 +75,17 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         if(index.intValue() == BOOKMARKS_INDEX) {
             item.setEnabled(true);
-            item.setImage(IconCache.iconNamed("history.tiff", 16));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("history.tiff", 16));
         }
         if(index.intValue() == BOOKMARKS_INDEX + 1) {
             item.setEnabled(true);
-            item.setImage(IconCache.iconNamed("rendezvous.tiff", 16));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("rendezvous.tiff", 16));
         }
         if(index.intValue() > BOOKMARKS_INDEX + 2) {
             Host h = collection.get(index.intValue() - (BOOKMARKS_INDEX + 3));
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
-            item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
         }

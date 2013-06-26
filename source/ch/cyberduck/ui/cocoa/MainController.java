@@ -63,8 +63,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.growl.GrowlFactory;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -669,7 +669,7 @@ public class MainController extends BundleController implements NSApplication.De
                 i++;
             }
             bookmarksPopup.addItemWithTitle(title);
-            bookmarksPopup.lastItem().setImage(IconCache.iconNamed(b.getProtocol().icon(), 16));
+            bookmarksPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed(b.getProtocol().icon(), 16));
             bookmarksPopup.lastItem().setRepresentedObject(b.getUuid());
             if(b.equals(open)) {
                 bookmarksPopup.selectItemAtIndex(bookmarksPopup.indexOfItem(bookmarksPopup.lastItem()));
@@ -995,7 +995,7 @@ public class MainController extends BundleController implements NSApplication.De
                 && Preferences.instance().getInteger("uses") > 0) {
             if(!SchemeHandlerFactory.get().isDefaultHandler(
                     Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()),
-                    new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString(), null))) {
+                    new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()))) {
                 final NSAlert alert = NSAlert.alert(
                         Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
                         Locale.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration"),
@@ -1013,7 +1013,7 @@ public class MainController extends BundleController implements NSApplication.De
                 if(choice == SheetCallback.DEFAULT_OPTION) {
                     SchemeHandlerFactory.get().setDefaultHandler(
                             Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()),
-                            new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString(), null)
+                            new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString())
                     );
                 }
             }

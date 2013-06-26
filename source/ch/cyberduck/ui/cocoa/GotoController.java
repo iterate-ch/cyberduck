@@ -26,8 +26,9 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -79,7 +80,7 @@ public class GotoController extends AlertController {
                 null,
                 Locale.localizedString("Cancel", "Goto")
         ));
-        alert.setIcon(IconCache.folderIcon(64));
+        alert.setIcon(IconCacheFactory.<NSImage>get().folderIcon(64));
         folderCombobox = NSComboBox.textfieldWithFrame(new NSRect(0, 26));
         folderCombobox.setCompletes(true);
         folderCombobox.setUsesDataSource(true);

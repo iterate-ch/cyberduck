@@ -23,9 +23,10 @@ import ch.cyberduck.core.RendezvousCollection;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -59,7 +60,7 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setEnabled(true);
-            item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
         }

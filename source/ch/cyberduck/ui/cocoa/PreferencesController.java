@@ -48,9 +48,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -172,7 +172,7 @@ public final class PreferencesController extends ToolbarWindowController {
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar, final String itemIdentifier, final boolean flag) {
         final NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, itemIdentifier, flag);
         if(itemIdentifier.equals("sftp")) {
-            item.setImage(IconCache.iconNamed("ftp"));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("ftp"));
         }
         return item;
     }
@@ -330,7 +330,7 @@ public final class PreferencesController extends ToolbarWindowController {
             editorCombobox.lastItem().setEnabled(enabled);
             if(enabled) {
                 editorCombobox.lastItem().setImage(
-                        IconCache.instance().iconForApplication(editor.getIdentifier(), 16));
+                        IconCacheFactory.<NSImage>get().applicationIcon(editor, 16));
             }
             if(editor.equals(EditorFactory.instance().getDefaultEditor())) {
                 editorCombobox.selectItem(editorCombobox.lastItem());
@@ -493,7 +493,7 @@ public final class PreferencesController extends ToolbarWindowController {
                 @Override
                 public void run() {
                     defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
-                    defaultBookmarkCombobox.lastItem().setImage(IconCache.iconNamed("cyberduck-document.icns", 16));
+                    defaultBookmarkCombobox.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns", 16));
                     defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
                 }
             });
@@ -530,7 +530,7 @@ public final class PreferencesController extends ToolbarWindowController {
         for(Host bookmark : BookmarkCollection.defaultCollection()) {
             this.defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
             this.defaultBookmarkCombobox.lastItem().setImage(
-                    IconCache.iconNamed(bookmark.getProtocol().icon(), 16));
+                    IconCacheFactory.<NSImage>get().iconNamed(bookmark.getProtocol().icon(), 16));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
             if(bookmark.getUuid().equals(Preferences.instance().getProperty("browser.defaultBookmark"))) {
                 this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
@@ -1103,7 +1103,7 @@ public final class PreferencesController extends ToolbarWindowController {
         this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, StringUtils.EMPTY);
         this.downloadPathPopup.lastItem().setTarget(this.id());
         this.downloadPathPopup.lastItem().setImage(
-                IconCache.instance().iconForPath(f, 16)
+                IconCacheFactory.<NSImage>get().fileIcon(f, 16)
         );
         this.downloadPathPopup.lastItem().setRepresentedObject(
                 f.getAbsolute());
@@ -1143,7 +1143,7 @@ public final class PreferencesController extends ToolbarWindowController {
         Local custom = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
         downloadPathPopup.itemAtIndex(new NSInteger(0)).setTitle(custom.getDisplayName());
         downloadPathPopup.itemAtIndex(new NSInteger(0)).setRepresentedObject(custom.getAbsolute());
-        downloadPathPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.instance().iconForPath(custom, 16));
+        downloadPathPopup.itemAtIndex(new NSInteger(0)).setImage(IconCacheFactory.<NSImage>get().fileIcon(custom, 16));
         downloadPathPopup.selectItemAtIndex(new NSInteger(0));
         downloadPathPanel = null;
     }
@@ -1632,7 +1632,7 @@ public final class PreferencesController extends ToolbarWindowController {
         for(Protocol protocol : ProtocolFactory.getKnownProtocols()) {
             final NSMenuItem item = this.protocolCombobox.itemWithTitle(protocol.getDescription());
             item.setRepresentedObject(protocol.getProvider());
-            item.setImage(IconCache.iconNamed(protocol.icon(), 16));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
         }
 
         final Protocol defaultProtocol
@@ -1700,7 +1700,7 @@ public final class PreferencesController extends ToolbarWindowController {
         for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol.getScheme())) {
             defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
             final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
-            item.setImage(IconCache.instance().iconForApplication(handler.getIdentifier(), 16));
+            item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(handler, 16));
             item.setRepresentedObject(handler.getIdentifier());
             if(handler.getIdentifier().equals(defaultHandler.getIdentifier())) {
                 defaultProtocolHandlerCombobox.selectItem(item);
@@ -1724,7 +1724,7 @@ public final class PreferencesController extends ToolbarWindowController {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
                 Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme()),
-                new Application(bundle, null)
+                new Application(bundle)
         );
     }
 
@@ -1743,7 +1743,7 @@ public final class PreferencesController extends ToolbarWindowController {
     public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-                Arrays.asList(Protocol.SFTP.getScheme()), new Application(bundle, null)
+                Arrays.asList(Protocol.SFTP.getScheme()), new Application(bundle)
         );
     }
 

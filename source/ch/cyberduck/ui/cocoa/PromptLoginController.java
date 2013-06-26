@@ -36,7 +36,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -137,7 +137,7 @@ public final class PromptLoginController extends AbstractLoginController {
 
             public void setIconView(NSImageView iconView) {
                 this.iconView = iconView;
-                this.iconView.setImage(IconCache.iconNamed(protocol.disk()));
+                this.iconView.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.disk()));
             }
 
             @Outlet

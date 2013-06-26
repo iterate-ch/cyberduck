@@ -27,12 +27,13 @@ import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
 import ch.cyberduck.ui.cocoa.application.NSColor;
 import ch.cyberduck.ui.cocoa.application.NSFont;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -114,7 +115,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                 item.setEnabled(true);
                 item.setTarget(this.id());
                 item.setAction(Foundation.selector("menuItemClicked:"));
-                item.setImage(IconCache.iconNamed("site.tiff", 16));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
                 Iterator<Path> iter = selected.iterator();
                 DescriptiveUrl url = this.getURLs(iter.next()).get(index.intValue() / 2);
                 item.setRepresentedObject(s);

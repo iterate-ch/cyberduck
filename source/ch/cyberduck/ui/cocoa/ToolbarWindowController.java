@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSTabView;
 import ch.cyberduck.ui.cocoa.application.NSTabViewItem;
 import ch.cyberduck.ui.cocoa.application.NSToolbar;
@@ -31,7 +32,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -188,7 +189,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         toolbarItem.setLabel(tab.label());
         toolbarItem.setPaletteLabel(tab.label());
         toolbarItem.setToolTip(tab.label());
-        toolbarItem.setImage(IconCache.iconNamed(itemIdentifier, 32));
+        toolbarItem.setImage(IconCacheFactory.<NSImage>get().iconNamed(itemIdentifier, 32));
         toolbarItem.setTarget(this.id());
         toolbarItem.setAction(Foundation.selector("select:"));
 

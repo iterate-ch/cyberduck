@@ -22,9 +22,10 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.log4j.Logger;
 
@@ -63,10 +64,10 @@ public class UploadPromptModel extends TransferPromptModel {
             if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
                 if(item.attributes().isFile()) {
                     if(item.getLocal().attributes().getSize() == 0) {
-                        return tableViewCache.put(item, identifier, IconCache.iconNamed("alert.tiff"));
+                        return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
                     }
                     if(item.attributes().getSize() > item.getLocal().attributes().getSize()) {
-                        return tableViewCache.put(item, identifier, IconCache.iconNamed("alert.tiff"));
+                        return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
                     }
                 }
                 return null;

@@ -38,9 +38,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -305,7 +305,7 @@ public abstract class TransferPromptController extends SheetController implement
                     cell.setEnabled(!transfer.isSkipped(path) && !getAction().equals(TransferAction.ACTION_SKIP));
                 }
                 if(identifier.equals(TransferPromptModel.FILENAME_COLUMN)) {
-                    (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCache.instance().iconForPath(path, 16));
+                    (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCacheFactory.<NSImage>get().fileIcon(path, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(transfer.isSkipped(path) || !transfer.isSelected(path) || getAction().equals(TransferAction.ACTION_SKIP)) {

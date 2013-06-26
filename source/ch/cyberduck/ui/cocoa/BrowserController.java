@@ -59,7 +59,6 @@ import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
@@ -67,6 +66,7 @@ import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -489,7 +489,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Override
     public void setWindow(NSWindow window) {
         window.setTitle(Preferences.instance().getProperty("application.name"));
-        window.setMiniwindowImage(IconCache.iconNamed("cyberduck-document.icns"));
+        window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setDelegate(this.id());
         super.setWindow(window);
@@ -734,7 +734,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setBonjourButton(NSButton bonjourButton) {
         this.bonjourButton = bonjourButton;
-        NSImage img = IconCache.iconNamed("rendezvous.tiff", 16);
+        NSImage img = IconCacheFactory.<NSImage>get().iconNamed("rendezvous.tiff", 16);
         img.setTemplate(false);
         this.bonjourButton.setImage(img);
         this.setRecessedBezelStyle(this.bonjourButton);
@@ -747,7 +747,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setHistoryButton(NSButton historyButton) {
         this.historyButton = historyButton;
-        NSImage img = IconCache.iconNamed("history.tiff", 16);
+        NSImage img = IconCacheFactory.<NSImage>get().iconNamed("history.tiff", 16);
         img.setTemplate(false);
         this.historyButton.setImage(img);
         this.setRecessedBezelStyle(this.historyButton);
@@ -760,7 +760,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setBookmarkButton(NSButton bookmarkButton) {
         this.bookmarkButton = bookmarkButton;
-        NSImage img = IconCache.iconNamed("bookmarks.tiff", 16);
+        NSImage img = IconCacheFactory.<NSImage>get().iconNamed("bookmarks.tiff", 16);
         img.setTemplate(false);
         this.bookmarkButton.setImage(img);
         this.setRecessedBezelStyle(this.bookmarkButton);
@@ -856,7 +856,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.bookmarkSwitchView = bookmarkSwitchView;
         this.bookmarkSwitchView.setSegmentCount(1);
         this.bookmarkSwitchView.setToolTip(Locale.localizedString("Bookmarks"));
-        final NSImage image = IconCache.iconNamed("book.tiff");
+        final NSImage image = IconCacheFactory.<NSImage>get().iconNamed("book.tiff");
         this.bookmarkSwitchView.setImage_forSegment(image, SWITCH_BOOKMARK_VIEW);
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
         cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectAny);
@@ -904,10 +904,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void setBrowserSwitchView(NSSegmentedControl browserSwitchView) {
         this.browserSwitchView = browserSwitchView;
         this.browserSwitchView.setSegmentCount(2); // list, outline
-        final NSImage list = IconCache.iconNamed("list.tiff");
+        final NSImage list = IconCacheFactory.<NSImage>get().iconNamed("list.tiff");
         list.setTemplate(true);
         this.browserSwitchView.setImage_forSegment(list, SWITCH_LIST_VIEW);
-        final NSImage outline = IconCache.iconNamed("outline.tiff");
+        final NSImage outline = IconCacheFactory.<NSImage>get().iconNamed("outline.tiff");
         outline.setTemplate(true);
         this.browserSwitchView.setImage_forSegment(outline, SWITCH_OUTLINE_VIEW);
         this.browserSwitchView.setTarget(this.id());
@@ -1058,8 +1058,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             this.setBrowserColumnSortingIndicator(
                     this.isSortedAscending() ?
-                            IconCache.iconNamed("NSAscendingSortIndicator") :
-                            IconCache.iconNamed("NSDescendingSortIndicator"),
+                            IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
+                            IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
                     tableColumn.identifier());
             reloadData(s);
         }
@@ -1495,8 +1495,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             table.addTableColumn(c);
         }
         table.setIndicatorImage_inTableColumn((browserListViewDelegate).isSortedAscending() ?
-                IconCache.iconNamed("NSAscendingSortIndicator") :
-                IconCache.iconNamed("NSDescendingSortIndicator"),
+                IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
+                IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
                 table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column")));
         // Sets whether the order and width of this table view’s columns are automatically saved.
         table.setAutosaveTableColumns(true);
@@ -1688,7 +1688,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.actionPopupButton.setAutoenablesItems(true);
         final NSInteger index = new NSInteger(0);
         this.actionPopupButton.insertItemWithTitle_atIndex(StringUtils.EMPTY, index);
-        this.actionPopupButton.itemAtIndex(index).setImage(IconCache.iconNamed("gear.tiff"));
+        this.actionPopupButton.itemAtIndex(index).setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
     }
 
     @Outlet
@@ -1933,9 +1933,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.navigationButton = navigationButton;
         this.navigationButton.setTarget(this.id());
         this.navigationButton.setAction(Foundation.selector("navigationButtonClicked:"));
-        this.navigationButton.setImage_forSegment(IconCache.iconNamed("nav-backward.tiff"),
+        this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-backward.tiff"),
                 NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.navigationButton.setImage_forSegment(IconCache.iconNamed("nav-forward.tiff"),
+        this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-forward.tiff"),
                 NAVIGATION_RIGHT_SEGMENT_BUTTON);
     }
 
@@ -1982,7 +1982,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.upButton = upButton;
         this.upButton.setTarget(this.id());
         this.upButton.setAction(Foundation.selector("upButtonClicked:"));
-        this.upButton.setImage_forSegment(IconCache.iconNamed("nav-up.tiff"),
+        this.upButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-up.tiff"),
                 NAVIGATION_UP_SEGMENT_BUTTON);
     }
 
@@ -2005,7 +2005,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private void addPathToNavigation(final Path p) {
         pathPopupButton.addItemWithTitle(p.getAbsolute());
         pathPopupButton.lastItem().setRepresentedObject(p.getAbsolute());
-        pathPopupButton.lastItem().setImage(IconCache.instance().iconForPath(p, 16));
+        if(p.attributes().isVolume()) {
+            pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().volumeIcon(session.getHost().getProtocol(), 16));
+        }
+        else {
+            pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(p, 16));
+        }
     }
 
     /**
@@ -2185,8 +2190,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             statusLabel.setStringValue(StringUtils.EMPTY);
         }
         if(this.isMounted()) {
-            securityLabel.setImage(session.isSecure() ? IconCache.iconNamed("locked.tiff")
-                    : IconCache.iconNamed("unlocked.tiff"));
+            securityLabel.setImage(session.isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
+                    : IconCacheFactory.<NSImage>get().iconNamed("unlocked.tiff"));
             securityLabel.setEnabled(session instanceof SSLSession);
         }
         else {
@@ -2588,7 +2593,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void editMenuClicked(final NSMenuItem sender) {
         for(Path selected : this.getSelectedPaths()) {
             final Editor editor = EditorFactory.instance().create(this, session,
-                    new Application(sender.representedObject(), null), selected);
+                    new Application(sender.representedObject()), selected);
             editor.open();
         }
     }
@@ -4088,10 +4093,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             if(null == editor) {
                 // No editor found
-                item.setImage(IconCache.iconNamed("pencil.tiff", 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
             }
             else {
-                item.setImage(IconCache.instance().iconForApplication(editor.getIdentifier(), 32));
+                item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(editor, 32));
             }
         }
         else if(identifier.equals(TOOLBAR_DISCONNECT)) {
@@ -4099,13 +4104,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 item.setLabel(Locale.localizedString("Stop"));
                 item.setPaletteLabel(Locale.localizedString("Stop"));
                 item.setToolTip(Locale.localizedString("Cancel current operation in progress"));
-                item.setImage(IconCache.iconNamed("stop", 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop", 32));
             }
             else {
                 item.setLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
                 item.setPaletteLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
                 item.setToolTip(Locale.localizedString("Disconnect from server"));
-                item.setImage(IconCache.iconNamed("eject.tiff", 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
             }
         }
         else if(identifier.equals(TOOLBAR_ARCHIVE)) {
@@ -4167,7 +4172,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_NEW_CONNECTION));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_CONNECTION));
             item.setToolTip(Locale.localizedString("Connect to server"));
-            item.setImage(IconCache.iconNamed("connect.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("connect.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("connectButtonClicked:"));
             return item;
@@ -4176,7 +4181,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_TRANSFERS));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_TRANSFERS));
             item.setToolTip(Locale.localizedString("Show Transfers window"));
-            item.setImage(IconCache.iconNamed("queue.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("queue.tiff", 32));
             item.setAction(Foundation.selector("showTransferQueueClicked:"));
             return item;
         }
@@ -4202,7 +4207,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             else {
                 NSToolbarItem temporary = NSToolbarItem.itemWithIdentifier(itemIdentifier);
                 temporary.setPaletteLabel(Locale.localizedString("Action"));
-                temporary.setImage(IconCache.iconNamed("advanced.tiff", 32));
+                temporary.setImage(IconCacheFactory.<NSImage>get().iconNamed("advanced.tiff", 32));
                 return temporary;
             }
             return item;
@@ -4239,7 +4244,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_REFRESH));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_REFRESH));
             item.setToolTip(Locale.localizedString("Refresh directory listing"));
-            item.setImage(IconCache.iconNamed("reload.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reload.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;
@@ -4248,7 +4253,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_DOWNLOAD));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_DOWNLOAD));
             item.setToolTip(Locale.localizedString("Download file"));
-            item.setImage(IconCache.iconNamed("download.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("download.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("downloadButtonClicked:"));
             return item;
@@ -4257,7 +4262,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_UPLOAD));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_UPLOAD));
             item.setToolTip(Locale.localizedString("Upload local file to the remote host"));
-            item.setImage(IconCache.iconNamed("upload.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("upload.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("uploadButtonClicked:"));
             return item;
@@ -4266,7 +4271,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_SYNCHRONIZE));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_SYNCHRONIZE));
             item.setToolTip(Locale.localizedString("Synchronize files"));
-            item.setImage(IconCache.iconNamed("sync.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("sync.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("syncButtonClicked:"));
             return item;
@@ -4275,7 +4280,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_GET_INFO));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_GET_INFO));
             item.setToolTip(Locale.localizedString("Show file attributes"));
-            item.setImage(IconCache.iconNamed("info.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("info.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("infoButtonClicked:"));
             return item;
@@ -4287,10 +4292,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final Application browser = SchemeHandlerFactory.get().getDefaultHandler(Scheme.http);
             if(null == browser) {
                 item.setEnabled(false);
-                item.setImage(IconCache.iconNamed("notfound.tiff", 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("notfound.tiff", 32));
             }
             else {
-                item.setImage(IconCache.instance().iconForApplication(browser.getIdentifier(), 32));
+                item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(browser, 32));
             }
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openBrowserButtonClicked:"));
@@ -4300,7 +4305,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_EDIT));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_EDIT));
             item.setToolTip(Locale.localizedString("Edit file in external editor"));
-            item.setImage(IconCache.iconNamed("pencil.tiff"));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("editButtonClicked:"));
             // Add a menu representation for text mode of toolbar
@@ -4317,7 +4322,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_DELETE));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_DELETE));
             item.setToolTip(Locale.localizedString("Delete file"));
-            item.setImage(IconCache.iconNamed("delete.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("delete.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("deleteFileButtonClicked:"));
             return item;
@@ -4326,7 +4331,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_NEW_FOLDER));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_FOLDER));
             item.setToolTip(Locale.localizedString("Create New Folder"));
-            item.setImage(IconCache.iconNamed("newfolder.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("createFolderButtonClicked:"));
             return item;
@@ -4335,7 +4340,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_NEW_BOOKMARK));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_BOOKMARK));
             item.setToolTip(Locale.localizedString("New Bookmark"));
-            item.setImage(IconCache.iconNamed("bookmark", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("bookmark", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("addBookmarkButtonClicked:"));
             return item;
@@ -4344,7 +4349,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
             item.setToolTip(Locale.localizedString("Disconnect from server"));
-            item.setImage(IconCache.iconNamed("eject.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("disconnectButtonClicked:"));
             return item;
@@ -4360,7 +4365,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 final Local terminal = LocalFactory.createLocal(app);
                 item.setLabel(terminal.getDisplayName());
                 item.setPaletteLabel(terminal.getDisplayName());
-                item.setImage(IconCache.instance().iconForPath(terminal, 32));
+                item.setImage(IconCacheFactory.<NSImage>get().fileIcon(terminal, 32));
             }
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openTerminalButtonClicked:"));
@@ -4369,7 +4374,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else if(itemIdentifier.equals(TOOLBAR_ARCHIVE)) {
             item.setLabel(Locale.localizedString("Archive", "Archive"));
             item.setPaletteLabel(Locale.localizedString("Archive", "Archive"));
-            item.setImage(IconCache.instance().iconForApplication("com.apple.archiveutility", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(new Application("com.apple.archiveutility"), 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("archiveButtonClicked:"));
             return item;
@@ -4380,7 +4385,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(quicklook.isAvailable()) {
                 quicklookButton = NSButton.buttonWithFrame(new NSRect(29, 23));
                 quicklookButton.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
-                quicklookButton.setImage(IconCache.iconNamed("NSQuickLookTemplate"));
+                quicklookButton.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSQuickLookTemplate"));
                 quicklookButton.sizeToFit();
                 quicklookButton.setTarget(this.id());
                 quicklookButton.setAction(Foundation.selector("quicklookButtonClicked:"));
@@ -4390,7 +4395,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             else {
                 item.setEnabled(false);
-                item.setImage(IconCache.iconNamed("notfound.tiff", 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("notfound.tiff", 32));
             }
             return item;
         }
@@ -4398,7 +4403,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_LOG));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_LOG));
             item.setToolTip(Locale.localizedString("Toggle Log Drawer"));
-            item.setImage(IconCache.iconNamed("log", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("log", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("toggleLogDrawer:"));
             return item;

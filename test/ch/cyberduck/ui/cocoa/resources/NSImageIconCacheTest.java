@@ -20,8 +20,13 @@ package ch.cyberduck.ui.cocoa.resources;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.resources.NSImageIconCache;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -31,11 +36,11 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class IconCacheTest extends AbstractTestCase {
+public class NSImageIconCacheTest extends AbstractTestCase {
 
     @Test
     public void testFolderIcon16() throws Exception {
-        final NSImage icon = IconCache.folderIcon(16);
+        final NSImage icon = new NSImageIconCache().folderIcon(16);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
@@ -46,7 +51,7 @@ public class IconCacheTest extends AbstractTestCase {
 
     @Test
     public void testFolderIcon32() throws Exception {
-        final NSImage icon = IconCache.folderIcon(32);
+        final NSImage icon = new NSImageIconCache().folderIcon(32);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
@@ -57,7 +62,7 @@ public class IconCacheTest extends AbstractTestCase {
 
     @Test
     public void testFolderIcon64() throws Exception {
-        final NSImage icon = IconCache.folderIcon(64);
+        final NSImage icon = new NSImageIconCache().folderIcon(64);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
@@ -68,7 +73,7 @@ public class IconCacheTest extends AbstractTestCase {
 
     @Test
     public void testFolderIcon128() throws Exception {
-        final NSImage icon = IconCache.folderIcon(128);
+        final NSImage icon = new NSImageIconCache().folderIcon(128);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
@@ -79,7 +84,7 @@ public class IconCacheTest extends AbstractTestCase {
 
     @Test
     public void testFolderIcon256() throws Exception {
-        final NSImage icon = IconCache.folderIcon(256);
+        final NSImage icon = new NSImageIconCache().folderIcon(256);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
@@ -90,7 +95,7 @@ public class IconCacheTest extends AbstractTestCase {
 
     @Test
     public void testFolderIcon512() throws Exception {
-        final NSImage icon = IconCache.folderIcon(512);
+        final NSImage icon = new NSImageIconCache().folderIcon(512);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
@@ -101,7 +106,7 @@ public class IconCacheTest extends AbstractTestCase {
 
     @Test
     public void testFolderIconAllSizes() throws Exception {
-        final NSImage icon = IconCache.folderIcon(null);
+        final NSImage icon = new NSImageIconCache().folderIcon(null);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
@@ -110,7 +115,7 @@ public class IconCacheTest extends AbstractTestCase {
 
     @Test
     public void testDocumentIcon() throws Exception {
-        final NSImage icon = IconCache.documentIcon("txt", 64);
+        final NSImage icon = new NSImageIconCache().documentIcon("txt", 64);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
@@ -120,22 +125,33 @@ public class IconCacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testIconForApplication() throws Exception {
+    @Ignore
+    public void testVolume() throws Exception {
+        final NSImageIconCache cache = new NSImageIconCache();
+        for(Protocol p : ProtocolFactory.getKnownProtocols()) {
+            assertNotNull(cache.volumeIcon(p, 32));
+        }
+    }
 
+    @Test
+    public void testIconForApplication() throws Exception {
+        final NSImageIconCache cache = new NSImageIconCache();
+        assertNotNull(cache.applicationIcon(new Application("com.apple.TextEdit"), 32));
     }
 
     @Test
     public void testIconForPath() throws Exception {
         final NullLocal f = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
-        NSImage icon = IconCache.instance().iconForPath(f);
+        final NSImageIconCache cache = new NSImageIconCache();
+        NSImage icon = cache.fileIcon(f, 16);
         assertNull(icon);
         assertTrue(f.touch());
-        icon = IconCache.instance().iconForPath(f);
+        icon = cache.fileIcon(f, 16);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
 //        assertEquals(4, icon.representations().count().intValue());
         f.delete();
-        assertNull(IconCache.instance().iconForPath(f));
+        assertNull(cache.fileIcon(f, 16));
     }
 }

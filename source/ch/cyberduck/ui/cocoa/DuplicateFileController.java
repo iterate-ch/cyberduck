@@ -24,7 +24,8 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +45,7 @@ public class DuplicateFileController extends FileController {
                 null,
                 Locale.localizedString("Cancel", "Duplicate")
         ));
-        alert.setIcon(IconCache.instance().iconForExtension(this.getSelected().getExtension(), 64));
+        alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(this.getSelected().getExtension(), 64));
         final Path selected = this.getSelected();
         String proposal = MessageFormat.format(Preferences.instance().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),

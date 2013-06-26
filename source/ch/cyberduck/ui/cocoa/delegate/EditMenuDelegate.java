@@ -23,9 +23,10 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.rococoa.Foundation;
@@ -101,17 +102,17 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
             item.setTitle(Locale.localizedString("No external editor available"));
             return false;
         }
-        final String identifier = editors.get(index.intValue()).getIdentifier();
-        item.setRepresentedObject(identifier);
+        final Application application = editors.get(index.intValue());
+        item.setRepresentedObject(application.getIdentifier());
         final String editor = editors.get(index.intValue()).getName();
         item.setTitle(editor);
-        if(null != selected && identifier.equalsIgnoreCase(EditorFactory.instance().getEditor(selected.getName()).getIdentifier())) {
+        if(null != selected && application.getIdentifier().equalsIgnoreCase(EditorFactory.instance().getEditor(selected.getName()).getIdentifier())) {
             setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
         }
         else {
             this.clearShortcut(item);
         }
-        item.setImage(IconCache.instance().iconForApplication(identifier, 16));
+        item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(application, 16));
         item.setAction(Foundation.selector("editMenuClicked:"));
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }

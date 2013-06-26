@@ -40,7 +40,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -48,6 +48,7 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,7 +78,7 @@ public class BookmarkController extends WindowController {
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
             item.setRepresentedObject(String.valueOf(protocol.hashCode()));
-            item.setImage(IconCache.iconNamed(protocol.icon(), 16));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
         }
     }
 
@@ -251,7 +252,7 @@ public class BookmarkController extends WindowController {
         this.webUrlImage = b;
         this.webUrlImage.setTarget(this.id());
         this.webUrlImage.setAction(Foundation.selector("openWebUrl:"));
-        this.webUrlImage.setImage(IconCache.iconNamed("site.tiff", 16));
+        this.webUrlImage.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
     }
 
     private NSImage favicon;
@@ -265,10 +266,9 @@ public class BookmarkController extends WindowController {
 
                 @Override
                 public void run() throws BackgroundException {
-                    NSImage img;
                     final String f = host.getProtocol().favicon();
                     if(StringUtils.isNotBlank(f)) {
-                        img = IconCache.iconNamed(f, 16);
+                        favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
                     }
                     else {
                         String url = host.getWebURL() + "/favicon.ico";
@@ -277,20 +277,18 @@ public class BookmarkController extends WindowController {
                         if(null == data) {
                             return;
                         }
-                        img = NSImage.imageWithData(data);
+                        favicon = NSImage.imageWithData(data);
                     }
-                    if(null == img) {
-                        return;
+                    if(null != favicon) {
+                        favicon.setSize(new NSSize(16, 16));
                     }
-                    favicon = IconCache.instance().convert(img, 16);
                 }
 
                 @Override
                 public void cleanup() {
-                    if(null == favicon) {
-                        return;
+                    if(null != favicon) {
+                        webUrlImage.setImage(favicon);
                     }
-                    webUrlImage.setImage(favicon);
                 }
 
                 @Override
@@ -469,7 +467,7 @@ public class BookmarkController extends WindowController {
         if(downloadPathPopup.menu().itemWithTitle(f.getDisplayName()) == null) {
             downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, StringUtils.EMPTY);
             downloadPathPopup.lastItem().setTarget(this.id());
-            downloadPathPopup.lastItem().setImage(IconCache.instance().iconForPath(f, 16));
+            downloadPathPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(f, 16));
             downloadPathPopup.lastItem().setRepresentedObject(f.getAbsolute());
             if(host.getDownloadFolder().equals(f)) {
                 downloadPathPopup.selectItem(downloadPathPopup.lastItem());
@@ -505,7 +503,7 @@ public class BookmarkController extends WindowController {
         }
         downloadPathPopup.itemAtIndex(new NSInteger(0)).setTitle(host.getDownloadFolder().getDisplayName());
         downloadPathPopup.itemAtIndex(new NSInteger(0)).setRepresentedObject(host.getDownloadFolder().getAbsolute());
-        downloadPathPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.instance().iconForPath(host.getDownloadFolder(), 16));
+        downloadPathPopup.itemAtIndex(new NSInteger(0)).setImage(IconCacheFactory.<NSImage>get().fileIcon(host.getDownloadFolder(), 16));
         downloadPathPopup.selectItemAtIndex(new NSInteger(0));
         downloadPathPanel = null;
         this.itemChanged();
@@ -685,12 +683,12 @@ public class BookmarkController extends WindowController {
                 @Override
                 public void cleanup() {
                     alertIcon.setEnabled(!reachable);
-                    alertIcon.setImage(reachable ? null : IconCache.iconNamed("alert.tiff"));
+                    alertIcon.setImage(reachable ? null : IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
                 }
             });
         }
         else {
-            alertIcon.setImage(IconCache.iconNamed("alert.tiff"));
+            alertIcon.setImage(IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
             alertIcon.setEnabled(false);
         }
     }

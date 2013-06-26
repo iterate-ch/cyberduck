@@ -52,12 +52,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -303,7 +303,7 @@ public final class TransferController extends WindowController implements NSTool
         this.bandwidthPopup.setAction(Foundation.selector("bandwidthPopupChanged:"));
         this.bandwidthPopup.removeAllItems();
         this.bandwidthPopup.addItemWithTitle(StringUtils.EMPTY);
-        this.bandwidthPopup.lastItem().setImage(IconCache.iconNamed("bandwidth.tiff", 16));
+        this.bandwidthPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("bandwidth.tiff", 16));
         this.bandwidthPopup.addItemWithTitle(Locale.localizedString("Unlimited Bandwidth", "Transfer"));
         this.bandwidthPopup.lastItem().setRepresentedObject(String.valueOf(BandwidthThrottle.UNLIMITED));
         this.bandwidthPopup.menu().addItem(NSMenuItem.separatorItem());
@@ -625,14 +625,14 @@ public final class TransferController extends WindowController implements NSTool
             // Draw file type icon
             if(transfer.numberOfRoots() == 1) {
                 if(transfer.getLocal() != null) {
-                    iconView.setImage(IconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
+                    iconView.setImage(IconCacheFactory.<NSImage>get().fileIcon(transfer.getRoot().getLocal(), 32));
                 }
                 else {
-                    iconView.setImage(IconCache.instance().iconForPath(transfer.getRoot(), 32));
+                    iconView.setImage(IconCacheFactory.<NSImage>get().fileIcon(transfer.getRoot(), 32));
                 }
             }
             else {
-                iconView.setImage(IconCache.iconNamed("NSMultipleDocuments", 32));
+                iconView.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSMultipleDocuments", 32));
             }
         }
         else {
@@ -655,12 +655,12 @@ public final class TransferController extends WindowController implements NSTool
             }
             if(transfer.getBandwidth().getRate() != BandwidthThrottle.UNLIMITED) {
                 // Mark as throttled
-                this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("turtle.tiff"));
+                this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCacheFactory.<NSImage>get().iconNamed("turtle.tiff"));
                 return;
             }
         }
         // Set the standard icon
-        this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("bandwidth.tiff", 16));
+        this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCacheFactory.<NSImage>get().iconNamed("bandwidth.tiff", 16));
     }
 
     private void reload() {
@@ -781,7 +781,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_STOP));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_STOP));
             item.setToolTip(Locale.localizedString(TOOLBAR_STOP));
-            item.setImage(IconCache.iconNamed("stop.tiff", 32));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("stopButtonClicked:"));
             return item;
@@ -790,7 +790,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_RESUME));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_RESUME));
             item.setToolTip(Locale.localizedString(TOOLBAR_RESUME));
-            item.setImage(IconCache.iconNamed("resume.tiff"));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("resume.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("resumeButtonClicked:"));
             return item;
@@ -799,7 +799,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_RELOAD));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_RELOAD));
             item.setToolTip(Locale.localizedString(TOOLBAR_RELOAD));
-            item.setImage(IconCache.iconNamed("reload.tiff"));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reload.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;
@@ -808,7 +808,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_SHOW));
             item.setPaletteLabel(Locale.localizedString("Show in Finder"));
             item.setToolTip(Locale.localizedString("Show in Finder"));
-            item.setImage(IconCache.iconNamed("reveal.tiff"));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reveal.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("revealButtonClicked:"));
             return item;
@@ -817,7 +817,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_OPEN));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_OPEN));
             item.setToolTip(Locale.localizedString(TOOLBAR_OPEN));
-            item.setImage(IconCache.iconNamed("open.tiff"));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("open.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openButtonClicked:"));
             return item;
@@ -826,7 +826,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_REMOVE));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_REMOVE));
             item.setToolTip(Locale.localizedString(TOOLBAR_REMOVE));
-            item.setImage(IconCache.iconNamed("clean.tiff"));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("clean.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("deleteButtonClicked:"));
             return item;
@@ -835,7 +835,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
             item.setToolTip(Locale.localizedString(TOOLBAR_CLEAN_UP));
-            item.setImage(IconCache.iconNamed("cleanall.tiff"));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("cleanall.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("clearButtonClicked:"));
             return item;
@@ -844,7 +844,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_TRASH));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_TRASH));
             item.setToolTip(Locale.localizedString("Move to Trash"));
-            item.setImage(IconCache.iconNamed("trash.tiff"));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("trash.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("trashButtonClicked:"));
             return item;
@@ -853,7 +853,7 @@ public final class TransferController extends WindowController implements NSTool
             item.setLabel(Locale.localizedString(TOOLBAR_LOG));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_LOG));
             item.setToolTip(Locale.localizedString("Toggle Log Drawer"));
-            item.setImage(IconCache.iconNamed("log.tiff"));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("log.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("toggleLogDrawer:"));
             return item;
