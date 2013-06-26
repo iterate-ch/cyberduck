@@ -255,7 +255,6 @@ public abstract class Preferences {
         defaults.put("browser.openUntitled", String.valueOf(true));
         defaults.put("browser.defaultBookmark", Locale.localizedString("None"));
 
-        defaults.put("browser.markInaccessibleFolders", String.valueOf(true));
         /**
          * Confirm closing the browsing connection
          */
