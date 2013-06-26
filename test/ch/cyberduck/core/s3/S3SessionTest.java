@@ -8,7 +8,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -43,7 +42,6 @@ public class S3SessionTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testConnectCnameAnonymous() throws Exception {
         final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null

@@ -54,14 +54,15 @@ public class S3BucketListService {
                     if(StringUtils.isNotBlank(session.getHost().getDefaultPath())) {
                         S3Path d = new S3Path(session, session.getHost().getDefaultPath(), Path.DIRECTORY_TYPE);
                         bucketname = d.getContainer().getName();
+                        log.info(String.format("Using default path to determine bucket name %s", bucketname));
                     }
-                    log.info(String.format("Using default path to determine bucket name %s", bucketname));
-                }
-                if(StringUtils.isEmpty(bucketname)) {
-                    log.warn(String.format("No bucket name given in hostname %s", session.getHost().getHostname()));
-                    // Rewrite endpoint to default S3 endpoint
-                    session.configure(session.getHost().getProtocol().getDefaultHostname());
-                    bucketname = session.getHost().getHostname(true);
+                    else {
+                        log.warn(String.format("No bucket name given in hostname %s", session.getHost().getHostname()));
+                        // Rewrite endpoint to default S3 endpoint
+                        session.getClient().getJetS3tProperties().loadAndReplaceProperties(
+                                session.configure(session.getHost().getProtocol().getDefaultHostname()), null);
+                        bucketname = session.getHost().getHostname(true);
+                    }
                 }
                 if(!session.getClient().isBucketAccessible(bucketname)) {
                     throw new ServiceException(String.format("Bucket %s not accessible", bucketname));
@@ -113,6 +114,9 @@ public class S3BucketListService {
         if(hostname.equals(host.getProtocol().getDefaultHostname())) {
             return null;
         }
-        return ServiceUtils.findBucketNameInHostname(hostname, host.getProtocol().getDefaultHostname());
+        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
+            return ServiceUtils.findBucketNameInHostname(hostname, host.getProtocol().getDefaultHostname());
+        }
+        return null;
     }
 }
