@@ -30,9 +30,6 @@ import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.download.DownloadTransfer;
-import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
-import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
@@ -56,21 +53,8 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public abstract class TransferPromptController extends SheetController implements TransferPrompt {
+public abstract class TransferPromptController extends SheetController implements TransferPrompt, ProgressListener {
     private static Logger log = Logger.getLogger(TransferPromptController.class);
-
-    public static TransferPromptController create(WindowController parent, final Transfer transfer) {
-        if(transfer instanceof DownloadTransfer) {
-            return new DownloadPromptController(parent, transfer);
-        }
-        if(transfer instanceof UploadTransfer) {
-            return new UploadPromptController(parent, transfer);
-        }
-        if(transfer instanceof SyncTransfer) {
-            return new SyncPromptController(parent, transfer);
-        }
-        throw new IllegalArgumentException(transfer.toString());
-    }
 
     private final TableColumnFactory tableColumnsFactory
             = new TableColumnFactory();
@@ -95,7 +79,7 @@ public abstract class TransferPromptController extends SheetController implement
     @Override
     public void awakeFromNib() {
         for(Session s : transfer.getSessions()) {
-            s.addProgressListener(l);
+            s.addProgressListener(this);
         }
         this.reloadData();
         if(browserView.numberOfRows().intValue() > 0) {
@@ -109,7 +93,7 @@ public abstract class TransferPromptController extends SheetController implement
     @Override
     public void invalidate() {
         for(Session s : transfer.getSessions()) {
-            s.removeProgressListener(l);
+            s.removeProgressListener(this);
         }
         browserView.setDataSource(null);
         browserView.setDelegate(null);
@@ -117,22 +101,17 @@ public abstract class TransferPromptController extends SheetController implement
         super.invalidate();
     }
 
-    /**
-     *
-     */
-    private ProgressListener l = new ProgressListener() {
-        @Override
-        public void message(final String msg) {
-            invoke(new WindowMainAction(TransferPromptController.this) {
-                @Override
-                public void run() {
-                    // Update the status label at the bottom of the browser window
-                    statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(msg,
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
-                }
-            });
-        }
-    };
+    @Override
+    public void message(final String message) {
+        invoke(new WindowMainAction(TransferPromptController.this) {
+            @Override
+            public void run() {
+                // Update the status label at the bottom of the browser window
+                statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(message,
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
+            }
+        });
+    }
 
     protected TransferAction action
             = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
