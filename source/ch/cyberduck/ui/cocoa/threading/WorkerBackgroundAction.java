@@ -46,7 +46,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
     @Override
     public void cleanup() {
         if(null == result) {
-            log.warn(String.format("No result for worker:%s", this.toString()));
+            log.error(String.format("Null result for worker %s", this));
         }
         worker.cleanup(result);
     }
