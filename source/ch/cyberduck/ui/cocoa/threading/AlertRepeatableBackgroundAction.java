@@ -26,8 +26,12 @@ import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.RepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.AlertController;
 import ch.cyberduck.ui.cocoa.SheetCallback;
+import ch.cyberduck.ui.cocoa.TranscriptController;
 import ch.cyberduck.ui.cocoa.WindowController;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSView;
+
+import org.rococoa.cocoa.foundation.NSRect;
 
 /**
  * @version $Id$
@@ -67,13 +71,25 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
     protected void alert() {
         if(controller.isVisible()) {
             final BackgroundException failure = this.getException();
-            NSAlert alert = NSAlert.alert(
+            final NSAlert alert = NSAlert.alert(
                     failure.getMessage(), //title
                     failure.getDetail(),
                     Locale.localizedString("Try Again", "Alert"), // default button
                     AlertRepeatableBackgroundAction.this.isNetworkFailure() ? Locale.localizedString("Network Diagnostics") : null, //other button
                     Locale.localizedString("Cancel") // alternate button
             );
+            if(this.hasTranscript()) {
+                final TranscriptController transcript = new TranscriptController() {
+                    @Override
+                    public boolean isOpen() {
+                        return true;
+                    }
+                };
+                transcript.log(true, this.getTranscript());
+                final NSView view = transcript.getLogView();
+                view.setFrame(new NSRect(alert.window().contentView().frame().size.width.doubleValue(), 50d));
+                alert.setAccessoryView(view);
+            }
             alert.setShowsHelp(true);
             final AlertController c = new AlertController(controller, alert) {
                 @Override
