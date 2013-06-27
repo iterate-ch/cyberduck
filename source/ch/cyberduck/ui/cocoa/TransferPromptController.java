@@ -484,12 +484,11 @@ public abstract class TransferPromptController extends SheetController implement
                 continue; //Not resumeable
             }
             this.actionPopup.addItemWithTitle(action.getLocalizableString());
-            this.actionPopup.lastItem().setRepresentedObject(action.toString());
+            this.actionPopup.lastItem().setRepresentedObject(action.name());
             if(action.equals(defaultAction)) {
                 this.actionPopup.selectItem(actionPopup.lastItem());
             }
         }
-        this.action = TransferAction.forName(this.actionPopup.selectedItem().representedObject());
         this.actionPopup.setTarget(this.id());
         this.actionPopup.setAction(Foundation.selector("actionPopupClicked:"));
     }
@@ -501,7 +500,7 @@ public abstract class TransferPromptController extends SheetController implement
         if(action.equals(selected)) {
             return;
         }
-        Preferences.instance().setProperty("queue.prompt.action.default", selected.toString());
+        Preferences.instance().setProperty("queue.prompt.action.default", selected.name());
         action = selected;
         this.reloadData();
     }

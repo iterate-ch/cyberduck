@@ -31,7 +31,7 @@ public abstract class TransferAction {
     private static final Map<String, TransferAction> registry
             = new HashMap<String, TransferAction>();
 
-    public static TransferAction forName(String name) {
+    public static TransferAction forName(final String name) {
         return registry.get(name);
     }
 
@@ -46,6 +46,11 @@ public abstract class TransferAction {
 
     public String name() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return this.name();
     }
 
     /**
