@@ -75,7 +75,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                     Locale.localizedString("Cancel") // alternate button
             );
             alert.setShowsHelp(true);
-            final AlertController c = new AlertController(AlertRepeatableBackgroundAction.this.controller, alert) {
+            final AlertController c = new AlertController(controller, alert) {
                 @Override
                 public void callback(final int returncode) {
                     if(returncode == SheetCallback.ALTERNATE_OPTION) {
