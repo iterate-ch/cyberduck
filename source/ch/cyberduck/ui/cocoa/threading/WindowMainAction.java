@@ -28,7 +28,7 @@ public abstract class WindowMainAction extends ControllerMainAction {
 
     private WindowController controller;
 
-    public WindowMainAction(WindowController c) {
+    public WindowMainAction(final WindowController c) {
         super(c);
         this.controller = c;
     }

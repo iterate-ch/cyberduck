@@ -35,7 +35,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
 
     private T result;
 
-    public WorkerBackgroundAction(BrowserController controller, Worker<T> worker) {
+    public WorkerBackgroundAction(final BrowserController controller, final Worker<T> worker) {
         super(controller);
         this.worker = worker;
     }
