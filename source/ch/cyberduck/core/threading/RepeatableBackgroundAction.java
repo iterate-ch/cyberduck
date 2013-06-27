@@ -311,12 +311,4 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     public Object lock() {
         return this.getSessions().iterator().next();
     }
-
-    @Override
-    public String toString() {
-        for(Session session : this.getSessions()) {
-            return session.getHost().getHostname();
-        }
-        return Locale.localizedString("Unknown");
-    }
 }
