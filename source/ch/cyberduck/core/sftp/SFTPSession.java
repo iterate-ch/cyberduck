@@ -339,6 +339,9 @@ public class SFTPSession extends Session<Connection> {
         try {
             connection.sendIgnorePacket();
         }
+        catch(IllegalStateException e) {
+            throw new ConnectionCanceledException();
+        }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
