@@ -29,7 +29,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.growl.GrowlFactory;
-import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
@@ -66,12 +65,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      * Contains the transcript of the session while this action was running
      */
     private StringBuilder transcript;
-
-    /**
-     *
-     */
-    private final int repeatAttempts
-            = Preferences.instance().getInteger("connection.retry");
 
     /**
      * The number of times this action has been run
@@ -165,7 +158,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             // Check for an exception we consider possibly temporary
             if(this.isNetworkFailure()) {
                 // The initial connection attempt does not count
-                return repeatAttempts - repeatCount;
+                return Preferences.instance().getInteger("connection.retry") - repeatCount;
             }
         }
         return 0;
@@ -193,12 +186,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     public boolean isNetworkFailure() {
         final Throwable cause = exception.getCause();
-        if(cause instanceof SocketException
+        return cause instanceof SocketException
                 || cause instanceof SocketTimeoutException
-                || cause instanceof UnknownHostException) {
-            return true;
-        }
-        return false;
+                || cause instanceof UnknownHostException;
     }
 
     @Override
