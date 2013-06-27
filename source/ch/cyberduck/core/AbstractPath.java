@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.BackgroundException;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,13 +66,6 @@ public abstract class AbstractPath {
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
     public abstract PathReference getReference();
-
-    /**
-     * Fetch the directory listing
-     *
-     * @return Directory listing from server
-     */
-    public abstract AttributedList<? extends AbstractPath> list() throws BackgroundException;
 
     public abstract char getPathDelimiter();
 
@@ -127,16 +118,6 @@ public abstract class AbstractPath {
     }
 
     /**
-     * @return The parent directory or self if this is the root of the hierarchy
-     */
-    public abstract AbstractPath getParent();
-
-    /**
-     * @return True if the path denoted exists
-     */
-    public abstract boolean exists() throws BackgroundException;
-
-    /**
      * @return the extension if any or null otherwise
      */
     public String getExtension() {
@@ -164,12 +145,12 @@ public abstract class AbstractPath {
             // Any other path is a child
             return true;
         }
-        if(ObjectUtils.equals(this.getParent(), directory.getParent())) {
+        if(ObjectUtils.equals(getParent(this.getAbsolute(), this.getPathDelimiter()), getParent(directory.getAbsolute(), this.getPathDelimiter()))) {
             // Cannot be a child if the same parent
             return false;
         }
-        for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
-            if(parent.equals(directory)) {
+        for(String parent = getParent(this.getAbsolute(), this.getPathDelimiter()); !parent.equals(String.valueOf(this.getPathDelimiter())); parent = getParent(parent, this.getPathDelimiter())) {
+            if(parent.equals(directory.getAbsolute())) {
                 return true;
             }
         }
@@ -181,34 +162,4 @@ public abstract class AbstractPath {
      * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
      */
     public abstract AbstractPath getSymlinkTarget();
-
-
-    /**
-     * Create a new empty file.
-     */
-    public abstract boolean touch() throws BackgroundException;
-
-    /**
-     * #getAbsolute -> target
-     *
-     * @param target Where this file should point to
-     */
-    public abstract void symlink(String target) throws BackgroundException;
-
-    /**
-     * Create a new folder.
-     */
-    public abstract void mkdir() throws BackgroundException;
-
-    /**
-     * @param permission@see Session#isUnixPermissionsSupported()
-     */
-    public abstract void writeUnixPermission(Permission permission) throws BackgroundException;
-
-    /**
-     * @param created  Creation timestamp of file
-     * @param modified Modification timestamp of file
-     * @param accessed @see ch.cyberduck.core.Session#isTimestampSupported()
-     */
-    public abstract void writeTimestamp(long created, long modified, long accessed) throws BackgroundException;
 }

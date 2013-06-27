@@ -222,7 +222,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         return container;
     }
 
-    @Override
     public Path getParent() {
         if(this.isRoot()) {
             return this;
@@ -259,7 +258,8 @@ public abstract class Path extends AbstractPath implements Serializable {
         return this.getSession().getHost();
     }
 
-    @Override
+    public abstract void mkdir() throws BackgroundException;
+
     public abstract AttributedList<Path> list() throws BackgroundException;
 
     public void writeUnixOwner(String owner) throws BackgroundException {
@@ -287,7 +287,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         //
     }
 
-    @Override
     public void writeTimestamp(long created, long modified, long accessed) throws BackgroundException {
         throw new BackgroundException("Not supported");
     }
@@ -311,7 +310,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         //
     }
 
-    @Override
     public void writeUnixPermission(Permission permission) throws BackgroundException {
         throw new BackgroundException("Not supported");
     }
@@ -409,7 +407,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      *
      * @param target Target file of symbolic link
      */
-    @Override
     public void symlink(String target) throws BackgroundException {
         // No op.
     }
@@ -427,7 +424,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * Upload an empty file.
      */
-    @Override
     public boolean touch() throws BackgroundException {
         final Local temp = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), UUID.randomUUID().toString());
         temp.touch();
@@ -662,7 +658,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      *
      * @return True if the path is cached.
      */
-    @Override
     public boolean exists() throws BackgroundException {
         if(this.isRoot()) {
             return true;

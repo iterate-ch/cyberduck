@@ -25,7 +25,6 @@ import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -88,7 +87,6 @@ public abstract class Local extends AbstractPath {
     /**
      * Creates a new file and sets its resource fork to feature a custom progress icon
      */
-    @Override
     public boolean touch() {
         try {
             final File file = new File(path);
@@ -107,12 +105,10 @@ public abstract class Local extends AbstractPath {
         }
     }
 
-    @Override
-    public void symlink(String target) throws BackgroundException {
-        throw new BackgroundException("Not supported");
+    public void symlink(String target) {
+        //
     }
 
-    @Override
     public void mkdir() {
         if(!new File(path).mkdirs()) {
             log.debug(String.format("Create directory %s failed", path));
@@ -149,7 +145,6 @@ public abstract class Local extends AbstractPath {
         this.delete();
     }
 
-    @Override
     public AttributedList<Local> list() {
         final AttributedList<Local> children = new AttributedList<Local>();
         final File[] files = new File(path).listFiles();
@@ -198,7 +193,6 @@ public abstract class Local extends AbstractPath {
         return LocalFactory.createLocal(new File(String.valueOf(this.getPathDelimiter())));
     }
 
-    @Override
     public Local getParent() {
         return LocalFactory.createLocal(new File(path).getParentFile());
     }
@@ -216,17 +210,14 @@ public abstract class Local extends AbstractPath {
     /**
      * @return True if the path exists on the file system.
      */
-    @Override
     public boolean exists() {
         return new File(path).exists();
     }
 
-    @Override
     public void writeUnixPermission(final Permission permission) {
         //
     }
 
-    @Override
     public void writeTimestamp(final long created, final long modified, final long accessed) {
         if(modified < 0) {
             return;

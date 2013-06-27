@@ -19,7 +19,6 @@ package ch.cyberduck.core.fs.fuse;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
@@ -251,7 +250,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 public NSArray call() throws BackgroundException {
                     if(directory.exists()) {
                         final NSMutableArray contents = NSMutableArray.array();
-                        for(AbstractPath child : directory.list()) {
+                        for(Path child : directory.list()) {
                             contents.addObject(child.getName());
                         }
                         return contents;
@@ -290,7 +289,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                         return attributes;
                     }
                     final Path directory = selected.getParent();
-                    final AbstractPath file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
+                    final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
                     if(null == file) {
                         log.error("Lookup failed for:" + path);
                         return null;
@@ -336,7 +335,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                         return false;
                     }
                     final Path directory = selected.getParent();
-                    final AbstractPath file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
+                    final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
                     if(null == file) {
                         log.error("Lookup failed for:" + path);
                         return false;

@@ -19,7 +19,6 @@ package ch.cyberduck.core.fs.kfs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
@@ -138,7 +137,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             log.warn("Return empty stat for directory not cached:" + path);
                             return false;
                         }
-                        final AbstractPath file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
+                        final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
                         if(null == file) {
                             log.warn("Lookup failed for:" + path);
                             return false;
@@ -218,7 +217,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         log.debug("kfsreaddir_f:" + path);
                         final Path directory = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
                         if(directory.exists()) {
-                            for(AbstractPath child : directory.list()) {
+                            for(Path child : directory.list()) {
                                 filesystem.kfscontents_append(contents, child.getName());
                             }
                             return true;

@@ -18,7 +18,6 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
@@ -112,7 +111,7 @@ public class FinderLocal extends Local {
 
     @Override
     public Local getVolume() {
-        for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
+        for(Local parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
             if(parent.getParent().getAbsolute().equals("/Volumes")) {
                 return (Local) parent;
             }
