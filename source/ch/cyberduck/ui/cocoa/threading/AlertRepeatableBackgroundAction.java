@@ -34,7 +34,7 @@ import ch.cyberduck.ui.cocoa.application.NSAlert;
  */
 public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgroundAction {
 
-    private WindowController controller;
+    protected WindowController controller;
 
     public AlertRepeatableBackgroundAction(final WindowController controller) {
         super(LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));

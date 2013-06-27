@@ -21,10 +21,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -37,12 +35,7 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferCollection;
-import ch.cyberduck.core.transfer.TransferListener;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -54,6 +47,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.TransferRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
@@ -238,6 +232,10 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     private TranscriptController transcript;
+
+    public TranscriptController getTranscript() {
+        return transcript;
+    }
 
     private NSDrawer logDrawer;
 
@@ -736,7 +734,8 @@ public final class TransferController extends WindowController implements NSTool
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window().makeKeyAndOrderFront(null);
         }
-        final AlertRepeatableBackgroundAction action = new TransferRepeatableBackgroundAction(resumeRequested, reloadRequested, transfer);
+        final AlertRepeatableBackgroundAction action = new TransferRepeatableBackgroundAction(this,
+                transfer, resumeRequested, reloadRequested);
         if(!TransferCollection.defaultCollection().contains(transfer)) {
             this.addTransfer(transfer, action);
         }
@@ -1212,134 +1211,5 @@ public final class TransferController extends WindowController implements NSTool
 
     private interface TransferToolbarValidator {
         boolean validate(Transfer transfer);
-    }
-
-    private class TransferRepeatableBackgroundAction extends AlertRepeatableBackgroundAction {
-        private final Transfer transfer;
-        private boolean resume;
-        private boolean reload;
-
-        private TransferListener tl;
-
-        public TransferRepeatableBackgroundAction(final boolean resumeRequested, final boolean reloadRequested, final Transfer transfer) {
-            super(TransferController.this);
-            this.transfer = transfer;
-            resume = resumeRequested;
-            reload = reloadRequested;
-            lock = new Object();
-        }
-
-        @Override
-        public void prepare() throws ConnectionCanceledException {
-            transfer.addListener(tl = new TransferAdapter() {
-                @Override
-                public void transferQueued() {
-                    validateToolbar();
-                }
-
-                @Override
-                public void transferResumed() {
-                    validateToolbar();
-                }
-
-                @Override
-                public void transferWillStart() {
-                    validateToolbar();
-                }
-
-                @Override
-                public void transferDidEnd() {
-                    validateToolbar();
-                }
-            });
-            // Attach listeners
-            super.prepare();
-        }
-
-        @Override
-        public void run() throws BackgroundException {
-            final TransferOptions options = new TransferOptions();
-            options.reloadRequested = reload;
-            options.resumeRequested = resume;
-            transfer.start(new TransferPrompt() {
-                @Override
-                public TransferAction prompt() throws BackgroundException {
-                    return TransferPromptController.create(TransferController.this, transfer).prompt();
-                }
-            }, options);
-        }
-
-        @Override
-        public void finish() throws BackgroundException {
-            super.finish();
-            for(Session s : transfer.getSessions()) {
-                s.close();
-                // We have our own session independent of any browser.
-                s.cache().clear();
-            }
-            transfer.removeListener(tl);
-        }
-
-        @Override
-        public void cleanup() {
-            final TransferCollection collection = TransferCollection.defaultCollection();
-            if(transfer.isComplete() && !transfer.isCanceled() && transfer.isReset()) {
-                if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                    collection.remove(transfer);
-                }
-                if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                    if(!(collection.numberOfRunningTransfers() > 0)) {
-                        window().close();
-                    }
-                }
-            }
-            collection.save();
-        }
-
-        @Override
-        public List<Session<?>> getSessions() {
-            return transfer.getSessions();
-        }
-
-        @Override
-        public String getActivity() {
-            return transfer.getName();
-        }
-
-        @Override
-        public void pause() {
-            transfer.fireTransferQueued();
-            // Upon retry do not suggest to overwrite already completed items from the transfer
-            reload = false;
-            resume = true;
-            super.pause();
-            transfer.fireTransferResumed();
-        }
-
-        @Override
-        public boolean isCanceled() {
-            return transfer.isCanceled();
-        }
-
-        @Override
-        public void log(final boolean request, final String message) {
-            if(logDrawer.state() == NSDrawer.OpenState) {
-                invoke(new WindowMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        TransferController.this.transcript.log(request, message);
-                    }
-                });
-            }
-            super.log(request, message);
-        }
-
-        private final Object lock;
-
-        @Override
-        public Object lock() {
-            // No synchronization with other tasks
-            return lock;
-        }
     }
 }
