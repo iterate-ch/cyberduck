@@ -42,7 +42,7 @@ public class NSObjectPathReference extends PathReference<NSObject> {
         }
 
         @Override
-        protected <T> PathReference<T> create(AbstractPath param) {
+        protected <T> PathReference<T> create(Path param) {
             return (PathReference<T>) new NSObjectPathReference(param);
         }
     }
@@ -60,7 +60,7 @@ public class NSObjectPathReference extends PathReference<NSObject> {
     ));
 
 
-    private NSObjectPathReference(final AbstractPath path) {
+    protected NSObjectPathReference(final Path path) {
         // Unique name
         final String name = path.unique();
         if(!cache.containsKey(name)) {

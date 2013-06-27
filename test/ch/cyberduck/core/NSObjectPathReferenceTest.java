@@ -2,7 +2,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -12,11 +11,6 @@ import static org.junit.Assert.assertNotSame;
  * @version $Id$
  */
 public class NSObjectPathReferenceTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
 
     @Test
     public void testUnique() throws Exception {
@@ -29,7 +23,7 @@ public class NSObjectPathReferenceTest extends AbstractTestCase {
 
     @Test
     public void testEqualConstructors() throws Exception {
-        assertEquals(new NSObjectPathReference(NSString.stringWithString("/b")), PathReferenceFactory.createPathReference(
+        assertEquals(new NSObjectPathReference(NSString.stringWithString("/b")), new NSObjectPathReference(
                 new NullPath("/b", Path.FILE_TYPE)
         ));
     }

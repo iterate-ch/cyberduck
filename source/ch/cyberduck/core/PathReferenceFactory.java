@@ -36,12 +36,12 @@ public abstract class PathReferenceFactory extends Factory<PathReference> {
         factories.put(platform, f);
     }
 
-    public static <T> PathReference<T> createPathReference(AbstractPath param) {
+    public static <T> PathReference<T> createPathReference(final Path param) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
         return factories.get(NATIVE_PLATFORM).create(param);
     }
 
-    protected abstract <T> PathReference<T> create(AbstractPath param);
+    protected abstract <T> PathReference<T> create(Path param);
 }
