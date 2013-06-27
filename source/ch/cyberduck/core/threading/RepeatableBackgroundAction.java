@@ -106,7 +106,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      * @see #TRANSCRIPT_MAX_LENGTH
      */
     @Override
-    public void log(boolean request, String message) {
+    public void log(final boolean request, final String message) {
         if(transcript.length() > TRANSCRIPT_MAX_LENGTH) {
             transcript = new StringBuilder();
         }
