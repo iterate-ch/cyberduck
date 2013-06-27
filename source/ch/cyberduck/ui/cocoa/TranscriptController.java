@@ -86,9 +86,7 @@ public abstract class TranscriptController extends BundleController implements T
 
     @Override
     public void log(final boolean request, final String transcript) {
-        if(this.isOpen()) {
-            this.write(request ? FIXED_WITH_FONT_REQUEST_ATTRIBUTES : FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
-        }
+        this.write(request ? FIXED_WITH_FONT_REQUEST_ATTRIBUTES : FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
     }
 
     private void write(final NSDictionary font, final String transcript) {

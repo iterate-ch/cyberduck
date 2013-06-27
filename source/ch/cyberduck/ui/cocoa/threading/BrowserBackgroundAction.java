@@ -66,7 +66,7 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
 
     @Override
     public void log(final boolean request, final String message) {
-        if(Preferences.instance().getBoolean("browser.transcript.open")) {
+        if(transcript.isOpen()) {
             controller.invoke(new WindowMainAction(controller) {
                 @Override
                 public void run() {
@@ -74,6 +74,7 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
                 }
             });
         }
+        super.log(request, message);
     }
 
     @Override
