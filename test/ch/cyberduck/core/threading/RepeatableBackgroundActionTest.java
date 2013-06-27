@@ -23,7 +23,9 @@ import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 
 import org.junit.Test;
 
@@ -40,10 +42,27 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testGetExceptions() throws Exception {
-        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new DisabledLoginController(), new DefaultHostKeyController()) {
+        final BackgroundException failure = new BackgroundException(null, null, null);
+        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new AlertCallback() {
+            @Override
+            public void alert(final RepeatableBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+                assertEquals(failure, f);
+            }
+        }, new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+        }, new TranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                //
+            }
+        }, new DisabledLoginController(), new DefaultHostKeyController()
+        ) {
 
             @Override
-            protected List<Session<?>> getSessions() {
+            public List<Session<?>> getSessions() {
                 return Collections.emptyList();
             }
 
@@ -55,16 +74,33 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
         a.error(new ConnectionCanceledException());
         assertFalse(a.hasFailed());
         assertNull(a.getException());
-        a.error(new BackgroundException(null, null, null));
+        a.error(failure);
         assertTrue(a.hasFailed());
         assertNotNull(a.getException());
     }
 
     @Test
     public void testRetrySocket() throws Exception {
-        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new DisabledLoginController(), new DefaultHostKeyController()) {
+        final BackgroundException failure = new BackgroundException(null, null, new SocketTimeoutException(""));
+        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new AlertCallback() {
             @Override
-            protected List<Session<?>> getSessions() {
+            public void alert(final RepeatableBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+                assertEquals(failure, f);
+            }
+        }, new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+        }, new TranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                //
+            }
+        }, new DisabledLoginController(), new DefaultHostKeyController()
+        ) {
+            @Override
+            public List<Session<?>> getSessions() {
                 return Collections.emptyList();
             }
 
@@ -73,7 +109,7 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
                 //
             }
         };
-        a.error(new BackgroundException(null, null, new SocketTimeoutException("")));
+        a.error(failure);
         assertEquals(Preferences.instance().getInteger("connection.retry"), a.retry());
     }
 }

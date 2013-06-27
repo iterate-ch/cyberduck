@@ -35,7 +35,10 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferCollection;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -46,14 +49,15 @@ import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
-import ch.cyberduck.ui.cocoa.threading.TransferRepeatableBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 import ch.cyberduck.ui.threading.ControllerMainAction;
+import ch.cyberduck.ui.threading.ControllerRepeatableBackgroundAction;
+import ch.cyberduck.ui.threading.TransferRepeatableBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -232,10 +236,6 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     private TranscriptController transcript;
-
-    public TranscriptController getTranscript() {
-        return transcript;
-    }
 
     private NSDrawer logDrawer;
 
@@ -722,20 +722,39 @@ public final class TransferController extends WindowController implements NSTool
      * @param transfer Transfer
      */
     public void startTransfer(final Transfer transfer) {
-        this.startTransfer(transfer, false, false);
+        this.startTransfer(transfer, new TransferOptions());
     }
 
     /**
-     * @param transfer        Transfer
-     * @param resumeRequested Resume button clicked
-     * @param reloadRequested Reload button clicked
+     * @param transfer Transfer
      */
-    private void startTransfer(final Transfer transfer, final boolean resumeRequested, final boolean reloadRequested) {
-        if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
-            this.window().makeKeyAndOrderFront(null);
-        }
-        final AlertRepeatableBackgroundAction action = new TransferRepeatableBackgroundAction(this,
-                transfer, resumeRequested, reloadRequested);
+    private void startTransfer(final Transfer transfer, final TransferOptions options) {
+        final ControllerRepeatableBackgroundAction action = new TransferRepeatableBackgroundAction(this,
+                new PanelAlertCallback(this), transferTableModel.getController(transfer), transcript,
+                transfer, new TransferPrompt() {
+            @Override
+            public TransferAction prompt() throws BackgroundException {
+                return TransferPromptControllerFactory.create(TransferController.this, transfer).prompt();
+            }
+        }, options) {
+            @Override
+            public void init() {
+                if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
+                    window.makeKeyAndOrderFront(null);
+                }
+                super.init();
+            }
+
+            @Override
+            public void cleanup() {
+                super.cleanup();
+                if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
+                    if(!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)) {
+                        window.close();
+                    }
+                }
+            }
+        };
         if(!TransferCollection.defaultCollection().contains(transfer)) {
             this.addTransfer(transfer, action);
         }
@@ -932,7 +951,10 @@ public final class TransferController extends WindowController implements NSTool
             final Collection<Transfer> transfers = transferTableModel.getSource();
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
-                this.startTransfer(transfer, true, false);
+                final TransferOptions options = new TransferOptions();
+                options.resumeRequested = true;
+                options.reloadRequested = false;
+                this.startTransfer(transfer, options);
             }
         }
     }
@@ -944,7 +966,10 @@ public final class TransferController extends WindowController implements NSTool
             final Collection<Transfer> transfers = transferTableModel.getSource();
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
-                this.startTransfer(transfer, false, true);
+                final TransferOptions options = new TransferOptions();
+                options.resumeRequested = false;
+                options.reloadRequested = true;
+                this.startTransfer(transfer, options);
             }
         }
     }

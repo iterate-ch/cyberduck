@@ -97,7 +97,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * @version $Id$
  */
-public class BrowserController extends WindowController implements NSToolbar.Delegate, QLPreviewPanelController {
+public class BrowserController extends WindowController
+        implements ProgressListener, TranscriptListener,
+        NSToolbar.Delegate, QLPreviewPanelController {
     private static Logger log = Logger.getLogger(BrowserController.class);
 
     /**
@@ -2158,22 +2160,22 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setStatus() {
         if(this.getSelectedTabView() == TAB_BOOKMARKS) {
-            this.setStatus(String.format("%s %s", this.bookmarkTable.numberOfRows(), Locale.localizedString("Bookmarks")));
+            this.message(String.format("%s %s", this.bookmarkTable.numberOfRows(), Locale.localizedString("Bookmarks")));
         }
         else if(this.getSelectedTabView() == TAB_LIST_VIEW
                 || this.getSelectedTabView() == TAB_OUTLINE_VIEW) {
             final BackgroundAction current = this.getActions().getCurrent();
             if(null == current) {
                 if(this.isConnected()) {
-                    this.setStatus(MessageFormat.format(Locale.localizedString("{0} Files"),
+                    this.message(MessageFormat.format(Locale.localizedString("{0} Files"),
                             String.valueOf(this.getSelectedBrowserView().numberOfRows())));
                 }
                 else {
-                    this.setStatus(Locale.localizedString("Disconnected", "Status"));
+                    this.message(Locale.localizedString("Disconnected", "Status"));
                 }
             }
             else {
-                this.setStatus(current.getActivity());
+                this.message(current.getActivity());
             }
         }
     }
@@ -2181,7 +2183,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * @param label Status message
      */
-    public void setStatus(final String label) {
+    @Override
+    public void message(final String label) {
         if(StringUtils.isNotBlank(label)) {
             // Update the status label at the bottom of the browser window
             statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -2189,6 +2192,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else {
             statusLabel.setStringValue(StringUtils.EMPTY);
         }
+    }
+
+    @Override
+    public void log(final boolean request, final String message) {
+        transcript.log(request, message);
     }
 
     @Outlet
@@ -2853,7 +2861,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 new TransferPrompt() {
                     @Override
                     public TransferAction prompt() throws BackgroundException {
-                        return TransferPromptController.create(BrowserController.this, transfer).prompt();
+                        return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
                     }
                 }
         );
@@ -2867,7 +2875,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.transfer(transfer, selected, browser, new TransferPrompt() {
             @Override
             public TransferAction prompt() throws BackgroundException {
-                return TransferPromptController.create(BrowserController.this, transfer).prompt();
+                return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
             }
         });
     }
@@ -2912,7 +2920,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                             invoke(new WindowMainAction(BrowserController.this) {
                                 @Override
                                 public void run() {
-                                    setStatus(meter.getProgress());
+                                    message(meter.getProgress());
                                 }
                             });
                         }

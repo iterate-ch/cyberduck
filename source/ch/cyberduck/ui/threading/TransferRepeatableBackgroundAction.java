@@ -1,52 +1,61 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.ui.threading;
+
+/*
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ */
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferCollection;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.ui.cocoa.TranscriptController;
-import ch.cyberduck.ui.cocoa.TransferController;
-import ch.cyberduck.ui.cocoa.TransferPromptController;
+import ch.cyberduck.ui.Controller;
 
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class TransferRepeatableBackgroundAction extends AlertRepeatableBackgroundAction {
+public class TransferRepeatableBackgroundAction extends ControllerRepeatableBackgroundAction {
 
     private Transfer transfer;
-    private boolean resume;
-    private boolean reload;
+    private TransferPrompt prompt;
+    private TransferOptions options;
 
-    private TranscriptController transcript;
-
-    public TransferRepeatableBackgroundAction(final TransferController controller,
+    public TransferRepeatableBackgroundAction(final Controller controller,
+                                              final AlertCallback alert,
+                                              final ProgressListener progressListener,
+                                              final TranscriptListener transcriptListener,
                                               final Transfer transfer,
-                                              final boolean resumeRequested,
-                                              final boolean reloadRequested) {
-        super(controller);
-        this.transcript = controller.getTranscript();
+                                              final TransferPrompt prompt,
+                                              final TransferOptions options) {
+        super(controller, alert, progressListener, transcriptListener);
+        this.prompt = prompt;
         this.transfer = transfer;
-        this.resume = resumeRequested;
-        this.reload = reloadRequested;
+        this.options = options;
     }
 
     @Override
     public void run() throws BackgroundException {
-        final TransferOptions options = new TransferOptions();
-        options.reloadRequested = reload;
-        options.resumeRequested = resume;
-        transfer.start(new TransferPrompt() {
-            @Override
-            public TransferAction prompt() throws BackgroundException {
-                return TransferPromptController.create(controller, transfer).prompt();
-            }
-        }, options);
+        transfer.start(prompt, options);
     }
 
     @Override
@@ -66,11 +75,6 @@ public class TransferRepeatableBackgroundAction extends AlertRepeatableBackgroun
             if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
                 collection.remove(transfer);
             }
-            if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                if(!(collection.numberOfRunningTransfers() > 0)) {
-                    controller.window().close();
-                }
-            }
         }
         collection.save();
     }
@@ -89,8 +93,8 @@ public class TransferRepeatableBackgroundAction extends AlertRepeatableBackgroun
     public void pause() {
         transfer.fireTransferQueued();
         // Upon retry do not suggest to overwrite already completed items from the transfer
-        reload = false;
-        resume = true;
+        options.reloadRequested = false;
+        options.resumeRequested = true;
         super.pause();
         transfer.fireTransferResumed();
     }
@@ -98,19 +102,6 @@ public class TransferRepeatableBackgroundAction extends AlertRepeatableBackgroun
     @Override
     public boolean isCanceled() {
         return transfer.isCanceled();
-    }
-
-    @Override
-    public void log(final boolean request, final String message) {
-        if(transcript.isOpen()) {
-            controller.invoke(new WindowMainAction(controller) {
-                @Override
-                public void run() {
-                    transcript.log(request, message);
-                }
-            });
-        }
-        super.log(request, message);
     }
 
     private final Object lock = new Object();

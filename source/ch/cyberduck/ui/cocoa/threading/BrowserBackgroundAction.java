@@ -1,8 +1,7 @@
 package ch.cyberduck.ui.cocoa.threading;
 
 /*
- * Copyright (c) 2002-2010 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,16 +14,14 @@ package ch.cyberduck.ui.cocoa.threading;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.BrowserController;
-import ch.cyberduck.ui.cocoa.TranscriptController;
+import ch.cyberduck.ui.threading.ControllerRepeatableBackgroundAction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,24 +30,13 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundAction {
+public abstract class BrowserBackgroundAction extends ControllerRepeatableBackgroundAction {
 
     private BrowserController controller;
 
-    private TranscriptController transcript;
-
-    private ProgressListener listener;
-
     public BrowserBackgroundAction(final BrowserController controller) {
-        super(controller);
+        super(controller, new PanelAlertCallback(controller), controller, controller);
         this.controller = controller;
-        this.transcript = controller.getTranscript();
-        this.listener = new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                controller.setStatus(message);
-            }
-        };
     }
 
     @Override
@@ -60,46 +46,16 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     }
 
     @Override
-    public void log(final boolean request, final String message) {
-        if(transcript.isOpen()) {
-            controller.invoke(new WindowMainAction(controller) {
-                @Override
-                public void run() {
-                    transcript.log(request, message);
-                }
-            });
-        }
-        super.log(request, message);
-    }
-
-    @Override
     public void prepare() throws ConnectionCanceledException {
         controller.getProgress().startAnimation(null);
-        controller.setStatus(this.getActivity());
-        controller.getSession().addProgressListener(listener);
+        controller.message(this.getActivity());
         super.prepare();
     }
 
     @Override
     public void finish() throws BackgroundException {
         controller.getProgress().stopAnimation(null);
-        controller.setStatus(null);
-        controller.getSession().removeProgressListener(listener);
+        controller.message(null);
         super.finish();
-    }
-
-    @Override
-    public void cancel() {
-        if(this.isRunning()) {
-            for(Session s : this.getSessions()) {
-                try {
-                    s.interrupt();
-                }
-                catch(BackgroundException e) {
-                    this.error(e);
-                }
-            }
-        }
-        super.cancel();
     }
 }

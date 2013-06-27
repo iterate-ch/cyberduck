@@ -24,7 +24,7 @@ import ch.cyberduck.core.ConnectionCheckService;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ReachabilityFactory;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.i18n.Locale;
@@ -32,9 +32,6 @@ import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Timer;
@@ -45,7 +42,8 @@ import java.util.concurrent.CyclicBarrier;
 /**
  * @version $Id$
  */
-public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean> implements TranscriptListener {
+public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean>
+        implements ProgressListener, TranscriptListener {
     private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
 
     private static final String lineSeparator
@@ -81,7 +79,20 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     private HostKeyController key;
 
-    public RepeatableBackgroundAction(final LoginController prompt, final HostKeyController key) {
+    private AlertCallback alert;
+
+    private ProgressListener progressListener;
+
+    private TranscriptListener transcriptListener;
+
+    public RepeatableBackgroundAction(final AlertCallback alert,
+                                      final ProgressListener progressListener,
+                                      final TranscriptListener transcriptListener,
+                                      final LoginController prompt,
+                                      final HostKeyController key) {
+        this.alert = alert;
+        this.progressListener = progressListener;
+        this.transcriptListener = transcriptListener;
         this.prompt = prompt;
         this.key = key;
     }
@@ -90,12 +101,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         return exception;
     }
 
-    public String getTranscript() {
-        return transcript.toString();
-    }
-
-    public boolean hasTranscript() {
-        return transcript.length() > 0;
+    @Override
+    public void message(final String message) {
+        progressListener.message(message);
     }
 
     /**
@@ -111,10 +119,12 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             transcript = new StringBuilder();
         }
         transcript.append(message).append(lineSeparator);
+        transcriptListener.log(request, message);
     }
 
     @Override
     public void init() {
+        this.reset();
         // Add to the registry so it will be displayed in the activity window.
         BackgroundActionRegistry.global().add(this);
     }
@@ -123,8 +133,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     public void prepare() throws ConnectionCanceledException {
         super.prepare();
         try {
-            for(Session session : this.getSessions()) {
-                session.addTranscriptListener(this);
+            for(Session s : this.getSessions()) {
+                s.addProgressListener(this);
+                s.addTranscriptListener(this);
             }
             // Clear the transcript and exceptions
             transcript = new StringBuilder();
@@ -145,7 +156,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      *
      * @return The session if any or null if invalid
      */
-    protected abstract List<Session<?>> getSessions();
+    public abstract List<Session<?>> getSessions();
 
     /**
      * The number of times a new connection attempt should be made. Takes into
@@ -156,7 +167,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     public int retry() {
         if(!this.isCanceled()) {
             // Check for an exception we consider possibly temporary
-            if(this.isNetworkFailure()) {
+            if(exception.isNetworkFailure()) {
                 // The initial connection attempt does not count
                 return Preferences.instance().getInteger("connection.retry") - repeatCount;
             }
@@ -169,12 +180,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         exception = null;
     }
 
-    protected void diagnose() {
-        for(Session session : this.getSessions()) {
-            ReachabilityFactory.get().diagnose(session.getHost());
-        }
-    }
-
     /**
      * @return True if the the action had a permanent failures. Returns false if
      *         there were only temporary exceptions and the action suceeded upon retry
@@ -182,13 +187,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     protected boolean hasFailed() {
         return failed;
-    }
-
-    public boolean isNetworkFailure() {
-        final Throwable cause = exception.getCause();
-        return cause instanceof SocketException
-                || cause instanceof SocketTimeoutException
-                || cause instanceof UnknownHostException;
     }
 
     @Override
@@ -233,6 +231,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             }
         }
         for(Session session : this.getSessions()) {
+            session.removeProgressListener(this);
             // It is important _not_ to do this in #cleanup as otherwise
             // the listeners are still registered when the next BackgroundAction
             // is already running
@@ -240,11 +239,33 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         }
         try {
             super.finish();
+            // If there was any failure, display the summary now
+            if(this.hasFailed() && !this.isCanceled()) {
+                // Display alert if the action was not canceled intentionally
+                alert.alert(this, exception, transcript);
+            }
+            this.reset();
         }
         catch(BackgroundException failure) {
             log.warn(String.format("Failure finishing background action: %s", failure));
             this.error(failure);
         }
+    }
+
+
+    @Override
+    public void cancel() {
+        if(this.isRunning()) {
+            for(Session s : this.getSessions()) {
+                try {
+                    s.interrupt();
+                }
+                catch(BackgroundException e) {
+                    this.error(e);
+                }
+            }
+        }
+        super.cancel();
     }
 
     /**

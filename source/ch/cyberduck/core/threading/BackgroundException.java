@@ -23,6 +23,7 @@ import ch.cyberduck.core.i18n.Locale;
 
 import java.io.IOException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 /**
@@ -112,6 +113,13 @@ public class BackgroundException extends Exception {
      */
     public Path getPath() {
         return path;
+    }
+
+    public boolean isNetworkFailure() {
+        final Throwable cause = this.getCause();
+        return cause instanceof SocketException
+                || cause instanceof SocketTimeoutException
+                || cause instanceof UnknownHostException;
     }
 
     @Override

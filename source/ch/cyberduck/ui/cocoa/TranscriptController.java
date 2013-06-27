@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
+import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -86,7 +87,14 @@ public abstract class TranscriptController extends BundleController implements T
 
     @Override
     public void log(final boolean request, final String transcript) {
-        this.write(request ? FIXED_WITH_FONT_REQUEST_ATTRIBUTES : FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
+        if(this.isOpen()) {
+            this.invoke(new ControllerMainAction(this) {
+                @Override
+                public void run() {
+                    write(request ? FIXED_WITH_FONT_REQUEST_ATTRIBUTES : FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
+                }
+            });
+        }
     }
 
     private void write(final NSDictionary font, final String transcript) {

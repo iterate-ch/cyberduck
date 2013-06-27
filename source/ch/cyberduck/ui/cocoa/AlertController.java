@@ -78,7 +78,7 @@ public abstract class AlertController extends SheetController {
     }
 
     protected void focus() {
-        ;
+        //
     }
 
     protected void setTitle(String title) {
