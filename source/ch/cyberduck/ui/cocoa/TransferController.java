@@ -1215,8 +1215,6 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     private class TransferRepeatableBackgroundAction extends AlertRepeatableBackgroundAction {
-        private final boolean resumeRequested;
-        private final boolean reloadRequested;
         private final Transfer transfer;
         private boolean resume;
         private boolean reload;
@@ -1225,8 +1223,6 @@ public final class TransferController extends WindowController implements NSTool
 
         public TransferRepeatableBackgroundAction(final boolean resumeRequested, final boolean reloadRequested, final Transfer transfer) {
             super(TransferController.this);
-            this.resumeRequested = resumeRequested;
-            this.reloadRequested = reloadRequested;
             this.transfer = transfer;
             resume = resumeRequested;
             reload = reloadRequested;
