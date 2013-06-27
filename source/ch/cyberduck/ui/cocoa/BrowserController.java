@@ -397,7 +397,7 @@ public class BrowserController extends WindowController
             this.updateQuickLookSelection(selected);
         }
         if(Preferences.instance().getBoolean("browser.info.inspector")) {
-            InfoController c = InfoController.Factory.get(BrowserController.this);
+            InfoController c = InfoControllerFactory.get(BrowserController.this);
             if(null != c) {
                 // Currently open info panel
                 c.setFiles(selected);
@@ -2619,7 +2619,7 @@ public class BrowserController extends WindowController
     @Action
     public void infoButtonClicked(final ID sender) {
         if(this.getSelectionCount() > 0) {
-            InfoController c = InfoController.Factory.create(this, this.getSelectedPaths());
+            InfoController c = InfoControllerFactory.create(this, this.getSelectedPaths());
             c.window().makeKeyAndOrderFront(null);
         }
     }
@@ -3659,7 +3659,7 @@ public class BrowserController extends WindowController
      * Unmount this session
      */
     private void disconnect() {
-        InfoController c = InfoController.Factory.get(BrowserController.this);
+        InfoController c = InfoControllerFactory.get(BrowserController.this);
         if(null != c) {
             c.window().close();
         }
