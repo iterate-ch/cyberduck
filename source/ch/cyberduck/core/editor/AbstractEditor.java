@@ -69,7 +69,7 @@ public abstract class AbstractEditor implements Editor {
      */
     private String checksum;
 
-    private Session session;
+    protected Session session;
 
     public AbstractEditor(final Application application, final Session session, final Path path) {
         this.application = application;
