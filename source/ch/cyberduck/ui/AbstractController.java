@@ -18,6 +18,7 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
@@ -98,6 +99,9 @@ public abstract class AbstractController implements Controller {
                         runnable.prepare();
                         // Execute the action of the runnable
                         return runnable.call();
+                    }
+                    catch(ConnectionCanceledException e) {
+                        log.warn(String.format("Connection canceled for background task %s", runnable));
                     }
                     catch(BackgroundException e) {
                         log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
