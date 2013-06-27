@@ -74,6 +74,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             catch(SardineException e) {
                 if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN
                         || e.getStatusCode() == HttpStatus.SC_NOT_FOUND
+                        || e.getStatusCode() == HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE
                         || e.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
                     // Possibly only HEAD requests are not allowed
                     client.execute(new HttpPropFind(this.toURL(this.home())), new VoidResponseHandler());
