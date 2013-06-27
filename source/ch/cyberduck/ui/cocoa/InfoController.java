@@ -1353,38 +1353,6 @@ public class InfoController extends ToolbarWindowController {
         return Preferences.instance().getBoolean("browser.info.inspector");
     }
 
-    public static final class Factory {
-        private static Map<BrowserController, InfoController> open
-                = new HashMap<BrowserController, InfoController>();
-
-        public static InfoController create(final BrowserController controller, final List<Path> files) {
-            if(Preferences.instance().getBoolean("browser.info.inspector")) {
-                if(open.containsKey(controller)) {
-                    final InfoController c = open.get(controller);
-                    c.setFiles(files);
-                    return c;
-                }
-            }
-            final InfoController c = new InfoController(controller, files) {
-                @Override
-                public void windowWillClose(NSNotification notification) {
-                    Factory.open.remove(controller);
-                    super.windowWillClose(notification);
-                }
-            };
-            open.put(controller, c);
-            return c;
-        }
-
-        /**
-         * @param controller Browser
-         * @return Null if the browser does not have an Info window.
-         */
-        public static InfoController get(final BrowserController controller) {
-            return open.get(controller);
-        }
-    }
-
     private BrowserController controller;
 
     private final WindowListener browserWindowListener = new WindowListener() {
@@ -1397,7 +1365,7 @@ public class InfoController extends ToolbarWindowController {
         }
     };
 
-    private InfoController(final BrowserController controller, final List<Path> files) {
+    public InfoController(final BrowserController controller, final List<Path> files) {
         this.controller = controller;
         this.controller.addListener(browserWindowListener);
         this.files = files;
