@@ -18,6 +18,7 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -36,9 +37,10 @@ import com.rackspacecloud.client.cloudfiles.FilesRegion;
 /**
  * @version $Id$
  */
-public class SwiftContainerListService {
+public class SwiftContainerListService implements RootListService<CFSession> {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
+    @Override
     public List<Path> list(final CFSession session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List containers for %s", session));

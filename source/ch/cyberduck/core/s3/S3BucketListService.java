@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundException;
 
@@ -35,9 +36,10 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class S3BucketListService {
+public class S3BucketListService implements RootListService<S3Session> {
     private static final Logger log = Logger.getLogger(S3BucketListService.class);
 
+    @Override
     public List<Path> list(final S3Session session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List containers for %s", session));
