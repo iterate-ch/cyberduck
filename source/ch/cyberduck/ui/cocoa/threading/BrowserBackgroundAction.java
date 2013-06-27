@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa.threading;
  */
 
 import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -52,10 +51,6 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
                 controller.setStatus(message);
             }
         };
-    }
-
-    public BrowserController getController() {
-        return controller;
     }
 
     @Override
