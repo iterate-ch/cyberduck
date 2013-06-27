@@ -19,16 +19,16 @@ package ch.cyberduck.ui.threading;
  */
 
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.ui.AbstractController;
+import ch.cyberduck.ui.Controller;
 
 /**
  * @version $Id$
  */
 public abstract class ControllerMainAction extends MainAction {
 
-    private AbstractController controller;
+    private Controller controller;
 
-    public ControllerMainAction(AbstractController c) {
+    public ControllerMainAction(Controller c) {
         this.controller = c;
     }
 
