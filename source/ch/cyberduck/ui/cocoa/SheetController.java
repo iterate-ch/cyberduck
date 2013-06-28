@@ -96,13 +96,10 @@ public abstract class SheetController extends WindowController implements SheetC
      * @see SheetCallback#CANCEL_OPTION
      */
     protected int getCallbackOption(NSButton selected) {
-        if(selected.tag() == NSPanel.NSOKButton) {
-            return SheetCallback.DEFAULT_OPTION;
-        }
         if(selected.tag() == NSPanel.NSCancelButton) {
             return SheetCallback.CANCEL_OPTION;
         }
-        throw new RuntimeException("Unexpected tag:" + selected.tag());
+        return SheetCallback.DEFAULT_OPTION;
     }
 
     /**
