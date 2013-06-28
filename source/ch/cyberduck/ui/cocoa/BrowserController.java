@@ -2166,13 +2166,7 @@ public class BrowserController extends WindowController
                 || this.getSelectedTabView() == TAB_OUTLINE_VIEW) {
             final BackgroundAction current = this.getActions().getCurrent();
             if(null == current) {
-                if(this.isConnected()) {
-                    this.message(MessageFormat.format(Locale.localizedString("{0} Files"),
-                            String.valueOf(this.getSelectedBrowserView().numberOfRows())));
-                }
-                else {
-                    this.message(Locale.localizedString("Disconnected", "Status"));
-                }
+                this.message(null);
             }
             else {
                 this.message(current.getActivity());
@@ -2187,10 +2181,21 @@ public class BrowserController extends WindowController
     public void message(final String label) {
         if(StringUtils.isNotBlank(label)) {
             // Update the status label at the bottom of the browser window
-            statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
+            statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label,
+                    TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         else {
-            statusLabel.setStringValue(StringUtils.EMPTY);
+            if(this.isConnected()) {
+                statusLabel.setAttributedStringValue(
+                        NSAttributedString.attributedStringWithAttributes(MessageFormat.format(Locale.localizedString("{0} Files"),
+                                String.valueOf(this.getSelectedBrowserView().numberOfRows())),
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
+            }
+            else {
+                statusLabel.setAttributedStringValue
+                        (NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Disconnected", "Status"),
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
+            }
         }
     }
 
