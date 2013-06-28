@@ -164,8 +164,6 @@ public abstract class Session<C> implements TranscriptListener {
      * when not given.
      */
     public Path mount() throws BackgroundException {
-        this.message(MessageFormat.format(Locale.localizedString("Mounting {0}", "Status"),
-                host.getHostname()));
         try {
             final Path home = this.home();
             // Retrieve directory listing of default path
@@ -288,7 +286,7 @@ public abstract class Session<C> implements TranscriptListener {
     /**
      * @param workdir The workdir to create query
      * @return True if creating an empty file is possible.
-     * @see ch.cyberduck.core.Path#touch()
+     * @see Path#touch()
      */
     public boolean isCreateFileSupported(final Path workdir) {
         return true;
@@ -300,7 +298,7 @@ public abstract class Session<C> implements TranscriptListener {
 
     /**
      * @return True if ACLs are supported
-     * @see ch.cyberduck.core.Path#writeAcl(Acl, boolean)
+     * @see Path#writeAcl(Acl, boolean)
      * @see Path#readAcl()
      */
     public boolean isAclSupported() {
@@ -316,8 +314,8 @@ public abstract class Session<C> implements TranscriptListener {
 
     /**
      * @return True if timestamp of file can be read.
-     * @see AbstractPath#writeTimestamp(long, long, long)
-     * @see ch.cyberduck.core.Path#readTimestamp()
+     * @see Path#writeTimestamp(long, long, long)
+     * @see Path#readTimestamp()
      */
     public boolean isReadTimestampSupported() {
         return true;
@@ -325,8 +323,7 @@ public abstract class Session<C> implements TranscriptListener {
 
     /**
      * @return True if timestamp of file can be read and written.
-     * @see AbstractPath#writeTimestamp(long, long, long)
-     * @see ch.cyberduck.core.Path#readTimestamp()
+     * @see Path#readTimestamp()
      */
     public boolean isWriteTimestampSupported() {
         return true;
@@ -341,6 +338,7 @@ public abstract class Session<C> implements TranscriptListener {
 
     /**
      * @return True if files can be reverted
+     * @see Path#revert()
      */
     public boolean isRevertSupported() {
         return false;
@@ -446,12 +444,12 @@ public abstract class Session<C> implements TranscriptListener {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
+        // Update status flag
+        state = State.opening;
         final ConnectionListener[] l = connectionListeners.toArray(new ConnectionListener[connectionListeners.size()]);
         for(ConnectionListener listener : l) {
             listener.connectionWillOpen();
         }
-        // Update status flag
-        state = State.opening;
     }
 
     /**
@@ -481,8 +479,8 @@ public abstract class Session<C> implements TranscriptListener {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will close to %s", host));
         }
-        this.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
-                host.getHostname()));
+        // Update status flag
+        state = State.closing;
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionWillClose();
         }
@@ -497,11 +495,11 @@ public abstract class Session<C> implements TranscriptListener {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did close to %s", host));
         }
+        // Update status flag
+        state = State.closed;
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionDidClose();
         }
-        // Update status flag
-        state = State.closed;
     }
 
     public void addTranscriptListener(final TranscriptListener listener) {
