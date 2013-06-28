@@ -46,22 +46,23 @@ public class FileWatcher {
 
     private WatchService monitor;
     private Local file;
+    private WatchableFile watchable;
 
     public FileWatcher(final Local file) {
         this.file = file;
+        this.watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
         this.monitor = WatchService.newWatchService();
     }
 
     public void register() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Register file %s", file));
-        }
-        final WatchableFile watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Register file %s", watchable.getFile()));
+            }
             watchable.register(monitor, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
         }
         catch(IOException e) {
-            log.error(String.format("Failure registering file watcher monitor for %s", file), e);
+            log.error(String.format("Failure registering file watcher monitor for %s", watchable.getFile()), e);
         }
         final AtomicReference<Thread> consumer = new AtomicReference<Thread>(new Thread(new Runnable() {
             public void run() {
@@ -81,36 +82,35 @@ public class FileWatcher {
                             return;
                         }
                         for(WatchEvent<?> event : key.pollEvents()) {
-                            WatchEvent.Kind<?> kind = event.kind();
+                            final WatchEvent.Kind<?> kind = event.kind();
                             log.info(String.format("Detected file system event %s", kind.name()));
                             if(kind == OVERFLOW) {
                                 continue;
                             }
                             // The filename is the context of the event.
-                            WatchEvent<File> ev = (WatchEvent<File>) event;
-                            Local f = LocalFactory.createLocal(ev.context());
-                            if(f.equals(file)) {
+                            final WatchEvent<File> ev = (WatchEvent<File>) event;
+                            if(ev.context().equals(new File(file.getAbsolute()).getCanonicalFile())) {
                                 if(ENTRY_MODIFY == kind) {
                                     for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                                        l.fileWritten(f);
+                                        l.fileWritten(LocalFactory.createLocal(ev.context()));
                                     }
                                 }
                                 else if(ENTRY_DELETE == kind) {
                                     for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                                        l.fileDeleted(f);
+                                        l.fileDeleted(LocalFactory.createLocal(ev.context()));
                                     }
                                 }
                                 else if(ENTRY_CREATE == kind) {
                                     for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                                        l.fileCreated(f);
+                                        l.fileCreated(LocalFactory.createLocal(ev.context()));
                                     }
                                 }
                                 else {
-                                    log.debug(String.format("Ignored file system event %s for %s", kind.name(), f));
+                                    log.debug(String.format("Ignored file system event %s for %s", kind.name(), ev.context()));
                                 }
                             }
                             else {
-                                log.debug(String.format("Ignored file system event for unknown file %s", f));
+                                log.debug(String.format("Ignored file system event for unknown file %s", ev.context()));
                             }
                         }
                         // Reset the key -- this step is critical to receive further watch events.
@@ -119,6 +119,9 @@ public class FileWatcher {
                             // The key is no longer valid and the loop can exit.
                             break;
                         }
+                    }
+                    catch(IOException e) {
+                        log.error(e.getMessage());
                     }
                     finally {
                         autorelease.operate();
@@ -140,13 +143,13 @@ public class FileWatcher {
         listeners.remove(listener);
         if(listeners.isEmpty()) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Unwatch file %s", file.getAbsolute()));
+                log.debug(String.format("Unwatch file %s", watchable.getFile()));
             }
             try {
                 monitor.close();
             }
             catch(IOException e) {
-                log.error(String.format("Failure closing file watcher monitor for %s", file), e);
+                log.error(String.format("Failure closing file watcher monitor for %s", watchable.getFile()), e);
             }
         }
     }
