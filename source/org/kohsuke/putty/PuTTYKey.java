@@ -144,7 +144,7 @@ public class PuTTYKey {
      * <p/>
      * This is used to decrypt the private key when it's encrypted.
      */
-    private byte[] toKey(String passphrase) {
+    private byte[] toKey(String passphrase) throws IOException {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
 
@@ -163,7 +163,7 @@ public class PuTTYKey {
             return r;
         }
         catch(NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new IOException(e.getMessage(), e);
         }
     }
 
