@@ -105,20 +105,20 @@ public abstract class AlertController extends SheetController {
         if(selected.tag() == NSPanel.NSAlertDefaultReturn) {
             return SheetCallback.DEFAULT_OPTION;
         }
-        if(selected.tag() == NSPanel.NSAlertAlternateReturn) {
+        else if(selected.tag() == NSPanel.NSAlertAlternateReturn) {
             return SheetCallback.ALTERNATE_OPTION;
         }
-        if(selected.tag() == NSPanel.NSAlertOtherReturn) {
+        else if(selected.tag() == NSPanel.NSAlertOtherReturn) {
             return SheetCallback.CANCEL_OPTION;
         }
-        throw new RuntimeException("Unexpected tag:" + selected.tag());
+        return SheetCallback.DEFAULT_OPTION;
     }
 
     /**
      * Open help page.
      */
     protected void help() {
-        openUrl(Preferences.instance().getProperty("website.help"));
+        this.openUrl(Preferences.instance().getProperty("website.help"));
     }
 
     /**
