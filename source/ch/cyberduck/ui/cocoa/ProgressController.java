@@ -71,8 +71,6 @@ public class ProgressController extends BundleController implements ProgressList
         this.init();
     }
 
-    private ProgressListener progressListener;
-
     private TransferListener transferListener;
 
     @Override
