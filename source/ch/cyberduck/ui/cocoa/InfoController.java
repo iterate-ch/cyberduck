@@ -2519,14 +2519,16 @@ public class InfoController extends ToolbarWindowController {
                                 method,
                                 StringUtils.split(distributionCnameField.stringValue()),
                                 distributionLoggingButton.state() == NSCell.NSOnState,
-                                distributionLoggingPopup.selectedItem().representedObject(), distributionDefaultRootPopup.selectedItem().representedObject());
+                                distributionLoggingPopup.selectedItem().representedObject(),
+                                distributionDefaultRootPopup.selectedItem().representedObject());
                     }
                     else {
                         cdn.write(container,
                                 distributionEnableButton.state() == NSCell.NSOnState,
                                 method, new String[]{},
                                 distributionLoggingButton.state() == NSCell.NSOnState,
-                                null == distributionLoggingPopup.selectedItem() ? getSelected().getName() : distributionLoggingPopup.selectedItem().representedObject(), distributionDefaultRootPopup.selectedItem().representedObject());
+                                null == distributionLoggingPopup.selectedItem() ? getSelected().getName() : distributionLoggingPopup.selectedItem().representedObject(),
+                                distributionDefaultRootPopup.selectedItem().representedObject());
                     }
                 }
 
