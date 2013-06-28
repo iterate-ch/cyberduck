@@ -131,10 +131,7 @@ public class SFTPSession extends Session<Connection> {
                 prompt.prompt(host.getProtocol(), additional,
                         Locale.localizedString("Partial authentication success", "Credentials"),
                         Locale.localizedString("Provide additional login credentials", "Credentials") + ".", false, false, false);
-                if(this.loginUsingChallengeResponseAuthentication(prompt, additional)) {
-                    this.message(Locale.localizedString("Login successful", "Credentials"));
-                }
-                else {
+                if(!this.loginUsingChallengeResponseAuthentication(prompt, additional)) {
                     prompt.fail(host.getProtocol(), host.getCredentials());
                 }
             }
@@ -203,7 +200,6 @@ public class SFTPSession extends Session<Connection> {
                         IOUtils.copy(new StringReader(putty.toOpenSSH(credentials.getPassword())), privatekey);
                     }
                     catch(PEMDecryptException e) {
-                        this.message(Locale.localizedString("Invalid passphrase", "Credentials"));
                         controller.prompt(host.getProtocol(), credentials,
                                 Locale.localizedString("Invalid passphrase", "Credentials"),
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
@@ -225,7 +221,6 @@ public class SFTPSession extends Session<Connection> {
                         PEMDecoder.decode(privatekey.toCharArray(), credentials.getPassword());
                     }
                     catch(PEMDecryptException e) {
-                        this.message(Locale.localizedString("Invalid passphrase", "Credentials"));
                         controller.prompt(host.getProtocol(), credentials,
                                 Locale.localizedString("Invalid passphrase", "Credentials"),
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")

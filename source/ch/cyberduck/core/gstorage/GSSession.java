@@ -152,10 +152,6 @@ public class GSSession extends S3Session {
                 credentials.setUsername(placeholder.getUsername());
                 // Authorization code
                 credentials.setPassword(placeholder.getPassword());
-
-                this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
-                        credentials.getUsername()));
-
                 try {
                     // Swap the given authorization token for access/refresh tokens
                     oauth.retrieveOAuth2TokensFromAuthorization(credentials.getPassword());

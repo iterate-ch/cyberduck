@@ -27,7 +27,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.http.HttpStatus;
@@ -69,7 +68,6 @@ public class DAVSession extends HttpSession<DAVClient> {
         try {
             try {
                 client.execute(new HttpHead(this.toURL(this.home())), new VoidResponseHandler());
-                this.message(Locale.localizedString("Login successful", "Credentials"));
             }
             catch(SardineException e) {
                 if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN

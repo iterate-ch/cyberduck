@@ -277,7 +277,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     public void login(final LoginController prompt) throws BackgroundException {
         try {
             if(client.login(host.getCredentials().getUsername(), host.getCredentials().getPassword())) {
-                this.message(Locale.localizedString("Login successful", "Credentials"));
                 if(host.getProtocol().isSecure()) {
                     client.execPBSZ(0);
                     // Negotiate data connection security
