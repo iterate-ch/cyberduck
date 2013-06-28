@@ -30,7 +30,7 @@ public class S3BucketListServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.open();
+        session.connect();
         final List<Path> list = new S3BucketListService().list(session);
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new S3Path(session, "test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE)));

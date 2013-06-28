@@ -21,7 +21,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.connect());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());
@@ -38,7 +38,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.connect();
         try {
             session.login(new DisabledLoginController());
         }
@@ -57,7 +57,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
         assertNotNull(session.mount());
     }
@@ -70,7 +70,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/auth-basic");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
         assertNotNull(session.mount());
     }
@@ -83,7 +83,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/auth-digest");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
         assertNotNull(session.mount());
     }
@@ -96,7 +96,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-perm");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
     }
 
@@ -108,7 +108,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-tmp");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
     }
 
@@ -120,7 +120,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-other");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
         assertNotNull(session.mount());
     }
@@ -144,7 +144,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
         assertNotNull(session.mount());
     }
@@ -156,7 +156,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/anon");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.connect();
         assertNotNull(session.home().list());
     }
 
@@ -167,7 +167,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
     }
 
@@ -199,7 +199,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 };
             }
         });
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
     }
 

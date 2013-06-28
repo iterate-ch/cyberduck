@@ -26,7 +26,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
         final List<Path> list = new SwiftContainerListService().list(session);
         final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);

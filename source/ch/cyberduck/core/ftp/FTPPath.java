@@ -111,7 +111,7 @@ public class FTPPath extends Path {
             // Fallback handling
             if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
                 session.interrupt();
-                session.open();
+                session.connect();
                 session.login(new DisabledLoginController());
                 try {
                     return this.fallback(action);
@@ -187,7 +187,7 @@ public class FTPPath extends Path {
             catch(IOException e) {
                 log.warn("Command STAT failed with I/O error:" + e.getMessage());
                 session.interrupt();
-                session.open();
+                session.connect();
                 session.login(new DisabledLoginController());
             }
             if(!success || children.isEmpty()) {

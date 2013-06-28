@@ -57,7 +57,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
-        session.open();
+        session.connect();
         session.login(new DisabledLoginController());
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session);
         final S3Path container = new S3Path(session, "test.cyberduck.ch", Path.VOLUME_TYPE);

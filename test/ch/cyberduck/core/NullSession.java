@@ -19,7 +19,7 @@ public class NullSession extends FTPSession {
     }
 
     @Override
-    public FTPClient open() throws BackgroundException {
+    public FTPClient connect() throws BackgroundException {
         return null;
     }
 

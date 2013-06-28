@@ -24,7 +24,7 @@ public class SFTPSessionTest extends AbstractTestCase {
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.connect(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());
@@ -41,7 +41,7 @@ public class SFTPSessionTest extends AbstractTestCase {
                 "u", "p"
         ));
         final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.connect(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());

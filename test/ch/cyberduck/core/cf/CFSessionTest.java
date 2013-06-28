@@ -26,7 +26,7 @@ public class CFSessionTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final CFSession session = new CFSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.connect());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());
@@ -45,7 +45,7 @@ public class CFSessionTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final CFSession session = new CFSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.connect());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());
@@ -62,7 +62,7 @@ public class CFSessionTest extends AbstractTestCase {
                 "a", "s"
         ));
         final CFSession session = new CFSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.connect());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         try {
@@ -80,7 +80,7 @@ public class CFSessionTest extends AbstractTestCase {
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final CFSession session = new CFSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.connect());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());

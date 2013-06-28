@@ -26,7 +26,7 @@ public class LoginServiceTest extends AbstractTestCase {
         ));
         final AtomicBoolean warned = new AtomicBoolean(false);
         final FTPSession session = new FTPSession(host);
-        session.open();
+        session.connect();
         LoginService l = new LoginService(new DisabledLoginController() {
             @Override
             public void warn(final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {

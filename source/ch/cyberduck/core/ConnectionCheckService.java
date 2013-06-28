@@ -81,11 +81,12 @@ public class ConnectionCheckService {
             // Close the underlying socket first
             session.interrupt();
         }
-
         try {
             final Host bookmark = session.getHost();
             session.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                     bookmark.getProtocol().getName(), bookmark.getHostname()));
+
+            session.fireConnectionWillOpenEvent();
 
             // Configuring proxy if any
             ProxyFactory.get().configure(bookmark);
@@ -105,7 +106,7 @@ public class ConnectionCheckService {
             }
             // The IP address could successfully be determined
 
-            session.open(key);
+            session.connect(key);
 
             GrowlFactory.get().notify("Connection opened", bookmark.getHostname());
 
@@ -117,6 +118,8 @@ public class ConnectionCheckService {
 
             LoginService login = new LoginService(prompt);
             login.login(session);
+
+            session.fireConnectionDidOpenEvent();
 
             final HistoryCollection history = HistoryCollection.defaultCollection();
             history.add(new Host(bookmark.getAsDictionary()));
