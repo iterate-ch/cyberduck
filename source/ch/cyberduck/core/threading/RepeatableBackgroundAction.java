@@ -27,24 +27,18 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 /**
  * @version $Id$
  */
 public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean>
         implements ProgressListener, TranscriptListener {
-    private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
+    private static final Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
 
     private static final String lineSeparator
             = System.getProperty("line.separator");
@@ -276,51 +270,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             log.info("No pause between retry");
             return;
         }
-        final Timer wakeup = new Timer();
-        final CyclicBarrier wait = new CyclicBarrier(2);
-        wakeup.scheduleAtFixedRate(new TimerTask() {
-            /**
-             * The delay to wait before execution of the action in seconds
-             */
-            private int delay = (int) Preferences.instance().getDouble("connection.retry.delay");
-
-            private final String pattern = Locale.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status");
-
-            @Override
-            public void run() {
-                if(0 == delay || RepeatableBackgroundAction.this.isCanceled()) {
-                    // Cancel the timer repetition
-                    this.cancel();
-                    return;
-                }
-                message(MessageFormat.format(pattern, delay--, RepeatableBackgroundAction.this.retry()));
-            }
-
-            @Override
-            public boolean cancel() {
-                try {
-                    // Notifiy to return to caller from #pause()
-                    wait.await();
-                }
-                catch(InterruptedException e) {
-                    log.error(e.getMessage(), e);
-                }
-                catch(BrokenBarrierException e) {
-                    log.error(e.getMessage(), e);
-                }
-                return super.cancel();
-            }
-        }, 0, 1000); // Schedule for immediate execusion with an interval of 1s
-        try {
-            // Wait for notify from wakeup timer
-            wait.await();
-        }
-        catch(InterruptedException e) {
-            log.error(e.getMessage(), e);
-        }
-        catch(BrokenBarrierException e) {
-            log.error(e.getMessage(), e);
-        }
+        final BackgroundActionPauser pauser = new BackgroundActionPauser(this);
+        pauser.await();
     }
 
     /**
