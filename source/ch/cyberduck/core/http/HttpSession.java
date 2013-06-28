@@ -181,7 +181,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     }
 
     @Override
-    public void logout() throws BackgroundException {
+    protected void logout() throws BackgroundException {
         client.getConnectionManager().shutdown();
     }
 

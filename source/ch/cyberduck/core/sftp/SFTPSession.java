@@ -306,7 +306,7 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void logout() throws BackgroundException {
+    protected void logout() throws BackgroundException {
         if(client != null) {
             client.close();
             client = null;
@@ -315,9 +315,10 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void interrupt() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         connection.close(null, true);
         client = null;
+        super.disconnect();
     }
 
     @Override

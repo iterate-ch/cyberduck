@@ -19,7 +19,7 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
     public void testCheckUnknown() throws Exception {
-        ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController());
+        final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController());
         final FTPSession session = new FTPSession(new Host("unknownhost.local"));
         try {
             s.check(session, new ProgressListener() {
@@ -67,7 +67,7 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
                 return l;
             }
         });
-        ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController());
+        final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController());
         s.check(session, new ProgressListener() {
             @Override
             public void message(final String message) {
@@ -78,7 +78,7 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
-        ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController());
+        final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController());
         s.check(new FTPSession(new Host("")), new ProgressListener() {
             @Override
             public void message(final String message) {

@@ -95,7 +95,10 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     public C open() throws BackgroundException {
-        return this.open(new DefaultHostKeyController());
+        this.fireConnectionWillOpenEvent();
+        final C client = this.open(new DefaultHostKeyController());
+        this.fireConnectionDidOpenEvent();
+        return client;
     }
 
     public C open(final HostKeyController key) throws BackgroundException {
@@ -120,17 +123,31 @@ public abstract class Session<C> implements TranscriptListener {
     public void close() throws BackgroundException {
         this.fireConnectionWillCloseEvent();
         this.logout();
+        this.disconnect();
         client = null;
         this.fireConnectionDidCloseEvent();
     }
 
     /**
-     * Close the connecion to the remote host. The protocol specific
-     * implementation has to be implemented in the subclasses. Subsequent calls to #getClient() must return null.
-     *
-     * @see #isConnected()
+     * Interrupt any running operation asynchroneously by closing the underlying socket.
+     * Close the underlying socket regardless of its state; will throw a socket exception
+     * on the thread owning the socket
      */
-    public abstract void logout() throws BackgroundException;
+    public void interrupt() throws BackgroundException {
+        this.fireConnectionWillCloseEvent();
+        this.disconnect();
+        client = null;
+        this.fireConnectionDidCloseEvent();
+    }
+
+    /**
+     * Close the connection to the remote host. Subsequent calls to #getClient() must return null.
+     */
+    protected abstract void logout() throws BackgroundException;
+
+    protected void disconnect() throws BackgroundException {
+        client = null;
+    }
 
     /**
      * @return The timeout in milliseconds
@@ -347,15 +364,6 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public void noop() throws BackgroundException {
         //
-    }
-
-    /**
-     * Interrupt any running operation asynchroneously by closing the underlying socket.
-     * Close the underlying socket regardless of its state; will throw a socket exception
-     * on the thread owning the socket
-     */
-    public void interrupt() throws BackgroundException {
-        this.close();
     }
 
     /**

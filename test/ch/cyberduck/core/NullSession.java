@@ -29,7 +29,7 @@ public class NullSession extends FTPSession {
     }
 
     @Override
-    public void logout() {
+    protected void logout() {
         //
     }
 }

@@ -115,7 +115,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void logout() throws BackgroundException {
+    protected void logout() throws BackgroundException {
         try {
             client.logout();
             client.removeProtocolCommandListener(listener);
@@ -126,10 +126,13 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void interrupt() throws BackgroundException {
+    protected void disconnect() throws BackgroundException {
         try {
-            client.disconnect();
-            client.removeProtocolCommandListener(listener);
+            if(client != null) {
+                client.disconnect();
+                client.removeProtocolCommandListener(listener);
+            }
+            super.disconnect();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
