@@ -25,7 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
-import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -41,7 +40,6 @@ import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPCommand;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
@@ -51,16 +49,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @version $Id$
@@ -185,7 +177,7 @@ public class FTPPath extends Path {
                                 result.add(StringUtils.stripStart(line, null));
                             }
                         }
-                        success = this.parseListResponse(children, parser, result);
+                        success = new FTPListResponseReader().read(children, session, this, parser, result);
                     }
                     else {
                         session.setStatListSupportedEnabled(false);
@@ -216,7 +208,8 @@ public class FTPPath extends Path {
                                 // Note that there is no distinct FEAT output for MLSD.
                                 // The presence of the MLST feature indicates that both MLST and MLSD are supported.
                                 && session.getClient().isFeatureSupported(FTPCommand.MLST)) {
-                            success = parseMlsdResponse(children, session.getClient().list(FTPCommand.MLSD));
+                            success = new FTPMlsdListResponseReader().read(children, session, FTPPath.this,
+                                    null, session.getClient().list(FTPCommand.MLSD));
                             if(!success) {
                                 session.setMlsdListSupportedEnabled(false);
                             }
@@ -225,7 +218,8 @@ public class FTPPath extends Path {
                             // MLSD listing failed or not enabled
                             if(session.isExtendedListEnabled()) {
                                 try {
-                                    success = parseListResponse(children, parser, session.getClient().list(FTPCommand.LIST, "-a"));
+                                    success = new FTPListResponseReader().read(children, session, FTPPath.this,
+                                            parser, session.getClient().list(FTPCommand.LIST, "-a"));
                                 }
                                 catch(FTPException e) {
                                     session.setExtendedListEnabled(false);
@@ -233,7 +227,8 @@ public class FTPPath extends Path {
                             }
                             if(!success) {
                                 // LIST -a listing failed or not enabled
-                                success = parseListResponse(children, parser, session.getClient().list(FTPCommand.LIST));
+                                success = new FTPListResponseReader().read(children, session, FTPPath.this,
+                                        parser, session.getClient().list(FTPCommand.LIST));
                             }
                         }
                         return success;
@@ -267,246 +262,6 @@ public class FTPPath extends Path {
             log.warn(String.format("Directory listing failure for %s with failure %s", this, e.getMessage()));
             throw new DefaultIOExceptionMappingService().map("Listing directory failed", e, this);
         }
-    }
-
-    /**
-     * The "facts" for a file in a reply to a MLSx command consist of
-     * information about that file.  The facts are a series of keyword=value
-     * pairs each followed by semi-colon (";") characters.  An individual
-     * fact may not contain a semi-colon in its name or value.  The complete
-     * series of facts may not contain the space character.  See the
-     * definition or "RCHAR" in section 2.1 for a list of the characters
-     * that can occur in a fact value.  Not all are applicable to all facts.
-     * <p/>
-     * A sample of a typical series of facts would be: (spread over two
-     * lines for presentation here only)
-     * <p/>
-     * size=4161;lang=en-US;modify=19970214165800;create=19961001124534;
-     * type=file;x.myfact=foo,bar;
-     * <p/>
-     * This document defines a standard set of facts as follows:
-     * <p/>
-     * size       -- Size in octets
-     * modify     -- Last modification time
-     * create     -- Creation time
-     * type       -- Entry type
-     * unique     -- Unique id of file/directory
-     * perm       -- File permissions, whether read, write, execute is
-     * allowed for the login id.
-     * lang       -- Language of the file name per IANA [11] registry.
-     * media-type -- MIME media-type of file contents per IANA registry.
-     * charset    -- Character set per IANA registry (if not UTF-8)
-     *
-     * @param line The "facts" for a file in a reply to a MLSx command
-     * @return Parsed keys and values
-     */
-    protected Map<String, Map<String, String>> parseFacts(String line) {
-        final Pattern p = Pattern.compile("\\s?(\\S+\\=\\S+;)*\\s(.*)");
-        final Matcher result = p.matcher(line);
-        Map<String, Map<String, String>> file = new HashMap<String, Map<String, String>>();
-        if(result.matches()) {
-            final String filename = result.group(2);
-            final Map<String, String> facts = new HashMap<String, String>();
-            for(String fact : result.group(1).split(";")) {
-                String key = StringUtils.substringBefore(fact, "=");
-                if(StringUtils.isBlank(key)) {
-                    continue;
-                }
-                String value = StringUtils.substringAfter(fact, "=");
-                if(StringUtils.isBlank(value)) {
-                    continue;
-                }
-                facts.put(key.toLowerCase(java.util.Locale.ENGLISH), value);
-            }
-            file.put(filename, facts);
-            return file;
-        }
-        log.warn("No match for " + line);
-        return null;
-    }
-
-    /**
-     * Parse response of MLSD
-     *
-     * @param children List to add parsed lines
-     * @param replies  Lines
-     * @return True if parsing is successful
-     */
-    protected boolean parseMlsdResponse(final AttributedList<Path> children, List<String> replies) {
-
-        if(null == replies) {
-            // This is an empty directory
-            return false;
-        }
-        boolean success = false; // At least one entry successfully parsed
-        for(String line : replies) {
-            final Map<String, Map<String, String>> file = this.parseFacts(line);
-            if(null == file) {
-                log.error(String.format("Error parsing line %s", line));
-                continue;
-            }
-            for(String name : file.keySet()) {
-                final Path parsed = new FTPPath(session, this, Path.getName(name), FILE_TYPE);
-                // size       -- Size in octets
-                // modify     -- Last modification time
-                // create     -- Creation time
-                // type       -- Entry type
-                // unique     -- Unique id of file/directory
-                // perm       -- File permissions, whether read, write, execute is allowed for the login id.
-                // lang       -- Language of the file name per IANA [11] registry.
-                // media-type -- MIME media-type of file contents per IANA registry.
-                // charset    -- Character set per IANA registry (if not UTF-8)
-                for(Map<String, String> facts : file.values()) {
-                    if(!facts.containsKey("type")) {
-                        log.error(String.format("No type fact in line %s", line));
-                        continue;
-                    }
-                    if("dir".equals(facts.get("type").toLowerCase(java.util.Locale.ENGLISH))) {
-                        parsed.attributes().setType(DIRECTORY_TYPE);
-                    }
-                    else if("file".equals(facts.get("type").toLowerCase(java.util.Locale.ENGLISH))) {
-                        parsed.attributes().setType(FILE_TYPE);
-                    }
-                    else {
-                        log.warn("Ignored type: " + line);
-                        break;
-                    }
-                    if(name.contains(String.valueOf(DELIMITER))) {
-                        if(!name.startsWith(this.getAbsolute() + Path.DELIMITER)) {
-                            // Workaround for #2434.
-                            log.warn("Skip listing entry with delimiter:" + name);
-                            continue;
-                        }
-                    }
-                    if(!success) {
-                        if("dir".equals(facts.get("type").toLowerCase(java.util.Locale.ENGLISH)) && this.getName().equals(name)) {
-                            log.warn("Possibly bogus response:" + line);
-                        }
-                        else {
-                            success = true;
-                        }
-                    }
-                    if(facts.containsKey("size")) {
-                        parsed.attributes().setSize(Long.parseLong(facts.get("size")));
-                    }
-                    if(facts.containsKey("unix.uid")) {
-                        parsed.attributes().setOwner(facts.get("unix.uid"));
-                    }
-                    if(facts.containsKey("unix.owner")) {
-                        parsed.attributes().setOwner(facts.get("unix.owner"));
-                    }
-                    if(facts.containsKey("unix.gid")) {
-                        parsed.attributes().setGroup(facts.get("unix.gid"));
-                    }
-                    if(facts.containsKey("unix.group")) {
-                        parsed.attributes().setGroup(facts.get("unix.group"));
-                    }
-                    if(facts.containsKey("unix.mode")) {
-                        try {
-                            parsed.attributes().setPermission(new Permission(Integer.parseInt(facts.get("unix.mode"))));
-                        }
-                        catch(NumberFormatException e) {
-                            log.error(String.format("Failed to parse fact %s", facts.get("unix.mode")));
-                        }
-                    }
-                    if(facts.containsKey("modify")) {
-                        parsed.attributes().setModificationDate(this.parseTimestamp(facts.get("modify")));
-                    }
-                    if(facts.containsKey("create")) {
-                        parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
-                    }
-                    if(facts.containsKey("charset")) {
-                        if(!facts.get("charset").equalsIgnoreCase(session.getEncoding())) {
-                            log.error(String.format("Incompatible charset %s but session is configured with %s",
-                                    facts.get("charset"), session.getEncoding()));
-                        }
-                    }
-                    children.add(parsed);
-                }
-            }
-        }
-        return success;
-    }
-
-    protected boolean parseListResponse(final AttributedList<Path> children,
-                                        final FTPFileEntryParser parser, final List<String> replies) {
-        if(null == replies) {
-            // This is an empty directory
-            return false;
-        }
-        boolean success = false;
-        for(String line : replies) {
-            final FTPFile f = parser.parseFTPEntry(line);
-            if(null == f) {
-                continue;
-            }
-            final String name = f.getName();
-            if(!success) {
-                // Workaround for #2410. STAT only returns ls of directory itself
-                // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
-                if(this.getAbsolute().equals(name)) {
-                    log.warn(String.format("Skip %s", f.getName()));
-                    continue;
-                }
-                if(name.contains(String.valueOf(DELIMITER))) {
-                    if(!name.startsWith(this.getAbsolute() + Path.DELIMITER)) {
-                        // Workaround for #2434.
-                        log.warn("Skip listing entry with delimiter:" + name);
-                        continue;
-                    }
-                }
-            }
-            success = true;
-            if(name.equals(".") || name.equals("..")) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Skip %s", f.getName()));
-                }
-                continue;
-            }
-            final Path parsed = new FTPPath(session, this,
-                    Path.getName(name), f.getType() == FTPFile.DIRECTORY_TYPE ? DIRECTORY_TYPE : FILE_TYPE);
-            switch(f.getType()) {
-                case FTPFile.SYMBOLIC_LINK_TYPE:
-                    // Symbolic link target may be an absolute or relative path
-                    if(f.getLink().startsWith(String.valueOf(Path.DELIMITER))) {
-                        parsed.setSymlinkTarget(new FTPPath(session, f.getLink(), parsed.attributes().getType()));
-                    }
-                    else {
-                        parsed.setSymlinkTarget(new FTPPath(session, this, f.getLink(), parsed.attributes().getType()));
-                    }
-                    parsed.attributes().setType(SYMBOLIC_LINK_TYPE | FILE_TYPE);
-                    break;
-            }
-            if(parsed.attributes().isFile()) {
-                parsed.attributes().setSize(f.getSize());
-            }
-            parsed.attributes().setOwner(f.getUser());
-            parsed.attributes().setGroup(f.getGroup());
-            if(session.isPermissionSupported(parser)) {
-                parsed.attributes().setPermission(new Permission(
-                        new boolean[][]{
-                                {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
-                                        f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
-                                        f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                                },
-                                {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
-                                        f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION),
-                                        f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                                },
-                                {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
-                                        f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION),
-                                        f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                                }
-                        }
-                ));
-            }
-            final Calendar timestamp = f.getTimestamp();
-            if(timestamp != null) {
-                parsed.attributes().setModificationDate(timestamp.getTimeInMillis());
-            }
-            children.add(parsed);
-        }
-        return success;
     }
 
     @Override
@@ -564,34 +319,6 @@ public class FTPPath extends Path {
         }
     }
 
-    /**
-     * Parse the timestamp using the MTDM format
-     *
-     * @param timestamp Date string
-     * @return Milliseconds
-     */
-    public long parseTimestamp(final String timestamp) {
-        if(null == timestamp) {
-            return -1;
-        }
-        try {
-            Date parsed = new MDTMSecondsDateFormatter().parse(timestamp);
-            return parsed.getTime();
-        }
-        catch(ParseException e) {
-            log.warn("Failed to parse timestamp:" + e.getMessage());
-            try {
-                Date parsed = new MDTMMillisecondsDateFormatter().parse(timestamp);
-                return parsed.getTime();
-            }
-            catch(ParseException f) {
-                log.warn("Failed to parse timestamp:" + f.getMessage());
-            }
-        }
-        log.error(String.format("Failed to parse timestamp %s", timestamp));
-        return -1;
-    }
-
     @Override
     public void readTimestamp() throws BackgroundException {
         try {
@@ -601,7 +328,7 @@ public class FTPPath extends Path {
             if(session.getClient().isFeatureSupported(FTPCommand.MDTM)) {
                 final String timestamp = session.getClient().getModificationTime(this.getAbsolute());
                 if(null != timestamp) {
-                    attributes().setModificationDate(this.parseTimestamp(timestamp));
+                    attributes().setModificationDate(new FTPMlsdListResponseReader().parseTimestamp(timestamp));
                 }
             }
             if(-1 == attributes().getModificationDate()) {
