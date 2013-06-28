@@ -82,47 +82,53 @@ public class ConnectionCheckService {
             session.interrupt();
         }
 
-        final Host bookmark = session.getHost();
-        session.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
-                bookmark.getProtocol().getName(), bookmark.getHostname()));
-
-        // Configuring proxy if any
-        ProxyFactory.get().configure(bookmark);
-
-        final Resolver resolver = new Resolver(
-                HostnameConfiguratorFactory.get(bookmark.getProtocol()).lookup(bookmark.getHostname()));
-
-        session.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
-                bookmark.getHostname()));
-
-        // Try to resolve the hostname first
         try {
-            resolver.resolve();
+            final Host bookmark = session.getHost();
+            session.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
+                    bookmark.getProtocol().getName(), bookmark.getHostname()));
+
+            // Configuring proxy if any
+            ProxyFactory.get().configure(bookmark);
+
+            final Resolver resolver = new Resolver(
+                    HostnameConfiguratorFactory.get(bookmark.getProtocol()).lookup(bookmark.getHostname()));
+
+            session.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
+                    bookmark.getHostname()));
+
+            // Try to resolve the hostname first
+            try {
+                resolver.resolve();
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
+            // The IP address could successfully be determined
+
+            session.open(key);
+
+            GrowlFactory.get().notify("Connection opened", bookmark.getHostname());
+
+            session.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
+                    bookmark.getProtocol().getName()));
+
+            // Update last accessed timestamp
+            bookmark.setTimestamp(new Date());
+
+            LoginService login = new LoginService(prompt);
+            login.login(session);
+
+            final HistoryCollection history = HistoryCollection.defaultCollection();
+            history.add(new Host(bookmark.getAsDictionary()));
+
+            // Notify changed bookmark
+            if(BookmarkCollection.defaultCollection().contains(bookmark)) {
+                BookmarkCollection.defaultCollection().collectionItemChanged(bookmark);
+            }
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        // The IP address could successfully be determined
-
-        session.open(key);
-
-        GrowlFactory.get().notify("Connection opened", bookmark.getHostname());
-
-        session.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
-                bookmark.getProtocol().getName()));
-
-        // Update last accessed timestamp
-        bookmark.setTimestamp(new Date());
-
-        LoginService login = new LoginService(prompt);
-        login.login(session);
-
-        final HistoryCollection history = HistoryCollection.defaultCollection();
-        history.add(new Host(bookmark.getAsDictionary()));
-
-        // Notify changed bookmark
-        if(BookmarkCollection.defaultCollection().contains(bookmark)) {
-            BookmarkCollection.defaultCollection().collectionItemChanged(bookmark);
+        catch(ConnectionCanceledException e) {
+            session.close();
+            throw e;
         }
     }
 }
