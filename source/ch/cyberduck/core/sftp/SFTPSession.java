@@ -317,7 +317,7 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public void interrupt() throws BackgroundException {
         connection.close(null, true);
-        super.interrupt();
+        client = null;
     }
 
     @Override
