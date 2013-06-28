@@ -24,7 +24,7 @@ import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.io.RepeatableFileInputStream;
+import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -286,7 +286,7 @@ public abstract class Local extends AbstractPath {
     }
 
     public InputStream getInputStream() throws FileNotFoundException {
-        return new RepeatableFileInputStream(new File(path));
+        return new LocalRepeatableFileInputStream(new File(path));
     }
 
     public OutputStream getOutputStream(final boolean append) throws FileNotFoundException {

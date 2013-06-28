@@ -18,13 +18,15 @@ package ch.cyberduck.core.io;
  *  dkocher@cyberduck.ch
  */
 
+import org.jets3t.service.io.RepeatableFileInputStream;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
  * @version $Id$
  */
-public class RepeatableFileInputStream extends org.jets3t.service.io.RepeatableFileInputStream {
+public class LocalRepeatableFileInputStream extends RepeatableFileInputStream {
 
     /**
      * Creates a repeatable input stream based on a file.
@@ -32,7 +34,7 @@ public class RepeatableFileInputStream extends org.jets3t.service.io.RepeatableF
      * @param file Plain file
      * @throws FileNotFoundException Invalid file
      */
-    public RepeatableFileInputStream(File file) throws FileNotFoundException {
+    public LocalRepeatableFileInputStream(final File file) throws FileNotFoundException {
         super(file);
     }
 }
