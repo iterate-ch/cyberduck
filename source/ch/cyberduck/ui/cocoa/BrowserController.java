@@ -964,7 +964,7 @@ public class BrowserController extends WindowController
         // Highlight selected browser view
         this.selectBrowser(view);
         // Remove any custom file filter
-        setPathFilter(null);
+        this.setPathFilter(null);
         // Update from model
         this.reloadData(selected);
         // Focus on browser view
@@ -1001,11 +1001,11 @@ public class BrowserController extends WindowController
         }
 
         @Override
-        protected Path pathAtRow(int row) {
+        protected Path pathAtRow(final int row) {
             if(row < browserOutlineView.numberOfRows().intValue()) {
                 return lookup(new NSObjectPathReference(browserOutlineView.itemAtRow(new NSInteger(row))));
             }
-            log.warn("No item at row:" + row);
+            log.warn(String.format("No item at row %d", row));
             return null;
         }
     }
@@ -3419,10 +3419,10 @@ public class BrowserController extends WindowController
             // Update the current working directory
             navigation.add(workdir);
             // Change to last selected browser view
-            browserSwitchClicked(Preferences.instance().getInteger("browser.view"), selected);
+            this.reloadData(selected);
         }
         else {
-            reloadData(false);
+            this.reloadData(false);
         }
     }
 
@@ -3486,6 +3486,8 @@ public class BrowserController extends WindowController
                         // Set the working directory
                         setWorkdir(workdir);
                         if(isMounted()) {
+                            // Close bookmarks
+                            toggleBookmarks(false);
                             // Set the window title
                             window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(host).getAbsolute());
                             if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
