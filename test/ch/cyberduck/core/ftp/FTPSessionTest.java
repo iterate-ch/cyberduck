@@ -8,6 +8,7 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.threading.BackgroundException;
 
@@ -26,13 +27,16 @@ public class FTPSessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final FTPSession session = new FTPSession(host);
+        assertEquals(Session.State.closed, session.getState());
         assertNotNull(session.open());
+        assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());
         assertNotNull(session.mount());
         assertTrue(session.isConnected());
         session.close();
+        assertEquals(Session.State.closed, session.getState());
         assertNull(session.getClient());
         assertFalse(session.isConnected());
     }
@@ -80,6 +84,7 @@ public class FTPSessionTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host) {
             @Override
             protected void warn(final LoginController login) throws BackgroundException {
+                assertEquals(Session.State.open, this.getState());
                 super.warn(login);
                 assertEquals(Protocol.FTP_TLS, host.getProtocol());
             }
