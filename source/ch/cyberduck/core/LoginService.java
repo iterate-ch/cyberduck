@@ -46,7 +46,7 @@ public class LoginService {
      *
      * @param session Session
      */
-    public void login(final Session session) throws BackgroundException {
+    public void login(final Session session, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt authentication for session %s", session));
         }
@@ -55,21 +55,21 @@ public class LoginService {
             session.warn(prompt);
         }
         final Host bookmark = session.getHost();
-        session.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
+        listener.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                 bookmark.getCredentials().getUsername()));
         try {
             session.login(prompt);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for session %s", session));
             }
-            session.message(Locale.localizedString("Login successful", "Credentials"));
+            listener.message(Locale.localizedString("Login successful", "Credentials"));
             // Write credentials to keychain
             keychain.save(bookmark);
         }
         catch(LoginFailureException e) {
-            session.message(Locale.localizedString("Login failed", "Credentials"));
+            listener.message(Locale.localizedString("Login failed", "Credentials"));
             prompt.fail(bookmark.getProtocol(), bookmark.getCredentials(), e.getDetail());
-            this.login(session);
+            this.login(session, listener);
         }
     }
 

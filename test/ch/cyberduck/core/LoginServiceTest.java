@@ -16,7 +16,12 @@ public class LoginServiceTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testCancel() throws Exception {
         LoginService l = new LoginService(new DisabledLoginController());
-        l.login(new NullSession(new Host(Protocol.FTP, "h")));
+        l.login(new NullSession(new Host(Protocol.FTP, "h")), new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+        });
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -35,7 +40,12 @@ public class LoginServiceTest extends AbstractTestCase {
             }
         });
         try {
-            l.login(session);
+            l.login(session, new ProgressListener() {
+                @Override
+                public void message(final String message) {
+                    //
+                }
+            });
             fail();
         }
         catch(LoginCanceledException e) {

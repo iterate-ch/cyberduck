@@ -113,6 +113,26 @@ public abstract class Session<C> implements TranscriptListener {
     public abstract void login(LoginController prompt) throws BackgroundException;
 
     /**
+     * Logout and close client connection
+     *
+     * @throws BackgroundException
+     */
+    public void close() throws BackgroundException {
+        this.fireConnectionWillCloseEvent();
+        this.logout();
+        client = null;
+        this.fireConnectionDidCloseEvent();
+    }
+
+    /**
+     * Close the connecion to the remote host. The protocol specific
+     * implementation has to be implemented in the subclasses. Subsequent calls to #getClient() must return null.
+     *
+     * @see #isConnected()
+     */
+    public abstract void logout() throws BackgroundException;
+
+    /**
      * @return The timeout in milliseconds
      */
     protected int timeout() {
@@ -221,26 +241,6 @@ public abstract class Session<C> implements TranscriptListener {
         return PathFactory.createPath(this, String.valueOf(Path.DELIMITER),
                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
     }
-
-    /**
-     * Logout and close client connection
-     *
-     * @throws BackgroundException
-     */
-    public void close() throws BackgroundException {
-        this.fireConnectionWillCloseEvent();
-        this.logout();
-        client = null;
-        this.fireConnectionDidCloseEvent();
-    }
-
-    /**
-     * Close the connecion to the remote host. The protocol specific
-     * implementation has to be implemented in the subclasses. Subsequent calls to #getClient() must return null.
-     *
-     * @see #isConnected()
-     */
-    public abstract void logout() throws BackgroundException;
 
     /**
      * @return the host this session connects to

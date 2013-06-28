@@ -51,7 +51,7 @@ public class ConnectionCheckService {
      * @param session Session
      * @throws BackgroundException If opening connection fails
      */
-    public void check(final Session session) throws BackgroundException {
+    public void check(final Session session, final ProgressListener listener) throws BackgroundException {
         if(!session.isConnected()) {
             if(StringUtils.isBlank(session.getHost().getHostname())) {
                 if(StringUtils.isBlank(session.getHost().getProtocol().getDefaultHostname())) {
@@ -60,7 +60,7 @@ public class ConnectionCheckService {
                 // If hostname is missing update with default
                 session.getHost().setHostname(session.getHost().getProtocol().getDefaultHostname());
             }
-            this.connect(session);
+            this.connect(session, listener);
         }
         else {
             // The session is still supposed to be connected
@@ -71,19 +71,19 @@ public class ConnectionCheckService {
             catch(BackgroundException e) {
                 log.warn(String.format("No operation command failed for session %s. Attempt to reopen connection", session));
                 // Try to reconnect once more
-                this.connect(session);
+                this.connect(session, listener);
             }
         }
     }
 
-    private void connect(final Session session) throws BackgroundException {
+    private void connect(final Session session, final ProgressListener listener) throws BackgroundException {
         if(session.isConnected()) {
             // Close the underlying socket first
             session.interrupt();
         }
         try {
             final Host bookmark = session.getHost();
-            session.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
+            listener.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                     bookmark.getProtocol().getName(), bookmark.getHostname()));
 
             session.fireConnectionWillOpenEvent();
@@ -94,7 +94,7 @@ public class ConnectionCheckService {
             final Resolver resolver = new Resolver(
                     HostnameConfiguratorFactory.get(bookmark.getProtocol()).lookup(bookmark.getHostname()));
 
-            session.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
+            listener.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
                     bookmark.getHostname()));
 
             // Try to resolve the hostname first
@@ -110,14 +110,14 @@ public class ConnectionCheckService {
 
             GrowlFactory.get().notify("Connection opened", bookmark.getHostname());
 
-            session.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
+            listener.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                     bookmark.getProtocol().getName()));
 
             // Update last accessed timestamp
             bookmark.setTimestamp(new Date());
 
             LoginService login = new LoginService(prompt);
-            login.login(session);
+            login.login(session, listener);
 
             session.fireConnectionDidOpenEvent();
 
@@ -129,8 +129,8 @@ public class ConnectionCheckService {
                 BookmarkCollection.defaultCollection().collectionItemChanged(bookmark);
             }
         }
-        catch(ConnectionCanceledException e) {
-            session.close();
+        catch(BackgroundException e) {
+            session.interrupt();
             throw e;
         }
     }
