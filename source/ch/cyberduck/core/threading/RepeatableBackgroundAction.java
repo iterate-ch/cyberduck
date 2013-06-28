@@ -293,9 +293,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     this.cancel();
                     return;
                 }
-                for(Session session : getSessions()) {
-                    session.message(MessageFormat.format(pattern, delay--, RepeatableBackgroundAction.this.retry()));
-                }
+                message(MessageFormat.format(pattern, delay--, RepeatableBackgroundAction.this.retry()));
             }
 
             @Override
