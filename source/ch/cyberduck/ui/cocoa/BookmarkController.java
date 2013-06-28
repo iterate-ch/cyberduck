@@ -53,9 +53,7 @@ import org.rococoa.cocoa.foundation.NSSize;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -517,29 +515,6 @@ public class BookmarkController extends WindowController {
     }
 
     /**
-     *
-     */
-    public static class Factory {
-        private static final Map<Host, BookmarkController> open
-                = new HashMap<Host, BookmarkController>();
-
-        public static BookmarkController create(final Host host) {
-            if(open.containsKey(host)) {
-                return open.get(host);
-            }
-            final BookmarkController c = new BookmarkController(host) {
-                @Override
-                public void windowWillClose(NSNotification notification) {
-                    super.windowWillClose(notification);
-                    Factory.open.remove(host);
-                }
-            };
-            open.put(host, c);
-            return c;
-        }
-    }
-
-    /**
      * The bookmark
      */
     private Host host;
@@ -547,7 +522,7 @@ public class BookmarkController extends WindowController {
     /**
      * @param host The bookmark to edit
      */
-    private BookmarkController(final Host host) {
+    public BookmarkController(final Host host) {
         this.host = host;
         // Register for bookmark delete event. Will close this window.
         BookmarkCollection.defaultCollection().addListener(bookmarkCollectionListener);

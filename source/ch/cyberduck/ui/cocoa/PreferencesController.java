@@ -72,21 +72,10 @@ import java.util.regex.PatternSyntaxException;
 /**
  * @version $Id$
  */
-public final class PreferencesController extends ToolbarWindowController {
+public class PreferencesController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(PreferencesController.class);
 
-    private static PreferencesController instance = null;
-
-    public static PreferencesController instance() {
-        synchronized(NSApplication.sharedApplication()) {
-            if(null == instance) {
-                instance = new PreferencesController();
-            }
-            return instance;
-        }
-    }
-
-    private PreferencesController() {
+    public PreferencesController() {
         this.loadBundle();
     }
 
@@ -219,7 +208,6 @@ public final class PreferencesController extends ToolbarWindowController {
     protected void invalidate() {
         BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
         super.invalidate();
-        instance = null;
     }
 
     @Override

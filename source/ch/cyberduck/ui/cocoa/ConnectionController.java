@@ -40,43 +40,11 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
 public class ConnectionController extends SheetController {
     private static Logger log = Logger.getLogger(ConnectionController.class);
-
-    private static final Map<WindowController, ConnectionController> controllers
-            = new HashMap<WindowController, ConnectionController>();
-
-    public static ConnectionController instance(final WindowController parent) {
-        if(!controllers.containsKey(parent)) {
-            final ConnectionController c = new ConnectionController(parent) {
-                @Override
-                protected void invalidate() {
-                    controllers.remove(parent);
-                    super.invalidate();
-                }
-            };
-            c.loadBundle();
-            controllers.put(parent, c);
-        }
-        final ConnectionController c = controllers.get(parent);
-        c.init();
-        return c;
-    }
-
-    protected void init() {
-        passField.setStringValue(StringUtils.EMPTY);
-        final boolean enabled = Preferences.instance().getBoolean("connection.login.useKeychain");
-        keychainCheckbox.setEnabled(enabled);
-        if(!enabled) {
-            keychainCheckbox.setState(NSCell.NSOffState);
-        }
-    }
 
     @Override
     protected void invalidate() {
@@ -90,8 +58,9 @@ public class ConnectionController extends SheetController {
         return true;
     }
 
-    private ConnectionController(final WindowController parent) {
+    public ConnectionController(final WindowController parent) {
         super(parent);
+        this.loadBundle();
     }
 
     @Override
@@ -104,6 +73,13 @@ public class ConnectionController extends SheetController {
         this.protocolSelectionDidChange(null);
         this.setState(toggleOptionsButton, Preferences.instance().getBoolean("connection.toggle.options"));
         super.awakeFromNib();
+    }
+
+    @Override
+    public void beginSheet() {
+        // Reset password input
+        passField.setStringValue(StringUtils.EMPTY);
+        super.beginSheet();
     }
 
     @Override

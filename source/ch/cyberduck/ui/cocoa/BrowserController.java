@@ -103,6 +103,16 @@ public class BrowserController extends WindowController
     private static Logger log = Logger.getLogger(BrowserController.class);
 
     /**
+     * No file filter.
+     */
+    private static final Filter<Path> NULL_FILTER = new NullPathFilter<Path>();
+
+    /**
+     * Filter hidden files.
+     */
+    private static final Filter<Path> HIDDEN_FILTER = new HiddenFilesPathFilter();
+
+    /**
      *
      */
     private Session<?> session;
@@ -112,19 +122,9 @@ public class BrowserController extends WindowController
      */
     private TranscriptController transcript;
 
-    private QuickLook quicklook = QuickLookFactory.get();
+    private final QuickLook quicklook = QuickLookFactory.get();
 
     private List<Path> selected = Collections.emptyList();
-
-    /**
-     * No file filter.
-     */
-    private static final Filter<Path> NULL_FILTER = new NullPathFilter<Path>();
-
-    /**
-     * Filter hidden files.
-     */
-    private static final Filter<Path> HIDDEN_FILTER = new HiddenFilesPathFilter();
 
     /**
      * Hide files beginning with '.'
@@ -144,10 +144,35 @@ public class BrowserController extends WindowController
         }
     }
 
+    private final NSTextFieldCell outlineCellPrototype = OutlineCell.outlineCell();
+    private final NSImageCell imageCellPrototype = NSImageCell.imageCell();
+    private final NSTextFieldCell textCellPrototype = NSTextFieldCell.textFieldCell();
+    private final NSTextFieldCell filenameCellPrototype = NSTextFieldCell.textFieldCell();
+
+    private final TableColumnFactory browserListColumnsFactory = new TableColumnFactory();
+    private final TableColumnFactory browserOutlineColumnsFactory = new TableColumnFactory();
+    private final TableColumnFactory bookmarkTableColumnFactory = new TableColumnFactory();
+
+    // setting appearance attributes()
+    private final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
+
+    private BrowserOutlineViewModel browserOutlineModel;
+    @Outlet
+    private NSOutlineView browserOutlineView;
+    private AbstractBrowserTableDelegate<Path> browserOutlineViewDelegate;
+
+    private BrowserListViewModel browserListModel;
+    @Outlet
+    private NSTableView browserListView;
+    private AbstractBrowserTableDelegate<Path> browserListViewDelegate;
+
+
+    private NSToolbar toolbar;
+
     /**
      * Navigation history
      */
-    private Navigation navigation = new Navigation();
+    private final Navigation navigation = new Navigation();
 
     public BrowserController() {
         this.loadBundle();
@@ -187,8 +212,6 @@ public class BrowserController extends WindowController
             controller._updateBrowserColumns(controller.browserOutlineView);
         }
     }
-
-    private NSToolbar toolbar;
 
     @Override
     public void awakeFromNib() {
@@ -1171,14 +1194,6 @@ public class BrowserController extends WindowController
         quicklook.didEndQuickLook();
     }
 
-    // setting appearance attributes()
-    final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
-
-    private BrowserOutlineViewModel browserOutlineModel;
-    @Outlet
-    private NSOutlineView browserOutlineView;
-    private AbstractBrowserTableDelegate<Path> browserOutlineViewDelegate;
-
     public void setBrowserOutlineView(NSOutlineView view) {
         browserOutlineView = view;
         // receive drag events from types
@@ -1301,11 +1316,6 @@ public class BrowserController extends WindowController
         }
     }
 
-    private BrowserListViewModel browserListModel;
-    @Outlet
-    private NSTableView browserListView;
-    private AbstractBrowserTableDelegate<Path> browserListViewDelegate;
-
     public void setBrowserListView(NSTableView view) {
         browserListView = view;
         // receive drag events from types
@@ -1413,16 +1423,7 @@ public class BrowserController extends WindowController
                 NSIndexSet.indexSetWithIndexesInRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(bookmarkTable.numberOfRows()))));
     }
 
-    private final NSTextFieldCell outlineCellPrototype = OutlineCell.outlineCell();
-    private final NSImageCell imageCellPrototype = NSImageCell.imageCell();
-    private final NSTextFieldCell textCellPrototype = NSTextFieldCell.textFieldCell();
-    private final NSTextFieldCell filenameCellPrototype = NSTextFieldCell.textFieldCell();
-
-    private final TableColumnFactory browserListColumnsFactory = new TableColumnFactory();
-    private final TableColumnFactory browserOutlineColumnsFactory = new TableColumnFactory();
-    private final TableColumnFactory bookmarkTableColumnFactory = new TableColumnFactory();
-
-    protected void _updateBrowserColumns(NSTableView table) {
+    private void _updateBrowserColumns(NSTableView table) {
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.SIZE_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnSize")) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.SIZE_COLUMN);
@@ -1821,7 +1822,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void editBookmarkButtonClicked(final ID sender) {
-        BookmarkController c = BookmarkController.Factory.create(
+        final BookmarkController c = BookmarkControllerFactory.create(
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
         c.window().makeKeyAndOrderFront(null);
@@ -1875,7 +1876,7 @@ public class BrowserController extends WindowController
         final NSInteger index = new NSInteger(row);
         bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         bookmarkTable.scrollRowToVisible(index);
-        BookmarkController c = BookmarkController.Factory.create(item);
+        final BookmarkController c = BookmarkControllerFactory.create(item);
         c.window().makeKeyAndOrderFront(null);
     }
 
@@ -3001,7 +3002,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void connectButtonClicked(final ID sender) {
-        final SheetController controller = ConnectionController.instance(this);
+        final SheetController controller = ConnectionControllerFactory.create(this);
         this.addListener(new WindowListener() {
             @Override
             public void windowWillClose() {

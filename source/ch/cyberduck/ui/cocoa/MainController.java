@@ -499,7 +499,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void preferencesMenuClicked(final ID sender) {
-        PreferencesController controller = PreferencesController.instance();
+        PreferencesController controller = PreferencesControllerFactory.instance();
         controller.window().makeKeyAndOrderFront(null);
     }
 
@@ -1323,7 +1323,6 @@ public class MainController extends BundleController implements NSApplication.De
                     app.replyToApplicationShouldTerminate(true);
                 }
             };
-            donationController.loadBundle();
             // Delay application termination. Dismissing the donation dialog will reply to quit.
             return NSApplication.NSTerminateLater;
         }
