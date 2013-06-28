@@ -129,6 +129,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     public void interrupt() throws BackgroundException {
         try {
             client.disconnect();
+            client.removeProtocolCommandListener(listener);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
