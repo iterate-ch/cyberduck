@@ -94,7 +94,8 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     }
 
     @Override
-    public void write(final Path container, final boolean enabled, final Distribution.Method method, final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
+    public void write(final Path container, final boolean enabled, final Distribution.Method method, final String[] cnames,
+                      final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
         this.authenticated(new Callable<Void>() {
             @Override
             public Void call() throws BackgroundException {
@@ -105,7 +106,8 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     }
 
     @Override
-    public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final boolean recursive) throws BackgroundException {
+    public void invalidate(final Path container, final Distribution.Method method,
+                           final List<Path> files, final boolean recursive) throws BackgroundException {
         this.authenticated(new Callable<Void>() {
             @Override
             public Void call() throws BackgroundException {
