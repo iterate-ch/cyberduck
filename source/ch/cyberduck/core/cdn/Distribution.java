@@ -19,6 +19,7 @@ package ch.cyberduck.core.cdn;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
@@ -145,7 +146,7 @@ public class Distribution {
 
         public abstract String getContext();
 
-        public static Method forName(String name) {
+        public static Method forName(final String name) {
             if(DOWNLOAD.toString().equals(name)) {
                 return DOWNLOAD;
             }
@@ -161,7 +162,7 @@ public class Distribution {
             if(WEBSITE_CDN.toString().equals(name)) {
                 return WEBSITE_CDN;
             }
-            throw new RuntimeException();
+            throw new FactoryException(name);
         }
     }
 
