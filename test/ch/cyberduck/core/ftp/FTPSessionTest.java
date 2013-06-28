@@ -28,7 +28,7 @@ public class FTPSessionTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         assertEquals(Session.State.closed, session.getState());
-        assertNotNull(session.connect());
+        assertNotNull(session.open());
         assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -47,7 +47,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.connect());
+        assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());
@@ -64,7 +64,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 "u", "p"
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.connect());
+        assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         try {
@@ -95,7 +95,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 return true;
             }
         };
-        assertNotNull(session.connect());
+        assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertEquals(Protocol.FTP, host.getProtocol());

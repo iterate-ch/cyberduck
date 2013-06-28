@@ -33,7 +33,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final CFSession session = new CFSession(new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
-        session.connect();
+        session.open();
         session.login(new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
@@ -61,7 +61,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final CFSession session = new CFSession(host);
-        session.connect();
+        session.open();
         session.login(new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final CFPath container = new CFPath(session, PathFactory.createPath(session, String.valueOf(Path.DELIMITER),

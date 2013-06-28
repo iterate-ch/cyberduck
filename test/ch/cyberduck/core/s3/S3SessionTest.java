@@ -7,6 +7,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
 
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ public class S3SessionTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
-        assertNotNull(session.connect());
+        assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());
@@ -39,6 +40,7 @@ public class S3SessionTest extends AbstractTestCase {
         session.close();
         assertNull(session.getClient());
         assertFalse(session.isConnected());
+        assertEquals(Session.State.closed, session.getState());
     }
 
     @Test
@@ -47,7 +49,7 @@ public class S3SessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
-        assertNotNull(session.connect());
+        assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());
@@ -56,6 +58,7 @@ public class S3SessionTest extends AbstractTestCase {
         session.close();
         assertNull(session.getClient());
         assertFalse(session.isConnected());
+        assertEquals(Session.State.closed, session.getState());
     }
 
 
@@ -65,7 +68,7 @@ public class S3SessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
-        assertNotNull(session.connect());
+        assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledLoginController());
@@ -74,6 +77,7 @@ public class S3SessionTest extends AbstractTestCase {
         session.close();
         assertNull(session.getClient());
         assertFalse(session.isConnected());
+        assertEquals(Session.State.closed, session.getState());
     }
 
     @Test

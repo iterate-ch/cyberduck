@@ -94,11 +94,16 @@ public abstract class Session<C> implements TranscriptListener {
         return client;
     }
 
-    public C connect() throws BackgroundException {
-        return this.connect(new DefaultHostKeyController());
+    public C open() throws BackgroundException {
+        return this.open(new DefaultHostKeyController());
     }
 
-    public abstract C connect(final HostKeyController key) throws BackgroundException;
+    public C open(final HostKeyController key) throws BackgroundException {
+        client = this.connect(key);
+        return client;
+    }
+
+    protected abstract C connect(final HostKeyController key) throws BackgroundException;
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
