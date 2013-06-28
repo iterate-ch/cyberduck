@@ -763,16 +763,6 @@ public final class TransferController extends WindowController implements NSTool
         }
     }
 
-    private void validateToolbar() {
-        invoke(new WindowMainAction(TransferController.this) {
-            @Override
-            public void run() {
-                window().toolbar().validateVisibleItems();
-                updateIcon();
-            }
-        });
-    }
-
     private static final String TOOLBAR_RESUME = "Resume";
     private static final String TOOLBAR_RELOAD = "Reload";
     private static final String TOOLBAR_STOP = "Stop";
