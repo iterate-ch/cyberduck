@@ -147,7 +147,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         catch(BackgroundException failure) {
             log.warn(String.format("Failure starting background action: %s", failure));
             this.error(failure);
-            throw new ConnectionCanceledException();
+            throw new ConnectionCanceledException(failure);
         }
     }
 
