@@ -91,13 +91,14 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertEquals(Protocol.FTP, host.getProtocol());
-        LoginService l = new LoginService(new DisabledLoginController());
-        l.login(session, new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                //
-            }
-        });
+        LoginService l = new LoginService(new DisabledLoginController(),
+                new ProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        //
+                    }
+                });
+        l.login(session);
         assertEquals(Protocol.FTP_TLS, host.getProtocol());
     }
 }
