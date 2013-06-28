@@ -108,6 +108,7 @@ public class CFSession extends CloudSession<FilesClient> {
 
     @Override
     public void logout() throws BackgroundException {
+        super.logout();
         regions.clear();
         distributions.clear();
     }
