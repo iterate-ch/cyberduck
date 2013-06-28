@@ -36,12 +36,13 @@ public class ConnectionCheckService {
     private static final Logger log = Logger.getLogger(ConnectionCheckService.class);
 
     private LoginController prompt;
-
     private HostKeyController key;
+    private ProgressListener listener;
 
-    public ConnectionCheckService(final LoginController prompt, final HostKeyController key) {
+    public ConnectionCheckService(final LoginController prompt, final HostKeyController key, final ProgressListener listener) {
         this.prompt = prompt;
         this.key = key;
+        this.listener = listener;
     }
 
     /**
@@ -51,7 +52,7 @@ public class ConnectionCheckService {
      * @param session Session
      * @throws BackgroundException If opening connection fails
      */
-    public void check(final Session session, final ProgressListener listener) throws BackgroundException {
+    public void check(final Session session) throws BackgroundException {
         if(!session.isConnected()) {
             if(StringUtils.isBlank(session.getHost().getHostname())) {
                 if(StringUtils.isBlank(session.getHost().getProtocol().getDefaultHostname())) {
@@ -60,7 +61,7 @@ public class ConnectionCheckService {
                 // If hostname is missing update with default
                 session.getHost().setHostname(session.getHost().getProtocol().getDefaultHostname());
             }
-            this.connect(session, listener);
+            this.connect(session);
         }
         else {
             // The session is still supposed to be connected
@@ -71,12 +72,12 @@ public class ConnectionCheckService {
             catch(BackgroundException e) {
                 log.warn(String.format("No operation command failed for session %s. Attempt to reopen connection", session));
                 // Try to reconnect once more
-                this.connect(session, listener);
+                this.connect(session);
             }
         }
     }
 
-    private void connect(final Session session, final ProgressListener listener) throws BackgroundException {
+    private void connect(final Session session) throws BackgroundException {
         if(session.isConnected()) {
             // Close the underlying socket first
             session.interrupt();
@@ -116,8 +117,8 @@ public class ConnectionCheckService {
             // Update last accessed timestamp
             bookmark.setTimestamp(new Date());
 
-            LoginService login = new LoginService(prompt);
-            login.login(session, listener);
+            LoginService login = new LoginService(prompt, listener);
+            login.login(session);
 
             session.fireConnectionDidOpenEvent();
 

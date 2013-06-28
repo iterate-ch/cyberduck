@@ -139,9 +139,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             }
             // Clear the transcript and exceptions
             transcript = new StringBuilder();
-            final ConnectionCheckService c = new ConnectionCheckService(prompt, key);
+            final ConnectionCheckService c = new ConnectionCheckService(prompt, key, this);
             for(Session session : this.getSessions()) {
-                c.check(session, this);
+                c.check(session);
             }
         }
         catch(BackgroundException failure) {

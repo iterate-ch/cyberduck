@@ -32,12 +32,13 @@ public class LoginService {
     private static final Logger log = Logger.getLogger(LoginService.class);
 
     private LoginController prompt;
-
     private AbstractKeychain keychain;
+    private ProgressListener listener;
 
-    public LoginService(final LoginController prompt) {
+    public LoginService(final LoginController prompt, final ProgressListener listener) {
         this.prompt = prompt;
         this.keychain = KeychainFactory.get();
+        this.listener = listener;
     }
 
     /**
@@ -46,7 +47,7 @@ public class LoginService {
      *
      * @param session Session
      */
-    public void login(final Session session, final ProgressListener listener) throws BackgroundException {
+    public void login(final Session session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt authentication for session %s", session));
         }
@@ -69,7 +70,7 @@ public class LoginService {
         catch(LoginFailureException e) {
             listener.message(Locale.localizedString("Login failed", "Credentials"));
             prompt.fail(bookmark.getProtocol(), bookmark.getCredentials(), e.getDetail());
-            this.login(session, listener);
+            this.login(session);
         }
     }
 
