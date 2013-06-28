@@ -107,7 +107,7 @@ public class ConnectionCheckService {
             }
             // The IP address could successfully be determined
 
-            session.connect(key);
+            session.open(key);
 
             GrowlFactory.get().notify("Connection opened", bookmark.getHostname());
 
