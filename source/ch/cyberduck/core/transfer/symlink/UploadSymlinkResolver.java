@@ -1,6 +1,5 @@
 package ch.cyberduck.core.transfer.symlink;
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Local;
@@ -55,7 +54,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver {
         return true;
     }
 
-    private boolean findTarget(final AbstractPath target, final Path root) {
+    private boolean findTarget(final Local target, final Path root) {
         return target.equals(root.getLocal()) || target.isChild(root.getLocal());
     }
 }

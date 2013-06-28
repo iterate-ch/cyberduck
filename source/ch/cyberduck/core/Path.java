@@ -38,6 +38,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -696,4 +697,32 @@ public abstract class Path extends AbstractPath implements Serializable {
         return this.getAbsolute();
     }
 
+    /**
+     * @param directory Parent directory
+     * @return True if this is a child in the path hierarchy of the argument passed
+     */
+    public boolean isChild(final Path directory) {
+        if(directory.attributes().isFile()) {
+            // If a file we don't have any children at all
+            return false;
+        }
+        if(this.isRoot()) {
+            // Root cannot be a child of any other path
+            return false;
+        }
+        if(directory.isRoot()) {
+            // Any other path is a child
+            return true;
+        }
+        if(ObjectUtils.equals(this.getParent(), directory.getParent())) {
+            // Cannot be a child if the same parent
+            return false;
+        }
+        for(Path parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
+            if(parent.equals(directory)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -126,34 +125,5 @@ public abstract class AbstractPath {
             return null;
         }
         return extension;
-    }
-
-    /**
-     * @param directory Parent directory
-     * @return True if this is a child in the path hierarchy of the argument passed
-     */
-    public boolean isChild(final AbstractPath directory) {
-        if(directory.attributes().isFile()) {
-            // If a file we don't have any children at all
-            return false;
-        }
-        if(this.isRoot()) {
-            // Root cannot be a child of any other path
-            return false;
-        }
-        if(directory.isRoot()) {
-            // Any other path is a child
-            return true;
-        }
-        if(ObjectUtils.equals(getParent(this.getAbsolute(), this.getPathDelimiter()), getParent(directory.getAbsolute(), this.getPathDelimiter()))) {
-            // Cannot be a child if the same parent
-            return false;
-        }
-        for(String parent = getParent(this.getAbsolute(), this.getPathDelimiter()); !parent.equals(String.valueOf(this.getPathDelimiter())); parent = getParent(parent, this.getPathDelimiter())) {
-            if(parent.equals(directory.getAbsolute())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

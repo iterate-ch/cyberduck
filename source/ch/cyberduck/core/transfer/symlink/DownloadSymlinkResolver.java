@@ -1,6 +1,5 @@
 package ch.cyberduck.core.transfer.symlink;
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 
@@ -50,7 +49,7 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver {
         return true;
     }
 
-    private boolean findTarget(final AbstractPath target, final Path root) {
+    private boolean findTarget(final Path target, final Path root) {
         return target.equals(root) || target.isChild(root);
     }
 }

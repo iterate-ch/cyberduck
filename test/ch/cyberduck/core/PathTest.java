@@ -221,7 +221,7 @@ public class PathTest extends AbstractTestCase {
     }
 
     @Test
-    public void testChildren() {
+    public void testIsChild() {
         Path p = new NullPath("/a/t", Path.FILE_TYPE);
         assertTrue(p.isChild(new NullPath("/a", Path.DIRECTORY_TYPE)));
         assertTrue(p.isChild(new NullPath("/", Path.DIRECTORY_TYPE)));

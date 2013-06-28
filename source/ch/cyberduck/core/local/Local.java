@@ -27,6 +27,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -290,5 +291,34 @@ public abstract class Local extends AbstractPath {
 
     public OutputStream getOutputStream(final boolean append) throws FileNotFoundException {
         return new FileOutputStream(new File(path), append);
+    }
+
+    /**
+     * @param directory Parent directory
+     * @return True if this is a child in the path hierarchy of the argument passed
+     */
+    public boolean isChild(final AbstractPath directory) {
+        if(directory.attributes().isFile()) {
+            // If a file we don't have any children at all
+            return false;
+        }
+        if(this.isRoot()) {
+            // Root cannot be a child of any other path
+            return false;
+        }
+        if(directory.isRoot()) {
+            // Any other path is a child
+            return true;
+        }
+        if(ObjectUtils.equals(getParent(this.getAbsolute(), this.getPathDelimiter()), getParent(directory.getAbsolute(), this.getPathDelimiter()))) {
+            // Cannot be a child if the same parent
+            return false;
+        }
+        for(String parent = getParent(this.getAbsolute(), this.getPathDelimiter()); !parent.equals(String.valueOf(this.getPathDelimiter())); parent = getParent(parent, this.getPathDelimiter())) {
+            if(parent.equals(directory.getAbsolute())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
