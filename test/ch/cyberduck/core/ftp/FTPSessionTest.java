@@ -1,14 +1,6 @@
 package ch.cyberduck.core.ftp;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginService;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.threading.BackgroundException;
 
@@ -100,7 +92,12 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         assertEquals(Protocol.FTP, host.getProtocol());
         LoginService l = new LoginService(new DisabledLoginController());
-        l.login(session);
+        l.login(session, new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+        });
         assertEquals(Protocol.FTP_TLS, host.getProtocol());
     }
 }
