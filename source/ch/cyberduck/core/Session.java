@@ -421,7 +421,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @return boolean True if the session has not yet been closed.
      */
     public boolean isConnected() {
-        return client != null;
+        return state == State.open;
     }
 
     /**
