@@ -156,10 +156,4 @@ public abstract class AbstractPath {
         }
         return false;
     }
-
-    /**
-     * @return The target of the symbolic link if this path denotes a symbolic link, null otherwise.
-     * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
-     */
-    public abstract AbstractPath getSymlinkTarget();
 }

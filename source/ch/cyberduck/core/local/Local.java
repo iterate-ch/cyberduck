@@ -170,7 +170,6 @@ public abstract class Local extends AbstractPath {
         return this.getAbsolute();
     }
 
-    @Override
     public Local getSymlinkTarget() {
         try {
             return LocalFactory.createLocal(this, new File(path).getCanonicalPath());
