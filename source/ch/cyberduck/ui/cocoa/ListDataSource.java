@@ -42,7 +42,7 @@ public abstract class ListDataSource extends ProxyController implements NSTableV
 
     @Override
     public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row) {
-        throw new RuntimeException("Not editable");
+        //
     }
 
     @Override

@@ -42,7 +42,7 @@ public abstract class OutlineDataSource extends ProxyController implements NSOut
     @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
                                                                  final NSTableColumn tableColumn, NSObject item) {
-        throw new RuntimeException("Not editable");
+        //
     }
 
     @Override
