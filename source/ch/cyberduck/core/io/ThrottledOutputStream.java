@@ -10,8 +10,9 @@ import java.io.OutputStream;
  * ThrottledOutputStream instances, the user can approximate fair global
  * bandwidth sharing.<p>
  * <p/>
- * This implementation is based on the <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/freenet/freenet/src/freenet/support/io/ThrottledOutputStream.java">ThrottledOutputStream</a> class from the Freenet project.  It has been
- * modified so that the bandwidth throttle is no longer static.  It also
+ * This implementation is based on the <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/freenet/
+ * freenet/src/freenet/support/io/ThrottledOutputStream.java">ThrottledOutputStream</a> class from the Freenet project.
+ * It has been modified so that the bandwidth throttle is no longer static.  It also
  * no longer subclasses FilterOutputStream, as the temptation to call
  * super.write() introduced some bugs.  <p>
  *
