@@ -184,7 +184,8 @@ class MacOSXWatchService extends AbstractWatchService {
             this.lastModifiedMap = lastModifiedMap;
         }
 
-        public void invoke(FSEventStreamRef streamRef, Pointer clientCallBackInfo, NativeLong numEvents, Pointer eventPaths, Pointer /* array of unsigned int */ eventFlags, /* array of unsigned long */ Pointer eventIds) {
+        public void invoke(FSEventStreamRef streamRef, Pointer clientCallBackInfo, NativeLong numEvents,
+                           Pointer eventPaths, Pointer /* array of unsigned int */ eventFlags, /* array of unsigned long */ Pointer eventIds) {
             final int length = numEvents.intValue();
 
             for (String folderName : eventPaths.getStringArray(0, length)) {
