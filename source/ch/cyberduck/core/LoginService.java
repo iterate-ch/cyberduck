@@ -90,7 +90,7 @@ public class LoginService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
         }
-        if(!bookmark.getCredentials().validate(bookmark.getProtocol())
+        if(!bookmark.getCredentials().validate(bookmark.getProtocol(), options)
                 || bookmark.getCredentials().isPublicKeyAuthentication()) {
             // Lookup password if missing. Always lookup password for public key authentication. See #5754.
             if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {

@@ -269,7 +269,7 @@ public final class Profile extends Protocol implements Serializable {
     }
 
     @Override
-    public boolean validate(Credentials credentials) {
-        return parent.validate(credentials);
+    public boolean validate(Credentials credentials, final LoginOptions options) {
+        return parent.validate(credentials, options);
     }
 }

@@ -202,11 +202,21 @@ public abstract class Protocol {
      * Check login credentials for validity for this protocol.
      *
      * @param credentials Login credentials
+     * @param options     Options
      * @return True if username is not a blank string and password is not empty ("") and not null.
      */
-    public boolean validate(Credentials credentials) {
-        return StringUtils.isNotBlank(credentials.getUsername())
-                && StringUtils.isNotEmpty(credentials.getPassword());
+    public boolean validate(Credentials credentials, final LoginOptions options) {
+        if(options.user) {
+            if(StringUtils.isBlank(credentials.getUsername())) {
+                return false;
+            }
+        }
+        if(options.password) {
+            if(StringUtils.isEmpty(credentials.getPassword())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -258,11 +268,11 @@ public abstract class Protocol {
         }
 
         @Override
-        public boolean validate(Credentials credentials) {
+        public boolean validate(Credentials credentials, final LoginOptions options) {
             if(credentials.isPublicKeyAuthentication()) {
                 return StringUtils.isNotBlank(credentials.getUsername());
             }
-            return super.validate(credentials);
+            return super.validate(credentials, options);
         }
 
         @Override
@@ -336,11 +346,13 @@ public abstract class Protocol {
 
         /**
          * Allows empty string for password.
+         *
          * @param credentials Login credentials
+         * @param options
          * @return True if username is not blank and password is not null
          */
         @Override
-        public boolean validate(Credentials credentials) {
+        public boolean validate(Credentials credentials, final LoginOptions options) {
             // Allow empty passwords
             return StringUtils.isNotBlank(credentials.getUsername()) && null != credentials.getPassword();
         }
@@ -800,7 +812,7 @@ public abstract class Protocol {
         }
 
         @Override
-        public boolean validate(final Credentials credentials) {
+        public boolean validate(final Credentials credentials, final LoginOptions options) {
             // OAuth only requires the project token
             return StringUtils.isNotBlank(credentials.getUsername());
         }

@@ -358,7 +358,7 @@ public final class PromptLoginController implements LoginController {
             protected boolean validateInput() {
                 credentials.setUsername(usernameField.stringValue());
                 credentials.setPassword(passwordField.stringValue());
-                return credentials.validate(protocol);
+                return credentials.validate(protocol, options);
             }
 
             @Override

@@ -22,6 +22,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -58,7 +59,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 Preferences.instance().getProperty("webdav.ntlm.workstation"),
                 Preferences.instance().getProperty("webdav.ntlm.domain"));
-        if(host.getCredentials().validate(host.getProtocol())) {
+        if(host.getCredentials().validate(host.getProtocol(), new LoginOptions())) {
             // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
             client.enablePreemptiveAuthentication(this.getHost().getHostname());
         }

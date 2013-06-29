@@ -162,10 +162,11 @@ public class Credentials {
 
     /**
      * @param protocol The protocol to verify against.
+     * @param options  Options
      * @return True if the login credential are valid for the given protocol.
      */
-    public boolean validate(final Protocol protocol) {
-        return protocol.validate(this);
+    public boolean validate(final Protocol protocol, final LoginOptions options) {
+        return protocol.validate(this, options);
     }
 
     public String getUsernamePlaceholder() {
