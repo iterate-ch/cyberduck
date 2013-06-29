@@ -110,5 +110,6 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s created", file));
         }
+        this.save();
     }
 }
