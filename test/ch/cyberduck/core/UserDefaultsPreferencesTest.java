@@ -2,7 +2,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -13,16 +12,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class PreferencesTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        UserDefaultsPreferences.register();
-    }
+public class UserDefaultsPreferencesTest extends AbstractTestCase {
 
     @Test
     public void testGetListEscapedWhitespace() throws Exception {
-        Preferences p = Preferences.instance();
+        Preferences p = new UserDefaultsPreferences();
         p.setProperty("metadata",
                 "Cache-Control=public,max-age=31536000 Expires=Fri,\\ 01\\ Feb\\ 2013\\ 00:00:00\\ GMT");
 
@@ -33,7 +27,7 @@ public class PreferencesTest extends AbstractTestCase {
 
     @Test
     public void testGetList() throws Exception {
-        Preferences p = Preferences.instance();
+        Preferences p = new UserDefaultsPreferences();
         p.setProperty("metadata",
                 "a b");
 
@@ -44,14 +38,14 @@ public class PreferencesTest extends AbstractTestCase {
 
     @Test
     public void testLong() {
-        Preferences p = Preferences.instance();
+        Preferences p = new UserDefaultsPreferences();
         p.setProperty("test.p", 2L);
         assertEquals("2", p.getProperty("test.p"));
     }
 
     @Test
     public void testDouble() {
-        Preferences p = Preferences.instance();
+        Preferences p = new UserDefaultsPreferences();
         p.setProperty("test.p", 0.983652);
         assertEquals("0.983652", p.getProperty("test.p"));
     }
