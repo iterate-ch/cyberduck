@@ -194,7 +194,7 @@ public abstract class AbstractEditor implements Editor {
                 // If checksum still the same no need for save
                 if(checksum.equals(edited.getLocal().attributes().getChecksum())) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("File %s not modified", edited.getLocal()));
+                        log.info(String.format("File %s not modified with checkum %s", edited.getLocal(), checksum));
                     }
                     return;
                 }
