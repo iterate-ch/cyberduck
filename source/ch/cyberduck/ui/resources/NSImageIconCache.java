@@ -85,7 +85,9 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
 
     private NSImage load(final String key, final Integer size) {
         if(!cache.containsKey(key)) {
-            log.debug(String.format("No cached image for %s", key));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("No cached image for %s", key));
+            }
             return null;
         }
         final Map<Integer, NSImage> versions = cache.get(key);
