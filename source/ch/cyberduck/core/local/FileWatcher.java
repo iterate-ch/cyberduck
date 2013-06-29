@@ -41,7 +41,7 @@ import static com.barbarysoftware.watchservice.StandardWatchEventKind.*;
 /**
  * @version $Id$
  */
-public class FileWatcher {
+public class FileWatcher implements FileWatcherCallback {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
     private WatchService monitor;
@@ -88,31 +88,11 @@ public class FileWatcher {
                             }
                             // The filename is the context of the event.
                             final WatchEvent<File> ev = (WatchEvent<File>) event;
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Process file system event %s for %s", kind.name(), ev.context()));
-                            }
-                            if(ev.context().equals(new File(file.getAbsolute()).getCanonicalFile())) {
-                                if(ENTRY_MODIFY == kind) {
-                                    for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                                        l.fileWritten(LocalFactory.createLocal(ev.context()));
-                                    }
-                                }
-                                else if(ENTRY_DELETE == kind) {
-                                    for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                                        l.fileDeleted(LocalFactory.createLocal(ev.context()));
-                                    }
-                                }
-                                else if(ENTRY_CREATE == kind) {
-                                    for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                                        l.fileCreated(LocalFactory.createLocal(ev.context()));
-                                    }
-                                }
-                                else {
-                                    log.debug(String.format("Ignored file system event %s for %s", kind.name(), ev.context()));
-                                }
+                            if(event.context().equals(new File(file.getAbsolute()).getCanonicalFile())) {
+                                callback(ev);
                             }
                             else {
-                                log.debug(String.format("Ignored file system event for unknown file %s", ev.context()));
+                                log.debug(String.format("Ignored file system event for unknown file %s", event.context()));
                             }
                         }
                         // Reset the key -- this step is critical to receive further watch events.
@@ -132,6 +112,32 @@ public class FileWatcher {
             }
         }));
         consumer.get().start();
+    }
+
+    @Override
+    public void callback(final WatchEvent<File> event) {
+        final WatchEvent.Kind<?> kind = event.kind();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Process file system event %s for %s", kind.name(), event.context()));
+        }
+        if(ENTRY_MODIFY == kind) {
+            for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
+                l.fileWritten(LocalFactory.createLocal(event.context()));
+            }
+        }
+        else if(ENTRY_DELETE == kind) {
+            for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
+                l.fileDeleted(LocalFactory.createLocal(event.context()));
+            }
+        }
+        else if(ENTRY_CREATE == kind) {
+            for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
+                l.fileCreated(LocalFactory.createLocal(event.context()));
+            }
+        }
+        else {
+            log.debug(String.format("Ignored file system event %s for %s", kind.name(), event.context()));
+        }
     }
 
     private Set<FileWatcherListener> listeners
