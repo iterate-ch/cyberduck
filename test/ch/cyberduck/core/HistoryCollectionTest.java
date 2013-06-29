@@ -18,11 +18,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.serializer.impl.PlistWriter;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,12 +32,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class HistoryCollectionTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        FinderLocal.register();
-        PlistWriter.register();
-    }
 
     @Test
     public void testAdd() throws Exception {
