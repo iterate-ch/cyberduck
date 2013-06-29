@@ -78,7 +78,7 @@ public class SFTPSession extends Session<Connection> {
                 @Override
                 public void connectionLost(Throwable reason) {
                     log.warn(String.format("Connection lost:%s", (null == reason) ? "Unknown" : reason.getMessage()));
-                    connection.close(null, true);
+                    disconnect();
                 }
             });
 
@@ -314,7 +314,7 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void disconnect() throws BackgroundException {
+    public void disconnect() {
         connection.close(null, true);
         client = null;
         super.disconnect();

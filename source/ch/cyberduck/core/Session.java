@@ -125,7 +125,6 @@ public abstract class Session<C> implements TranscriptListener {
         this.logout();
         this.disconnect();
         client = null;
-        this.fireConnectionDidCloseEvent();
     }
 
     /**
@@ -137,7 +136,6 @@ public abstract class Session<C> implements TranscriptListener {
         this.fireConnectionWillCloseEvent();
         this.disconnect();
         client = null;
-        this.fireConnectionDidCloseEvent();
     }
 
     /**
@@ -145,8 +143,9 @@ public abstract class Session<C> implements TranscriptListener {
      */
     protected abstract void logout() throws BackgroundException;
 
-    protected void disconnect() throws BackgroundException {
+    protected void disconnect() {
         client = null;
+        this.fireConnectionDidCloseEvent();
     }
 
     /**

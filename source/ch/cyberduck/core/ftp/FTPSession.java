@@ -126,7 +126,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    protected void disconnect() throws BackgroundException {
+    protected void disconnect() {
         try {
             if(client != null) {
                 client.disconnect();
@@ -135,7 +135,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             super.disconnect();
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
         }
     }
 
