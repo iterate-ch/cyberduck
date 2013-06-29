@@ -18,11 +18,11 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class LoginOptions {
 
-    public boolean keychain;
+    public boolean keychain = Preferences.instance().getBoolean("connection.login.useKeychain");
     public boolean publickey;
     public boolean anonymous;
 

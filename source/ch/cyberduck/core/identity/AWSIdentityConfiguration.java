@@ -72,11 +72,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
 
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
         try {
-            final LoginOptions options = new LoginOptions();
-            options.keychain = true;
-            options.publickey = false;
-            options.anonymous = false;
-            prompt.check(host, "AWS Identity and Access Management", null, options);
+            prompt.check(host, "AWS Identity and Access Management", null, new LoginOptions());
             return run.call();
         }
         catch(LoginFailureException failure) {

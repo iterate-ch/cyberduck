@@ -70,11 +70,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
         try {
-            final LoginOptions options = new LoginOptions();
-            options.keychain = true;
-            options.publickey = false;
-            options.anonymous = false;
-            prompt.check(session.getHost(), this.getName(), null, options);
+            prompt.check(session.getHost(), this.getName(), null, new LoginOptions());
             return run.call();
         }
         catch(LoginFailureException failure) {

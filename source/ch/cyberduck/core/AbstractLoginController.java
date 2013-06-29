@@ -47,7 +47,6 @@ public abstract class AbstractLoginController implements LoginController {
     public void check(final Host host, final String title, final String message)
             throws LoginCanceledException {
         final LoginOptions options = new LoginOptions();
-        options.keychain = Preferences.instance().getBoolean("connection.login.useKeychain");
         options.publickey = host.getProtocol().equals(Protocol.SFTP);
         options.anonymous = host.getProtocol().isAnonymousConfigurable();
         this.check(host, title, message, options);
@@ -144,7 +143,6 @@ public abstract class AbstractLoginController implements LoginController {
     public void prompt(final Protocol protocol, final Credentials credentials,
                        final String title, final String reason) throws LoginCanceledException {
         final LoginOptions options = new LoginOptions();
-        options.keychain = Preferences.instance().getBoolean("connection.login.useKeychain");
         options.publickey = protocol.equals(Protocol.SFTP);
         options.anonymous = protocol.isAnonymousConfigurable();
         this.prompt(protocol, credentials, title, reason, options);
