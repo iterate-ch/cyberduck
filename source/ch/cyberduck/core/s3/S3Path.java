@@ -864,7 +864,7 @@ public class S3Path extends CloudPath {
         }
     }
 
-    private AttributedList<Path> listObjects(final Path bucket, String prefix, String delimiter)
+    private AttributedList<Path> listObjects(final Path bucket, final String prefix, final String delimiter)
             throws IOException, ServiceException, BackgroundException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // Null if listing is complete
@@ -878,8 +878,7 @@ public class S3Path extends CloudPath {
 
             final StorageObject[] objects = chunk.getObjects();
             for(StorageObject object : objects) {
-                final S3Path p = new S3Path(session, bucket,
-                        Path.getName(PathNormalizer.normalize(object.getKey())), FILE_TYPE);
+                final S3Path p = new S3Path(session, bucket.getName() + Path.DELIMITER + object.getKey(), FILE_TYPE);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 // Directory placeholders
@@ -916,7 +915,7 @@ public class S3Path extends CloudPath {
                     log.warn("Skipping prefix " + common);
                     continue;
                 }
-                final Path p = new S3Path(session, bucket, Path.getName(PathNormalizer.normalize(common)), DIRECTORY_TYPE);
+                final Path p = new S3Path(session, bucket.getName() + Path.DELIMITER + common, DIRECTORY_TYPE);
                 if(children.contains(p.getReference())) {
                     continue;
                 }
@@ -929,7 +928,7 @@ public class S3Path extends CloudPath {
         return children;
     }
 
-    private List<Path> listVersions(final Path bucket, List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
+    private List<Path> listVersions(final Path bucket, final List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
             throws IOException, ServiceException {
         // Amazon S3 returns object versions in the order in which they were
         // stored, with the most recently stored returned first.
@@ -945,7 +944,7 @@ public class S3Path extends CloudPath {
             if((marker.isDeleteMarker() && marker.isLatest())
                     || !marker.isLatest()) {
                 // Latest version already in default listing
-                final S3Path path = new S3Path(session, bucket, Path.getName(marker.getKey()), FILE_TYPE);
+                final S3Path path = new S3Path(session, bucket.getName() + Path.DELIMITER + marker.getKey(), FILE_TYPE);
                 // Versioning is enabled if non null.
                 path.attributes().setVersionId(marker.getVersionId());
                 path.attributes().setRevision(++i);
