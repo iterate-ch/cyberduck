@@ -313,7 +313,9 @@ public class SFTPSession extends Session<Connection> {
 
     @Override
     public void disconnect() {
-        client.close(null, true);
+        if(client != null) {
+            client.close(null, true);
+        }
         sftp = null;
         super.disconnect();
     }
