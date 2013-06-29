@@ -231,6 +231,7 @@
 		47C88FEF17269A54001A746A /* IOKitSleepPreventer.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C88FED17269A54001A746A /* IOKitSleepPreventer.h */; };
 		47C88FF017269A54001A746A /* IOKitSleepPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C88FEE17269A54001A746A /* IOKitSleepPreventer.m */; };
 		47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		47CB03A6177F798200A6E3B5 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 47CB03A5177F798200A6E3B5 /* libcrypto.dylib */; };
 		47CD043812DB5F2000694306 /* File.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD041612DB5F2000694306 /* File.strings */; };
 		47CD045B12DB5F2E00694306 /* Folder.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD043912DB5F2E00694306 /* Folder.strings */; };
 		47CD047E12DB5F4500694306 /* Goto.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD045C12DB5F4500694306 /* Goto.strings */; };
@@ -1320,6 +1321,7 @@
 		47C92DB61189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/S3.strings; sourceTree = "<group>"; };
 		47C92DB91189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Status.strings; sourceTree = "<group>"; };
 		47C92DBA1189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Transfer.strings; sourceTree = "<group>"; };
+		47CB03A5177F798200A6E3B5 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = usr/lib/libcrypto.dylib; sourceTree = SDKROOT; };
 		47CD041712DB5F2000694306 /* ro */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/File.strings; sourceTree = "<group>"; };
 		47CD041812DB5F2000694306 /* pl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/File.strings; sourceTree = "<group>"; };
 		47CD041A12DB5F2000694306 /* de */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/File.strings; sourceTree = "<group>"; };
@@ -1643,6 +1645,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47CB03A6177F798200A6E3B5 /* libcrypto.dylib in Frameworks */,
 				474524DD1076B89700823467 /* Foundation.framework in Frameworks */,
 				4714591713B492CD00F1A9D2 /* libAquaticPrime.a in Frameworks */,
 				4704C3B11664FC8D00B17020 /* JavaNativeFoundation.framework in Frameworks */,
@@ -1744,6 +1747,7 @@
 		29B97314FDCFA39411CA2CEA /* cyberduck-cocoa */ = {
 			isa = PBXGroup;
 			children = (
+				47CB03A5177F798200A6E3B5 /* libcrypto.dylib */,
 				4741639206C4F58D00AC0BD2 /* Resources */,
 				474152D706C4F08A00AC0BD2 /* source */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -4387,7 +4391,6 @@
 					"\"$(SRCROOT)/lib\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = libPrime;
 				SDKROOT = macosx10.5;
 			};
@@ -4619,7 +4622,6 @@
 					"\"$(SRCROOT)/lib\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = libPrime;
 				SDKROOT = macosx;
 			};
