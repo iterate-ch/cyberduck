@@ -4392,7 +4392,6 @@
 				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libPrime;
-				SDKROOT = macosx10.5;
 			};
 			name = Release;
 		};
@@ -4623,7 +4622,6 @@
 				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libPrime;
-				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
