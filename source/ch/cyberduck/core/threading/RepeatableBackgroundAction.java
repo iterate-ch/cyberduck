@@ -23,6 +23,7 @@ import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.ConnectionCheckService;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -133,7 +134,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             }
             // Clear the transcript and exceptions
             transcript = new StringBuilder();
-            final ConnectionCheckService c = new ConnectionCheckService(prompt, key, this);
+            final ConnectionCheckService c = new ConnectionCheckService(prompt, key, PasswordStoreFactory.get(), this);
             for(Session session : this.getSessions()) {
                 c.check(session);
             }

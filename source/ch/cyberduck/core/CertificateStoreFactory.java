@@ -17,23 +17,28 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class DisabledLoginController extends AbstractLoginController {
+public abstract class CertificateStoreFactory extends Factory<CertificateStore> {
 
-    public DisabledLoginController() {
-        super(new DisabledPasswordStore());
+    /**
+     * Registered factories
+     */
+    private static final Map<Platform, CertificateStoreFactory> factories
+            = new HashMap<Platform, CertificateStoreFactory>();
+
+    public static void addFactory(Platform platform, CertificateStoreFactory f) {
+        factories.put(platform, f);
     }
 
-    @Override
-    public void warn(final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
-        throw new LoginCanceledException();
-    }
-
-    @Override
-    public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason,
-                       final LoginOptions options) throws LoginCanceledException {
-        throw new LoginCanceledException();
+    public static CertificateStore get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+        }
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }

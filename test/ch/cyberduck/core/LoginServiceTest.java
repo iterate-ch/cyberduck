@@ -15,7 +15,7 @@ public class LoginServiceTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testCancel() throws Exception {
-        LoginService l = new LoginService(new DisabledLoginController(), new ProgressListener() {
+        LoginService l = new LoginService(new DisabledLoginController(), new DisabledPasswordStore(), new ProgressListener() {
             @Override
             public void message(final String message) {
                 //
@@ -38,7 +38,7 @@ public class LoginServiceTest extends AbstractTestCase {
                 warned.set(true);
                 throw new LoginCanceledException();
             }
-        }, new ProgressListener() {
+        }, new DisabledPasswordStore(), new ProgressListener() {
             @Override
             public void message(final String message) {
                 //

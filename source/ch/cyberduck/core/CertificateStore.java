@@ -1,24 +1,25 @@
 package ch.cyberduck.core;
 
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface CertificateStore {
 
     /**
-     * @param hostname Hostname
-     * @param certs    Certificate chain
+     * @param hostname     Hostname
+     * @param certificates Certificate chain
      * @return True if trusted in Keychain
      */
-    public abstract boolean isTrusted(String hostname, X509Certificate[] certs);
+    public abstract boolean isTrusted(String hostname, List<X509Certificate> certificates);
 
     /**
      * @param certificates X.509 certificates
      * @return False if display is not possible
      */
-    public abstract boolean displayCertificates(X509Certificate[] certificates);
+    public abstract boolean display(List<X509Certificate> certificates);
 
     /**
      * Prompt user for client certificate
@@ -28,5 +29,5 @@ public interface CertificateStore {
      * @param prompt   Display in certificate choose prompt
      * @return Null if no certificate selected
      */
-    public X509Certificate chooseCertificate(String[] issuers, String hostname, String prompt);
+    public X509Certificate choose(String[] issuers, String hostname, String prompt) throws ConnectionCanceledException;
 }

@@ -27,29 +27,34 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 /**
  * @version $Id$
  */
-public final class Keychain extends AbstractKeychain {
+public final class Keychain implements PasswordStore, CertificateStore {
     private static Logger log = Logger.getLogger(Keychain.class);
 
     public static void register() {
-        KeychainFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends KeychainFactory {
-        @Override
-        protected AbstractKeychain create() {
-            return new Keychain();
-        }
+        PasswordStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new PasswordStoreFactory() {
+            @Override
+            protected PasswordStore create() {
+                return new Keychain();
+            }
+        });
+        CertificateStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new CertificateStoreFactory() {
+            @Override
+            protected CertificateStore create() {
+                return new Keychain();
+            }
+        });
     }
 
     static {
         Native.load("Keychain");
     }
 
-    private Keychain() {
+    public Keychain() {
         //
     }
 
@@ -89,11 +94,13 @@ public final class Keychain extends AbstractKeychain {
      * @param certificates Chain of certificates
      * @return ASN.1 DER encoded
      */
-    private Object[] getEncoded(X509Certificate[] certificates) {
-        final Object[] encoded = new Object[certificates.length];
-        for(int i = 0; i < encoded.length; i++) {
+    private Object[] getEncoded(final List<X509Certificate> certificates) {
+        final Object[] encoded = new Object[certificates.size()];
+        int i = 0;
+        for(X509Certificate certificate : certificates) {
             try {
-                encoded[i] = certificates[i].getEncoded();
+                encoded[i] = certificate.getEncoded();
+                i++;
             }
             catch(CertificateEncodingException c) {
                 log.error("Error getting encoded certificate", c);
@@ -127,7 +134,7 @@ public final class Keychain extends AbstractKeychain {
      * @return True if chain is trusted
      */
     @Override
-    public synchronized boolean isTrusted(String hostname, X509Certificate[] certificates) {
+    public synchronized boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
         return this.isTrustedNative(hostname, this.getEncoded(certificates));
     }
 
@@ -143,7 +150,7 @@ public final class Keychain extends AbstractKeychain {
      * @return True if certificate was selected. False if prompt is dismissed to close the connection
      */
     @Override
-    public synchronized boolean displayCertificates(X509Certificate[] certificates) {
+    public synchronized boolean display(final List<X509Certificate> certificates) {
         return this.displayCertificatesNative(this.getEncoded(certificates));
     }
 
@@ -154,7 +161,7 @@ public final class Keychain extends AbstractKeychain {
     private native boolean displayCertificatesNative(Object[] certificates);
 
     @Override
-    public synchronized X509Certificate chooseCertificate(String[] issuers, String hostname, String prompt) {
+    public synchronized X509Certificate choose(String[] issuers, String hostname, String prompt) {
         byte[] cert = this.chooseCertificateNative(issuers, hostname, prompt);
         if(null == cert) {
             log.info("No certificate selected");

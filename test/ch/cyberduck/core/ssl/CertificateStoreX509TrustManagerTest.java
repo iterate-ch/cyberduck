@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import static com.ibm.icu.impl.Assert.fail;
 
@@ -47,12 +48,12 @@ public class CertificateStoreX509TrustManagerTest extends AbstractTestCase {
             }
         }, new CertificateStore() {
             @Override
-            public boolean isTrusted(final String hostname, final X509Certificate[] certs) {
+            public boolean isTrusted(final String hostname, List<X509Certificate> certificates) {
                 return false;
             }
 
             @Override
-            public boolean display(final X509Certificate[] certificates) {
+            public boolean display(List<X509Certificate> certificates) {
                 throw new UnsupportedOperationException();
             }
 

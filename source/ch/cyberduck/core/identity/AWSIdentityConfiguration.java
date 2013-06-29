@@ -2,14 +2,16 @@ package ch.cyberduck.core.identity;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
@@ -70,11 +72,15 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
 
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
         try {
-            prompt.check(host, "AWS Identity and Access Management", null, true, false, false);
+            final LoginOptions options = new LoginOptions();
+            options.keychain = true;
+            options.publickey = false;
+            options.anonymous = false;
+            prompt.check(host, "AWS Identity and Access Management", null, options);
             return run.call();
         }
         catch(LoginFailureException failure) {
-            prompt.fail(host.getProtocol(), host.getCredentials(), failure.getMessage());
+            prompt.prompt(host.getProtocol(), host.getCredentials(), Locale.localizedString("Login failed", "Credentials"), failure.getMessage());
             return this.authenticated(run);
         }
         catch(BackgroundException e) {
@@ -124,7 +130,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
             log.warn(String.format("No access key found for user %s", username));
             return null;
         }
-        return new Credentials(id, KeychainFactory.get().getPassword(host.getProtocol().getScheme(), host.getPort(),
+        return new Credentials(id, PasswordStoreFactory.get().getPassword(host.getProtocol().getScheme(), host.getPort(),
                 host.getHostname(), id)) {
             @Override
             public String getUsernamePlaceholder() {
@@ -155,7 +161,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                     final String id = key.getAccessKey().getAccessKeyId();
                     Preferences.instance().setProperty(String.format("%s%s", prefix, username), id);
                     // Save secret
-                    KeychainFactory.get().addPassword(
+                    PasswordStoreFactory.get().addPassword(
                             host.getProtocol().getScheme(), host.getPort(), host.getHostname(),
                             id, key.getAccessKey().getSecretAccessKey());
                 }

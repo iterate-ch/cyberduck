@@ -46,36 +46,13 @@ public interface LoginController {
      * Check the credentials for validity and prompt the user for the password if not found
      * in the login keychain
      *
-     * @param host            Hostname
-     * @param title           The title for the login prompt
-     * @param message         Additional message displayed in the password prompt
-     * @param enableKeychain  Enable checkbox to save password in keychain
-     * @param enablePublicKey Enable public key authentication checkbox
-     * @param enableAnonymous Enable anynomous login option checkbox
+     * @param host    Hostname
+     * @param title   The title for the login prompt
+     * @param message Additional message displayed in the password prompt
+     * @param options Enable checkbox to save password in keychain. Enable public key authentication checkbox. Enable anynomous login option checkbox
      * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
-    void check(final Host host, String title, String message, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException;
-
-    /**
-     * Call this to allow the user to reenter the new login credentials.
-     * A concrete subclass should display a login prompt.
-     *
-     * @param protocol    Used to determine login prompt options. SFTP or other.
-     * @param credentials Credentials that failed login
-     * @throws LoginCanceledException When login is canceled and the prompt dismissed
-     */
-    void fail(Protocol protocol, Credentials credentials) throws LoginCanceledException;
-
-    /**
-     * Call this to allow the user to reenter the new login credentials.
-     * A concrete subclass should display a login prompt.
-     *
-     * @param protocol    Used to determine login prompt options.
-     * @param credentials Credentials that failed login
-     * @param reason      The detail message for the login prompt. Any additional information why the login failed.
-     * @throws LoginCanceledException When login is canceled and the prompt dismissed
-     */
-    void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException;
+    void check(final Host host, String title, String message, LoginOptions options) throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.
@@ -93,16 +70,14 @@ public interface LoginController {
      * Call this to allow the user to reenter the new login credentials.
      * A concrete subclass should display a login prompt.
      *
-     * @param protocol        Used to determine login prompt options.
-     * @param credentials     The credentials to obtain.
-     * @param title           The title for the login prompt
-     * @param reason          The detail message for the login prompt. Any additional information why the login failed.
-     * @param enableKeychain  Enable checkbox to save password in keychain
-     * @param enablePublicKey Enable public key authentication checkbox
-     * @param enableAnonymous Enable anynomous login option checkbox
+     * @param protocol    Used to determine login prompt options.
+     * @param credentials The credentials to obtain.
+     * @param title       The title for the login prompt
+     * @param reason      The detail message for the login prompt. Any additional information why the login failed.
+     * @param options     Enable checkbox to save password in keychain. Enable public key authentication checkbox. Enable anynomous login option checkbox
      * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
     void prompt(final Protocol protocol, final Credentials credentials,
                 final String title, final String reason,
-                final boolean enableKeychain, final boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException;
+                LoginOptions options) throws LoginCanceledException;
 }

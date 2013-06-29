@@ -130,9 +130,11 @@ public class SFTPSession extends Session<Connection> {
                 };
                 prompt.prompt(host.getProtocol(), additional,
                         Locale.localizedString("Partial authentication success", "Credentials"),
-                        Locale.localizedString("Provide additional login credentials", "Credentials") + ".", false, false, false);
+                        Locale.localizedString("Provide additional login credentials", "Credentials") + ".", new LoginOptions());
                 if(!this.loginUsingChallengeResponseAuthentication(prompt, additional)) {
-                    prompt.fail(host.getProtocol(), host.getCredentials());
+                    prompt.prompt(host.getProtocol(), host.getCredentials(),
+                            Locale.localizedString("Login failed", "Credentials"),
+                            Locale.localizedString("Login with username and password", "Credentials"));
                 }
             }
             if(connection.isAuthenticationComplete()) {
@@ -157,7 +159,9 @@ public class SFTPSession extends Session<Connection> {
                 }
             }
             else {
-                prompt.fail(host.getProtocol(), host.getCredentials());
+                prompt.prompt(host.getProtocol(), host.getCredentials(),
+                        Locale.localizedString("Login failed", "Credentials"),
+                        Locale.localizedString("Login with username and password", "Credentials"));
             }
         }
         catch(IOException e) {
@@ -289,7 +293,7 @@ public class SFTPSession extends Session<Connection> {
                             String[] response = new String[numPrompts];
                             for(int i = 0; i < numPrompts; i++) {
                                 controller.prompt(host.getProtocol(), credentials,
-                                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i], false, false, false);
+                                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i], new LoginOptions());
                                 response[i] = credentials.getPassword();
                                 promptCount++;
                             }

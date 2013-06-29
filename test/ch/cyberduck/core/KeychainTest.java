@@ -1,6 +1,5 @@
 package ch.cyberduck.core;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNull;
@@ -10,14 +9,9 @@ import static org.junit.Assert.assertNull;
  */
 public class KeychainTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        Keychain.register();
-    }
-
     @Test
-    public void testFind() throws Exception {
-        PasswordStore k = KeychainFactory.get();
+    public void testFindPassword() throws Exception {
+        final PasswordStore k = new Keychain();
         assertNull(k.getPassword("cyberduck.ch", "u"));
         assertNull(k.getPassword(Scheme.http, 80, "cyberduck.ch", "u"));
     }

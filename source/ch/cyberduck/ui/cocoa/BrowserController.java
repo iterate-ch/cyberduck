@@ -2219,13 +2219,12 @@ public class BrowserController extends WindowController
     public void securityLabelClicked(final ID sender) {
         if(session instanceof SSLSession) {
             final SSLSession<?> secured = (SSLSession) session;
-            List<X509Certificate> certificates = secured.getAcceptedIssuers();
+            final List<X509Certificate> certificates = secured.getAcceptedIssuers();
             if(0 == certificates.size()) {
                 log.warn("No accepted certificates found");
                 return;
             }
-            KeychainFactory.get().displayCertificates(
-                    certificates.toArray(new X509Certificate[certificates.size()]));
+            CertificateStoreFactory.get().display(certificates);
         }
     }
 

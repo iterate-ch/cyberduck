@@ -20,10 +20,11 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AbstractLoginController;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginControllerFactory;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.i18n.Locale;
@@ -71,6 +72,7 @@ public final class PromptLoginController extends AbstractLoginController {
     private WindowController parent;
 
     private PromptLoginController(final WindowController parent) {
+        super(PasswordStoreFactory.get());
         this.parent = parent;
     }
 
@@ -107,8 +109,7 @@ public final class PromptLoginController extends AbstractLoginController {
     @Override
     public void prompt(final Protocol protocol, final Credentials credentials,
                        final String title, final String reason,
-                       final boolean enableKeychain, final boolean enablePublicKey,
-                       final boolean enableAnonymous) throws LoginCanceledException {
+                       final LoginOptions options) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for credentials for %s", protocol));
         }
@@ -182,7 +183,7 @@ public final class PromptLoginController extends AbstractLoginController {
             public void userFieldTextDidChange(NSNotification notification) {
                 credentials.setUsername(usernameField.stringValue());
                 if(StringUtils.isNotBlank(credentials.getUsername())) {
-                    String password = KeychainFactory.get().getPassword(protocol.getScheme(), protocol.getDefaultPort(),
+                    String password = PasswordStoreFactory.get().getPassword(protocol.getScheme(), protocol.getDefaultPort(),
                             protocol.getDefaultHostname(), credentials.getUsername());
                     if(StringUtils.isNotBlank(password)) {
                         passwordField.setStringValue(password);
@@ -321,21 +322,21 @@ public final class PromptLoginController extends AbstractLoginController {
                 this.usernameField.setEnabled(!credentials.isAnonymousLogin());
                 this.passwordField.setEnabled(!credentials.isAnonymousLogin());
                 {
-                    boolean enable = enableKeychain && !credentials.isAnonymousLogin();
+                    boolean enable = options.keychain && !credentials.isAnonymousLogin();
                     this.keychainCheckbox.setEnabled(enable);
                     if(!enable) {
                         this.keychainCheckbox.setState(NSCell.NSOffState);
                     }
                 }
-                this.anonymousCheckbox.setEnabled(enableAnonymous);
-                if(enableAnonymous && credentials.isAnonymousLogin()) {
+                this.anonymousCheckbox.setEnabled(options.anonymous);
+                if(options.anonymous && credentials.isAnonymousLogin()) {
                     this.anonymousCheckbox.setState(NSCell.NSOnState);
                 }
                 else {
                     this.anonymousCheckbox.setState(NSCell.NSOffState);
                 }
-                this.pkCheckbox.setEnabled(enablePublicKey);
-                if(enablePublicKey && credentials.isPublicKeyAuthentication()) {
+                this.pkCheckbox.setEnabled(options.publickey);
+                if(options.publickey && credentials.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.NSOnState);
                     this.updateField(this.pkLabel, credentials.getIdentity().getAbbreviatedPath());
                     this.pkLabel.setTextColor(NSColor.textColor());

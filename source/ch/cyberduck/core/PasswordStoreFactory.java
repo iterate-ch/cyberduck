@@ -25,18 +25,19 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class KeychainFactory extends Factory<AbstractKeychain> {
+public abstract class PasswordStoreFactory extends Factory<PasswordStore> {
 
     /**
      * Registered factories
      */
-    private static final Map<Platform, KeychainFactory> factories = new HashMap<Platform, KeychainFactory>();
+    private static final Map<Platform, PasswordStoreFactory> factories
+            = new HashMap<Platform, PasswordStoreFactory>();
 
-    public static void addFactory(Platform platform, KeychainFactory f) {
+    public static void addFactory(Platform platform, PasswordStoreFactory f) {
         factories.put(platform, f);
     }
 
-    public static AbstractKeychain get() {
+    public static PasswordStore get() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

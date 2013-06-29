@@ -8,7 +8,7 @@ public interface PasswordStore {
     /**
      * @param scheme   Protocol scheme
      * @param port     Port
-     * @param hostname
+     * @param hostname Hostname
      * @param user     Credentials  @return Password if found or null otherwise
      */
     String getPassword(Scheme scheme, int port, String hostname, String user);

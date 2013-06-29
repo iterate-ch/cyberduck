@@ -20,9 +20,11 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.threading.BackgroundException;
 
@@ -68,11 +70,16 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
         try {
-            prompt.check(session.getHost(), this.getName(), null, true, false, false);
+            final LoginOptions options = new LoginOptions();
+            options.keychain = true;
+            options.publickey = false;
+            options.anonymous = false;
+            prompt.check(session.getHost(), this.getName(), null, options);
             return run.call();
         }
         catch(LoginFailureException failure) {
-            prompt.fail(session.getHost().getProtocol(), session.getHost().getCredentials(), failure.getMessage());
+            prompt.prompt(session.getHost().getProtocol(), session.getHost().getCredentials(),
+                    Locale.localizedString("Login failed", "Credentials"), failure.getMessage());
             return this.authenticated(run);
         }
         catch(BackgroundException e) {

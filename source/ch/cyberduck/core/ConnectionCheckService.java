@@ -37,11 +37,15 @@ public class ConnectionCheckService {
 
     private LoginController prompt;
     private HostKeyController key;
+    private PasswordStore keychain;
     private ProgressListener listener;
 
-    public ConnectionCheckService(final LoginController prompt, final HostKeyController key, final ProgressListener listener) {
+    public ConnectionCheckService(final LoginController prompt, final HostKeyController key,
+                                  final PasswordStore keychain,
+                                  final ProgressListener listener) {
         this.prompt = prompt;
         this.key = key;
+        this.keychain = keychain;
         this.listener = listener;
     }
 
@@ -117,7 +121,7 @@ public class ConnectionCheckService {
             // Update last accessed timestamp
             bookmark.setTimestamp(new Date());
 
-            LoginService login = new LoginService(prompt, listener);
+            LoginService login = new LoginService(prompt, keychain, listener);
             login.login(session);
 
             session.fireConnectionDidOpenEvent();

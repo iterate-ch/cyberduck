@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -32,12 +33,13 @@ public class LoginService {
     private static final Logger log = Logger.getLogger(LoginService.class);
 
     private LoginController prompt;
-    private AbstractKeychain keychain;
+    private PasswordStore keychain;
     private ProgressListener listener;
 
-    public LoginService(final LoginController prompt, final ProgressListener listener) {
+    public LoginService(final LoginController prompt, final PasswordStore keychain,
+                        final ProgressListener listener) {
         this.prompt = prompt;
-        this.keychain = KeychainFactory.get();
+        this.keychain = keychain;
         this.listener = listener;
     }
 
@@ -65,11 +67,11 @@ public class LoginService {
             }
             listener.message(Locale.localizedString("Login successful", "Credentials"));
             // Write credentials to keychain
-            keychain.save(bookmark);
+            this.save(bookmark);
         }
         catch(LoginFailureException e) {
             listener.message(Locale.localizedString("Login failed", "Credentials"));
-            prompt.fail(bookmark.getProtocol(), bookmark.getCredentials(), e.getDetail());
+            prompt.prompt(bookmark.getProtocol(), bookmark.getCredentials(), Locale.localizedString("Login failed", "Credentials"), e.getDetail());
             this.login(session);
         }
     }
@@ -87,5 +89,50 @@ public class LoginService {
         }
         return Preferences.instance().getBoolean(
                 String.format("connection.unsecure.warning.%s", bookmark.getProtocol().getScheme()));
+    }
+
+    /**
+     * Adds the password to the login keychain
+     *
+     * @param host Hostname
+     * @see ch.cyberduck.core.Host#getCredentials()
+     */
+    protected void save(final Host host) {
+        if(StringUtils.isEmpty(host.getHostname())) {
+            log.warn("No hostname given");
+            return;
+        }
+        final Credentials credentials = host.getCredentials();
+        if(!credentials.isSaved()) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Skip writing credentials for host %s", host.getHostname()));
+            }
+            return;
+        }
+        if(StringUtils.isEmpty(credentials.getUsername())) {
+            log.warn(String.format("No username in credentials for host %s", host.getHostname()));
+            return;
+        }
+        if(StringUtils.isEmpty(credentials.getPassword())) {
+            log.warn(String.format("No password in credentials for host %s", host.getHostname()));
+            return;
+        }
+        if(credentials.isAnonymousLogin()) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Do not write anonymous credentials for host %s", host.getHostname()));
+            }
+            return;
+        }
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Add password for host %s", host));
+        }
+        if(credentials.isPublicKeyAuthentication()) {
+            keychain.addPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
+                    credentials.getPassword());
+        }
+        else {
+            keychain.addPassword(host.getProtocol().getScheme(), host.getPort(),
+                    host.getHostname(), credentials.getUsername(), credentials.getPassword());
+        }
     }
 }

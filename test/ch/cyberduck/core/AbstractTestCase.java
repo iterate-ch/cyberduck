@@ -102,7 +102,8 @@ public class AbstractTestCase {
         UserDefaultsDateFormatter.register();
         WorkspaceApplicationLauncher.register();
         SystemConfigurationProxy.register();
-        NullKeychain.register();
+        DisabledCertificateStore.register();
+        DisabledPasswordStore.register();
     }
 
     @BeforeClass

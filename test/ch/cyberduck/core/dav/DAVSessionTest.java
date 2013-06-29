@@ -186,14 +186,14 @@ public class DAVSessionTest extends AbstractTestCase {
 
             @Override
             protected LoginController create() {
-                return new AbstractLoginController() {
+                return new DisabledLoginController() {
                     @Override
                     public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason,
-                                       final boolean enableKeychain, final boolean enablePublicKey, final boolean enableAnonymous) throws LoginCanceledException {
+                                       final LoginOptions options) throws LoginCanceledException {
                         assertEquals(host.getCredentials(), credentials);
                         assertEquals("Login failed", title);
                         assertEquals("Authorization Required.", reason);
-                        assertFalse(enablePublicKey);
+                        assertFalse(options.publickey);
                         throw new LoginCanceledException();
                     }
                 };

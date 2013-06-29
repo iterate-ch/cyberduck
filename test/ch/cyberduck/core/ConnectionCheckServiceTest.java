@@ -3,12 +3,12 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.threading.BackgroundException;
-import ch.cyberduck.ui.Controller;
 
 import org.junit.Test;
 
 import java.net.UnknownHostException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,6 +20,7 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
     @Test(expected = BackgroundException.class)
     public void testCheckUnknown() throws Exception {
         final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController(),
+                new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -39,37 +40,20 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testHandshakeFailure() throws Exception {
-        final DAVSession session = new DAVSession(new Host(Protocol.WEBDAV_SSL, "54.228.253.92", new Credentials("user", "p")));
-        KeychainFactory.addFactory(Factory.NATIVE_PLATFORM, new KeychainFactory() {
+        CertificateStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new CertificateStoreFactory() {
             @Override
-            protected AbstractKeychain create() {
-                return new NullKeychain() {
+            protected CertificateStore create() {
+                return new DisabledCertificateStore() {
                     @Override
-                    public boolean isTrusted(final String hostname, final X509Certificate[] certs) {
+                    public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
                         return false;
                     }
                 };
             }
         });
-        final LoginController l = new AbstractLoginController() {
-            @Override
-            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason,
-                               final boolean enableKeychain, final boolean enablePublicKey, final boolean enableAnonymous) throws LoginCanceledException {
-                //
-            }
-        };
-        LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginControllerFactory() {
-            @Override
-            protected LoginController create(final Controller c) {
-                return l;
-            }
-
-            @Override
-            protected LoginController create() {
-                return l;
-            }
-        });
+        final DAVSession session = new DAVSession(new Host(Protocol.WEBDAV_SSL, "54.228.253.92", new Credentials("user", "p")));
         final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController(),
+                new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -82,6 +66,7 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
         final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController(),
+                new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
