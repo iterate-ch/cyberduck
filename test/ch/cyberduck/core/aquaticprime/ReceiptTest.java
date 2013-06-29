@@ -3,7 +3,6 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.local.LocalFactory;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -12,11 +11,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class ReceiptTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        Receipt.register();
-    }
 
     @Test
     public void testVerify() throws Exception {
