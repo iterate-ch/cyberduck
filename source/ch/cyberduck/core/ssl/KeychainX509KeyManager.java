@@ -18,10 +18,7 @@ package ch.cyberduck.core.ssl;
 *  dkocher@cyberduck.ch
 */
 
-import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.CertificateStoreFactory;
-
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -29,9 +26,6 @@ import java.io.IOException;
  * @version $Id$
  */
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager {
-    private static final Logger log = Logger.getLogger(KeychainX509KeyManager.class);
-
-    private CertificateStore store;
 
     public KeychainX509KeyManager(final TrustManagerHostnameCallback callback) throws IOException {
         super(callback, CertificateStoreFactory.get());
