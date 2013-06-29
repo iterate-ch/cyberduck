@@ -20,7 +20,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -31,11 +30,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        LaunchServicesApplicationFinder.register();
-    }
 
     @Test
     public void testFindAll() throws Exception {
