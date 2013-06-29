@@ -130,7 +130,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     @Override
     public NSImage folderIcon(final Integer size, final NSImage badge) {
         final String name = String.format("NSFolder-%s", badge.name());
-        NSImage folder = this.iconNamed(name, size);
+        NSImage folder = this.load(name, size);
         if(null == folder) {
             folder = this.badge(badge, this.convert(FOLDER_ICON, size));
             this.put(name, folder, size);
