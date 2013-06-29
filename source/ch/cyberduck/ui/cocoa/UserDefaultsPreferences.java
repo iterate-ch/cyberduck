@@ -64,7 +64,7 @@ public class UserDefaultsPreferences extends Preferences {
         }
     }
 
-    private NSUserDefaults props;
+    private NSUserDefaults store;
 
     /**
      * Additionally look for default values in Info.plist of application bundle.
@@ -91,7 +91,7 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public String getProperty(final String property) {
-        NSObject value = props.objectForKey(property);
+        NSObject value = store.objectForKey(property);
         if(null == value) {
             return this.getDefault(property);
         }
@@ -108,7 +108,7 @@ public class UserDefaultsPreferences extends Preferences {
             // Sets the value of the default identified by defaultName in the standard application domain.
             // Setting a default has no effect on the value returned by the objectForKey method if
             // the same key exists in a domain that precedes the application domain in the search list.
-            this.props.setObjectForKey(NSString.stringWithString(value), property);
+            store.setObjectForKey(NSString.stringWithString(value), property);
         }
         else {
             this.deleteProperty(property);
@@ -120,13 +120,13 @@ public class UserDefaultsPreferences extends Preferences {
         // Sets the value of the default identified by defaultName in the standard application domain.
         // Setting a default has no effect on the value returned by the objectForKey method if
         // the same key exists in a domain that precedes the application domain in the search list.
-        this.props.setObjectForKey(NSArray.arrayWithObjects(value.toArray(new String[value.size()])), property);
+        store.setObjectForKey(NSArray.arrayWithObjects(value.toArray(new String[value.size()])), property);
     }
 
     @Override
     public void deleteProperty(final String property) {
         log.debug("deleteProperty:" + property);
-        this.props.removeObjectForKey(property);
+        store.removeObjectForKey(property);
     }
 
     /**
@@ -134,7 +134,7 @@ public class UserDefaultsPreferences extends Preferences {
      */
     @Override
     protected void load() {
-        this.props = NSUserDefaults.standardUserDefaults();
+        store = NSUserDefaults.standardUserDefaults();
     }
 
     /**
@@ -155,7 +155,7 @@ public class UserDefaultsPreferences extends Preferences {
 
         if(this.getBoolean("update.check")) {
             // Will override SUCheckAtStartup
-            this.props.setInteger_forKey(new NSInteger(Long.parseLong(this.getProperty("update.check.interval"))),
+            store.setInteger_forKey(new NSInteger(Long.parseLong(this.getProperty("update.check.interval"))),
                     "SUScheduledCheckInterval");
         }
 
@@ -232,7 +232,7 @@ public class UserDefaultsPreferences extends Preferences {
      * @param property Initial property name to store default value for.
      */
     private void _init(final String property) {
-        if(null == props.objectForKey(property)) {
+        if(null == store.objectForKey(property)) {
             // Set the default value
             this.setProperty(property, this.getDefault(property));
         }
@@ -247,12 +247,12 @@ public class UserDefaultsPreferences extends Preferences {
         // if you cannot wait for the automatic synchronization (for example, if
         // your application is about to exit) or if you want to update user props
         // to what is on disk even though you have not made any changes.
-        this.props.synchronize();
+        store.synchronize();
     }
 
     @Override
     public String locale() {
-        NSObject value = props.objectForKey("AppleLanguages");
+        NSObject value = store.objectForKey("AppleLanguages");
         if(null == value) {
             return super.locale();
         }

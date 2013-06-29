@@ -17,6 +17,7 @@ public class UserDefaultsPreferencesTest extends AbstractTestCase {
     @Test
     public void testGetListEscapedWhitespace() throws Exception {
         Preferences p = new UserDefaultsPreferences();
+        p.load();
         p.setProperty("metadata",
                 "Cache-Control=public,max-age=31536000 Expires=Fri,\\ 01\\ Feb\\ 2013\\ 00:00:00\\ GMT");
 
@@ -28,6 +29,7 @@ public class UserDefaultsPreferencesTest extends AbstractTestCase {
     @Test
     public void testGetList() throws Exception {
         Preferences p = new UserDefaultsPreferences();
+        p.load();
         p.setProperty("metadata",
                 "a b");
 
@@ -39,6 +41,7 @@ public class UserDefaultsPreferencesTest extends AbstractTestCase {
     @Test
     public void testLong() {
         Preferences p = new UserDefaultsPreferences();
+        p.load();
         p.setProperty("test.p", 2L);
         assertEquals("2", p.getProperty("test.p"));
     }
@@ -46,6 +49,7 @@ public class UserDefaultsPreferencesTest extends AbstractTestCase {
     @Test
     public void testDouble() {
         Preferences p = new UserDefaultsPreferences();
+        p.load();
         p.setProperty("test.p", 0.983652);
         assertEquals("0.983652", p.getProperty("test.p"));
     }

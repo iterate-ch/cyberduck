@@ -37,7 +37,7 @@ public abstract class PreferencesFactory extends Factory<Preferences> {
 
     private static Preferences l;
 
-    public static Preferences createPreferences() {
+    public static Preferences get() {
         if(null == l) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
                 throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));

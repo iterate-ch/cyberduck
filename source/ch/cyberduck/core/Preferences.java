@@ -67,7 +67,7 @@ public abstract class Preferences {
     public static Preferences instance() {
         synchronized(lock) {
             if(null == current) {
-                current = PreferencesFactory.createPreferences();
+                current = PreferencesFactory.get();
                 current.load();
                 current.setDefaults();
                 current.post();
