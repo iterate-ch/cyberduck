@@ -1,8 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
-
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.InetAddress;
@@ -17,15 +14,9 @@ import static org.junit.Assert.*;
  */
 public class RendezvousResponderTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        UserDefaultsDateFormatter.register();
-        RendezvousResponder.register();
-    }
-
     @Test
     public void testInit() throws Exception {
-        Rendezvous r = RendezvousFactory.instance();
+        final Rendezvous r = new RendezvousResponder();
         final CountDownLatch wait = new CountDownLatch(1);
         final AssertionError[] failure = new AssertionError[1];
         r.addListener(new RendezvousListener() {
