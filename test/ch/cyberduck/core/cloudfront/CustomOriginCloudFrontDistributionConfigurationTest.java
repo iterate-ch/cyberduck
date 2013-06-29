@@ -76,7 +76,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
                 assertEquals(true, options.keychain);
                 assertEquals(false, options.anonymous);
                 assertEquals(false, options.publickey);
-                assertEquals("No login credentials could be found in the Keychain.", reason);
+                assertEquals("No login credentials could be found in the Keychain", reason);
                 throw new LoginCanceledException();
             }
         });
