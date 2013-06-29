@@ -146,7 +146,8 @@ public final class PromptLoginController implements LoginController {
             public void setUsernameLabel(NSTextField usernameLabel) {
                 this.usernameLabel = usernameLabel;
                 this.usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        String.format("%s:", credentials.getUsernamePlaceholder()), TRUNCATE_MIDDLE_ATTRIBUTES));
+                        StringUtils.isNotBlank(credentials.getUsernamePlaceholder()) ? String.format("%s:", credentials.getUsernamePlaceholder()) : StringUtils.EMPTY,
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
             @Outlet
@@ -155,7 +156,8 @@ public final class PromptLoginController implements LoginController {
             public void setPasswordLabel(NSTextField passwordLabel) {
                 this.passwordLabel = passwordLabel;
                 this.passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        String.format("%s:", credentials.getPasswordPlaceholder()), TRUNCATE_MIDDLE_ATTRIBUTES));
+                        StringUtils.isNotBlank(credentials.getPasswordPlaceholder()) ? String.format("%s:", credentials.getPasswordPlaceholder()) : StringUtils.EMPTY,
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
             @Outlet
