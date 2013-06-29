@@ -25,7 +25,10 @@ public class KeyReader {
      * Skips an integer without reading it.
      */
     public void skip() throws IOException {
-        di.skipBytes(di.readInt());
+        final int read = di.readInt();
+        if(read != di.skipBytes(read)) {
+            throw new IOException(String.format("Failed to skip %d bytes", read));
+        }
     }
 
     private byte[] read() throws IOException {
