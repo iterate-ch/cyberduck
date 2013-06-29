@@ -132,7 +132,8 @@ public class SFTPSession extends Session<Connection> {
                 if(!this.loginUsingChallengeResponseAuthentication(prompt, additional)) {
                     prompt.prompt(host.getProtocol(), host.getCredentials(),
                             Locale.localizedString("Login failed", "Credentials"),
-                            Locale.localizedString("Login with username and password", "Credentials"));
+                            Locale.localizedString("Login with username and password", "Credentials"),
+                            new LoginOptions(host.getProtocol()));
                 }
             }
             if(client.isAuthenticationComplete()) {
@@ -159,7 +160,8 @@ public class SFTPSession extends Session<Connection> {
             else {
                 prompt.prompt(host.getProtocol(), host.getCredentials(),
                         Locale.localizedString("Login failed", "Credentials"),
-                        Locale.localizedString("Login with username and password", "Credentials"));
+                        Locale.localizedString("Login with username and password", "Credentials"),
+                        new LoginOptions(host.getProtocol()));
             }
         }
         catch(IOException e) {
@@ -195,7 +197,8 @@ public class SFTPSession extends Session<Connection> {
                             controller.prompt(host.getProtocol(), credentials,
                                     Locale.localizedString("Private key password protected", "Credentials"),
                                     Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
-                                            + " (" + identity + ")");
+                                            + " (" + identity + ")",
+                                    new LoginOptions(host.getProtocol()));
                         }
                     }
                     try {
@@ -205,7 +208,7 @@ public class SFTPSession extends Session<Connection> {
                         controller.prompt(host.getProtocol(), credentials,
                                 Locale.localizedString("Invalid passphrase", "Credentials"),
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
-                                        + " (" + identity + ")");
+                                        + " (" + identity + ")", new LoginOptions(host.getProtocol()));
                         return this.loginUsingPublicKeyAuthentication(controller, credentials);
                     }
                 }
@@ -216,7 +219,7 @@ public class SFTPSession extends Session<Connection> {
                             controller.prompt(host.getProtocol(), credentials,
                                     Locale.localizedString("Private key password protected", "Credentials"),
                                     Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
-                                            + " (" + identity + ")");
+                                            + " (" + identity + ")", new LoginOptions(host.getProtocol()));
                         }
                     }
                     try {
@@ -226,7 +229,7 @@ public class SFTPSession extends Session<Connection> {
                         controller.prompt(host.getProtocol(), credentials,
                                 Locale.localizedString("Invalid passphrase", "Credentials"),
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
-                                        + " (" + identity + ")");
+                                        + " (" + identity + ")", new LoginOptions(host.getProtocol()));
 
                         return this.loginUsingPublicKeyAuthentication(controller, credentials);
                     }

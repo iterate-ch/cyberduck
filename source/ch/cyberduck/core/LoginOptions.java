@@ -32,6 +32,11 @@ public final class LoginOptions {
         //
     }
 
+    public LoginOptions(Protocol protocol) {
+        publickey = protocol.equals(Protocol.SFTP);
+        anonymous = protocol.isAnonymousConfigurable();
+    }
+
     @Override
     public boolean equals(final Object o) {
         if(this == o) {

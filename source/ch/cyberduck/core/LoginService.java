@@ -75,20 +75,23 @@ public class LoginService {
         }
         catch(LoginFailureException e) {
             listener.message(Locale.localizedString("Login failed", "Credentials"));
-            controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(), Locale.localizedString("Login failed", "Credentials"), e.getDetail());
+            controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
+                    Locale.localizedString("Login failed", "Credentials"), e.getDetail(),
+                    new LoginOptions(bookmark.getProtocol()));
             this.login(session, listener);
         }
     }
 
     public void validate(final Host bookmark, final String title) throws LoginCanceledException {
+        this.validate(bookmark, title, new LoginOptions(bookmark.getProtocol()));
+    }
+
+    public void validate(final Host bookmark, final String title, final LoginOptions options) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
         }
         if(!bookmark.getCredentials().validate(bookmark.getProtocol())
                 || bookmark.getCredentials().isPublicKeyAuthentication()) {
-            final LoginOptions options = new LoginOptions();
-            options.publickey = bookmark.getProtocol().equals(Protocol.SFTP);
-            options.anonymous = bookmark.getProtocol().isAnonymousConfigurable();
             // Lookup password if missing. Always lookup password for public key authentication. See #5754.
             if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
@@ -96,8 +99,8 @@ public class LoginService {
                     if(StringUtils.isBlank(password)) {
                         if(!bookmark.getCredentials().isPublicKeyAuthentication()) {
                             controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
-                                    title,
-                                    Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"), options);
+                                    title, Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"),
+                                    options);
                         }
                         // We decide later if the key is encrypted and a password must be known to decrypt.
                     }

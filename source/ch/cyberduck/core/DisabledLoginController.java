@@ -20,7 +20,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class DisabledLoginController extends AbstractLoginController {
+public class DisabledLoginController implements LoginController {
 
     public DisabledLoginController() {
         super();

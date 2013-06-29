@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 public interface LoginController {
+
     /**
      * Display warning sheet. Block connection until decision is made.
      *
@@ -31,19 +32,6 @@ public interface LoginController {
      */
     void warn(String title, String message, String continueButton, String disconnectButton,
               String preference) throws LoginCanceledException;
-
-    /**
-     * Call this to allow the user to reenter the new login credentials.
-     * A concrete subclass should display a login prompt.
-     *
-     * @param protocol    Used to determine login prompt options.
-     * @param credentials The credentials to obtain.
-     * @param title       The title for the login prompt
-     * @param reason      The detail message for the login prompt. Any additional information why the login failed.
-     * @throws LoginCanceledException When login is canceled and the prompt dismissed
-     */
-    void prompt(Protocol protocol, Credentials credentials,
-                String title, String reason) throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.

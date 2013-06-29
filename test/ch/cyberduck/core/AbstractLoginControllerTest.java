@@ -67,6 +67,6 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
                 throw new LoginCanceledException();
             }
         };
-        c.prompt(Protocol.WEBDAV, user, "t", "r");
+        c.prompt(Protocol.WEBDAV, user, "t", "r", new LoginOptions(Protocol.WEBDAV));
     }
 }

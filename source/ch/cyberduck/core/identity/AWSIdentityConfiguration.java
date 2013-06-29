@@ -1,14 +1,6 @@
 package ch.cyberduck.core.identity;
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginService;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.ProxyFactory;
-import ch.cyberduck.core.UseragentProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.i18n.Locale;
@@ -71,13 +63,17 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     }
 
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
+        final LoginOptions options = new LoginOptions();
+        options.anonymous = false;
+        options.publickey = false;
         try {
             final LoginService login = new LoginService(prompt, PasswordStoreFactory.get());
-            login.validate(host, Locale.localizedString("AWS Identity and Access Management", "S3"));
+            login.validate(host, Locale.localizedString("AWS Identity and Access Management", "S3"), options);
             return run.call();
         }
         catch(LoginFailureException failure) {
-            prompt.prompt(host.getProtocol(), host.getCredentials(), Locale.localizedString("Login failed", "Credentials"), failure.getMessage());
+            prompt.prompt(host.getProtocol(), host.getCredentials(),
+                    Locale.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
             return this.authenticated(run);
         }
         catch(BackgroundException e) {

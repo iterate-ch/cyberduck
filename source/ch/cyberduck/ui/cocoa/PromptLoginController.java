@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractLoginController;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
@@ -50,7 +49,7 @@ import java.net.URISyntaxException;
 /**
  * @version $Id$
  */
-public final class PromptLoginController extends AbstractLoginController {
+public final class PromptLoginController implements LoginController {
     private static Logger log = Logger.getLogger(PromptLoginController.class);
 
     public static void register() {
