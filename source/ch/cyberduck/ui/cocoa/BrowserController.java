@@ -267,7 +267,7 @@ public class BrowserController extends WindowController
                     }
                     if(file.attributes().isDirectory() && getSelectedBrowserView() == browserOutlineView) {
                         // #471. Expanded item children may match search string
-                        return getSession().cache().isCached(file.getReference());
+                        return session.cache().isCached(file.getReference());
                     }
                     return false;
                 }
@@ -910,7 +910,7 @@ public class BrowserController extends WindowController
             this.browserTabView.selectTabViewItemAtIndex(TAB_BOOKMARKS);
             this.updateBookmarkSource();
             if(this.isMounted()) {
-                int row = this.bookmarkModel.getSource().indexOf(this.getSession().getHost());
+                int row = this.bookmarkModel.getSource().indexOf(session.getHost());
                 if(row != -1) {
                     this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
                     this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
@@ -1242,7 +1242,7 @@ public class BrowserController extends WindowController
                     return;
                 }
                 if(tableColumn.identifier().equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    cell.setEditable(getSession().isRenameSupported(path));
+                    cell.setEditable(session.isRenameSupported(path));
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
                 if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
@@ -1355,7 +1355,7 @@ public class BrowserController extends WindowController
                 final String identifier = tableColumn.identifier();
                 final Path path = browserListModel.children(BrowserController.this.workdir()).get(row.intValue());
                 if(identifier.equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    cell.setEditable(getSession().isRenameSupported(path));
+                    cell.setEditable(session.isRenameSupported(path));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
@@ -2251,15 +2251,13 @@ public class BrowserController extends WindowController
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
             final List<Path> s = this.getSelectedPaths();
-            final Session session = this.getSession();
             session.cache().invalidate(this.workdir().getReference());
             switch(this.browserSwitchView.selectedSegment()) {
                 case SWITCH_OUTLINE_VIEW: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
                         if(browserOutlineView.isItemExpanded(item)) {
-                            final NSObjectPathReference reference = new NSObjectPathReference(item);
-                            session.cache().invalidate(reference);
+                            session.cache().invalidate(new NSObjectPathReference(item));
                         }
                     }
                     break;
@@ -2281,7 +2279,7 @@ public class BrowserController extends WindowController
             selected = this.workdir();
         }
         BrowserController c = MainController.newDocument(true);
-        final Host host = new Host(this.getSession().getHost().<NSDictionary>getAsDictionary());
+        final Host host = new Host(session.getHost().<NSDictionary>getAsDictionary());
         host.setDefaultPath(selected.getAbsolute());
         c.mount(host);
     }
@@ -2537,7 +2535,7 @@ public class BrowserController extends WindowController
      * @return True if the selected path is editable (not a directory and no known binary file)
      */
     protected boolean isEditable(final Path selected) {
-        if(this.getSession().getHost().getCredentials().isAnonymousLogin()) {
+        if(session.getHost().getCredentials().isAnonymousLogin()) {
             return false;
         }
         return selected.attributes().isFile();
@@ -2714,7 +2712,7 @@ public class BrowserController extends WindowController
         syncPanel.setMessage(MessageFormat.format(Locale.localizedString("Synchronize {0} with"),
                 selection.getName()));
         syncPanel.setPrompt(Locale.localizedString("Choose"));
-        syncPanel.beginSheetForDirectory(this.getSession().getHost().getDownloadFolder().getAbsolute(), null, this.window, this.id(),
+        syncPanel.beginSheetForDirectory(session.getHost().getDownloadFolder().getAbsolute(), null, this.window, this.id(),
                 Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
     }
@@ -2862,7 +2860,7 @@ public class BrowserController extends WindowController
      * @param transfer Transfer Operation
      */
     protected void transfer(final Transfer transfer, final List<Path> selected) {
-        this.transfer(transfer, selected, this.getSession().getMaxConnections() == 1,
+        this.transfer(transfer, selected, session.getMaxConnections() == 1,
                 new TransferPrompt() {
                     @Override
                     public TransferAction prompt() throws BackgroundException {
@@ -3134,7 +3132,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void copy(final ID sender) {
-        PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(this.getSession());
+        PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(session);
         pasteboard.clear();
         pasteboard.setCopy(true);
         final List<Path> s = this.getSelectedPaths();
@@ -3162,7 +3160,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void cut(final ID sender) {
-        PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(this.getSession());
+        PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(session);
         pasteboard.clear();
         pasteboard.setCut(true);
         for(Path s : this.getSelectedPaths()) {
@@ -3178,7 +3176,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void paste(final ID sender) {
-        final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(this.getSession());
+        final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(session);
         if(pasteboard.isEmpty()) {
             NSPasteboard pboard = NSPasteboard.generalPasteboard();
             this.upload(pboard);
@@ -3196,9 +3194,9 @@ public class BrowserController extends WindowController
                 }
             }
             for(final Path next : pasteboard) {
-                Path current = PathFactory.createPath(this.getSession(),
+                Path current = PathFactory.createPath(session,
                         next.getAbsolute(), next.attributes().getType());
-                Path renamed = PathFactory.createPath(this.getSession(),
+                Path renamed = PathFactory.createPath(session,
                         parent, current.getName(), next.attributes().getType());
                 files.put(current, renamed);
             }
@@ -3243,7 +3241,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void openTerminalButtonClicked(final ID sender) {
-        final Host host = this.getSession().getHost();
+        final Host host = session.getHost();
         final boolean identity = host.getCredentials().isPublicKeyAuthentication();
         String workdir = null;
         if(this.getSelectionCount() == 1) {
@@ -3375,7 +3373,7 @@ public class BrowserController extends WindowController
      */
     public Path lookup(final PathReference reference) {
         if(this.isMounted()) {
-            return this.getSession().cache().lookup(reference);
+            return session.cache().lookup(reference);
         }
         return null;
     }
@@ -3588,7 +3586,6 @@ public class BrowserController extends WindowController
         if(this.isActivityRunning()) {
             this.interrupt();
         }
-        final Session session = this.getSession();
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
             public void run() throws BackgroundException {
@@ -3863,7 +3860,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("paste:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(this.getSession());
+                PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(session);
                 if(pasteboard.isEmpty()) {
                     NSPasteboard pboard = NSPasteboard.generalPasteboard();
                     if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
@@ -3947,7 +3944,7 @@ public class BrowserController extends WindowController
             return this.isMounted();
         }
         else if(action.equals(Foundation.selector("sendCustomCommandClicked:"))) {
-            return this.isBrowser() && this.isMounted() && this.getSession().isSendCommandSupported();
+            return this.isBrowser() && this.isMounted() && session.isSendCommandSupported();
         }
         else if(action.equals(Foundation.selector("gotoButtonClicked:"))) {
             return this.isBrowser() && this.isMounted();
@@ -3956,13 +3953,13 @@ public class BrowserController extends WindowController
             return this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("createFolderButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && this.getSession().isCreateFolderSupported(this.workdir());
+            return this.isBrowser() && this.isMounted() && session.isCreateFolderSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && this.getSession().isCreateFileSupported(this.workdir());
+            return this.isBrowser() && this.isMounted() && session.isCreateFileSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && this.getSession().isCreateSymlinkSupported() && this.getSelectionCount() == 1;
+            return this.isBrowser() && this.isMounted() && session.isCreateSymlinkSupported() && this.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
             return this.isBrowser() && this.isMounted() && this.getSelectionCount() == 1;
@@ -3973,7 +3970,7 @@ public class BrowserController extends WindowController
                 if(null == selected) {
                     return false;
                 }
-                return getSession().isRenameSupported(selected);
+                return session.isRenameSupported(selected);
             }
             return false;
         }
@@ -3982,7 +3979,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted() && this.getSelectionCount() == 1) {
-                return this.getSession().isRevertSupported();
+                return session.isRevertSupported();
             }
             return false;
         }
@@ -4034,11 +4031,11 @@ public class BrowserController extends WindowController
             return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("openTerminalButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && this.getSession() instanceof SFTPSession;
+            return this.isBrowser() && this.isMounted() && session instanceof SFTPSession;
         }
         else if(action.equals(Foundation.selector("archiveButtonClicked:")) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                if(!this.getSession().isArchiveSupported()) {
+                if(!session.isArchiveSupported()) {
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {
@@ -4055,7 +4052,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("unarchiveButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                if(!this.getSession().isUnarchiveSupported()) {
+                if(!session.isUnarchiveSupported()) {
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {
