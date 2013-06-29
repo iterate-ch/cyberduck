@@ -77,6 +77,13 @@ public class AuthenticationService {
                         credentials.getUsername(), credentials.getPassword());
             }
             else if(host.getProtocol().getContext().contains("2.0")) {
+                if(host.getHostname(true).endsWith(Protocol.CLOUDFILES.getDefaultHostname())) {
+                    // Fix access to lon.identity.api.rackspacecloud.com
+                    return new Authentication20RAXUsernameKeyRequest(
+                            URI.create(url.toString()),
+                            credentials.getUsername(), credentials.getPassword(), null
+                    );
+                }
                 // Prompt for tenant
                 final String user;
                 final String tenant;
@@ -98,13 +105,6 @@ public class AuthenticationService {
                             Locale.localizedString("Provide additional login credentials", "Credentials"),
                             Locale.localizedString("Tenant", "Mosso"), options);
                     tenant = tenantCredentials.getUsername();
-                }
-                if(host.getHostname(true).endsWith(Protocol.CLOUDFILES.getDefaultHostname())) {
-                    // Fix access to lon.identity.api.rackspacecloud.com
-                    return new Authentication20RAXUsernameKeyRequest(
-                            URI.create(url.toString()),
-                            credentials.getUsername(), credentials.getPassword(), tenant
-                    );
                 }
                 return new Authentication20AccessKeySecretKeyRequest(
                         URI.create(url.toString()),
