@@ -786,12 +786,12 @@ public abstract class Protocol {
 
         @Override
         public String getUsernamePlaceholder() {
-            return String.format("%s/x-goog-project-id", Locale.localizedString("Access Key", "S3"));
+            return Locale.localizedString("x-goog-project-id", "Credentials");
         }
 
         @Override
         public String getPasswordPlaceholder() {
-            return Locale.localizedString("Secret", "S3");
+            return Locale.localizedString("Authorization code", "Credentials");
         }
 
         @Override
