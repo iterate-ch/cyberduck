@@ -35,8 +35,6 @@
 		4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */; };
 		4718C207107AA445006FDEFA /* SystemConfigurationProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C205107AA445006FDEFA /* SystemConfigurationProxy.h */; };
 		4718C208107AA445006FDEFA /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */; };
-		4718F4BB175F432400B424AD /* Rackspace UK.cyberduckprofile in Resources */ = {isa = PBXBuildFile; fileRef = 4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */; };
-		4718F4BC175F432400B424AD /* Rackspace US.cyberduckprofile in Resources */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
 		471B4909102C66600059687D /* Growl.h in Headers */ = {isa = PBXBuildFile; fileRef = 471B4905102C66600059687D /* Growl.h */; };
 		471B490B102C66600059687D /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = 471B4907102C66600059687D /* Growl.m */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
@@ -75,6 +73,9 @@
 		47462ADE0F0A473D0075CBA9 /* EMKeychainItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 47462ADA0F0A473D0075CBA9 /* EMKeychainItem.m */; };
 		47462ADF0F0A473D0075CBA9 /* EMKeychainProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 47462ADB0F0A473D0075CBA9 /* EMKeychainProxy.h */; };
 		47462AE00F0A473D0075CBA9 /* EMKeychainProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 47462ADC0F0A473D0075CBA9 /* EMKeychainProxy.m */; };
+		47472EF3177F78880090A595 /* HP Cloud Object Storage.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4780ACC617634CD6007D9DD5 /* HP Cloud Object Storage.cyberduckprofile */; };
+		47472EF4177F788C0090A595 /* Rackspace UK.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */; };
+		47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
 		474B5BA40AEFB7F5009FD459 /* Alert.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474B5BA20AEFB7F5009FD459 /* Alert.nib */; };
 		4751799E097943FA008F671F /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		475286C210D2CC660029363C /* CDBookmarkCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 475286B510D2CC660029363C /* CDBookmarkCell.h */; };
@@ -183,7 +184,6 @@
 		477A11170FD08EAB00BAD4AD /* CTGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356C0DA1025000CC1426 /* CTGradient.m */; };
 		477A11180FD08EAB00BAD4AD /* CTGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356E0DA1025000CC1426 /* CTGradientView.m */; };
 		477A11190FD08EAB00BAD4AD /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 477FA95A0E9A7826009E7857 /* UKSystemInfo.m */; };
-		4780ACC717634CD6007D9DD5 /* HP Cloud Object Storage.cyberduckprofile in Resources */ = {isa = PBXBuildFile; fileRef = 4780ACC617634CD6007D9DD5 /* HP Cloud Object Storage.cyberduckprofile */; };
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		4781DFE5162FF6FE001F4993 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4781DFE6162FF703001F4993 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -366,6 +366,18 @@
 				470C64791328CC0300146FB6 /* s3.amazonaws.com – S3.duck in CopyFiles */,
 				470C647A1328CC0300146FB6 /* storage.clouddrive.com – Cloud Files.duck in CopyFiles */,
 				47EBC1311328D01C00E9E6B3 /* mirror.switch.ch – FTP.duck in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		47472EEF177F78620090A595 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Profiles;
+			dstSubfolderSpec = 7;
+			files = (
+				47472EF3177F78880090A595 /* HP Cloud Object Storage.cyberduckprofile in CopyFiles */,
+				47472EF4177F788C0090A595 /* Rackspace UK.cyberduckprofile in CopyFiles */,
+				47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2339,6 +2351,7 @@
 				47C2724412E99D8600A13758 /* Frameworks */,
 				4749573207EDEC4E00B34D53 /* CopyFiles */,
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
+				47472EEF177F78620090A595 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2838,9 +2851,6 @@
 				47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */,
 				471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */,
 				475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */,
-				4718F4BB175F432400B424AD /* Rackspace UK.cyberduckprofile in Resources */,
-				4718F4BC175F432400B424AD /* Rackspace US.cyberduckprofile in Resources */,
-				4780ACC717634CD6007D9DD5 /* HP Cloud Object Storage.cyberduckprofile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
