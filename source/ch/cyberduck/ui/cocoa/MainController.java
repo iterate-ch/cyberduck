@@ -998,7 +998,8 @@ public class MainController extends BundleController implements NSApplication.De
                     new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()))) {
                 final NSAlert alert = NSAlert.alert(
                         Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
-                        Locale.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration"),
+                        Locale.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links " +
+                                "in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration"),
                         Locale.localizedString("Change", "Configuration"), //default
                         null, //other
                         Locale.localizedString("Cancel", "Configuration"));
