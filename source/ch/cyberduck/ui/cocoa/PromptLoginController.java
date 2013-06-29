@@ -72,7 +72,6 @@ public final class PromptLoginController extends AbstractLoginController {
     private WindowController parent;
 
     private PromptLoginController(final WindowController parent) {
-        super(PasswordStoreFactory.get());
         this.parent = parent;
     }
 
@@ -319,8 +318,8 @@ public final class PromptLoginController extends AbstractLoginController {
             }
 
             private void update() {
-                this.usernameField.setEnabled(!credentials.isAnonymousLogin());
-                this.passwordField.setEnabled(!credentials.isAnonymousLogin());
+                this.usernameField.setEnabled(options.user && !credentials.isAnonymousLogin());
+                this.passwordField.setEnabled(options.password && !credentials.isAnonymousLogin());
                 {
                     boolean enable = options.keychain && !credentials.isAnonymousLogin();
                     this.keychainCheckbox.setEnabled(enable);

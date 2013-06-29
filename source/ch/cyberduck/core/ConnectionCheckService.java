@@ -121,8 +121,8 @@ public class ConnectionCheckService {
             // Update last accessed timestamp
             bookmark.setTimestamp(new Date());
 
-            LoginService login = new LoginService(prompt, keychain, listener);
-            login.login(session);
+            LoginService login = new LoginService(prompt, keychain);
+            login.login(session, listener);
 
             session.fireConnectionDidOpenEvent();
 

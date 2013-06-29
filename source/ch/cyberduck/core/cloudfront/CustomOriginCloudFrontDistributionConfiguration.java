@@ -20,7 +20,8 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.LoginService;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -70,7 +71,8 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
         try {
-            prompt.check(session.getHost(), this.getName(), null, new LoginOptions());
+            final LoginService login = new LoginService(prompt, PasswordStoreFactory.get());
+            login.validate(session.getHost(), this.getName());
             return run.call();
         }
         catch(LoginFailureException failure) {

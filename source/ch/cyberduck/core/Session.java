@@ -76,6 +76,20 @@ public abstract class Session<C> implements TranscriptListener {
      */
     private State state = State.closed;
 
+    public boolean alert() throws BackgroundException {
+        if(this.getHost().getProtocol().isSecure()) {
+            return false;
+        }
+        if(this.getHost().getCredentials().isAnonymousLogin()) {
+            return false;
+        }
+        if(Preferences.instance().getBoolean(String.format("connection.unsecure.%s", this.getHost().getHostname()))) {
+            return false;
+        }
+        return Preferences.instance().getBoolean(
+                String.format("connection.unsecure.warning.%s", this.getHost().getProtocol().getScheme()));
+    }
+
     public enum State {
         opening,
         open,
@@ -165,32 +179,6 @@ public abstract class Session<C> implements TranscriptListener {
             return this.host.getProtocol().isSecure();
         }
         return false;
-    }
-
-    /**
-     * Prompt for username and password if not available.
-     *
-     * @param controller Prompt
-     * @throws LoginCanceledException Login prompt dismissed with cancel
-     */
-    protected void prompt(final LoginController controller) throws BackgroundException {
-        controller.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
-    }
-
-    /**
-     * Warning if credentials are sent plaintext.
-     *
-     * @param login Prompt
-     * @throws LoginCanceledException If connection should be dropped
-     */
-    protected void warn(final LoginController login) throws BackgroundException {
-        login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"),
-                host.getProtocol().getName()),
-                MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"),
-                        host.getCredentials().getPasswordPlaceholder()),
-                Locale.localizedString("Continue", "Credentials"),
-                Locale.localizedString("Disconnect", "Credentials"),
-                String.format("connection.unsecure.%s", host.getHostname()));
     }
 
     /**

@@ -11,7 +11,7 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testCheckFTP() throws Exception {
-        LoginController c = new AbstractLoginController(new DisabledPasswordStore()) {
+        LoginController c = new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals(Protocol.FTP, protocol);
@@ -27,12 +27,12 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
         options.keychain = true;
         options.publickey = true;
         options.anonymous = false;
-        c.check(new Host(Protocol.FTP, "h"), "t", "r", options);
+        c.prompt(Protocol.FTP, new Credentials(), "t", "r", options);
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testCheckSFTP() throws Exception {
-        LoginController c = new AbstractLoginController(new DisabledPasswordStore()) {
+        LoginController c = new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals(Protocol.SFTP, protocol);
@@ -48,13 +48,13 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
         options.keychain = true;
         options.publickey = true;
         options.anonymous = false;
-        c.check(new Host(Protocol.SFTP, "h"), "t", "r", options);
+        c.prompt(Protocol.SFTP, new Credentials(), "t", "r", options);
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testFail() throws Exception {
         final Credentials user = new Credentials("t", "p");
-        LoginController c = new AbstractLoginController(new DisabledPasswordStore()) {
+        LoginController c = new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals(Protocol.WEBDAV, protocol);

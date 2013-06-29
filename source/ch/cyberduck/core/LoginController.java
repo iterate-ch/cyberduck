@@ -29,30 +29,8 @@ public interface LoginController {
      * @param preference       Where to save preference if dismissed
      * @throws LoginCanceledException If the other option has been selected.
      */
-    void warn(String title, String message, String continueButton, String disconnectButton, String preference) throws LoginCanceledException;
-
-    /**
-     * Check the credentials for validity and prompt the user for the password if not found
-     * in the login keychain
-     *
-     * @param host   Hostname
-     * @param title  The title for the login prompt
-     * @param reason The detail message for the login prompt. Any additional information about the domain.
-     * @throws LoginCanceledException When login is canceled and the prompt dismissed
-     */
-    void check(Host host, String title, String reason) throws LoginCanceledException;
-
-    /**
-     * Check the credentials for validity and prompt the user for the password if not found
-     * in the login keychain
-     *
-     * @param host    Hostname
-     * @param title   The title for the login prompt
-     * @param message Additional message displayed in the password prompt
-     * @param options Enable checkbox to save password in keychain. Enable public key authentication checkbox. Enable anynomous login option checkbox
-     * @throws LoginCanceledException When login is canceled and the prompt dismissed
-     */
-    void check(final Host host, String title, String message, LoginOptions options) throws LoginCanceledException;
+    void warn(String title, String message, String continueButton, String disconnectButton,
+              String preference) throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.
@@ -64,7 +42,8 @@ public interface LoginController {
      * @param reason      The detail message for the login prompt. Any additional information why the login failed.
      * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
-    void prompt(Protocol protocol, Credentials credentials, String title, String reason) throws LoginCanceledException;
+    void prompt(Protocol protocol, Credentials credentials,
+                String title, String reason) throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.
@@ -77,7 +56,7 @@ public interface LoginController {
      * @param options     Enable checkbox to save password in keychain. Enable public key authentication checkbox. Enable anynomous login option checkbox
      * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
-    void prompt(final Protocol protocol, final Credentials credentials,
-                final String title, final String reason,
+    void prompt(Protocol protocol, Credentials credentials,
+                String title, String reason,
                 LoginOptions options) throws LoginCanceledException;
 }

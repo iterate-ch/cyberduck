@@ -32,15 +32,12 @@ import java.text.MessageFormat;
 public class LoginService {
     private static final Logger log = Logger.getLogger(LoginService.class);
 
-    private LoginController prompt;
+    private LoginController controller;
     private PasswordStore keychain;
-    private ProgressListener listener;
 
-    public LoginService(final LoginController prompt, final PasswordStore keychain,
-                        final ProgressListener listener) {
-        this.prompt = prompt;
+    public LoginService(final LoginController prompt, final PasswordStore keychain) {
+        this.controller = prompt;
         this.keychain = keychain;
-        this.listener = listener;
     }
 
     /**
@@ -49,19 +46,26 @@ public class LoginService {
      *
      * @param session Session
      */
-    public void login(final Session session) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Attempt authentication for session %s", session));
-        }
-        session.prompt(prompt);
-        if(this.alert(session)) {
-            session.warn(prompt);
-        }
+    public void login(final Session session, final ProgressListener listener) throws BackgroundException {
         final Host bookmark = session.getHost();
+        this.validate(bookmark, Locale.localizedString("Login with username and password", "Credentials"));
+        if(session.alert()) {
+            // Warning if credentials are sent plaintext.
+            controller.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"),
+                    bookmark.getProtocol().getName()),
+                    MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"),
+                            bookmark.getCredentials().getPasswordPlaceholder()),
+                    Locale.localizedString("Continue", "Credentials"),
+                    Locale.localizedString("Disconnect", "Credentials"),
+                    String.format("connection.unsecure.%s", bookmark.getHostname()));
+        }
         listener.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                 bookmark.getCredentials().getUsername()));
         try {
-            session.login(prompt);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Attempt authentication for %s", bookmark));
+            }
+            session.login(controller);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for session %s", session));
             }
@@ -71,24 +75,94 @@ public class LoginService {
         }
         catch(LoginFailureException e) {
             listener.message(Locale.localizedString("Login failed", "Credentials"));
-            prompt.prompt(bookmark.getProtocol(), bookmark.getCredentials(), Locale.localizedString("Login failed", "Credentials"), e.getDetail());
-            this.login(session);
+            controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(), Locale.localizedString("Login failed", "Credentials"), e.getDetail());
+            this.login(session, listener);
         }
     }
 
-    private boolean alert(final Session session) {
-        final Host bookmark = session.getHost();
-        if(bookmark.getProtocol().isSecure()) {
-            return false;
+    public void validate(final Host bookmark, final String title) throws LoginCanceledException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Validate login credentials for %s", bookmark));
         }
-        if(bookmark.getCredentials().isAnonymousLogin()) {
-            return false;
+        if(!bookmark.getCredentials().validate(bookmark.getProtocol())
+                || bookmark.getCredentials().isPublicKeyAuthentication()) {
+            final LoginOptions options = new LoginOptions();
+            options.publickey = bookmark.getProtocol().equals(Protocol.SFTP);
+            options.anonymous = bookmark.getProtocol().isAnonymousConfigurable();
+            // Lookup password if missing. Always lookup password for public key authentication. See #5754.
+            if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+                if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
+                    final String password = this.find(bookmark);
+                    if(StringUtils.isBlank(password)) {
+                        if(!bookmark.getCredentials().isPublicKeyAuthentication()) {
+                            controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
+                                    title,
+                                    Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"), options);
+                        }
+                        // We decide later if the key is encrypted and a password must be known to decrypt.
+                    }
+                    else {
+                        bookmark.getCredentials().setPassword(password);
+                        // No need to reinsert found password to the keychain.
+                        bookmark.getCredentials().setSaved(false);
+                    }
+                }
+                else {
+                    if(!bookmark.getCredentials().isPublicKeyAuthentication()) {
+                        controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
+                                title,
+                                Locale.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"), options);
+                    }
+                    // We decide later if the key is encrypted and a password must be known to decrypt.
+                }
+            }
+            else {
+                controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
+                        title,
+                        Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"), options);
+            }
         }
-        if(Preferences.instance().getBoolean(String.format("connection.unsecure.%s", bookmark.getHostname()))) {
-            return false;
+    }
+
+    /**
+     * @param host Hostname
+     * @return the password fetched from the keychain or null if it was not found
+     */
+    protected String find(final Host host) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Fetching password from keychain for %s", host));
         }
-        return Preferences.instance().getBoolean(
-                String.format("connection.unsecure.warning.%s", bookmark.getProtocol().getScheme()));
+        if(StringUtils.isEmpty(host.getHostname())) {
+            log.warn("No hostname given");
+            return null;
+        }
+        Credentials credentials = host.getCredentials();
+        if(StringUtils.isEmpty(credentials.getUsername())) {
+            log.warn("No username given");
+            return null;
+        }
+        String p;
+        if(credentials.isPublicKeyAuthentication()) {
+            p = keychain.getPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath());
+            if(null == p) {
+                // Interoperability with OpenSSH (ssh, ssh-agent, ssh-add)
+                p = keychain.getPassword("SSH", credentials.getIdentity().getAbsolute());
+            }
+            if(null == p) {
+                // Backward compatibility
+                p = keychain.getPassword("SSHKeychain", credentials.getIdentity().getAbbreviatedPath());
+            }
+        }
+        else {
+            p = keychain.getPassword(host.getProtocol().getScheme(), host.getPort(),
+                    host.getHostname(), credentials.getUsername());
+        }
+        if(null == p) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Password not found in keychain for %s", host));
+            }
+        }
+        return p;
     }
 
     /**

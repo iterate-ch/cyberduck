@@ -23,7 +23,7 @@ package ch.cyberduck.core;
 public class DisabledLoginController extends AbstractLoginController {
 
     public DisabledLoginController() {
-        super(new DisabledPasswordStore());
+        super();
     }
 
     @Override

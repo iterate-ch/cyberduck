@@ -3,7 +3,7 @@ package ch.cyberduck.core.identity;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -72,7 +72,8 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
 
     private <T> T authenticated(final Callable<T> run) throws BackgroundException {
         try {
-            prompt.check(host, "AWS Identity and Access Management", null, new LoginOptions());
+            final LoginService login = new LoginService(prompt, PasswordStoreFactory.get());
+            login.validate(host, Locale.localizedString("AWS Identity and Access Management", "S3"));
             return run.call();
         }
         catch(LoginFailureException failure) {

@@ -239,41 +239,36 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     }
 
-    /**
-     * Propose protocol change if AUTH TLS is available.
-     *
-     * @param login Prompt
-     */
     @Override
-    protected void warn(final LoginController login) throws BackgroundException {
-        if(this.isTLSSupported()) {
-            try {
-                login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
-                        MessageFormat.format(Locale.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"), Protocol.FTP_TLS.getName()),
-                        Locale.localizedString("Continue", "Credentials"),
-                        Locale.localizedString("Change", "Credentials"),
-                        "connection.unsecure." + host.getHostname());
-                // Continue choosen. Login using plain FTP.
-            }
-            catch(LoginCanceledException e) {
-                // Protocol switch
-                host.setProtocol(Protocol.FTP_TLS);
-                try {
-                    // Reconfigure client for TLS
-                    this.configure(client);
-                    client.execAUTH();
-                    client.sslNegotiation();
-                }
-                catch(IOException f) {
-                    throw new DefaultIOExceptionMappingService().map(f);
-                }
-            }
+    public boolean alert() throws BackgroundException {
+        if(super.alert()) {
+            return !this.isTLSSupported();
         }
+        return false;
     }
 
     @Override
     public void login(final LoginController prompt) throws BackgroundException {
         try {
+            if(!host.getProtocol().isSecure() && this.isTLSSupported()) {
+                // Propose protocol change if AUTH TLS is available.
+                try {
+                    prompt.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+                            MessageFormat.format(Locale.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"), Protocol.FTP_TLS.getName()),
+                            Locale.localizedString("Continue", "Credentials"),
+                            Locale.localizedString("Change", "Credentials"),
+                            "connection.unsecure." + host.getHostname());
+                    // Continue choosen. Login using plain FTP.
+                }
+                catch(LoginCanceledException e) {
+                    // Protocol switch
+                    host.setProtocol(Protocol.FTP_TLS);
+                    // Reconfigure client for TLS
+                    this.configure(client);
+                    client.execAUTH();
+                    client.sslNegotiation();
+                }
+            }
             if(client.login(host.getCredentials().getUsername(), host.getCredentials().getPassword())) {
                 if(host.getProtocol().isSecure()) {
                     client.execPBSZ(0);

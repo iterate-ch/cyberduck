@@ -22,6 +22,8 @@ package ch.cyberduck.core;
  */
 public final class LoginOptions {
 
+    public boolean user = true;
+    public boolean password = true;
     public boolean keychain = Preferences.instance().getBoolean("connection.login.useKeychain");
     public boolean publickey;
     public boolean anonymous;

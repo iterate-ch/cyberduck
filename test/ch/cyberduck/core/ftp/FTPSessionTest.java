@@ -6,6 +6,8 @@ import ch.cyberduck.core.threading.BackgroundException;
 
 import org.junit.Test;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static org.junit.Assert.*;
 
 /**
@@ -75,9 +77,9 @@ public class FTPSessionTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host) {
             @Override
-            protected void warn(final LoginController login) throws BackgroundException {
+            public void login(final LoginController login) throws BackgroundException {
                 assertEquals(Session.State.open, this.getState());
-                super.warn(login);
+                super.login(login);
                 assertEquals(Protocol.FTP_TLS, host.getProtocol());
             }
 
@@ -91,14 +93,22 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertEquals(Protocol.FTP, host.getProtocol());
-        LoginService l = new LoginService(new DisabledLoginController(), new DisabledPasswordStore(),
-                new ProgressListener() {
-                    @Override
-                    public void message(final String message) {
-                        //
-                    }
-                });
-        l.login(session);
+        final AtomicBoolean warned = new AtomicBoolean();
+        LoginService l = new LoginService(new DisabledLoginController() {
+            @Override
+            public void warn(final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                warned.set(true);
+                // Cancel to switch
+                throw new LoginCanceledException();
+            }
+        }, new DisabledPasswordStore());
+        l.login(session, new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+        });
         assertEquals(Protocol.FTP_TLS, host.getProtocol());
+        assertTrue(warned.get());
     }
 }
