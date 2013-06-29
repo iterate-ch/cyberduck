@@ -26,6 +26,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.Controller;
@@ -196,14 +197,19 @@ public final class PromptLoginController implements LoginController {
 
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
-                try {
-                    // For OAuth2
-                    final URI uri = new URI(reason);
-                    this.textField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(reason));
-                    this.textField.setAllowsEditingTextAttributes(true);
-                    this.textField.setSelectable(true);
+                if(reason.startsWith(Scheme.http.name())) {
+                    try {
+                        // For OAuth2
+                        final URI uri = new URI(reason);
+                        this.textField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(reason));
+                        this.textField.setAllowsEditingTextAttributes(true);
+                        this.textField.setSelectable(true);
+                    }
+                    catch(URISyntaxException e) {
+                        this.updateField(this.textField, Locale.localizedString(reason, "Credentials"));
+                    }
                 }
-                catch(URISyntaxException e) {
+                else {
                     this.updateField(this.textField, Locale.localizedString(reason, "Credentials"));
                 }
             }
