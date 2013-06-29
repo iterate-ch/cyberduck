@@ -48,7 +48,7 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
         Native.load("LaunchServicesSchemeHandler");
     }
 
-    private LaunchServicesSchemeHandler() {
+    public LaunchServicesSchemeHandler() {
         //
     }
 
