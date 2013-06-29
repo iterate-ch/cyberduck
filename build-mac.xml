@@ -39,7 +39,7 @@
     <property name="app.runtime.lib"
               value="@executable_path/../Resources/Java/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
     <property name="app.runtime.properties.key" value="Runtime"/>
-    <property name="app.runtime.system.min" value="10.5"/>
+    <property name="app.runtime.system.min" value="10.6"/>
 
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
     <property name="app.spotlight.executable"
