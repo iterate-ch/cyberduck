@@ -19,9 +19,13 @@ package ch.cyberduck.core.cf;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -38,7 +42,8 @@ import com.rackspacecloud.client.cloudfiles.method.AuthenticationRequest;
  */
 public class AuthenticationService {
 
-    public AuthenticationRequest getRequest(final Host host) {
+    public AuthenticationRequest getRequest(final Host host, final LoginController prompt)
+            throws LoginCanceledException {
         final Credentials credentials = host.getCredentials();
         final StringBuilder url = new StringBuilder();
         url.append(host.getProtocol().getScheme().toString()).append("://");
@@ -76,13 +81,23 @@ public class AuthenticationService {
                 final String user;
                 final String tenant;
                 if(StringUtils.contains(credentials.getUsername(), ':')) {
-                    user = StringUtils.split(credentials.getUsername(), ':')[1];
                     tenant = StringUtils.split(credentials.getUsername(), ':')[0];
+                    user = StringUtils.split(credentials.getUsername(), ':')[1];
                 }
                 else {
                     user = credentials.getUsername();
-                    // Prompt for tenant
-                    tenant = null;
+                    final Credentials tenantCredentials = new Credentials() {
+                        @Override
+                        public String getUsernamePlaceholder() {
+                            return Locale.localizedString("Tenant", "Mosso");
+                        }
+                    };
+                    final LoginOptions options = new LoginOptions();
+                    options.password = false;
+                    prompt.prompt(host.getProtocol(), tenantCredentials,
+                            Locale.localizedString("Provide additional login credentials", "Credentials"),
+                            Locale.localizedString("Tenant", "Mosso"), options);
+                    tenant = tenantCredentials.getUsername();
                 }
                 if(host.getHostname(true).endsWith(Protocol.CLOUDFILES.getDefaultHostname())) {
                     // Fix access to lon.identity.api.rackspacecloud.com

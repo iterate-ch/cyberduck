@@ -90,7 +90,8 @@ public class CFSession extends CloudSession<FilesClient> {
     @Override
     public void login(final LoginController prompt) throws BackgroundException {
         try {
-            final FilesAuthenticationResponse authentication = client.authenticate(new AuthenticationService().getRequest(host));
+            final FilesAuthenticationResponse authentication = client.authenticate(
+                    new AuthenticationService().getRequest(host, prompt));
             for(FilesRegion region : authentication.getRegions()) {
                 regions.put(region.getRegionId(), region);
             }
@@ -140,10 +141,8 @@ public class CFSession extends CloudSession<FilesClient> {
 
     @Override
     public boolean isLocationSupported() {
-        return new AuthenticationService().getRequest(this.getHost()).getVersion().equals(
-                FilesClient.AuthVersion.v20);
+        return true;
     }
-
 
     @Override
     public DistributionConfiguration cdn(final LoginController prompt) {
