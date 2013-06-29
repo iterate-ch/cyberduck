@@ -32,7 +32,7 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class AbstractX509TrustManager implements X509TrustManager {
-    private static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
+    private static final Logger log = Logger.getLogger(AbstractX509TrustManager.class);
 
     /**
      * A set of all X509 certificates accepted by the user that contains

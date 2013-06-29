@@ -43,7 +43,7 @@ import java.util.List;
  * @version $Id$
  */
 public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
-    private static Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
+    private static final Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 
     private SSLSocketFactory factory;
 
