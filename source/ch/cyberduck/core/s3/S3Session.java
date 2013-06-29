@@ -90,7 +90,18 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
      */
     public class RequestEntityRestStorageService extends RestS3Service {
         public RequestEntityRestStorageService(final Jets3tProperties configuration) {
-            super(null, new PreferencesUseragentProvider().get(), null, configuration);
+            super(host.getCredentials().isAnonymousLogin() ? null :
+                    new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()) {
+                        @Override
+                        public String getAccessKey() {
+                            return host.getCredentials().getUsername();
+                        }
+
+                        @Override
+                        public String getSecretKey() {
+                            return host.getCredentials().getPassword();
+                        }
+                    }, new PreferencesUseragentProvider().get(), null, configuration);
         }
 
         @Override
@@ -334,12 +345,7 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
 
     @Override
     public RequestEntityRestStorageService connect(final HostKeyController key) throws BackgroundException {
-        return new RequestEntityRestStorageService(this.configure(host.getHostname())) {
-            @Override
-            public ProviderCredentials getProviderCredentials() {
-                return S3Session.this.getProviderCredentials(host.getCredentials());
-            }
-        };
+        return new RequestEntityRestStorageService(this.configure(host.getHostname()));
     }
 
     @Override
@@ -349,23 +355,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
                 log.debug(String.format("Found bucket %s", bucket));
             }
         }
-    }
-
-    protected ProviderCredentials getProviderCredentials(final Credentials credentials) {
-        if(credentials.isAnonymousLogin()) {
-            return null;
-        }
-        return new AWSCredentials(credentials.getUsername(), credentials.getPassword()) {
-            @Override
-            public String getAccessKey() {
-                return host.getCredentials().getUsername();
-            }
-
-            @Override
-            public String getSecretKey() {
-                return host.getCredentials().getPassword();
-            }
-        };
     }
 
     /**

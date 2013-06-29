@@ -20,7 +20,6 @@ package ch.cyberduck.core.gstorage;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
@@ -95,7 +94,7 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    protected boolean authorize(HttpUriRequest request, ProviderCredentials credentials)
+    protected boolean authorize(final HttpUriRequest request, final ProviderCredentials credentials)
             throws ServiceException {
         if(credentials instanceof OAuth2Credentials) {
             request.setHeader("x-goog-api-version", "2");
@@ -104,9 +103,7 @@ public class GSSession extends S3Session {
                 tokens = ((OAuth2Credentials) credentials).getOAuth2Tokens();
             }
             catch(IOException e) {
-                final ServiceException failure = new ServiceException(e.getMessage());
-                failure.initCause(e);
-                throw failure;
+                throw new ServiceException(e.getMessage(), e);
             }
             if(tokens == null) {
                 throw new ServiceException("Cannot authenticate using OAuth2 until initial tokens are provided");
@@ -119,47 +116,38 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    protected void prompt(final LoginController controller) throws BackgroundException {
-        final Credentials credentials = this.getHost().getCredentials();
-        final ProviderCredentials provider = this.getProviderCredentials(credentials);
-        if(provider instanceof OAuth2Credentials) {
-            final OAuth2Credentials oauth = (OAuth2Credentials) provider;
-            final String acccesstoken = PasswordStoreFactory.get().getPassword(this.getHost().getProtocol().getScheme(),
-                    this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token");
-            final String refreshtoken = PasswordStoreFactory.get().getPassword(this.getHost().getProtocol().getScheme(),
-                    this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token");
+    public void login(final LoginController controller) throws BackgroundException {
+        if(NumberUtils.isNumber(host.getCredentials().getUsername())) {
+            // Project ID needs OAuth2 authentication
+            OAuth2Credentials oauth = new OAuth2Credentials(
+                    new OAuthUtils(this.http(),
+                            OAuthUtils.OAuthImplementation.GOOGLE_STORAGE_OAUTH2_10,
+                            Preferences.instance().getProperty("google.storage.oauth.clientid"),
+                            Preferences.instance().getProperty("google.storage.oauth.secret")),
+                    Preferences.instance().getProperty("application.name"));
+            final String acccesstoken = PasswordStoreFactory.get().getPassword(host.getProtocol().getScheme(),
+                    host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token");
+            final String refreshtoken = PasswordStoreFactory.get().getPassword(host.getProtocol().getScheme(),
+                    host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token");
             if(StringUtils.isEmpty(acccesstoken) || StringUtils.isEmpty(refreshtoken)) {
                 final String url = oauth.generateBrowserUrlToAuthorizeNativeApplication(
                         OAuthConstants.GSOAuth2_10.Scopes.FullControl
                 );
-                final Credentials placeholder = new Credentials(credentials.getUsername(), null, false) {
-                    @Override
-                    public String getUsernamePlaceholder() {
-                        return Locale.localizedString("x-goog-project-id", "Credentials");
-                    }
-
-                    @Override
-                    public String getPasswordPlaceholder() {
-                        return Locale.localizedString("Authorization code", "Credentials");
-                    }
-                };
                 // Query access token from URL to visit in browser
-                controller.prompt(this.getHost().getProtocol(), placeholder,
-                        Locale.localizedString("OAuth2 Authentication", "Credentials"), url, new LoginOptions());
+                final LoginOptions options = new LoginOptions();
+                options.keychain = false;
+                controller.prompt(host.getProtocol(), host.getCredentials(),
+                        Locale.localizedString("OAuth2 Authentication", "Credentials"), url, options);
 
-                // Project ID
-                credentials.setUsername(placeholder.getUsername());
-                // Authorization code
-                credentials.setPassword(placeholder.getPassword());
                 try {
                     // Swap the given authorization token for access/refresh tokens
-                    oauth.retrieveOAuth2TokensFromAuthorization(credentials.getPassword());
+                    oauth.retrieveOAuth2TokensFromAuthorization(host.getCredentials().getPassword());
                     final OAuth2Tokens tokens = oauth.getOAuth2Tokens();
                     // Save for future use
-                    PasswordStoreFactory.get().addPassword(this.getHost().getProtocol().getScheme(),
-                            this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token", tokens.getAccessToken());
-                    PasswordStoreFactory.get().addPassword(this.getHost().getProtocol().getScheme(),
-                            this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token", tokens.getRefreshToken());
+                    PasswordStoreFactory.get().addPassword(host.getProtocol().getScheme(),
+                            host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token", tokens.getAccessToken());
+                    PasswordStoreFactory.get().addPassword(host.getProtocol().getScheme(),
+                            host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token", tokens.getRefreshToken());
 
                     // Save expiry
                     Preferences.instance().setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
@@ -173,27 +161,9 @@ public class GSSession extends S3Session {
                 oauth.setOAuth2Tokens(new OAuth2Tokens(acccesstoken, refreshtoken,
                         new Date(Preferences.instance().getLong("google.storage.oauth.expiry"))));
             }
+            client.setProviderCredentials(oauth);
         }
-        else {
-            super.prompt(controller);
-        }
-    }
-
-    @Override
-    protected ProviderCredentials getProviderCredentials(final Credentials credentials) {
-        if(credentials.isAnonymousLogin()) {
-            return null;
-        }
-        if(NumberUtils.isNumber(credentials.getUsername())) {
-            // Project ID needs OAuth2 authentication
-            return new OAuth2Credentials(
-                    new OAuthUtils(this.http(),
-                            OAuthUtils.OAuthImplementation.GOOGLE_STORAGE_OAUTH2_10,
-                            Preferences.instance().getProperty("google.storage.oauth.clientid"),
-                            Preferences.instance().getProperty("google.storage.oauth.secret")),
-                    Preferences.instance().getProperty("application.name"));
-        }
-        return super.getProviderCredentials(credentials);
+        super.login(controller);
     }
 
     @Override
@@ -364,7 +334,7 @@ public class GSSession extends S3Session {
 
     @Override
     protected String getProjectId() {
-        if(this.getProviderCredentials(host.getCredentials()) instanceof OAuth2Credentials) {
+        if(client.getProviderCredentials() instanceof OAuth2Credentials) {
             return host.getCredentials().getUsername();
         }
         return null;
@@ -372,7 +342,7 @@ public class GSSession extends S3Session {
 
     @Override
     public IdentityConfiguration iam(final LoginController prompt) {
-        return new DefaultCredentialsIdentityConfiguration(this.getHost());
+        return new DefaultCredentialsIdentityConfiguration(host);
     }
 
     @Override
