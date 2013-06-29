@@ -169,11 +169,11 @@ public class Credentials {
     }
 
     public String getUsernamePlaceholder() {
-        return null;
+        return StringUtils.EMPTY;
     }
 
     public String getPasswordPlaceholder() {
-        return null;
+        return StringUtils.EMPTY;
     }
 
     @Override
