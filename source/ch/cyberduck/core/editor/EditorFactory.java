@@ -110,8 +110,9 @@ public abstract class EditorFactory extends Factory<Editor> {
     }
 
     /**
-     * @param filename@return The bundle identifier of the application for this file or null if no
-     *                        suitable and installed editor is found.
+     * @param filename File type
+     * @return The bundle identifier of the application for this file or null if no
+     *         suitable and installed editor is found.
      */
     public Application getEditor(final String filename) {
         if(Preferences.instance().getBoolean("editor.alwaysUseDefault")) {
@@ -129,8 +130,9 @@ public abstract class EditorFactory extends Factory<Editor> {
     }
 
     /**
-     * @param filename@return Installed applications suitable to edit the given file type. Does always include
-     *                        the default editor set in the Preferences
+     * @param filename File type
+     * @return Installed applications suitable to edit the given file type. Does always include
+     *         the default editor set in the Preferences
      */
     public List<Application> getEditors(final String filename) {
         if(log.isDebugEnabled()) {
