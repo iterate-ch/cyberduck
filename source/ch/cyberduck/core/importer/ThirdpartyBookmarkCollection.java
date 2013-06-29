@@ -21,7 +21,8 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.KeychainFactory;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -39,6 +40,8 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     private static Logger log = Logger.getLogger(ThirdpartyBookmarkCollection.class);
 
     private static final long serialVersionUID = -4582425984484543617L;
+
+    private PasswordStore keychain = PasswordStoreFactory.get();
 
     @Override
     public String getName() {
@@ -114,12 +117,12 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     }
 
     @Override
-    public boolean add(Host bookmark) {
+    public boolean add(final Host bookmark) {
         if(null == bookmark) {
             log.warn("Parsing bookmark failed.");
             return false;
         }
-        StringBuilder comment = new StringBuilder();
+        final StringBuilder comment = new StringBuilder();
         if(StringUtils.isNotBlank(bookmark.getComment())) {
             comment.append(bookmark.getComment());
             if(!comment.toString().endsWith(".")) {
@@ -134,9 +137,12 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             log.debug("Create new bookmark from import: " + bookmark);
         }
         // Save password if any to Keychain
-        KeychainFactory.get().save(bookmark);
-        // Reset password in memory
-        bookmark.getCredentials().setPassword(null);
+        if(StringUtils.isNotBlank(bookmark.getCredentials().getPassword())) {
+            keychain.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                    bookmark.getHostname(), bookmark.getCredentials().getUsername(), bookmark.getCredentials().getPassword());
+            // Reset password in memory
+            bookmark.getCredentials().setPassword(null);
+        }
         return super.add(bookmark);
     }
 }
