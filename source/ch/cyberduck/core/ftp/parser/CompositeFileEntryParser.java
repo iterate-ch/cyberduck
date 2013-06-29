@@ -53,7 +53,7 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
                 return matched;
             }
         }
-        log.warn(String.format("Failure parsing %s", line));
+        log.warn(String.format("Failure parsing line %s", line));
         return null;
     }
 
