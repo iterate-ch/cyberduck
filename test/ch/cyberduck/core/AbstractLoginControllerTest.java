@@ -16,7 +16,7 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals(Protocol.FTP, protocol);
                 assertEquals("t", title);
-                assertEquals("r.", reason);
+                assertEquals("r", reason);
                 assertTrue(options.keychain);
                 assertTrue(options.publickey);
                 assertFalse(options.anonymous);
