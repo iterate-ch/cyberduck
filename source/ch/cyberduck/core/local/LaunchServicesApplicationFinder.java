@@ -56,7 +56,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
         Native.load("LaunchServicesApplicationFinder");
     }
 
-    private LaunchServicesApplicationFinder() {
+    public LaunchServicesApplicationFinder() {
         //
     }
 

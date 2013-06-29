@@ -3,7 +3,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Permission;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -15,11 +14,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class FinderLocalTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        FinderLocal.register();
-    }
 
     @Test
     public void testEqual() throws Exception {
