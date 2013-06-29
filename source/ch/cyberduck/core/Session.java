@@ -77,17 +77,17 @@ public abstract class Session<C> implements TranscriptListener {
     private State state = State.closed;
 
     public boolean alert() throws BackgroundException {
-        if(this.getHost().getProtocol().isSecure()) {
+        if(host.getProtocol().isSecure()) {
             return false;
         }
-        if(this.getHost().getCredentials().isAnonymousLogin()) {
+        if(host.getCredentials().isAnonymousLogin()) {
             return false;
         }
-        if(Preferences.instance().getBoolean(String.format("connection.unsecure.%s", this.getHost().getHostname()))) {
+        if(Preferences.instance().getBoolean(String.format("connection.unsecure.%s", host.getHostname()))) {
             return false;
         }
         return Preferences.instance().getBoolean(
-                String.format("connection.unsecure.warning.%s", this.getHost().getProtocol().getScheme()));
+                String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
     }
 
     public enum State {
@@ -176,7 +176,7 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public boolean isSecure() {
         if(this.isConnected()) {
-            return this.host.getProtocol().isSecure();
+            return host.getProtocol().isSecure();
         }
         return false;
     }
@@ -189,14 +189,14 @@ public abstract class Session<C> implements TranscriptListener {
         try {
             final Path home = this.home();
             // Retrieve directory listing of default path
-            this.cache().put(home.getReference(), home.list());
+            cache.put(home.getReference(), home.list());
             return home;
         }
         catch(BackgroundException e) {
             // The default path does not exist or is not readable due to possible permission issues
             // Fallback to default working directory
             final Path workdir = this.workdir();
-            this.cache().put(workdir.getReference(), workdir.list());
+            cache.put(workdir.getReference(), workdir.list());
             return workdir;
         }
         finally {
@@ -260,10 +260,10 @@ public abstract class Session<C> implements TranscriptListener {
      * @see Host
      */
     public String getEncoding() {
-        if(null == this.host.getEncoding()) {
+        if(null == host.getEncoding()) {
             return Preferences.instance().getProperty("browser.charset.encoding");
         }
-        return this.host.getEncoding();
+        return host.getEncoding();
     }
 
     /**
@@ -628,7 +628,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @return The directory listing cache for this session
      */
     public Cache cache() {
-        return this.cache;
+        return cache;
     }
 
     /**
@@ -672,7 +672,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @return Null if there is a encoding failure
      */
     public String toURL(final Path path, final boolean credentials) {
-        return String.format("%s%s", this.getHost().toURL(credentials), URIEncoder.encode(path.getAbsolute()));
+        return String.format("%s%s", host.toURL(credentials), URIEncoder.encode(path.getAbsolute()));
     }
 
     /**
@@ -680,8 +680,8 @@ public abstract class Session<C> implements TranscriptListener {
      *         hostname configuration from the bookmark
      */
     public String toHttpURL(final Path path) {
-        return URI.create(this.getHost().getWebURL() + URIEncoder.encode(PathRelativizer.relativize(
-                PathNormalizer.normalize(this.getHost().getDefaultPath(), true),
+        return URI.create(host.getWebURL() + URIEncoder.encode(PathRelativizer.relativize(
+                PathNormalizer.normalize(host.getDefaultPath(), true),
                 path.getAbsolute()))).normalize().toString();
     }
 
@@ -694,7 +694,7 @@ public abstract class Session<C> implements TranscriptListener {
     public Set<DescriptiveUrl> getURLs(final Path path) {
         Set<DescriptiveUrl> list = new LinkedHashSet<DescriptiveUrl>();
         list.add(new DescriptiveUrl(this.toURL(path), MessageFormat.format(Locale.localizedString("{0} URL"),
-                this.getHost().getProtocol().getScheme().toString().toUpperCase(java.util.Locale.ENGLISH))));
+                host.getProtocol().getScheme().toString().toUpperCase(java.util.Locale.ENGLISH))));
         list.addAll(this.getHttpURLs(path));
         return list;
     }
