@@ -51,7 +51,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
         }
     }
 
-    private RendezvousResponder() {
+    public RendezvousResponder() {
         this.browsers = new ConcurrentHashMap<String, DNSSDService>();
     }
 
