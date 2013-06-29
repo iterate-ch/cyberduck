@@ -1,7 +1,7 @@
 package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NullKeychain;
+import ch.cyberduck.core.DisabledPasswordStore;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class DefaultX509TrustManagerTest extends AbstractTestCase {
 
     @BeforeClass
     public static void register() {
-        NullKeychain.register();
+        DisabledPasswordStore.register();
     }
 
     @Test

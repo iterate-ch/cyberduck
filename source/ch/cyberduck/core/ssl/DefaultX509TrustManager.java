@@ -39,7 +39,13 @@ public final class DefaultX509TrustManager implements X509TrustManager {
 
     public DefaultX509TrustManager() {
         try {
-            this.init(KeyStore.getInstance(KeyStore.getDefaultType()));
+            final TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            factory.init(KeyStore.getInstance(KeyStore.getDefaultType()));
+            TrustManager[] trustmanagers = factory.getTrustManagers();
+            if(trustmanagers.length == 0) {
+                throw new NoSuchAlgorithmException("SunX509 trust manager not supported");
+            }
+            this.standardTrustManager = (X509TrustManager) trustmanagers[0];
         }
         catch(NoSuchAlgorithmException e) {
             log.error(e.getMessage());
@@ -47,16 +53,6 @@ public final class DefaultX509TrustManager implements X509TrustManager {
         catch(KeyStoreException e) {
             log.error(e.getMessage());
         }
-    }
-
-    protected void init(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
-        TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        factory.init(keystore);
-        TrustManager[] trustmanagers = factory.getTrustManagers();
-        if(trustmanagers.length == 0) {
-            throw new NoSuchAlgorithmException("SunX509 trust manager not supported");
-        }
-        this.standardTrustManager = (X509TrustManager) trustmanagers[0];
     }
 
     @Override
