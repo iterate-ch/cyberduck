@@ -103,7 +103,7 @@ public class AuthenticationService {
                     options.password = false;
                     prompt.prompt(host.getProtocol(), tenantCredentials,
                             Locale.localizedString("Provide additional login credentials", "Credentials"),
-                            Locale.localizedString("Tenant", "Mosso"), options);
+                            Locale.localizedString("Tenant or project identifier", "Mosso"), options);
                     tenant = tenantCredentials.getUsername();
                 }
                 return new Authentication20AccessKeySecretKeyRequest(
