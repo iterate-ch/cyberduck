@@ -119,7 +119,7 @@ public abstract class CloudSession<C> extends HttpSession<C> {
      * @return Bucket geographical location
      */
     public String getLocation(final Path container) throws BackgroundException {
-        return null;
+        return container.attributes().getRegion();
     }
 
     /**
