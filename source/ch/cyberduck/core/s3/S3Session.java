@@ -81,8 +81,6 @@ import java.util.UUID;
 public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
-    protected RequestEntityRestStorageService client;
-
     public S3Session(Host h) {
         super(h);
     }
@@ -336,13 +334,12 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
 
     @Override
     public RequestEntityRestStorageService connect(final HostKeyController key) throws BackgroundException {
-        client = new RequestEntityRestStorageService(this.configure(host.getHostname())) {
+        return new RequestEntityRestStorageService(this.configure(host.getHostname())) {
             @Override
             public ProviderCredentials getProviderCredentials() {
                 return S3Session.this.getProviderCredentials(host.getCredentials());
             }
         };
-        return client;
     }
 
     @Override

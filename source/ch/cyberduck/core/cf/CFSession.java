@@ -50,8 +50,6 @@ import com.rackspacecloud.client.cloudfiles.FilesRegion;
 public class CFSession extends CloudSession<FilesClient> {
     private static final Logger log = Logger.getLogger(CFSession.class);
 
-    private FilesClient client;
-
     private Map<String, FilesRegion> regions
             = new HashMap<String, FilesRegion>();
 
@@ -64,8 +62,7 @@ public class CFSession extends CloudSession<FilesClient> {
 
     @Override
     public FilesClient connect(final HostKeyController key) throws BackgroundException {
-        client = new FilesClient(this.http());
-        return client;
+        return new FilesClient(this.http());
     }
 
     protected FilesRegion getRegion(final Path container) throws BackgroundException {

@@ -43,16 +43,13 @@ import com.googlecode.sardine.impl.methods.HttpPropFind;
  */
 public class DAVSession extends HttpSession<DAVClient> {
 
-    private DAVClient client;
-
     public DAVSession(Host h) {
         super(h);
     }
 
     @Override
     public DAVClient connect(final HostKeyController key) throws BackgroundException {
-        client = new DAVClient(host, this.http());
-        return client;
+        return new DAVClient(host, this.http());
     }
 
     @Override

@@ -57,8 +57,6 @@ import java.util.TimeZone;
 public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
-    private FTPClient client;
-
     private CompositeFileEntryParser parser;
 
     public FTPSession(Host h) {
@@ -201,7 +199,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         final CustomTrustSSLProtocolSocketFactory f
                 = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
 
-        client = new FTPClient(f, f.getSSLContext());
+        FTPClient client = new FTPClient(f, f.getSSLContext());
         try {
             this.configure(client);
             client.connect(host.getHostname(true), host.getPort());

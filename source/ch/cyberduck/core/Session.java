@@ -50,7 +50,7 @@ public abstract class Session<C> implements TranscriptListener {
      */
     protected Host host;
 
-    private C client;
+    protected C client;
 
     /**
      * Caching files listings of previously listed directories

@@ -69,7 +69,7 @@ import java.security.cert.X509Certificate;
 public abstract class HttpSession<C> extends SSLSession<C> {
     private static final Logger log = Logger.getLogger(HttpSession.class);
 
-    private AbstractHttpClient client;
+    private AbstractHttpClient http;
 
     /**
      * Target hostname of current request
@@ -149,14 +149,14 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         final PoolingClientConnectionManager manager = new PoolingClientConnectionManager(registry);
         manager.setMaxTotal(Preferences.instance().getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
-        client = new DefaultHttpClient(manager, params);
-        client.addRequestInterceptor(new HttpRequestInterceptor() {
+        http = new DefaultHttpClient(manager, params);
+        http.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 target = ((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName();
             }
         });
-        client.addRequestInterceptor(new HttpRequestInterceptor() {
+        http.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 log(true, request.getRequestLine().toString());
@@ -165,7 +165,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 }
             }
         });
-        client.addResponseInterceptor(new HttpResponseInterceptor() {
+        http.addResponseInterceptor(new HttpResponseInterceptor() {
             @Override
             public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
                 log(false, response.getStatusLine().toString());
@@ -175,14 +175,14 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             }
         });
         if(Preferences.instance().getBoolean("http.compression.enable")) {
-            client.addRequestInterceptor(new RequestAcceptEncoding());
-            client.addResponseInterceptor(new ResponseContentEncoding());
+            http.addRequestInterceptor(new RequestAcceptEncoding());
+            http.addResponseInterceptor(new ResponseContentEncoding());
         }
     }
 
     @Override
     protected void logout() throws BackgroundException {
-        client.getConnectionManager().shutdown();
+        http.getConnectionManager().shutdown();
     }
 
     @Override
@@ -191,7 +191,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     }
 
     public AbstractHttpClient http() {
-        return client;
+        return http;
     }
 
     @Override

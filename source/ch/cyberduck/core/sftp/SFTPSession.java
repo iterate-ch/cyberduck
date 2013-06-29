@@ -52,8 +52,6 @@ import ch.ethz.ssh2.crypto.PEMDecryptException;
 public class SFTPSession extends Session<Connection> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
-    private Connection connection;
-
     public SFTPSession(Host h) {
         super(h);
     }
@@ -61,17 +59,17 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public boolean isSecure() {
         if(super.isSecure()) {
-            return connection.isAuthenticationComplete();
+            return client.isAuthenticationComplete();
         }
         return false;
     }
 
-    private SFTPv3Client client;
+    private SFTPv3Client sftp;
 
     @Override
     public Connection connect(final HostKeyController key) throws BackgroundException {
         try {
-            connection = new Connection(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()), host.getPort(),
+            Connection connection = new Connection(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()), host.getPort(),
                     new PreferencesUseragentProvider().get());
             connection.setTCPNoDelay(true);
             connection.addConnectionMonitor(new ConnectionMonitor() {
@@ -116,7 +114,7 @@ public class SFTPSession extends Session<Connection> {
                 log.info("Login successful");
             }
             // Check if authentication is partial
-            if(connection.isAuthenticationPartialSuccess()) {
+            if(client.isAuthenticationPartialSuccess()) {
                 final Credentials additional = new Credentials(host.getCredentials().getUsername(), null, false) {
                     @Override
                     public String getUsernamePlaceholder() {
@@ -137,10 +135,10 @@ public class SFTPSession extends Session<Connection> {
                             Locale.localizedString("Login with username and password", "Credentials"));
                 }
             }
-            if(connection.isAuthenticationComplete()) {
+            if(client.isAuthenticationComplete()) {
                 this.message(Locale.localizedString("Starting SFTP subsystem", "Status"));
                 try {
-                    client = new SFTPv3Client(connection, new PacketListener() {
+                    sftp = new SFTPv3Client(client, new PacketListener() {
                         @Override
                         public void read(String packet) {
                             SFTPSession.this.log(false, packet);
@@ -152,7 +150,7 @@ public class SFTPSession extends Session<Connection> {
                         }
                     });
                     this.message(Locale.localizedString("SFTP subsystem ready", "Status"));
-                    client.setCharset(this.getEncoding());
+                    sftp.setCharset(this.getEncoding());
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
@@ -170,7 +168,7 @@ public class SFTPSession extends Session<Connection> {
     }
 
     public SFTPv3Client sftp() {
-        return client;
+        return sftp;
     }
 
     /**
@@ -186,7 +184,7 @@ public class SFTPSession extends Session<Connection> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using public key authentication with credentials %s", credentials));
         }
-        if(connection.isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
+        if(client.isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
             if(credentials.isPublicKeyAuthentication()) {
                 final Local identity = credentials.getIdentity();
                 final CharArrayWriter privatekey = new CharArrayWriter();
@@ -233,7 +231,7 @@ public class SFTPSession extends Session<Connection> {
                         return this.loginUsingPublicKeyAuthentication(controller, credentials);
                     }
                 }
-                return connection.authenticateWithPublicKey(credentials.getUsername(),
+                return client.authenticateWithPublicKey(credentials.getUsername(),
                         privatekey.toCharArray(), credentials.getPassword());
             }
         }
@@ -250,8 +248,8 @@ public class SFTPSession extends Session<Connection> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using password authentication with credentials %s", credentials));
         }
-        if(connection.isAuthMethodAvailable(credentials.getUsername(), "password")) {
-            return connection.authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
+        if(client.isAuthMethodAvailable(credentials.getUsername(), "password")) {
+            return client.authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
         }
         return false;
     }
@@ -265,8 +263,8 @@ public class SFTPSession extends Session<Connection> {
      */
     private boolean loginUsingChallengeResponseAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
         log.debug("loginUsingChallengeResponseAuthentication:" + credentials);
-        if(connection.isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
-            return connection.authenticateWithKeyboardInteractive(credentials.getUsername(),
+        if(client.isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
+            return client.authenticateWithKeyboardInteractive(credentials.getUsername(),
                     /**
                      * The logic that one has to implement if "keyboard-interactive" authentication shall be
                      * supported.
@@ -306,17 +304,17 @@ public class SFTPSession extends Session<Connection> {
 
     @Override
     protected void logout() throws BackgroundException {
-        if(client != null) {
-            client.close();
-            client = null;
+        if(sftp != null) {
+            sftp.close();
+            sftp = null;
         }
-        connection.close();
+        client.close();
     }
 
     @Override
     public void disconnect() {
-        connection.close(null, true);
-        client = null;
+        client.close(null, true);
+        sftp = null;
         super.disconnect();
     }
 
@@ -325,7 +323,7 @@ public class SFTPSession extends Session<Connection> {
         // "." as referring to the current directory
         final String directory;
         try {
-            directory = client.canonicalPath(".");
+            directory = sftp.canonicalPath(".");
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -337,7 +335,7 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public void noop() throws BackgroundException {
         try {
-            connection.sendIgnorePacket();
+            client.sendIgnorePacket();
         }
         catch(IllegalStateException e) {
             throw new ConnectionCanceledException();
@@ -366,7 +364,7 @@ public class SFTPSession extends Session<Connection> {
     public void sendCommand(final String command) throws BackgroundException {
         ch.ethz.ssh2.Session sess = null;
         try {
-            sess = connection.openSession();
+            sess = client.openSession();
 
             final BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
             final BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStderr())));
