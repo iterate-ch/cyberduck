@@ -65,8 +65,10 @@ public class ODBEditor extends BrowserBackgroundEditor {
      * Called by the native editor when the file has been closed
      */
     public void didCloseFile() {
-        log.debug(String.format("Received notification from editor to close file %s",
-                this.getEdited().getLocal().getAbsolute()));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Received notification from editor to close file %s",
+                    edited.getLocal().getAbsolute()));
+        }
         if(this.isDirty()) {
             this.setClosed(true);
         }
@@ -80,8 +82,10 @@ public class ODBEditor extends BrowserBackgroundEditor {
      * called by the native editor when the file has been saved
      */
     public void didModifyFile() {
-        log.debug(String.format("Received notification from editor to save file %s",
-                this.getEdited().getLocal().getAbsolute()));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Received notification from editor to save file %s",
+                    edited.getLocal().getAbsolute()));
+        }
         this.setDirty(true);
         this.save();
     }

@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
 public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherListener {
     private static final Logger log = Logger.getLogger(WatchEditor.class);
 
-    private FileWatcher monitor;
+    private FileWatcher monitor = new FileWatcher();
 
     /**
      * With custom editor for file type.
@@ -61,7 +61,7 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
      */
     @Override
     public void edit() {
-        if(ApplicationLauncherFactory.get().open(this.getEdited().getLocal(), this.getApplication())) {
+        if(ApplicationLauncherFactory.get().open(edited.getLocal(), this.getApplication())) {
             this.watch();
         }
     }
@@ -70,13 +70,13 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
      * Watch the file for changes
      */
     public void watch() {
-        monitor = new FileWatcher(this.getEdited().getLocal());
-        monitor.register();
+        monitor.register(edited.getLocal());
         monitor.addListener(this);
     }
 
     @Override
     protected void delete() {
+        monitor.close(edited.getLocal());
         monitor.removeListener(this);
         super.delete();
     }

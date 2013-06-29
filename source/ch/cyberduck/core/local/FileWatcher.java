@@ -45,16 +45,13 @@ public class FileWatcher {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
     private WatchService monitor;
-    private Local file;
-    private WatchableFile watchable;
 
-    public FileWatcher(final Local file) {
-        this.file = file;
-        this.watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
+    public FileWatcher() {
         this.monitor = WatchService.newWatchService();
     }
 
-    public void register() {
+    public void register(final Local file) {
+        final WatchableFile watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Register file %s", watchable.getFile()));
@@ -83,12 +80,17 @@ public class FileWatcher {
                         }
                         for(WatchEvent<?> event : key.pollEvents()) {
                             final WatchEvent.Kind<?> kind = event.kind();
-                            log.info(String.format("Detected file system event %s", kind.name()));
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Detected file system event %s", kind.name()));
+                            }
                             if(kind == OVERFLOW) {
                                 continue;
                             }
                             // The filename is the context of the event.
                             final WatchEvent<File> ev = (WatchEvent<File>) event;
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Process file system event %s for %s", kind.name(), ev.context()));
+                            }
                             if(ev.context().equals(new File(file.getAbsolute()).getCanonicalFile())) {
                                 if(ENTRY_MODIFY == kind) {
                                     for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
@@ -141,16 +143,14 @@ public class FileWatcher {
 
     public void removeListener(final FileWatcherListener listener) {
         listeners.remove(listener);
-        if(listeners.isEmpty()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Unwatch file %s", watchable.getFile()));
-            }
-            try {
-                monitor.close();
-            }
-            catch(IOException e) {
-                log.error(String.format("Failure closing file watcher monitor for %s", watchable.getFile()), e);
-            }
+    }
+
+    public void close(final Local local) {
+        try {
+            monitor.close();
+        }
+        catch(IOException e) {
+            log.error(String.format("Failure closing file watcher monitor"), e);
         }
     }
 }
