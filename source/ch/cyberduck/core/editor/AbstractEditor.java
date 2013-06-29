@@ -52,7 +52,7 @@ public abstract class AbstractEditor implements Editor {
     /**
      * File has changed but not uploaded yet
      */
-    private boolean dirty;
+    private boolean modified;
 
     /**
      * The edited path
@@ -108,12 +108,12 @@ public abstract class AbstractEditor implements Editor {
         return closed;
     }
 
-    public boolean isDirty() {
-        return dirty;
+    public boolean isModified() {
+        return modified;
     }
 
-    public void setDirty(boolean dirty) {
-        this.dirty = dirty;
+    public void setModified(boolean modified) {
+        this.modified = modified;
     }
 
     protected void delete() {
@@ -211,7 +211,7 @@ public abstract class AbstractEditor implements Editor {
                     if(isClosed()) {
                         delete();
                     }
-                    setDirty(false);
+                    setModified(false);
                 }
             }
 

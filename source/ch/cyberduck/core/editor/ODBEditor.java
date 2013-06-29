@@ -69,7 +69,7 @@ public class ODBEditor extends BrowserBackgroundEditor {
             log.debug(String.format("Received notification from editor to close file %s",
                     edited.getLocal().getAbsolute()));
         }
-        if(this.isDirty()) {
+        if(this.isModified()) {
             this.setClosed(true);
         }
         else {
@@ -86,7 +86,7 @@ public class ODBEditor extends BrowserBackgroundEditor {
             log.debug(String.format("Received notification from editor to save file %s",
                     edited.getLocal().getAbsolute()));
         }
-        this.setDirty(true);
+        this.setModified(true);
         this.save();
     }
 }
