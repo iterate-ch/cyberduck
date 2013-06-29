@@ -2384,7 +2384,6 @@
 				4739EF680856981300405FD3 /* Headers */,
 				4739EF6A0856981300405FD3 /* Sources */,
 				4739EF6C0856981300405FD3 /* Frameworks */,
-				4739EF700856981300405FD3 /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2403,7 +2402,6 @@
 				4739EF84085698F600405FD3 /* Headers */,
 				4739EF89085698F600405FD3 /* Sources */,
 				4739EF8D085698F600405FD3 /* Frameworks */,
-				4739EF91085698F600405FD3 /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2422,7 +2420,6 @@
 				4739EF960856990000405FD3 /* Headers */,
 				4739EF980856990000405FD3 /* Sources */,
 				4739EF9A0856990000405FD3 /* Frameworks */,
-				4739EF9F0856990000405FD3 /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2441,7 +2438,6 @@
 				4739EFA40856990900405FD3 /* Headers */,
 				4739EFA60856990900405FD3 /* Sources */,
 				4739EFA80856990900405FD3 /* Frameworks */,
-				4739EFAD0856990900405FD3 /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2460,7 +2456,6 @@
 				4739EFB20856991200405FD3 /* Headers */,
 				4739EFB60856991200405FD3 /* Sources */,
 				4739EFBA0856991200405FD3 /* Frameworks */,
-				4739EFBE0856991200405FD3 /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2479,7 +2474,6 @@
 				4762DAB909FC42EC0034C662 /* Headers */,
 				4762DABB09FC42EC0034C662 /* Sources */,
 				4762DABD09FC42EC0034C662 /* Frameworks */,
-				4762DAC209FC42EC0034C662 /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2498,7 +2492,6 @@
 				477A10410FD08DBA00BAD4AD /* Headers */,
 				477A10440FD08DBA00BAD4AD /* Sources */,
 				477A10460FD08DBA00BAD4AD /* Frameworks */,
-				477A104A0FD08DBA00BAD4AD /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2517,7 +2510,6 @@
 				478CFE770F9932B3000560EF /* Headers */,
 				478CFE7A0F9932B3000560EF /* Sources */,
 				478CFE7C0F9932B3000560EF /* Frameworks */,
-				478CFE7F0F9932B3000560EF /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2536,7 +2528,6 @@
 				478ECD010DAD5743008A5B1F /* Headers */,
 				478ECD0B0DAD5743008A5B1F /* Sources */,
 				478ECD110DAD5743008A5B1F /* Frameworks */,
-				478ECD150DAD5743008A5B1F /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2555,7 +2546,6 @@
 				4797D26F1628276C00340E1C /* Headers */,
 				4797D2711628276C00340E1C /* Sources */,
 				4797D2731628276C00340E1C /* Frameworks */,
-				4797D2761628276C00340E1C /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2574,7 +2564,6 @@
 				47BEDAF70B92960400141EB4 /* Headers */,
 				47BEDAF90B92960400141EB4 /* Sources */,
 				47BEDAFB0B92960400141EB4 /* Frameworks */,
-				47BEDB000B92960400141EB4 /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2593,7 +2582,6 @@
 				47C57EAF162F471700A272BC /* Headers */,
 				47C57EB1162F471700A272BC /* Sources */,
 				47C57EB3162F471700A272BC /* Frameworks */,
-				47C57EB6162F471700A272BC /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2612,7 +2600,6 @@
 				47F102AE1628D57500923FDE /* Headers */,
 				47F102B01628D57500923FDE /* Sources */,
 				47F102B21628D57500923FDE /* Frameworks */,
-				47F102B51628D57500923FDE /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2631,7 +2618,6 @@
 				47FB9C5F1725A5CC00FE33C1 /* Headers */,
 				47FB9C611725A5CC00FE33C1 /* Sources */,
 				47FB9C631725A5CC00FE33C1 /* Frameworks */,
-				47FB9C671725A5CC00FE33C1 /* Rez */,
 			);
 			buildRules = (
 			);
@@ -2855,107 +2841,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXRezBuildPhase section */
-		4739EF700856981300405FD3 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4739EF91085698F600405FD3 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4739EF9F0856990000405FD3 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4739EFAD0856990900405FD3 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4739EFBE0856991200405FD3 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4762DAC209FC42EC0034C662 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		477A104A0FD08DBA00BAD4AD /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		478CFE7F0F9932B3000560EF /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		478ECD150DAD5743008A5B1F /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4797D2761628276C00340E1C /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		47BEDB000B92960400141EB4 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		47C57EB6162F471700A272BC /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		47F102B51628D57500923FDE /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		47FB9C671725A5CC00FE33C1 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		4735940F0CE76EE50085DEAC /* Prune NIBs */ = {
