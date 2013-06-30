@@ -83,7 +83,6 @@ public abstract class AbstractEditor implements Editor {
      */
     protected abstract void open(BackgroundAction<Void> background);
 
-
     /**
      * @param background Upload transfer
      */
