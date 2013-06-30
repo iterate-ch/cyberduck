@@ -1037,16 +1037,10 @@ public class BrowserController extends WindowController
     }
 
     private abstract class AbstractBrowserTableDelegate<E> extends AbstractPathTableDelegate {
-
         public AbstractBrowserTableDelegate() {
             BrowserController.this.addListener(new WindowListener() {
                 @Override
                 public void windowWillClose() {
-                    if(quicklook.isAvailable()) {
-                        if(quicklook.isOpen()) {
-                            quicklook.close();
-                        }
-                    }
                 }
             });
         }
@@ -1084,6 +1078,8 @@ public class BrowserController extends WindowController
                 this.setBrowserColumnSortingIndicator(null, this.selectedColumnIdentifier());
                 // Set the newly selected column
                 this.setSelectedColumn(tableColumn);
+                // Update the default value
+                Preferences.instance().setProperty("browser.sort.column", this.selectedColumnIdentifier());
             }
             this.setBrowserColumnSortingIndicator(
                     this.isSortedAscending() ?
@@ -4494,6 +4490,11 @@ public class BrowserController extends WindowController
      */
     @Override
     protected void invalidate() {
+        if(quicklook.isAvailable()) {
+            if(quicklook.isOpen()) {
+                quicklook.close();
+            }
+        }
         bookmarkTable.setDelegate(null);
         bookmarkTable.setDataSource(null);
         bookmarkModel.invalidate();
