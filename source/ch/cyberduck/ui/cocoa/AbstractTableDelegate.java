@@ -39,21 +39,25 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
 
     private NSTableColumn selectedColumn;
 
+    protected AbstractTableDelegate() {
+    }
+
+    protected AbstractTableDelegate(final NSTableColumn selectedColumn) {
+        this.selectedColumn = selectedColumn;
+    }
+
     protected void setSelectedColumn(NSTableColumn selectedColumn) {
         this.selectedColumn = selectedColumn;
-        // Update the default value
-        Preferences.instance().setProperty("browser.sort.column", this.selectedColumnIdentifier());
     }
 
     /**
-     * @return The identifier of the column selected or the default sorting column if no selection
+     * @return The identifier of the column selected or null
      */
     protected String selectedColumnIdentifier() {
-        if(null == this.selectedColumn) {
-            //return default value
-            return Preferences.instance().getProperty("browser.sort.column");
+        if(null == selectedColumn) {
+            return null;
         }
-        //return previously set custom sorting preference
+        // Return previously set custom sorting preference
         return this.selectedColumn.identifier();
     }
 
@@ -147,7 +151,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     public abstract void selectionDidChange(NSNotification notification);
 
     public void selectionIsChanging(NSNotification notification) {
-        ;
+        //
     }
 
     // ----------------------------------------------------------

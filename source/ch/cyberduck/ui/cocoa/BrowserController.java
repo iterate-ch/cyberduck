@@ -208,8 +208,8 @@ public class BrowserController extends WindowController
 
     public static void updateBrowserTableColumns() {
         for(BrowserController controller : MainController.getBrowsers()) {
-            controller._updateBrowserColumns(controller.browserListView);
-            controller._updateBrowserColumns(controller.browserOutlineView);
+            controller._updateBrowserColumns(controller.browserListView, controller.browserListViewDelegate);
+            controller._updateBrowserColumns(controller.browserOutlineView, controller.browserOutlineViewDelegate);
         }
     }
 
@@ -222,8 +222,8 @@ public class BrowserController extends WindowController
         this.toolbar.setAutosavesConfiguration(true);
         this.window().setToolbar(toolbar);
         this.window().makeFirstResponder(this.quickConnectPopup);
-        this._updateBrowserColumns(this.browserListView);
-        this._updateBrowserColumns(this.browserOutlineView);
+        this._updateBrowserColumns(this.browserListView, browserListViewDelegate);
+        this._updateBrowserColumns(this.browserOutlineView, browserOutlineViewDelegate);
         if(Preferences.instance().getBoolean("browser.transcript.open")) {
             this.logDrawer.open();
         }
@@ -1419,7 +1419,7 @@ public class BrowserController extends WindowController
                 NSIndexSet.indexSetWithIndexesInRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(bookmarkTable.numberOfRows()))));
     }
 
-    private void _updateBrowserColumns(NSTableView table) {
+    private void _updateBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate<Path> delegate) {
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.SIZE_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnSize")) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.SIZE_COLUMN);
@@ -1497,6 +1497,8 @@ public class BrowserController extends WindowController
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
+        delegate.setSelectedColumn(
+                table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column")));
         table.setIndicatorImage_inTableColumn((browserListViewDelegate).isSortedAscending() ?
                 IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
                 IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
