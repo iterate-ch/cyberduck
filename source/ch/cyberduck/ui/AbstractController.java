@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
@@ -42,6 +43,12 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public abstract class AbstractController implements Controller {
     private static Logger log = Logger.getLogger(AbstractController.class);
+
+    protected ThreadPool threadPool
+            = new ThreadPool();
+
+    protected ScheduledExecutorService timerPool
+            = Executors.newScheduledThreadPool(1);
 
     /**
      * Does wait for main action to return before continuing the caller thread.
@@ -73,35 +80,35 @@ public abstract class AbstractController implements Controller {
      * as soon as no other previous <code>BackgroundAction</code> is pending.
      * Will return immediatly but not run the runnable before the lock of the runnable is acquired.
      *
-     * @param runnable The runnable to execute in a secondary Thread
+     * @param action The runnable to execute in a secondary Thread
      * @see java.lang.Thread
      * @see ch.cyberduck.core.threading.BackgroundAction#lock()
      */
     @Override
-    public <T> Future<T> background(final BackgroundAction<T> runnable) {
+    public <T> Future<T> background(final BackgroundAction<T> action) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run action %s in background", runnable));
+            log.debug(String.format("Run action %s in background", action));
         }
-        runnable.init();
-        actions.add(runnable);
+        action.init();
+        actions.add(action);
         // Start background task
-        Callable<T> command = new Callable<T>() {
+        final Callable<T> command = new Callable<T>() {
             @Override
             public T call() {
                 // Synchronize all background threads to this lock so actions run
                 // sequentially as they were initiated from the main interface thread
-                synchronized(runnable.lock()) {
+                synchronized(action.lock()) {
                     final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Acquired lock for background runnable %s", runnable));
+                        log.debug(String.format("Acquired lock for background runnable %s", action));
                     }
                     try {
-                        runnable.prepare();
+                        action.prepare();
                         // Execute the action of the runnable
-                        return runnable.call();
+                        return action.call();
                     }
                     catch(ConnectionCanceledException e) {
-                        log.warn(String.format("Connection canceled for background task %s", runnable));
+                        log.warn(String.format("Connection canceled for background task %s", action));
                     }
                     catch(BackgroundException e) {
                         log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
@@ -109,7 +116,7 @@ public abstract class AbstractController implements Controller {
                     finally {
                         // Increase the run counter
                         try {
-                            runnable.finish();
+                            action.finish();
                         }
                         catch(BackgroundException e) {
                             log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
@@ -119,7 +126,7 @@ public abstract class AbstractController implements Controller {
                             @Override
                             public void run() {
                                 try {
-                                    runnable.cleanup();
+                                    action.cleanup();
                                 }
                                 catch(Exception e) {
                                     log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
@@ -127,7 +134,7 @@ public abstract class AbstractController implements Controller {
                             }
                         });
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Releasing lock for background runnable %s", runnable));
+                            log.debug(String.format("Releasing lock for background runnable %s", action));
                         }
                         autorelease.operate();
                     }
@@ -136,20 +143,17 @@ public abstract class AbstractController implements Controller {
                 return null;
             }
         };
-        final Future<T> future = ThreadPool.instance().execute(command);
+        try {
+            return threadPool.execute(command);
+        }
+        catch(RejectedExecutionException e) {
+            log.error(String.format("Error scheduling background task %s for execution. %s", action, e.getMessage()));
+            action.cleanup();
+        }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Scheduled background runnable %s for execution", runnable));
+            log.info(String.format("Scheduled background runnable %s for execution", action));
         }
-        return future;
-    }
-
-    private static ScheduledExecutorService timerPool;
-
-    public static ScheduledExecutorService getTimerPool() {
-        if(null == timerPool) {
-            timerPool = Executors.newScheduledThreadPool(1);
-        }
-        return timerPool;
+        return null;
     }
 
     public void openUrl(final DescriptiveUrl url) {
@@ -163,5 +167,10 @@ public abstract class AbstractController implements Controller {
      */
     public void openUrl(String url) {
         BrowserLauncherFactory.get().open(url);
+    }
+
+    protected void invalidate() {
+        timerPool.shutdownNow();
+        threadPool.shutdown();
     }
 }

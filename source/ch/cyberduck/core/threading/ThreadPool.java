@@ -31,22 +31,6 @@ import java.util.concurrent.ThreadFactory;
  */
 public class ThreadPool {
 
-    private static ThreadPool instance;
-
-    private static final Object lock = new Object();
-
-    /**
-     * @return The singleton instance of me.
-     */
-    public static ThreadPool instance() {
-        synchronized(lock) {
-            if(null == instance) {
-                instance = new ThreadPool();
-            }
-            return instance;
-        }
-    }
-
     private final ThreadFactory threadFactory
             = new NamedThreadFactory();
 

@@ -2917,7 +2917,7 @@ public class BrowserController extends WindowController
                 @Override
                 public void willTransferPath(Path path) {
                     meter.reset();
-                    progressTimer = getTimerPool().scheduleAtFixedRate(new Runnable() {
+                    progressTimer = timerPool.scheduleAtFixedRate(new Runnable() {
                         @Override
                         public void run() {
                             invoke(new WindowMainAction(BrowserController.this) {

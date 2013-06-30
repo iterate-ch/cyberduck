@@ -69,6 +69,7 @@ public class ProxyController extends AbstractController {
      * Free all locked resources by this controller; also remove me from all observables;
      * marks this controller to be garbage collected as soon as needed
      */
+    @Override
     protected void invalidate() {
         if(log.isDebugEnabled()) {
             log.debug("invalidate:" + this.toString());
@@ -76,6 +77,7 @@ public class ProxyController extends AbstractController {
         if(id != null) {
             NSNotificationCenter.defaultCenter().removeObserver(id);
         }
+        super.invalidate();
     }
 
     /**
