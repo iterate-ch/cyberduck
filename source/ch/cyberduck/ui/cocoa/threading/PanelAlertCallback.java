@@ -34,7 +34,7 @@ import ch.cyberduck.ui.cocoa.application.NSView;
 import org.rococoa.cocoa.foundation.NSRect;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PanelAlertCallback implements AlertCallback {
 
@@ -55,18 +55,6 @@ public class PanelAlertCallback implements AlertCallback {
                     failure.isNetworkFailure() ? Locale.localizedString("Network Diagnostics") : null, //other button
                     Locale.localizedString("Cancel") // alternate button
             );
-            if(log.length() > 0) {
-                final TranscriptController transcript = new TranscriptController() {
-                    @Override
-                    public boolean isOpen() {
-                        return true;
-                    }
-                };
-                transcript.log(true, log.toString());
-                final NSView view = transcript.getLogView();
-                view.setFrame(new NSRect(alert.window().contentView().frame().size.width.doubleValue(), 50d));
-                alert.setAccessoryView(view);
-            }
             alert.setShowsHelp(true);
             final AlertController c = new AlertController(controller, alert) {
                 @Override
@@ -91,6 +79,18 @@ public class PanelAlertCallback implements AlertCallback {
                     controller.openUrl(site.toString());
                 }
             };
+            if(log.length() > 0) {
+                final TranscriptController transcript = new TranscriptController() {
+                    @Override
+                    public boolean isOpen() {
+                        return true;
+                    }
+                };
+                transcript.log(true, log.toString());
+                final NSView view = transcript.getLogView();
+                view.setFrame(new NSRect(0, 100d));
+                c.setAccessoryView(view);
+            }
             c.beginSheet();
         }
     }
