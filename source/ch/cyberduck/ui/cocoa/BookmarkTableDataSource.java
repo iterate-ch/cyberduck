@@ -141,7 +141,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                     delayed.cancel(false);
                 }
                 // Delay to 1 second. When typing changes we don't have to save every iteration.
-                delayed = getTimerPool().schedule(new Runnable() {
+                delayed = timerPool.schedule(new Runnable() {
                     public void run() {
                         controller.invoke(new WindowMainAction(controller) {
                             @Override
