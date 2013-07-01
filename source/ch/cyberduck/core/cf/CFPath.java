@@ -99,9 +99,6 @@ public class CFPath extends CloudPath {
 
     @Override
     public boolean exists() throws BackgroundException {
-        if(super.exists()) {
-            return true;
-        }
         if(this.isContainer()) {
             try {
                 return session.getClient().containerExists(session.getRegion(this.getContainer()),

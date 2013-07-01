@@ -149,9 +149,6 @@ public class DAVPath extends HttpPath {
 
     @Override
     public boolean exists() throws BackgroundException {
-        if(super.exists()) {
-            return true;
-        }
         if(this.attributes().isDirectory()) {
             // Parent directory may not be accessible. Issue #5662
             try {
@@ -164,7 +161,7 @@ public class DAVPath extends HttpPath {
                 throw new DefaultIOExceptionMappingService().map(e, this);
             }
         }
-        return false;
+        return super.exists();
     }
 
     @Override
