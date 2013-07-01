@@ -423,7 +423,7 @@ public class SFTPPath extends Path {
             final String mode = Preferences.instance().getProperty("ssh.transfer");
             if(mode.equals(Protocol.SFTP.getIdentifier())) {
                 SFTPv3FileHandle handle;
-                if(status.isResume() && this.exists()) {
+                if(status.isResume()) {
                     handle = session.sftp().openFile(this.getAbsolute(),
                             SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
                 }
