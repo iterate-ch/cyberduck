@@ -2158,19 +2158,8 @@ public class BrowserController extends WindowController
     }
 
     public void setStatus() {
-        if(this.getSelectedTabView() == TAB_BOOKMARKS) {
-            this.message(String.format("%s %s", this.bookmarkTable.numberOfRows(), Locale.localizedString("Bookmarks")));
-        }
-        else if(this.getSelectedTabView() == TAB_LIST_VIEW
-                || this.getSelectedTabView() == TAB_OUTLINE_VIEW) {
-            final BackgroundAction current = this.getActions().getCurrent();
-            if(null == current) {
-                this.message(null);
-            }
-            else {
-                this.message(current.getActivity());
-            }
-        }
+        final BackgroundAction current = this.getActions().getCurrent();
+        this.message(null != current ? current.getActivity() : null);
     }
 
     /**
@@ -2184,6 +2173,12 @@ public class BrowserController extends WindowController
                     TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         else {
+            if(this.getSelectedTabView() == TAB_BOOKMARKS) {
+                statusLabel.setAttributedStringValue(
+                        NSAttributedString.attributedStringWithAttributes(String.format("%s %s", this.bookmarkTable.numberOfRows(),
+                                Locale.localizedString("Bookmarks")),
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
+            }
             if(this.isConnected()) {
                 statusLabel.setAttributedStringValue(
                         NSAttributedString.attributedStringWithAttributes(MessageFormat.format(Locale.localizedString("{0} Files"),
