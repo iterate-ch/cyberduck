@@ -17,8 +17,12 @@ package ch.cyberduck.core.cf;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.RootListService;
+import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -54,6 +58,12 @@ public class SwiftContainerListService implements RootListService<CFSession> {
                     final Path container = new CFPath(session, String.format("/%s", f.getName()),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     container.attributes().setRegion(f.getRegion().getRegionId());
+                    if(Preferences.instance().getBoolean("cf.cdn.preload")) {
+                        final DistributionConfiguration cdn = session.cdn(new DisabledLoginController());
+                        for(Distribution.Method method : cdn.getMethods(container)) {
+                            cdn.read(container, method);
+                        }
+                    }
                     containers.add(container);
                 }
             }
