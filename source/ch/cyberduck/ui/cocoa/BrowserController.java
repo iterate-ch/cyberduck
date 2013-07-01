@@ -2650,8 +2650,8 @@ public class BrowserController extends WindowController
                 null);
     }
 
-    public void downloadToPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, final ID contextInfo) {
-        sheet.close();
+    public void downloadToPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
+        sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             final Local downloadfolder = LocalFactory.createLocal(sheet.filename());
             this.download(this.getSelectedPaths(), downloadfolder);
@@ -2675,7 +2675,7 @@ public class BrowserController extends WindowController
     }
 
     public void downloadAsPanelDidEnd_returnCode_contextInfo(NSSavePanel sheet, int returncode, final ID contextInfo) {
-        sheet.close();
+        sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             String filename;
             if((filename = sheet.filename()) != null) {
@@ -2710,8 +2710,8 @@ public class BrowserController extends WindowController
         );
     }
 
-    public void syncPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, final ID contextInfo) {
-        sheet.close();
+    public void syncPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
+        sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filenames().count().intValue() > 0) {
                 final Path selected;
@@ -2794,8 +2794,8 @@ public class BrowserController extends WindowController
         uploadPanel.setShowsHiddenFiles(uploadPanelHiddenFilesCheckbox.state() == NSCell.NSOnState);
     }
 
-    public void uploadPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
-        sheet.close();
+    public void uploadPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
+        sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             Path destination = getSelectedPath();
             if(null == destination) {
