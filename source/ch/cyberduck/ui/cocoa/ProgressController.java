@@ -185,20 +185,21 @@ public class ProgressController extends BundleController implements ProgressList
 
     @Override
     public void message(final String message) {
-        messageText = message;
-        StringBuilder b = new StringBuilder();
-        if(null == messageText) {
+        if(StringUtils.isBlank(message)) {
             // Do not display any progress text when transfer is stopped
             final Date timestamp = transfer.getTimestamp();
             if(null != timestamp) {
                 messageText = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime(), false);
             }
+            else {
+                messageText = StringUtils.EMPTY;
+            }
         }
-        if(messageText != null) {
-            b.append(messageText);
+        else {
+            messageText = message;
         }
         messageField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                b.toString(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                messageText, TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setProgressText() {
