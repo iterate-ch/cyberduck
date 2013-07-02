@@ -31,7 +31,6 @@ import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -68,8 +67,7 @@ public abstract class Transfer implements Serializable {
     private long transferred = 0;
 
     /**
-     * The transfer has been canceled and should
-     * not continue any further processing
+     * The transfer has been canceled and should not continue any further processing
      */
     private boolean canceled;
 
@@ -466,7 +464,7 @@ public abstract class Transfer implements Serializable {
         this.check();
         if(file.attributes().isDirectory()) {
             boolean failure = false;
-            for(Path child : this.children(file)) {
+            for(Path child : this.cache().get(file.getReference())) {
                 // Recursive
                 this.transfer(child, filter, options, this.status.get(child));
                 if(!this.status.get(child).isComplete()) {
@@ -544,7 +542,7 @@ public abstract class Transfer implements Serializable {
      * @param p      File
      * @param filter Filter to apply to exclude files from transfer
      */
-    private void prepare(final Path p, final TransferPathFilter filter) throws BackgroundException {
+    protected void prepare(final Path p, final TransferPathFilter filter) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer status for path %s", p.getAbsolute()));
         }
@@ -558,7 +556,6 @@ public abstract class Transfer implements Serializable {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Accepted in %s transfer", p.getAbsolute()));
             }
-            session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
             s = filter.prepare(session, p);
             // Add transfer length to total bytes
             this.addSize(s.getLength());
@@ -575,7 +572,11 @@ public abstract class Transfer implements Serializable {
         status.put(p, s);
         if(p.attributes().isDirectory()) {
             // Call recursively for all children
-            for(Path child : this.children(p)) {
+            final AttributedList<Path> children = this.children(p);
+            // Put into cache for later reference when transferring
+            this.cache().put(p.getReference(), children);
+            // Call recursively
+            for(Path child : children) {
                 this.prepare(child, filter);
             }
         }
@@ -677,11 +678,10 @@ public abstract class Transfer implements Serializable {
             s.setCanceled();
         }
         if(this.isCanceled()) {
-            // Called prevously; now force
+            // Called previously; now force
             this.interrupt();
         }
         canceled = true;
-        Queue.instance().remove(this);
     }
 
     /**

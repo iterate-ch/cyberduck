@@ -41,6 +41,7 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.normalizer.CopyRootPathsNormalizer;
+import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 
 import org.apache.log4j.Logger;
 
@@ -154,20 +155,24 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> children(final Path parent) throws BackgroundException {
-        if(this.cache().containsKey(parent.getReference())) {
-            return this.cache().get(parent.getReference());
-        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", parent));
         }
-        final AttributedList<Path> list = parent.list();
-        this.cache().put(parent.getReference(), list);
-        final Path target = files.get(parent);
-        for(Path p : list) {
-            files.put(p, PathFactory.createPath(destination, target, p.getName(), p.attributes().getType()));
+        if(parent.attributes().isSymbolicLink()
+                && new DownloadSymlinkResolver(this.getRoots()).resolve(parent)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Do not list children for symbolic link %s", parent));
+            }
+            return AttributedList.emptyList();
         }
-        destination.cache().put(target.getReference(), AttributedList.<Path>emptyList());
-        return list;
+        else {
+            final AttributedList<Path> list = parent.list();
+            final Path target = files.get(parent);
+            for(Path p : list) {
+                files.put(p, PathFactory.createPath(destination, target, p.getName(), p.attributes().getType()));
+            }
+            return list;
+        }
     }
 
     @Override

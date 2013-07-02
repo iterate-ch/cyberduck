@@ -80,29 +80,24 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> children(final Path parent) throws BackgroundException {
-        if(this.cache().containsKey(parent.getReference())) {
-            return this.cache().get(parent.getReference()).filter(null, filter);
-        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", parent));
         }
-        final AttributedList<Path> list;
         if(parent.attributes().isSymbolicLink()
                 && new DownloadSymlinkResolver(this.getRoots()).resolve(parent)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Do not list children for symbolic link %s", parent));
             }
-            list = AttributedList.emptyList();
+            return AttributedList.emptyList();
         }
         else {
-            list = parent.list().filter(filter);
+            AttributedList<Path> list = parent.list().filter(filter);
             for(Path download : list) {
                 // Change download path relative to parent local folder
                 download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));
             }
+            return list;
         }
-        this.cache().put(parent.getReference(), list);
-        return list;
     }
 
     @Override

@@ -9,7 +9,12 @@ import ch.cyberduck.core.threading.BackgroundException;
  */
 public interface TransferPathFilter {
 
-    boolean accept(final Session session, Path file) throws BackgroundException;
+    /**
+     * @param session Connection
+     * @param file    File
+     * @return True if file should be transferred
+     */
+    boolean accept(Session session, Path file) throws BackgroundException;
 
     /**
      * Called before the file will actually get transferred. Should prepare for the transfer
@@ -17,18 +22,19 @@ public interface TransferPathFilter {
      * Must only be called exactly once for each file.
      * Must only be called if #accept for the file returns true
      *
-     * @param p File
+     * @param session Connection
+     * @param file    File
      * @return Transfer status
-     * @see ch.cyberduck.core.Filter#accept(Object)
      */
-    TransferStatus prepare(final Session session, Path p) throws BackgroundException;
+    TransferStatus prepare(Session session, Path file) throws BackgroundException;
 
     /**
      * Post processing of completed transfer.
      *
-     * @param p       File
+     * @param session Connection
+     * @param file    File
      * @param options Options
      * @param status  Transfer status
      */
-    void complete(final Session session, Path p, TransferOptions options, TransferStatus status) throws BackgroundException;
+    void complete(Session session, Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
 }

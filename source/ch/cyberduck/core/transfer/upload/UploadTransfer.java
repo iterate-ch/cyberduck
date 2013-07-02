@@ -1,8 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 /*
- * Copyright (c) 2002-2010 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,13 +14,11 @@ package ch.cyberduck.core.transfer.upload;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.AbstractStreamListener;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
@@ -77,49 +74,26 @@ public class UploadTransfer extends Transfer {
         return dict.getSerialized();
     }
 
-    /**
-     * File listing cache for children of the root paths not part of the session cache because
-     * they only exist on the local file system.
-     */
-    private final Cache cache = new Cache() {
-        @Override
-        public void clear() {
-            super.clear();
-            session.cache().clear();
-        }
-    };
-
-    @Override
-    public Cache cache() {
-        return cache;
-    }
-
     @Override
     public AttributedList<Path> children(final Path parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Children for %s", parent));
+            log.debug(String.format("List children for %s", parent));
         }
         if(parent.getLocal().attributes().isSymbolicLink()
                 && new UploadSymlinkResolver(this.getRoots()).resolve(parent)) {
             if(log.isDebugEnabled()) {
-                log.debug("Do not list children for symbolic link:" + parent);
+                log.debug(String.format("Do not list children for symbolic link %s", parent));
             }
-            this.cache().put(parent.getReference(), AttributedList.<Path>emptyList());
+            return AttributedList.emptyList();
         }
-        else if(!this.cache().containsKey(parent.getReference())) {
-            if(!parent.getLocal().exists()) {
-                // Cannot fetch file listing of non existent file
-                this.cache().put(parent.getReference(), AttributedList.<Path>emptyList());
+        else {
+            AttributedList<Path> list = new AttributedList<Path>();
+            for(Local local : parent.getLocal().list().filter(filter)) {
+                final Path child = PathFactory.createPath(session, parent, local);
+                list.add(child);
             }
-            else {
-                final AttributedList<Path> children = new AttributedList<Path>();
-                for(Local local : parent.getLocal().list().filter(filter)) {
-                    children.add(PathFactory.createPath(session, parent, local));
-                }
-                this.cache().put(parent.getReference(), children);
-            }
+            return list;
         }
-        return this.cache().get(parent.getReference());
     }
 
     @Override
@@ -160,14 +134,14 @@ public class UploadTransfer extends Transfer {
             for(Path upload : this.getRoots()) {
                 this.check();
                 if(upload.exists()) {
-                    if(upload.getLocal().attributes().isDirectory()) {
+                    if(upload.attributes().isDirectory()) {
                         if(this.children(upload).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
                     // Prompt user to choose a filter
-                    TransferAction result = prompt.prompt();
+                    final TransferAction result = prompt.prompt();
                     return this.filter(prompt, result);
                 }
             }
