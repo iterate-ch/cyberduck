@@ -490,7 +490,6 @@ public class S3Path extends CloudPath {
         // Default metadata for new files
         for(String m : Preferences.instance().getList("s3.metadata.default")) {
             if(StringUtils.isBlank(m)) {
-                log.warn(String.format("Invalid header %s", m));
                 continue;
             }
             if(!m.contains("=")) {
