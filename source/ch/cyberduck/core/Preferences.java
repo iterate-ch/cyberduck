@@ -274,6 +274,7 @@ public abstract class Preferences {
         defaults.put("browser.columnOwner", String.valueOf(false));
         defaults.put("browser.columnGroup", String.valueOf(false));
         defaults.put("browser.columnPermissions", String.valueOf(false));
+        defaults.put("browser.columnRegion", String.valueOf(false));
 
         defaults.put("browser.sort.column", "FILENAME");
         defaults.put("browser.sort.ascending", String.valueOf(true));
