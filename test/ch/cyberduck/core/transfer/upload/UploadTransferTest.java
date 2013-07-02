@@ -86,6 +86,6 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         };
         Transfer t = new UploadTransfer(root);
-        assertEquals(Collections.singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
+        assertEquals(Collections.<Path>singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
     }
 }

@@ -89,7 +89,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         };
         root.setLocal(new NullLocal(null, "l"));
         Transfer t = new DownloadTransfer(root);
-        assertEquals(Collections.singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
+        assertEquals(Collections.<Path>singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
     }
 
     @Test(expected = NullPointerException.class)

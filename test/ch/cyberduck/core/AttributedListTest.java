@@ -38,6 +38,6 @@ public class AttributedListTest extends AbstractTestCase {
                 return !file.getName().equals("b");
             }
         }).isEmpty());
-        assertEquals(Collections.emptyList(), list.attributes().getHidden());
+        assertEquals(Collections.<Path>emptyList(), list.attributes().getHidden());
     }
 }
