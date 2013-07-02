@@ -169,7 +169,7 @@ public class CFSession extends CloudSession<FilesClient> {
     @Override
     public String toHttpURL(final Path path) {
         if(distributions.containsKey(path.getContainer())) {
-            return distributions.get(path).getURL(path);
+            return distributions.get(path.getContainer()).getURL(path);
         }
         return null;
     }
