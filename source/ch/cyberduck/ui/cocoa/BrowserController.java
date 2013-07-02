@@ -2958,6 +2958,11 @@ public class BrowserController extends WindowController
                 }
 
                 @Override
+                public List<Session<?>> getSessions() {
+                    return transfer.getSessions();
+                }
+
+                @Override
                 public String getActivity() {
                     return transfer.getName();
                 }
