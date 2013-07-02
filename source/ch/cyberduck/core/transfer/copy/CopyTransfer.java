@@ -153,20 +153,21 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> children(final Path source) throws BackgroundException {
-        if(this.cache().containsKey(source.getReference())) {
-            return this.cache().get(source.getReference());
+    public AttributedList<Path> children(final Path parent) throws BackgroundException {
+        if(this.cache().containsKey(parent.getReference())) {
+            return this.cache().get(parent.getReference());
         }
-        else {
-            final AttributedList<Path> list = source.list();
-            this.cache().put(source.getReference(), list);
-            final Path target = files.get(source);
-            for(Path p : list) {
-                files.put(p, PathFactory.createPath(destination, target, p.getName(), p.attributes().getType()));
-            }
-            destination.cache().put(target.getReference(), AttributedList.<Path>emptyList());
-            return list;
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("List children for %s", parent));
         }
+        final AttributedList<Path> list = parent.list();
+        this.cache().put(parent.getReference(), list);
+        final Path target = files.get(parent);
+        for(Path p : list) {
+            files.put(p, PathFactory.createPath(destination, target, p.getName(), p.attributes().getType()));
+        }
+        destination.cache().put(target.getReference(), AttributedList.<Path>emptyList());
+        return list;
     }
 
     @Override
