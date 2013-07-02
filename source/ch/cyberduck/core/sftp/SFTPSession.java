@@ -265,7 +265,9 @@ public class SFTPSession extends Session<Connection> {
      * @return True if authentication succeeded
      */
     private boolean loginUsingChallengeResponseAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
-        log.debug("loginUsingChallengeResponseAuthentication:" + credentials);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Login using challenge response authentication with credentials %s", credentials));
+        }
         if(client.isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
             return client.authenticateWithKeyboardInteractive(credentials.getUsername(),
                     /**
