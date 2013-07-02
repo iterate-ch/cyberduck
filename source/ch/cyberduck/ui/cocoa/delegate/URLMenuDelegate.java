@@ -69,7 +69,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
-        List<Path> selected = this.getSelected();
+        final List<Path> selected = this.getSelected();
         if(selected.isEmpty()) {
             return new NSInteger(1);
         }
