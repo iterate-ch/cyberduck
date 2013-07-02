@@ -92,7 +92,7 @@ public class CFSession extends CloudSession<FilesClient> {
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         try {
             final FilesAuthenticationResponse authentication = client.authenticate(
-                    new AuthenticationService().getRequest(host, prompt));
+                    new SwiftAuthenticationService().getRequest(host, prompt));
             for(FilesRegion region : authentication.getRegions()) {
                 regions.put(region.getRegionId(), region);
             }

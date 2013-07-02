@@ -25,11 +25,11 @@ import static org.junit.Assert.fail;
 /**
  * @version $Id$
  */
-public class AuthenticationServiceTest extends AbstractTestCase {
+public class SwiftAuthenticationServiceTest extends AbstractTestCase {
 
     @Test
     public void testGetRequest() throws Exception {
-        final AuthenticationService s = new AuthenticationService();
+        final SwiftAuthenticationService s = new SwiftAuthenticationService();
         assertEquals(FilesClient.AuthVersion.v20,
                 s.getRequest(new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials("u", "P")),
                         new DisabledLoginController()).getVersion());
@@ -60,7 +60,7 @@ public class AuthenticationServiceTest extends AbstractTestCase {
 
     @Test
     public void testProfileHPCloud() throws Exception {
-        final AuthenticationService s = new AuthenticationService();
+        final SwiftAuthenticationService s = new SwiftAuthenticationService();
         final Profile profile = ProfileReaderFactory.get().read(
                 LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
@@ -80,7 +80,7 @@ public class AuthenticationServiceTest extends AbstractTestCase {
 
     @Test
     public void testProfileLondon() throws Exception {
-        final AuthenticationService s = new AuthenticationService();
+        final SwiftAuthenticationService s = new SwiftAuthenticationService();
         final Profile profile = ProfileReaderFactory.get().read(
                 LocalFactory.createLocal("profiles/Rackspace UK.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
@@ -92,7 +92,7 @@ public class AuthenticationServiceTest extends AbstractTestCase {
 
     @Test
     public void testDefault() throws Exception {
-        final AuthenticationService s = new AuthenticationService();
+        final SwiftAuthenticationService s = new SwiftAuthenticationService();
         final Host host = new Host(Protocol.SWIFT, "myidentityservice.example.net");
         assertEquals(URI.create("https://myidentityservice.example.net/v1.0"), s.getRequest(host, new DisabledLoginController()).getURI());
         assertEquals(FilesClient.AuthVersion.v10, s.getRequest(host, new DisabledLoginController()).getVersion());

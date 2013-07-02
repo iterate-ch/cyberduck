@@ -40,10 +40,9 @@ import com.rackspacecloud.client.cloudfiles.method.AuthenticationRequest;
 /**
  * @version $Id$
  */
-public class AuthenticationService {
+public class SwiftAuthenticationService {
 
-    public AuthenticationRequest getRequest(final Host host, final LoginController prompt)
-            throws LoginCanceledException {
+    public AuthenticationRequest getRequest(final Host host, final LoginController prompt) throws LoginCanceledException {
         final Credentials credentials = host.getCredentials();
         final StringBuilder url = new StringBuilder();
         url.append(host.getProtocol().getScheme().toString()).append("://");
