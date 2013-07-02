@@ -881,6 +881,8 @@ public class S3Path extends CloudPath {
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 p.attributes().setRegion(bucket.attributes().getRegion());
+                p.attributes().setStorageClass(object.getStorageClass());
+                p.attributes().setEncryption(object.getServerSideEncryptionAlgorithm());
                 // Directory placeholders
                 if(object.isDirectoryPlaceholder()) {
                     p.attributes().setType(DIRECTORY_TYPE);
@@ -902,8 +904,6 @@ public class S3Path extends CloudPath {
                         p.attributes().setPlaceholder(true);
                     }
                 }
-                p.attributes().setStorageClass(object.getStorageClass());
-                p.attributes().setEncryption(object.getServerSideEncryptionAlgorithm());
                 if(object instanceof S3Object) {
                     p.attributes().setVersionId(((S3Object) object).getVersionId());
                 }
@@ -917,6 +917,7 @@ public class S3Path extends CloudPath {
                 }
                 final Path p = new S3Path(session, bucket.getName() + Path.DELIMITER + common, DIRECTORY_TYPE);
                 if(children.contains(p.getReference())) {
+                    // There is already a placeholder object
                     continue;
                 }
                 p.attributes().setRegion(bucket.attributes().getRegion());

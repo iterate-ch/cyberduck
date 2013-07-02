@@ -211,6 +211,8 @@ public class CFPath extends CloudPath {
                         final Path file = new CFPath(session, this,
                                 Path.getName(PathNormalizer.normalize(object.getName())),
                                 "application/directory".equals(object.getMimeType()) ? DIRECTORY_TYPE : FILE_TYPE);
+                        file.attributes().setOwner(this.attributes().getOwner());
+                        file.attributes().setRegion(container.attributes().getRegion());
                         if(file.attributes().isFile()) {
                             file.attributes().setSize(object.getSize());
                             file.attributes().setChecksum(object.getMd5sum());
@@ -227,11 +229,10 @@ public class CFPath extends CloudPath {
                         if(file.attributes().isDirectory()) {
                             file.attributes().setPlaceholder(true);
                             if(children.contains(file.getReference())) {
+                                // There is already a placeholder object
                                 continue;
                             }
                         }
-                        file.attributes().setOwner(this.attributes().getOwner());
-                        file.attributes().setRegion(container.attributes().getRegion());
                         children.add(file);
                         marker = object.getName();
                     }
