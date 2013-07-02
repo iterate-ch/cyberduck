@@ -2588,6 +2588,7 @@ source/ch/cyberduck/ui/comparator/FilenameComparator.java -text
 source/ch/cyberduck/ui/comparator/GroupComparator.java -text
 source/ch/cyberduck/ui/comparator/OwnerComparator.java -text
 source/ch/cyberduck/ui/comparator/PermissionsComparator.java -text
+source/ch/cyberduck/ui/comparator/RegionComparator.java -text
 source/ch/cyberduck/ui/comparator/SizeComparator.java -text
 source/ch/cyberduck/ui/comparator/TimestampComparator.java -text
 source/ch/cyberduck/ui/controller/ActivityController.cs -text

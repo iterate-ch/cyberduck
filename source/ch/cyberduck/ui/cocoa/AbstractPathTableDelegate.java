@@ -28,6 +28,7 @@ import ch.cyberduck.ui.comparator.FilenameComparator;
 import ch.cyberduck.ui.comparator.GroupComparator;
 import ch.cyberduck.ui.comparator.OwnerComparator;
 import ch.cyberduck.ui.comparator.PermissionsComparator;
+import ch.cyberduck.ui.comparator.RegionComparator;
 import ch.cyberduck.ui.comparator.SizeComparator;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 
@@ -80,8 +81,10 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
         else if(identifier.equals(BrowserTableDataSource.PERMISSIONS_COLUMN)) {
             return new PermissionsComparator(ascending);
         }
+        else if(identifier.equals(BrowserTableDataSource.REGION_COLUMN)) {
+            return new RegionComparator(ascending);
+        }
         log.error(String.format("Unknown column identifier %s", identifier));
         return new NullComparator<Path>();
     }
-
 }

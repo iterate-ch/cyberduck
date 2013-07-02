@@ -1490,6 +1490,17 @@ public class BrowserController extends WindowController
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.REGION_COLUMN));
+        if(Preferences.instance().getBoolean("browser.columnRegion")) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.REGION_COLUMN);
+            c.headerCell().setStringValue(Locale.localizedString("Region"));
+            c.setMinWidth(50);
+            c.setWidth(80);
+            c.setMaxWidth(500);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setDataCell(textCellPrototype);
+            table.addTableColumn(c);
+        }
         delegate.setSelectedColumn(
                 table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column")));
         table.setIndicatorImage_inTableColumn((browserListViewDelegate).isSortedAscending() ?

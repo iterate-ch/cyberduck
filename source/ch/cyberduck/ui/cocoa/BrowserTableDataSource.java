@@ -81,6 +81,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
     public static final String KIND_COLUMN = "KIND";
     public static final String EXTENSION_COLUMN = "EXTENSION";
+    public static final String REGION_COLUMN = "REGION";
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
@@ -252,6 +253,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(identifier.equals(EXTENSION_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         item.attributes().isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : Locale.localizedString("None") : Locale.localizedString("None"),
+                        TableCellAttributes.browserFontLeftAlignment()));
+            }
+            if(identifier.equals(REGION_COLUMN)) {
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() : Locale.localizedString("Unknown"),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
