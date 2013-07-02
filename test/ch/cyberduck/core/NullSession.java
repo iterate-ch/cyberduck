@@ -24,7 +24,7 @@ public class NullSession extends FTPSession {
     }
 
     @Override
-    public void login(final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         //
     }
 

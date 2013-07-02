@@ -21,6 +21,7 @@ import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -88,7 +89,7 @@ public class CFSession extends CloudSession<FilesClient> {
     }
 
     @Override
-    public void login(final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         try {
             final FilesAuthenticationResponse authentication = client.authenticate(
                     new AuthenticationService().getRequest(host, prompt));

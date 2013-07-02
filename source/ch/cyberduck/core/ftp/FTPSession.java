@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
@@ -248,7 +249,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void login(final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         try {
             if(!host.getProtocol().isSecure() && this.isTLSSupported()) {
                 // Propose protocol change if AUTH TLS is available.

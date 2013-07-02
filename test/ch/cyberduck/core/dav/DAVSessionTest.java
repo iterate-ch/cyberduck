@@ -24,7 +24,7 @@ public class DAVSessionTest extends AbstractTestCase {
         assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
         assertTrue(session.isConnected());
         session.close();
@@ -40,7 +40,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open();
         try {
-            session.login(new DisabledLoginController());
+            session.login(new DisabledPasswordStore(), new DisabledLoginController());
         }
         catch(BackgroundException e) {
             assertEquals("Connection failed", e.getMessage());
@@ -58,7 +58,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/dav");
         final DAVSession session = new DAVSession(host);
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
     }
 
@@ -71,7 +71,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/auth-basic");
         final DAVSession session = new DAVSession(host);
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
     }
 
@@ -84,7 +84,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/auth-digest");
         final DAVSession session = new DAVSession(host);
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
     }
 
@@ -97,7 +97,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/redir-perm");
         final DAVSession session = new DAVSession(host);
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/redir-tmp");
         final DAVSession session = new DAVSession(host);
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/redir-other");
         final DAVSession session = new DAVSession(host);
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
     }
 
@@ -133,7 +133,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-gone");
         final DAVSession session = new DAVSession(host);
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNull(session.mount());
     }
 
@@ -145,7 +145,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
     }
 
@@ -168,7 +168,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -200,7 +200,7 @@ public class DAVSessionTest extends AbstractTestCase {
             }
         });
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
     @Test

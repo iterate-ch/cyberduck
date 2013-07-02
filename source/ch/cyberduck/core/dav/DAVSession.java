@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -54,7 +55,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void login(final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 Preferences.instance().getProperty("webdav.ntlm.workstation"),

@@ -97,7 +97,7 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void login(final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         try {
             if(host.getCredentials().isPublicKeyAuthentication()) {
                 if(this.loginUsingPublicKeyAuthentication(prompt, host.getCredentials())) {

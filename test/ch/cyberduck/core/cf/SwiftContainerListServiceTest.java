@@ -3,6 +3,7 @@ package ch.cyberduck.core.cf;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -27,7 +28,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final List<Path> list = new SwiftContainerListService().list(session);
         final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");

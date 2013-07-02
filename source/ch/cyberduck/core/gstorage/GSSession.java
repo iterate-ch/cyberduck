@@ -24,7 +24,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -116,24 +116,24 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public void login(final LoginController controller) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController controller) throws BackgroundException {
         if(NumberUtils.isNumber(host.getCredentials().getUsername())) {
             // Project ID needs OAuth2 authentication
-            OAuth2Credentials oauth = new OAuth2Credentials(
+            final OAuth2Credentials oauth = new OAuth2Credentials(
                     new OAuthUtils(this.http(),
                             OAuthUtils.OAuthImplementation.GOOGLE_STORAGE_OAUTH2_10,
                             Preferences.instance().getProperty("google.storage.oauth.clientid"),
                             Preferences.instance().getProperty("google.storage.oauth.secret")),
                     Preferences.instance().getProperty("application.name"));
-            final String acccesstoken = PasswordStoreFactory.get().getPassword(host.getProtocol().getScheme(),
+            final String accesstoken = keychain.getPassword(host.getProtocol().getScheme(),
                     host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token");
-            final String refreshtoken = PasswordStoreFactory.get().getPassword(host.getProtocol().getScheme(),
+            final String refreshtoken = keychain.getPassword(host.getProtocol().getScheme(),
                     host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token");
-            if(StringUtils.isEmpty(acccesstoken) || StringUtils.isEmpty(refreshtoken)) {
+            if(StringUtils.isEmpty(accesstoken) || StringUtils.isEmpty(refreshtoken)) {
+                // Query access token from URL to visit in browser
                 final String url = oauth.generateBrowserUrlToAuthorizeNativeApplication(
                         OAuthConstants.GSOAuth2_10.Scopes.FullControl
                 );
-                // Query access token from URL to visit in browser
                 final LoginOptions options = new LoginOptions();
                 options.keychain = false;
                 controller.prompt(host.getProtocol(), host.getCredentials(),
@@ -144,9 +144,9 @@ public class GSSession extends S3Session {
                     oauth.retrieveOAuth2TokensFromAuthorization(host.getCredentials().getPassword());
                     final OAuth2Tokens tokens = oauth.getOAuth2Tokens();
                     // Save for future use
-                    PasswordStoreFactory.get().addPassword(host.getProtocol().getScheme(),
+                    keychain.addPassword(host.getProtocol().getScheme(),
                             host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token", tokens.getAccessToken());
-                    PasswordStoreFactory.get().addPassword(host.getProtocol().getScheme(),
+                    keychain.addPassword(host.getProtocol().getScheme(),
                             host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token", tokens.getRefreshToken());
 
                     // Save expiry
@@ -158,12 +158,12 @@ public class GSSession extends S3Session {
             }
             else {
                 // Re-use authentication tokens from last use
-                oauth.setOAuth2Tokens(new OAuth2Tokens(acccesstoken, refreshtoken,
+                oauth.setOAuth2Tokens(new OAuth2Tokens(accesstoken, refreshtoken,
                         new Date(Preferences.instance().getLong("google.storage.oauth.expiry"))));
             }
             client.setProviderCredentials(oauth);
         }
-        super.login(controller);
+        super.login(keychain, controller);
     }
 
     @Override

@@ -23,6 +23,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
@@ -54,7 +55,7 @@ public class FTPPathTest extends AbstractTestCase {
             }
         };
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
 
         final AtomicInteger count = new AtomicInteger();
 

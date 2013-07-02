@@ -125,9 +125,10 @@ public abstract class Session<C> implements TranscriptListener {
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
      *
-     * @param prompt Prompt
+     * @param keychain Password store
+     * @param prompt   Prompt
      */
-    public abstract void login(LoginController prompt) throws BackgroundException;
+    public abstract void login(final PasswordStore keychain, LoginController prompt) throws BackgroundException;
 
     /**
      * Logout and close client connection

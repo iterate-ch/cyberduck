@@ -4,6 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
@@ -34,7 +35,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
@@ -62,7 +63,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         ));
         final CFSession session = new CFSession(host);
         session.open();
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final CFPath container = new CFPath(session, PathFactory.createPath(session, String.valueOf(Path.DELIMITER),
                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE), "test.cyberduck.ch", Path.VOLUME_TYPE);

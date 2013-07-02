@@ -349,7 +349,7 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     }
 
     @Override
-    public void login(final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         for(Path bucket : new S3BucketListService().list(this)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Found bucket %s", bucket));

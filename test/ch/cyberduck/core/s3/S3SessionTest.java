@@ -3,6 +3,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
@@ -34,7 +35,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
         assertTrue(session.isConnected());
         session.close();
@@ -52,7 +53,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
         assertTrue(session.isConnected());
         session.close();
@@ -71,7 +72,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
         assertTrue(session.isConnected());
         session.close();

@@ -26,7 +26,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
         assertTrue(session.isConnected());
         session.close();
@@ -44,7 +44,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.open());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
         assertTrue(session.isConnected());
         session.close();
@@ -62,7 +62,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         try {
-            session.login(new DisabledLoginController());
+            session.login(new DisabledPasswordStore(), new DisabledLoginController());
             fail();
         }
         catch(LoginFailureException e) {
@@ -77,9 +77,9 @@ public class FTPSessionTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host) {
             @Override
-            public void login(final LoginController login) throws BackgroundException {
+            public void login(final PasswordStore keychain, final LoginController login) throws BackgroundException {
                 assertEquals(Session.State.open, this.getState());
-                super.login(login);
+                super.login(keychain, login);
                 assertEquals(Protocol.FTP_TLS, host.getProtocol());
             }
 
