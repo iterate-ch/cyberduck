@@ -45,7 +45,7 @@ public class DuplicateFileController extends FileController {
                 null,
                 Locale.localizedString("Cancel", "Duplicate")
         ));
-        alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(this.getSelected().getExtension(), 64));
+        alert.setIcon(IconCacheFactory.<NSImage>get().fileIcon(this.getSelected(), 64));
         final Path selected = this.getSelected();
         String proposal = MessageFormat.format(Preferences.instance().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),
