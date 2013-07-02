@@ -61,6 +61,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     public boolean accept(final Session session, final Path file) throws BackgroundException {
         if(file.attributes().isDirectory()) {
             if(file.getLocal().exists()) {
+                // Do not attempt to create existing folders
                 return false;
             }
         }
@@ -71,8 +72,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         final Local volume = file.getLocal().getVolume();
         if(!volume.exists()) {
-            log.error(String.format("Volume %s not mounted", volume.getAbsolute()));
-            return false;
+            throw new BackgroundException(String.format("Volume %s not mounted", volume.getAbsolute()));
         }
         return true;
     }
