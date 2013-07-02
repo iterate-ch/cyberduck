@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FileWatcherTest extends AbstractTestCase {
 
@@ -27,7 +27,12 @@ public class FileWatcherTest extends AbstractTestCase {
         w.addListener(new FileWatcherListener() {
             @Override
             public void fileWritten(final Local file) {
-                assertEquals(f, file);
+                try {
+                    assertEquals(new File(f.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
+                }
+                catch(IOException e) {
+                    fail();
+                }
             }
 
             @Override
