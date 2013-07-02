@@ -881,6 +881,7 @@ public class S3Path extends CloudPath {
                 final S3Path p = new S3Path(session, bucket.getName() + Path.DELIMITER + object.getKey(), FILE_TYPE);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
+                p.attributes().setRegion(bucket.attributes().getRegion());
                 // Directory placeholders
                 if(object.isDirectoryPlaceholder()) {
                     p.attributes().setType(DIRECTORY_TYPE);
@@ -919,6 +920,7 @@ public class S3Path extends CloudPath {
                 if(children.contains(p.getReference())) {
                     continue;
                 }
+                p.attributes().setRegion(bucket.attributes().getRegion());
                 p.attributes().setPlaceholder(false);
                 children.add(p);
             }
@@ -944,18 +946,19 @@ public class S3Path extends CloudPath {
             if((marker.isDeleteMarker() && marker.isLatest())
                     || !marker.isLatest()) {
                 // Latest version already in default listing
-                final S3Path path = new S3Path(session, bucket.getName() + Path.DELIMITER + marker.getKey(), FILE_TYPE);
+                final S3Path p = new S3Path(session, bucket.getName() + Path.DELIMITER + marker.getKey(), FILE_TYPE);
                 // Versioning is enabled if non null.
-                path.attributes().setVersionId(marker.getVersionId());
-                path.attributes().setRevision(++i);
-                path.attributes().setDuplicate(true);
-                path.attributes().setModificationDate(marker.getLastModified().getTime());
+                p.attributes().setVersionId(marker.getVersionId());
+                p.attributes().setRevision(++i);
+                p.attributes().setDuplicate(true);
+                p.attributes().setModificationDate(marker.getLastModified().getTime());
+                p.attributes().setRegion(bucket.attributes().getRegion());
                 if(marker instanceof S3Version) {
-                    path.attributes().setSize(((S3Version) marker).getSize());
-                    path.attributes().setETag(((S3Version) marker).getEtag());
-                    path.attributes().setStorageClass(((S3Version) marker).getStorageClass());
+                    p.attributes().setSize(((S3Version) marker).getSize());
+                    p.attributes().setETag(((S3Version) marker).getEtag());
+                    p.attributes().setStorageClass(((S3Version) marker).getStorageClass());
                 }
-                versions.add(path);
+                versions.add(p);
             }
         }
         return versions;

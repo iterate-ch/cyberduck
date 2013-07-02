@@ -231,6 +231,7 @@ public class CFPath extends CloudPath {
                             }
                         }
                         file.attributes().setOwner(this.attributes().getOwner());
+                        file.attributes().setRegion(container.attributes().getRegion());
                         children.add(file);
                         marker = object.getName();
                     }
