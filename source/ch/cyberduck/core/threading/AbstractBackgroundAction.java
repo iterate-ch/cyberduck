@@ -78,9 +78,6 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prepare background task %s", this));
         }
-        if(this.isCanceled()) {
-            throw new ConnectionCanceledException();
-        }
         running = true;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
