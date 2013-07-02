@@ -248,14 +248,11 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
                 @Override
                 public NSArray call() throws BackgroundException {
-                    if(directory.exists()) {
-                        final NSMutableArray contents = NSMutableArray.array();
-                        for(Path child : directory.list()) {
-                            contents.addObject(child.getName());
-                        }
-                        return contents;
+                    final NSMutableArray contents = NSMutableArray.array();
+                    for(Path child : directory.list()) {
+                        contents.addObject(child.getName());
                     }
-                    return null;
+                    return contents;
                 }
 
                 @Override
@@ -290,13 +287,6 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                     }
                     final Path directory = selected.getParent();
                     final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
-                    if(null == file) {
-                        log.error("Lookup failed for:" + path);
-                        return null;
-                    }
-                    if(!file.exists()) {
-                        return null;
-                    }
                     attributes.setObjectForKey(file.attributes().isDirectory() ? NSFileManager.NSFileTypeDirectory : NSFileManager.NSFileTypeRegular,
                             NSFileManager.NSFileType);
                     attributes.setObjectForKey(NSNumber.numberWithFloat(file.attributes().getSize()),
@@ -336,13 +326,6 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                     }
                     final Path directory = selected.getParent();
                     final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
-                    if(null == file) {
-                        log.error("Lookup failed for:" + path);
-                        return false;
-                    }
-                    if(!file.exists()) {
-                        return false;
-                    }
                     if(session.isUnixPermissionsSupported()) {
                         final NSObject posixNumber = attributes.objectForKey(NSFileManager.NSFilePosixPermissions);
                         if(null != posixNumber) {
@@ -451,9 +434,6 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean call() throws BackgroundException {
                     final Path file = PathFactory.createPath(session, path, Path.FILE_TYPE);
-                    if(!file.exists()) {
-                        return false;
-                    }
                     file.delete(new DisabledLoginController());
                     return true;
                 }
@@ -476,9 +456,6 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean call() throws BackgroundException {
                     final Path file = PathFactory.createPath(session, source, Path.FILE_TYPE);
-                    if(!file.exists()) {
-                        return false;
-                    }
                     if(!session.isRenameSupported(file)) {
                         return false;
                     }

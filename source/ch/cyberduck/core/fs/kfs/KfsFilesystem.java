@@ -138,13 +138,6 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             return false;
                         }
                         final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
-                        if(null == file) {
-                            log.warn("Lookup failed for:" + path);
-                            return false;
-                        }
-                        if(!file.exists()) {
-                            return false;
-                        }
                         stat.type = file.attributes().isDirectory() ? KfsLibrary.kfstype_t.KFS_DIR : KfsLibrary.kfstype_t.KFS_REG;
                         if(session.isWriteTimestampSupported()) {
                             stat.mtime = new KfsLibrary.kfstime(file.attributes().getModificationDate() / 1000, 0);
@@ -216,13 +209,10 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean call() throws BackgroundException {
                         log.debug("kfsreaddir_f:" + path);
                         final Path directory = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
-                        if(directory.exists()) {
-                            for(Path child : directory.list()) {
-                                filesystem.kfscontents_append(contents, child.getName());
-                            }
-                            return true;
+                        for(Path child : directory.list()) {
+                            filesystem.kfscontents_append(contents, child.getName());
                         }
-                        return false;
+                        return true;
                     }
                 });
                 try {
@@ -372,9 +362,6 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean call() throws BackgroundException {
                         log.debug("kfsremove_f:" + path);
                         final Path file = PathFactory.createPath(session, path, Path.FILE_TYPE);
-                        if(!file.exists()) {
-                            return false;
-                        }
                         file.delete(new DisabledLoginController());
                         return true;
                     }
@@ -399,9 +386,6 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean call() throws BackgroundException {
                         log.debug("kfsrename_f:" + path);
                         final Path file = PathFactory.createPath(session, path, Path.FILE_TYPE);
-                        if(!file.exists()) {
-                            return false;
-                        }
                         if(!session.isRenameSupported(file)) {
                             return false;
                         }
@@ -429,9 +413,6 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean call() throws BackgroundException {
                         log.debug("kfsremove_f:" + path);
                         final Path file = PathFactory.createPath(session, path, Path.FILE_TYPE);
-                        if(!file.exists()) {
-                            return false;
-                        }
                         file.delete(new DisabledLoginController());
                         return true;
                     }
@@ -504,11 +485,8 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean call() throws BackgroundException {
                         log.debug("kfsrmdir_f:" + path);
                         final Path directory = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
-                        if(directory.exists()) {
-                            directory.delete(new DisabledLoginController());
-                            return true;
-                        }
-                        return false;
+                        directory.delete(new DisabledLoginController());
+                        return true;
                     }
                 });
                 try {
