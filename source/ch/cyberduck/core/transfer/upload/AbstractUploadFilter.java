@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -47,14 +46,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     @Override
     public boolean accept(final Session session, final Path file) throws BackgroundException {
-        final PathAttributes attributes = file.attributes();
-        if(attributes.isDirectory()) {
+        if(file.attributes().isDirectory()) {
             // Do not attempt to create a directory that already exists
             if(file.exists()) {
                 return false;
             }
         }
-        if(attributes.isFile()) {
+        else if(file.attributes().isFile()) {
             if(!file.getLocal().exists()) {
                 // Local file is no more here
                 return false;
@@ -119,11 +117,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             else {
                 // Read file size from filesystem
                 status.setLength(file.getLocal().attributes().getSize());
-            }
-        }
-        if(attributes.isDirectory()) {
-            if(!file.exists()) {
-                file.getSession().cache().put(file.getReference(), AttributedList.<Path>emptyList());
             }
         }
         return status;
