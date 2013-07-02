@@ -81,16 +81,17 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> children(final Path parent) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Children for %s", parent));
-        }
         if(this.cache().containsKey(parent.getReference())) {
             return this.cache().get(parent.getReference()).filter(null, filter);
         }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("List children for %s", parent));
+        }
         final AttributedList<Path> list;
-        if(parent.attributes().isSymbolicLink() && new DownloadSymlinkResolver(this.getRoots()).resolve(parent)) {
+        if(parent.attributes().isSymbolicLink()
+                && new DownloadSymlinkResolver(this.getRoots()).resolve(parent)) {
             if(log.isDebugEnabled()) {
-                log.debug("Do not list children for symbolic link:" + parent);
+                log.debug(String.format("Do not list children for symbolic link %s", parent));
             }
             list = AttributedList.emptyList();
         }
@@ -131,15 +132,16 @@ public class DownloadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path download : this.getRoots()) {
-                if(download.getLocal().exists()) {
-                    if(download.getLocal().attributes().isDirectory()) {
-                        if(download.getLocal().list().isEmpty()) {
+                final Local local = download.getLocal();
+                if(local.exists()) {
+                    if(local.attributes().isDirectory()) {
+                        if(local.list().isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
-                    if(download.getLocal().attributes().isFile()) {
-                        if(download.getLocal().attributes().getSize() == 0) {
+                    if(local.attributes().isFile()) {
+                        if(local.attributes().getSize() == 0) {
                             // Dragging a file to the local volume creates the file already
                             continue;
                         }
