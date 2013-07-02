@@ -3,16 +3,20 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-4.3.2 [http://trac.cyberduck.ch/milestone/4.3.2]
+4.4 [http://trac.cyberduck.ch/milestone/4.3.2]
+- [Feature] No Java installation requirement (Mac)
 - [Feature] Bucket lifecycle configuration to archive objects in Glacier (S3) (#6830)
 - [Feature] Keystone (2.0) authentication support (OpenStack) (#6330)
 - [Feature] Multiple region support (OpenStack) (#6902)
 - [Feature] Set container metadata (OpenStack)
+- [Feature] Edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)
 - [Bugfix] Failure duplicating files (FTP) (#7224)
 - [Bugfix] Save workspace does not work for multiple browser sessions to the same server (#7213)
+- [Bugfix] Permission error for upload to write-only folder (#6240)
+- [Bugfix] Authentication with none password (SFTP) (#7322)
 
 4.3.1 [http://trac.cyberduck.ch/milestone/4.3.1]
 - [Bugfix] Modification date shown as 01.01.1970 (Windows) (#7177)
