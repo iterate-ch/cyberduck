@@ -366,12 +366,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             set
             {
-                List<Path> selected = new List<Path>();
-                foreach (Path s in SelectedPaths)
-                {
-                    selected.Add(PathFactory.createPath(getSession(), s.getAsDictionary()));
-                }
-                View.SelectedPaths = selected;
+                View.SelectedPaths = SelectedPaths;
             }
         }
 
@@ -2260,7 +2255,12 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="prompt"></param>
         public void transfer(Transfer transfer, bool browser, TransferPrompt prompt)
         {
-            this.transfer(transfer, Utils.ConvertFromJavaList<Path>(transfer.getRoots(), null), browser, prompt);
+            List<Path> selected = new List<Path>();
+            foreach (Path s in Utils.ConvertFromJavaList<Path>(transfer.getRoots(), null))
+            {
+                selected.Add(PathFactory.createPath(getSession(), s.getAsDictionary()));
+            }
+            this.transfer(transfer, selected, browser, prompt);
         }
 
         public void transfer(Transfer transfer, IList<Path> changed, bool browser, TransferPrompt prompt)

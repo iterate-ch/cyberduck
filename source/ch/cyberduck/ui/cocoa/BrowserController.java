@@ -368,10 +368,6 @@ public class BrowserController extends WindowController
     }
 
     protected void reloadData(final List<Path> changed, final List<Path> selected, boolean scroll) {
-        this.reloadBrowserImpl(changed, selected, scroll);
-    }
-
-    private void reloadBrowserImpl(final List<Path> changed, final List<Path> selected, boolean scroll) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload data with selected files %s", selected));
         }
@@ -426,10 +422,7 @@ public class BrowserController extends WindowController
                 c.setFiles(selected);
             }
         }
-        this.selected = new ArrayList<Path>();
-        for(Path s : selected) {
-            this.selected.add(PathFactory.createPath(session, s.getAsDictionary()));
-        }
+        this.selected = selected;
         this.validateToolbar();
     }
 
@@ -2844,7 +2837,11 @@ public class BrowserController extends WindowController
     }
 
     protected void transfer(final Transfer transfer) {
-        this.transfer(transfer, transfer.getRoots());
+        final List<Path> selected = new ArrayList<Path>();
+        for(Path s : transfer.getRoots()) {
+            selected.add(PathFactory.createPath(session, s.getAsDictionary()));
+        }
+        this.transfer(transfer, selected);
     }
 
     /**
