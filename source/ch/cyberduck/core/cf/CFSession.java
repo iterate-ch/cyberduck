@@ -17,7 +17,6 @@ package ch.cyberduck.core.cf;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
@@ -81,7 +80,7 @@ public class CFSession extends CloudSession<FilesClient> {
             return region;
         }
         if(regions.isEmpty()) {
-            throw new ConnectionCanceledException("No default region in authentication context");
+            throw new BackgroundException("No default region in authentication context");
         }
         final FilesRegion region = regions.values().iterator().next();
         log.warn(String.format("Fallback to first region found %s", region));
