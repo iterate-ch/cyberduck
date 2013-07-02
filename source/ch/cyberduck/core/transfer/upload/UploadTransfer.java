@@ -132,7 +132,6 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path upload : this.getRoots()) {
-                this.check();
                 if(upload.exists()) {
                     if(upload.attributes().isDirectory()) {
                         if(this.children(upload).isEmpty()) {
