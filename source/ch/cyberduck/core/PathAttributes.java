@@ -199,12 +199,12 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     @Override
     public long getSize() {
-        return this.size;
+        return size;
     }
 
     @Override
     public long getModificationDate() {
-        return this.modified;
+        return modified;
     }
 
     public void setModificationDate(long millis) {
@@ -216,7 +216,7 @@ public class PathAttributes extends Attributes implements Serializable {
 
     @Override
     public long getCreationDate() {
-        return this.created;
+        return created;
     }
 
     public void setCreationDate(long millis) {
@@ -228,7 +228,7 @@ public class PathAttributes extends Attributes implements Serializable {
 
     @Override
     public long getAccessedDate() {
-        return this.accessed;
+        return accessed;
     }
 
     public void setAccessedDate(long millis) {
@@ -250,7 +250,7 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     @Override
     public Permission getPermission() {
-        return this.permission;
+        return permission;
     }
 
     public Acl getAcl() {
@@ -267,28 +267,28 @@ public class PathAttributes extends Attributes implements Serializable {
 
     @Override
     public int getType() {
-        return this.type;
+        return type;
     }
 
     @Override
     public boolean isVolume() {
-        return (this.type & Path.VOLUME_TYPE) == Path.VOLUME_TYPE;
+        return (type & Path.VOLUME_TYPE) == Path.VOLUME_TYPE;
     }
 
     @Override
     public boolean isDirectory() {
-        return (this.type & Path.DIRECTORY_TYPE) == Path.DIRECTORY_TYPE
+        return (type & Path.DIRECTORY_TYPE) == Path.DIRECTORY_TYPE
                 || this.isVolume();
     }
 
     @Override
     public boolean isFile() {
-        return (this.type & Path.FILE_TYPE) == Path.FILE_TYPE;
+        return (type & Path.FILE_TYPE) == Path.FILE_TYPE;
     }
 
     @Override
     public boolean isSymbolicLink() {
-        return (this.type & Path.SYMBOLIC_LINK_TYPE) == Path.SYMBOLIC_LINK_TYPE;
+        return (type & Path.SYMBOLIC_LINK_TYPE) == Path.SYMBOLIC_LINK_TYPE;
     }
 
     public void setOwner(String o) {
@@ -300,10 +300,10 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     @Override
     public String getOwner() {
-        if(null == this.owner) {
+        if(null == owner) {
             return Locale.localizedString("Unknown");
         }
-        return this.owner;
+        return owner;
     }
 
     public void setGroup(String g) {
@@ -315,10 +315,10 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     @Override
     public String getGroup() {
-        if(null == this.group) {
+        if(null == group) {
             return Locale.localizedString("Unknown");
         }
-        return this.group;
+        return group;
     }
 
     @Override
