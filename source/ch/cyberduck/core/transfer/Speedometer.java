@@ -24,6 +24,8 @@ import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.log4j.Logger;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
@@ -32,6 +34,7 @@ import java.text.MessageFormat;
  * @version $Id$
  */
 public class Speedometer {
+    private static final Logger log = Logger.getLogger(Speedometer.class);
 
     /**
      * Formatter for file size
@@ -41,8 +44,7 @@ public class Speedometer {
     /**
      * The time to start counting bytes transferred
      */
-    private long timestamp
-            = System.currentTimeMillis();
+    private long timestamp;
 
     /**
      * Initial data already transferred
@@ -54,22 +56,34 @@ public class Speedometer {
      */
     private PeriodFormatter periodFormatter = new RemainingPeriodFormatter();
 
+    public Speedometer() {
+        this(System.currentTimeMillis());
+    }
+
+    public Speedometer(final long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     /**
      * @param transferred Bytes transferred
      * @return Differential by time
      */
-    protected double getSpeed(final long transferred) {
+    protected Double getSpeed(final Long transferred) {
+        return this.getSpeed(System.currentTimeMillis(), transferred);
+    }
+
+    protected Double getSpeed(final Long time, final Long transferred) {
         // Number of seconds data was actually transferred
-        final long elapsed = System.currentTimeMillis() - timestamp;
+        final Long elapsed = time - timestamp;
         if(elapsed > 0) {
-            final long differential = transferred - last;
+            final Long differential = transferred - last;
             // Remember for next iteration
             last = transferred;
-            timestamp = System.currentTimeMillis();
+            timestamp = time;
             // The throughput is usually measured in bits per second
             return (double) differential / elapsed;
         }
-        return 0L;
+        return 0d;
     }
 
     /**
@@ -78,31 +92,35 @@ public class Speedometer {
      * @param transferred Current
      * @return 500.0 KB (500,000 bytes) of 1.0 MB (50%, 500.0 KB/sec, 2 seconds remaining)
      */
-    public String getProgress(final boolean running, final long size, final long transferred) {
+    public String getProgress(final Boolean running, final Long size, final Long transferred) {
+        return this.getProgress(System.currentTimeMillis(), running, size, transferred);
+    }
+
+    public String getProgress(final Long time, final Boolean running, final Long size, final Long transferred) {
         final StringBuilder b = new StringBuilder(
                 MessageFormat.format(Locale.localizedString("{0} of {1}"),
                         sizeFormatter.format(transferred, running),
                         sizeFormatter.format(size))
         );
-        if(running) {
-            final double speed = this.getSpeed(transferred);
-            if(size > 0 || speed > 0) {
+        if(running && transferred > 0) {
+            final double speed = this.getSpeed(time, transferred);
+            if(size > 0) {
                 b.append(" (");
                 if(size > 0) {
                     b.append((int) ((double) transferred / size * 100));
                     b.append("%");
                 }
+                if(size > 0) {
+                    b.append(", ");
+                }
+                b.append(SizeFormatterFactory.get(true).format(
+                        new BigDecimal(speed * 1000).setScale(0, RoundingMode.UP).longValue()));
+                b.append("/sec");
                 if(speed > 0) {
-                    if(size > 0) {
-                        b.append(", ");
-                    }
-                    b.append(SizeFormatterFactory.get(true).format(
-                            new BigDecimal(speed * 1000).setScale(0, RoundingMode.UP).longValue()));
-                    b.append("/sec");
                     if(transferred < size) {
                         b.append(", ");
                         // Remaining time in milliseconds
-                        long remaining = new BigDecimal((size - transferred) / speed).setScale(0, RoundingMode.UP).longValue();
+                        Long remaining = new BigDecimal((size - transferred) / speed).setScale(0, RoundingMode.UP).longValue();
                         // Display in seconds
                         b.append(periodFormatter.format(new BigDecimal(remaining).divide(new BigDecimal(1000L), RoundingMode.UP).longValue()));
                     }
@@ -113,7 +131,7 @@ public class Speedometer {
         return b.toString();
     }
 
-    public void reset(long transferred) {
+    public void reset(Long transferred) {
         timestamp = System.currentTimeMillis();
         last = transferred;
     }

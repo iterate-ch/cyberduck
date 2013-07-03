@@ -45,6 +45,7 @@ import org.junit.BeforeClass;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -86,6 +87,7 @@ public class AbstractTestCase {
 
     @BeforeClass
     public static void setup() {
+        Locale.setDefault(Locale.ENGLISH);
         AutoreleaseActionOperationBatcher.register();
         FinderLocal.register();
         UserDefaultsPreferences.register();
