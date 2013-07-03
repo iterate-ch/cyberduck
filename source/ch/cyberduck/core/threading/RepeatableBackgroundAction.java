@@ -200,13 +200,15 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         // Do not report an error when the action was canceled intentionally
         if(failure instanceof ConnectionCanceledException) {
             // Do not report as failed if instanceof ConnectionCanceledException
-            return;
+            this.cancel();
         }
-        for(Session session : this.getSessions()) {
-            GrowlFactory.get().notify(failure.getMessage(), session.getHost().getHostname());
+        else {
+            for(Session session : this.getSessions()) {
+                GrowlFactory.get().notify(failure.getMessage(), session.getHost().getHostname());
+            }
+            exception = failure;
+            failed = true;
         }
-        exception = failure;
-        failed = true;
     }
 
     @Override
