@@ -213,7 +213,9 @@
         <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
             <classpath refid="build.classpath"/>
         </taskdef>
-        <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml"/>
+        <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+            <classpath path="${lib.ext}/jacocoant.jar"/>
+        </taskdef>
         <echo message="${build}/${configuration}"/>
         <jacoco:coverage destfile="${build}/jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant">
             <junit jvm="${jvm.runtime.bundle.home}/bin/java" fork="yes" forkmode="once" printsummary="on" filtertrace="on" haltonfailure="no" showoutput="yes"
