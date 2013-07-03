@@ -57,7 +57,7 @@ import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 import ch.cyberduck.ui.threading.ControllerRepeatableBackgroundAction;
-import ch.cyberduck.ui.threading.TransferRepeatableBackgroundAction;
+import ch.cyberduck.ui.threading.TransferCollectionRepeatableBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -82,7 +82,7 @@ import java.util.StringTokenizer;
  * @version $Id$
  */
 public final class TransferController extends WindowController implements NSToolbar.Delegate {
-    private static Logger log = Logger.getLogger(TransferController.class);
+    private static final Logger log = Logger.getLogger(TransferController.class);
 
     private static TransferController instance = null;
 
@@ -729,7 +729,7 @@ public final class TransferController extends WindowController implements NSTool
      * @param transfer Transfer
      */
     private void startTransfer(final Transfer transfer, final TransferOptions options) {
-        final ControllerRepeatableBackgroundAction action = new TransferRepeatableBackgroundAction(this,
+        final ControllerRepeatableBackgroundAction action = new TransferCollectionRepeatableBackgroundAction(this,
                 new PanelAlertCallback(this), transferTableModel.getController(transfer), transcript,
                 transfer, new TransferPrompt() {
             @Override

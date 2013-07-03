@@ -17,17 +17,17 @@ package ch.cyberduck.ui.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferCollection;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.ui.Controller;
+
+import org.apache.log4j.Logger;
 
 import java.util.List;
 
@@ -35,10 +35,11 @@ import java.util.List;
  * @version $Id$
  */
 public class TransferRepeatableBackgroundAction extends ControllerRepeatableBackgroundAction {
+    private static final Logger log = Logger.getLogger(TransferRepeatableBackgroundAction.class);
 
-    private Transfer transfer;
-    private TransferPrompt prompt;
-    private TransferOptions options;
+    protected Transfer transfer;
+    protected TransferPrompt prompt;
+    protected TransferOptions options;
 
     public TransferRepeatableBackgroundAction(final Controller controller,
                                               final AlertCallback alert,
@@ -59,24 +60,16 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
     }
 
     @Override
-    public void finish() throws BackgroundException {
-        super.finish();
-        for(Session s : transfer.getSessions()) {
-            s.close();
-            // We have our own session independent of any browser.
-            s.cache().clear();
-        }
-    }
-
-    @Override
-    public void cleanup() {
-        final TransferCollection collection = TransferCollection.defaultCollection();
-        if(transfer.isComplete() && !transfer.isCanceled() && transfer.isReset()) {
-            if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                collection.remove(transfer);
+    public void cancel() {
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Cancel background action for transfer %s", transfer));
             }
+            transfer.cancel();
         }
-        collection.save();
+        catch(BackgroundException failure) {
+            this.error(failure);
+        }
     }
 
     @Override
@@ -91,6 +84,9 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
 
     @Override
     public void pause() {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Pause background action for transfer %s", transfer));
+        }
         transfer.fireTransferQueued();
         // Upon retry do not suggest to overwrite already completed items from the transfer
         options.reloadRequested = false;

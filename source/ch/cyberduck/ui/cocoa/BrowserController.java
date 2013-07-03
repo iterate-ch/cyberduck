@@ -60,6 +60,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
@@ -67,6 +68,7 @@ import ch.cyberduck.ui.cocoa.view.OutlineCell;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
+import ch.cyberduck.ui.threading.TransferRepeatableBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -2861,30 +2863,14 @@ public class BrowserController extends WindowController
      * @param transfer Transfer Operation
      */
     protected void transfer(final Transfer transfer, final List<Path> selected) {
-        this.transfer(transfer, selected, session.getMaxConnections() == 1,
-                new TransferPrompt() {
-                    @Override
-                    public TransferAction prompt() throws BackgroundException {
-                        return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
-                    }
-                }
-        );
+        this.transfer(transfer, selected, session.getMaxConnections() == 1);
     }
 
     /**
      * @param transfer Transfer Operation
      * @param browser  Transfer in browser window
      */
-    protected void transfer(final Transfer transfer, final List<Path> selected, final boolean browser) {
-        this.transfer(transfer, selected, browser, new TransferPrompt() {
-            @Override
-            public TransferAction prompt() throws BackgroundException {
-                return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
-            }
-        });
-    }
-
-    private void transfer(final Transfer transfer, final List<Path> selected, boolean browser, final TransferPrompt prompt) {
+    private void transfer(final Transfer transfer, final List<Path> selected, boolean browser) {
         if(!selected.isEmpty()) {
             transfer.addListener(new TransferAdapter() {
                 @Override
@@ -2950,34 +2936,13 @@ public class BrowserController extends WindowController
                     transfer.removeListener(this);
                 }
             });
-            this.background(new BrowserBackgroundAction(this) {
-                @Override
-                public void run() throws BackgroundException {
-                    TransferOptions options = new TransferOptions();
-                    transfer.start(prompt, options);
-                }
-
-                @Override
-                public void cancel() {
-                    try {
-                        transfer.cancel();
-                    }
-                    catch(BackgroundException e) {
-                        this.error(e);
-                    }
-                    super.cancel();
-                }
-
-                @Override
-                public List<Session<?>> getSessions() {
-                    return transfer.getSessions();
-                }
-
-                @Override
-                public String getActivity() {
-                    return transfer.getName();
-                }
-            });
+            this.background(new TransferRepeatableBackgroundAction(this, new PanelAlertCallback(this), this, this, transfer,
+                    new TransferPrompt() {
+                        @Override
+                        public TransferAction prompt() throws BackgroundException {
+                            return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
+                        }
+                    }, new TransferOptions()));
         }
         else {
             TransferController.instance().startTransfer(transfer);
