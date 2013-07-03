@@ -190,8 +190,12 @@ public class DAVPath extends HttpPath {
             final List<DavResource> resources = session.getClient().list(URIEncoder.encode(this.getAbsolute()));
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
+                final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
+                if(href.equals(this.getAbsolute())) {
+                    continue;
+                }
                 final DAVPath p = new DAVPath(session, this,
-                        Path.getName(PathNormalizer.normalize(resource.getHref().getPath(), true)), resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
+                        Path.getName(href), resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
                 p.readAttributes(resource);
                 children.add(p);
             }
