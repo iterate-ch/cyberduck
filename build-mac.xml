@@ -122,7 +122,9 @@
         <!-- Copy stub for system runtime -->
         <antcall target="copy-stub"/>
         <!-- Remove architectures -->
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
+        </taskdef>
         <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}"/>
 
         <antcall target="spotlight"/>

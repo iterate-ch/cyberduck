@@ -67,13 +67,13 @@
         <fileset dir="${build}">
             <include name="*.jar"/>
         </fileset>
+        <fileset dir="${lib.ext}">
+            <include name="*.jar"/>
+        </fileset>
     </path>
 
     <path id="build.classpath">
         <fileset dir="${lib}">
-            <include name="*.jar"/>
-        </fileset>
-        <fileset dir="${lib.ext}">
             <include name="*.jar"/>
         </fileset>
     </path>
@@ -199,8 +199,8 @@
     <target name="test-compile" depends="build">
         <javac debug="${debug}"
                encoding="utf-8"
-               source="1.5"
-               target="1.5"
+               source="1.6"
+               target="1.6"
                deprecation="off"
                srcdir="${unittests}"
                destdir="${build.unittests}"
@@ -211,7 +211,7 @@
 
     <target name="test" depends="test-compile" description="Runs all test cases and generate report">
         <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-            <classpath refid="build.classpath"/>
+            <classpath path="${lib.ext}/junit-4.8.2.jar"/>
         </taskdef>
         <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
             <classpath path="${lib.ext}/jacocoant.jar"/>
@@ -252,7 +252,7 @@
         </junitreport>
     </target>
 
-    <target name="sonar" depends="build">
+    <target name="sonar" depends="test">
         <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
             <classpath path="${lib.ext}/sonar-ant-task-2.1.jar"/>
         </taskdef>

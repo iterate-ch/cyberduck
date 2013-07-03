@@ -41,9 +41,15 @@
     <property name="wyupdate.home" value="C:/workspace/wyupdate-2.6.18-r414"/>
     <property name="wybuild.home" value="${programFiles}/wyBuild"/>
 
-    <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask"/>
-    <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask"/>
-    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+    <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
+        <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
+    </taskdef>
+    <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+        <classpath path="${lib.ext}/ant-dotnet-1.0.jar"/>
+    </taskdef>
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
+    </taskdef>
 
     <target name="version" depends="revision">
         <!-- remove any non-digits (e.g. a trailing M) from the current revision -->
