@@ -37,6 +37,9 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
+        assertFalse(session.cache().isEmpty());
+        assertTrue(session.cache().containsKey(new S3Path(session, "/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new S3Path(session, "/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertTrue(session.isConnected());
         session.close();
         assertNull(session.getClient());
