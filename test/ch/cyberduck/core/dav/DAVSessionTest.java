@@ -26,6 +26,11 @@ public class DAVSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
+        assertFalse(session.cache().isEmpty());
+        assertTrue(session.cache().containsKey(new DAVPath(session, "/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new DAVPath(session, "/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new DAVPath(session, "/branches", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new DAVPath(session, "/tags", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertTrue(session.isConnected());
         session.close();
         assertNull(session.getClient());
