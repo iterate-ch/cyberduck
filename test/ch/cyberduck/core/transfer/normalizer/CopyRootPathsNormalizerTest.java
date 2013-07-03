@@ -19,11 +19,9 @@ package ch.cyberduck.core.transfer.normalizer;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -50,7 +48,7 @@ public class CopyRootPathsNormalizerTest extends AbstractTestCase {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         files.put(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE));
         files.put(new NullPath("/p/child", Path.DIRECTORY_TYPE), new NullPath("/d/child", Path.DIRECTORY_TYPE));
-        assertEquals(Collections.singletonMap(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE)), normalizer.normalize(files));
+        assertEquals(Collections.<Path, Path>singletonMap(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE)), normalizer.normalize(files));
     }
 
     @Test
@@ -59,6 +57,6 @@ public class CopyRootPathsNormalizerTest extends AbstractTestCase {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         files.put(new NullPath("/p/child", Path.DIRECTORY_TYPE), new NullPath("/d/child", Path.DIRECTORY_TYPE));
         files.put(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE));
-        assertEquals(Collections.singletonMap(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE)), normalizer.normalize(files));
+        assertEquals(Collections.<Path, Path>singletonMap(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE)), normalizer.normalize(files));
     }
 }
