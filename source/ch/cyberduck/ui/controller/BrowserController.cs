@@ -2109,7 +2109,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if(selected != null) {
                 final Path workdir = Workdir;
                 Path p = workdir;
-                while(!p.getParent().getAbsolute().equals(p.getAbsolute())) {
+                while(!p.getAbsolute().equals(selected)) {
                     p = p.getParent();
                 }
                 SetWorkdir(p);

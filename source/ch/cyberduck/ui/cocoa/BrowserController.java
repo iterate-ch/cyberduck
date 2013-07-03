@@ -2063,7 +2063,7 @@ public class BrowserController extends WindowController
         if(selected != null) {
             final Path workdir = this.workdir();
             Path p = workdir;
-            while(!p.getParent().getAbsolute().equals(p.getAbsolute())) {
+            while(!p.getAbsolute().equals(selected)) {
                 p = p.getParent();
             }
             this.setWorkdir(p);
