@@ -22,6 +22,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.URIEncoder;
@@ -47,7 +48,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -190,9 +190,8 @@ public class DAVPath extends HttpPath {
             final List<DavResource> resources = session.getClient().list(URIEncoder.encode(this.getAbsolute()));
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
-                final URI uri = resource.getHref();
                 final DAVPath p = new DAVPath(session, this,
-                        Path.getName(uri.getPath()), resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
+                        Path.getName(PathNormalizer.normalize(resource.getHref().getPath(), true)), resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
                 p.readAttributes(resource);
                 children.add(p);
             }
