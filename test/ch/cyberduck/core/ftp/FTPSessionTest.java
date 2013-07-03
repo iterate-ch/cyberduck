@@ -28,6 +28,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
+        assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();
         assertEquals(Session.State.closed, session.getState());
@@ -46,6 +47,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
+        assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();
         assertNull(session.getClient());
