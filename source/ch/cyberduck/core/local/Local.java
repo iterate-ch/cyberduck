@@ -150,7 +150,7 @@ public abstract class Local extends AbstractPath {
         final AttributedList<Local> children = new AttributedList<Local>();
         final File[] files = new File(path).listFiles();
         if(null == files) {
-            log.error(String.format("Error listing children at %s", path));
+            log.error(String.format("Error listing children for %s", path));
             return children;
         }
         for(File file : files) {
@@ -229,7 +229,7 @@ public abstract class Local extends AbstractPath {
 
     public void rename(final Local renamed) {
         if(!new File(path).renameTo(new File(renamed.getAbsolute()))) {
-            log.error(String.format("Rename failed for %s", renamed.getAbsolute()));
+            log.error(String.format("Rename failed for %s", renamed));
         }
     }
 

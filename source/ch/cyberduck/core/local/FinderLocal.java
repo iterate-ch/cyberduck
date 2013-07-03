@@ -125,7 +125,7 @@ public class FinderLocal extends Local {
             final AttributedList<Local> children = new AttributedList<Local>();
             final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), null);
             if(null == files) {
-                log.error(String.format("Error listing children for folder %s", getAbsolute()));
+                log.error(String.format("Error listing children for folder %s", this));
                 return children;
             }
             final NSEnumerator i = files.objectEnumerator();
@@ -150,7 +150,7 @@ public class FinderLocal extends Local {
         final boolean success = NSFileManager.defaultManager().createSymbolicLinkAtPath_pathContent(
                 this.getAbsolute(), target);
         if(!success) {
-            log.error(String.format("File attribute changed failed for file %s", getAbsolute()));
+            log.error(String.format("File attribute changed failed for file %s", this));
         }
     }
 
@@ -180,9 +180,9 @@ public class FinderLocal extends Local {
                     NSDictionary.dictionaryWithObjectsForKeys(
                             NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(permission.getOctalString(), 8))),
                             NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
-                    getAbsolute(), null);
+                    this.getAbsolute(), null);
             if(!success) {
-                log.error(String.format("File attribute changed failed for file %s", getAbsolute()));
+                log.error(String.format("File attribute changed failed for file %s", this));
             }
         }
     }
@@ -203,7 +203,7 @@ public class FinderLocal extends Local {
                             NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
                     getAbsolute(), null);
             if(!success) {
-                log.error(String.format("File attribute changed failed for file %s", getAbsolute()));
+                log.error(String.format("File attribute changed failed for file %s", this));
             }
         }
     }
@@ -222,7 +222,7 @@ public class FinderLocal extends Local {
                         NSWorkspace.RecycleOperation,
                         this.getParent().getAbsolute(), StringUtils.EMPTY,
                         NSArray.arrayWithObject(this.getName()))) {
-                    log.warn(String.format("Failed to move %s to Trash", this.getAbsolute()));
+                    log.warn(String.format("Failed to move %s to Trash", this));
                 }
             }
         }
