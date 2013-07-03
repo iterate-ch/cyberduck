@@ -12,27 +12,27 @@ public class NullAttributes extends Attributes {
 
     @Override
     public long getSize() {
-        throw new UnsupportedOperationException();
+        return -1L;
     }
 
     @Override
     public long getModificationDate() {
-        throw new UnsupportedOperationException();
+        return -1L;
     }
 
     @Override
     public long getCreationDate() {
-        throw new UnsupportedOperationException();
+        return -1L;
     }
 
     @Override
     public long getAccessedDate() {
-        throw new UnsupportedOperationException();
+        return -1L;
     }
 
     @Override
     public Permission getPermission() {
-        throw new UnsupportedOperationException();
+        return Permission.EMPTY;
     }
 
     @Override
