@@ -13,7 +13,9 @@ import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -90,6 +92,82 @@ public class DownloadTransferTest extends AbstractTestCase {
         root.setLocal(new NullLocal(null, "l"));
         Transfer t = new DownloadTransfer(root);
         assertEquals(Collections.<Path>singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
+    }
+
+    @Test
+    public void testChildrenEmpty() throws Exception {
+        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+            @Override
+            public AttributedList<Path> list() {
+                return AttributedList.emptyList();
+            }
+        };
+        Transfer t = new DownloadTransfer(root);
+        assertTrue(t.children(root).isEmpty());
+    }
+
+    @Test
+    public void testPrepareOverride() throws Exception {
+        final NullPath child = new NullPath("/t/c", Path.FILE_TYPE);
+        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+            @Override
+            public AttributedList<Path> list() {
+                final AttributedList<Path> children = new AttributedList<Path>();
+                children.add(child);
+                return children;
+            }
+        };
+        root.setLocal(new NullLocal(null, "l") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        });
+        final Transfer t = new DownloadTransfer(root) {
+            @Override
+            protected void prepare(final Path file, final TransferPathFilter filter, final TransferStatus status) throws BackgroundException {
+                super.prepare(file, filter, status);
+                if(file.equals(root)) {
+                    assertTrue(status.isOverride());
+                }
+                else if(file.equals(child)) {
+                    assertFalse(status.isOverride());
+                }
+                else {
+                    fail();
+                }
+            }
+
+            @Override
+            protected void transfer(final Path file, final TransferPathFilter filter,
+                                    final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                if(file.equals(root)) {
+                    assertTrue(this.cache().containsKey(root.getReference()));
+                }
+                super.transfer(file, filter, options, status);
+                assertFalse(this.cache().containsKey(child.getReference()));
+            }
+
+            @Override
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                if(file.equals(root)) {
+                    fail();
+                }
+                else if(file.equals(child)) {
+                    assertFalse(status.isOverride());
+                }
+                else {
+                    fail();
+                }
+            }
+        };
+        t.start(new TransferPrompt() {
+            @Override
+            public TransferAction prompt() throws BackgroundException {
+                return TransferAction.ACTION_OVERWRITE;
+            }
+        }, new TransferOptions());
+        assertFalse(t.cache().containsKey(child.getReference()));
     }
 
     @Test(expected = NullPointerException.class)

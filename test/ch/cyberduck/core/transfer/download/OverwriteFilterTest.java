@@ -34,7 +34,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final NullPath p = new NullPath("a", Path.FILE_TYPE);
         p.setLocal(new NullLocal(null, "a"));
         p.attributes().setSize(8L);
-        assertTrue(f.accept(new NullSession(new Host("h")), p));
+        assertTrue(f.accept(new NullSession(new Host("h")), p, new TransferStatus()));
     }
 
     @Test
@@ -48,9 +48,9 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 return t;
             }
         };
-        assertTrue(f.accept(new NullSession(new Host("h")), p));
+        assertTrue(f.accept(new NullSession(new Host("h")), p, new TransferStatus()));
         p.getLocal().mkdir();
-        assertFalse(f.accept(new NullSession(new Host("h")), p));
+        assertFalse(f.accept(new NullSession(new Host("h")), p, new TransferStatus()));
     }
 
     @Test
@@ -59,7 +59,8 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final NullPath p = new NullPath("a", Path.FILE_TYPE);
         p.setLocal(new NullLocal(null, "a"));
         p.attributes().setSize(8L);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), p);
+        final TransferStatus status = new TransferStatus();
+        f.prepare(new NullSession(new Host("h")), p, status);
         assertEquals(8L, status.getLength(), 0L);
     }
 }

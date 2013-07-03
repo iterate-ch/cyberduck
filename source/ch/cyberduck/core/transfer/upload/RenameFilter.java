@@ -38,14 +38,14 @@ public class RenameFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
         return true;
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
-        final TransferStatus status = super.prepare(session, file);
-        if(file.exists()) {
+    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+        super.prepare(session, file, status);
+        if(status.isOverride()) {
             final Path parent = file.getParent();
             final String filename = file.getName();
             int no = 0;
@@ -61,6 +61,5 @@ public class RenameFilter extends AbstractUploadFilter {
                 log.info(String.format("Changed local name from %s to %s", filename, file.getName()));
             }
         }
-        return status;
     }
 }

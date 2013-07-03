@@ -2,11 +2,10 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
-
-import java.util.concurrent.Callable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,13 +24,13 @@ public class OverwriteFilterTest extends AbstractTestCase {
             public Local getLocal() {
                 return new NullLocal(null, "t");
             }
-        }));
+        }, new TransferStatus()));
         assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t");
             }
-        }));
+        }, new TransferStatus()));
         assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
@@ -42,13 +41,14 @@ public class OverwriteFilterTest extends AbstractTestCase {
             public boolean exists() {
                 return true;
             }
-        }));
+        }, new TransferStatus()));
     }
 
     @Test
     public void testSize() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
-        assertEquals(1L, f.prepare(new NullSession(new Host("h")), new NullPath("/t", Path.FILE_TYPE) {
+        final TransferStatus status = new TransferStatus();
+        f.prepare(new NullSession(new Host("h")), new NullPath("/t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "/t") {
@@ -63,7 +63,8 @@ public class OverwriteFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }).getLength(), 0L);
+        }, status);
+        assertEquals(1L, status.getLength(), 0L);
     }
 
     @Test
@@ -71,7 +72,9 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         final NullPath file = new NullPath("/t", Path.FILE_TYPE);
         file.setLocal(new NullLocal(null, "a"));
-        assertFalse(f.prepare(new NullSession(new Host("h")), file).isComplete());
+        final TransferStatus status = new TransferStatus();
+        f.prepare(new NullSession(new Host("h")), file, status);
+        assertFalse(status.isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }
@@ -86,7 +89,9 @@ public class OverwriteFilterTest extends AbstractTestCase {
             }
         };
         file.setLocal(new NullLocal(null, "a"));
-        assertFalse(f.prepare(new NullSession(new Host("h")), file).isComplete());
+        final TransferStatus status = new TransferStatus();
+        f.prepare(new NullSession(new Host("h")), file, status);
+        assertFalse(status.isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }
@@ -126,21 +131,13 @@ public class OverwriteFilterTest extends AbstractTestCase {
             public void readUnixPermission() {
                 attributes().setPermission(permission);
             }
-
-            @Override
-            public boolean exists() {
-                return true;
-            }
         };
         file.setLocal(new NullLocal(null, "a"));
-        this.repeat(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                assertFalse(f.prepare(new NullSession(new Host("h")), file).isComplete());
-                assertEquals(acl, file.attributes().getAcl());
-                assertEquals(permission, file.attributes().getPermission());
-                return null;
-            }
-        }, 10);
+        final TransferStatus status = new TransferStatus();
+        status.setOverride(true);
+        f.prepare(new NullSession(new Host("h")), file, status);
+        assertFalse(status.isComplete());
+        assertEquals(acl, file.attributes().getAcl());
+        assertEquals(permission, file.attributes().getPermission());
     }
 }

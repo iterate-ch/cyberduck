@@ -29,21 +29,19 @@ public class MoveTransferFilterTest {
             }
         });
         MoveTransferFilter f = new MoveTransferFilter(files);
-        assertTrue(f.accept(new NullSession(new Host("h")), source));
+        assertTrue(f.accept(new NullSession(new Host("h")), source, new TransferStatus()));
     }
 
     @Test
     public void testAcceptDirectoryExists() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         final NullPath source = new NullPath("a", Path.DIRECTORY_TYPE);
-        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE) {
-            @Override
-            public boolean exists() {
-                return true;
-            }
-        });
+        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE));
         MoveTransferFilter f = new MoveTransferFilter(files);
-        assertFalse(f.accept(new NullSession(new Host("h")), source));
+        final TransferStatus status = new TransferStatus();
+        assertTrue(f.accept(new NullSession(new Host("h")), source, status));
+        status.setOverride(true);
+        assertFalse(f.accept(new NullSession(new Host("h")), source, status));
     }
 
     @Test
@@ -53,7 +51,8 @@ public class MoveTransferFilterTest {
         source.attributes().setSize(1L);
         files.put(source, new NullPath("a", Path.FILE_TYPE));
         MoveTransferFilter f = new MoveTransferFilter(files);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
+        final TransferStatus status = new TransferStatus();
+        f.prepare(new NullSession(new Host("h")), source, status);
         assertEquals(1L, status.getLength());
     }
 
@@ -77,7 +76,8 @@ public class MoveTransferFilterTest {
         };
         files.put(source, target);
         MoveTransferFilter f = new MoveTransferFilter(files);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
+        final TransferStatus status = new TransferStatus();
+        f.prepare(new NullSession(new Host("h")), source, status);
         assertEquals(0L, status.getLength());
     }
 }

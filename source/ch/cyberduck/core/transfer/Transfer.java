@@ -431,8 +431,8 @@ public abstract class Transfer implements Serializable {
      * @param options Quarantine option
      * @param status  Transfer status
      */
-    private void transfer(final Path file, final TransferPathFilter filter,
-                          final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    protected void transfer(final Path file, final TransferPathFilter filter,
+                            final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(!status.isSelected()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skip %s not selected in prompt", file.getAbsolute()));
@@ -441,7 +441,7 @@ public abstract class Transfer implements Serializable {
             return;
         }
         this.check();
-        if(filter.accept(session, file)) {
+        if(filter.accept(session, file, status)) {
             // Notification
             this.fireWillTransferPath(file);
             // Transfer
@@ -497,88 +497,52 @@ public abstract class Transfer implements Serializable {
     public abstract void transfer(Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
 
     /**
-     * @param prompt  Callback
-     * @param options Transfer options
-     */
-    private void transfer(final TransferPrompt prompt, final TransferOptions options) throws BackgroundException {
-        this.check();
-        // Determine the filter to match files against
-        final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Selected transfer action %s", action));
-        }
-        if(action.equals(TransferAction.ACTION_CANCEL)) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Transfer canceled by user:%s", this));
-            }
-            this.cancel();
-            return;
-        }
-        this.clear(options);
-        this.check();
-        // Get the transfer filter from the concrete transfer class
-        final TransferPathFilter filter = this.filter(prompt, action);
-        if(null == filter) {
-            // The user has canceled choosing a transfer filter
-            this.cancel();
-            return;
-        }
-        // Reset the cached size of the transfer and progress value
-        this.reset();
-        // Calculate information about the files in advance to give progress information
-        for(Path next : roots) {
-            this.prepare(next, filter);
-        }
-        // Transfer all files sequentially
-        for(Path next : roots) {
-            this.transfer(next, filter, options, status.get(next));
-        }
-        this.clear(options);
-    }
-
-    /**
      * To be called before any file is actually transferred
      *
      * @param p      File
      * @param filter Filter to apply to exclude files from transfer
      */
-    protected void prepare(final Path p, final TransferPathFilter filter) throws BackgroundException {
+    protected void prepare(final Path p, final TransferPathFilter filter, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer status for path %s", p.getAbsolute()));
+            log.debug(String.format("Find transfer status of %s for transfer %s", p, this));
         }
         this.check();
-        if(!this.isSelected(p)) {
-            return;
-        }
-        final TransferStatus s;
-        // Only prepare the path it will be actually transferred
-        if(filter.accept(session, p)) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Accepted in %s transfer", p.getAbsolute()));
+        if(this.isSelected(p)) {
+            // Only prepare the path it will be actually transferred
+            if(filter.accept(session, p, status)) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Accepted in %s transfer", p));
+                }
+                filter.prepare(session, p, status);
+                // Add transfer length to total bytes
+                this.addSize(status.getLength());
+                // Add skipped bytes
+                this.addTransferred(status.getCurrent());
             }
-            s = filter.prepare(session, p);
-            // Add transfer length to total bytes
-            this.addSize(s.getLength());
-            // Add skipped bytes
-            this.addTransferred(s.getCurrent());
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Determined transfer status %s of %s for transfer %s", status, p, this));
+            }
+            this.status.put(p, status);
+            if(p.attributes().isDirectory()) {
+                // Call recursively for all children
+                final AttributedList<Path> children = this.children(p);
+                // Put into cache for later reference when transferring
+                this.cache().put(p.getReference(), children);
+                // Call recursively
+                for(Path child : children) {
+                    final TransferStatus s = new TransferStatus();
+                    if(status.isOverride()) {
+                        s.setOverride(child.exists());
+                    }
+                    else {
+                        s.setOverride(false);
+                    }
+                    this.prepare(child, filter, s);
+                }
+            }
         }
         else {
-            // Empty transfer status for files not accepted by filter
-            s = new TransferStatus();
-        }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Determined transfer status %s for %s", s, p.getAbsolute()));
-        }
-        status.put(p, s);
-        if(p.attributes().isDirectory()) {
-            // Call recursively for all children
-            final AttributedList<Path> children = this.children(p);
-            // Put into cache for later reference when transferring
-            this.cache().put(p.getReference(), children);
-            // Call recursively
-            for(Path child : children) {
-                this.prepare(child, filter);
-            }
+            log.info(String.format("Skip unchecked file %s for transfer %s", p, this));
         }
     }
 
@@ -634,11 +598,39 @@ public abstract class Transfer implements Serializable {
         try {
             this.fireTransferWillStart();
             this.queue();
-            if(this.isCanceled()) {
-                // The transfer has been canceled while being queued
-                return;
+            this.check();
+            // Determine the filter to match files against
+            final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Selected transfer action %s", action));
             }
-            this.transfer(prompt, options);
+            if(action.equals(TransferAction.ACTION_CANCEL)) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Transfer canceled by user:%s", this));
+                }
+                throw new ConnectionCanceledException();
+            }
+            this.clear(options);
+            this.check();
+            // Get the transfer filter from the concrete transfer class
+            final TransferPathFilter filter = this.filter(prompt, action);
+            if(null == filter) {
+                // The user has canceled choosing a transfer filter
+                throw new ConnectionCanceledException();
+            }
+            // Reset the cached size of the transfer and progress value
+            this.reset();
+            // Calculate information about the files in advance to give progress information
+            for(Path next : roots) {
+                final TransferStatus status = new TransferStatus();
+                status.setOverride(next.exists());
+                this.prepare(next, filter, status);
+            }
+            // Transfer all files sequentially
+            for(Path next : roots) {
+                this.transfer(next, filter, options, status.get(next));
+            }
+            this.clear(options);
         }
         finally {
             sleep.release(lock);

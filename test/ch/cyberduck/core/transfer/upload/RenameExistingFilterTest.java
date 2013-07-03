@@ -10,6 +10,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        })
+        }, new TransferStatus())
         );
         assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("t", Path.FILE_TYPE) {
             @Override
@@ -66,7 +67,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        })
+        }, new TransferStatus())
         );
     }
 
@@ -97,6 +98,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
             }
         };
         p.setLocal(new NullLocal("/Downloads", "n"));
-        f.prepare(new NullSession(new Host("h")), p);
+        f.prepare(new NullSession(new Host("h")), p, new TransferStatus());
     }
 }

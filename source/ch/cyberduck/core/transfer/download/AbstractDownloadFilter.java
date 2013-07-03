@@ -58,7 +58,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
         if(file.attributes().isDirectory()) {
             if(file.getLocal().exists()) {
                 // Do not attempt to create existing folders
@@ -78,8 +78,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
-        final TransferStatus status = new TransferStatus();
+    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
         if(file.attributes().isFile()) {
             if(file.attributes().getSize() == -1) {
                 file.readSize();
@@ -126,7 +125,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(Preferences.instance().getBoolean("queue.download.icon.update")) {
             icon.set(file.getLocal(), 0);
         }
-        return status;
     }
 
     /**

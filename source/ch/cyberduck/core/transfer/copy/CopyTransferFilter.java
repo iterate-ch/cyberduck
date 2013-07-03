@@ -40,11 +40,11 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path source) throws BackgroundException {
+    public boolean accept(final Session session, final Path source, final TransferStatus status) throws BackgroundException {
         if(source.attributes().isDirectory()) {
             final Path destination = files.get(source);
             // Do not attempt to create a directory that already exists
-            if(destination.exists()) {
+            if(status.isOverride()) {
                 return false;
             }
         }
@@ -52,8 +52,7 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path source) throws BackgroundException {
-        final TransferStatus status = new TransferStatus();
+    public void prepare(final Session session, final Path source, final TransferStatus status) throws BackgroundException {
         if(source.attributes().isFile()) {
             if(source.attributes().getSize() == -1) {
                 // Read file size
@@ -61,7 +60,6 @@ public class CopyTransferFilter implements TransferPathFilter {
             }
             status.setLength(source.attributes().getSize());
         }
-        return status;
     }
 
     @Override

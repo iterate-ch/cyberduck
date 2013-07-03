@@ -12,8 +12,7 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -33,7 +32,7 @@ public class ResumeFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }));
+        }, new TransferStatus()));
     }
 
     @Test
@@ -42,7 +41,11 @@ public class ResumeFilterTest extends AbstractTestCase {
         final NullPath t = new NullPath("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal(null, "t"));
         t.attributes().setSize(7L);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), t);
+        final TransferStatus status = new TransferStatus();
+        f.prepare(new NullSession(new Host("h")), t, status);
+        assertFalse(status.isResume());
+        status.setOverride(true);
+        f.prepare(new NullSession(new Host("h")), t, status);
         assertTrue(status.isResume());
         assertEquals(7L, status.getCurrent());
     }

@@ -41,7 +41,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
         return file.getSession().isRenameSupported(file);
     }
 
@@ -49,19 +49,21 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      * Rename existing file on server if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
-        Path renamed = file;
-        while(renamed.exists()) {
-            String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
-                    FilenameUtils.getBaseName(file.getName()),
-                    UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
-                    StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-            renamed = PathFactory.createPath(file.getSession(), renamed.getParent(),
-                    proposal, file.attributes().getType());
+    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+        if(status.isOverride()) {
+            Path renamed = file;
+            while(renamed.exists()) {
+                String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
+                        FilenameUtils.getBaseName(file.getName()),
+                        UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                        StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
+                renamed = PathFactory.createPath(file.getSession(), renamed.getParent(),
+                        proposal, file.attributes().getType());
+            }
+            if(!renamed.equals(file)) {
+                file.rename(renamed);
+            }
         }
-        if(!renamed.equals(file)) {
-            file.rename(renamed);
-        }
-        return super.prepare(session, file);
+        super.prepare(session, file, status);
     }
 }

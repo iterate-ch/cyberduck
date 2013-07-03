@@ -45,18 +45,18 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+        if(!file.getLocal().exists()) {
+            // Local file is no more here
+            return false;
+        }
         if(file.attributes().isDirectory()) {
             // Do not attempt to create a directory that already exists
-            if(file.exists()) {
+            if(status.isOverride()) {
                 return false;
             }
         }
         else if(file.attributes().isFile()) {
-            if(!file.getLocal().exists()) {
-                // Local file is no more here
-                return false;
-            }
             if(file.getLocal().attributes().isSymbolicLink()) {
                 if(!symlinkResolver.resolve(file)) {
                     return symlinkResolver.include(file);
@@ -67,10 +67,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
         final PathAttributes attributes = file.attributes();
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-            if(file.exists()) {
+            if(status.isOverride()) {
                 // Do not overwrite permissions for existing file.
                 if(file.getSession().isUnixPermissionsSupported()) {
                     file.readUnixPermission();
@@ -102,7 +102,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
         }
-        final TransferStatus status = new TransferStatus();
         if(attributes.isFile()) {
             if(file.getLocal().attributes().isSymbolicLink()) {
                 if(symlinkResolver.resolve(file)) {
@@ -119,7 +118,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setLength(file.getLocal().attributes().getSize());
             }
         }
-        return status;
     }
 
     @Override

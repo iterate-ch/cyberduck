@@ -169,36 +169,35 @@ public class SyncTransfer extends Transfer {
                         = _delegateUpload.filter(null, TransferAction.ACTION_OVERWRITE);
 
                 @Override
-                public TransferStatus prepare(final Session session, final Path p) throws BackgroundException {
+                public void prepare(final Session session, final Path p, final TransferStatus status) throws BackgroundException {
                     final Comparison compare = SyncTransfer.this.compare(p);
                     if(compare.equals(Comparison.REMOTE_NEWER)) {
-                        return _delegateFilterDownload.prepare(session, p);
+                        _delegateFilterDownload.prepare(session, p, status);
                     }
-                    if(compare.equals(Comparison.LOCAL_NEWER)) {
-                        return _delegateFilterUpload.prepare(session, p);
+                    else if(compare.equals(Comparison.LOCAL_NEWER)) {
+                        _delegateFilterUpload.prepare(session, p, status);
                     }
-                    return new TransferStatus();
                 }
 
                 @Override
-                public boolean accept(final Session session, final Path p) throws BackgroundException {
+                public boolean accept(final Session session, final Path p, final TransferStatus status) throws BackgroundException {
                     final Comparison compare = SyncTransfer.this.compare(p);
                     if(compare.equals(Comparison.EQUAL)) {
                         return false;
                     }
-                    if(compare.equals(Comparison.REMOTE_NEWER)) {
+                    else if(compare.equals(Comparison.REMOTE_NEWER)) {
                         if(getTransferAction().equals(ACTION_UPLOAD)) {
                             return false;
                         }
                         // Ask the download delegate for inclusion
-                        return _delegateFilterDownload.accept(session, p);
+                        return _delegateFilterDownload.accept(session, p, status);
                     }
                     else if(compare.equals(Comparison.LOCAL_NEWER)) {
                         if(getTransferAction().equals(ACTION_DOWNLOAD)) {
                             return false;
                         }
                         // Ask the upload delegate for inclusion
-                        return _delegateFilterUpload.accept(session, p);
+                        return _delegateFilterUpload.accept(session, p, status);
                     }
                     return false;
                 }

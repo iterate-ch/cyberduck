@@ -35,7 +35,12 @@ public class TransferStatus {
     public static final long GIGA = 1073741824; // 2^30
 
     /**
-     * Transfer is resumable
+     * Override existing file
+     */
+    private boolean override = false;
+
+    /**
+     * Append to existing file
      */
     private boolean resume = false;
 
@@ -143,6 +148,15 @@ public class TransferStatus {
             current = 0;
         }
         this.resume = resume;
+        this.override = false;
+    }
+
+    public void setOverride(final boolean override) {
+        this.override = override;
+    }
+
+    public boolean isOverride() {
+        return override;
     }
 
     public boolean isResume() {
@@ -154,6 +168,7 @@ public class TransferStatus {
         final StringBuilder sb = new StringBuilder();
         sb.append("TransferStatus");
         sb.append("{resume=").append(resume);
+        sb.append(", override=").append(override);
         sb.append(", current=").append(current);
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);

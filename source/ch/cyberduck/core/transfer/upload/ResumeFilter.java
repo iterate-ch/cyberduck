@@ -37,12 +37,12 @@ public class ResumeFilter extends AbstractUploadFilter {
      * Append to existing file.
      */
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
-        final TransferStatus status = super.prepare(session, file);
+    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+        super.prepare(session, file, status);
         if(file.getSession().isUploadResumable()) {
             final PathAttributes attributes = file.attributes();
             if(attributes.isFile()) {
-                if(file.exists()) {
+                if(status.isOverride()) {
                     // Do not trust cached value which is from last directory listing
                     // and possibly outdated. Fix #3284.
                     file.readSize();
@@ -53,6 +53,5 @@ public class ResumeFilter extends AbstractUploadFilter {
                 }
             }
         }
-        return status;
     }
 }

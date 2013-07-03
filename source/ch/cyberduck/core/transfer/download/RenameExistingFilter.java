@@ -42,7 +42,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
         return true;
     }
 
@@ -50,7 +50,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
      * Rename existing file on disk if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
         Local renamed = file.getLocal();
         while(renamed.exists()) {
             String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.download.file.rename.format"),
@@ -62,6 +62,6 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
         if(!renamed.equals(file.getLocal())) {
             file.getLocal().rename(renamed);
         }
-        return super.prepare(session, file);
+        super.prepare(session, file, status);
     }
 }
