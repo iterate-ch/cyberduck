@@ -251,7 +251,9 @@
     </target>
 
     <target name="sonar" depends="build">
-        <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml"/>
+        <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+            <classpath path="${lib.ext}/sonar-ant-task-2.1.jar"/>
+        </taskdef>
         <property name="sonar.projectName" value="${app.name}"/>
         <property name="sonar.projectKey" value="ch.cyberduck:cyberduck"/>
         <property name="sonar.projectVersion" value="${svn.revision}"/>
