@@ -120,7 +120,7 @@ public abstract class Session<C> implements TranscriptListener {
         return client;
     }
 
-    protected abstract C connect(final HostKeyController key) throws BackgroundException;
+    protected abstract C connect(HostKeyController key) throws BackgroundException;
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
@@ -128,7 +128,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @param keychain Password store
      * @param prompt   Prompt
      */
-    public abstract void login(final PasswordStore keychain, LoginController prompt) throws BackgroundException;
+    public abstract void login(PasswordStore keychain, LoginController prompt) throws BackgroundException;
 
     /**
      * Logout and close client connection
