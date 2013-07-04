@@ -20,6 +20,7 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
@@ -28,7 +29,10 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.barbarysoftware.watchservice.ClosedWatchServiceException;
 import com.barbarysoftware.watchservice.WatchEvent;
@@ -46,8 +50,11 @@ public class FileWatcher implements FileWatcherCallback {
 
     private WatchService monitor;
 
+    private ExecutorService pool;
+
     public FileWatcher() {
-        this.monitor = WatchService.newWatchService();
+        monitor = WatchService.newWatchService();
+        pool = Executors.newFixedThreadPool(1, new NamedThreadFactory());
     }
 
     public CountDownLatch register(final Local file) {
@@ -62,8 +69,9 @@ public class FileWatcher implements FileWatcherCallback {
             log.error(String.format("Failure registering file watcher monitor for %s", watchable.getFile()), e);
         }
         final CountDownLatch lock = new CountDownLatch(1);
-        new Thread(new Runnable() {
-            public void run() {
+        pool.submit(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws IOException {
                 while(true) {
                     final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
                     try {
@@ -75,10 +83,10 @@ public class FileWatcher implements FileWatcherCallback {
                         }
                         catch(ClosedWatchServiceException e) {
                             // If this watch service is closed
-                            return;
+                            return true;
                         }
                         catch(InterruptedException e) {
-                            return;
+                            return false;
                         }
                         for(WatchEvent<?> event : key.pollEvents()) {
                             final WatchEvent.Kind<?> kind = event.kind();
@@ -102,18 +110,15 @@ public class FileWatcher implements FileWatcherCallback {
                         boolean valid = key.reset();
                         if(!valid) {
                             // The key is no longer valid and the loop can exit.
-                            break;
+                            return true;
                         }
-                    }
-                    catch(IOException e) {
-                        log.error(e.getMessage());
                     }
                     finally {
                         autorelease.operate();
                     }
                 }
             }
-        }).start();
+        });
         return lock;
     }
 
@@ -157,6 +162,7 @@ public class FileWatcher implements FileWatcherCallback {
     public void close(final Local local) {
         try {
             monitor.close();
+            pool.shutdown();
         }
         catch(IOException e) {
             log.error(String.format("Failure closing file watcher monitor"), e);
