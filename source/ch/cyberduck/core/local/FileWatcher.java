@@ -84,6 +84,7 @@ public class FileWatcher implements FileWatcherCallback {
                                 log.info(String.format("Detected file system event %s", kind.name()));
                             }
                             if(kind == OVERFLOW) {
+                                log.error(String.format("Overflow event for %s", watchable.getFile()));
                                 continue;
                             }
                             // The filename is the context of the event.
