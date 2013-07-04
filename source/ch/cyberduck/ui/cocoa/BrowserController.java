@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Application;
@@ -32,7 +33,6 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.transfer.Transfer;
@@ -3924,7 +3924,7 @@ public class BrowserController extends WindowController
             return this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("createFolderButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.isCreateFolderSupported(this.workdir());
+            return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isBrowser() && this.isMounted() && session.isCreateFileSupported(this.workdir());
