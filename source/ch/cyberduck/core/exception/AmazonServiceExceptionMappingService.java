@@ -35,6 +35,9 @@ public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMap
         if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
             return new LoginFailureException(buffer.toString(), e);
         }
+        if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            return new LoginFailureException(buffer.toString(), e);
+        }
         return this.wrap(e, buffer);
     }
 }

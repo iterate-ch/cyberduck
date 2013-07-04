@@ -34,6 +34,9 @@ public class CloudFrontServiceExceptionMappingService extends AbstractIOExceptio
         if(e.getResponseCode() == HttpStatus.SC_FORBIDDEN) {
             return new LoginFailureException(buffer.toString(), e);
         }
+        if(e.getResponseCode() == HttpStatus.SC_NOT_FOUND) {
+            return new NotfoundException(buffer.toString(), e);
+        }
         if(e.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
             if(e.getErrorCode().equals("InvalidHttpAuthHeader")) {
                 return new LoginFailureException(buffer.toString(), e);

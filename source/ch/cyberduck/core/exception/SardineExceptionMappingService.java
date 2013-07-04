@@ -35,6 +35,9 @@ public class SardineExceptionMappingService extends AbstractIOExceptionMappingSe
         if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             return new LoginFailureException(buffer.toString(), e);
         }
+        if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            return new NotfoundException(buffer.toString(), e);
+        }
         return this.wrap(e, buffer);
     }
 }

@@ -30,6 +30,7 @@ import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
@@ -196,12 +197,14 @@ public class FTPPath extends Path {
                     @Override
                     public Boolean run() throws IOException {
                         if(!session.getClient().changeWorkingDirectory(getAbsolute())) {
-                            throw new FTPException(session.getClient().getReplyString());
+                            throw new FTPException(session.getClient().getReplyCode(),
+                                    session.getClient().getReplyString());
                         }
                         if(!session.getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
                             // Set transfer type for traditional data socket file listings. The data transfer is over the
                             // data connection in type ASCII or type EBCDIC.
-                            throw new FTPException(session.getClient().getReplyString());
+                            throw new FTPException(session.getClient().getReplyCode(),
+                                    session.getClient().getReplyString());
                         }
                         boolean success = false;
                         // STAT listing failed or empty
@@ -261,7 +264,7 @@ public class FTPPath extends Path {
         }
         catch(IOException e) {
             log.warn(String.format("Directory listing failure for %s with failure %s", this, e.getMessage()));
-            throw new DefaultIOExceptionMappingService().map("Listing directory failed", e, this);
+            throw new FTPExceptionMappingService().map("Listing directory failed", e, this);
         }
     }
 
@@ -272,11 +275,12 @@ public class FTPPath extends Path {
                     this.getName()));
 
             if(!session.getClient().makeDirectory(this.getAbsolute())) {
-                throw new FTPException(session.getClient().getReplyString());
+                throw new FTPException(session.getClient().getReplyCode(),
+                        session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, this);
+            throw new FTPExceptionMappingService().map("Cannot create folder {0}", e, this);
         }
     }
 
@@ -287,11 +291,12 @@ public class FTPPath extends Path {
                     this.getName(), renamed));
 
             if(!session.getClient().rename(this.getAbsolute(), renamed.getAbsolute())) {
-                throw new FTPException(session.getClient().getReplyString());
+                throw new FTPException(session.getClient().getReplyCode(),
+                        session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, this);
+            throw new FTPExceptionMappingService().map("Cannot rename {0}", e, this);
         }
     }
 
@@ -303,7 +308,8 @@ public class FTPPath extends Path {
 
             if(attributes().isFile() || attributes().isSymbolicLink()) {
                 if(!session.getClient().deleteFile(this.getAbsolute())) {
-                    throw new FTPException(session.getClient().getReplyString());
+                    throw new FTPException(session.getClient().getReplyCode(),
+                            session.getClient().getReplyString());
                 }
             }
             else if(attributes().isDirectory()) {
@@ -317,12 +323,13 @@ public class FTPPath extends Path {
                         this.getName()));
 
                 if(!session.getClient().removeDirectory(this.getAbsolute())) {
-                    throw new FTPException(session.getClient().getReplyString());
+                    throw new FTPException(session.getClient().getReplyCode(),
+                            session.getClient().getReplyString());
                 }
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, this);
+            throw new FTPExceptionMappingService().map("Cannot delete {0}", e, this);
 
         }
     }
@@ -336,17 +343,19 @@ public class FTPPath extends Path {
 
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
                 if(!session.getClient().sendSiteCommand(command + " " + owner + " " + this.getAbsolute())) {
-                    throw new FTPException(session.getClient().getReplyString());
+                    throw new FTPException(session.getClient().getReplyCode(),
+                            session.getClient().getReplyString());
                 }
             }
             else if(attributes().isDirectory()) {
                 if(!session.getClient().sendSiteCommand(command + " " + owner + " " + this.getAbsolute())) {
-                    throw new FTPException(session.getClient().getReplyString());
+                    throw new FTPException(session.getClient().getReplyCode(),
+                            session.getClient().getReplyString());
                 }
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot change owner", e, this);
+            throw new FTPExceptionMappingService().map("Cannot change owner", e, this);
         }
     }
 
@@ -359,17 +368,19 @@ public class FTPPath extends Path {
 
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
                 if(!session.getClient().sendSiteCommand(command + " " + group + " " + this.getAbsolute())) {
-                    throw new FTPException(session.getClient().getReplyString());
+                    throw new FTPException(session.getClient().getReplyCode(),
+                            session.getClient().getReplyString());
                 }
             }
             else if(attributes().isDirectory()) {
                 if(!session.getClient().sendSiteCommand(command + " " + group + " " + this.getAbsolute())) {
-                    throw new FTPException(session.getClient().getReplyString());
+                    throw new FTPException(session.getClient().getReplyCode(),
+                            session.getClient().getReplyString());
                 }
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot change group", e, this);
+            throw new FTPExceptionMappingService().map("Cannot change group", e, this);
         }
     }
 
@@ -379,7 +390,7 @@ public class FTPPath extends Path {
             this.writeUnixPermissionImpl(permission);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot change permissions", e, this);
+            throw new FTPExceptionMappingService().map("Cannot change permissions", e, this);
         }
     }
 
@@ -414,7 +425,7 @@ public class FTPPath extends Path {
             this.writeModificationDateImpl(created, modified);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot change timestamp", e, this);
+            throw new FTPExceptionMappingService().map("Cannot change timestamp", e, this);
         }
     }
 
@@ -470,7 +481,7 @@ public class FTPPath extends Path {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download failed", e, this);
+            throw new FTPExceptionMappingService().map("Download failed", e, this);
         }
     }
 
@@ -478,7 +489,8 @@ public class FTPPath extends Path {
     public InputStream read(final TransferStatus status) throws BackgroundException {
         try {
             if(!session.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
-                throw new FTPException(session.getClient().getReplyString());
+                throw new FTPException(session.getClient().getReplyCode(),
+                        session.getClient().getReplyString());
             }
             if(status.isResume()) {
                 // Where a server process supports RESTart in STREAM mode
@@ -505,7 +517,8 @@ public class FTPPath extends Path {
                         if(this.getByteCount() == status.getLength()) {
                             // Read 226 status
                             if(!session.getClient().completePendingCommand()) {
-                                throw new FTPException(session.getClient().getReplyString());
+                                throw new FTPException(session.getClient().getReplyCode(),
+                                        session.getClient().getReplyString());
                             }
                         }
                         else {
@@ -519,7 +532,7 @@ public class FTPPath extends Path {
             };
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download failed", e, this);
+            throw new FTPExceptionMappingService().map("Download failed", e, this);
         }
     }
 
@@ -540,7 +553,7 @@ public class FTPPath extends Path {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload failed", e, this);
+            throw new FTPExceptionMappingService().map("Upload failed", e, this);
         }
     }
 
@@ -548,7 +561,8 @@ public class FTPPath extends Path {
     public OutputStream write(final TransferStatus status) throws BackgroundException {
         try {
             if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                throw new FTPException(session.getClient().getReplyString());
+                throw new FTPException(session.getClient().getReplyCode(),
+                        session.getClient().getReplyString());
             }
             final OutputStream out = this.data(new DataConnectionAction<OutputStream>() {
                 @Override
@@ -571,7 +585,8 @@ public class FTPPath extends Path {
                         if(this.getByteCount() == status.getLength()) {
                             // Read 226 status
                             if(!session.getClient().completePendingCommand()) {
-                                throw new FTPException(session.getClient().getReplyString());
+                                throw new FTPException(session.getClient().getReplyCode(),
+                                        session.getClient().getReplyString());
                             }
                         }
                         else {
@@ -585,7 +600,7 @@ public class FTPPath extends Path {
             };
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload failed", e, this);
+            throw new FTPExceptionMappingService().map("Upload failed", e, this);
         }
     }
 }

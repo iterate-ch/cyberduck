@@ -42,6 +42,9 @@ public class FilesExceptionMappingService extends AbstractIOExceptionMappingServ
         if(e.getHttpStatusCode() == HttpStatus.SC_FORBIDDEN) {
             return new LoginFailureException(buffer.toString(), e);
         }
+        if(e.getHttpStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            return new NotfoundException(buffer.toString(), e);
+        }
         return this.wrap(e, buffer);
     }
 }

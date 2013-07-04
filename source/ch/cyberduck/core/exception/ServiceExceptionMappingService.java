@@ -37,6 +37,9 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
             if(HttpStatus.SC_FORBIDDEN == e.getResponseCode()) {
                 return new LoginFailureException(buffer.toString(), e);
             }
+            if(HttpStatus.SC_NOT_FOUND == e.getResponseCode()) {
+                return new NotfoundException(buffer.toString(), e);
+            }
             else if(HttpStatus.SC_UNAUTHORIZED == e.getResponseCode()) {
                 return new LoginFailureException(buffer.toString(), e);
             }

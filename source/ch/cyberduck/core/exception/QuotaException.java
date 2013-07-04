@@ -1,8 +1,7 @@
-package ch.cyberduck.core.ftp;
+package ch.cyberduck.core.exception;
 
 /*
- * Copyright (c) 2002-2010 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,26 +14,14 @@ package ch.cyberduck.core.ftp;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
-
-import java.io.IOException;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class FTPException extends IOException {
-    private static final long serialVersionUID = -809453207804218675L;
-
-    private int code;
-
-    public FTPException(int code, String message) {
-        super(message);
-        this.code = code;
-    }
-
-    public int getCode() {
-        return code;
+public class QuotaException extends BackgroundException {
+    public QuotaException(final String detail, final Exception cause) {
+        super(detail, cause);
     }
 }

@@ -23,6 +23,7 @@ import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AbstractIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
@@ -55,12 +56,7 @@ public abstract class Session<C> implements TranscriptListener {
     /**
      * Caching files listings of previously listed directories
      */
-    private Cache cache = new Cache() {
-        @Override
-        public String toString() {
-            return String.format("Cache for %s", Session.this.toString());
-        }
-    };
+    private Cache cache = new Cache();
 
     private Set<ConnectionListener> connectionListeners
             = Collections.synchronizedSet(new HashSet<ConnectionListener>(0));
@@ -99,6 +95,13 @@ public abstract class Session<C> implements TranscriptListener {
 
     protected Session(final Host h) {
         this.host = h;
+    }
+
+    /**
+     * @return The directory listing cache for this session
+     */
+    public Cache cache() {
+        return cache;
     }
 
     /**
@@ -193,7 +196,7 @@ public abstract class Session<C> implements TranscriptListener {
             cache.put(home.getReference(), home.list());
             return home;
         }
-        catch(BackgroundException e) {
+        catch(NotfoundException e) {
             // The default path does not exist or is not readable due to possible permission issues
             // Fallback to default working directory
             final Path workdir = this.workdir();
@@ -597,13 +600,6 @@ public abstract class Session<C> implements TranscriptListener {
         for(ProgressListener listener : progressListeners.toArray(new ProgressListener[progressListeners.size()])) {
             listener.message(message);
         }
-    }
-
-    /**
-     * @return The directory listing cache for this session
-     */
-    public Cache cache() {
-        return cache;
     }
 
     /**

@@ -130,7 +130,7 @@ public class FTPClient extends FTPSClient {
     protected Socket _openDataConnection_(final String command, final String arg) throws IOException {
         final Socket socket = super._openDataConnection_(command, arg);
         if(null == socket) {
-            throw new FTPException(this.getReplyString());
+            throw new FTPException(this.getReplyCode(), this.getReplyString());
         }
         return socket;
     }
@@ -294,7 +294,7 @@ public class FTPClient extends FTPSClient {
     public long size(final String pathname) throws IOException {
         if(this.isFeatureSupported(SIZE)) {
             if(!this.setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                throw new FTPException(this.getReplyString());
+                throw new FTPException(this.getReplyCode(), this.getReplyString());
             }
             if(FTPReply.isPositiveCompletion(this.sendCommand(SIZE, pathname))) {
                 String status = StringUtils.chomp(this.getReplyString().substring(3).trim());
