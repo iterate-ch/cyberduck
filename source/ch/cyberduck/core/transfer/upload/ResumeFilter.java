@@ -42,11 +42,11 @@ public class ResumeFilter extends AbstractUploadFilter {
         if(file.getSession().isUploadResumable()) {
             final PathAttributes attributes = file.attributes();
             if(attributes.isFile()) {
-                if(file.exists()) {
-                    if(attributes.getSize() > 0) {
-                        status.setResume(true);
-                        status.setCurrent(attributes.getSize());
-                    }
+                if(this.exists(session, file)) {
+                    status.setResume(true);
+                    status.setCurrent(
+                            session.cache().get(file.getParent().getReference()).get(file.getReference()).attributes().getSize()
+                    );
                 }
             }
         }

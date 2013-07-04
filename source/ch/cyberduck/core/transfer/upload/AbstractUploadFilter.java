@@ -17,7 +17,9 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -44,19 +46,31 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.symlinkResolver = symlinkResolver;
     }
 
+    protected boolean exists(final Session session, final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return true;
+        }
+        final Cache cache = session.cache();
+        if(!cache.isCached(file.getParent().getReference())) {
+            final AttributedList<Path> list = file.getParent().list();
+            cache.put(file.getParent().getReference(), list);
+        }
+        return cache.get(file.getParent().getReference()).contains(file.getReference());
+    }
+
     @Override
     public boolean accept(final Session session, final Path file) throws BackgroundException {
+        if(!file.getLocal().exists()) {
+            // Local file is no more here
+            return false;
+        }
         if(file.attributes().isDirectory()) {
             // Do not attempt to create a directory that already exists
-            if(file.exists()) {
+            if(this.exists(session, file)) {
                 return false;
             }
         }
         else if(file.attributes().isFile()) {
-            if(!file.getLocal().exists()) {
-                // Local file is no more here
-                return false;
-            }
             if(file.getLocal().attributes().isSymbolicLink()) {
                 if(!symlinkResolver.resolve(file)) {
                     return symlinkResolver.include(file);

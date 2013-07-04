@@ -50,9 +50,9 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      */
     @Override
     public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
-        if(file.exists()) {
+        if(this.exists(session, file)) {
             Path renamed = file;
-            while(renamed.exists()) {
+            while(this.exists(session, renamed)) {
                 String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
                         UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
