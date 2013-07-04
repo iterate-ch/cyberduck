@@ -19,14 +19,11 @@ package ch.cyberduck.ui.resources;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -121,16 +118,6 @@ public class NSImageIconCacheTest extends AbstractTestCase {
         assertFalse(icon.isTemplate());
         assertEquals(64, icon.size().width.intValue());
         assertEquals(64, icon.size().height.intValue());
-//        assertEquals(4, icon.representations().count().intValue());
-    }
-
-    @Test
-    @Ignore
-    public void testVolume() throws Exception {
-        final NSImageIconCache cache = new NSImageIconCache();
-        for(Protocol p : ProtocolFactory.getKnownProtocols()) {
-            assertNotNull(cache.volumeIcon(p, 32));
-        }
     }
 
     @Test
