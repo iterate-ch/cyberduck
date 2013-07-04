@@ -23,10 +23,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -53,7 +54,8 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public abstract class TransferPromptController extends SheetController implements TransferPrompt, ProgressListener {
+public abstract class TransferPromptController extends SheetController
+        implements TransferPrompt, ProgressListener, TranscriptListener {
     private static Logger log = Logger.getLogger(TransferPromptController.class);
 
     private final TableColumnFactory tableColumnsFactory
@@ -482,5 +484,10 @@ public abstract class TransferPromptController extends SheetController implement
         Preferences.instance().setProperty("queue.prompt.action.default", selected.name());
         action = selected;
         this.reloadData();
+    }
+
+    @Override
+    public void log(final boolean request, final String message) {
+        //
     }
 }

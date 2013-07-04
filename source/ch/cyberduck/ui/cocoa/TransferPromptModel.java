@@ -18,17 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.NullComparator;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.threading.RepeatableBackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.cocoa.application.NSCell;
@@ -38,6 +31,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 import ch.cyberduck.ui.comparator.FilenameComparator;
 
 import org.rococoa.Rococoa;
@@ -124,19 +118,20 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      */
     protected AttributedList<Path> children(final Path path) {
         synchronized(isLoadingListingInBackground) {
+            if(transfer.cache().containsKey(path.getReference())) {
+                return transfer.cache().get(path.getReference()).filter(new NullComparator<Path>(), filter());
+            }
             // Check first if it hasn't been already requested so we don't spawn
             // a multitude of unecessary threads
             if(!isLoadingListingInBackground.contains(path)) {
-                if(transfer.cache().containsKey(path.getReference())) {
-                    return transfer.cache().get(path.getReference()).filter(new NullComparator<Path>(), filter());
-                }
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
-                controller.background(new AbstractBackgroundAction<Void>() {
+                controller.background(new RepeatableBackgroundAction(new PanelAlertCallback(controller),
+                        controller, controller, new DisabledLoginController(), new DefaultHostKeyController()) {
                     @Override
                     public void run() throws BackgroundException {
-                        transfer.children(path);
+                        transfer.cache().put(path.getReference(), transfer.children(path));
                     }
 
                     @Override
@@ -156,8 +151,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                     }
 
                     @Override
-                    public Object lock() {
-                        return transfer.getSessions().iterator().next();
+                    public List<Session<?>> getSessions() {
+                        return transfer.getSessions();
                     }
                 });
             }
