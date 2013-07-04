@@ -25,6 +25,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
@@ -33,7 +34,6 @@ import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
@@ -2067,26 +2067,30 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     try {
-                        bucketLoggingButton.setState(logging.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(!containers.isEmpty()) {
-                            bucketLoggingPopup.removeAllItems();
-                        }
-                        for(String c : containers) {
-                            bucketLoggingPopup.addItemWithTitle(c);
-                            bucketLoggingPopup.lastItem().setRepresentedObject(c);
-                        }
-                        if(logging.isEnabled()) {
-                            bucketLoggingPopup.selectItemWithTitle(logging.getLoggingTarget());
-                        }
-                        else {
-                            // Default to write log files to origin bucket
-                            bucketLoggingPopup.selectItemWithTitle(selected.getContainer().getName());
+                        if(logging != null) {
+                            bucketLoggingButton.setState(logging.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
+                            if(!containers.isEmpty()) {
+                                bucketLoggingPopup.removeAllItems();
+                            }
+                            for(String c : containers) {
+                                bucketLoggingPopup.addItemWithTitle(c);
+                                bucketLoggingPopup.lastItem().setRepresentedObject(c);
+                            }
+                            if(logging.isEnabled()) {
+                                bucketLoggingPopup.selectItemWithTitle(logging.getLoggingTarget());
+                            }
+                            else {
+                                // Default to write log files to origin bucket
+                                bucketLoggingPopup.selectItemWithTitle(selected.getContainer().getName());
+                            }
                         }
                         if(StringUtils.isNotBlank(location)) {
                             bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
                         }
-                        bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
-                        bucketMfaButton.setState(versioning.isMultifactor() ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(versioning != null) {
+                            bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
+                            bucketMfaButton.setState(versioning.isMultifactor() ? NSCell.NSOnState : NSCell.NSOffState);
+                        }
                         encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
                         if(null != credentials) {
                             bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
@@ -2096,27 +2100,29 @@ public class InfoController extends ToolbarWindowController {
                             ));
                         }
                         bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
-                        lifecycleDeleteCheckbox.setState(lifecycle.getExpiration() != null ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(lifecycle.getExpiration() != null) {
-                            final NSInteger index = lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration()));
-                            if(-1 == index.intValue()) {
-                                lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getExpiration())));
-                                lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
-                                lifecycleDeletePopup.lastItem().setTarget(id());
-                                lifecycleDeletePopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getExpiration()));
+                        if(lifecycle != null) {
+                            lifecycleDeleteCheckbox.setState(lifecycle.getExpiration() != null ? NSCell.NSOnState : NSCell.NSOffState);
+                            if(lifecycle.getExpiration() != null) {
+                                final NSInteger index = lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration()));
+                                if(-1 == index.intValue()) {
+                                    lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getExpiration())));
+                                    lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
+                                    lifecycleDeletePopup.lastItem().setTarget(id());
+                                    lifecycleDeletePopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getExpiration()));
+                                }
+                                lifecycleDeletePopup.selectItemAtIndex(lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration())));
                             }
-                            lifecycleDeletePopup.selectItemAtIndex(lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration())));
-                        }
-                        lifecycleTransitionCheckbox.setState(lifecycle.getTransition() != null ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(lifecycle.getTransition() != null) {
-                            final NSInteger index = lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition()));
-                            if(-1 == index.intValue()) {
-                                lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getTransition())));
-                                lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
-                                lifecycleTransitionPopup.lastItem().setTarget(id());
-                                lifecycleTransitionPopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getTransition()));
+                            lifecycleTransitionCheckbox.setState(lifecycle.getTransition() != null ? NSCell.NSOnState : NSCell.NSOffState);
+                            if(lifecycle.getTransition() != null) {
+                                final NSInteger index = lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition()));
+                                if(-1 == index.intValue()) {
+                                    lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getTransition())));
+                                    lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
+                                    lifecycleTransitionPopup.lastItem().setTarget(id());
+                                    lifecycleTransitionPopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getTransition()));
+                                }
+                                lifecycleTransitionPopup.selectItemAtIndex(lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition())));
                             }
-                            lifecycleTransitionPopup.selectItemAtIndex(lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition())));
                         }
                     }
                     finally {
@@ -2280,7 +2286,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void octalPermissionsInputDidEndEditing(NSNotification sender) {
-        Permission permission = this.getPermissionFromOctalField();
+        final Permission permission = this.getPermissionFromOctalField();
         if(null == permission) {
             AppKitFunctionsLibrary.beep();
             this.initPermissions();
@@ -2318,7 +2324,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void recursiveButtonClicked(final NSButton sender) {
-        Permission permission = this.getPermissionFromOctalField();
+        final Permission permission = this.getPermissionFromOctalField();
         if(null == permission) {
             AppKitFunctionsLibrary.beep();
             this.initPermissions();
