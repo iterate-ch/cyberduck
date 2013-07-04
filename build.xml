@@ -212,6 +212,7 @@
     <target name="test" depends="test-compile" description="Runs all test cases and generate report">
         <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
             <classpath path="${lib.ext}/junit-4.11.jar"/>
+            <classpath path="${lib.ext}/hamcrest-core-1.3.jar"/>
         </taskdef>
         <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
             <classpath path="${lib.ext}/jacocoant.jar"/>
