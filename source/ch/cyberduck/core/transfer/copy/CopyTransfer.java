@@ -190,9 +190,7 @@ public class CopyTransfer extends Transfer {
             }, status);
         }
         else {
-            if(destination.getSession().isCreateFolderSupported(destination)) {
-                destination.mkdir();
-            }
+            destination.mkdir();
         }
     }
 
