@@ -24,8 +24,6 @@ import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 
-import org.apache.log4j.Logger;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
@@ -34,7 +32,6 @@ import java.text.MessageFormat;
  * @version $Id$
  */
 public class Speedometer {
-    private static final Logger log = Logger.getLogger(Speedometer.class);
 
     /**
      * Formatter for file size
