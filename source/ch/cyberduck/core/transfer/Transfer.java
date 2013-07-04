@@ -450,7 +450,7 @@ public abstract class Transfer implements Serializable {
      * @param status  Transfer status
      */
     protected void transfer(final Path file, final TransferPathFilter filter,
-                          final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                            final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(!status.isSelected()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skip %s not selected in prompt", file.getAbsolute()));
@@ -591,6 +591,7 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Clear cache with options %s", options));
         }
+        cache.clear();
     }
 
     /**
