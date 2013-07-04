@@ -141,6 +141,11 @@ public class CFSession extends CloudSession<FilesClient> {
     }
 
     @Override
+    public boolean isMetadataSupported() {
+        return true;
+    }
+
+    @Override
     public DistributionConfiguration cdn(final LoginController prompt) {
         return new SwiftDistributionConfiguration(this) {
             @Override

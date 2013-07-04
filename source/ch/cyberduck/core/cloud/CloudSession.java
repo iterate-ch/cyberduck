@@ -122,11 +122,6 @@ public abstract class CloudSession<C> extends HttpSession<C> {
         return container.attributes().getRegion();
     }
 
-    @Override
-    public boolean isMetadataSupported() {
-        return true;
-    }
-
     /**
      * @return List of redundancy level options. Empty list
      *         no storage options are available.
