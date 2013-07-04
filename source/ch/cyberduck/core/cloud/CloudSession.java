@@ -23,10 +23,10 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import java.util.Collections;
@@ -64,7 +64,7 @@ public abstract class CloudSession<C> extends HttpSession<C> {
     /**
      * Creating files is only possible inside a bucket.
      *
-     * @param workdir The workdir to create query
+     * @param workdir The working directory to create query
      * @return False if directory is root.
      */
     @Override

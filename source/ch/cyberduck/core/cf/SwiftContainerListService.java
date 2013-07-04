@@ -23,9 +23,9 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
 
