@@ -34,12 +34,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         Path p = new NullPath("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
-                return new NullLocal(null, "a") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
-                };
+                return new NullLocal(null, "a");
             }
         };
         p.attributes().setSize(2L);
@@ -84,11 +79,6 @@ public class ResumeFilterTest extends AbstractTestCase {
                                 return 1L;
                             }
                         };
-                    }
-
-                    @Override
-                    public boolean exists() {
-                        return true;
                     }
                 };
             }

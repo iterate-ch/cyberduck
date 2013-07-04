@@ -9,7 +9,6 @@ import ch.cyberduck.core.NullProtocol;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
@@ -34,16 +33,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                     }
                 };
             }
-
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "a") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
-                };
-            }
         })
         );
         assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("t", Path.FILE_TYPE) {
@@ -53,16 +42,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                     @Override
                     public boolean isRenameSupported(final Path file) {
                         return false;
-                    }
-                };
-            }
-
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "a") {
-                    @Override
-                    public boolean exists() {
-                        return true;
                     }
                 };
             }

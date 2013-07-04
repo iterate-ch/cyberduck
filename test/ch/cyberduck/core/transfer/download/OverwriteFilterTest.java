@@ -14,8 +14,6 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.UUID;
-
 import static org.junit.Assert.*;
 
 /**
@@ -40,17 +38,28 @@ public class OverwriteFilterTest extends AbstractTestCase {
     @Test
     public void testAcceptDirectory() throws Exception {
         OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
-        final NullPath p = new NullPath("a", Path.DIRECTORY_TYPE) {
-            final NullLocal t = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-
+        assertTrue(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
-                return t;
+                return new NullLocal("/", "a") {
+                    @Override
+                    public boolean exists() {
+                        return false;
+                    }
+                };
             }
-        };
-        assertTrue(f.accept(new NullSession(new Host("h")), p));
-        p.getLocal().mkdir();
-        assertFalse(f.accept(new NullSession(new Host("h")), p));
+        }));
+        assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.DIRECTORY_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal("/", "a") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                };
+            }
+        }));
     }
 
     @Test

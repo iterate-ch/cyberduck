@@ -49,7 +49,7 @@ public class SkipFilterTest extends AbstractTestCase {
                 return new NullLocal(null, "a") {
                     @Override
                     public boolean exists() {
-                        return true;
+                        return false;
                     }
                 };
             }

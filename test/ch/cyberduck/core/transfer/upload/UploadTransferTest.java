@@ -7,7 +7,6 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -21,6 +20,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
@@ -62,13 +62,18 @@ public class UploadTransferTest extends AbstractTestCase {
     @Test
     public void testPrepareOverrideRootExists() throws Exception {
         final NullPath child = new NullPath("/t/c", Path.FILE_TYPE);
-        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE);
-        root.setLocal(new NullLocal(null, "l") {
+        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
             @Override
-            public boolean exists() {
-                return true;
+            public Path getParent() {
+                return new NullPath("/", Path.DIRECTORY_TYPE) {
+                    @Override
+                    public AttributedList<Path> list() {
+                        return new AttributedList<Path>(Collections.<Path>singletonList(new NullPath("/t", Path.DIRECTORY_TYPE)));
+                    }
+                };
             }
-
+        };
+        root.setLocal(new NullLocal(null, "l") {
             @Override
             public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
@@ -101,6 +106,7 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, new TransferOptions());
         assertFalse(t.cache().containsKey(child.getReference()));
+        assertTrue(t.cache().isEmpty());
     }
 
 
@@ -109,16 +115,16 @@ public class UploadTransferTest extends AbstractTestCase {
         final NullPath child = new NullPath("/t/c", Path.FILE_TYPE);
         final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
             @Override
-            public boolean exists() {
-                return false;
+            public Path getParent() {
+                return new NullPath("/", Path.DIRECTORY_TYPE) {
+                    @Override
+                    public AttributedList<Path> list() {
+                        return AttributedList.emptyList();
+                    }
+                };
             }
         };
         root.setLocal(new NullLocal(null, "l") {
-            @Override
-            public boolean exists() {
-                return true;
-            }
-
             @Override
             public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
@@ -155,11 +161,6 @@ public class UploadTransferTest extends AbstractTestCase {
     public void testChildren() throws Exception {
         final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
             @Override
-            public Session getSession() {
-                return new SFTPSession(new Host(Protocol.SFTP, "t"));
-            }
-
-            @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
                     @Override
@@ -168,15 +169,87 @@ public class UploadTransferTest extends AbstractTestCase {
                         l.add(new NullLocal(this.getAbsolute(), "c"));
                         return l;
                     }
-
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
                 };
             }
         };
         Transfer t = new UploadTransfer(root);
         assertEquals(Collections.<Path>singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
+    }
+
+    @Test
+    public void testCacheResume() throws Exception {
+        final AtomicInteger c = new AtomicInteger();
+        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "t") {
+                    @Override
+                    public AttributedList<Local> list() {
+                        AttributedList<Local> l = new AttributedList<Local>();
+                        l.add(new NullLocal(this.getAbsolute(), "a"));
+                        l.add(new NullLocal(this.getAbsolute(), "b"));
+                        l.add(new NullLocal(this.getAbsolute(), "c"));
+                        return l;
+                    }
+                };
+            }
+
+            @Override
+            public AttributedList<Path> list() {
+                c.incrementAndGet();
+                return AttributedList.emptyList();
+            }
+        };
+        Transfer t = new UploadTransfer(root) {
+            @Override
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                //
+            }
+        };
+        t.start(new TransferPrompt() {
+            @Override
+            public TransferAction prompt() throws BackgroundException {
+                return TransferAction.ACTION_RESUME;
+            }
+        }, new TransferOptions());
+        assertEquals(1, c.get());
+    }
+
+    @Test
+    public void testCacheRename() throws Exception {
+        final AtomicInteger c = new AtomicInteger();
+        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "t") {
+                    @Override
+                    public AttributedList<Local> list() {
+                        AttributedList<Local> l = new AttributedList<Local>();
+                        l.add(new NullLocal(this.getAbsolute(), "a"));
+                        l.add(new NullLocal(this.getAbsolute(), "b"));
+                        l.add(new NullLocal(this.getAbsolute(), "c"));
+                        return l;
+                    }
+                };
+            }
+
+            @Override
+            public AttributedList<Path> list() {
+                c.incrementAndGet();
+                return AttributedList.emptyList();
+            }
+        };
+        Transfer t = new UploadTransfer(root) {
+            @Override
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                //
+            }
+        };
+        t.start(new TransferPrompt() {
+            @Override
+            public TransferAction prompt() throws BackgroundException {
+                return TransferAction.ACTION_RENAME;
+            }
+        }, new TransferOptions());
     }
 }

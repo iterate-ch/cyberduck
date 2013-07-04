@@ -12,6 +12,11 @@ public class NullLocal extends Local {
     }
 
     @Override
+    public boolean exists() {
+        return true;
+    }
+
+    @Override
     public void trash() {
         throw new UnsupportedOperationException();
     }

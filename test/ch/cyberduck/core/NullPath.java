@@ -16,6 +16,10 @@ public class NullPath extends Path {
         super(new NullSession(new Host("test")), path, type);
     }
 
+    public NullPath(final Path parent, final String name, final int type) {
+        super(parent, name, type);
+    }
+
     @Override
     public AttributedList<Path> list() {
         return AttributedList.emptyList();
@@ -31,6 +35,16 @@ public class NullPath extends Path {
     @Override
     public Session getSession() {
         return session;
+    }
+
+    @Override
+    public Path getParent() {
+        return new NullPath(Path.getParent(this.getAbsolute(), '/'), Path.DIRECTORY_TYPE) {
+            @Override
+            public AttributedList<Path> list() {
+                return AttributedList.emptyList();
+            }
+        };
     }
 
     @Override

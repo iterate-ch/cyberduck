@@ -150,6 +150,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }, new TransferOptions());
         assertFalse(t.cache().containsKey(child.getReference()));
+        assertTrue(t.cache().isEmpty());
     }
 
     @Test(expected = NullPointerException.class)

@@ -6,8 +6,9 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import java.util.Collections;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -15,30 +16,66 @@ import static org.junit.Assert.assertFalse;
 public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test
-    public void testAccept() throws Exception {
+    public void testAcceptNoLocal() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         // Local file does not exist
         assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
-                return new NullLocal(null, "t");
+                return new NullLocal(null, "t") {
+                    @Override
+                    public boolean exists() {
+                        return false;
+                    }
+                };
             }
         }));
         assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
-                return new NullLocal(null, "t");
+                return new NullLocal(null, "t") {
+                    @Override
+                    public boolean exists() {
+                        return false;
+                    }
+                };
+            }
+        }));
+    }
+
+    @Test
+    public void testAcceptRemoteExists() throws Exception {
+        final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
+        assertTrue(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.DIRECTORY_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "t") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                };
             }
         }));
         assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
-                return new NullLocal(null, "t");
+                return new NullLocal(null, "t") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                };
             }
 
             @Override
-            public boolean exists() {
-                return true;
+            public Path getParent() {
+                return new NullPath("/", Path.DIRECTORY_TYPE) {
+                    @Override
+                    public AttributedList<Path> list() {
+                        return new AttributedList<Path>(Collections.<Path>singletonList(new NullPath("a", Path.DIRECTORY_TYPE)));
+                    }
+                };
             }
         }));
     }
