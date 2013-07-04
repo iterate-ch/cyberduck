@@ -1913,7 +1913,7 @@ lib/ext/ant-contrib-1.0b3.jar -text
 lib/ext/ant-dotnet-1.0.jar -text
 lib/ext/ant-ikvmc.0.5.jar -text
 lib/ext/jacocoant.jar -text svneol=unset#application/zip
-lib/ext/junit-4.8.2.jar -text
+lib/ext/junit-4.11.jar -text svneol=unset#application/jar
 lib/ext/nunit.framework.dll -text
 lib/ext/sonar-ant-task-2.1.jar -text svneol=unset#application/jar
 lib/ganymed-ssh-2-260.jar -text
