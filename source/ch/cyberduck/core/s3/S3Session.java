@@ -309,8 +309,7 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         return configuration;
     }
 
-    @Override
-    public String getHostnameForContainer(final Path bucket) {
+    private String getHostnameForContainer(final Path bucket) {
         if(this.configure(this.getHost().getHostname(true)).getBoolProperty("s3service.disable-dns-buckets", false)) {
             return this.getHost().getHostname(true);
         }

@@ -122,14 +122,6 @@ public abstract class CloudSession<C> extends HttpSession<C> {
         return container.attributes().getRegion();
     }
 
-    /**
-     * @param container DNS container name
-     * @return Generic hostname
-     */
-    public String getHostnameForContainer(final Path container) {
-        return String.format("%s.%s", container, this.getHost().getHostname(true));
-    }
-
     @Override
     public boolean isMetadataSupported() {
         return true;
