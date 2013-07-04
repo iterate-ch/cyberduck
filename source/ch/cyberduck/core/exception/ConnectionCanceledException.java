@@ -1,7 +1,7 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.exception;
 
 /*
- *  Copyright (c) 2007 David Kocher. All rights reserved.
+ *  Copyright (c) 2006 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,13 +18,25 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.threading.BackgroundException;
+
 /**
+ * To be used if a connection attempt is interrupted by the user
+ *
  * @version $Id$
  */
-public class ResolveCanceledException extends ConnectionCanceledException {
-    private static final long serialVersionUID = -8022014902668414964L;
+public class ConnectionCanceledException extends BackgroundException {
+    private static final long serialVersionUID = 1731598032382782206L;
 
-    public ResolveCanceledException() {
+    public ConnectionCanceledException() {
         super();
+    }
+
+    public ConnectionCanceledException(final String detail) {
+        super(detail, null);
+    }
+
+    public ConnectionCanceledException(final Exception cause) {
+        super(cause);
     }
 }

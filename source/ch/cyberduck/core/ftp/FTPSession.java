@@ -19,7 +19,6 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
@@ -27,6 +26,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;

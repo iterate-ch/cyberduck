@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.exception;
 
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.

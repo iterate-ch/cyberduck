@@ -19,7 +19,6 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.ConnectionCheckService;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
@@ -28,6 +27,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;

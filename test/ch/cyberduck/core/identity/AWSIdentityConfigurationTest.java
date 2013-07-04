@@ -4,8 +4,8 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.junit.Test;
@@ -17,7 +17,7 @@ import com.amazonaws.services.identitymanagement.model.MalformedPolicyDocumentEx
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AWSIdentityConfigurationTest extends AbstractTestCase {
 

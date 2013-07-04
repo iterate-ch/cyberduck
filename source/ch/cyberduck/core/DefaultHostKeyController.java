@@ -1,9 +1,11 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultHostKeyController implements HostKeyController {
 

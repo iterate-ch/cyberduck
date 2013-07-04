@@ -19,7 +19,6 @@ package ch.cyberduck.core.exception;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.ConnectionCanceledException;
 
 import org.jets3t.service.ServiceException;
 import org.junit.Test;

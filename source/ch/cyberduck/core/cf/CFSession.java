@@ -17,7 +17,6 @@ package ch.cyberduck.core.cf;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
@@ -26,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;

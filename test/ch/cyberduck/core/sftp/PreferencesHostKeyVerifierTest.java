@@ -1,7 +1,7 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.junit.Test;
 

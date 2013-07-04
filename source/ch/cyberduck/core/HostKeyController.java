@@ -20,6 +20,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
 import java.io.IOException;
 
 /**

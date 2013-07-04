@@ -19,13 +19,13 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.junit.Test;
 

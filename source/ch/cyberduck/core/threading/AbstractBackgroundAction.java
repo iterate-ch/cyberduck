@@ -18,8 +18,8 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;

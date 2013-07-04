@@ -1,6 +1,7 @@
 package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.threading.BackgroundException;
 

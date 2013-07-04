@@ -1,7 +1,7 @@
 package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.junit.Test;
 

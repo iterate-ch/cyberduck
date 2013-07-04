@@ -18,7 +18,6 @@ package ch.cyberduck.core.exception;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.threading.BackgroundException;
 

@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ResolveCanceledException;
+
 import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
@@ -70,8 +72,9 @@ public class Resolver implements Runnable {
      * has been canceled using #cancel
      *
      * @return The resolved IP address for this hostname
-     * @throws UnknownHostException     If the hostname cannot be resolved
-     * @throws ResolveCanceledException If the lookup has been interrupted
+     * @throws UnknownHostException If the hostname cannot be resolved
+     * @throws ch.cyberduck.core.exception.ResolveCanceledException
+     *                              If the lookup has been interrupted
      * @see #cancel
      */
     public InetAddress resolve() throws UnknownHostException, ResolveCanceledException {

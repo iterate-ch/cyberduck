@@ -26,6 +26,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
@@ -362,7 +363,8 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
      *
      * @param controller Prompt controller
      * @return MFA one time authentication password.
-     * @throws ConnectionCanceledException Prompt dismissed
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
+     *          Prompt dismissed
      */
     protected Credentials mfa(final LoginController controller) throws ConnectionCanceledException {
         final Credentials credentials = new Credentials(

@@ -20,7 +20,6 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.sftp.SFTPPath;

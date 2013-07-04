@@ -32,6 +32,51 @@ public final class LoginOptions {
         //
     }
 
+    public LoginOptions user(boolean e) {
+        user = e;
+        return this;
+    }
+
+    public LoginOptions password(boolean e) {
+        password = e;
+        return this;
+    }
+
+    public LoginOptions keychain(boolean e) {
+        keychain = e;
+        return this;
+    }
+
+    public LoginOptions publickey(boolean e) {
+        publickey = e;
+        return this;
+    }
+
+    public LoginOptions anonymous(boolean e) {
+        anonymous = e;
+        return this;
+    }
+
+    public boolean user() {
+        return user;
+    }
+
+    public boolean password() {
+        return password;
+    }
+
+    public boolean isKeychain() {
+        return keychain;
+    }
+
+    public boolean isPublickey() {
+        return publickey;
+    }
+
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+
     public LoginOptions(Protocol protocol) {
         publickey = protocol.equals(Protocol.SFTP);
         anonymous = protocol.isAnonymousConfigurable();

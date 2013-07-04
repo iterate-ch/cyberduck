@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
 import java.security.cert.X509Certificate;
 import java.util.List;
 

@@ -18,7 +18,7 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.CertificateStore;
-import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
@@ -43,7 +43,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     private static final Logger log = Logger.getLogger(CertificateStoreX509KeyManager.class);

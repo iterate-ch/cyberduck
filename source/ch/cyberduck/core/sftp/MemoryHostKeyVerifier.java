@@ -19,8 +19,8 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.local.Local;
 
 import org.apache.log4j.Logger;
@@ -91,7 +91,7 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
      * @param serverHostKeyAlgorithm Algorithm
      * @param serverHostKey          Key blob
      * @return True if accepted.
-     * @throws ch.cyberduck.core.ConnectionCanceledException
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
      *          Canceled by user
      */
     protected abstract boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
@@ -103,7 +103,7 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
      * @param serverHostKeyAlgorithm Algorithm
      * @param serverHostKey          Key blob
      * @return True if accepted.
-     * @throws ch.cyberduck.core.ConnectionCanceledException
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
      *          Canceled by user
      */
     protected abstract boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,

@@ -19,8 +19,8 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import ch.ethz.ssh2.crypto.Base64;
 

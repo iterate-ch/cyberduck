@@ -1,7 +1,6 @@
 package ch.cyberduck.core.cf;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -11,6 +10,7 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.junit.Test;
 

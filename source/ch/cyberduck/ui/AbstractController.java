@@ -18,8 +18,8 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;

@@ -279,15 +279,6 @@ public abstract class Session<C> implements TranscriptListener {
 
     /**
      * @param workdir The workdir to create query
-     * @return True if making directories is possible.
-     * @see Path#mkdir()
-     */
-    public boolean isCreateFolderSupported(final Path workdir) {
-        return true;
-    }
-
-    /**
-     * @param workdir The workdir to create query
      * @return True if creating an empty file is possible.
      * @see Path#touch()
      */

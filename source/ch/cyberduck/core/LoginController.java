@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LoginCanceledException;
+
 public interface LoginController {
 
     /**
@@ -28,7 +30,8 @@ public interface LoginController {
      * @param continueButton   Button title for default button
      * @param disconnectButton Button title for other button
      * @param preference       Where to save preference if dismissed
-     * @throws LoginCanceledException If the other option has been selected.
+     * @throws ch.cyberduck.core.exception.LoginCanceledException
+     *          If the other option has been selected.
      */
     void warn(String title, String message, String continueButton, String disconnectButton,
               String preference) throws LoginCanceledException;

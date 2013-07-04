@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.exception.LoginCanceledException;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
