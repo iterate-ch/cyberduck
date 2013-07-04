@@ -60,6 +60,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -576,7 +577,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 for(Path p : pasteboard) {
                     // Drag to application icon in dock.
                     WatchEditor editor = new WatchEditor(controller, controller.getSession(), null, p);
-                    editor.watch();
+                    try {
+                        editor.watch();
+                    }
+                    catch(IOException e) {
+                        log.error(e.getMessage());
+                    }
                 }
             }
             else {

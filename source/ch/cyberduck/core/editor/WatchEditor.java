@@ -30,6 +30,8 @@ import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+
 /**
  * An editor listing for file system notifications on a particular folder
  *
@@ -60,17 +62,26 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
      * Edit and watch the file for changes
      */
     @Override
-    public void edit() {
-        if(ApplicationLauncherFactory.get().open(edited.getLocal(), this.getApplication())) {
+    public void edit() throws IOException {
+        final Application application = this.getApplication();
+        if(ApplicationLauncherFactory.get().open(edited.getLocal(), application)) {
             this.watch();
+        }
+        else {
+            throw new IOException(String.format("Failed to open application %s", application.getName()));
         }
     }
 
     /**
      * Watch the file for changes
      */
-    public void watch() {
-        monitor.register(edited.getLocal());
+    public void watch() throws IOException {
+        try {
+            monitor.register(edited.getLocal()).await();
+        }
+        catch(InterruptedException e) {
+            throw new IOException(String.format("Failure monitoring file %s", edited.getLocal()));
+        }
         monitor.addListener(this);
     }
 

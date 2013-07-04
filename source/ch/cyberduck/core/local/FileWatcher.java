@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.CountDownLatch;
 
 import com.barbarysoftware.watchservice.ClosedWatchServiceException;
 import com.barbarysoftware.watchservice.WatchEvent;
@@ -50,7 +50,7 @@ public class FileWatcher implements FileWatcherCallback {
         this.monitor = WatchService.newWatchService();
     }
 
-    public void register(final Local file) {
+    public CountDownLatch register(final Local file) {
         final WatchableFile watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
         try {
             if(log.isDebugEnabled()) {
@@ -61,7 +61,8 @@ public class FileWatcher implements FileWatcherCallback {
         catch(IOException e) {
             log.error(String.format("Failure registering file watcher monitor for %s", watchable.getFile()), e);
         }
-        final AtomicReference<Thread> consumer = new AtomicReference<Thread>(new Thread(new Runnable() {
+        final CountDownLatch lock = new CountDownLatch(1);
+        new Thread(new Runnable() {
             public void run() {
                 while(true) {
                     final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
@@ -69,6 +70,7 @@ public class FileWatcher implements FileWatcherCallback {
                         // wait for key to be signaled
                         WatchKey key;
                         try {
+                            lock.countDown();
                             key = monitor.take();
                         }
                         catch(ClosedWatchServiceException e) {
@@ -111,8 +113,8 @@ public class FileWatcher implements FileWatcherCallback {
                     }
                 }
             }
-        }));
-        consumer.get().start();
+        }).start();
+        return lock;
     }
 
     @Override

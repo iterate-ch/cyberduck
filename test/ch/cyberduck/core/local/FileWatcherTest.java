@@ -83,7 +83,7 @@ public class FileWatcherTest extends AbstractTestCase {
                 }
             }
         });
-        w.register(f);
+        w.register(f).await();
         f.touch();
         create.await();
         f.delete();

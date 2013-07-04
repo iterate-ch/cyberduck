@@ -36,6 +36,7 @@ import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 
 /**
@@ -135,42 +136,7 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void open() {
-        final BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
-            private final Transfer download = new DownloadTransfer(edited) {
-                @Override
-                public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-                    return getAction();
-                }
-            };
-
-            @Override
-            public void run() throws BackgroundException {
-                // Delete any existing file which might be used by a watch editor already
-                final Local local = edited.getLocal();
-                local.trash();
-                final TransferOptions options = new TransferOptions();
-                options.quarantine = false;
-                options.open = false;
-                download.start(null, options);
-                if(download.isComplete()) {
-                    checksum = local.attributes().getChecksum();
-                }
-            }
-
-            @Override
-            public void cleanup() {
-                if(download.isComplete()) {
-                    final Local local = edited.getLocal();
-                    final Permission permissions = local.attributes().getPermission();
-                    // Update local permissions to make sure the file is readable and writable for editing.
-                    permissions.getOwnerPermissions()[Permission.READ] = true;
-                    permissions.getOwnerPermissions()[Permission.WRITE] = true;
-                    local.writeUnixPermission(permissions);
-                    // Important, should always be run on the main thread; otherwise applescript crashes
-                    AbstractEditor.this.edit();
-                }
-            }
-        };
+        final BackgroundAction<Void> background = new EditBackgroundAction();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Download file for edit %s", edited.getLocal().getAbsolute()));
         }
@@ -180,7 +146,7 @@ public abstract class AbstractEditor implements Editor {
     /**
      * Watch for changes in external editor
      */
-    protected abstract void edit();
+    protected abstract void edit() throws IOException;
 
     /**
      * Upload changes to server if checksum of local file has changed since last edit.
@@ -224,5 +190,39 @@ public abstract class AbstractEditor implements Editor {
             log.debug(String.format("Upload changes for %s", edited.getLocal().getAbsolute()));
         }
         this.save(background);
+    }
+
+    private final class EditBackgroundAction extends AbstractBackgroundAction<Void> {
+        @Override
+        public void run() throws BackgroundException {
+            // Delete any existing file which might be used by a watch editor already
+            final Local local = edited.getLocal();
+            local.trash();
+            final TransferOptions options = new TransferOptions();
+            options.quarantine = false;
+            options.open = false;
+            final Transfer download = new DownloadTransfer(edited) {
+                @Override
+                public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+                    return getAction();
+                }
+            };
+            download.start(null, options);
+            if(download.isComplete()) {
+                checksum = local.attributes().getChecksum();
+                final Permission permissions = local.attributes().getPermission();
+                // Update local permissions to make sure the file is readable and writable for editing.
+                permissions.getOwnerPermissions()[Permission.READ] = true;
+                permissions.getOwnerPermissions()[Permission.WRITE] = true;
+                local.writeUnixPermission(permissions);
+                // Important, should always be run on the main thread; otherwise applescript crashes
+                try {
+                    AbstractEditor.this.edit();
+                }
+                catch(IOException e) {
+                    throw new BackgroundException(e.getMessage(), e);
+                }
+            }
+        }
     }
 }

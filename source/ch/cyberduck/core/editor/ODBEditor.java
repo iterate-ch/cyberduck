@@ -26,6 +26,8 @@ import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+
 /**
  * @version $Id$
  */
@@ -44,9 +46,9 @@ public class ODBEditor extends BrowserBackgroundEditor {
      * Open the file using the ODB external editor protocol
      */
     @Override
-    public void edit() {
+    public void edit() throws IOException {
         if(!this.edit(this.getEdited().getLocal().getAbsolute(), session.toURL(this.getEdited()), this.getApplication().getIdentifier())) {
-            log.warn(String.format("Edit failed for %s", this.getEdited().getLocal().getAbsolute()));
+            throw new IOException(String.format("Edit failed for %s", this.getEdited().getLocal().getAbsolute()));
         }
     }
 
