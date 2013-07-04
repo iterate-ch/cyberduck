@@ -271,44 +271,8 @@ public abstract class Path extends AbstractPath implements Serializable {
         throw new BackgroundException("Not supported");
     }
 
-    /**
-     * Default implementation updating timestamp from directory listing.
-     * <p/>
-     * No checksum calculation by default. Might be supported by specific
-     * provider implementation.
-     */
-    public void readChecksum() throws BackgroundException {
-        //
-    }
-
-    /**
-     * Default implementation updating size from directory listing
-     */
-    public void readSize() throws BackgroundException {
-        //
-    }
-
     public void writeTimestamp(long created, long modified, long accessed) throws BackgroundException {
         throw new BackgroundException("Not supported");
-    }
-
-    /**
-     * Default implementation updating timestamp from directory listing.
-     *
-     * @see ch.cyberduck.core.Attributes#getModificationDate()
-     */
-    public void readTimestamp() throws BackgroundException {
-        //
-    }
-
-    /**
-     * Default implementation updating permissions from directory listing.
-     *
-     * @see Attributes#getPermission()
-     * @see Session#isUnixPermissionsSupported()
-     */
-    public void readUnixPermission() throws BackgroundException {
-        //
     }
 
     public void writeUnixPermission(Permission permission) throws BackgroundException {

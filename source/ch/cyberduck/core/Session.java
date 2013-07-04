@@ -316,27 +316,10 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
-     * @return True if timestamp of file can be read.
-     * @see Path#writeTimestamp(long, long, long)
-     * @see Path#readTimestamp()
-     */
-    public boolean isReadTimestampSupported() {
-        return true;
-    }
-
-    /**
      * @return True if timestamp of file can be read and written.
-     * @see Path#readTimestamp()
      */
     public boolean isWriteTimestampSupported() {
         return true;
-    }
-
-    /**
-     * @return MD5/ETag available for files.
-     */
-    public boolean isChecksumSupported() {
-        return false;
     }
 
     /**

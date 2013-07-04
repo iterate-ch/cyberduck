@@ -70,7 +70,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
             if(null == host.getTimezone()) {
                 // No custom timezone set
-                final List<TimeZone> matches = new FTPTimezoneCalculator().get(workdir);
+                final List<TimeZone> matches = new FTPTimezoneCalculator().get(this, workdir);
                 for(TimeZone tz : matches) {
                     // Save in bookmark. User should have the option to choose from determined zones.
                     host.setTimezone(tz);

@@ -335,44 +335,6 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public void readChecksum() throws BackgroundException {
-        if(attributes().isFile()) {
-            session.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                    this.getName()));
-
-            final StorageObject details = this.getDetails();
-            if(StringUtils.isNotEmpty(details.getMd5HashAsHex())) {
-                attributes().setChecksum(details.getMd5HashAsHex());
-            }
-            else {
-                log.debug("Setting ETag Header as checksum for:" + this.toString());
-                attributes().setChecksum(details.getETag());
-            }
-            attributes().setETag(details.getETag());
-        }
-    }
-
-    @Override
-    public void readSize() throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                this.getName()));
-
-        final StorageObject details = this.getDetails();
-        attributes().setSize(details.getContentLength());
-    }
-
-    @Override
-    public void readTimestamp() throws BackgroundException {
-        if(attributes().isFile()) {
-            session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                    this.getName()));
-
-            final StorageObject details = this.getDetails();
-            attributes().setModificationDate(details.getLastModifiedDate().getTime());
-        }
-    }
-
-    @Override
     public InputStream read(final TransferStatus status) throws BackgroundException {
         try {
             if(this.attributes().isDuplicate()) {
@@ -896,9 +858,9 @@ public class S3Path extends CloudPath {
                 }
                 final Object etag = object.getMetadataMap().get(StorageObject.METADATA_HEADER_ETAG);
                 if(null != etag) {
-                    String s = etag.toString().replaceAll("\"", StringUtils.EMPTY);
-                    p.attributes().setChecksum(s);
-                    if(s.equals("d66759af42f282e1ba19144df2d405d0")) {
+                    final String checksum = etag.toString().replaceAll("\"", StringUtils.EMPTY);
+                    p.attributes().setChecksum(checksum);
+                    if(checksum.equals("d66759af42f282e1ba19144df2d405d0")) {
                         // Fix #5374 s3sync.rb interoperability
                         p.attributes().setType(DIRECTORY_TYPE);
                         p.attributes().setPlaceholder(true);

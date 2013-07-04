@@ -125,11 +125,6 @@ public class CFSession extends CloudSession<FilesClient> {
     }
 
     @Override
-    public boolean isChecksumSupported() {
-        return true;
-    }
-
-    @Override
     public boolean isCDNSupported() {
         for(FilesRegion region : client.getRegions()) {
             if(null != region.getCDNManagementUrl()) {

@@ -23,8 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +45,6 @@ public abstract class ChecksumWorker extends Worker<List<String>> {
     public List<String> run() throws BackgroundException {
         List<String> checksum = new ArrayList<String>();
         for(Path file : files) {
-            if(StringUtils.isBlank(file.attributes().getChecksum())) {
-                file.readChecksum();
-            }
             checksum.add(file.attributes().getChecksum());
         }
         return checksum;

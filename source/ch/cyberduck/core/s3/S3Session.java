@@ -452,11 +452,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
     }
 
-    @Override
-    public boolean isChecksumSupported() {
-        return true;
-    }
-
     /**
      * @return True if the service supports object versioning.
      */

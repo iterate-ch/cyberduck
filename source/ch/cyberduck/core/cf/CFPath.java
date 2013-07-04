@@ -50,7 +50,6 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -115,81 +114,6 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public void readSize() throws BackgroundException {
-        try {
-            session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                    this.getName()));
-
-            if(this.isContainer()) {
-                attributes().setSize(
-                        session.getClient().getContainerInfo(session.getRegion(this.getContainer()),
-                                this.getContainer().getName()).getTotalSize()
-                );
-            }
-            else if(this.attributes().isFile()) {
-                attributes().setSize(
-                        Long.valueOf(session.getClient().getObjectMetaData(session.getRegion(this.getContainer()),
-                                this.getContainer().getName(), this.getKey()).getContentLength())
-                );
-            }
-        }
-        catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
-        }
-    }
-
-    @Override
-    public void readChecksum() throws BackgroundException {
-        if(this.attributes().isFile()) {
-            try {
-                session.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                        this.getName()));
-
-                final String checksum = session.getClient().getObjectMetaData(session.getRegion(this.getContainer()),
-                        this.getContainer().getName(), this.getKey()).getETag();
-                attributes().setChecksum(checksum);
-                attributes().setETag(checksum);
-            }
-            catch(FilesException e) {
-                throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
-            }
-        }
-    }
-
-    @Override
-    public void readTimestamp() throws BackgroundException {
-        if(this.attributes().isFile()) {
-            try {
-                session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                        this.getName()));
-
-                try {
-                    attributes().setModificationDate(
-                            ServiceUtils.parseRfc822Date(session.getClient().getObjectMetaData(
-                                    session.getRegion(this.getContainer()), this.getContainer().getName(),
-                                    this.getKey()).getLastModified()).getTime()
-                    );
-                }
-                catch(ParseException e) {
-                    log.error("Failure parsing timestamp", e);
-                }
-            }
-            catch(FilesException e) {
-                throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
-            }
-        }
-    }
-
-    @Override
     public AttributedList<Path> list() throws BackgroundException {
         try {
             session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
@@ -216,6 +140,7 @@ public class CFPath extends CloudPath {
                         if(file.attributes().isFile()) {
                             file.attributes().setSize(object.getSize());
                             file.attributes().setChecksum(object.getMd5sum());
+                            file.attributes().setETag(object.getMd5sum());
                             try {
                                 final Date modified = DateParser.parse(object.getLastModified());
                                 if(null != modified) {

@@ -38,11 +38,6 @@ public class ChecksumComparisonService implements ComparisonService {
         final PathAttributes attributes = p.attributes();
         if(attributes.isFile()) {
             if(null == attributes.getChecksum()) {
-                if(p.getSession().isChecksumSupported()) {
-                    p.readChecksum();
-                }
-            }
-            if(null == attributes.getChecksum()) {
                 log.warn("No checksum available for comparison:" + p);
                 return Comparison.UNEQUAL;
             }

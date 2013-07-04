@@ -91,63 +91,6 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public void readSize() throws BackgroundException {
-        if(this.attributes().isFile()) {
-            try {
-                session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                        this.getName()));
-
-                this.readAttributes();
-            }
-            catch(SardineException e) {
-                throw new SardineExceptionMappingService().map("Cannot read file attributes", e, this);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, this);
-            }
-        }
-    }
-
-    @Override
-    public void readTimestamp() throws BackgroundException {
-        if(this.attributes().isFile()) {
-            try {
-                session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                        this.getName()));
-
-                this.readAttributes();
-            }
-            catch(SardineException e) {
-                throw new SardineExceptionMappingService().map("Cannot read file attributes", e, this);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, this);
-            }
-        }
-    }
-
-    private void readAttributes() throws IOException {
-        final List<DavResource> resources = session.getClient().list(URIEncoder.encode(this.getAbsolute()));
-        for(final DavResource resource : resources) {
-            this.readAttributes(resource);
-        }
-    }
-
-    private void readAttributes(DavResource resource) {
-        if(resource.getModified() != null) {
-            this.attributes().setModificationDate(resource.getModified().getTime());
-        }
-        if(resource.getCreation() != null) {
-            this.attributes().setCreationDate(resource.getCreation().getTime());
-        }
-        if(resource.getContentLength() != null) {
-            this.attributes().setSize(resource.getContentLength());
-        }
-        this.attributes().setChecksum(resource.getEtag());
-        this.attributes().setETag(resource.getEtag());
-    }
-
-    @Override
     public boolean exists() throws BackgroundException {
         if(this.attributes().isDirectory()) {
             // Parent directory may not be accessible. Issue #5662
@@ -196,7 +139,17 @@ public class DAVPath extends HttpPath {
                 }
                 final DAVPath p = new DAVPath(session, this,
                         Path.getName(href), resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
-                p.readAttributes(resource);
+                if(resource.getModified() != null) {
+                    p.attributes().setModificationDate(resource.getModified().getTime());
+                }
+                if(resource.getCreation() != null) {
+                    p.attributes().setCreationDate(resource.getCreation().getTime());
+                }
+                if(resource.getContentLength() != null) {
+                    p.attributes().setSize(resource.getContentLength());
+                }
+                p.attributes().setChecksum(resource.getEtag());
+                p.attributes().setETag(resource.getEtag());
                 children.add(p);
             }
             return children;

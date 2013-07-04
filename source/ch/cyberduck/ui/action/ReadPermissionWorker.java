@@ -47,10 +47,6 @@ public abstract class ReadPermissionWorker extends Worker<List<Permission>> {
     public List<Permission> run() throws BackgroundException {
         List<Permission> permissions = new ArrayList<Permission>();
         for(Path next : files) {
-            if(next.attributes().getPermission().equals(Permission.EMPTY)) {
-                // Read permission of every selected path
-                next.readUnixPermission();
-            }
             permissions.add(next.attributes().getPermission());
         }
         return permissions;

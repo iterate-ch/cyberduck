@@ -89,14 +89,12 @@ public class S3SessionTest extends AbstractTestCase {
         final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         assertTrue(aws.isVersioningSupported());
         assertTrue(aws.isAnalyticsSupported());
-        assertTrue(aws.isChecksumSupported());
         assertTrue(aws.isLifecycleSupported());
         assertTrue(aws.isLocationSupported());
         assertTrue(aws.isRevertSupported());
         final S3Session o = new S3Session(new Host(Protocol.S3_SSL, "o"));
         assertFalse(o.isVersioningSupported());
         assertFalse(o.isAnalyticsSupported());
-        assertTrue(o.isChecksumSupported());
         assertFalse(o.isLifecycleSupported());
         assertTrue(o.isLocationSupported());
         assertFalse(o.isRevertSupported());

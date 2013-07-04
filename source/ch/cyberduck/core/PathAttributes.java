@@ -38,8 +38,6 @@ public class PathAttributes extends Attributes implements Serializable {
 
     /**
      * The file length
-     *
-     * @see Path#readSize()
      */
     private long size = -1;
 
@@ -64,14 +62,8 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private int type = Path.FILE_TYPE;
 
-    /**
-     * @see ch.cyberduck.core.Path#readUnixPermission()
-     */
     private Permission permission = Permission.EMPTY;
 
-    /**
-     * @see ch.cyberduck.core.Path#readAcl() ()
-     */
     private Acl acl = Acl.EMPTY;
 
     /**

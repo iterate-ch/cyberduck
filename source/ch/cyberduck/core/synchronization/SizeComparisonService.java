@@ -37,9 +37,6 @@ public class SizeComparisonService implements ComparisonService {
         }
         final PathAttributes attributes = p.attributes();
         if(attributes.isFile()) {
-            if(attributes.getSize() == -1) {
-                p.readSize();
-            }
             //fist make sure both files are larger than 0 bytes
             if(attributes.getSize() == 0 && p.getLocal().attributes().getSize() == 0) {
                 return Comparison.EQUAL;

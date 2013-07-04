@@ -296,54 +296,6 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void readSize() throws BackgroundException {
-        try {
-            session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                    this.getName()));
-
-            if(session.getClient().isFeatureSupported(FTPClient.SIZE)) {
-                if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                    throw new FTPException(session.getClient().getReplyString());
-                }
-                this.attributes().setSize(session.getClient().size(this.getAbsolute()));
-            }
-            if(-1 == attributes().getSize()) {
-                // Read the size from the directory listing
-                final AttributedList<Path> l = this.getParent().list();
-                if(l.contains(this.getReference())) {
-                    attributes().setSize(l.get(this.getReference()).attributes().getSize());
-                }
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
-        }
-    }
-
-    @Override
-    public void readTimestamp() throws BackgroundException {
-        try {
-            session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                    this.getName()));
-
-            if(session.getClient().isFeatureSupported(FTPCommand.MDTM)) {
-                final String timestamp = session.getClient().getModificationTime(this.getAbsolute());
-                if(null != timestamp) {
-                    attributes().setModificationDate(new FTPMlsdListResponseReader().parseTimestamp(timestamp));
-                }
-            }
-            if(-1 == attributes().getModificationDate()) {
-                // Read the timestamp from the directory listing
-                super.readTimestamp();
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
-
-        }
-    }
-
-    @Override
     public void delete(final LoginController prompt) throws BackgroundException {
         try {
             session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),

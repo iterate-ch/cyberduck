@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ChecksumWorkerTest extends AbstractTestCase {
 
@@ -21,12 +21,8 @@ public class ChecksumWorkerTest extends AbstractTestCase {
     public void testRun() throws Exception {
         final String checksum = "c1";
         final List<Path> files = new ArrayList<Path>();
-        final NullPath p = new NullPath("a", Path.FILE_TYPE) {
-            @Override
-            public void readChecksum() {
-                this.attributes().setChecksum(checksum);
-            }
-        };
+        final NullPath p = new NullPath("a", Path.FILE_TYPE);
+        p.attributes().setChecksum(checksum);
         files.add(p);
         assertEquals(Collections.singletonList(checksum), new ChecksumWorker(files) {
             @Override

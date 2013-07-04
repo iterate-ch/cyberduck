@@ -113,9 +113,56 @@ public class SFTPPath extends Path {
                     continue;
                 }
                 SFTPv3FileAttributes attributes = f.attributes;
-                SFTPPath p = new SFTPPath(session, this,
+                final SFTPPath p = new SFTPPath(session, this,
                         f.filename, attributes.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
-                p.readAttributes(attributes);
+                if(null != attributes.size) {
+                    if(p.attributes().isFile()) {
+                        p.attributes().setSize(attributes.size);
+                    }
+                }
+                String perm = attributes.getOctalPermissions();
+                if(null != perm) {
+                    try {
+                        String octal = Integer.toOctalString(attributes.permissions);
+                        p.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
+                    }
+                    catch(IndexOutOfBoundsException e) {
+                        log.warn(String.format("Failure parsing mode:%s", e.getMessage()));
+                    }
+                    catch(NumberFormatException e) {
+                        log.warn(String.format("Failure parsing mode:%s", e.getMessage()));
+                    }
+                }
+                if(null != attributes.uid) {
+                    p.attributes().setOwner(attributes.uid.toString());
+                }
+                if(null != attributes.gid) {
+                    p.attributes().setGroup(attributes.gid.toString());
+                }
+                if(null != attributes.mtime) {
+                    p.attributes().setModificationDate(Long.parseLong(attributes.mtime.toString()) * 1000L);
+                }
+                if(null != attributes.atime) {
+                    p.attributes().setAccessedDate(Long.parseLong(attributes.atime.toString()) * 1000L);
+                }
+                if(attributes.isSymlink()) {
+                    final String target = session.sftp().readLink(this.getAbsolute());
+                    final int type;
+                    SFTPv3FileAttributes targetAttributes = session.sftp().stat(target);
+                    if(targetAttributes.isDirectory()) {
+                        type = SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE;
+                    }
+                    else {
+                        type = SYMBOLIC_LINK_TYPE | FILE_TYPE;
+                    }
+                    p.attributes().setType(type);
+                    if(target.startsWith(String.valueOf(Path.DELIMITER))) {
+                        this.setSymlinkTarget(new SFTPPath(session, target, p.attributes().isFile() ? FILE_TYPE : DIRECTORY_TYPE));
+                    }
+                    else {
+                        this.setSymlinkTarget(new SFTPPath(session, this.getParent(), target, p.attributes().isFile() ? FILE_TYPE : DIRECTORY_TYPE));
+                    }
+                }
                 children.add(p);
             }
             return children;
@@ -183,66 +230,6 @@ public class SFTPPath extends Path {
         }
     }
 
-    protected void readAttributes() throws BackgroundException {
-        try {
-            this.readAttributes(session.sftp().stat(this.getAbsolute()));
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot read file attributes", e, this);
-        }
-    }
-
-    protected void readAttributes(final SFTPv3FileAttributes attributes) throws IOException {
-        if(null != attributes.size) {
-            if(this.attributes().isFile()) {
-                this.attributes().setSize(attributes.size);
-            }
-        }
-        String perm = attributes.getOctalPermissions();
-        if(null != perm) {
-            try {
-                String octal = Integer.toOctalString(attributes.permissions);
-                this.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
-            }
-            catch(IndexOutOfBoundsException e) {
-                log.warn(String.format("Failure parsing mode:%s", e.getMessage()));
-            }
-            catch(NumberFormatException e) {
-                log.warn(String.format("Failure parsing mode:%s", e.getMessage()));
-            }
-        }
-        if(null != attributes.uid) {
-            this.attributes().setOwner(attributes.uid.toString());
-        }
-        if(null != attributes.gid) {
-            this.attributes().setGroup(attributes.gid.toString());
-        }
-        if(null != attributes.mtime) {
-            this.attributes().setModificationDate(Long.parseLong(attributes.mtime.toString()) * 1000L);
-        }
-        if(null != attributes.atime) {
-            this.attributes().setAccessedDate(Long.parseLong(attributes.atime.toString()) * 1000L);
-        }
-        if(attributes.isSymlink()) {
-            final String target = session.sftp().readLink(this.getAbsolute());
-            final int type;
-            SFTPv3FileAttributes targetAttributes = session.sftp().stat(target);
-            if(targetAttributes.isDirectory()) {
-                type = SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE;
-            }
-            else {
-                type = SYMBOLIC_LINK_TYPE | FILE_TYPE;
-            }
-            this.attributes().setType(type);
-            if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                this.setSymlinkTarget(new SFTPPath(session, target, this.attributes().isFile() ? FILE_TYPE : DIRECTORY_TYPE));
-            }
-            else {
-                this.setSymlinkTarget(new SFTPPath(session, this.getParent(), target, this.attributes().isFile() ? FILE_TYPE : DIRECTORY_TYPE));
-            }
-        }
-    }
-
     protected void writeAttributes(SFTPv3FileAttributes attributes) throws BackgroundException {
         try {
             session.sftp().setstat(this.getAbsolute(), attributes);
@@ -250,30 +237,6 @@ public class SFTPPath extends Path {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot write file attributes", e, this);
         }
-    }
-
-    @Override
-    public void readSize() throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                this.getName()));
-
-        this.readAttributes();
-    }
-
-    @Override
-    public void readTimestamp() throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                this.getName()));
-
-        this.readAttributes();
-    }
-
-    @Override
-    public void readUnixPermission() throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
-                this.getName()));
-
-        this.readAttributes();
     }
 
     @Override
