@@ -19,6 +19,8 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SleepPreventer;
+import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -26,6 +28,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
@@ -40,6 +43,8 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
     protected Transfer transfer;
     protected TransferPrompt prompt;
     protected TransferOptions options;
+
+    final SleepPreventer sleep = SleepPreventerFactory.get();
 
     public TransferRepeatableBackgroundAction(final Controller controller,
                                               final AlertCallback alert,
@@ -56,7 +61,13 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
 
     @Override
     public void run() throws BackgroundException {
-        transfer.start(prompt, options);
+        final String lock = sleep.lock();
+        try {
+            transfer.start(prompt, options);
+        }
+        finally {
+            sleep.release(lock);
+        }
     }
 
     @Override
@@ -70,6 +81,14 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
         catch(BackgroundException failure) {
             this.error(failure);
         }
+    }
+
+    @Override
+    public void cleanup() {
+        if(transfer.isReset() && transfer.isComplete() && !transfer.isCanceled() && !(transfer.getTransferred() == 0)) {
+            GrowlFactory.get().notify(transfer.getStatus(), transfer.getName());
+        }
+        super.cleanup();
     }
 
     @Override
