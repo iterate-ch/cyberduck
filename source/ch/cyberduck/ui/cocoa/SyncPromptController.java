@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;

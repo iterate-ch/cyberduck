@@ -28,6 +28,7 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
@@ -35,7 +36,6 @@ import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;

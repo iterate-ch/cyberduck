@@ -19,7 +19,7 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import java.io.FilterOutputStream;
 import java.io.OutputStream;

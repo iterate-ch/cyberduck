@@ -25,9 +25,9 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpException;

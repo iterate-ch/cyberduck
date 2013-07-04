@@ -1,4 +1,4 @@
-package ch.cyberduck.core.threading;
+package ch.cyberduck.core.exception;
 
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.

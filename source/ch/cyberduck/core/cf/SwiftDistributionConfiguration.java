@@ -21,10 +21,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

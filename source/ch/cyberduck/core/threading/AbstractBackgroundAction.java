@@ -19,6 +19,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.i18n.Locale;
 

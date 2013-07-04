@@ -20,7 +20,7 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 

@@ -1,9 +1,9 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.junit.Test;
 

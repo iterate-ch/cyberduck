@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;

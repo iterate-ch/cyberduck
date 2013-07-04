@@ -22,11 +22,11 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AbstractIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

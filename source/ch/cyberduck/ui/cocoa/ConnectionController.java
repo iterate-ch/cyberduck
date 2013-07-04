@@ -19,11 +19,11 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;

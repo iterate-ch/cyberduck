@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa.threading;
  */
 
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.threading.ControllerRepeatableBackgroundAction;
 

@@ -2,7 +2,7 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id$

@@ -27,12 +27,12 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;

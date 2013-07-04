@@ -21,7 +21,7 @@ package ch.cyberduck.core.cdn;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.Controller;
 
 import org.junit.Ignore;

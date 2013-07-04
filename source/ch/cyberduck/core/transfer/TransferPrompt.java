@@ -18,7 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id$

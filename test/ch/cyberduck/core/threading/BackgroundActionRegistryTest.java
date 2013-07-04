@@ -19,6 +19,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
 

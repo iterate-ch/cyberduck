@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 import ch.cyberduck.ui.cocoa.application.NSImage;

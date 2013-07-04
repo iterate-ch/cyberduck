@@ -19,7 +19,7 @@ package ch.cyberduck.core.synchronization;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id$

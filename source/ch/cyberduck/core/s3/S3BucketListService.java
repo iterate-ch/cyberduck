@@ -21,8 +21,8 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RootListService;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

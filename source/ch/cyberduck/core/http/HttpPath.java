@@ -22,10 +22,10 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.http.message.BasicHeader;

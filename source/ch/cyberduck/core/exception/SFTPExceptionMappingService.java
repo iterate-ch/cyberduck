@@ -18,8 +18,6 @@ package ch.cyberduck.core.exception;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.BackgroundException;
-
 import java.io.IOException;
 import java.net.SocketException;
 

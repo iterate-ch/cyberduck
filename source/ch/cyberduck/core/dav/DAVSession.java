@@ -26,10 +26,10 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;

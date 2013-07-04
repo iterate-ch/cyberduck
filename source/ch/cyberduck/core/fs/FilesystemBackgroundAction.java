@@ -19,9 +19,9 @@ package ch.cyberduck.core.fs;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.core.threading.BackgroundException;
 
 /**
  * @version $Id$

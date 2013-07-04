@@ -3,8 +3,8 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.net.ftp.FTPCommand;
 import org.apache.log4j.Logger;

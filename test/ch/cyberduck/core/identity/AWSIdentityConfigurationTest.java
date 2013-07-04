@@ -5,8 +5,8 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.junit.Test;
 

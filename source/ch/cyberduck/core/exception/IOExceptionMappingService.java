@@ -18,8 +18,6 @@ package ch.cyberduck.core.exception;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.BackgroundException;
-
 /**
  * @version $Id$
  */

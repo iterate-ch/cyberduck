@@ -20,11 +20,11 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;

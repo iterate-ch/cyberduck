@@ -1,8 +1,8 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPClient;
 import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.threading.BackgroundException;
 
 /**
  * @version $Id$

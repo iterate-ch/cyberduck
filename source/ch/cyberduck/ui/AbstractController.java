@@ -19,13 +19,13 @@ package ch.cyberduck.ui;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.ui.threading.ControllerMainAction;

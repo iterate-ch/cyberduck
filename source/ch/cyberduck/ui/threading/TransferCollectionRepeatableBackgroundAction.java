@@ -21,8 +21,8 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCollection;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -32,7 +32,7 @@ import ch.cyberduck.ui.Controller;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferCollectionRepeatableBackgroundAction extends TransferRepeatableBackgroundAction {
     private static final Logger log = Logger.getLogger(TransferCollectionRepeatableBackgroundAction.class);

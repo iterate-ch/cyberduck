@@ -24,7 +24,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.sftp.SFTPPath;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.junit.Test;
 

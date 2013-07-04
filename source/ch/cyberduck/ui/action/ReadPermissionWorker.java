@@ -22,8 +22,8 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;

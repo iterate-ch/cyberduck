@@ -18,8 +18,6 @@ package ch.cyberduck.core.exception;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.BackgroundException;
-
 /**
  * To be used if a connection attempt is interrupted by the user
  *

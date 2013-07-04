@@ -8,8 +8,8 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;

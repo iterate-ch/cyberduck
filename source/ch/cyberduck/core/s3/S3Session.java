@@ -26,6 +26,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
@@ -33,7 +34,6 @@ import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import org.apache.commons.lang.StringUtils;

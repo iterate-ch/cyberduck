@@ -1,6 +1,6 @@
 package ch.cyberduck.core.identity;
 
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id$

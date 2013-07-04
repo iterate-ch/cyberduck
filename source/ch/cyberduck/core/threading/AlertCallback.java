@@ -1,7 +1,9 @@
 package ch.cyberduck.core.threading;
 
+import ch.cyberduck.core.exception.BackgroundException;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface AlertCallback {
 

@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.date.CalendarService;
 import ch.cyberduck.core.date.Instant;
-import ch.cyberduck.core.threading.BackgroundException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 

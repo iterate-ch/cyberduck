@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.util.concurrent.Callable;

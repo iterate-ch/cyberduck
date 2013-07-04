@@ -27,8 +27,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;

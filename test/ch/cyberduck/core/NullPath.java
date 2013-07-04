@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;

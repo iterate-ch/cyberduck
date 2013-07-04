@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -34,7 +35,6 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
-import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;

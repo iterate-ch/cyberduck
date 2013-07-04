@@ -20,9 +20,9 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
