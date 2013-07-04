@@ -19,10 +19,11 @@ package ch.cyberduck.ui.resources;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 
 import org.junit.Ignore;
@@ -140,7 +141,8 @@ public class NSImageIconCacheTest extends AbstractTestCase {
 
     @Test
     public void testIconForPath() throws Exception {
-        final NullLocal f = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
+        final Local f
+                = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
         final NSImageIconCache cache = new NSImageIconCache();
         NSImage icon = cache.fileIcon(f, 16);
         assertNull(icon);
