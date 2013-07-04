@@ -19,7 +19,6 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
@@ -28,6 +27,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SFTPExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
@@ -146,9 +146,9 @@ public class SFTPPath extends Path {
                     p.attributes().setAccessedDate(Long.parseLong(attributes.atime.toString()) * 1000L);
                 }
                 if(attributes.isSymlink()) {
-                    final String target = session.sftp().readLink(this.getAbsolute());
+                    final String target = session.sftp().readLink(p.getAbsolute());
                     final int type;
-                    SFTPv3FileAttributes targetAttributes = session.sftp().stat(target);
+                    final SFTPv3FileAttributes targetAttributes = session.sftp().stat(target);
                     if(targetAttributes.isDirectory()) {
                         type = SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE;
                     }
@@ -157,10 +157,10 @@ public class SFTPPath extends Path {
                     }
                     p.attributes().setType(type);
                     if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                        this.setSymlinkTarget(new SFTPPath(session, target, p.attributes().isFile() ? FILE_TYPE : DIRECTORY_TYPE));
+                        p.setSymlinkTarget(new SFTPPath(session, target, p.attributes().isFile() ? FILE_TYPE : DIRECTORY_TYPE));
                     }
                     else {
-                        this.setSymlinkTarget(new SFTPPath(session, this.getParent(), target, p.attributes().isFile() ? FILE_TYPE : DIRECTORY_TYPE));
+                        p.setSymlinkTarget(new SFTPPath(session, p.getParent(), target, p.attributes().isFile() ? FILE_TYPE : DIRECTORY_TYPE));
                     }
                 }
                 children.add(p);
