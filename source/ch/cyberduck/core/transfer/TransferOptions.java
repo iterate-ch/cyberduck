@@ -44,6 +44,26 @@ public final class TransferOptions {
     public boolean open =
             Preferences.instance().getBoolean("queue.postProcessItemWhenComplete");
 
+    public TransferOptions open(boolean e) {
+        open = e;
+        return this;
+    }
+
+    public TransferOptions quarantine(boolean e) {
+        quarantine = e;
+        return this;
+    }
+
+    public TransferOptions reload(boolean e) {
+        reloadRequested = e;
+        return this;
+    }
+
+    public TransferOptions resume(boolean e) {
+        resumeRequested = e;
+        return this;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();

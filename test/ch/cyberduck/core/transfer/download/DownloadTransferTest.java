@@ -125,38 +125,20 @@ public class DownloadTransferTest extends AbstractTestCase {
         });
         final Transfer t = new DownloadTransfer(root) {
             @Override
-            protected void prepare(final Path file, final TransferPathFilter filter, final TransferStatus status) throws BackgroundException {
-                super.prepare(file, filter, status);
-                if(file.equals(root)) {
-                    assertTrue(status.isOverride());
-                }
-                else if(file.equals(child)) {
-                    assertFalse(status.isOverride());
-                }
-                else {
-                    fail();
-                }
-            }
-
-            @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
                                     final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
                 super.transfer(file, filter, options, status);
-                assertFalse(this.cache().containsKey(child.getReference()));
+                if(file.equals(root)) {
+                    assertFalse(this.cache().containsKey(root.getReference()));
+                }
             }
 
             @Override
             public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 if(file.equals(root)) {
-                    fail();
-                }
-                else if(file.equals(child)) {
-                    assertFalse(status.isOverride());
-                }
-                else {
                     fail();
                 }
             }

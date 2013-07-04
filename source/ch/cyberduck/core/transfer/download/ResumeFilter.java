@@ -33,7 +33,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         if(file.attributes().isDirectory()) {
             if(file.getLocal().exists()) {
                 return false;
@@ -43,11 +43,12 @@ public class ResumeFilter extends AbstractDownloadFilter {
             // No need to resume completed transfers
             return false;
         }
-        return super.accept(session, file, status);
+        return super.accept(session, file);
     }
 
     @Override
-    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+        final TransferStatus status = super.prepare(session, file);
         if(file.getSession().isDownloadResumable()) {
             if(file.attributes().isFile()) {
                 if(file.getLocal().exists()) {
@@ -58,5 +59,6 @@ public class ResumeFilter extends AbstractDownloadFilter {
                 }
             }
         }
+        return status;
     }
 }

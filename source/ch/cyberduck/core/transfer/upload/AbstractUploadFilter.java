@@ -45,18 +45,18 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
-        if(!file.getLocal().exists()) {
-            // Local file is no more here
-            return false;
-        }
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         if(file.attributes().isDirectory()) {
             // Do not attempt to create a directory that already exists
-            if(status.isOverride()) {
+            if(file.exists()) {
                 return false;
             }
         }
         else if(file.attributes().isFile()) {
+            if(!file.getLocal().exists()) {
+                // Local file is no more here
+                return false;
+            }
             if(file.getLocal().attributes().isSymbolicLink()) {
                 if(!symlinkResolver.resolve(file)) {
                     return symlinkResolver.include(file);
@@ -67,41 +67,30 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
         final PathAttributes attributes = file.attributes();
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-            if(status.isOverride()) {
-                // Do not overwrite permissions for existing file.
-                if(file.getSession().isUnixPermissionsSupported()) {
-                    file.readUnixPermission();
+            if(file.getSession().isUnixPermissionsSupported()) {
+                if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                    if(attributes.isFile()) {
+                        attributes.setPermission(new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.file.default")));
+                    }
+                    else if(attributes.isDirectory()) {
+                        attributes.setPermission(new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.folder.default")));
+                    }
                 }
-                // Do not overwrite ACL for existing file.
-                if(file.getSession().isAclSupported()) {
-                    file.readAcl();
+                else {
+                    // Read permissions from local file
+                    attributes.setPermission(file.getLocal().attributes().getPermission());
                 }
             }
-            else {
-                if(file.getSession().isUnixPermissionsSupported()) {
-                    if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        if(attributes.isFile()) {
-                            attributes.setPermission(new Permission(
-                                    Preferences.instance().getInteger("queue.upload.permissions.file.default")));
-                        }
-                        else if(attributes.isDirectory()) {
-                            attributes.setPermission(new Permission(
-                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default")));
-                        }
-                    }
-                    else {
-                        // Read permissions from local file
-                        attributes.setPermission(file.getLocal().attributes().getPermission());
-                    }
-                }
-                if(file.getSession().isAclSupported()) {
-                    // ACL set on object creation with default from Preferences
-                }
+            if(file.getSession().isAclSupported()) {
+                // ACL set on object creation with default from Preferences
             }
         }
+        final TransferStatus status = new TransferStatus();
         if(attributes.isFile()) {
             if(file.getLocal().attributes().isSymbolicLink()) {
                 if(symlinkResolver.resolve(file)) {
@@ -118,6 +107,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setLength(file.getLocal().attributes().getSize());
             }
         }
+        return status;
     }
 
     @Override

@@ -39,12 +39,12 @@ public class RenameFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         return true;
     }
 
     @Override
-    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
         if(file.getLocal().exists()) {
             final String parent = file.getLocal().getParent().getAbsolute();
             final String filename = file.getName();
@@ -61,6 +61,6 @@ public class RenameFilter extends AbstractDownloadFilter {
                 log.info(String.format("Changed local name from %s to %s", filename, file.getLocal().getName()));
             }
         }
-        super.prepare(session, file, status);
+        return super.prepare(session, file);
     }
 }

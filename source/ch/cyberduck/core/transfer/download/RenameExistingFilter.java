@@ -42,7 +42,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         return true;
     }
 
@@ -50,18 +50,21 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
      * Rename existing file on disk if there is a conflict.
      */
     @Override
-    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
-        Local renamed = file.getLocal();
-        while(renamed.exists()) {
-            String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.download.file.rename.format"),
-                    FilenameUtils.getBaseName(file.getName()),
-                    UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
-                    StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-            renamed = LocalFactory.createLocal(renamed.getParent().getAbsolute(), proposal);
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+        final TransferStatus status = super.prepare(session, file);
+        if(file.getLocal().exists()) {
+            Local renamed = file.getLocal();
+            while(renamed.exists()) {
+                String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.download.file.rename.format"),
+                        FilenameUtils.getBaseName(file.getName()),
+                        UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                        StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
+                renamed = LocalFactory.createLocal(renamed.getParent().getAbsolute(), proposal);
+            }
+            if(!renamed.equals(file.getLocal())) {
+                file.getLocal().rename(renamed);
+            }
         }
-        if(!renamed.equals(file.getLocal())) {
-            file.getLocal().rename(renamed);
-        }
-        super.prepare(session, file, status);
+        return status;
     }
 }

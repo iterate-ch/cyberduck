@@ -18,7 +18,15 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
@@ -118,6 +126,11 @@ public abstract class Transfer implements Serializable {
      * Last transferred timestamp
      */
     private Date timestamp;
+
+    /**
+     * Prefetched workload
+     */
+    private Cache cache = new Cache();
 
     /**
      * @return True if appending to files is supported
@@ -266,9 +279,6 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug("fireTransferDidEnd:" + this);
         }
-        if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
-            GrowlFactory.get().notify(this.getStatus(), this.getName());
-        }
         running = false;
         queued = false;
         timestamp = new Date();
@@ -356,6 +366,14 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
+     * @return The cache of the underlying session
+     * @see Session#cache()
+     */
+    public Cache cache() {
+        return cache;
+    }
+
+    /**
      * @param prompt Callback
      * @param action Transfer action for duplicate files
      * @return Null if the filter could not be determined and the transfer should be canceled instead
@@ -432,7 +450,7 @@ public abstract class Transfer implements Serializable {
      * @param status  Transfer status
      */
     protected void transfer(final Path file, final TransferPathFilter filter,
-                            final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                          final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(!status.isSelected()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skip %s not selected in prompt", file.getAbsolute()));
@@ -441,7 +459,7 @@ public abstract class Transfer implements Serializable {
             return;
         }
         this.check();
-        if(filter.accept(session, file, status)) {
+        if(filter.accept(session, file)) {
             // Notification
             this.fireWillTransferPath(file);
             // Transfer
@@ -502,27 +520,32 @@ public abstract class Transfer implements Serializable {
      * @param p      File
      * @param filter Filter to apply to exclude files from transfer
      */
-    protected void prepare(final Path p, final TransferPathFilter filter, final TransferStatus status) throws BackgroundException {
+    protected void prepare(final Path p, final TransferPathFilter filter) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer status of %s for transfer %s", p, this));
         }
         this.check();
         if(this.isSelected(p)) {
+            final TransferStatus s;
             // Only prepare the path it will be actually transferred
-            if(filter.accept(session, p, status)) {
+            if(filter.accept(session, p)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Accepted in %s transfer", p));
                 }
-                filter.prepare(session, p, status);
+                s = filter.prepare(session, p);
                 // Add transfer length to total bytes
-                this.addSize(status.getLength());
+                this.addSize(s.getLength());
                 // Add skipped bytes
-                this.addTransferred(status.getCurrent());
+                this.addTransferred(s.getCurrent());
+            }
+            else {
+                // Empty transfer status for files not accepted by filter
+                s = new TransferStatus();
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Determined transfer status %s of %s for transfer %s", status, p, this));
             }
-            this.status.put(p, status);
+            this.status.put(p, s);
             if(p.attributes().isDirectory()) {
                 // Call recursively for all children
                 final AttributedList<Path> children = this.children(p);
@@ -530,14 +553,7 @@ public abstract class Transfer implements Serializable {
                 this.cache().put(p.getReference(), children);
                 // Call recursively
                 for(Path child : children) {
-                    final TransferStatus s = new TransferStatus();
-                    if(status.isOverride()) {
-                        s.setOverride(child.exists());
-                    }
-                    else {
-                        s.setOverride(false);
-                    }
-                    this.prepare(child, filter, s);
+                    this.prepare(child, filter);
                 }
             }
         }
@@ -578,14 +594,6 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return The cache of the underlying session
-     * @see Session#cache()
-     */
-    public Cache cache() {
-        return session.cache();
-    }
-
-    /**
      * @param prompt  Transfer prompt callback
      * @param options Transfer options
      */
@@ -593,8 +601,6 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start transfer with prompt %s", prompt));
         }
-        final SleepPreventer sleep = SleepPreventerFactory.get();
-        final String lock = sleep.lock();
         try {
             this.fireTransferWillStart();
             this.queue();
@@ -622,9 +628,7 @@ public abstract class Transfer implements Serializable {
             this.reset();
             // Calculate information about the files in advance to give progress information
             for(Path next : roots) {
-                final TransferStatus status = new TransferStatus();
-                status.setOverride(next.exists());
-                this.prepare(next, filter, status);
+                this.prepare(next, filter);
             }
             // Transfer all files sequentially
             for(Path next : roots) {
@@ -633,7 +637,6 @@ public abstract class Transfer implements Serializable {
             this.clear(options);
         }
         finally {
-            sleep.release(lock);
             this.fireTransferDidEnd();
         }
     }

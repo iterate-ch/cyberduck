@@ -9,7 +9,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 
@@ -49,7 +48,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 };
             }
         };
-        f.prepare(new NullSession(new Host("h")), p, new TransferStatus());
+        f.prepare(new NullSession(new Host("h")), p);
     }
 
     @Test
@@ -73,7 +72,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 return local;
             }
         };
-        f.prepare(new NullSession(new Host("h")), p, new TransferStatus());
+        f.prepare(new NullSession(new Host("h")), p);
         assertEquals("t", p.getLocal().getName());
     }
 }

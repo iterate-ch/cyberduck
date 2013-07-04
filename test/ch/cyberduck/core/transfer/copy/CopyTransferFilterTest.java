@@ -33,18 +33,21 @@ public class CopyTransferFilterTest extends AbstractTestCase {
             }
         });
         CopyTransferFilter f = new CopyTransferFilter(files);
-        assertTrue(f.accept(new NullSession(new Host("h")), source, new TransferStatus()));
+        assertTrue(f.accept(new NullSession(new Host("h")), source));
     }
 
     @Test
     public void testAcceptDirectoryExists() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         final NullPath source = new NullPath("a", Path.DIRECTORY_TYPE);
-        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE));
+        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE) {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        });
         CopyTransferFilter f = new CopyTransferFilter(files);
-        final TransferStatus status = new TransferStatus();
-        status.setOverride(true);
-        assertFalse(f.accept(new NullSession(new Host("h")), source, status));
+        assertFalse(f.accept(new NullSession(new Host("h")), source));
     }
 
     @Test
@@ -54,8 +57,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         source.attributes().setSize(1L);
         files.put(source, new NullPath("a", Path.FILE_TYPE));
         CopyTransferFilter f = new CopyTransferFilter(files);
-        final TransferStatus status = new TransferStatus();
-        f.prepare(new NullSession(new Host("h")), source, status);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
         assertEquals(1L, status.getLength());
     }
 
@@ -80,8 +82,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         };
         files.put(source, target);
         CopyTransferFilter f = new CopyTransferFilter(files);
-        final TransferStatus status = new TransferStatus();
-        f.prepare(new NullSession(new Host("h")), source, status);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
         assertEquals(0L, status.getLength());
     }
 

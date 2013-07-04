@@ -58,7 +58,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
+    public boolean accept(final Session session, final Path file) throws BackgroundException {
         if(file.attributes().isDirectory()) {
             if(file.getLocal().exists()) {
                 // Do not attempt to create existing folders
@@ -78,26 +78,8 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public void prepare(final Session session, final Path file, final TransferStatus status) throws BackgroundException {
-        if(file.attributes().isFile()) {
-            if(file.attributes().getSize() == -1) {
-                file.readSize();
-            }
-            if(file.getSession().isReadTimestampSupported()) {
-                if(file.attributes().getModificationDate() == -1) {
-                    if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
-                        file.readTimestamp();
-                    }
-                }
-            }
-        }
-        if(file.getSession().isUnixPermissionsSupported()) {
-            if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
-                if(file.attributes().getPermission().equals(Permission.EMPTY)) {
-                    file.readUnixPermission();
-                }
-            }
-        }
+    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+        final TransferStatus status = new TransferStatus();
         if(file.attributes().isFile()) {
             if(file.attributes().isSymbolicLink()) {
                 if(symlinkResolver.resolve(file)) {
@@ -106,9 +88,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 else {
                     // A server will resolve the symbolic link when the file is requested.
                     final Path target = file.getSymlinkTarget();
-                    if(target.attributes().getSize() == -1) {
-                        target.readSize();
-                    }
                     status.setLength(target.attributes().getSize());
                 }
             }
@@ -125,6 +104,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(Preferences.instance().getBoolean("queue.download.icon.update")) {
             icon.set(file.getLocal(), 0);
         }
+        return status;
     }
 
     /**

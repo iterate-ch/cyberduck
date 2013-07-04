@@ -6,7 +6,6 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
@@ -28,7 +27,7 @@ public class RenameFilterTest extends AbstractTestCase {
             }
         };
         t.setLocal(new NullLocal(null, "t"));
-        f.prepare(new NullSession(new Host("h")), t, new TransferStatus());
+        f.prepare(new NullSession(new Host("h")), t);
         assertNotSame("t", t.getName());
     }
 }

@@ -60,7 +60,7 @@ public class UploadTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testPrepareOverride() throws Exception {
+    public void testPrepareOverrideRootExists() throws Exception {
         final NullPath child = new NullPath("/t/c", Path.FILE_TYPE);
         final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE);
         root.setLocal(new NullLocal(null, "l") {
@@ -78,20 +78,6 @@ public class UploadTransferTest extends AbstractTestCase {
         });
         final Transfer t = new UploadTransfer(root) {
             @Override
-            protected void prepare(final Path file, final TransferPathFilter filter, final TransferStatus status) throws BackgroundException {
-                super.prepare(file, filter, status);
-                if(file.equals(root)) {
-                    assertTrue(status.isOverride());
-                }
-                else if(file.equals(child)) {
-                    assertFalse(status.isOverride());
-                }
-                else {
-                    fail();
-                }
-            }
-
-            @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
                                     final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 if(file.equals(root)) {
@@ -104,12 +90,6 @@ public class UploadTransferTest extends AbstractTestCase {
             @Override
             public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 if(file.equals(root)) {
-                    fail();
-                }
-                else if(file.equals(child)) {
-                    assertFalse(status.isOverride());
-                }
-                else {
                     fail();
                 }
             }
@@ -125,7 +105,7 @@ public class UploadTransferTest extends AbstractTestCase {
 
 
     @Test
-    public void testPrepareOverride2() throws Exception {
+    public void testPrepareOverrideRootDoesNotExist() throws Exception {
         final NullPath child = new NullPath("/t/c", Path.FILE_TYPE);
         final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
             @Override
@@ -148,20 +128,6 @@ public class UploadTransferTest extends AbstractTestCase {
         });
         final Transfer t = new UploadTransfer(root) {
             @Override
-            protected void prepare(final Path file, final TransferPathFilter filter, final TransferStatus status) throws BackgroundException {
-                super.prepare(file, filter, status);
-                if(file.equals(root)) {
-                    assertFalse(status.isOverride());
-                }
-                else if(file.equals(child)) {
-                    assertFalse(status.isOverride());
-                }
-                else {
-                    fail();
-                }
-            }
-
-            @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
                                     final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 if(file.equals(root)) {
@@ -173,15 +139,7 @@ public class UploadTransferTest extends AbstractTestCase {
 
             @Override
             public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
-                if(file.equals(root)) {
-                    assertFalse(status.isOverride());
-                }
-                else if(file.equals(child)) {
-                    assertFalse(status.isOverride());
-                }
-                else {
-                    fail();
-                }
+                //
             }
         };
         t.start(new TransferPrompt() {

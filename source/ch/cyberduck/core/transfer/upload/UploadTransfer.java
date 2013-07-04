@@ -211,9 +211,7 @@ public class UploadTransfer extends Transfer {
             }
         }
         else if(file.attributes().isDirectory()) {
-            if(file.getSession().isCreateFolderSupported(file)) {
-                file.mkdir();
-            }
+            file.mkdir();
         }
     }
 
