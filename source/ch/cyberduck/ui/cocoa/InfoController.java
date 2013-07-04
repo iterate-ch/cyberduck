@@ -385,7 +385,7 @@ public class InfoController extends ToolbarWindowController {
                 public void run() throws BackgroundException {
                     for(Path next : files) {
                         next.attributes().setEncryption(encryptionButton.state() == NSCell.NSOnState ?
-                                ((CloudSession<?>) controller.getSession()).getSupportedEncryptionAlgorithms().iterator().next() : null);
+                                ((S3Session) controller.getSession()).getSupportedEncryptionAlgorithms().iterator().next() : null);
                         // Copy item in place to write new attributes
                         next.copy(next, new TransferStatus());
                     }
@@ -1936,8 +1936,8 @@ public class InfoController extends ToolbarWindowController {
             logging = ((CloudSession) session).isLoggingSupported();
             analytics = session.isAnalyticsSupported();
             versioning = ((CloudSession) session).isVersioningSupported();
-            encryption = ((CloudSession) session).getSupportedEncryptionAlgorithms().size() > 0;
-            storageclass = ((CloudSession) session).getSupportedStorageClasses().size() > 1;
+            encryption = ((S3Session) session).getSupportedEncryptionAlgorithms().size() > 0;
+            storageclass = ((S3Session) session).getSupportedStorageClasses().size() > 1;
             lifecycle = ((CloudSession) session).isLifecycleSupported();
         }
         storageClassPopup.setEnabled(stop && enable && storageclass);
@@ -1988,7 +1988,7 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
 
         if(this.toggleS3Settings(false)) {
-            for(String redundancy : ((CloudSession<?>) controller.getSession()).getSupportedStorageClasses()) {
+            for(String redundancy : ((S3Session) controller.getSession()).getSupportedStorageClasses()) {
                 storageClassPopup.addItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 storageClassPopup.lastItem().setRepresentedObject(redundancy);
             }

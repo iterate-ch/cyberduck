@@ -426,14 +426,12 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         return !file.attributes().isVolume();
     }
 
-    @Override
     public List<String> getSupportedStorageClasses() {
         return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD,
                 S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
                 "GLACIER");
     }
 
-    @Override
     public List<String> getSupportedEncryptionAlgorithms() {
         return Arrays.asList("AES256");
     }

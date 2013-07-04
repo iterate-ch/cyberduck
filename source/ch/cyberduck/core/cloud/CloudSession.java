@@ -29,8 +29,6 @@ import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -120,22 +118,6 @@ public abstract class CloudSession<C> extends HttpSession<C> {
      */
     public String getLocation(final Path container) throws BackgroundException {
         return container.attributes().getRegion();
-    }
-
-    /**
-     * @return List of redundancy level options. Empty list
-     *         no storage options are available.
-     */
-    public List<String> getSupportedStorageClasses() {
-        return Collections.emptyList();
-    }
-
-    /**
-     * @return List of algorithms. Empty list
-     *         no encryption options are available.
-     */
-    public List<String> getSupportedEncryptionAlgorithms() {
-        return Collections.emptyList();
     }
 
     @Override
