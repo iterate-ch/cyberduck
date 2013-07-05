@@ -23,7 +23,7 @@ public class FTPSessionTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         assertEquals(Session.State.closed, session.getState());
-        assertNotNull(session.open());
+        assertNotNull(session.open(new DefaultHostKeyController()));
         assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
