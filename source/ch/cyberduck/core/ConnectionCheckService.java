@@ -88,10 +88,6 @@ public class ConnectionCheckService {
             session.interrupt();
         }
         final Host bookmark = session.getHost();
-        listener.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
-                bookmark.getProtocol().getName(), bookmark.getHostname()));
-
-        session.fireConnectionWillOpenEvent();
 
         // Configuring proxy if any
         ProxyFactory.get().configure(bookmark);
@@ -104,26 +100,30 @@ public class ConnectionCheckService {
 
         // Try to resolve the hostname first
         try {
+            session.fireConnectionWillOpenEvent();
             resolver.resolve();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+
+        listener.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
+                bookmark.getProtocol().getName(), bookmark.getHostname()));
+
         // The IP address could successfully be determined
         session.open(key);
+
+        GrowlFactory.get().notify("Connection opened", bookmark.getHostname());
+
+        listener.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
+                bookmark.getProtocol().getName()));
+
+        // Update last accessed timestamp
+        bookmark.setTimestamp(new Date());
+
         try {
-            GrowlFactory.get().notify("Connection opened", bookmark.getHostname());
-
-            listener.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
-                    bookmark.getProtocol().getName()));
-
-            // Update last accessed timestamp
-            bookmark.setTimestamp(new Date());
-
             final LoginService login = new LoginService(prompt, keychain);
             login.login(session, listener);
-
-            session.fireConnectionDidOpenEvent();
 
             final HistoryCollection history = HistoryCollection.defaultCollection();
             history.add(new Host(bookmark.getAsDictionary()));
