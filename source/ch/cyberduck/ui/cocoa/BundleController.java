@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSFont;
 import ch.cyberduck.ui.cocoa.application.NSView;
@@ -61,9 +62,9 @@ public abstract class BundleController extends ProxyController {
         if(log.isInfoEnabled()) {
             log.info(String.format("Loading bundle %s", bundleName));
         }
+        // Unarchives the contents of the nib file and links them to a specific owner object
         if(!NSBundle.loadNibNamed(bundleName, this.id())) {
-            log.fatal(String.format("Couldn't load %s.nib", bundleName));
-            return;
+            throw new FactoryException(String.format("Couldn't load %s.nib", bundleName));
         }
         if(!awaked) {
             this.awakeFromNib();
