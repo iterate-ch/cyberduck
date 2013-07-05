@@ -2456,9 +2456,6 @@ public class BrowserController extends WindowController
         this.background(new BrowserBackgroundAction(this) {
             @Override
             public void run() throws BackgroundException {
-                if(this.isCanceled()) {
-                    return;
-                }
                 selected.revert();
             }
 
