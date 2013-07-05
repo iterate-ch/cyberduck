@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import java.net.URL;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Date;
@@ -175,8 +176,10 @@ public abstract class Preferences {
         // call only once during initialization time of your application
         SLF4JBridgeHandler.install();
 
-        DOMConfigurator.configure(Preferences.class.getClassLoader().getResource(
-                defaults.get("logging.config")));
+        final URL configuration = Preferences.class.getClassLoader().getResource(defaults.get("logging.config"));
+        if(null != configuration) {
+            DOMConfigurator.configure(configuration);
+        }
         final Logger root = Logger.getRootLogger();
         root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
