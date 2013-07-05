@@ -174,8 +174,7 @@ public final class ProtocolFactory {
     public static boolean isURL(final String str) {
         if(StringUtils.isNotBlank(str)) {
             for(Protocol protocol : getKnownProtocols(false)) {
-                String[] schemes = protocol.getSchemes();
-                for(String scheme : schemes) {
+                for(String scheme : protocol.getSchemes()) {
                     if(str.startsWith(scheme + "://")) {
                         return true;
                     }
