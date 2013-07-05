@@ -104,6 +104,7 @@ public class ConnectionCheckService {
             resolver.resolve();
         }
         catch(IOException e) {
+            session.fireConnectionDidCloseEvent();
             throw new DefaultIOExceptionMappingService().map(e);
         }
 

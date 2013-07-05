@@ -7,6 +7,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -20,15 +21,22 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
     public void testCheckUnknown() throws Exception {
-        final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController(),
+        final FTPSession session = new FTPSession(new Host("unknownhost.local"));
+        final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new HostKeyController() {
+            @Override
+            public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
+                assertEquals(Session.State.opening, session.getState());
+                return true;
+            }
+        },
                 new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
                         //
                     }
-                });
-        final FTPSession session = new FTPSession(new Host("unknownhost.local"));
+                }
+        );
         try {
             s.check(session);
         }
