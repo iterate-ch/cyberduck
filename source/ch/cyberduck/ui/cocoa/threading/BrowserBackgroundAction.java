@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.threading;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.threading.ControllerRepeatableBackgroundAction;
 
@@ -43,6 +44,12 @@ public abstract class BrowserBackgroundAction extends ControllerRepeatableBackgr
     public List<Session<?>> getSessions() {
         final Session<?> session = controller.getSession();
         return new ArrayList<Session<?>>(Collections.singletonList(session));
+    }
+
+    @Override
+    public void init() {
+        // Add to the registry so it will be displayed in the activity window.
+        BackgroundActionRegistry.global().add(this);
     }
 
     @Override

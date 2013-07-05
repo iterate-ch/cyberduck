@@ -116,8 +116,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     @Override
     public void init() {
         this.reset();
-        // Add to the registry so it will be displayed in the activity window.
-        BackgroundActionRegistry.global().add(this);
     }
 
     @Override
@@ -198,7 +196,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         // Do not report an error when the action was canceled intentionally
         if(failure instanceof ConnectionCanceledException) {
             // Do not report as failed if instanceof ConnectionCanceledException
-            this.cancel();
+            log.warn(String.format("Connection canceled %s", failure.getMessage()));
         }
         else {
             for(Session session : this.getSessions()) {
