@@ -59,7 +59,7 @@ public class FinderLocalAttributes extends LocalAttributes {
      * @return Null if no such file or attribute.
      */
     private NSObject getNativeAttribute(final String name) {
-        NSDictionary dict = this.getNativeAttributes();
+        final NSDictionary dict = this.getNativeAttributes();
         if(null == dict) {
             log.error(String.format("No file at %s", path));
             return null;
@@ -73,7 +73,7 @@ public class FinderLocalAttributes extends LocalAttributes {
         if(this.isDirectory()) {
             return -1;
         }
-        NSObject size = this.getNativeAttribute(NSFileManager.NSFileSize);
+        final NSObject size = this.getNativeAttribute(NSFileManager.NSFileSize);
         if(null == size) {
             return -1;
         }
@@ -84,7 +84,7 @@ public class FinderLocalAttributes extends LocalAttributes {
     @Override
     public Permission getPermission() {
         try {
-            NSObject object = this.getNativeAttribute(NSFileManager.NSFilePosixPermissions);
+            final NSObject object = this.getNativeAttribute(NSFileManager.NSFilePosixPermissions);
             if(null == object) {
                 return Permission.EMPTY;
             }
@@ -104,7 +104,7 @@ public class FinderLocalAttributes extends LocalAttributes {
      */
     @Override
     public long getCreationDate() {
-        NSObject object = this.getNativeAttribute(NSFileManager.NSFileCreationDate);
+        final NSObject object = this.getNativeAttribute(NSFileManager.NSFileCreationDate);
         if(null == object) {
             return -1;
         }
@@ -113,7 +113,7 @@ public class FinderLocalAttributes extends LocalAttributes {
 
     @Override
     public String getOwner() {
-        NSObject object = this.getNativeAttribute(NSFileManager.NSFileOwnerAccountName);
+        final NSObject object = this.getNativeAttribute(NSFileManager.NSFileOwnerAccountName);
         if(null == object) {
             return super.getOwner();
         }
@@ -122,7 +122,7 @@ public class FinderLocalAttributes extends LocalAttributes {
 
     @Override
     public String getGroup() {
-        NSObject object = this.getNativeAttribute(NSFileManager.NSFileGroupOwnerAccountName);
+        final NSObject object = this.getNativeAttribute(NSFileManager.NSFileGroupOwnerAccountName);
         if(null == object) {
             return super.getGroup();
         }
@@ -133,11 +133,11 @@ public class FinderLocalAttributes extends LocalAttributes {
      * @return The value for the key NSFileSystemFileNumber, or 0 if the receiver doesn’t have an entry for the key
      */
     public long getInode() {
-        NSObject object = this.getNativeAttribute(NSFileManager.NSFileSystemFileNumber);
+        final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSystemFileNumber);
         if(null == object) {
             return -1;
         }
-        NSNumber number = Rococoa.cast(object, NSNumber.class);
+        final NSNumber number = Rococoa.cast(object, NSNumber.class);
         return number.longValue();
     }
 
