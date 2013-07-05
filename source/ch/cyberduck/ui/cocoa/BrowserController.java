@@ -217,6 +217,7 @@ public class BrowserController extends WindowController
 
     @Override
     public void awakeFromNib() {
+        super.awakeFromNib();
         // Configure Toolbar
         this.toolbar = NSToolbar.toolbarWithIdentifier("Cyberduck Toolbar");
         this.toolbar.setDelegate((this.id()));
@@ -232,8 +233,7 @@ public class BrowserController extends WindowController
         if(LicenseFactory.find().equals(LicenseFactory.EMPTY_LICENSE)) {
             this.addDonateWindowTitle();
         }
-        this.toggleBookmarks(true);
-        super.awakeFromNib();
+        this.selectBookmarks();
     }
 
     protected Comparator<Path> getComparator() {
@@ -387,8 +387,6 @@ public class BrowserController extends WindowController
             scroll = false;
         }
         this.setSelectedPaths(selected);
-        // Update path navigation
-        this.validateNavigationButtons();
     }
 
     private void selectRow(PathReference reference, boolean expand, boolean scroll) {
@@ -623,7 +621,7 @@ public class BrowserController extends WindowController
      * @return The currently selected browser view (which is either an outlineview or a plain tableview)
      */
     public NSTableView getSelectedBrowserView() {
-        switch(this.browserSwitchView.selectedSegment()) {
+        switch(Preferences.instance().getInteger("browser.view")) {
             case SWITCH_LIST_VIEW: {
                 return browserListView;
             }
@@ -631,8 +629,7 @@ public class BrowserController extends WindowController
                 return browserOutlineView;
             }
         }
-        log.fatal("No selected brower view");
-        return null;
+        throw new FactoryException("No selected browser view");
     }
 
     /**
@@ -647,8 +644,7 @@ public class BrowserController extends WindowController
                 return browserOutlineModel;
             }
         }
-        log.fatal("No selected brower view");
-        return null;
+        throw new FactoryException("No selected browser view");
     }
 
     public AbstractBrowserTableDelegate<Path> getSelectedBrowserDelegate() {
@@ -660,8 +656,7 @@ public class BrowserController extends WindowController
                 return browserOutlineViewDelegate;
             }
         }
-        log.fatal("No selected brower view");
-        return null;
+        throw new FactoryException("No selected browser view");
     }
 
     @Outlet
@@ -804,8 +799,7 @@ public class BrowserController extends WindowController
             bookmarkButton.setState(NSCell.NSOffState);
         }
         sender.setState(NSCell.NSOnState);
-
-        this.updateBookmarkSource();
+        this.selectBookmarks();
     }
 
     private void setRecessedBezelStyle(final NSButton b) {
@@ -814,39 +808,6 @@ public class BrowserController extends WindowController
         b.setImagePosition(NSCell.NSImageLeft);
         b.setFont(NSFont.boldSystemFontOfSize(11f));
         b.setShowsBorderOnlyWhileMouseInside(true);
-    }
-
-    private void updateBookmarkSource() {
-        AbstractHostCollection source = BookmarkCollection.defaultCollection();
-        if(bonjourButton.state() == NSCell.NSOnState) {
-            source = RendezvousCollection.defaultCollection();
-        }
-        else if(historyButton.state() == NSCell.NSOnState) {
-            source = HistoryCollection.defaultCollection();
-        }
-        bookmarkModel.setSource(source);
-        if(!source.isLoaded()) {
-            browserSpinner.startAnimation(null);
-        }
-        source.addListener(new AbstractCollectionListener<Host>() {
-            @Override
-            public void collectionLoaded() {
-                invoke(new WindowMainAction(BrowserController.this) {
-                    @Override
-                    public void run() {
-                        browserSpinner.stopAnimation(null);
-                        bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
-                    }
-                });
-            }
-        });
-        if(source.isLoaded()) {
-            browserSpinner.stopAnimation(null);
-            bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
-        }
-        this.setBookmarkFilter(null);
-        this.reloadBookmarks();
-        this.getFocus();
     }
 
     public void sortBookmarksByNickame(final ID sender) {
@@ -862,14 +823,6 @@ public class BrowserController extends WindowController
     public void sortBookmarksByProtocol(final ID sender) {
         BookmarkCollection.defaultCollection().sortByProtocol();
         this.reloadBookmarks();
-    }
-
-    /**
-     * Reload bookmark table from currently selected model
-     */
-    public void reloadBookmarks() {
-        bookmarkTable.reloadData();
-        this.setStatus();
     }
 
     private NSSegmentedControl bookmarkSwitchView;
@@ -892,32 +845,16 @@ public class BrowserController extends WindowController
 
     @Action
     public void bookmarkSwitchClicked(final ID sender) {
-        this.toggleBookmarks(this.getSelectedTabView() != TAB_BOOKMARKS);
-    }
-
-    /**
-     * @param open Should open the bookmarks
-     */
-    public void toggleBookmarks(final boolean open) {
-        this.bookmarkSwitchView.setSelected_forSegment(open, SWITCH_BOOKMARK_VIEW);
+        // Toggle
+        final boolean open = this.getSelectedTabView() != TAB_BOOKMARKS;
+        bookmarkSwitchView.setSelected_forSegment(open, SWITCH_BOOKMARK_VIEW);
+        this.setNavigation(!open && this.isMounted());
         if(open) {
-            // Display bookmarks
-            this.browserTabView.selectTabViewItemAtIndex(TAB_BOOKMARKS);
-            this.updateBookmarkSource();
-            if(this.isMounted()) {
-                int row = this.bookmarkModel.getSource().indexOf(session.getHost());
-                if(row != -1) {
-                    this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
-                    this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
-                }
-            }
+            this.selectBookmarks();
         }
         else {
-            this.setBookmarkFilter(null);
             this.selectBrowser(Preferences.instance().getInteger("browser.view"));
         }
-        this.getFocus();
-        this.validateNavigationButtons();
     }
 
     private NSSegmentedControl browserSwitchView;
@@ -925,59 +862,111 @@ public class BrowserController extends WindowController
     private static final int SWITCH_LIST_VIEW = 0;
     private static final int SWITCH_OUTLINE_VIEW = 1;
 
-    public void setBrowserSwitchView(NSSegmentedControl browserSwitchView) {
-        this.browserSwitchView = browserSwitchView;
-        this.browserSwitchView.setSegmentCount(2); // list, outline
+    public void setBrowserSwitchView(NSSegmentedControl view) {
+        browserSwitchView = view;
+        browserSwitchView.setSegmentCount(2); // list, outline
         final NSImage list = IconCacheFactory.<NSImage>get().iconNamed("list.tiff");
         list.setTemplate(true);
-        this.browserSwitchView.setImage_forSegment(list, SWITCH_LIST_VIEW);
+        browserSwitchView.setImage_forSegment(list, SWITCH_LIST_VIEW);
         final NSImage outline = IconCacheFactory.<NSImage>get().iconNamed("outline.tiff");
         outline.setTemplate(true);
-        this.browserSwitchView.setImage_forSegment(outline, SWITCH_OUTLINE_VIEW);
-        this.browserSwitchView.setTarget(this.id());
-        this.browserSwitchView.setAction(Foundation.selector("browserSwitchButtonClicked:"));
-        final NSSegmentedCell cell = Rococoa.cast(this.browserSwitchView.cell(), NSSegmentedCell.class);
+        browserSwitchView.setImage_forSegment(outline, SWITCH_OUTLINE_VIEW);
+        browserSwitchView.setTarget(this.id());
+        browserSwitchView.setAction(Foundation.selector("browserSwitchButtonClicked:"));
+        final NSSegmentedCell cell = Rococoa.cast(browserSwitchView.cell(), NSSegmentedCell.class);
         cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
         cell.setControlSize(NSCell.NSRegularControlSize);
-        this.browserSwitchView.setSelectedSegment(Preferences.instance().getInteger("browser.view"));
+        browserSwitchView.setSelectedSegment(Preferences.instance().getInteger("browser.view"));
     }
 
     @Action
     public void browserSwitchButtonClicked(final NSSegmentedControl sender) {
-        this.browserSwitchClicked(sender.selectedSegment(), this.getSelectedPaths());
+        // Highlight selected browser view
+        this.selectBrowser(sender.selectedSegment());
     }
 
     @Action
     public void browserSwitchMenuClicked(final NSMenuItem sender) {
-        this.browserSwitchView.setSelectedSegment(sender.tag());
-        this.browserSwitchClicked(sender.tag(), this.getSelectedPaths());
-    }
-
-    private void browserSwitchClicked(final int view, final List<Path> selected) {
-        // Close bookmarks
-        this.toggleBookmarks(false);
-        // Highlight selected browser view
-        this.selectBrowser(view);
-        // Remove any custom file filter
-        this.setPathFilter(null);
-        // Update from model
-        this.reloadData(selected);
-        // Focus on browser view
-        this.getFocus();
-        // Save selected browser view
-        Preferences.instance().setProperty("browser.view", view);
+        bookmarkSwitchView.setSelected_forSegment(false, SWITCH_BOOKMARK_VIEW);
+        browserSwitchView.setSelectedSegment(sender.tag());
+        this.selectBrowser(sender.tag());
     }
 
     private void selectBrowser(int selected) {
-        this.browserSwitchView.setSelectedSegment(selected);
+        browserSwitchView.setSelectedSegment(selected);
         switch(selected) {
             case SWITCH_LIST_VIEW:
-                this.browserTabView.selectTabViewItemAtIndex(TAB_LIST_VIEW);
+                browserTabView.selectTabViewItemAtIndex(TAB_LIST_VIEW);
                 break;
             case SWITCH_OUTLINE_VIEW:
-                this.browserTabView.selectTabViewItemAtIndex(TAB_OUTLINE_VIEW);
+                browserTabView.selectTabViewItemAtIndex(TAB_OUTLINE_VIEW);
                 break;
         }
+        // Remove any custom file filter
+        this.setPathFilter(null);
+        // Update from model
+        this.reloadData(true);
+        // Focus on browser view
+        this.getFocus();
+        // Save selected browser view
+        Preferences.instance().setProperty("browser.view", selected);
+    }
+
+    private void selectBookmarks() {
+        bookmarkSwitchView.setSelected_forSegment(true, SWITCH_BOOKMARK_VIEW);
+        // Display bookmarks
+        browserTabView.selectTabViewItemAtIndex(TAB_BOOKMARKS);
+        final AbstractHostCollection source;
+        if(bookmarkButton.state() == NSCell.NSOnState) {
+            source = BookmarkCollection.defaultCollection();
+        }
+        else if(bonjourButton.state() == NSCell.NSOnState) {
+            source = RendezvousCollection.defaultCollection();
+        }
+        else if(historyButton.state() == NSCell.NSOnState) {
+            source = HistoryCollection.defaultCollection();
+        }
+        else {
+            source = AbstractHostCollection.empty();
+        }
+        bookmarkModel.setSource(source);
+        if(!source.isLoaded()) {
+            browserSpinner.startAnimation(null);
+        }
+        source.addListener(new AbstractCollectionListener<Host>() {
+            @Override
+            public void collectionLoaded() {
+                invoke(new WindowMainAction(BrowserController.this) {
+                    @Override
+                    public void run() {
+                        browserSpinner.stopAnimation(null);
+                        bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
+                    }
+                });
+                source.removeListener(this);
+            }
+        });
+        if(source.isLoaded()) {
+            browserSpinner.stopAnimation(null);
+            bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
+        }
+        this.setBookmarkFilter(null);
+        this.reloadBookmarks();
+        if(this.isMounted()) {
+            int row = this.bookmarkModel.getSource().indexOf(session.getHost());
+            if(row != -1) {
+                this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
+                this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
+            }
+        }
+    }
+
+    /**
+     * Reload bookmark table from currently selected model
+     */
+    public void reloadBookmarks() {
+        bookmarkTable.reloadData();
+        this.getFocus();
     }
 
     private abstract class AbstractBrowserOutlineViewDelegate<E> extends AbstractBrowserTableDelegate<E>
@@ -1835,7 +1824,7 @@ public class BrowserController extends WindowController
     @Action
     public void duplicateBookmarkButtonClicked(final ID sender) {
         final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
-        this.toggleBookmarks(true);
+        this.selectBookmarks();
         final Host duplicate = new Host(selected.getAsDictionary());
         // Make sure a new UUID is asssigned for duplicate
         duplicate.setUuid(null);
@@ -1869,7 +1858,7 @@ public class BrowserController extends WindowController
                     Preferences.instance().getProperty("connection.hostname.default"),
                     Preferences.instance().getInteger("connection.port.default"));
         }
-        this.toggleBookmarks(true);
+        this.selectBookmarks();
         this.addBookmark(bookmark);
     }
 
@@ -2012,51 +2001,6 @@ public class BrowserController extends WindowController
         this.pathPopupButton.setAction(Foundation.selector("pathPopupSelectionChanged:"));
     }
 
-    private void addPathToNavigation(final Path p) {
-        pathPopupButton.addItemWithTitle(p.getAbsolute());
-        pathPopupButton.lastItem().setRepresentedObject(p.getAbsolute());
-        if(p.attributes().isVolume()) {
-            pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().volumeIcon(session.getHost().getProtocol(), 16));
-        }
-        else {
-            pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(p, 16));
-        }
-    }
-
-    /**
-     * Update navigation toolbar.
-     */
-    private void validateNavigationButtons() {
-        if(!this.isMounted()) {
-            pathPopupButton.removeAllItems();
-        }
-        else {
-            pathPopupButton.removeAllItems();
-            final Path workdir = this.workdir();
-            this.addPathToNavigation(workdir);
-            Path p = workdir;
-            while(!p.getParent().equals(p)) {
-                this.addPathToNavigation(p);
-                p = p.getParent();
-            }
-            this.addPathToNavigation(p);
-        }
-
-        this.navigationButton.setEnabled_forSegment(this.isMounted() && navigation.getBack().size() > 1,
-                NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.navigationButton.setEnabled_forSegment(this.isMounted() && navigation.getForward().size() > 0,
-                NAVIGATION_RIGHT_SEGMENT_BUTTON);
-        this.upButton.setEnabled_forSegment(this.isMounted() && !this.workdir().isRoot(),
-                NAVIGATION_UP_SEGMENT_BUTTON);
-
-        this.pathPopupButton.setEnabled(this.isMounted());
-        final boolean enabled = this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
-        this.searchField.setEnabled(enabled);
-        if(!enabled) {
-            this.searchField.setStringValue(StringUtils.EMPTY);
-        }
-    }
-
     @Action
     public void pathPopupSelectionChanged(final NSPopUpButton sender) {
         final String selected = sender.selectedItem().representedObject();
@@ -2185,16 +2129,17 @@ public class BrowserController extends WindowController
                                 Locale.localizedString("Bookmarks")),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
             }
-            if(this.isConnected()) {
-                statusLabel.setAttributedStringValue(
-                        NSAttributedString.attributedStringWithAttributes(MessageFormat.format(Locale.localizedString("{0} Files"),
-                                String.valueOf(this.getSelectedBrowserView().numberOfRows())),
-                                TRUNCATE_MIDDLE_ATTRIBUTES));
-            }
             else {
-                statusLabel.setAttributedStringValue
-                        (NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Disconnected", "Status"),
-                                TRUNCATE_MIDDLE_ATTRIBUTES));
+                // Browser view
+                if(this.isConnected()) {
+                    statusLabel.setAttributedStringValue(
+                            NSAttributedString.attributedStringWithAttributes(MessageFormat.format(Locale.localizedString("{0} Files"),
+                                    String.valueOf(this.getSelectedBrowserView().numberOfRows())),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                }
+                else {
+                    statusLabel.setStringValue(StringUtils.EMPTY);
+                }
             }
         }
     }
@@ -2251,7 +2196,7 @@ public class BrowserController extends WindowController
         if(this.isMounted()) {
             final List<Path> s = this.getSelectedPaths();
             session.cache().invalidate(this.workdir().getReference());
-            switch(this.browserSwitchView.selectedSegment()) {
+            switch(browserSwitchView.selectedSegment()) {
                 case SWITCH_OUTLINE_VIEW: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
@@ -3367,10 +3312,7 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * Sets the current working directory. This will udpate the path selection dropdown button
-     * and also add this path to the browsing history. If the path cannot be a working directory (e.g. permission
-     * issues trying to enter the directory), reloading the browser view is canceled and the working directory
-     * not changed.
+     * Sets the current working directory. This will update the path selection menu and also add this path to the browsing history.
      *
      * @param directory The new working directory to display or null to detach any working directory from the browser
      * @param selected  Selected files in browser
@@ -3383,14 +3325,42 @@ public class BrowserController extends WindowController
         window.endEditingFor(browser);
         // Update the working directory if listing is successful
         workdir = directory;
-        if(workdir != null) {
+        // Change to last selected browser view
+        this.reloadData(workdir != null ? selected : Collections.<Path>emptyList());
+        this.setNavigation(this.isMounted());
+    }
+
+    private void setNavigation(boolean enabled) {
+        searchField.setEnabled(enabled);
+        if(!enabled) {
+            searchField.setStringValue(StringUtils.EMPTY);
+        }
+        pathPopupButton.removeAllItems();
+        if(enabled) {
             // Update the current working directory
             navigation.add(workdir);
-            // Change to last selected browser view
-            this.reloadData(selected);
+            Path p = workdir;
+            do {
+                this.addNavigation(p);
+                p = p.getParent();
+            }
+            while(!p.isRoot());
+            this.addNavigation(p);
+        }
+        pathPopupButton.setEnabled(enabled);
+        navigationButton.setEnabled_forSegment(enabled && navigation.getBack().size() > 1, NAVIGATION_LEFT_SEGMENT_BUTTON);
+        navigationButton.setEnabled_forSegment(enabled && navigation.getForward().size() > 0, NAVIGATION_RIGHT_SEGMENT_BUTTON);
+        upButton.setEnabled_forSegment(enabled && !workdir.isRoot(), NAVIGATION_UP_SEGMENT_BUTTON);
+    }
+
+    private void addNavigation(final Path p) {
+        pathPopupButton.addItemWithTitle(p.getAbsolute());
+        pathPopupButton.lastItem().setRepresentedObject(p.getAbsolute());
+        if(p.attributes().isVolume()) {
+            pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().volumeIcon(session.getHost().getProtocol(), 16));
         }
         else {
-            this.reloadData(false);
+            pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(p, 16));
         }
     }
 
@@ -3455,7 +3425,7 @@ public class BrowserController extends WindowController
                         setWorkdir(workdir);
                         if(isMounted()) {
                             // Close bookmarks
-                            toggleBookmarks(false);
+                            selectBrowser(Preferences.instance().getInteger("browser.view"));
                             // Set the window title
                             window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(host).getAbsolute());
                             if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
@@ -3648,7 +3618,7 @@ public class BrowserController extends WindowController
             public void cleanup() {
                 window.setDocumentEdited(false);
                 if(Preferences.instance().getBoolean("browser.disconnect.showBookmarks")) {
-                    BrowserController.this.toggleBookmarks(true);
+                    selectBookmarks();
                 }
             }
 
