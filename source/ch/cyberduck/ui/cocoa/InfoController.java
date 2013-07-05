@@ -1938,7 +1938,7 @@ public class InfoController extends ToolbarWindowController {
         boolean lifecycle = false;
         if(enable) {
             logging = ((CloudSession) session).isLoggingSupported();
-            analytics = session.isAnalyticsSupported();
+            analytics = session.getFeature(AnalyticsProvider.class) != null;
             versioning = ((CloudSession) session).isVersioningSupported();
             encryption = ((S3Session) session).getSupportedEncryptionAlgorithms().size() > 0;
             storageclass = ((S3Session) session).getSupportedStorageClasses().size() > 1;
@@ -2060,7 +2060,7 @@ public class InfoController extends ToolbarWindowController {
                     if(s.isLifecycleSupported()) {
                         lifecycle = s.getLifecycle(container);
                     }
-                    if(s.isAnalyticsSupported()) {
+                    if(s.getFeature(AnalyticsProvider.class) != null) {
                         credentials = s.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(
                                 controller.getSession().getFeature(AnalyticsProvider.class).getName());
                     }

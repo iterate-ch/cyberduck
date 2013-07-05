@@ -524,10 +524,6 @@ public abstract class Session<C> implements TranscriptListener {
         };
     }
 
-    public boolean isAnalyticsSupported() {
-        return this.isCDNSupported();
-    }
-
     public DistributionConfiguration cdn(final LoginController prompt) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         final S3Session session = new S3Session(

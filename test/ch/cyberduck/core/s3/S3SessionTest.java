@@ -1,6 +1,7 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.analytics.AnalyticsProvider;
 
 import org.junit.Test;
 
@@ -77,13 +78,13 @@ public class S3SessionTest extends AbstractTestCase {
     public void testFeatures() throws Exception {
         final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         assertTrue(aws.isVersioningSupported());
-        assertTrue(aws.isAnalyticsSupported());
+        assertNotNull(aws.getFeature(AnalyticsProvider.class));
         assertTrue(aws.isLifecycleSupported());
         assertTrue(aws.isLocationSupported());
         assertTrue(aws.isRevertSupported());
         final S3Session o = new S3Session(new Host(Protocol.S3_SSL, "o"));
         assertFalse(o.isVersioningSupported());
-        assertFalse(o.isAnalyticsSupported());
+        assertNull(o.getFeature(AnalyticsProvider.class));
         assertFalse(o.isLifecycleSupported());
         assertTrue(o.isLocationSupported());
         assertFalse(o.isRevertSupported());
