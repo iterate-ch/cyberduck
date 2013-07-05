@@ -387,6 +387,7 @@ public class BrowserController extends WindowController
             scroll = false;
         }
         this.setSelectedPaths(selected);
+        this.setStatus();
     }
 
     private void selectRow(PathReference reference, boolean expand, boolean scroll) {
