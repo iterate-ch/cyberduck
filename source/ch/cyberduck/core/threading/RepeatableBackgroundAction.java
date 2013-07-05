@@ -273,7 +273,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             return;
         }
         final BackgroundActionPauser pauser = new BackgroundActionPauser(this);
-        pauser.await();
+        pauser.await(progressListener);
     }
 
     /**

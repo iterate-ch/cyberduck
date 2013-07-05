@@ -1,6 +1,7 @@
 package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
@@ -12,7 +13,7 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class BackgroundActionPauser {
     private static final Logger log = Logger.getLogger(BackgroundActionPauser.class);
@@ -23,7 +24,7 @@ public class BackgroundActionPauser {
         this.action = action;
     }
 
-    public void await() {
+    public void await(final ProgressListener listener) {
         final Timer wakeup = new Timer();
         final CyclicBarrier wait = new CyclicBarrier(2);
         wakeup.scheduleAtFixedRate(new TimerTask() {
@@ -41,7 +42,7 @@ public class BackgroundActionPauser {
                     this.cancel();
                     return;
                 }
-                action.message(MessageFormat.format(pattern, delay--, action.retry()));
+                listener.message(MessageFormat.format(pattern, delay--, action.retry()));
             }
 
             @Override
