@@ -183,10 +183,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
 
     @Override
     public List<Distribution.Method> getMethods(final Path container) {
-        if(session.isCDNSupported()) {
-            return Arrays.asList(Distribution.DOWNLOAD);
-        }
-        return Collections.emptyList();
+        return Arrays.asList(Distribution.DOWNLOAD);
     }
 
     @Override
