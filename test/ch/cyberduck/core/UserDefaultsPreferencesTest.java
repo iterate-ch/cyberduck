@@ -53,4 +53,21 @@ public class UserDefaultsPreferencesTest extends AbstractTestCase {
         p.setProperty("test.p", 0.983652);
         assertEquals("0.983652", p.getProperty("test.p"));
     }
+
+    @Test
+    public void testIntegerFallback() {
+        Preferences p = new UserDefaultsPreferences();
+        p.load();
+        p.setProperty("t", 1.2d);
+        assertEquals(1.2d, p.getDouble("t"), 0d);
+        assertEquals(1, p.getInteger("t"));
+    }
+
+    @Test
+    public void testLongFallback() {
+        Preferences p = new UserDefaultsPreferences();
+        p.load();
+        p.setProperty("t", 1.2d);
+        assertEquals(1L, p.getLong("t"));
+    }
 }

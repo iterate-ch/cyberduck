@@ -851,7 +851,12 @@ public abstract class Preferences {
         if(null == v) {
             return -1;
         }
-        return Integer.parseInt(v);
+        try {
+            return Integer.parseInt(v);
+        }
+        catch(NumberFormatException e) {
+            return (int) Double.parseDouble(v);
+        }
     }
 
     public float getFloat(String property) {
@@ -867,7 +872,12 @@ public abstract class Preferences {
         if(null == v) {
             return -1;
         }
-        return Long.parseLong(v);
+        try {
+            return Long.parseLong(v);
+        }
+        catch(NumberFormatException e) {
+            return (long) Double.parseDouble(v);
+        }
     }
 
     public double getDouble(String property) {
