@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.analytics.AnalyticsProvider;
-import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -530,10 +528,6 @@ public abstract class Session<C> implements TranscriptListener {
         return this.isCDNSupported();
     }
 
-    public AnalyticsProvider analytics() {
-        return new QloudstatAnalyticsProvider();
-    }
-
     public DistributionConfiguration cdn(final LoginController prompt) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         final S3Session session = new S3Session(
@@ -672,6 +666,6 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     public <T> T getFeature(final Class<T> type) {
-        return  null;
+        return null;
     }
 }

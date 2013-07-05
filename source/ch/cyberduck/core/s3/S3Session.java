@@ -23,7 +23,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cf.SwiftMetadataFeature;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
@@ -693,11 +692,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         return new AWSIdentityConfiguration(host, prompt);
     }
 
-    @Override
-    public AnalyticsProvider analytics() {
-        return new QloudstatAnalyticsProvider();
-    }
-
     /**
      * Overwritten to provide publicly accessible URL of given object
      *
@@ -842,6 +836,9 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         }
         if(type == Metadata.class) {
             return (T) new S3MetadataFeature(this);
+        }
+        if(type == AnalyticsProvider.class) {
+            return (T) new QloudstatAnalyticsProvider();
         }
         return null;
     }

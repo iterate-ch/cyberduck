@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
@@ -476,13 +477,13 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
-                    final Session session = controller.getSession();
+                    final Session<?> session = controller.getSession();
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                        session.iam(LoginControllerFactory.get(InfoController.this)).createUser(session.analytics().getName(), document);
+                        session.iam(LoginControllerFactory.get(InfoController.this)).createUser(controller.getSession().getFeature(AnalyticsProvider.class).getName(), document);
                     }
                     else {
-                        session.iam(LoginControllerFactory.get(InfoController.this)).deleteUser(session.analytics().getName());
+                        session.iam(LoginControllerFactory.get(InfoController.this)).deleteUser(controller.getSession().getFeature(AnalyticsProvider.class).getName());
                     }
                 }
 
@@ -1923,7 +1924,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private boolean toggleS3Settings(final boolean stop) {
         this.window().endEditingFor(null);
-        final Session session = controller.getSession();
+        final Session<?> session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = session instanceof S3Session;
         if(enable) {
@@ -1950,7 +1951,7 @@ public class InfoController extends ToolbarWindowController {
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
-        if(ObjectUtils.equals(session.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(session.analytics().getName()), credentials)) {
+        if(ObjectUtils.equals(session.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(controller.getSession().getFeature(AnalyticsProvider.class).getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             bucketAnalyticsButton.setEnabled(false);
         }
@@ -2042,7 +2043,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void run() throws BackgroundException {
-                    final CloudSession s = (CloudSession) controller.getSession();
+                    final CloudSession<?> s = (CloudSession) controller.getSession();
                     final Path container = selected.getContainer();
                     if(s.isLocationSupported()) {
                         location = s.getLocation(container);
@@ -2060,7 +2061,8 @@ public class InfoController extends ToolbarWindowController {
                         lifecycle = s.getLifecycle(container);
                     }
                     if(s.isAnalyticsSupported()) {
-                        credentials = s.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(s.analytics().getName());
+                        credentials = s.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(
+                                controller.getSession().getFeature(AnalyticsProvider.class).getName());
                     }
                     if(numberOfFiles() == 1) {
                         encryption = selected.attributes().getEncryption();
@@ -2097,7 +2099,7 @@ public class InfoController extends ToolbarWindowController {
                         encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
                         if(null != credentials) {
                             bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                                    controller.getSession().analytics().getSetup(controller.getSession().getHost().getProtocol(),
+                                    controller.getSession().getFeature(AnalyticsProvider.class).getSetup(controller.getSession().getHost().getProtocol(),
                                             controller.getSession().getHost().getProtocol().getScheme(),
                                             selected.getContainer().getName(), credentials)
                             ));
@@ -2456,7 +2458,8 @@ public class InfoController extends ToolbarWindowController {
         distributionDeliveryPopup.setEnabled(stop && enable);
         final DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(InfoController.this));
         distributionLoggingButton.setEnabled(stop && enable && cdn.isLoggingSupported(method));
-        if(ObjectUtils.equals(session.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(session.analytics().getName()), credentials)) {
+        if(ObjectUtils.equals(session.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(
+                controller.getSession().getFeature(AnalyticsProvider.class).getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             distributionAnalyticsButton.setEnabled(false);
         }
@@ -2609,11 +2612,11 @@ public class InfoController extends ToolbarWindowController {
                             distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
                         }
                         if(cdn.isAnalyticsSupported(distribution.getMethod())) {
-                            final Credentials credentials = session.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(controller.getSession().analytics().getName());
+                            final Credentials credentials = session.iam(LoginControllerFactory.get(InfoController.this)).getUserCredentials(controller.getSession().getFeature(AnalyticsProvider.class).getName());
                             distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
                             if(credentials != null) {
                                 distributionAnalyticsSetupUrlField.setAttributedStringValue(
-                                        HyperlinkAttributedStringFactory.create(session.analytics().getSetup(cdn.getProtocol(),
+                                        HyperlinkAttributedStringFactory.create(controller.getSession().getFeature(AnalyticsProvider.class).getSetup(cdn.getProtocol(),
                                                 distribution.getMethod().getScheme(), container.getName(), credentials)));
                             }
                         }
@@ -2715,10 +2718,10 @@ public class InfoController extends ToolbarWindowController {
                     final Session session = controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                        session.iam(LoginControllerFactory.get(InfoController.this)).createUser(session.analytics().getName(), document);
+                        session.iam(LoginControllerFactory.get(InfoController.this)).createUser(controller.getSession().getFeature(AnalyticsProvider.class).getName(), document);
                     }
                     else {
-                        session.iam(LoginControllerFactory.get(InfoController.this)).deleteUser(session.analytics().getName());
+                        session.iam(LoginControllerFactory.get(InfoController.this)).deleteUser(controller.getSession().getFeature(AnalyticsProvider.class).getName());
                     }
                 }
 

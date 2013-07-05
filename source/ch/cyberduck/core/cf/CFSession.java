@@ -22,6 +22,8 @@ import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
@@ -179,6 +181,9 @@ public class CFSession extends CloudSession<FilesClient> {
     public <T> T getFeature(final Class<T> type) {
         if(type == Metadata.class) {
             return (T) new SwiftMetadataFeature(this);
+        }
+        if(type == AnalyticsProvider.class) {
+            return (T) new QloudstatAnalyticsProvider();
         }
         return null;
     }
