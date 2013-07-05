@@ -113,6 +113,9 @@ public abstract class AbstractController implements Controller {
                     catch(BackgroundException e) {
                         log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
                     }
+                    catch(Exception e) {
+                        log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+                    }
                     finally {
                         // Increase the run counter
                         try {
@@ -123,6 +126,9 @@ public abstract class AbstractController implements Controller {
                         }
                         catch(BackgroundException e) {
                             log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+                        }
+                        catch(Exception e) {
+                            log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
                         }
                         // Invoke the cleanup on the main thread to let the action synchronize the user interface
                         invoke(new ControllerMainAction(AbstractController.this) {
