@@ -271,51 +271,6 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     public abstract AttributedList<Path> list() throws BackgroundException;
 
-    public void writeUnixOwner(String owner) throws BackgroundException {
-        throw new BackgroundException("Not supported");
-    }
-
-    public void writeUnixGroup(String group) throws BackgroundException {
-        throw new BackgroundException("Not supported");
-    }
-
-    public void writeTimestamp(long created, long modified, long accessed) throws BackgroundException {
-        throw new BackgroundException("Not supported");
-    }
-
-    public void writeUnixPermission(Permission permission) throws BackgroundException {
-        throw new BackgroundException("Not supported");
-    }
-
-    /**
-     * @param acl       The permissions to apply
-     * @param recursive Include subdirectories and files
-     */
-    public void writeAcl(Acl acl, boolean recursive) throws BackgroundException {
-        throw new BackgroundException("Not supported");
-    }
-
-    /**
-     * Read the ACL of the bucket or object
-     */
-    public void readAcl() throws BackgroundException {
-        //
-    }
-
-    /**
-     * Read modifiable HTTP header metatdata key and values
-     */
-    public void readMetadata() throws BackgroundException {
-        //
-    }
-
-    /**
-     * @param meta Modifiable HTTP header metatdata key and values
-     */
-    public void writeMetadata(Map<String, String> meta) throws BackgroundException {
-        throw new BackgroundException("Not supported");
-    }
-
     /**
      * @return the path relative to its parent directory
      */
@@ -391,7 +346,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @return The session this path uses to send commands
      */
-    public abstract Session getSession();
+    public abstract Session<?> getSession();
 
     /**
      * Upload an empty file.

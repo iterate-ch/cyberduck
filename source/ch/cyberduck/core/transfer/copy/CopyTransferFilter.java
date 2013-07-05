@@ -22,6 +22,8 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,20 +63,22 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public void complete(final Session session, final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void complete(final Session<?> session, final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(status.isComplete()) {
             final Path destination = files.get(source);
-            if(destination.getSession().isUnixPermissionsSupported()) {
+            final UnixPermission unix = destination.getSession().getFeature(UnixPermission.class);
+            if(unix != null) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     Permission permission = source.attributes().getPermission();
                     if(!Permission.EMPTY.equals(permission)) {
-                        destination.writeUnixPermission(permission);
+                        unix.setUnixPermission(destination, permission);
                     }
                 }
             }
-            if(destination.getSession().isWriteTimestampSupported()) {
+            final Timestamp timestamp = destination.getSession().getFeature(Timestamp.class);
+            if(timestamp != null) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    destination.writeTimestamp(source.attributes().getCreationDate(),
+                    timestamp.udpate(destination, source.attributes().getCreationDate(),
                             source.attributes().getModificationDate(),
                             source.attributes().getAccessedDate());
                 }

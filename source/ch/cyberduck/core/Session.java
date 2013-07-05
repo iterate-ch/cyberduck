@@ -290,29 +290,6 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
-     * @return True if ACLs are supported
-     * @see Path#writeAcl(Acl, boolean)
-     * @see Path#readAcl()
-     */
-    public boolean isAclSupported() {
-        return false;
-    }
-
-    /**
-     * @return True if UNIX permissions can be read and written.
-     */
-    public boolean isUnixPermissionsSupported() {
-        return true;
-    }
-
-    /**
-     * @return True if timestamp of file can be read and written.
-     */
-    public boolean isWriteTimestampSupported() {
-        return true;
-    }
-
-    /**
      * @return True if files can be reverted
      * @see Path#revert()
      */
@@ -692,5 +669,9 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public DescriptiveUrl toAuthenticatedUrl(final Path path) {
         return new DescriptiveUrl(null, null);
+    }
+
+    public <T> T getFeature(final Class<T> type) {
+        return  null;
     }
 }

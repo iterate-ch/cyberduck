@@ -23,6 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 
@@ -441,11 +443,6 @@ public class SFTPSession extends Session<Connection> {
         return true;
     }
 
-    @Override
-    public boolean isUnixPermissionsSupported() {
-        return true;
-    }
-
     /**
      * No resume supported for SCP transfers.
      *
@@ -453,5 +450,21 @@ public class SFTPSession extends Session<Connection> {
      */
     private boolean isTransferResumable() {
         return Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier());
+    }
+
+    @Override
+    public Connection getClient() {
+        return super.getClient();
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == UnixPermission.class) {
+            return (T) new SFTPUnixPermissionFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new SFTPTimestampFeature(this);
+        }
+        return null;
     }
 }

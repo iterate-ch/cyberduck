@@ -347,7 +347,7 @@ public class GSSession extends S3Session {
 
     @Override
     public DistributionConfiguration cdn(final LoginController prompt) {
-        return new GSWebsiteDistributionConfiguration(this);
+        return new GoogleStorageWebsiteDistributionConfiguration(this);
     }
 
     @Override
@@ -394,5 +394,13 @@ public class GSSession extends S3Session {
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Authenticated"))));
         }
         return urls;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == ch.cyberduck.core.features.AccessControlList.class) {
+            return (T) new GoogleStorageAccessControlListFeature(this);
+        }
+        return super.getFeature(type);
     }
 }

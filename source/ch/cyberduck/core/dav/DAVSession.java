@@ -29,6 +29,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.http.HttpSession;
 
 import org.apache.http.HttpStatus;
@@ -90,16 +91,6 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public boolean isUnixPermissionsSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isWriteTimestampSupported() {
-        return false;
-    }
-
-    @Override
     public boolean isMetadataSupported() {
         return true;
     }
@@ -107,5 +98,13 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public String toHttpURL(final Path path) {
         return this.toURL(path);
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == Metadata.class) {
+            return (T) new DAVMetadataFeature(this);
+        }
+        return null;
     }
 }

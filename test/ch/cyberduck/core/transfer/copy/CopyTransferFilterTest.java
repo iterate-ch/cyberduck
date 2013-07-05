@@ -97,17 +97,17 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         final boolean[] timestampWrite = new boolean[1];
         final boolean[] permissionWrite = new boolean[1];
         final NullPath target = new NullPath("a", Path.FILE_TYPE) {
-            @Override
-            public void writeTimestamp(final long created, final long modified, final long accessed) {
-                assertEquals(time, modified);
-                timestampWrite[0] = true;
-            }
+//            @Override
+//            public void writeTimestamp(final long created, final long modified, final long accessed) {
+//                assertEquals(time, modified);
+//                timestampWrite[0] = true;
+//            }
 
-            @Override
-            public void writeUnixPermission(final Permission permission) {
-                assertEquals(new Permission(777), permission);
-                permissionWrite[0] = true;
-            }
+//            @Override
+//            public void writeUnixPermission(final Permission permission) {
+//                assertEquals(new Permission(777), permission);
+//                permissionWrite[0] = true;
+//            }
         };
         files.put(source, target);
         CopyTransferFilter f = new CopyTransferFilter(files);

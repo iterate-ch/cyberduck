@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 
@@ -170,6 +171,14 @@ public class CFSession extends CloudSession<FilesClient> {
     public String toHttpURL(final Path path) {
         if(distributions.containsKey(path.getContainer())) {
             return distributions.get(path.getContainer()).getURL(path);
+        }
+        return null;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == Metadata.class) {
+            return (T) new SwiftMetadataFeature(this);
         }
         return null;
     }

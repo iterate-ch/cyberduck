@@ -26,6 +26,8 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -81,10 +83,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+    public TransferStatus prepare(final Session<?> session, final Path file) throws BackgroundException {
         final PathAttributes attributes = file.attributes();
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-            if(session.isUnixPermissionsSupported()) {
+            if(session.getFeature(UnixPermission.class) != null) {
                 if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                     if(attributes.isFile()) {
                         attributes.setPermission(new Permission(
@@ -99,9 +101,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     // Read permissions from local file
                     attributes.setPermission(file.getLocal().attributes().getPermission());
                 }
-            }
-            if(session.isAclSupported()) {
-                // ACL set on object creation with default from Preferences
             }
         }
         final TransferStatus status = new TransferStatus();
@@ -125,24 +124,26 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public void complete(final Session session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void complete(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            if(session.isUnixPermissionsSupported()) {
+            final UnixPermission unix = session.getFeature(UnixPermission.class);
+            if(unix != null) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    Permission permission = file.attributes().getPermission();
+                    final Permission permission = file.attributes().getPermission();
                     if(!Permission.EMPTY.equals(permission)) {
-                        file.writeUnixPermission(permission);
+                        unix.setUnixPermission(file, permission);
                     }
                 }
             }
-            if(session.isWriteTimestampSupported()) {
+            final Timestamp timestamp = session.getFeature(Timestamp.class);
+            if(timestamp != null) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     // Read timestamps from local file
                     final Attributes attributes = file.getLocal().attributes();
-                    file.writeTimestamp(attributes.getCreationDate(),
+                    timestamp.udpate(file, attributes.getCreationDate(),
                             attributes.getModificationDate(),
                             attributes.getAccessedDate());
                 }

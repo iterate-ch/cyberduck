@@ -23,12 +23,14 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cf.SwiftMetadataFeature;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
@@ -401,11 +403,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     @Override
     public boolean isUploadResumable() {
         return false;
-    }
-
-    @Override
-    public boolean isAclSupported() {
-        return true;
     }
 
     @Override
@@ -836,5 +833,16 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Torrent"))));
         }
         return urls;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == ch.cyberduck.core.features.AccessControlList.class) {
+            return (T) new S3AccessControlListFeature(this);
+        }
+        if(type == Metadata.class) {
+            return (T) new S3MetadataFeature(this);
+        }
+        return null;
     }
 }

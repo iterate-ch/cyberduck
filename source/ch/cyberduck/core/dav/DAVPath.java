@@ -181,50 +181,6 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public void readMetadata() throws BackgroundException {
-        if(attributes().isFile()) {
-            try {
-                session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                        this.getName()));
-
-                final List<DavResource> resources = session.getClient().list(URIEncoder.encode(this.getAbsolute()));
-                for(DavResource resource : resources) {
-                    this.attributes().setMetadata(resource.getCustomProps());
-                }
-            }
-            catch(SardineException e) {
-                throw new SardineExceptionMappingService().map("Cannot read file attributes", e, this);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, this);
-            }
-        }
-    }
-
-    @Override
-    public void writeMetadata(Map<String, String> meta) throws BackgroundException {
-        if(attributes().isFile()) {
-            try {
-
-                session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                        this.getName()));
-
-                session.getClient().setCustomProps(URIEncoder.encode(this.getAbsolute()),
-                        meta, Collections.<java.lang.String>emptyList());
-            }
-            catch(SardineException e) {
-                throw new SardineExceptionMappingService().map("Cannot write file attributes", e, this);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, this);
-            }
-            finally {
-                this.attributes().clear(false, false, false, true);
-            }
-        }
-    }
-
-    @Override
     public void rename(final Path renamed) throws BackgroundException {
         try {
 

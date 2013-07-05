@@ -20,8 +20,10 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +39,8 @@ import java.util.Map;
 public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
     private static Logger log = Logger.getLogger(WriteMetadataWorker.class);
 
+    private Metadata feature;
+
     /**
      * Selected files.
      */
@@ -47,7 +51,8 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
      */
     private Map<String, String> metadata;
 
-    protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata) {
+    protected WriteMetadataWorker(final Session<?> session , final List<Path> files, final Map<String, String> metadata) {
+        this.feature = session.getFeature(Metadata.class);
         this.files = files;
         this.metadata = metadata;
     }
@@ -77,7 +82,7 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
                 }
             }
             else {
-                next.writeMetadata(metadata);
+                feature.write(next, metadata);
             }
         }
         return metadata;

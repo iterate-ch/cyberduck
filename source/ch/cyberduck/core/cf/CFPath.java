@@ -402,66 +402,6 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public void readMetadata() throws BackgroundException {
-        try {
-            session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                    this.getName()));
-
-            if(this.attributes().isFile()) {
-                final FilesObjectMetaData meta
-                        = session.getClient().getObjectMetaData(session.getRegion(this.getContainer()),
-                        this.getContainer().getName(), this.getKey());
-                this.attributes().setMetadata(meta.getMetaData());
-            }
-            if(this.attributes().isVolume()) {
-                final FilesContainerMetaData meta
-                        = session.getClient().getContainerMetaData(session.getRegion(this.getContainer()),
-                        this.getContainer().getName());
-                this.attributes().setMetadata(meta.getMetaData());
-            }
-        }
-        catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
-        }
-    }
-
-    @Override
-    public void writeMetadata(final Map<String, String> meta) throws BackgroundException {
-        try {
-            session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                    this.getName()));
-
-            if(this.attributes().isFile()) {
-                session.getClient().updateObjectMetadata(session.getRegion(this.getContainer()),
-                        this.getContainer().getName(), this.getKey(), meta);
-            }
-            else if(this.attributes().isVolume()) {
-                for(Map.Entry<String, String> entry : this.attributes().getMetadata().entrySet()) {
-                    // Choose metadata values to remove
-                    if(!meta.containsKey(entry.getKey())) {
-                        log.debug(String.format("Remove metadata with key %s", entry.getKey()));
-                        meta.put(entry.getKey(), StringUtils.EMPTY);
-                    }
-                }
-                session.getClient().updateContainerMetadata(session.getRegion(this.getContainer()),
-                        this.getContainer().getName(), meta);
-            }
-        }
-        catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot read file attributes", e, this);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, this);
-        }
-        finally {
-            this.attributes().clear(false, false, false, true);
-        }
-    }
-
-    @Override
     public void rename(final Path renamed) throws BackgroundException {
         try {
             session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),

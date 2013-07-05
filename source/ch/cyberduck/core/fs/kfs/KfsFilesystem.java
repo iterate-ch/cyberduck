@@ -26,6 +26,8 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
@@ -139,7 +141,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         }
                         final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
                         stat.type = file.attributes().isDirectory() ? KfsLibrary.kfstype_t.KFS_DIR : KfsLibrary.kfstype_t.KFS_REG;
-                        if(session.isWriteTimestampSupported()) {
+                        if(session.getFeature(Timestamp.class) != null) {
                             stat.mtime = new KfsLibrary.kfstime(file.attributes().getModificationDate() / 1000, 0);
                             stat.atime = new KfsLibrary.kfstime(file.attributes().getAccessedDate() / 1000, 0);
                             stat.ctime = new KfsLibrary.kfstime(file.attributes().getCreationDate() / 1000, 0);
@@ -150,7 +152,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             stat.ctime = new KfsLibrary.kfstime();
                         }
                         stat.size = file.attributes().getSize();
-                        if(session.isUnixPermissionsSupported()) {
+                        if(session.getFeature(UnixPermission.class) != null) {
                             final Permission permission = file.attributes().getPermission();
                             if(permission.getOwnerPermissions()[Permission.READ]) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IRUSR;

@@ -78,8 +78,6 @@ public class PathAttributes extends Attributes implements Serializable {
 
     /**
      * Redundany level if available
-     *
-     * @see ch.cyberduck.core.cloud.CloudSession#getSupportedStorageClasses()
      */
     private String storageClass;
 
@@ -423,37 +421,6 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setRegion(final String region) {
         this.region = region;
-    }
-
-    /**
-     * Clear all attributes
-     */
-    public void clear() {
-        this.clear(true, true, true, true);
-    }
-
-    /**
-     * @param timestamp   Clear modification, creation and last access date
-     * @param size        Clear content length
-     * @param permissions Clear permissions and ACLs
-     * @param metadata    Clear metadata
-     */
-    public void clear(boolean timestamp, boolean size, boolean permissions, boolean metadata) {
-        if(timestamp) {
-            this.setModificationDate(-1);
-            this.setCreationDate(-1);
-            this.setAccessedDate(-1);
-        }
-        if(size) {
-            this.setSize(-1);
-        }
-        if(permissions) {
-            this.setPermission(Permission.EMPTY);
-            this.setAcl(Acl.EMPTY);
-        }
-        if(metadata) {
-            this.setMetadata(Collections.<String, String>emptyMap());
-        }
     }
 
     @Override

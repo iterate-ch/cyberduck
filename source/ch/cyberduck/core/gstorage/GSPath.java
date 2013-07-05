@@ -58,56 +58,5 @@ public class GSPath extends S3Path {
         super(s, dict);
     }
 
-    @Override
-    protected AccessControlList convert(Acl acl) {
-        GSAccessControlList list = new GSAccessControlList();
-        // Do not set owner for ACL which is set automatically
-        for(Acl.UserAndRole userAndRole : acl.asList()) {
-            if(!userAndRole.isValid()) {
-                continue;
-            }
-            if(userAndRole.getUser() instanceof Acl.EmailUser) {
-                list.grantPermission(new UserByEmailAddressGrantee(userAndRole.getUser().getIdentifier()),
-                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
-            }
-            else if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                if(userAndRole.getUser().getIdentifier().equals("AllUsers")) {
-                    list.grantPermission(new AllUsersGrantee(),
-                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
-                }
-                else if(userAndRole.getUser().getIdentifier().equals("AllAuthenticatedUsers")) {
-                    list.grantPermission(new AllAuthenticatedUsersGrantee(),
-                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
-                }
-                else {
-                    list.grantPermission(new GroupByIdGrantee(userAndRole.getUser().getIdentifier()),
-                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
-                }
-            }
-            else if(userAndRole.getUser() instanceof Acl.DomainUser) {
-                list.grantPermission(new GroupByDomainGrantee(userAndRole.getUser().getIdentifier()),
-                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
-            }
-            else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
-                list.grantPermission(new UserByIdGrantee(userAndRole.getUser().getIdentifier()),
-                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
-            }
-            else if(userAndRole.getUser() instanceof Acl.EmailGroupUser) {
-                list.grantPermission(new GroupByEmailAddressGrantee(userAndRole.getUser().getIdentifier()),
-                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
-            }
-            else {
-                log.warn("Unsupported user:" + userAndRole.getUser());
-            }
-        }
-        if(log.isDebugEnabled()) {
-            try {
-                log.debug(list.toXml());
-            }
-            catch(ServiceException e) {
-                log.error(e.getMessage());
-            }
-        }
-        return list;
-    }
+
 }

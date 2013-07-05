@@ -21,8 +21,10 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.AccessControlList;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
@@ -35,6 +37,8 @@ import java.util.List;
  */
 public abstract class WriteAclWorker extends Worker<Acl> {
     private static Logger log = Logger.getLogger(WriteAclWorker.class);
+
+    private AccessControlList feature;
 
     /**
      * Selected files.
@@ -51,7 +55,8 @@ public abstract class WriteAclWorker extends Worker<Acl> {
      */
     private boolean recursive;
 
-    public WriteAclWorker(final List<Path> files, final Acl acl, final boolean recursive) {
+    public WriteAclWorker(final Session<?> session, final List<Path> files, final Acl acl, final boolean recursive) {
+        this.feature = session.getFeature(AccessControlList.class);
         this.files = files;
         this.acl = acl;
         this.recursive = recursive;
@@ -65,7 +70,7 @@ public abstract class WriteAclWorker extends Worker<Acl> {
             }
             if(acl.isModified()) {
                 // Existing entry has been modified
-                next.writeAcl(acl, recursive);
+                feature.write(next, acl, recursive);
             }
             else {
                 if(acl.equals(next.attributes().getAcl())) {
@@ -76,7 +81,7 @@ public abstract class WriteAclWorker extends Worker<Acl> {
                 }
                 else {
                     // Additional entry added
-                    next.writeAcl(acl, recursive);
+                    feature.write(next, acl, recursive);
                 }
             }
         }

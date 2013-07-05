@@ -21,7 +21,9 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AccessControlList;
 import ch.cyberduck.core.i18n.Locale;
 
 import java.text.MessageFormat;
@@ -33,9 +35,12 @@ import java.util.List;
  */
 public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
+    private AccessControlList feature;
+
     private List<Path> files;
 
-    public ReadAclWorker(final List<Path> files) {
+    public ReadAclWorker(final Session<?> session, final List<Path> files) {
+        this.feature = session.getFeature(AccessControlList.class);
         this.files = files;
     }
 
@@ -44,7 +49,7 @@ public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
         List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
         for(Path next : files) {
             if(Acl.EMPTY.equals(next.attributes().getAcl())) {
-                next.readAcl();
+                next.attributes().setAcl(feature.read(next));
             }
             for(Acl.UserAndRole acl : next.attributes().getAcl().asList()) {
                 if(updated.contains(acl)) {

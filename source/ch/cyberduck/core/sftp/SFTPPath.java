@@ -230,93 +230,6 @@ public class SFTPPath extends Path {
         }
     }
 
-    protected void writeAttributes(SFTPv3FileAttributes attributes) throws BackgroundException {
-        try {
-            session.sftp().setstat(this.getAbsolute(), attributes);
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot write file attributes", e, this);
-        }
-    }
-
-    @Override
-    public void writeUnixOwner(String owner) throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
-                this.getName(), owner));
-
-        SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-        attr.uid = new Integer(owner);
-        this.writeAttributes(attr);
-    }
-
-    @Override
-    public void writeUnixGroup(final String group) throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
-                this.getName(), group));
-
-        SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-        attr.gid = new Integer(group);
-        this.writeAttributes(attr);
-    }
-
-    @Override
-    public void writeUnixPermission(final Permission permission) throws BackgroundException {
-        try {
-            this.writeUnixPermissionImpl(permission);
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot change permissions", e, this);
-        }
-    }
-
-    private void writeUnixPermissionImpl(final Permission permission) throws IOException {
-        session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                this.getName(), permission.getOctalString()));
-
-        try {
-            SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-            attr.permissions = Integer.parseInt(permission.getOctalString(), 8);
-            this.writeAttributes(attr);
-        }
-        catch(BackgroundException ignore) {
-            // We might not be able to change the attributes if we are not the owner of the file
-            log.warn(ignore.getMessage());
-        }
-        finally {
-            this.attributes().clear(false, false, true, false);
-        }
-    }
-
-    @Override
-    public void writeTimestamp(long created, long modified, long accessed) throws BackgroundException {
-        try {
-            this.writeModificationDateImpl(modified);
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot change timestamp", e, this);
-        }
-    }
-
-    private void writeModificationDateImpl(long modified) throws IOException {
-        session.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                this.getName(), UserDateFormatterFactory.get().getShortFormat(modified)));
-        try {
-            SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
-            int t = (int) (modified / 1000);
-            // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
-            attrs.atime = t;
-            attrs.mtime = t;
-            this.writeAttributes(attrs);
-        }
-        catch(BackgroundException ignore) {
-            // We might not be able to change the attributes if we are not the owner of the file
-            log.warn(ignore.getMessage());
-        }
-        finally {
-            this.attributes().clear(true, false, false, false);
-        }
-    }
-
     @Override
     public InputStream read(final TransferStatus status) throws BackgroundException {
         InputStream in = null;
@@ -450,15 +363,11 @@ public class SFTPPath extends Path {
             Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
             attr.permissions = Integer.parseInt(permission.getOctalString(), 8);
             session.sftp().createFile(this.getAbsolute(), attr);
-            try {
-                // Even if specified above when creating the file handle, we still need to update the
-                // permissions after the creating the file. SSH_FXP_OPEN does not support setting
-                // attributes in version 4 or lower.
-                this.writeUnixPermissionImpl(permission);
-            }
-            catch(SFTPException ignore) {
-                log.warn(ignore.getMessage());
-            }
+
+            // Even if specified above when creating the file handle, we still need to update the
+            // permissions after the creating the file. SSH_FXP_OPEN does not support setting
+            // attributes in version 4 or lower.
+            new SFTPUnixPermissionFeature(session).setUnixPermission(this, permission);
             return true;
         }
         catch(IOException e) {

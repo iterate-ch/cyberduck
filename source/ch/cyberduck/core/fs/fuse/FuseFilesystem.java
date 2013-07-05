@@ -26,6 +26,8 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
@@ -69,7 +71,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
         }
     }
 
-    private Session session;
+    private Session<?> session;
 
     /**
      *
@@ -326,19 +328,21 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                     }
                     final Path directory = selected.getParent();
                     final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
-                    if(session.isUnixPermissionsSupported()) {
+                    final UnixPermission unix = session.getFeature(UnixPermission.class);
+                    if(unix != null) {
                         final NSObject posixNumber = attributes.objectForKey(NSFileManager.NSFilePosixPermissions);
                         if(null != posixNumber) {
                             String posixString = Integer.toOctalString(Rococoa.cast(posixNumber, NSNumber.class).intValue());
                             final Permission permission = new Permission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
-                            file.writeUnixPermission(permission);
+                            unix.setUnixPermission(file, permission);
                         }
                     }
-                    if(session.isWriteTimestampSupported()) {
+                    final Timestamp timestamp = session.getFeature(Timestamp.class);
+                    if(timestamp != null) {
                         NSObject modificationNumber = attributes.objectForKey(NSFileManager.NSFileModificationDate);
                         if(null != modificationNumber) {
                             final long modification = (long) (Rococoa.cast(modificationNumber, NSDate.class).timeIntervalSince1970() * 1000);
-                            file.writeTimestamp(modification, modification, modification);
+                            timestamp.udpate(file, modification, modification, modification);
                         }
                     }
                     return true;

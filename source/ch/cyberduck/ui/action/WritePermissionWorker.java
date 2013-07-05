@@ -21,8 +21,10 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.i18n.Locale;
 
 import java.text.MessageFormat;
@@ -32,6 +34,8 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class WritePermissionWorker extends Worker<Permission> {
+
+    private UnixPermission feature;
 
     /**
      * Selected files.
@@ -48,7 +52,8 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
      */
     private boolean recursive;
 
-    public WritePermissionWorker(final List<Path> files, final Permission permission, final boolean recursive) {
+    public WritePermissionWorker(final Session<?> session, final List<Path> files, final Permission permission, final boolean recursive) {
+        this.feature = session.getFeature(UnixPermission.class);
         this.files = files;
         this.permission = permission;
         this.recursive = recursive;
@@ -80,12 +85,12 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
                 modified.getOtherPermissions()[Permission.EXECUTE] = false;
             }
             if(!file.attributes().getPermission().equals(modified)) {
-                file.writeUnixPermission(modified);
+                feature.setUnixPermission(file, modified);
             }
         }
         else {
             if(!file.attributes().getPermission().equals(permission)) {
-                file.writeUnixPermission(permission);
+                feature.setUnixPermission(file, permission);
             }
         }
         if(recursive) {

@@ -14,7 +14,7 @@ public interface TransferPathFilter {
      * @param file    File
      * @return True if file should be transferred
      */
-    boolean accept(Session session, Path file) throws BackgroundException;
+    boolean accept(Session<?> session, Path file) throws BackgroundException;
 
     /**
      * Called before the file will actually get transferred. Should prepare for the transfer
@@ -26,7 +26,7 @@ public interface TransferPathFilter {
      * @param file    File
      * @return Transfer status
      */
-    TransferStatus prepare(Session session, Path file) throws BackgroundException;
+    TransferStatus prepare(Session<?> session, Path file) throws BackgroundException;
 
     /**
      * Post processing of completed transfer.
@@ -36,5 +36,5 @@ public interface TransferPathFilter {
      * @param options Options
      * @param status  Transfer status
      */
-    void complete(Session session, Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
+    void complete(Session<?> session, Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
 }

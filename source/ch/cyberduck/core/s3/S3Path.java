@@ -50,15 +50,10 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.acl.AccessControlList;
-import org.jets3t.service.acl.CanonicalGrantee;
-import org.jets3t.service.acl.EmailAddressGrantee;
-import org.jets3t.service.acl.GrantAndPermission;
-import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
-import org.jets3t.service.model.S3Owner;
 import org.jets3t.service.model.S3Version;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
@@ -173,10 +168,8 @@ public class S3Path extends CloudPath {
                 // Keep encryption setting
                 destination.setServerSideEncryptionAlgorithm(this.attributes().getEncryption());
                 // Apply non standard ACL
-                if(Acl.EMPTY.equals(this.attributes().getAcl())) {
-                    this.readAcl();
-                }
-                destination.setAcl(this.convert(this.attributes().getAcl()));
+                final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+                destination.setAcl(acl.convert(acl.read(this)));
                 session.getClient().copyVersionedObject(this.attributes().getVersionId(),
                         this.getContainer().getName(), this.getKey(), this.getContainer().getName(), destination, false);
             }
@@ -184,71 +177,6 @@ public class S3Path extends CloudPath {
                 throw new ServiceExceptionMappingService().map("Cannot revert file", e, this);
             }
         }
-    }
-
-    @Override
-    public void readAcl() throws BackgroundException {
-        try {
-            final Credentials credentials = session.getHost().getCredentials();
-            if(credentials.isAnonymousLogin()) {
-                return;
-            }
-            if(this.isContainer()) {
-                // This method can be performed by anonymous services, but can only succeed if the
-                // bucket's existing ACL already allows write access by the anonymous user.
-                // In general, you can only access the ACL of a bucket if the ACL already in place
-                // for that bucket (in S3) allows you to do so.
-                this.attributes().setAcl(this.convert(session.getClient().getBucketAcl(this.getContainer().getName())));
-            }
-            else if(attributes().isFile() || attributes().isPlaceholder()) {
-                AccessControlList list;
-                if(session.getVersioning(this.getContainer()).isEnabled()) {
-                    list = session.getClient().getVersionedObjectAcl(this.attributes().getVersionId(),
-                            this.getContainer().getName(), this.getKey());
-                }
-                else {
-                    // This method can be performed by anonymous services, but can only succeed if the
-                    // object's existing ACL already allows read access by the anonymous user.
-                    list = session.getClient().getObjectAcl(this.getContainer().getName(), this.getKey());
-                }
-                this.attributes().setAcl(this.convert(list));
-                this.attributes().setOwner(list.getOwner().getDisplayName());
-            }
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, this);
-        }
-    }
-
-    /**
-     * @param list ACL from server
-     * @return Editable ACL
-     */
-    protected Acl convert(final AccessControlList list) {
-        if(log.isDebugEnabled()) {
-            try {
-                log.debug(list.toXml());
-            }
-            catch(ServiceException e) {
-                log.error(e.getMessage());
-            }
-        }
-        Acl acl = new Acl();
-        acl.setOwner(new Acl.CanonicalUser(list.getOwner().getId(), list.getOwner().getDisplayName()));
-        for(GrantAndPermission grant : list.getGrantAndPermissions()) {
-            Acl.Role role = new Acl.Role(grant.getPermission().toString());
-            if(grant.getGrantee() instanceof CanonicalGrantee) {
-                acl.addAll(new Acl.CanonicalUser(grant.getGrantee().getIdentifier(),
-                        ((CanonicalGrantee) grant.getGrantee()).getDisplayName(), false), role);
-            }
-            else if(grant.getGrantee() instanceof EmailAddressGrantee) {
-                acl.addAll(new Acl.EmailUser(grant.getGrantee().getIdentifier()), role);
-            }
-            else if(grant.getGrantee() instanceof GroupGrantee) {
-                acl.addAll(new Acl.GroupUser(grant.getGrantee().getIdentifier()), role);
-            }
-        }
-        return acl;
     }
 
     private static final String METADATA_HEADER_EXPIRES = "Expires";
@@ -297,49 +225,6 @@ public class S3Path extends CloudPath {
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot write file attributes", e, this);
-        }
-    }
-
-    @Override
-    public void readMetadata() throws BackgroundException {
-        if(attributes().isFile() || attributes().isPlaceholder()) {
-            session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                    this.getName()));
-
-            final StorageObject target = this.getDetails();
-            HashMap<String, String> metadata = new HashMap<String, String>();
-            Map<String, Object> source = target.getModifiableMetadata();
-            for(Map.Entry<String, Object> entry : source.entrySet()) {
-                metadata.put(entry.getKey(), entry.getValue().toString());
-            }
-            this.attributes().setEncryption(target.getServerSideEncryptionAlgorithm());
-            this.attributes().setMetadata(metadata);
-        }
-    }
-
-    @Override
-    public void writeMetadata(final Map<String, String> meta) throws BackgroundException {
-        if(attributes().isFile() || attributes().isPlaceholder()) {
-            try {
-                session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                        this.getName()));
-
-                final StorageObject target = this.getDetails();
-                target.replaceAllMetadata(new HashMap<String, Object>(meta));
-                // Apply non standard ACL
-                if(Acl.EMPTY.equals(this.attributes().getAcl())) {
-                    this.readAcl();
-                }
-                target.setAcl(this.convert(this.attributes().getAcl()));
-                session.getClient().updateObjectMetadata(this.getContainer().getName(), target);
-                target.setMetadataComplete(false);
-            }
-            catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot write file attributes", e, this);
-            }
-            finally {
-                this.attributes().clear(false, false, false, true);
-            }
         }
     }
 
@@ -449,7 +334,7 @@ public class S3Path extends CloudPath {
             }
         }
         else {
-            object.setAcl(this.convert(acl));
+            object.setAcl(new S3AccessControlListFeature(session).convert(acl));
         }
         // Storage class
         if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
@@ -976,95 +861,6 @@ public class S3Path extends CloudPath {
         }
     }
 
-    /**
-     * Write ACL to bucket or object.
-     *
-     * @param acl       The updated access control list.
-     * @param recursive Descend into directory placeholders
-     */
-    @Override
-    public void writeAcl(Acl acl, boolean recursive) throws BackgroundException {
-        try {
-            if(null == acl.getOwner()) {
-                // Owner is lost in controller
-                acl.setOwner(this.attributes().getAcl().getOwner());
-            }
-            if(this.isContainer()) {
-                session.getClient().putBucketAcl(this.getContainer().getName(), this.convert(acl));
-            }
-            else {
-                if(attributes().isFile() || attributes().isPlaceholder()) {
-                    session.getClient().putObjectAcl(this.getContainer().getName(), this.getKey(), this.convert(acl));
-                }
-                if(attributes().isDirectory()) {
-                    if(recursive) {
-                        for(Path child : this.list()) {
-                            if(!session.isConnected()) {
-                                throw new ConnectionCanceledException();
-                            }
-                            // Existing ACL might not be cached
-                            if(Acl.EMPTY.equals(child.attributes().getAcl())) {
-                                child.readAcl();
-                            }
-                            final List<Acl.UserAndRole> existing = child.attributes().getAcl().asList();
-                            acl.addAll(existing.toArray(new Acl.UserAndRole[existing.size()]));
-                            child.writeAcl(acl, recursive);
-                        }
-                    }
-                }
-            }
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot change permissions", e, this);
-        }
-        finally {
-            this.attributes().clear(false, false, true, false);
-        }
-    }
-
-    /**
-     * Convert ACL for writing to service.
-     *
-     * @param acl Edited ACL
-     * @return ACL to write to server
-     */
-    protected AccessControlList convert(Acl acl) {
-        if(null == acl) {
-            return null;
-        }
-        AccessControlList list = new AccessControlList();
-        list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
-        for(Acl.UserAndRole userAndRole : acl.asList()) {
-            if(!userAndRole.isValid()) {
-                continue;
-            }
-            if(userAndRole.getUser() instanceof Acl.EmailUser) {
-                list.grantPermission(new EmailAddressGrantee(userAndRole.getUser().getIdentifier()),
-                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
-            }
-            else if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                list.grantPermission(new GroupGrantee(userAndRole.getUser().getIdentifier()),
-                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
-            }
-            else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
-                list.grantPermission(new CanonicalGrantee(userAndRole.getUser().getIdentifier()),
-                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
-            }
-            else {
-                log.warn("Unsupported user:" + userAndRole.getUser());
-            }
-        }
-        if(log.isDebugEnabled()) {
-            try {
-                log.debug(list.toXml());
-            }
-            catch(ServiceException e) {
-                log.error(e.getMessage());
-            }
-        }
-        return list;
-    }
-
     @Override
     public void delete(final LoginController prompt) throws BackgroundException {
         try {
@@ -1145,7 +941,6 @@ public class S3Path extends CloudPath {
     @Override
     public void rename(final Path renamed) throws BackgroundException {
         try {
-
             session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
@@ -1156,10 +951,8 @@ public class S3Path extends CloudPath {
                 // Keep encryption setting
                 destination.setServerSideEncryptionAlgorithm(this.attributes().getEncryption());
                 // Apply non standard ACL
-                if(Acl.EMPTY.equals(this.attributes().getAcl())) {
-                    this.readAcl();
-                }
-                destination.setAcl(this.convert(this.attributes().getAcl()));
+                final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+                destination.setAcl(acl.convert(acl.read(this)));
                 // Moving the object retaining the metadata of the original.
                 session.getClient().moveObject(this.getContainer().getName(), this.getKey(), renamed.getContainer().getName(),
                         destination, false);
@@ -1195,10 +988,8 @@ public class S3Path extends CloudPath {
                     // Keep encryption setting
                     destination.setServerSideEncryptionAlgorithm(this.attributes().getEncryption());
                     // Apply non standard ACL
-                    if(Acl.EMPTY.equals(this.attributes().getAcl())) {
-                        this.readAcl();
-                    }
-                    destination.setAcl(this.convert(this.attributes().getAcl()));
+                    final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+                    destination.setAcl(acl.convert(acl.read(this)));
                     // Copying object applying the metadata of the original
                     session.getClient().copyObject(this.getContainer().getName(), this.getKey(),
                             copy.getContainer().getName(), destination, false);

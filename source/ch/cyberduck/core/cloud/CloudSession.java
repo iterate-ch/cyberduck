@@ -40,21 +40,6 @@ public abstract class CloudSession<C> extends HttpSession<C> {
         super(h);
     }
 
-    /**
-     * Use ACL support.
-     *
-     * @return Always returning false because permissions should be set using ACLs
-     */
-    @Override
-    public boolean isUnixPermissionsSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isWriteTimestampSupported() {
-        return false;
-    }
-
     public boolean isLoggingSupported() {
         return false;
     }

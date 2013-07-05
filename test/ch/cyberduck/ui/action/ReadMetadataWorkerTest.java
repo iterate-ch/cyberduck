@@ -1,8 +1,12 @@
 package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Metadata;
 
 import org.junit.Test;
 
@@ -15,14 +19,14 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ReadMetadataWorkerTest extends AbstractTestCase {
 
     @Test
     public void testEmpty() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        ReadMetadataWorker worker = new ReadMetadataWorker(files) {
+        ReadMetadataWorker worker = new ReadMetadataWorker(new NullSession(new Host("h")), files) {
             @Override
             public void cleanup(final Map<String, String> result) {
                 fail();
@@ -34,25 +38,38 @@ public class ReadMetadataWorkerTest extends AbstractTestCase {
     @Test
     public void testDifferent() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        files.add(new NullPath("a", Path.FILE_TYPE) {
+        files.add(new NullPath("a", Path.FILE_TYPE));
+        files.add(new NullPath("b", Path.FILE_TYPE));
+        files.add(new NullPath("c", Path.FILE_TYPE));
+        final NullSession session = new NullSession(new Host("h")) {
             @Override
-            public void readMetadata() {
-                this.attributes().setMetadata(Collections.singletonMap("key1", "value1"));
+            public <T> T getFeature(final Class<T> type) {
+                return (T) new Metadata() {
+                    @Override
+                    public Map<String, String> get(final Path file) throws BackgroundException {
+                        if(file.getName().equals("a")) {
+                            return Collections.singletonMap("key1", "value1");
+                        }
+                        else if(file.getName().equals("b")) {
+                            return Collections.singletonMap("key2", "value2");
+                        }
+                        else if(file.getName().equals("c")) {
+                            return Collections.singletonMap("key2", "value2");
+                        }
+                        else {
+                            fail();
+                        }
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public void write(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
-        });
-        files.add(new NullPath("b", Path.FILE_TYPE) {
-            @Override
-            public void readMetadata() {
-                this.attributes().setMetadata(Collections.singletonMap("key2", "value2"));
-            }
-        });
-        files.add(new NullPath("c", Path.FILE_TYPE) {
-            @Override
-            public void readMetadata() {
-                this.attributes().setMetadata(Collections.singletonMap("key2", "value2"));
-            }
-        });
-        ReadMetadataWorker worker = new ReadMetadataWorker(files) {
+        };
+        ReadMetadataWorker worker = new ReadMetadataWorker(session, files) {
             @Override
             public void cleanup(final Map<String, String> result) {
                 fail();
@@ -66,35 +83,46 @@ public class ReadMetadataWorkerTest extends AbstractTestCase {
     @Test
     public void testRun() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        files.add(new NullPath("a", Path.FILE_TYPE) {
+        files.add(new NullPath("a", Path.FILE_TYPE));
+        files.add(new NullPath("b", Path.FILE_TYPE));
+        files.add(new NullPath("c", Path.FILE_TYPE));
+        final NullSession session = new NullSession(new Host("h")) {
             @Override
-            public void readMetadata() {
-                final HashMap<String, String> map = new HashMap<String, String>();
-                map.put("key1", "v1");
-                map.put("key2", "v");
-                map.put("key3", "v");
-                this.attributes().setMetadata(map);
+            public <T> T getFeature(final Class<T> type) {
+                return (T) new Metadata() {
+                    @Override
+                    public Map<String, String> get(final Path file) throws BackgroundException {
+                        final HashMap<String, String> map = new HashMap<String, String>();
+                        if(file.getName().equals("a")) {
+                            map.put("key1", "v1");
+                            map.put("key2", "v");
+                            map.put("key3", "v");
+                            return map;
+                        }
+                        else if(file.getName().equals("b")) {
+                            map.put("key2", "v");
+                            map.put("key3", "v");
+                            return map;
+                        }
+                        else if(file.getName().equals("c")) {
+                            map.put("key2", "v2");
+                            map.put("key3", "v");
+                            return map;
+                        }
+                        else {
+                            fail();
+                        }
+                        return map;
+                    }
+
+                    @Override
+                    public void write(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
-        });
-        files.add(new NullPath("b", Path.FILE_TYPE) {
-            @Override
-            public void readMetadata() {
-                final HashMap<String, String> map = new HashMap<String, String>();
-                map.put("key2", "v");
-                map.put("key3", "v");
-                this.attributes().setMetadata(map);
-            }
-        });
-        files.add(new NullPath("c", Path.FILE_TYPE) {
-            @Override
-            public void readMetadata() {
-                final HashMap<String, String> map = new HashMap<String, String>();
-                map.put("key2", "v2");
-                map.put("key3", "v");
-                this.attributes().setMetadata(map);
-            }
-        });
-        ReadMetadataWorker worker = new ReadMetadataWorker(files) {
+        };
+        ReadMetadataWorker worker = new ReadMetadataWorker(session, files) {
             @Override
             public void cleanup(final Map<String, String> result) {
                 fail();

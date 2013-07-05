@@ -29,6 +29,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
@@ -383,8 +385,13 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public boolean isUnixPermissionsSupported() {
-        return true;
+    public <T> T getFeature(final Class<T> type) {
+        if(type == UnixPermission.class) {
+            return (T) new FTPUnixPermissionFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new FTPTimestampFeature(this);
+        }
+        return null;
     }
-
 }

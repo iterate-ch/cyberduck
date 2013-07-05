@@ -3,7 +3,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.LoginFailureException;import ch.cyberduck.core.features.UnixPermission;import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
 
@@ -111,5 +111,14 @@ public class FTPSessionTest extends AbstractTestCase {
         });
         assertEquals(Protocol.FTP_TLS, host.getProtocol());
         assertTrue(warned.get());
+    }
+
+    @Test
+    public void testUnixPermissionFeature() {
+        final Host host = new Host(Protocol.FTP, "test.cyberduck.ch", new Credentials(
+                "u", "p"
+        ));
+        final Session session = new FTPSession(host);
+        assertNotNull(session.getFeature(UnixPermission.class));
     }
 }

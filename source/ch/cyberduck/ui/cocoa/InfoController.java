@@ -26,6 +26,9 @@ import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AccessControlList;
+import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
@@ -933,7 +936,7 @@ public class InfoController extends ToolbarWindowController {
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
             controller.background(new WorkerBackgroundAction<Acl>(controller,
-                    new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
+                    new WriteAclWorker(controller.getSession(), files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
                         @Override
                         public void cleanup(Acl permission) {
                             toggleAclSettings(true);
@@ -1255,7 +1258,7 @@ public class InfoController extends ToolbarWindowController {
                 update.put(header.getName(), header.getValue());
             }
             controller.background(new WorkerBackgroundAction<Map<String, String>>(controller,
-                    new WriteMetadataWorker(files, update) {
+                    new WriteMetadataWorker(controller.getSession(), files, update) {
                         @Override
                         public void cleanup(Map<String, String> metadata) {
                             try {
@@ -1461,14 +1464,14 @@ public class InfoController extends ToolbarWindowController {
                 // Anonymous never has the right to updated permissions
                 return false;
             }
-            return session.isUnixPermissionsSupported();
+            return session.getFeature(UnixPermission.class) != null;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_ACL)) {
             if(anonymous) {
                 // Anonymous never has the right to updated permissions
                 return false;
             }
-            return session.isAclSupported();
+            return session.getFeature(AccessControlList.class) != null;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             if(anonymous) {
@@ -1488,7 +1491,7 @@ public class InfoController extends ToolbarWindowController {
                 return false;
             }
             // Not enabled if not a cloud session
-            return session.isMetadataSupported();
+            return session.getFeature(Metadata.class) != null;
         }
         return true;
     }
@@ -1613,10 +1616,10 @@ public class InfoController extends ToolbarWindowController {
     protected List<NSView> getPanels() {
         List<NSView> views = new ArrayList<NSView>();
         views.add(panelGeneral);
-        if(controller.getSession().isUnixPermissionsSupported()) {
+        if(controller.getSession().getFeature(UnixPermission.class) != null) {
             views.add(panelPermissions);
         }
-        if(controller.getSession().isAclSupported()) {
+        if(controller.getSession().getFeature(AccessControlList.class) != null) {
             views.add(panelAcl);
         }
         views.add(panelMetadata);
@@ -1629,10 +1632,10 @@ public class InfoController extends ToolbarWindowController {
     protected List<String> getPanelIdentifiers() {
         List<String> identifiers = new ArrayList<String>();
         identifiers.add(TOOLBAR_ITEM_GENERAL);
-        if(controller.getSession().isUnixPermissionsSupported()) {
+        if(controller.getSession().getFeature(UnixPermission.class) != null) {
             identifiers.add(TOOLBAR_ITEM_PERMISSIONS);
         }
-        if(controller.getSession().isAclSupported()) {
+        if(controller.getSession().getFeature(AccessControlList.class) != null) {
             identifiers.add(TOOLBAR_ITEM_ACL);
         }
         identifiers.add(TOOLBAR_ITEM_METADATA);
@@ -2149,7 +2152,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.isAclSupported();
+        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(AccessControlList.class) != null;
         aclTable.setEnabled(stop && enable);
         aclAddButton.setEnabled(stop && enable);
         boolean selection = aclTable.selectedRowIndexes().count().intValue() > 0;
@@ -2173,7 +2176,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.isMetadataSupported();
+        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(Metadata.class) != null;
         metadataTable.setEnabled(stop && enable);
         metadataAddButton.setEnabled(stop && enable);
         boolean selection = metadataTable.selectedRowIndexes().count().intValue() > 0;
@@ -2193,7 +2196,7 @@ public class InfoController extends ToolbarWindowController {
     private void initMetadata() {
         this.setMetadata(Collections.<Header>emptyList());
         if(this.toggleMetadataSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(files) {
+            controller.background(new WorkerBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(controller.getSession(), files) {
                 @Override
                 public void cleanup(Map<String, String> updated) {
                     try {
@@ -2239,7 +2242,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
-            controller.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new ReadAclWorker(files) {
+            controller.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new ReadAclWorker(controller.getSession(), files) {
                 @Override
                 public void cleanup(List<Acl.UserAndRole> updated) {
                     try {
@@ -2374,7 +2377,7 @@ public class InfoController extends ToolbarWindowController {
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
             controller.background(new WorkerBackgroundAction<Permission>(controller,
-                    new WritePermissionWorker(files, permission, recursive) {
+                    new WritePermissionWorker(controller.getSession(), files, permission, recursive) {
                         @Override
                         public void cleanup(Permission permission) {
                             try {
@@ -2399,7 +2402,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.isUnixPermissionsSupported();
+        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(UnixPermission.class) != null;
         recursiveButton.setEnabled(stop && enable);
         for(Path next : files) {
             if(next.attributes().isFile()) {
