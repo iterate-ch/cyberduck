@@ -1350,4 +1350,5 @@ video/x-ms-wmx					wmx
 video/x-ms-wvx					wvx
 video/x-msvideo					avi
 video/x-sgi-movie				movie
+video/mp2t				ts
 x-conference/x-cooltalk				ice
