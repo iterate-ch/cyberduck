@@ -84,7 +84,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
         final PathAttributes attributes = file.attributes();
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-            if(file.getSession().isUnixPermissionsSupported()) {
+            if(session.isUnixPermissionsSupported()) {
                 if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                     if(attributes.isFile()) {
                         attributes.setPermission(new Permission(
@@ -100,7 +100,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     attributes.setPermission(file.getLocal().attributes().getPermission());
                 }
             }
-            if(file.getSession().isAclSupported()) {
+            if(session.isAclSupported()) {
                 // ACL set on object creation with default from Preferences
             }
         }
@@ -130,7 +130,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            if(file.getSession().isUnixPermissionsSupported()) {
+            if(session.isUnixPermissionsSupported()) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     Permission permission = file.attributes().getPermission();
                     if(!Permission.EMPTY.equals(permission)) {
@@ -138,7 +138,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     }
                 }
             }
-            if(file.getSession().isWriteTimestampSupported()) {
+            if(session.isWriteTimestampSupported()) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     // Read timestamps from local file
                     final Attributes attributes = file.getLocal().attributes();

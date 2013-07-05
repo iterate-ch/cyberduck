@@ -190,7 +190,7 @@ public class UploadTransfer extends Transfer {
         else if(file.attributes().isFile()) {
             String original = file.getName();
             final boolean temporary = Preferences.instance().getBoolean("queue.upload.file.temporary")
-                    && file.getSession().isRenameSupported(file);
+                    && session.isRenameSupported(file);
             if(temporary) {
                 file.setPath(file.getParent(), MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
                         file.getName(), UUID.randomUUID().toString()));
@@ -204,7 +204,7 @@ public class UploadTransfer extends Transfer {
             }, status);
             if(status.isComplete()) {
                 if(temporary) {
-                    file.rename(PathFactory.createPath(file.getSession(), file.getParent(),
+                    file.rename(PathFactory.createPath(session, file.getParent(),
                             original, file.attributes().getType()));
                     file.setPath(file.getParent(), original);
                 }

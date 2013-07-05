@@ -39,7 +39,7 @@ public class ResumeFilter extends AbstractUploadFilter {
     @Override
     public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
         final TransferStatus status = super.prepare(session, file);
-        if(file.getSession().isUploadResumable()) {
+        if(session.isUploadResumable()) {
             final PathAttributes attributes = file.attributes();
             if(attributes.isFile()) {
                 if(this.exists(session, file)) {

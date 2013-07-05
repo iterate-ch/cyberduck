@@ -42,7 +42,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
 
     @Override
     public boolean accept(final Session session, final Path file) throws BackgroundException {
-        return file.getSession().isRenameSupported(file);
+        return session.isRenameSupported(file);
     }
 
     /**
@@ -57,7 +57,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
                         FilenameUtils.getBaseName(file.getName()),
                         UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-                renamed = PathFactory.createPath(file.getSession(), renamed.getParent(),
+                renamed = PathFactory.createPath(session, renamed.getParent(),
                         proposal, file.attributes().getType());
             }
             if(!renamed.equals(file)) {
