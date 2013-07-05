@@ -48,9 +48,7 @@ import ch.cyberduck.ui.growl.GrowlNative;
 import ch.cyberduck.ui.growl.NotificationCenter;
 import ch.cyberduck.ui.resources.NSImageIconCache;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * @version $Id$
@@ -139,10 +137,6 @@ public final class MainApplication {
                 }
                 ProtocolFactory.register();
             }
-
-            DOMConfigurator.configure(MainApplication.class.getClassLoader().getResource(Preferences.instance().getProperty("logging.config")));
-            final Logger root = Logger.getRootLogger();
-            root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
             if(log.isInfoEnabled()) {
                 log.info("Encoding " + System.getProperty("file.encoding"));

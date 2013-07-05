@@ -31,13 +31,15 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class UserDefaultsPortablePreferences extends UserDefaultsPreferences {
-    private static Logger log = Logger.getLogger(UserDefaultsPortablePreferences.class);
+    private static final Logger log = Logger.getLogger(UserDefaultsPortablePreferences.class);
 
     private NSMutableDictionary dict;
 
     @Override
     public void setProperty(String property, String value) {
-        log.info("setProperty:" + property + "," + value);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Set property %s for key %s", value, property));
+        }
         if(StringUtils.isNotEmpty(value)) {
             this.dict.setObjectForKey(value, property);
         }
@@ -57,7 +59,7 @@ public class UserDefaultsPortablePreferences extends UserDefaultsPreferences {
         final Local f = LocalFactory.createLocal(
                 NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString());
         if(f.exists()) {
-            log.info("Found preferences file: " + f.toString());
+            log.info(String.format("Found preferences file %s", f));
             this.dict = NSMutableDictionary.dictionary();
             this.dict.setDictionary(NSDictionary.dictionaryWithContentsOfFile(f.getAbsolute()));
         }

@@ -23,7 +23,9 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.security.Security;
@@ -44,7 +46,6 @@ import java.util.logging.LogManager;
  * @version $Id$
  */
 public abstract class Preferences {
-    private static final Logger log = Logger.getLogger(Preferences.class);
 
     private static Preferences current = null;
 
@@ -164,11 +165,6 @@ public abstract class Preferences {
      */
     protected void setDefaults() {
         defaults.put("tmp.dir", System.getProperty("java.io.tmpdir"));
-
-        /**
-         * The logging level (debug, info, warn, error)
-         */
-        defaults.put("logging.config", "log4j-cocoa.xml");
         defaults.put("logging", "error");
 
         java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
@@ -178,6 +174,11 @@ public abstract class Preferences {
         }
         // call only once during initialization time of your application
         SLF4JBridgeHandler.install();
+
+        DOMConfigurator.configure(Preferences.class.getClassLoader().getResource(
+                defaults.get("logging.config")));
+        final Logger root = Logger.getRootLogger();
+        root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
         /**
          * How many times the application was launched
@@ -825,7 +826,7 @@ public abstract class Preferences {
     public String getDefault(String property) {
         String value = defaults.get(property);
         if(null == value) {
-            log.warn(String.format("No property with key '%s'", property));
+            Logger.getLogger(Preferences.class).warn(String.format("No property with key '%s'", property));
         }
         return value;
     }
