@@ -48,7 +48,7 @@ import java.util.List;
  * @see ch.cyberduck.ui.cocoa.foundation.NSUserDefaults
  */
 public class UserDefaultsPreferences extends Preferences {
-    private static Logger log = Logger.getLogger(Preferences.class);
+    private static final Logger log = Logger.getLogger(Preferences.class);
 
     public static void register() {
         PreferencesFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
@@ -80,7 +80,7 @@ public class UserDefaultsPreferences extends Preferences {
             // Missing in default. Lookup in Info.plist
             NSObject plist = NSBundle.mainBundle().infoDictionary().objectForKey(property);
             if(null == plist) {
-                log.warn("No default value for property:" + property);
+                log.warn(String.format("No default value for property %s", property));
                 return null;
             }
             return plist.toString();
@@ -102,7 +102,7 @@ public class UserDefaultsPreferences extends Preferences {
     @Override
     public void setProperty(final String property, final String value) {
         if(log.isInfoEnabled()) {
-            log.info("setProperty:" + property + "," + value);
+            log.info(String.format("Set property %s for key %s", value, property));
         }
         if(StringUtils.isNotEmpty(value)) {
             // Sets the value of the default identified by defaultName in the standard application domain.
@@ -125,7 +125,9 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public void deleteProperty(final String property) {
-        log.debug("deleteProperty:" + property);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Delete property %s", property));
+        }
         store.removeObjectForKey(property);
     }
 
@@ -164,10 +166,13 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     protected void setDefaults() {
-        super.setDefaults();
-
+        /**
+         * The logging level (debug, info, warn, error)
+         */
+        defaults.put("logging.config", "log4j-cocoa.xml");
         defaults.put("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
 
+        super.setDefaults();
         final NSBundle bundle = NSBundle.mainBundle();
         if(null != bundle) {
             final NSObject bundleName = bundle.objectForInfoDictionaryKey("CFBundleName");

@@ -274,10 +274,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 Environment.SpecialFolder.LocalApplicationData), "CloudBerry Explorer for Azure Blob Storage",
                                                                                    "settings.list"));
 
-            base.setDefaults();
-
             defaults.put("logging.config", "log4j-windows.xml");
-            defaults.put("logging", "error");            
+
+            base.setDefaults();
 
             //disable reminder for procotol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());
