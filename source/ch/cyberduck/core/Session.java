@@ -142,18 +142,12 @@ public abstract class Session<C> implements TranscriptListener {
         this.fireConnectionWillCloseEvent();
         this.logout();
         this.disconnect();
-        client = null;
     }
 
-    /**
-     * Interrupt any running operation asynchroneously by closing the underlying socket.
-     * Close the underlying socket regardless of its state; will throw a socket exception
-     * on the thread owning the socket
-     */
     public void interrupt() throws BackgroundException {
         this.fireConnectionWillCloseEvent();
         this.disconnect();
-        client = null;
+        this.fireConnectionDidCloseEvent();
     }
 
     /**
@@ -162,8 +156,7 @@ public abstract class Session<C> implements TranscriptListener {
     protected abstract void logout() throws BackgroundException;
 
     protected void disconnect() {
-        client = null;
-        this.fireConnectionDidCloseEvent();
+        //
     }
 
     /**
