@@ -89,9 +89,13 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(pathObj != null) {
             this.setPath(session, pathObj);
         }
-        String localObj = dict.stringForKey("Local");
+        final String localObj = dict.stringForKey("Local");
         if(localObj != null) {
             this.local = LocalFactory.createLocal(localObj);
+        }
+        final Object symlinkObj = dict.objectForKey("Symbolic Link");
+        if(symlinkObj != null) {
+            this.symlink = PathFactory.createPath(session, symlinkObj);
         }
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
@@ -112,6 +116,9 @@ public abstract class Path extends AbstractPath implements Serializable {
         dict.setStringForKey(this.getAbsolute(), "Remote");
         if(local != null) {
             dict.setStringForKey(local.getAbsolute(), "Local");
+        }
+        if(symlink != null) {
+            dict.setObjectForKey(symlink, "Symbolic Link");
         }
         dict.setObjectForKey(attributes, "Attributes");
         return dict.getSerialized();
