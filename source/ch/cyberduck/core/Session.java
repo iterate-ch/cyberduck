@@ -111,15 +111,17 @@ public abstract class Session<C> implements TranscriptListener {
         return client;
     }
 
-    public C open() throws BackgroundException {
-        this.fireConnectionWillOpenEvent();
-        final C client = this.open(new DefaultHostKeyController());
-        this.fireConnectionDidOpenEvent();
-        return client;
-    }
-
+    /**
+     * Connect to host
+     *
+     * @param key Host identity verification callback
+     * @return Client
+     * @throws BackgroundException
+     */
     public C open(final HostKeyController key) throws BackgroundException {
+        this.fireConnectionWillOpenEvent();
         client = this.connect(key);
+        this.fireConnectionDidOpenEvent();
         return client;
     }
 
