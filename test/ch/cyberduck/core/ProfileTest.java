@@ -34,6 +34,9 @@ public class ProfileTest extends AbstractTestCase {
         assertEquals(Protocol.SWIFT, profile.getProtocol());
         assertNotSame(Protocol.CLOUDFILES.getDefaultHostname(), profile.getDefaultHostname());
         assertEquals(Scheme.https, profile.getScheme());
+        assertNotNull(profile.disk());
+        assertEquals(profile.disk(), profile.disk());
+        assertFalse(profile.disk().equals(Protocol.SWIFT.disk()));
         assertNotNull(profile.getProvider());
     }
 }
