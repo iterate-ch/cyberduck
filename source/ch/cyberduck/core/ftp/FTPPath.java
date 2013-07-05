@@ -18,6 +18,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.LoginController;
@@ -113,7 +114,7 @@ public class FTPPath extends Path {
             // Fallback handling
             if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
                 session.interrupt();
-                session.open();
+                session.open(new DefaultHostKeyController());
                 session.login(new DisabledPasswordStore(), new DisabledLoginController());
                 try {
                     return this.fallback(action);
@@ -189,7 +190,7 @@ public class FTPPath extends Path {
             catch(IOException e) {
                 log.warn("Command STAT failed with I/O error:" + e.getMessage());
                 session.interrupt();
-                session.open();
+                session.open(new DefaultHostKeyController());
                 session.login(new DisabledPasswordStore(), new DisabledLoginController());
             }
             if(!success || children.isEmpty()) {
