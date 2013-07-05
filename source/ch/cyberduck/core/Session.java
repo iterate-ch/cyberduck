@@ -558,9 +558,12 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     public DistributionConfiguration cdn(final LoginController prompt) {
-        return new CustomOriginCloudFrontDistributionConfiguration(new S3Session(
-                // Configure with the same host as S3 to get the same credentials from the keychain.
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCdnCredentials())),
+        // Configure with the same host as S3 to get the same credentials from the keychain.
+        final S3Session session = new S3Session(
+                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCdnCredentials()));
+        session.addTranscriptListener(this);
+        return new CustomOriginCloudFrontDistributionConfiguration(
+                session,
                 // Use login context of current session
                 prompt);
     }
