@@ -2,6 +2,7 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -25,7 +26,7 @@ public class GSSessionTest extends AbstractTestCase {
                 properties.getProperty("googlestorage.key"), properties.getProperty("googlestorage.secret")
         ));
         final GSSession session = new GSSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController() {
@@ -43,7 +44,7 @@ public class GSSessionTest extends AbstractTestCase {
                 "a", "s"
         ));
         final GSSession session = new GSSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         try {

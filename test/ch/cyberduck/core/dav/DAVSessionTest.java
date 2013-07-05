@@ -22,7 +22,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
@@ -43,7 +43,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.open(new DefaultHostKeyController());
         try {
             session.login(new DisabledPasswordStore(), new DisabledLoginController());
         }
@@ -62,7 +62,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
     }
@@ -75,7 +75,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/auth-basic");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
     }
@@ -88,7 +88,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/auth-digest");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
     }
@@ -101,7 +101,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-perm");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
@@ -113,7 +113,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-tmp");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
@@ -125,7 +125,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-other");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
     }
@@ -149,7 +149,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
     }
@@ -161,7 +161,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/anon");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.open(new DefaultHostKeyController());
         assertNotNull(session.home().list());
     }
 
@@ -172,7 +172,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open();
+        session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
@@ -204,7 +204,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 };
             }
         });
-        session.open();
+        session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 

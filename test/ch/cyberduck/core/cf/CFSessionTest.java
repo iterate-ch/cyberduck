@@ -1,14 +1,6 @@
 package ch.cyberduck.core.cf;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.ProfileReaderFactory;
@@ -28,7 +20,7 @@ public class CFSessionTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final CFSession session = new CFSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
@@ -52,7 +44,7 @@ public class CFSessionTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final CFSession session = new CFSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
@@ -70,7 +62,7 @@ public class CFSessionTest extends AbstractTestCase {
                 "a", "s"
         ));
         final CFSession session = new CFSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         try {
@@ -88,7 +80,7 @@ public class CFSessionTest extends AbstractTestCase {
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final CFSession session = new CFSession(host);
-        assertNotNull(session.open());
+        assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());

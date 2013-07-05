@@ -19,7 +19,7 @@ public class NullSession extends FTPSession {
     }
 
     @Override
-    public FTPClient open() throws BackgroundException {
+    public FTPClient open(HostKeyController c) throws BackgroundException {
         return null;
     }
 
