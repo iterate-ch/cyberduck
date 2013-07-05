@@ -29,7 +29,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPListResponseReader implements FTPResponseReader {
     private static final Logger log = Logger.getLogger(FTPListResponseReader.class);
@@ -74,6 +74,7 @@ public class FTPListResponseReader implements FTPResponseReader {
                     Path.getName(name), f.getType() == FTPFile.DIRECTORY_TYPE ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
+                    parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                     // Symbolic link target may be an absolute or relative path
                     if(f.getLink().startsWith(String.valueOf(Path.DELIMITER))) {
                         parsed.setSymlinkTarget(new FTPPath(session, f.getLink(), parsed.attributes().getType()));
@@ -81,7 +82,6 @@ public class FTPListResponseReader implements FTPResponseReader {
                     else {
                         parsed.setSymlinkTarget(new FTPPath(session, parent, f.getLink(), parsed.attributes().getType()));
                     }
-                    parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                     break;
             }
             if(parsed.attributes().isFile()) {
