@@ -117,24 +117,26 @@ public class FTPSession extends SSLSession<FTPClient> {
     protected void logout() throws BackgroundException {
         try {
             client.logout();
-            client.removeProtocolCommandListener(listener);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
+        }
+        finally {
+            client.removeProtocolCommandListener(listener);
         }
     }
 
     @Override
     protected void disconnect() {
         try {
-            if(client != null) {
-                client.disconnect();
-                client.removeProtocolCommandListener(listener);
-            }
+            client.disconnect();
             super.disconnect();
         }
         catch(IOException e) {
             log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
+        }
+        finally {
+            client.removeProtocolCommandListener(listener);
         }
     }
 
@@ -200,7 +202,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         final CustomTrustSSLProtocolSocketFactory f
                 = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
 
-        FTPClient client = new FTPClient(f, f.getSSLContext());
+        final FTPClient client = new FTPClient(f, f.getSSLContext());
         try {
             this.configure(client);
             client.connect(host.getHostname(true), host.getPort());
@@ -218,7 +220,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 }
             }
             catch(IOException e) {
-                log.warn("SYST command failed:" + e.getMessage());
+                log.warn(String.format("SYST command failed %s", e.getMessage()));
             }
             parser = new FTPParserSelector().getParser(system, zone);
             return client;
@@ -228,9 +230,8 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
     }
 
-
     protected FTPConnectMode getConnectMode() {
-        if(null == this.host.getFTPConnectMode()) {
+        if(null == host.getFTPConnectMode()) {
             if(ProxyFactory.get().usePassiveFTP()) {
                 return FTPConnectMode.PASV;
             }
@@ -279,7 +280,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 if("UTF-8".equals(this.getEncoding())) {
                     if(client.isFeatureSupported("UTF8")) {
                         if(!FTPReply.isPositiveCompletion(client.sendCommand("OPTS UTF8 ON"))) {
-                            log.warn("Failed to negotiate UTF-8 charset:" + client.getReplyString());
+                            log.warn(String.format("Failed to negotiate UTF-8 charset %s", client.getReplyString()));
                         }
                     }
                 }
