@@ -48,6 +48,8 @@ public final class Profile extends Protocol implements Serializable {
      */
     private Protocol parent;
 
+    private Local disk;
+
     public <T> Profile(final T serialized) {
         dict = DeserializerFactory.createDeserializer(serialized);
         final String protocol = this.getValue("Protocol");
@@ -58,6 +60,7 @@ public final class Profile extends Protocol implements Serializable {
         else {
             parent = ProtocolFactory.forName(protocol);
         }
+        disk = this.write(this.getValue("Disk"));
     }
 
     @Override
@@ -177,12 +180,11 @@ public final class Profile extends Protocol implements Serializable {
 
     @Override
     public String disk() {
-        final String temp = this.write(this.getValue("Disk"));
-        if(StringUtils.isBlank(temp)) {
+        if(null == disk) {
             return parent.disk();
         }
         // Temporary file
-        return temp;
+        return disk.getAbsolute();
     }
 
     /**
@@ -191,7 +193,7 @@ public final class Profile extends Protocol implements Serializable {
      * @param icon Base64 encoded image information
      * @return Path to file
      */
-    private String write(final String icon) {
+    private Local write(final String icon) {
         if(StringUtils.isBlank(icon)) {
             return null;
         }
@@ -207,7 +209,7 @@ public final class Profile extends Protocol implements Serializable {
             finally {
                 IOUtils.closeQuietly(out);
             }
-            return file.getAbsolute();
+            return file;
         }
         catch(IOException e) {
             log.error("Error writing temporary file", e);
