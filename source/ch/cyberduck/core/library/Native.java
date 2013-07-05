@@ -26,7 +26,7 @@ import java.io.File;
  * @version $Id$
  */
 public final class Native {
-    private static Logger log = Logger.getLogger(Native.class);
+    private static final Logger log = Logger.getLogger(Native.class);
 
     private Native() {
         //
@@ -70,9 +70,6 @@ public final class Native {
      */
     protected static String getPath(final String name) {
         final String lib = String.format("%s/%s", System.getProperty("java.library.path"), getName(name));
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Locating library %s at %s", name, lib));
-        }
         return new File(lib).getAbsolutePath();
     }
 
