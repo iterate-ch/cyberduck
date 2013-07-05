@@ -39,9 +39,11 @@ public class ResumeFilter extends AbstractDownloadFilter {
                 return false;
             }
         }
-        if(file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
-            // No need to resume completed transfers
-            return false;
+        if(file.getLocal().exists()) {
+            if(file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
+                // No need to resume completed transfers
+                return false;
+            }
         }
         return super.accept(session, file);
     }
