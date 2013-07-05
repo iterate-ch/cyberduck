@@ -117,6 +117,7 @@ public abstract class AbstractController implements Controller {
                         log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
                     }
                     finally {
+                        actions.remove(action);
                         // Increase the run counter
                         try {
                             action.finish();

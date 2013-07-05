@@ -21,7 +21,7 @@ package ch.cyberduck.core.threading;
 /**
  * @version $Id$
  */
-public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundAction> {
+public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundAction> implements BackgroundActionListener {
     private static final long serialVersionUID = 1721336643608575003L;
 
     private static BackgroundActionRegistry global = null;
@@ -46,6 +46,21 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
         return current;
     }
 
+    @Override
+    public void start(final BackgroundAction action) {
+        current = action;
+    }
+
+    @Override
+    public void stop(final BackgroundAction action) {
+        current = null;
+    }
+
+    @Override
+    public void cancel(final BackgroundAction action) {
+        current = null;
+    }
+
     /**
      * Actions added are automatically removed when canceled or stopped.
      *
@@ -54,22 +69,16 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
      */
     @Override
     public boolean add(final BackgroundAction action) {
-        action.addListener(new BackgroundActionListener() {
-            public void start(final BackgroundAction action) {
-                current = action;
-            }
-
-            public void cancel(final BackgroundAction action) {
-                remove(action);
-            }
-
-            public void stop(final BackgroundAction action) {
-                current = null;
-                action.removeListener(this);
-                remove(action);
-            }
-        });
+        action.addListener(this);
         return super.add(action);
+    }
+
+    @Override
+    public boolean remove(final Object action) {
+        if(super.remove(action)) {
+            ((BackgroundAction) action).removeListener(this);
+        }
+        return false;
     }
 
     public BackgroundActionRegistry() {
