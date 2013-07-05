@@ -20,6 +20,15 @@ public class BackgroundActionPauser {
 
     private RepeatableBackgroundAction action;
 
+    /**
+     * The delay to wait before execution of the action in seconds
+     */
+    private int delay
+            = Preferences.instance().getInteger("connection.retry.delay");
+
+    private final String pattern
+            = Locale.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status");
+
     public BackgroundActionPauser(final RepeatableBackgroundAction action) {
         this.action = action;
     }
@@ -27,14 +36,8 @@ public class BackgroundActionPauser {
     public void await(final ProgressListener listener) {
         final Timer wakeup = new Timer();
         final CyclicBarrier wait = new CyclicBarrier(2);
+
         wakeup.scheduleAtFixedRate(new TimerTask() {
-            /**
-             * The delay to wait before execution of the action in seconds
-             */
-            private int delay = (int) Preferences.instance().getDouble("connection.retry.delay");
-
-            private final String pattern = Locale.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status");
-
             @Override
             public void run() {
                 if(0 == delay || action.isCanceled()) {
