@@ -227,7 +227,8 @@ application/vnd.anser-web-certificate-issue-initiation	cii
 application/vnd.anser-web-funds-transfer-initiation	fti
 application/vnd.antix.game-component		atx
 application/vnd.apple.installer+xml		mpkg
-application/vnd.apple.mpegurl			m3u8
+# application/vnd.apple.mpegurl			m3u8
+application/x-mpegurl			m3u8
 # application/vnd.arastra.swi
 application/vnd.aristanetworks.swi		swi
 application/vnd.audiograph			aep
