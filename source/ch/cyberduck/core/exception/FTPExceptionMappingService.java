@@ -19,12 +19,13 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.ftp.FTPException;
 
+import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPExceptionMappingService extends AbstractIOExceptionMappingService<IOException> {
 
@@ -32,6 +33,9 @@ public class FTPExceptionMappingService extends AbstractIOExceptionMappingServic
     public BackgroundException map(final IOException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
+        if(e instanceof FTPConnectionClosedException) {
+            return new ConnectionCanceledException(e);
+        }
         if(e instanceof FTPException) {
             if(((FTPException) e).getCode() == FTPReply.INSUFFICIENT_STORAGE) {
                 return new QuotaException(buffer.toString(), e);
@@ -46,6 +50,6 @@ public class FTPExceptionMappingService extends AbstractIOExceptionMappingServic
                 return new NotfoundException(buffer.toString(), e);
             }
         }
-        return this.wrap(e, buffer);
+        return new DefaultIOExceptionMappingService().map(e);
     }
 }
