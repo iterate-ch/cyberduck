@@ -42,7 +42,6 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(session.cache().lookup(new S3Path(session, "/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertTrue(session.isConnected());
         session.close();
-        assertNull(session.getClient());
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());
     }
@@ -60,7 +59,6 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(session.mount());
         assertTrue(session.isConnected());
         session.close();
-        assertNull(session.getClient());
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());
     }
@@ -79,7 +77,6 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(session.mount());
         assertTrue(session.isConnected());
         session.close();
-        assertNull(session.getClient());
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());
     }

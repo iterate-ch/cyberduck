@@ -32,7 +32,6 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();
-        assertNull(session.getClient());
         assertFalse(session.isConnected());
     }
 

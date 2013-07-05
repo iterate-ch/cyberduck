@@ -34,7 +34,6 @@ public class DAVSessionTest extends AbstractTestCase {
         assertNotNull(session.cache().lookup(new DAVPath(session, "/tags", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertTrue(session.isConnected());
         session.close();
-        assertNull(session.getClient());
         assertFalse(session.isConnected());
     }
 

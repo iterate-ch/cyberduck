@@ -33,7 +33,6 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         session.close();
         assertEquals(Session.State.closed, session.getState());
-        assertNull(session.getClient());
         assertFalse(session.isConnected());
     }
 
@@ -51,7 +50,6 @@ public class FTPSessionTest extends AbstractTestCase {
         assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();
-        assertNull(session.getClient());
         assertFalse(session.isConnected());
     }
 
