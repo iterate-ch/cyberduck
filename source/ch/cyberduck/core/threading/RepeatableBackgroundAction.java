@@ -39,7 +39,7 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean>
-        implements ProgressListener, TranscriptListener {
+        implements TranscriptListener {
     private static final Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
 
     private static final String lineSeparator
@@ -97,11 +97,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         return exception;
     }
 
-    @Override
-    public void message(final String message) {
-        progressListener.message(message);
-    }
-
     /**
      * Apppend to the transcript. Reset if maximum length has been reached.
      *
@@ -128,14 +123,16 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     @Override
     public void prepare() throws ConnectionCanceledException {
         super.prepare();
+        progressListener.message(this.getActivity());
         try {
             for(Session s : this.getSessions()) {
-                s.addProgressListener(this);
+                s.addProgressListener(progressListener);
                 s.addTranscriptListener(this);
             }
             // Clear the transcript and exceptions
             transcript = new StringBuilder();
-            final ConnectionCheckService c = new ConnectionCheckService(prompt, key, PasswordStoreFactory.get(), this);
+            final ConnectionCheckService c = new ConnectionCheckService(prompt, key, PasswordStoreFactory.get(),
+                    progressListener);
             for(Session session : this.getSessions()) {
                 c.check(session);
             }
@@ -228,8 +225,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 this.call();
             }
         }
+        progressListener.message(null);
         for(Session session : this.getSessions()) {
-            session.removeProgressListener(this);
+            session.removeProgressListener(progressListener);
             // It is important _not_ to do this in #cleanup as otherwise
             // the listeners are still registered when the next BackgroundAction
             // is already running

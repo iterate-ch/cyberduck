@@ -48,14 +48,12 @@ public abstract class BrowserBackgroundAction extends ControllerRepeatableBackgr
     @Override
     public void prepare() throws ConnectionCanceledException {
         controller.getProgress().startAnimation(null);
-        controller.message(this.getActivity());
         super.prepare();
     }
 
     @Override
     public void finish() throws BackgroundException {
         controller.getProgress().stopAnimation(null);
-        controller.message(null);
         super.finish();
     }
 }
