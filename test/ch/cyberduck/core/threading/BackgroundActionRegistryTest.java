@@ -50,6 +50,7 @@ public class BackgroundActionRegistryTest extends AbstractTestCase {
         assertTrue(r.add(action));
         action.finish();
         lock.await();
+        r.remove(action);
         assertFalse(r.contains(action));
         assertNull(r.getCurrent());
     }
@@ -64,6 +65,7 @@ public class BackgroundActionRegistryTest extends AbstractTestCase {
         };
         assertTrue(r.add(action));
         action.cancel();
+        r.remove(action);
         assertFalse(r.contains(action));
         assertNull(r.getCurrent());
     }
