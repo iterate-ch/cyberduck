@@ -26,7 +26,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
@@ -120,7 +120,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             client.removeProtocolCommandListener(listener);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new FTPExceptionMappingService().map(e);
         }
     }
 
@@ -144,7 +144,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             client.sendNoOp();
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new FTPExceptionMappingService().map(e);
         }
     }
 
@@ -191,7 +191,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     && client.isFeatureSupported("PROT");
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new FTPExceptionMappingService().map(e);
         }
     }
 
@@ -224,7 +224,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             return client;
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new FTPExceptionMappingService().map(e);
         }
     }
 
@@ -289,7 +289,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new FTPExceptionMappingService().map(e);
         }
     }
 
@@ -300,7 +300,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             directory = client.printWorkingDirectory();
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new FTPExceptionMappingService().map(e);
         }
         return new FTPPath(this, directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
@@ -318,7 +318,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             client.sendSiteCommand(command);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new FTPExceptionMappingService().map(e);
         }
     }
 
