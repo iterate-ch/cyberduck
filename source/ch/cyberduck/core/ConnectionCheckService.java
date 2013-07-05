@@ -87,33 +87,31 @@ public class ConnectionCheckService {
             // Close the underlying socket first
             session.interrupt();
         }
+        final Host bookmark = session.getHost();
+        listener.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
+                bookmark.getProtocol().getName(), bookmark.getHostname()));
+
+        session.fireConnectionWillOpenEvent();
+
+        // Configuring proxy if any
+        ProxyFactory.get().configure(bookmark);
+
+        final Resolver resolver = new Resolver(
+                HostnameConfiguratorFactory.get(bookmark.getProtocol()).lookup(bookmark.getHostname()));
+
+        listener.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
+                bookmark.getHostname()));
+
+        // Try to resolve the hostname first
         try {
-            final Host bookmark = session.getHost();
-            listener.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
-                    bookmark.getProtocol().getName(), bookmark.getHostname()));
-
-            session.fireConnectionWillOpenEvent();
-
-            // Configuring proxy if any
-            ProxyFactory.get().configure(bookmark);
-
-            final Resolver resolver = new Resolver(
-                    HostnameConfiguratorFactory.get(bookmark.getProtocol()).lookup(bookmark.getHostname()));
-
-            listener.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
-                    bookmark.getHostname()));
-
-            // Try to resolve the hostname first
-            try {
-                resolver.resolve();
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
-            // The IP address could successfully be determined
-
-            session.open(key);
-
+            resolver.resolve();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+        // The IP address could successfully be determined
+        session.open(key);
+        try {
             GrowlFactory.get().notify("Connection opened", bookmark.getHostname());
 
             listener.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
@@ -122,7 +120,7 @@ public class ConnectionCheckService {
             // Update last accessed timestamp
             bookmark.setTimestamp(new Date());
 
-            LoginService login = new LoginService(prompt, keychain);
+            final LoginService login = new LoginService(prompt, keychain);
             login.login(session, listener);
 
             session.fireConnectionDidOpenEvent();
