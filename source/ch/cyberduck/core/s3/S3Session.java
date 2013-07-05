@@ -792,7 +792,7 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
 
         // Generate URL
-        return this.getClient().createSignedUrl("GET",
+        return client.createSignedUrl("GET",
                 path.getContainer().getName(), path.getKey(), null,
                 null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
     }
@@ -805,7 +805,7 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
      */
     public DescriptiveUrl toTorrentUrl(final Path path) {
         if(path.attributes().isFile()) {
-            return new DescriptiveUrl(this.getClient().createTorrentUrl(path.getContainer().getName(),
+            return new DescriptiveUrl(client.createTorrentUrl(path.getContainer().getName(),
                     path.getKey()));
         }
         return new DescriptiveUrl(null, null);
