@@ -8,7 +8,6 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.ui.Controller;
 
 import org.junit.Ignore;
@@ -227,7 +226,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test
     public void testFeatures() throws Exception {
-        final Session session = new FTPSession(new Host("h"));
+        final Session session = new DAVSession(new Host("h"));
         assertNull(session.getFeature(UnixPermission.class, null));
         assertNull(session.getFeature(Timestamp.class, null));
         assertNotNull(session.getFeature(Headers.class, null));
