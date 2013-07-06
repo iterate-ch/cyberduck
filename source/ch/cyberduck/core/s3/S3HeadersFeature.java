@@ -21,13 +21,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,9 +46,6 @@ public class S3HeadersFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
-            session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                    file.getName()));
-
             final StorageObject target = ((S3Path) file).getDetails();
             HashMap<String, String> metadata = new HashMap<String, String>();
             Map<String, Object> source = target.getModifiableMetadata();
@@ -66,9 +61,6 @@ public class S3HeadersFeature implements Headers {
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
-            session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                    file.getName()));
-
             try {
                 final StorageObject target = ((S3Path) file).getDetails();
                 target.replaceAllMetadata(new HashMap<String, Object>(metadata));

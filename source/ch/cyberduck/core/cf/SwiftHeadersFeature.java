@@ -22,13 +22,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Map;
 
@@ -51,9 +49,6 @@ public class SwiftHeadersFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                    file.getName()));
-
             if(file.attributes().isFile()) {
                 final FilesObjectMetaData meta
                         = session.getClient().getObjectMetaData(session.getRegion(file.getContainer()),
@@ -80,9 +75,6 @@ public class SwiftHeadersFeature implements Headers {
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                    file.getName()));
-
             if(file.attributes().isFile()) {
                 session.getClient().updateObjectMetadata(session.getRegion(file.getContainer()),
                         file.getContainer().getName(), file.getKey(), metadata);

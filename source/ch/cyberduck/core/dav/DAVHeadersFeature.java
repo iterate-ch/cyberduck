@@ -23,10 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +47,6 @@ public class DAVHeadersFeature implements Headers {
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         if(file.attributes().isFile()) {
             try {
-                session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                        file.getName()));
-
                 final List<DavResource> resources = session.getClient().list(URIEncoder.encode(file.getAbsolute()));
                 for(DavResource resource : resources) {
                     return resource.getCustomProps();
@@ -71,9 +66,6 @@ public class DAVHeadersFeature implements Headers {
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         if(file.attributes().isFile()) {
             try {
-                session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                        file.getName()));
-
                 session.getClient().setCustomProps(URIEncoder.encode(file.getAbsolute()),
                         metadata, Collections.<java.lang.String>emptyList());
             }
