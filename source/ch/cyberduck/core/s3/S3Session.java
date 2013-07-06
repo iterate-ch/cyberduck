@@ -23,19 +23,20 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
-import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Lifecycle;
+import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Revert;
+import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
-import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -51,9 +52,6 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.LifecycleConfig;
-import org.jets3t.service.model.S3BucketLoggingStatus;
-import org.jets3t.service.model.S3BucketVersioningStatus;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
@@ -75,12 +73,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * @version $Id$
  */
-public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageService> {
+public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
     public S3Session(Host h) {
@@ -324,27 +321,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     }
 
     @Override
-    public String getLocation(final Path container) throws BackgroundException {
-        if(this.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot access bucket location");
-            return null;
-        }
-        try {
-            if(null == container.attributes().getRegion()) {
-                String location = client.getBucketLocation(container.getContainer().getName());
-                if(StringUtils.isBlank(location)) {
-                    location = "US"; //Default location US is null
-                }
-                container.attributes().setRegion(location);
-            }
-            return container.attributes().getRegion();
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
-        }
-    }
-
-    @Override
     public RequestEntityRestStorageService connect(final HostKeyController key) throws BackgroundException {
         return new RequestEntityRestStorageService(this.configure(host.getHostname()));
     }
@@ -404,11 +380,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         return false;
     }
 
-    @Override
-    public boolean isLocationSupported() {
-        return true;
-    }
-
     public boolean isMultipartUploadSupported() {
         // Only for AWS
         if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
@@ -422,6 +393,12 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
         return !file.attributes().isVolume();
     }
 
+    @Override
+    public boolean isCreateFileSupported(final Path workdir) {
+        // Creating files is only possible inside a bucket.
+        return !workdir.isRoot();
+    }
+
     public List<String> getSupportedStorageClasses() {
         return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD,
                 S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
@@ -430,219 +407,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
 
     public List<String> getSupportedEncryptionAlgorithms() {
         return Arrays.asList("AES256");
-    }
-
-    /**
-     * @return True if the service supports bucket logging.
-     */
-    @Override
-    public boolean isLoggingSupported() {
-        // Only for AWS
-        return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
-    }
-
-    @Override
-    public boolean isAnalyticsSupported() {
-        // Only for AWS
-        return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
-    }
-
-    /**
-     * @return True if the service supports object versioning.
-     */
-    @Override
-    public boolean isVersioningSupported() {
-        // Only for AWS
-        return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
-    }
-
-    @Override
-    public boolean isLifecycleSupported() {
-        // Only for AWS
-        return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
-    }
-
-    @Override
-    public boolean isRevertSupported() {
-        // Only for AWS
-        return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
-    }
-
-    /**
-     * @param container The bucket name
-     * @return True if the bucket logging status is enabled.
-     */
-    @Override
-    public LoggingConfiguration getLogging(final Path container) throws BackgroundException {
-        if(this.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot access logging status");
-            return new LoggingConfiguration(false);
-        }
-        try {
-            final StorageBucketLoggingStatus status
-                    = client.getBucketLoggingStatusImpl(container.getName());
-            return new LoggingConfiguration(status.isLoggingEnabled(),
-                    status.getTargetBucketName());
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
-        }
-    }
-
-    /**
-     * @param container The bucket name
-     */
-    @Override
-    public void setLogging(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
-        try {
-            // Logging target bucket
-            final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
-                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName(), null);
-            if(configuration.isEnabled()) {
-                status.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
-            }
-            client.setBucketLoggingStatus(container.getName(), status, true);
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
-        }
-    }
-
-    public LifecycleConfiguration getLifecycle(final Path container) throws BackgroundException {
-        if(this.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot access logging status");
-            return new LifecycleConfiguration();
-        }
-        try {
-            final LifecycleConfig status = client.getLifecycleConfig(container.getName());
-            if(null != status) {
-                Integer transition = null;
-                Integer expiration = null;
-                for(LifecycleConfig.Rule rule : status.getRules()) {
-                    if(rule.getTransition() != null) {
-                        transition = rule.getTransition().getDays();
-                    }
-                    if(rule.getExpiration() != null) {
-                        expiration = rule.getExpiration().getDays();
-                    }
-                }
-                return new LifecycleConfiguration(transition, expiration);
-            }
-            return new LifecycleConfiguration();
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map(e);
-        }
-    }
-
-    /**
-     * @param container The bucket name
-     */
-    @Override
-    public void setLifecycle(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
-        try {
-            if(configuration.getTransition() != null || configuration.getExpiration() != null) {
-                final LifecycleConfig config = new LifecycleConfig();
-                // Unique identifier for the rule. The value cannot be longer than 255 characters. When you specify an empty prefix, the rule applies to all objects in the bucket
-                final LifecycleConfig.Rule rule = config.newRule(UUID.randomUUID().toString(), StringUtils.EMPTY, true);
-                if(configuration.getTransition() != null) {
-                    rule.newTransition().setDays(configuration.getTransition());
-                }
-                if(configuration.getExpiration() != null) {
-                    rule.newExpiration().setDays(configuration.getExpiration());
-                }
-                client.setLifecycleConfig(container.getName(), config);
-            }
-            else {
-                client.deleteLifecycleConfig(container.getName());
-            }
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
-        }
-    }
-
-    /**
-     * @param container The bucket name
-     * @return True if enabled
-     */
-    @Override
-    public VersioningConfiguration getVersioning(final Path container) throws BackgroundException {
-        try {
-            final S3BucketVersioningStatus status
-                    = client.getBucketVersioningStatus(container.getName());
-
-            return new VersioningConfiguration(status.isVersioningEnabled(),
-                    status.isMultiFactorAuthDeleteRequired());
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
-        }
-    }
-
-    /**
-     * @param container The bucket name
-     * @param prompt    Login prompt for multi factor authentication
-     */
-    @Override
-    public void setVersioning(final Path container, final LoginController prompt,
-                              final VersioningConfiguration configuration) throws BackgroundException {
-        try {
-            final VersioningConfiguration current = this.getVersioning(container);
-            if(current.isMultifactor()) {
-                // The bucket is already MFA protected.
-                final Credentials factor = this.mfa(prompt);
-                if(configuration.isEnabled()) {
-                    if(current.isEnabled()) {
-                        log.debug("Versioning already enabled for bucket " + container);
-                    }
-                    else {
-                        // Enable versioning if not already active.
-                        log.debug("Enable bucket versioning with MFA " + factor.getUsername() + " for " + container);
-                        client.enableBucketVersioningWithMFA(container.getName(),
-                                factor.getUsername(), factor.getPassword());
-                    }
-                }
-                else {
-                    log.debug("Suspend bucket versioning with MFA " + factor.getUsername() + " for " + container);
-                    client.suspendBucketVersioningWithMFA(container.getName(),
-                            factor.getUsername(), factor.getPassword());
-                }
-                if(configuration.isEnabled() && !configuration.isMultifactor()) {
-                    log.debug(String.format("Disable MFA %s for %s", factor.getUsername(), container));
-                    // User has choosen to disable MFA
-                    final Credentials factor2 = this.mfa(prompt);
-                    client.disableMFAForVersionedBucket(container.getName(),
-                            factor2.getUsername(), factor2.getPassword());
-                }
-            }
-            else {
-                if(configuration.isEnabled()) {
-                    if(configuration.isMultifactor()) {
-                        final Credentials factor = this.mfa(prompt);
-                        log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), container));
-                        client.enableBucketVersioningWithMFA(container.getName(),
-                                factor.getUsername(), factor.getPassword());
-                    }
-                    else {
-                        if(current.isEnabled()) {
-                            log.debug(String.format("Versioning already enabled for bucket %s", container));
-                        }
-                        else {
-                            log.debug(String.format("Enable bucket versioning for %s", container));
-                            client.enableBucketVersioning(container.getName());
-                        }
-                    }
-                }
-                else {
-                    log.debug(String.format("Susped bucket versioning for %s", container));
-                    client.suspendBucketVersioning(container.getName());
-                }
-            }
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
-        }
     }
 
     protected AccessControlList getPrivateCannedAcl() {
@@ -674,22 +438,6 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
                     }
                 })
         );
-    }
-
-    @Override
-    public DistributionConfiguration cdn(final LoginController prompt) {
-        if(host.getHostname().endsWith(Protocol.S3_SSL.getDefaultHostname())) {
-            return new WebsiteCloudFrontDistributionConfiguration(this);
-        }
-        else {
-            // Amazon CloudFront custom origin
-            return super.cdn(prompt);
-        }
-    }
-
-    @Override
-    public IdentityConfiguration iam(final LoginController prompt) {
-        return new AWSIdentityConfiguration(host, prompt);
     }
 
     /**
@@ -830,15 +578,64 @@ public class S3Session extends CloudSession<S3Session.RequestEntityRestStorageSe
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == ch.cyberduck.core.features.AccessControlList.class) {
             return (T) new S3AccessControlListFeature(this);
         }
-        if(type == Metadata.class) {
-            return (T) new S3MetadataFeature(this);
+        if(type == Headers.class) {
+            return (T) new S3HeadersFeature(this);
+        }
+        if(type == Location.class) {
+            // Only for AWS
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                return (T) new S3LocationFeature(this);
+            }
         }
         if(type == AnalyticsProvider.class) {
-            return (T) new QloudstatAnalyticsProvider();
+            // Only for AWS
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                return (T) new QloudstatAnalyticsProvider();
+            }
+            return null;
+        }
+        if(type == Versioning.class) {
+            // Only for AWS
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                return (T) new S3VersioningFeature(this);
+            }
+            return null;
+        }
+        if(type == Logging.class) {
+            // Only for AWS
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                return (T) new S3LoggingFeature(this);
+            }
+            return null;
+        }
+        if(type == Revert.class) {
+            // Only for AWS
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                return (T) new S3RevertFeature(this);
+            }
+            return null;
+        }
+        if(type == Lifecycle.class) {
+            // Only for AWS
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                return (T) new S3LifecycleConfiguration(this);
+            }
+        }
+        if(type == IdentityConfiguration.class) {
+            return (T) new AWSIdentityConfiguration(host, prompt);
+        }
+        if(type == DistributionConfiguration.class) {
+            if(host.getHostname().endsWith(Protocol.S3_SSL.getDefaultHostname())) {
+                return (T) new WebsiteCloudFrontDistributionConfiguration(this);
+            }
+            else {
+                // Amazon CloudFront custom origin
+                return super.getFeature(type, prompt);
+            }
         }
         return null;
     }

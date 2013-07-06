@@ -122,7 +122,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
             if(options.quarantine) {
                 // Set quarantine attributes
-                quarantine.setQuarantine(file.getLocal(), file.getHost().toURL(), session.toURL(file));
+                quarantine.setQuarantine(file.getLocal(), session.getHost().toURL(), session.toURL(file));
             }
             if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
                 // Set quarantine attributes

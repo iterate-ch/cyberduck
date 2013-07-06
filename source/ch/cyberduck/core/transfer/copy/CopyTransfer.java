@@ -29,6 +29,7 @@ import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -148,7 +149,7 @@ public class CopyTransfer extends Transfer {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return new CopyTransferFilter(files);
+            return new CopyTransferFilter(destination, files);
         }
         return super.filter(prompt, action);
     }
@@ -167,9 +168,9 @@ public class CopyTransfer extends Transfer {
         }
         else {
             final AttributedList<Path> list = parent.list();
-            final Path target = files.get(parent);
+            final Path copy = files.get(parent);
             for(Path p : list) {
-                files.put(p, PathFactory.createPath(destination, target, p.getName(), p.attributes().getType()));
+                files.put(p, PathFactory.createPath(destination, copy, p.getName(), p.attributes().getType()));
             }
             return list;
         }
@@ -180,17 +181,29 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
-        final Path destination = files.get(source);
+        final Path copy = files.get(source);
         if(source.attributes().isFile()) {
-            source.copy(destination, bandwidth, new AbstractStreamListener() {
-                @Override
-                public void bytesSent(long bytes) {
-                    addTransferred(bytes);
-                }
-            }, status);
+            session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                    source.getName(), copy));
+            final Copy feature = session.getFeature(Copy.class, null);
+            if(feature != null) {
+                feature.copy(source, copy);
+                addTransferred(source.attributes().getSize());
+                status.setComplete();
+            }
+            else {
+                source.copy(copy, bandwidth, new AbstractStreamListener() {
+                    @Override
+                    public void bytesSent(long bytes) {
+                        addTransferred(bytes);
+                    }
+                }, status);
+            }
         }
         else {
-            destination.mkdir();
+            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                    this.getName()));
+            copy.mkdir();
         }
     }
 

@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPTimestampFeature implements Timestamp {
     private static final Logger log = Logger.getLogger(FTPTimestampFeature.class);
@@ -46,7 +46,7 @@ public class FTPTimestampFeature implements Timestamp {
     }
 
     @Override
-    public void udpate(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
+    public void update(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
         try {
             session.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                     file.getName(), UserDateFormatterFactory.get().getShortFormat(modified)));

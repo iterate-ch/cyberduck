@@ -23,7 +23,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
@@ -33,11 +36,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.kohsuke.putty.PuTTYKey;
 
-import java.io.BufferedReader;
 import java.io.CharArrayWriter;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 
 import ch.ethz.ssh2.Connection;
@@ -46,7 +47,6 @@ import ch.ethz.ssh2.InteractiveCallback;
 import ch.ethz.ssh2.PacketListener;
 import ch.ethz.ssh2.SFTPv3Client;
 import ch.ethz.ssh2.ServerHostKeyVerifier;
-import ch.ethz.ssh2.StreamGobbler;
 import ch.ethz.ssh2.crypto.PEMDecoder;
 import ch.ethz.ssh2.crypto.PEMDecryptException;
 
@@ -357,78 +357,6 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public boolean isSendCommandSupported() {
-        return true;
-    }
-
-    @Override
-    public boolean isArchiveSupported() {
-        return true;
-    }
-
-    @Override
-    public boolean isUnarchiveSupported() {
-        return true;
-    }
-
-    @Override
-    public void sendCommand(final String command) throws BackgroundException {
-        ch.ethz.ssh2.Session sess = null;
-        try {
-            sess = client.openSession();
-
-            final BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
-            final BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStderr())));
-
-            try {
-                this.message(command);
-                sess.execCommand(command, host.getEncoding());
-
-                // Here is the output from stdout
-                while(true) {
-                    String line = stdoutReader.readLine();
-                    if(null == line) {
-                        break;
-                    }
-                    this.log(false, line);
-                }
-                // Here is the output from stderr
-                StringBuilder error = new StringBuilder();
-                while(true) {
-                    String line = stderrReader.readLine();
-                    if(null == line) {
-                        break;
-                    }
-                    this.log(false, line);
-                    // Standard error output contains all status messages, not only errors.
-                    if(StringUtils.isNotBlank(error.toString())) {
-                        error.append(" ");
-                    }
-                    error.append(line).append(".");
-                }
-                if(StringUtils.isNotBlank(error.toString())) {
-                    throw new BackgroundException(error.toString(), null);
-                }
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
-            finally {
-                IOUtils.closeQuietly(stdoutReader);
-                IOUtils.closeQuietly(stderrReader);
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        finally {
-            if(sess != null) {
-                sess.close();
-            }
-        }
-    }
-
-    @Override
     public boolean isDownloadResumable() {
         return this.isTransferResumable();
     }
@@ -436,11 +364,6 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public boolean isUploadResumable() {
         return this.isTransferResumable();
-    }
-
-    @Override
-    public boolean isCreateSymlinkSupported() {
-        return true;
     }
 
     /**
@@ -458,12 +381,24 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == UnixPermission.class) {
             return (T) new SFTPUnixPermissionFeature(this);
         }
         if(type == Timestamp.class) {
             return (T) new SFTPTimestampFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new SFTPTouchFeature(this);
+        }
+        if(type == Symlink.class) {
+            return (T) new SFTPSymlinkFeature(this);
+        }
+        if(type == Command.class) {
+            return (T) new SFTPCommandFeature(this);
+        }
+        if(type == Archive.class) {
+            return (T) new SFTPCompressFeature(this);
         }
         return null;
     }

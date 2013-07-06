@@ -24,6 +24,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
@@ -42,6 +43,7 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -190,6 +192,8 @@ public class DownloadTransfer extends Transfer {
             status.setComplete();
         }
         else if(file.attributes().isFile()) {
+            session.message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
+                    this.getName()));
             file.download(bandwidth, new AbstractStreamListener() {
                 // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
                 // overhead when transferring a large amount of files

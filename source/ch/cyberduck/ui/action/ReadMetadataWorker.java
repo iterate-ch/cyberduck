@@ -20,9 +20,8 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
@@ -38,15 +37,15 @@ import java.util.Map;
 public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
     private static Logger log = Logger.getLogger(ReadMetadataWorker.class);
 
-    private Metadata feature;
+    private Headers feature;
 
     /**
      * Selected files.
      */
     private List<Path> files;
 
-    public ReadMetadataWorker(final Session<?> session, final List<Path> files) {
-        this.feature = session.getFeature(Metadata.class);
+    public ReadMetadataWorker(final Headers feature, final List<Path> files) {
+        this.feature = feature;
         this.files = files;
     }
 
@@ -70,7 +69,7 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
         for(Path next : files) {
             // Reading HTTP headers custom metadata
             if(next.attributes().getMetadata().isEmpty()) {
-                next.attributes().setMetadata(feature.get(next));
+                next.attributes().setMetadata(feature.getMetadata(next));
             }
             final Map<String, String> metadata = next.attributes().getMetadata();
             for(Map.Entry<String, String> entry : metadata.entrySet()) {

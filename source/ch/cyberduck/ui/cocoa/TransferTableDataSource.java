@@ -214,7 +214,7 @@ public class TransferTableDataSource extends ListDataSource {
             }
             final List<Path> downloads = pasteboard.copy();
             for(Path download : downloads) {
-                download.setLocal(LocalFactory.createLocal(download.getHost().getDownloadFolder(), download.getName()));
+                download.setLocal(LocalFactory.createLocal(pasteboard.getSession().getHost().getDownloadFolder(), download.getName()));
             }
             TransferCollection.defaultCollection().add(row.intValue(), new DownloadTransfer(downloads));
             view.reloadData();

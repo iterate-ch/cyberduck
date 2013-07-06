@@ -10,6 +10,8 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Lifecycle;
+import ch.cyberduck.core.features.Versioning;
 
 import org.junit.Test;
 
@@ -54,5 +56,11 @@ public class GSSessionTest extends AbstractTestCase {
         catch(LoginFailureException e) {
             throw e;
         }
+    }
+
+    @Test
+    public void testFeatures() {
+        assertNull(new GSSession(new Host("t")).getFeature(Lifecycle.class, null));
+        assertNull(new GSSession(new Host("t")).getFeature(Versioning.class, null));
     }
 }

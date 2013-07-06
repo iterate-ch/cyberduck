@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
-import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,19 +37,19 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
 import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class SwiftMetadataFeature implements Metadata {
-    private static final Logger log = Logger.getLogger(SwiftMetadataFeature.class);
+public class SwiftHeadersFeature implements Headers {
+    private static final Logger log = Logger.getLogger(SwiftHeadersFeature.class);
 
     private CFSession session;
 
-    public SwiftMetadataFeature(final CFSession session) {
+    public SwiftHeadersFeature(final CFSession session) {
         this.session = session;
     }
 
     @Override
-    public Map<String, String> get(final Path file) throws BackgroundException {
+    public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
             session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
                     file.getName()));
@@ -78,7 +78,7 @@ public class SwiftMetadataFeature implements Metadata {
 
 
     @Override
-    public void write(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         try {
             session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));

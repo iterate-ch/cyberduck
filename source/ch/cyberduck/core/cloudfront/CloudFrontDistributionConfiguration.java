@@ -108,7 +108,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      *         custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
      */
     public String getOrigin(final Path container, final Distribution.Method method) {
-        return String.format("%s.%s", container.getName(), container.getSession().getHost().getProtocol().getDefaultHostname());
+        return String.format("%s.%s", container.getName(), session.getHost().getProtocol().getDefaultHostname());
     }
 
     @Override

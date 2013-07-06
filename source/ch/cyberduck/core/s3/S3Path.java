@@ -154,31 +154,6 @@ public class S3Path extends CloudPath {
         return _details;
     }
 
-    /**
-     * Versioning support. Copy a previous version of the object into the same bucket.
-     * The copied object becomes the latest version of that object and all object versions are preserved.
-     */
-    @Override
-    public void revert() throws BackgroundException {
-        if(this.attributes().isFile()) {
-            try {
-                final S3Object destination = new S3Object(this.getKey());
-                // Keep same storage class
-                destination.setStorageClass(this.attributes().getStorageClass());
-                // Keep encryption setting
-                destination.setServerSideEncryptionAlgorithm(this.attributes().getEncryption());
-                // Apply non standard ACL
-                final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-                destination.setAcl(acl.convert(acl.read(this)));
-                session.getClient().copyVersionedObject(this.attributes().getVersionId(),
-                        this.getContainer().getName(), this.getKey(), this.getContainer().getName(), destination, false);
-            }
-            catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot revert file", e, this);
-            }
-        }
-    }
-
     private static final String METADATA_HEADER_EXPIRES = "Expires";
 
     /**
@@ -691,7 +666,7 @@ public class S3Path extends CloudPath {
                 final AttributedList<Path> children = new AttributedList<Path>();
                 children.addAll(this.listObjects(this.getContainer(), prefix, String.valueOf(Path.DELIMITER)));
                 if(Preferences.instance().getBoolean("s3.revisions.enable")) {
-                    if(session.getVersioning(this.getContainer()).isEnabled()) {
+                    if(new S3VersioningFeature(session).getConfiguration(this.getContainer()).isEnabled()) {
                         String priorLastKey = null;
                         String priorLastVersionId = null;
                         do {
@@ -823,9 +798,6 @@ public class S3Path extends CloudPath {
     @Override
     public void mkdir() throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
-
             if(this.isContainer()) {
                 // Create bucket
                 if(!ServiceUtils.isBucketNameValidDNSName(this.getName())) {
@@ -916,7 +888,7 @@ public class S3Path extends CloudPath {
      * @throws ServiceException            Service error
      */
     protected void delete(final LoginController prompt, final Path container, final List<ObjectKeyAndVersion> keys) throws ServiceException, BackgroundException {
-        if(session.getVersioning(container).isMultifactor()) {
+        if(new S3VersioningFeature(session).getConfiguration(container).isMultifactor()) {
             final Credentials factor = session.mfa(prompt);
             session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
                     keys.toArray(new ObjectKeyAndVersion[keys.size()]),
@@ -968,42 +940,6 @@ public class S3Path extends CloudPath {
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot rename {0}", e, this);
-        }
-    }
-
-    @Override
-    public void copy(final Path copy, final BandwidthThrottle throttle,
-                     final StreamListener listener, final TransferStatus status)
-            throws BackgroundException {
-        if(copy.getSession().equals(session)) {
-            // Copy on same server
-            try {
-                session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                        this.getName(), copy));
-
-                if(this.attributes().isFile()) {
-                    final StorageObject destination = new StorageObject(copy.getKey());
-                    // Keep same storage class
-                    destination.setStorageClass(this.attributes().getStorageClass());
-                    // Keep encryption setting
-                    destination.setServerSideEncryptionAlgorithm(this.attributes().getEncryption());
-                    // Apply non standard ACL
-                    final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-                    destination.setAcl(acl.convert(acl.read(this)));
-                    // Copying object applying the metadata of the original
-                    session.getClient().copyObject(this.getContainer().getName(), this.getKey(),
-                            copy.getContainer().getName(), destination, false);
-                    listener.bytesSent(this.attributes().getSize());
-                    status.setComplete();
-                }
-            }
-            catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot copy {0}", e, this);
-            }
-        }
-        else {
-            // Copy to different host
-            super.copy(copy, throttle, listener, status);
         }
     }
 }

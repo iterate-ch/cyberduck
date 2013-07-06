@@ -24,7 +24,9 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.filter.UploadRegexFilter;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Serializer;
@@ -80,7 +82,7 @@ public class UploadTransfer extends Transfer {
             log.debug(String.format("List children for %s", parent));
         }
         if(parent.getLocal().attributes().isSymbolicLink()
-                && new UploadSymlinkResolver(this.getRoots()).resolve(parent)) {
+                && new UploadSymlinkResolver(session.getFeature(Symlink.class, null), this.getRoots()).resolve(parent)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Do not list children for symbolic link %s", parent));
             }
@@ -111,7 +113,7 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
-        final SymlinkResolver resolver = new UploadSymlinkResolver(this.getRoots());
+        final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class, null), this.getRoots());
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new OverwriteFilter(resolver);
         }
@@ -176,7 +178,7 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
-        final SymlinkResolver symlinkResolver = new UploadSymlinkResolver(this.getRoots());
+        final SymlinkResolver symlinkResolver = new UploadSymlinkResolver(session.getFeature(Symlink.class, null), this.getRoots());
         if(file.getLocal().attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
             final String target = symlinkResolver.relativize(file.getLocal().getAbsolute(),
@@ -188,6 +190,8 @@ public class UploadTransfer extends Transfer {
             status.setComplete();
         }
         else if(file.attributes().isFile()) {
+            session.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                    this.getName()));
             String original = file.getName();
             final boolean temporary = Preferences.instance().getBoolean("queue.upload.file.temporary")
                     && session.isRenameSupported(file);
@@ -211,6 +215,8 @@ public class UploadTransfer extends Transfer {
             }
         }
         else if(file.attributes().isDirectory()) {
+            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                    this.getName()));
             file.mkdir();
         }
     }

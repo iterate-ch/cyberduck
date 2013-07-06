@@ -30,11 +30,12 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
+import ch.cyberduck.core.features.Lifecycle;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,13 +45,10 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
-import org.jets3t.service.acl.Permission;
 import org.jets3t.service.acl.gs.GSAccessControlList;
-import org.jets3t.service.acl.gs.GroupByEmailAddressGrantee;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
-import org.jets3t.service.model.GSBucketLoggingStatus;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.OAuth2Credentials;
@@ -177,53 +175,6 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public boolean isLoggingSupported() {
-        return true;
-    }
-
-    @Override
-    public boolean isAnalyticsSupported() {
-        return true;
-    }
-
-    /**
-     * @param container The bucket name
-     */
-    @Override
-    public void setLogging(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
-        try {
-            // Logging target bucket
-            final GSBucketLoggingStatus status = new GSBucketLoggingStatus(
-                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName(), null);
-            if(configuration.isEnabled()) {
-                status.setLogfilePrefix(Preferences.instance().getProperty("google.logging.prefix"));
-            }
-            // Grant write for Google to logging target bucket
-            final AccessControlList acl = client.getBucketAcl(container.getName());
-            final GroupByEmailAddressGrantee grantee = new GroupByEmailAddressGrantee(
-                    "cloud-storage-analytics@google.com");
-            if(!acl.getPermissionsForGrantee(grantee).contains(Permission.PERMISSION_WRITE)) {
-                acl.grantPermission(grantee, Permission.PERMISSION_WRITE);
-                client.putBucketAcl(container.getName(), acl);
-            }
-            client.setBucketLoggingStatusImpl(container.getName(), status);
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
-        }
-    }
-
-    @Override
-    public boolean isVersioningSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isLifecycleSupported() {
-        return false;
-    }
-
-    @Override
     public boolean isMultipartUploadSupported() {
         return false;
     }
@@ -341,16 +292,6 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public IdentityConfiguration iam(final LoginController prompt) {
-        return new DefaultCredentialsIdentityConfiguration(host);
-    }
-
-    @Override
-    public DistributionConfiguration cdn(final LoginController prompt) {
-        return new GoogleStorageWebsiteDistributionConfiguration(this);
-    }
-
-    @Override
     protected DescriptiveUrl toSignedUrl(final Path path, int seconds) {
         return new DescriptiveUrl(null, null);
     }
@@ -397,10 +338,25 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == ch.cyberduck.core.features.AccessControlList.class) {
             return (T) new GoogleStorageAccessControlListFeature(this);
         }
-        return super.getFeature(type);
+        if(type == DistributionConfiguration.class) {
+            return (T) new GoogleStorageWebsiteDistributionConfiguration(this);
+        }
+        if(type == IdentityConfiguration.class) {
+            return (T) new DefaultCredentialsIdentityConfiguration(host);
+        }
+        if(type == Logging.class) {
+            return (T) new GoogleStorageLoggingFeature(this);
+        }
+        if(type == Lifecycle.class) {
+            return null;
+        }
+        if(type == Versioning.class) {
+            return null;
+        }
+        return super.getFeature(type, prompt);
     }
 }

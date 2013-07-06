@@ -8,7 +8,8 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.UnixPermission;
 
 import org.junit.Test;
@@ -75,6 +76,6 @@ public class SFTPSessionTest extends AbstractTestCase {
                 "u", "p"
         ));
         final Session session = new SFTPSession(host);
-        assertNotNull(session.getFeature(UnixPermission.class));
+        assertNotNull(session.getFeature(UnixPermission.class, null));
     }
 }

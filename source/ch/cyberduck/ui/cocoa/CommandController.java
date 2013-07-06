@@ -18,9 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LoginControllerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -87,7 +89,7 @@ public class CommandController extends SheetController implements TranscriptList
         }
     }
 
-    private Session session;
+    private Session<?> session;
 
     public CommandController(final WindowController parent, final Session session) {
         super(parent);
@@ -111,7 +113,7 @@ public class CommandController extends SheetController implements TranscriptList
 
                 @Override
                 public void run() throws BackgroundException {
-                    session.sendCommand(command);
+                    session.getFeature(Command.class, LoginControllerFactory.get(parent)).send(command);
                 }
 
                 @Override

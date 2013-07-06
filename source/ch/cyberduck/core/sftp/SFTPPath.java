@@ -26,7 +26,6 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.StreamListener;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -176,9 +175,6 @@ public class SFTPPath extends Path {
     @Override
     public void mkdir() throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
-
             session.sftp().mkdir(this.getAbsolute(),
                     Integer.parseInt(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getOctalString(), 8));
         }
@@ -281,19 +277,6 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    public void symlink(String target) throws BackgroundException {
-        try {
-            session.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                    this.getName()));
-
-            session.sftp().createSymlink(this.getAbsolute(), target);
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, this);
-        }
-    }
-
-    @Override
     public OutputStream write(final TransferStatus status) throws BackgroundException {
         try {
             final String mode = Preferences.instance().getProperty("ssh.transfer");
@@ -350,28 +333,6 @@ public class SFTPPath extends Path {
         finally {
             IOUtils.closeQuietly(in);
             IOUtils.closeQuietly(out);
-        }
-    }
-
-    @Override
-    public boolean touch() throws BackgroundException {
-        try {
-            session.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                    this.getName()));
-
-            SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-            Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-            attr.permissions = Integer.parseInt(permission.getOctalString(), 8);
-            session.sftp().createFile(this.getAbsolute(), attr);
-
-            // Even if specified above when creating the file handle, we still need to update the
-            // permissions after the creating the file. SSH_FXP_OPEN does not support setting
-            // attributes in version 4 or lower.
-            new SFTPUnixPermissionFeature(session).setUnixPermission(this, permission);
-            return true;
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, this);
         }
     }
 }

@@ -21,13 +21,13 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -48,9 +48,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.MessageFormat;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * @version $Id$
@@ -260,13 +257,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         this.attributes = attributes;
     }
 
-    /**
-     * @return Null if the connection has been closed
-     */
-    public Host getHost() {
-        return this.getSession().getHost();
-    }
-
     public abstract void mkdir() throws BackgroundException;
 
     public abstract AttributedList<Path> list() throws BackgroundException;
@@ -352,7 +342,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * Upload an empty file.
      */
     public boolean touch() throws BackgroundException {
-        final Local temp = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), UUID.randomUUID().toString());
+        final Local temp = TemporaryFileServiceFactory.get().create(this);
         temp.touch();
         this.setLocal(temp);
         TransferOptions options = new TransferOptions();
@@ -378,13 +368,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param prompt Login prompt for multi factor authentication
      */
     public abstract void delete(final LoginController prompt) throws BackgroundException;
-
-    /**
-     * Versioning support.
-     */
-    public void revert() throws BackgroundException {
-        throw new BackgroundException("Not supported");
-    }
 
     /**
      * @param status Transfer status
@@ -450,9 +433,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
-        this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                this.getName()));
-
         if(offset > 0) {
             long skipped = in.skip(offset);
             if(log.isInfoEnabled()) {
@@ -481,9 +461,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
-        this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
-                this.getName()));
-
         this.transfer(new ThrottledInputStream(in, throttle), out, l, -1, status);
     }
 
@@ -544,11 +521,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
     }
 
-    public void copy(Path copy, final TransferStatus status) throws BackgroundException {
-        this.copy(copy, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new AbstractStreamListener(), status);
-    }
-
     /**
      * Default implementation using a temporary file on localhost as an intermediary
      * with a download and upload transfer.
@@ -563,8 +535,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         InputStream in = null;
         OutputStream out = null;
         try {
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                    this.getName(), copy));
             if(this.attributes().isFile()) {
                 this.transfer(in = new ThrottledInputStream(this.read(status), throttle),
                         out = new ThrottledOutputStream(copy.write(status), throttle),

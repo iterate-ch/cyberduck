@@ -35,9 +35,12 @@ import java.util.Map;
  */
 public class CopyTransferFilter implements TransferPathFilter {
 
+    private Session<?> destination;
+
     private final Map<Path, Path> files;
 
-    public CopyTransferFilter(final Map<Path, Path> files) {
+    public CopyTransferFilter(final Session destination, final Map<Path, Path> files) {
+        this.destination = destination;
         this.files = files;
     }
 
@@ -65,20 +68,19 @@ public class CopyTransferFilter implements TransferPathFilter {
     @Override
     public void complete(final Session<?> session, final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(status.isComplete()) {
-            final Path destination = files.get(source);
-            final UnixPermission unix = destination.getSession().getFeature(UnixPermission.class);
+            final UnixPermission unix = destination.getFeature(UnixPermission.class, null);
             if(unix != null) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     Permission permission = source.attributes().getPermission();
                     if(!Permission.EMPTY.equals(permission)) {
-                        unix.setUnixPermission(destination, permission);
+                        unix.setUnixPermission(files.get(source), permission);
                     }
                 }
             }
-            final Timestamp timestamp = destination.getSession().getFeature(Timestamp.class);
+            final Timestamp timestamp = destination.getFeature(Timestamp.class, null);
             if(timestamp != null) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    timestamp.udpate(destination, source.attributes().getCreationDate(),
+                    timestamp.update(files.get(source), source.attributes().getCreationDate(),
                             source.attributes().getModificationDate(),
                             source.attributes().getAccessedDate());
                 }

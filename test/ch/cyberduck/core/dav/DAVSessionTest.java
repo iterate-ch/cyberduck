@@ -1,9 +1,14 @@
 package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.ui.Controller;
 
 import org.junit.Ignore;
@@ -217,5 +222,15 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toURL(new DAVPath(session, "/my/documentroot/f", Path.DIRECTORY_TYPE)));
         assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toHttpURL(new DAVPath(session, "/my/documentroot/f", Path.DIRECTORY_TYPE)));
+    }
+
+
+    @Test
+    public void testFeatures() throws Exception {
+        final Session session = new FTPSession(new Host("h"));
+        assertNull(session.getFeature(UnixPermission.class, null));
+        assertNull(session.getFeature(Timestamp.class, null));
+        assertNotNull(session.getFeature(Headers.class, null));
+        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
     }
 }

@@ -20,10 +20,8 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -39,7 +37,7 @@ import java.util.Map;
 public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
     private static Logger log = Logger.getLogger(WriteMetadataWorker.class);
 
-    private Metadata feature;
+    private Headers feature;
 
     /**
      * Selected files.
@@ -51,8 +49,8 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
      */
     private Map<String, String> metadata;
 
-    protected WriteMetadataWorker(final Session<?> session , final List<Path> files, final Map<String, String> metadata) {
-        this.feature = session.getFeature(Metadata.class);
+    protected WriteMetadataWorker(final Headers feature, final List<Path> files, final Map<String, String> metadata) {
+        this.feature = feature;
         this.files = files;
         this.metadata = metadata;
     }
@@ -66,9 +64,6 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
     @Override
     public Map<String, String> run() throws BackgroundException {
         for(Path next : files) {
-            if(!next.getSession().isConnected()) {
-                throw new ConnectionCanceledException();
-            }
             for(Map.Entry<String, String> entry : metadata.entrySet()) {
                 // Prune metadata from entries which are unique to a single file. For example md5-hash.
                 if(StringUtils.isBlank(entry.getValue())) {
@@ -82,7 +77,7 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
                 }
             }
             else {
-                feature.write(next, metadata);
+                feature.setMetadata(next, metadata);
             }
         }
         return metadata;

@@ -20,9 +20,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullPath;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -51,36 +49,30 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
                 return children;
             }
         };
-        final NullSession h = new NullSession(new Host("h")) {
+        final WritePermissionWorker worker = new WritePermissionWorker(new UnixPermission() {
             @Override
-            public <T> T getFeature(final Class<T> type) {
-                return (T) new UnixPermission() {
-                    @Override
-                    public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    @Override
-                    public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-                        if(file.getName().equals("a")) {
-                            assertEquals(permission, permission);
-                        }
-                        else if(file.getName().equals("b")) {
-                            assertEquals(new Permission(644), permission);
-                        }
-                        else {
-                            fail();
-                        }
-                    }
-                };
+            public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                throw new UnsupportedOperationException();
             }
-        };
-        final WritePermissionWorker worker = new WritePermissionWorker(h, Arrays.<Path>asList(path), permission, true) {
+
+            @Override
+            public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                if(file.getName().equals("a")) {
+                    assertEquals(permission, permission);
+                }
+                else if(file.getName().equals("b")) {
+                    assertEquals(new Permission(644), permission);
+                }
+                else {
+                    fail();
+                }
+            }
+        }, Arrays.<Path>asList(path), permission, true) {
             @Override
             public void cleanup(Permission result) {
                 throw new UnsupportedOperationException();

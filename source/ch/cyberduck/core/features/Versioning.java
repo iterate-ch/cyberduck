@@ -17,17 +17,18 @@ package ch.cyberduck.core.features;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-
-import java.util.Map;
+import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 /**
  * @version $Id:$
  */
-public interface Metadata {
+public interface Versioning {
 
-    Map<String, String> get(Path file) throws BackgroundException;
+    VersioningConfiguration getConfiguration(Path container) throws BackgroundException;
 
-    void write(Path file, Map<String, String> metadata) throws BackgroundException;
+    void setConfiguration(Path container, LoginController prompt, VersioningConfiguration configuration) throws BackgroundException;
+
 }

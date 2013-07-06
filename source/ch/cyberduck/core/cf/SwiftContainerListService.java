@@ -59,7 +59,7 @@ public class SwiftContainerListService implements RootListService<CFSession> {
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     container.attributes().setRegion(f.getRegion().getRegionId());
                     if(Preferences.instance().getBoolean("cf.cdn.preload")) {
-                        final DistributionConfiguration cdn = session.cdn(new DisabledLoginController());
+                        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, new DisabledLoginController());
                         for(Distribution.Method method : cdn.getMethods(container)) {
                             cdn.read(container, method);
                         }

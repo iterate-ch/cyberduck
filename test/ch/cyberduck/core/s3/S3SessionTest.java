@@ -2,6 +2,10 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.features.Lifecycle;
+import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Revert;
+import ch.cyberduck.core.features.Versioning;
 
 import org.junit.Test;
 
@@ -77,17 +81,17 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testFeatures() throws Exception {
         final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        assertTrue(aws.isVersioningSupported());
-        assertNotNull(aws.getFeature(AnalyticsProvider.class));
-        assertTrue(aws.isLifecycleSupported());
-        assertTrue(aws.isLocationSupported());
-        assertTrue(aws.isRevertSupported());
+        assertNotNull(aws.getFeature(Versioning.class, null));
+        assertNotNull(aws.getFeature(AnalyticsProvider.class, null));
+        assertNotNull(aws.getFeature(Lifecycle.class, null));
+        assertNotNull(aws.getFeature(Location.class, null));
+        assertNotNull(aws.getFeature(Revert.class, null));
         final S3Session o = new S3Session(new Host(Protocol.S3_SSL, "o"));
-        assertFalse(o.isVersioningSupported());
-        assertNull(o.getFeature(AnalyticsProvider.class));
-        assertFalse(o.isLifecycleSupported());
-        assertTrue(o.isLocationSupported());
-        assertFalse(o.isRevertSupported());
+        assertNull(o.getFeature(Versioning.class, null));
+        assertNull(o.getFeature(AnalyticsProvider.class, null));
+        assertNull(o.getFeature(Lifecycle.class, null));
+        assertNull(o.getFeature(Location.class, null));
+        assertNull(o.getFeature(Revert.class, null));
     }
 
     @Test

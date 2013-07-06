@@ -86,7 +86,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     public TransferStatus prepare(final Session<?> session, final Path file) throws BackgroundException {
         final PathAttributes attributes = file.attributes();
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-            if(session.getFeature(UnixPermission.class) != null) {
+            if(session.getFeature(UnixPermission.class, null) != null) {
                 if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                     if(attributes.isFile()) {
                         attributes.setPermission(new Permission(
@@ -129,7 +129,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            final UnixPermission unix = session.getFeature(UnixPermission.class);
+            final UnixPermission unix = session.getFeature(UnixPermission.class, null);
             if(unix != null) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     final Permission permission = file.attributes().getPermission();
@@ -138,12 +138,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     }
                 }
             }
-            final Timestamp timestamp = session.getFeature(Timestamp.class);
+            final Timestamp timestamp = session.getFeature(Timestamp.class, null);
             if(timestamp != null) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     // Read timestamps from local file
                     final Attributes attributes = file.getLocal().attributes();
-                    timestamp.udpate(file, attributes.getCreationDate(),
+                    timestamp.update(file, attributes.getCreationDate(),
                             attributes.getModificationDate(),
                             attributes.getAccessedDate());
                 }

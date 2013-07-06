@@ -20,7 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
-import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
@@ -34,19 +34,19 @@ import java.util.Map;
 
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class S3MetadataFeature implements Metadata {
-    private static final Logger log = Logger.getLogger(S3MetadataFeature.class);
+public class S3HeadersFeature implements Headers {
+    private static final Logger log = Logger.getLogger(S3HeadersFeature.class);
 
     private S3Session session;
 
-    public S3MetadataFeature(final S3Session session) {
+    public S3HeadersFeature(final S3Session session) {
         this.session = session;
     }
 
     @Override
-    public Map<String, String> get(final Path file) throws BackgroundException {
+    public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
             session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
                     file.getName()));
@@ -64,7 +64,7 @@ public class S3MetadataFeature implements Metadata {
     }
 
     @Override
-    public void write(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
             session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));

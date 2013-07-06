@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.local.Local;
 
 import java.util.List;
@@ -28,9 +29,12 @@ import java.util.List;
  */
 public class UploadSymlinkResolver extends AbstractSymlinkResolver {
 
+    private Symlink feature;
+
     private List<Path> files;
 
-    public UploadSymlinkResolver(final List<Path> files) {
+    public UploadSymlinkResolver(final Symlink feature, final List<Path> files) {
+        this.feature = feature;
         this.files = files;
     }
 
@@ -43,7 +47,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver {
                 return false;
             }
             // Create symbolic link only if supported by the host
-            if(file.getSession().isCreateSymlinkSupported()) {
+            if(feature != null) {
                 final Local target = local.getSymlinkTarget();
                 // Only create symbolic link if target is included in the upload
                 for(Path root : files) {

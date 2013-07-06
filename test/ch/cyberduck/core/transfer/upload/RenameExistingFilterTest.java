@@ -22,36 +22,28 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
     @Test
     public void testAccept() throws Exception {
-        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
-        assertTrue(f.accept(new NullSession(new Host("h")), new NullPath("t", Path.FILE_TYPE) {
+        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
+        assertTrue(f.accept(new NullSession(new Host("h")) {
             @Override
-            public Session getSession() {
-                return new NullSession(new Host("t")) {
-                    @Override
-                    public boolean isRenameSupported(final Path file) {
-                        return true;
-                    }
-                };
+            public boolean isRenameSupported(final Path file) {
+                return true;
             }
-        })
+
+        }, new NullPath("t", Path.FILE_TYPE)
+        )
         );
-        assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("t", Path.FILE_TYPE) {
+        assertFalse(f.accept(new NullSession(new Host("h")) {
             @Override
-            public Session getSession() {
-                return new NullSession(new Host("t")) {
-                    @Override
-                    public boolean isRenameSupported(final Path file) {
-                        return false;
-                    }
-                };
+            public boolean isRenameSupported(final Path file) {
+                return false;
             }
-        })
+        }, new NullPath("t", Path.FILE_TYPE))
         );
     }
 
     @Test
     public void testPrepare() throws Exception {
-        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
+        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
         final NullPath p = new NullPath("t", Path.FILE_TYPE) {
             @Override
             public Session getSession() {

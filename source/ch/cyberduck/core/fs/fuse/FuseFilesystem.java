@@ -328,7 +328,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                     }
                     final Path directory = selected.getParent();
                     final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
-                    final UnixPermission unix = session.getFeature(UnixPermission.class);
+                    final UnixPermission unix = session.getFeature(UnixPermission.class, new DisabledLoginController());
                     if(unix != null) {
                         final NSObject posixNumber = attributes.objectForKey(NSFileManager.NSFilePosixPermissions);
                         if(null != posixNumber) {
@@ -337,12 +337,12 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                             unix.setUnixPermission(file, permission);
                         }
                     }
-                    final Timestamp timestamp = session.getFeature(Timestamp.class);
+                    final Timestamp timestamp = session.getFeature(Timestamp.class, new DisabledLoginController());
                     if(timestamp != null) {
                         NSObject modificationNumber = attributes.objectForKey(NSFileManager.NSFileModificationDate);
                         if(null != modificationNumber) {
                             final long modification = (long) (Rococoa.cast(modificationNumber, NSDate.class).timeIntervalSince1970() * 1000);
-                            timestamp.udpate(file, modification, modification, modification);
+                            timestamp.update(file, modification, modification, modification);
                         }
                     }
                     return true;

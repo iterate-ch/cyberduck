@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
@@ -310,22 +311,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public boolean isSendCommandSupported() {
-        return true;
-    }
-
-    @Override
-    public void sendCommand(final String command) throws BackgroundException {
-        this.message(command);
-        try {
-            client.sendSiteCommand(command);
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map(e);
-        }
-    }
-
-    @Override
     public boolean isDownloadResumable() {
         return true;
     }
@@ -385,13 +370,16 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == UnixPermission.class) {
             return (T) new FTPUnixPermissionFeature(this);
         }
         if(type == Timestamp.class) {
             return (T) new FTPTimestampFeature(this);
         }
-        return null;
+        if(type == Command.class) {
+            return (T) new FTPCommandFeature(this);
+        }
+        return super.getFeature(type, prompt);
     }
 }

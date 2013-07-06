@@ -2,12 +2,16 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -32,7 +36,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                 return false;
             }
         });
-        CopyTransferFilter f = new CopyTransferFilter(files);
+        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
         assertTrue(f.accept(new NullSession(new Host("h")), source));
     }
 
@@ -46,7 +50,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                 return true;
             }
         });
-        CopyTransferFilter f = new CopyTransferFilter(files);
+        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
         assertFalse(f.accept(new NullSession(new Host("h")), source));
     }
 
@@ -56,7 +60,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         final NullPath source = new NullPath("a", Path.FILE_TYPE);
         source.attributes().setSize(1L);
         files.put(source, new NullPath("a", Path.FILE_TYPE));
-        CopyTransferFilter f = new CopyTransferFilter(files);
+        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
         final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
         assertEquals(1L, status.getLength());
     }
@@ -81,7 +85,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
             }
         };
         files.put(source, target);
-        CopyTransferFilter f = new CopyTransferFilter(files);
+        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
         final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
         assertEquals(0L, status.getLength());
     }
@@ -92,25 +96,47 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         final NullPath source = new NullPath("a", Path.FILE_TYPE);
         source.attributes().setSize(1L);
         source.attributes().setPermission(new Permission(777));
-        final long time = System.currentTimeMillis();
+        final Long time = System.currentTimeMillis();
         source.attributes().setModificationDate(time);
         final boolean[] timestampWrite = new boolean[1];
         final boolean[] permissionWrite = new boolean[1];
-        final NullPath target = new NullPath("a", Path.FILE_TYPE) {
-//            @Override
-//            public void writeTimestamp(final long created, final long modified, final long accessed) {
-//                assertEquals(time, modified);
-//                timestampWrite[0] = true;
-//            }
-
-//            @Override
-//            public void writeUnixPermission(final Permission permission) {
-//                assertEquals(new Permission(777), permission);
-//                permissionWrite[0] = true;
-//            }
-        };
+        final NullPath target = new NullPath("a", Path.FILE_TYPE);
         files.put(source, target);
-        CopyTransferFilter f = new CopyTransferFilter(files);
+        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")) {
+            @Override
+            public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+                if(type.equals(Timestamp.class)) {
+                    return (T) new Timestamp() {
+
+                        @Override
+                        public void update(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
+                            assertEquals(time, modified);
+                            timestampWrite[0] = true;
+                        }
+                    };
+                }
+                if(type.equals(UnixPermission.class)) {
+                    return (T) new UnixPermission() {
+                        @Override
+                        public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                            assertEquals(new Permission(777), permission);
+                            permissionWrite[0] = true;
+                        }
+                    };
+                }
+                return null;
+            }
+        }, files);
         Preferences.instance().setProperty("queue.upload.preserveDate", true);
         final TransferStatus status = new TransferStatus();
         f.complete(new NullSession(new Host("h")), source, new TransferOptions(), status);

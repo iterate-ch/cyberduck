@@ -23,6 +23,10 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Revert;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Application;
@@ -434,7 +438,7 @@ public class BrowserController extends WindowController
                 if(!path.attributes().isFile()) {
                     continue;
                 }
-                path.setLocal(TemporaryFileServiceFactory.get().get(path));
+                path.setLocal(TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), path));
                 downloads.add(path);
             }
             if(downloads.size() > 0) {
@@ -2456,7 +2460,7 @@ public class BrowserController extends WindowController
         this.background(new BrowserBackgroundAction(this) {
             @Override
             public void run() throws BackgroundException {
-                selected.revert();
+                session.getFeature(Revert.class, LoginControllerFactory.get(BrowserController.this)).revert(selected);
             }
 
             @Override
@@ -3220,7 +3224,7 @@ public class BrowserController extends WindowController
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     @Override
                     public void run() throws BackgroundException {
-                        session.archive(archive, changed);
+                        session.getFeature(Compress.class, null).archive(archive, changed);
                     }
 
                     @Override
@@ -3253,7 +3257,7 @@ public class BrowserController extends WindowController
                     background(new BrowserBackgroundAction(BrowserController.this) {
                         @Override
                         public void run() throws BackgroundException {
-                            session.unarchive(archive, s);
+                            session.getFeature(Compress.class, null).unarchive(archive, s);
                         }
 
                         @Override
@@ -3883,7 +3887,7 @@ public class BrowserController extends WindowController
             return this.isMounted();
         }
         else if(action.equals(Foundation.selector("sendCustomCommandClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.isSendCommandSupported();
+            return this.isBrowser() && this.isMounted() && session.getFeature(Command.class, null) != null;
         }
         else if(action.equals(Foundation.selector("gotoButtonClicked:"))) {
             return this.isBrowser() && this.isMounted();
@@ -3898,7 +3902,8 @@ public class BrowserController extends WindowController
             return this.isBrowser() && this.isMounted() && session.isCreateFileSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.isCreateSymlinkSupported() && this.getSelectionCount() == 1;
+            return this.isBrowser() && this.isMounted() && session.getFeature(Symlink.class, null) != null
+                    && this.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
             return this.isBrowser() && this.isMounted() && this.getSelectionCount() == 1;
@@ -3918,7 +3923,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted() && this.getSelectionCount() == 1) {
-                return session.isRevertSupported();
+                return session.getFeature(Revert.class, LoginControllerFactory.get(this)) != null;
             }
             return false;
         }
@@ -3974,7 +3979,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("archiveButtonClicked:")) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                if(!session.isArchiveSupported()) {
+                if(session.getFeature(Archive.class, null) != null) {
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {
@@ -3991,7 +3996,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("unarchiveButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                if(!session.isUnarchiveSupported()) {
+                if(session.getFeature(Archive.class, null) != null) {
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {

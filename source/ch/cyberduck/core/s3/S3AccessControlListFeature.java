@@ -34,7 +34,7 @@ import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.model.S3Owner;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3AccessControlListFeature implements AccessControlList {
     private static final Logger log = Logger.getLogger(S3AccessControlListFeature.class);
@@ -61,7 +61,7 @@ public class S3AccessControlListFeature implements AccessControlList {
             }
             else if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
                 org.jets3t.service.acl.AccessControlList list;
-                if(session.getVersioning(file.getContainer()).isEnabled()) {
+                if(new S3VersioningFeature(session).getConfiguration(file.getContainer()).isEnabled()) {
                     list = session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
                             file.getContainer().getName(), file.getKey());
                 }

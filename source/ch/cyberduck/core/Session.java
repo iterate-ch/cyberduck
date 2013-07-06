@@ -23,8 +23,6 @@ import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfigurat
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.identity.AbstractIdentityConfiguration;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.commons.lang.StringUtils;
@@ -283,16 +281,8 @@ public abstract class Session<C> implements TranscriptListener {
         return true;
     }
 
-    public boolean isRenameSupported(Path file) {
+    public boolean isRenameSupported(final Path file) {
         return true;
-    }
-
-    /**
-     * @return True if files can be reverted
-     * @see Path#revert()
-     */
-    public boolean isRevertSupported() {
-        return false;
     }
 
     /**
@@ -300,57 +290,6 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public void noop() throws BackgroundException {
         //
-    }
-
-    /**
-     * @return True if command execution if supported by the protocol.
-     */
-    public boolean isSendCommandSupported() {
-        return false;
-    }
-
-    /**
-     * Sends an arbitrary command to the server
-     *
-     * @param command Command to send
-     * @see #isSendCommandSupported()
-     */
-    public void sendCommand(String command) throws BackgroundException {
-        throw new BackgroundException("Not supported");
-    }
-
-    /**
-     * @return False
-     */
-    public boolean isArchiveSupported() {
-        return false;
-    }
-
-    /**
-     * Create ompressed archive.
-     *
-     * @param archive Archive format description
-     * @param files   List of files to archive
-     */
-    public void archive(final Archive archive, final List<Path> files) throws BackgroundException {
-        this.sendCommand(archive.getCompressCommand(files));
-    }
-
-    /**
-     * @return True if archiving is supported. Always false
-     */
-    public boolean isUnarchiveSupported() {
-        return false;
-    }
-
-    /**
-     * Unpack compressed archive
-     *
-     * @param archive Archive format description
-     * @param file    File to decompress
-     */
-    public void unarchive(final Archive archive, final Path file) throws BackgroundException {
-        this.sendCommand(archive.getDecompressCommand(file));
     }
 
     /**
@@ -487,52 +426,10 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
-     * @return True if symbolic links are supported on UNIX filesystems
-     */
-    public boolean isCreateSymlinkSupported() {
-        return false;
-    }
-
-    /**
      * @return List of known ACL users
      */
     public List<Acl.User> getAvailableAclUsers() {
         return Collections.emptyList();
-    }
-
-    /**
-     * @return If metadata for files are supported
-     */
-    public boolean isMetadataSupported() {
-        return false;
-    }
-
-    /**
-     * @return If CDN distribution configuration is supported
-     * @see #cdn(LoginController)
-     */
-    public boolean isCDNSupported() {
-        return true;
-    }
-
-    public IdentityConfiguration iam(final LoginController prompt) {
-        return new AbstractIdentityConfiguration() {
-            @Override
-            public Credentials getUserCredentials(final String username) {
-                return host.getCdnCredentials();
-            }
-        };
-    }
-
-    public DistributionConfiguration cdn(final LoginController prompt) {
-        // Configure with the same host as S3 to get the same credentials from the keychain.
-        final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCdnCredentials()));
-        session.addTranscriptListener(this);
-        return new CustomOriginCloudFrontDistributionConfiguration(
-                session,
-                // Use login context of current session
-                prompt);
     }
 
     /**
@@ -661,7 +558,17 @@ public abstract class Session<C> implements TranscriptListener {
         return new DescriptiveUrl(null, null);
     }
 
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == DistributionConfiguration.class) {
+            // Configure with the same host as S3 to get the same credentials from the keychain.
+            final S3Session session = new S3Session(
+                    new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCdnCredentials()));
+            session.addTranscriptListener(this);
+            return (T) new CustomOriginCloudFrontDistributionConfiguration(
+                    session,
+                    // Use login context of current session
+                    prompt);
+        }
         return null;
     }
 }

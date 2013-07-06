@@ -1,9 +1,12 @@
 package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;import ch.cyberduck.core.features.UnixPermission;import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.UnixPermission;
 
 import org.junit.Test;
 
@@ -119,6 +122,14 @@ public class FTPSessionTest extends AbstractTestCase {
                 "u", "p"
         ));
         final Session session = new FTPSession(host);
-        assertNotNull(session.getFeature(UnixPermission.class));
+        assertNotNull(session.getFeature(UnixPermission.class, null));
+    }
+
+    @Test
+    public void testFeatures() throws Exception {
+        final Session session = new FTPSession(new Host("h"));
+        assertNotNull(session.getFeature(UnixPermission.class, null));
+        assertNotNull(session.getFeature(Timestamp.class, null));
+        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
     }
 }

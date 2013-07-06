@@ -22,7 +22,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
-import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.i18n.Locale;
 
 import java.io.IOException;
@@ -35,18 +35,18 @@ import com.googlecode.sardine.DavResource;
 import com.googlecode.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class DAVMetadataFeature implements Metadata {
+public class DAVHeadersFeature implements Headers {
 
     private DAVSession session;
 
-    public DAVMetadataFeature(final DAVSession session) {
+    public DAVHeadersFeature(final DAVSession session) {
         this.session = session;
     }
 
     @Override
-    public Map<String, String> get(final Path file) throws BackgroundException {
+    public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         if(file.attributes().isFile()) {
             try {
                 session.message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
@@ -68,7 +68,7 @@ public class DAVMetadataFeature implements Metadata {
     }
 
     @Override
-    public void write(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         if(file.attributes().isFile()) {
             try {
                 session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),

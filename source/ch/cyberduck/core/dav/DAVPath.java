@@ -49,7 +49,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,9 +166,6 @@ public class DAVPath extends HttpPath {
     @Override
     public void mkdir() throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
-
             session.getClient().createDirectory(URIEncoder.encode(this.getAbsolute()));
         }
         catch(SardineException e) {
@@ -183,7 +179,6 @@ public class DAVPath extends HttpPath {
     @Override
     public void rename(final Path renamed) throws BackgroundException {
         try {
-
             session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed.getName()));
 
@@ -194,34 +189,6 @@ public class DAVPath extends HttpPath {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, this);
-        }
-    }
-
-    @Override
-    public void copy(Path copy, BandwidthThrottle throttle, StreamListener listener, final TransferStatus status) throws BackgroundException {
-        if(copy.getSession().equals(session)) {
-            // Copy on same server
-            try {
-
-                session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                        this.getName(), copy));
-
-                if(attributes().isFile()) {
-                    session.getClient().copy(URIEncoder.encode(this.getAbsolute()), URIEncoder.encode(copy.getAbsolute()));
-                    listener.bytesSent(this.attributes().getSize());
-                    status.setComplete();
-                }
-            }
-            catch(SardineException e) {
-                throw new SardineExceptionMappingService().map("Cannot copy {0}", e, this);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, this);
-            }
-        }
-        else {
-            // Copy to different host
-            super.copy(copy, throttle, listener, status);
         }
     }
 

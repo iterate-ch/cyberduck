@@ -32,7 +32,7 @@ import java.text.MessageFormat;
 import ch.ethz.ssh2.SFTPv3FileAttributes;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPTimestampFeature implements Timestamp {
     private static final Logger log = Logger.getLogger(SFTPTimestampFeature.class);
@@ -44,7 +44,7 @@ public class SFTPTimestampFeature implements Timestamp {
     }
 
     @Override
-    public void udpate(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
+    public void update(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
         try {
             session.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                     file.getName(), UserDateFormatterFactory.get().getShortFormat(modified)));

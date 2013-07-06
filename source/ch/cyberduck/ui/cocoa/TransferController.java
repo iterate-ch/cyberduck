@@ -891,7 +891,9 @@ public final class TransferController extends WindowController implements NSTool
             }
             final List<Path> downloads = pasteboard.copy();
             for(Path download : downloads) {
-                download.setLocal(LocalFactory.createLocal(download.getHost().getDownloadFolder(), download.getName()));
+                download.setLocal(LocalFactory.createLocal(
+                        pasteboard.getSession().getHost().getDownloadFolder(),
+                        download.getName()));
             }
             this.addTransfer(new DownloadTransfer(downloads), new AbstractBackgroundAction() {
                 @Override

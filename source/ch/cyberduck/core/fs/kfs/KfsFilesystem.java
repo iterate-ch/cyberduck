@@ -141,7 +141,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         }
                         final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
                         stat.type = file.attributes().isDirectory() ? KfsLibrary.kfstype_t.KFS_DIR : KfsLibrary.kfstype_t.KFS_REG;
-                        if(session.getFeature(Timestamp.class) != null) {
+                        if(session.getFeature(Timestamp.class, new DisabledLoginController()) != null) {
                             stat.mtime = new KfsLibrary.kfstime(file.attributes().getModificationDate() / 1000, 0);
                             stat.atime = new KfsLibrary.kfstime(file.attributes().getAccessedDate() / 1000, 0);
                             stat.ctime = new KfsLibrary.kfstime(file.attributes().getCreationDate() / 1000, 0);
@@ -152,7 +152,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             stat.ctime = new KfsLibrary.kfstime();
                         }
                         stat.size = file.attributes().getSize();
-                        if(session.getFeature(UnixPermission.class) != null) {
+                        if(session.getFeature(UnixPermission.class, new DisabledLoginController()) != null) {
                             final Permission permission = file.attributes().getPermission();
                             if(permission.getOwnerPermissions()[Permission.READ]) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IRUSR;

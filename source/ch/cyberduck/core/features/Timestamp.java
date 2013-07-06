@@ -21,8 +21,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Timestamp {
-    void udpate(Path file, Long created, Long modified, Long accessed) throws BackgroundException;
+    void update(Path file, Long created, Long modified, Long accessed) throws BackgroundException;
 }

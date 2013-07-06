@@ -17,6 +17,7 @@ package ch.cyberduck.core.cf;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
@@ -26,12 +27,13 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
-import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 
@@ -40,6 +42,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.rackspacecloud.client.cloudfiles.FilesAuthenticationResponse;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
@@ -51,7 +54,7 @@ import com.rackspacecloud.client.cloudfiles.FilesRegion;
  *
  * @version $Id$
  */
-public class CFSession extends CloudSession<FilesClient> {
+public class CFSession extends HttpSession<FilesClient> {
     private static final Logger log = Logger.getLogger(CFSession.class);
 
     private Map<String, FilesRegion> regions
@@ -129,42 +132,10 @@ public class CFSession extends CloudSession<FilesClient> {
     }
 
     @Override
-    public boolean isCDNSupported() {
-        for(FilesRegion region : client.getRegions()) {
-            if(null != region.getCDNManagementUrl()) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isCreateFileSupported(final Path workdir) {
+        // Creating files is only possible inside a container.
+        return !workdir.isRoot();
     }
-
-    @Override
-    public boolean isLocationSupported() {
-        return true;
-    }
-
-    @Override
-    public boolean isMetadataSupported() {
-        return true;
-    }
-
-    @Override
-    public DistributionConfiguration cdn(final LoginController prompt) {
-        return new SwiftDistributionConfiguration(this) {
-            @Override
-            public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
-                final Distribution distribution = super.read(container, method);
-                distributions.put(container, distribution);
-                return distribution;
-            }
-        };
-    }
-
-    @Override
-    public IdentityConfiguration iam(final LoginController prompt) {
-        return new DefaultCredentialsIdentityConfiguration(host);
-    }
-
 
     /**
      * @return Publicy accessible URL of given object
@@ -178,12 +149,44 @@ public class CFSession extends CloudSession<FilesClient> {
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type) {
-        if(type == Metadata.class) {
-            return (T) new SwiftMetadataFeature(this);
+    public Set<DescriptiveUrl> getURLs(final Path path) {
+        // Storage URL is not accessible
+        return this.getHttpURLs(path);
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Headers.class) {
+            return (T) new SwiftHeadersFeature(this);
+        }
+        if(type == Location.class) {
+            return (T) new Location() {
+                @Override
+                public String getLocation(final Path container) throws BackgroundException {
+                    return container.attributes().getRegion();
+                }
+            };
         }
         if(type == AnalyticsProvider.class) {
             return (T) new QloudstatAnalyticsProvider();
+        }
+        if(type == IdentityConfiguration.class) {
+            return (T) new DefaultCredentialsIdentityConfiguration(host);
+        }
+        if(type == DistributionConfiguration.class) {
+            for(FilesRegion region : client.getRegions()) {
+                if(null != region.getCDNManagementUrl()) {
+                    return (T) new SwiftDistributionConfiguration(this) {
+                        @Override
+                        public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
+                            final Distribution distribution = super.read(container, method);
+                            distributions.put(container, distribution);
+                            return distribution;
+                        }
+                    };
+                }
+            }
+            return null;
         }
         return null;
     }

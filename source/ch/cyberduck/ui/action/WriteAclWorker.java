@@ -21,9 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AccessControlList;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -55,8 +53,8 @@ public abstract class WriteAclWorker extends Worker<Acl> {
      */
     private boolean recursive;
 
-    public WriteAclWorker(final Session<?> session, final List<Path> files, final Acl acl, final boolean recursive) {
-        this.feature = session.getFeature(AccessControlList.class);
+    public WriteAclWorker(final AccessControlList feature, final List<Path> files, final Acl acl, final boolean recursive) {
+        this.feature = feature;
         this.files = files;
         this.acl = acl;
         this.recursive = recursive;
@@ -65,9 +63,6 @@ public abstract class WriteAclWorker extends Worker<Acl> {
     @Override
     public Acl run() throws BackgroundException {
         for(Path next : files) {
-            if(!next.getSession().isConnected()) {
-                throw new ConnectionCanceledException();
-            }
             if(acl.isModified()) {
                 // Existing entry has been modified
                 feature.write(next, acl, recursive);

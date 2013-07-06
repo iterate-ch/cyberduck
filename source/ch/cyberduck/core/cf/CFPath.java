@@ -53,13 +53,10 @@ import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
 import com.rackspacecloud.client.cloudfiles.FilesException;
 import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
 import com.rackspacecloud.client.cloudfiles.FilesObject;
-import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -341,9 +338,6 @@ public class CFPath extends CloudPath {
     @Override
     public void mkdir() throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
-
             if(this.isContainer()) {
                 // Create container at top level
                 session.getClient().createContainer(session.getRegion(this.getContainer()), this.getName());
@@ -436,35 +430,6 @@ public class CFPath extends CloudPath {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, this);
-        }
-    }
-
-    @Override
-    public void copy(final Path copy, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
-        if(copy.getSession().equals(session)) {
-            // Copy on same server
-            try {
-                session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                        this.getName(), copy));
-
-                if(this.attributes().isFile()) {
-                    session.getClient().copyObject(session.getRegion(this.getContainer()),
-                            this.getContainer().getName(), this.getKey(),
-                            copy.getContainer().getName(), copy.getKey());
-                    listener.bytesSent(this.attributes().getSize());
-                    status.setComplete();
-                }
-            }
-            catch(FilesException e) {
-                throw new FilesExceptionMappingService().map("Cannot copy {0}", e, this);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, this);
-            }
-        }
-        else {
-            // Copy to different host
-            super.copy(copy, throttle, listener, status);
         }
     }
 }

@@ -23,11 +23,8 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
-import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -53,9 +50,7 @@ import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -272,9 +267,6 @@ public class FTPPath extends Path {
     @Override
     public void mkdir() throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
-
             if(!session.getClient().makeDirectory(this.getAbsolute())) {
                 throw new FTPException(session.getClient().getReplyCode(),
                         session.getClient().getReplyString());

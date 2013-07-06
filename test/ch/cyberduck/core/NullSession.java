@@ -34,4 +34,9 @@ public class NullSession extends FTPSession {
     protected void logout() {
         //
     }
+
+    @Override
+    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        return null;
+    }
 }

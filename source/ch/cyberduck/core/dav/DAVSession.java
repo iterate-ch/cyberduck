@@ -29,7 +29,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
-import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.http.HttpSession;
 
 import org.apache.http.HttpStatus;
@@ -91,20 +91,15 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public boolean isMetadataSupported() {
-        return true;
-    }
-
-    @Override
     public String toHttpURL(final Path path) {
         return this.toURL(path);
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type) {
-        if(type == Metadata.class) {
-            return (T) new DAVMetadataFeature(this);
+    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Headers.class) {
+            return (T) new DAVHeadersFeature(this);
         }
-        return null;
+        return super.getFeature(type, prompt);
     }
 }

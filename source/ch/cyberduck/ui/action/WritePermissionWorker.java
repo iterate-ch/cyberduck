@@ -21,9 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -52,8 +50,8 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
      */
     private boolean recursive;
 
-    public WritePermissionWorker(final Session<?> session, final List<Path> files, final Permission permission, final boolean recursive) {
-        this.feature = session.getFeature(UnixPermission.class);
+    public WritePermissionWorker(final UnixPermission feature, final List<Path> files, final Permission permission, final boolean recursive) {
+        this.feature = feature;
         this.files = files;
         this.permission = permission;
         this.recursive = recursive;
@@ -68,9 +66,6 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
     }
 
     private void write(final Path file) throws BackgroundException {
-        if(!file.getSession().isConnected()) {
-            throw new ConnectionCanceledException();
-        }
         if(recursive && file.attributes().isFile()) {
             // Do not write executable bit for files if not already set when recursively updating directory.
             // See #1787

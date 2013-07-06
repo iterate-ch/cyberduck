@@ -21,7 +21,6 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AccessControlList;
 import ch.cyberduck.core.i18n.Locale;
@@ -39,8 +38,8 @@ public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
     private List<Path> files;
 
-    public ReadAclWorker(final Session<?> session, final List<Path> files) {
-        this.feature = session.getFeature(AccessControlList.class);
+    public ReadAclWorker(final AccessControlList feature, final List<Path> files) {
+        this.feature = feature;
         this.files = files;
     }
 
