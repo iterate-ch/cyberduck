@@ -178,7 +178,8 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
-        final SymlinkResolver symlinkResolver = new UploadSymlinkResolver(session.getFeature(Symlink.class, null), this.getRoots());
+        final Symlink symlink = session.getFeature(Symlink.class, null);
+        final SymlinkResolver symlinkResolver = new UploadSymlinkResolver(symlink, this.getRoots());
         if(file.getLocal().attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
             final String target = symlinkResolver.relativize(file.getLocal().getAbsolute(),
@@ -186,7 +187,7 @@ public class UploadTransfer extends Transfer {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create symbolic link from %s to %s", file, target));
             }
-            file.symlink(target);
+            symlink.symlink(file, target);
             status.setComplete();
         }
         else if(file.attributes().isFile()) {

@@ -19,9 +19,12 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LoginControllerFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -63,12 +66,13 @@ public class CreateSymlinkController extends FileController {
 
     protected void createSymlink(final Path selected, final String symlink, final boolean edit) {
         final BrowserController c = (BrowserController) parent;
-        final Path link = PathFactory.createPath(this.getSession(), this.getWorkdir(), symlink, Path.FILE_TYPE);
+        final Session<?> session = this.getSession();
+        final Path link = PathFactory.createPath(session, this.getWorkdir(), symlink, Path.FILE_TYPE);
         c.background(new BrowserBackgroundAction(c) {
             @Override
             public void run() throws BackgroundException {
                 // Symlink pointing to existing file
-                link.symlink(selected.getName());
+                session.getFeature(Symlink.class, LoginControllerFactory.get(c)).symlink(link, selected.getName());
             }
 
             @Override

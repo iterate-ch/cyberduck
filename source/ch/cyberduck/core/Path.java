@@ -236,6 +236,11 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     * @return The session this path uses to send commands
+     */
+    public abstract Session<?> getSession();
+
+    /**
      * Default implementation returning a reference to self. You can override this
      * if you need a different strategy to compare hashcode and equality for caching
      * in a model.
@@ -256,10 +261,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     public void setAttributes(final PathAttributes attributes) {
         this.attributes = attributes;
     }
-
-    public abstract void mkdir() throws BackgroundException;
-
-    public abstract AttributedList<Path> list() throws BackgroundException;
 
     /**
      * @return the path relative to its parent directory
@@ -318,25 +319,14 @@ public abstract class Path extends AbstractPath implements Serializable {
         return null;
     }
 
-    /**
-     * Create a symbolic link on the server. Creates a link "src" that points
-     * to "target".
-     *
-     * @param target Target file of symbolic link
-     */
-    public void symlink(String target) throws BackgroundException {
-        // No op.
-    }
+    public abstract void mkdir() throws BackgroundException;
+
+    public abstract AttributedList<Path> list() throws BackgroundException;
 
     /**
      * @param renamed Must be an absolute path
      */
     public abstract void rename(Path renamed) throws BackgroundException;
-
-    /**
-     * @return The session this path uses to send commands
-     */
-    public abstract Session<?> getSession();
 
     /**
      * Upload an empty file.
