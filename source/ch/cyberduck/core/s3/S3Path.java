@@ -29,7 +29,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cloud.CloudPath;
-import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -71,11 +70,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -121,7 +118,7 @@ public class S3Path extends CloudPath {
      *
      * @see #getDetails()
      */
-    protected StorageObject _details;
+    protected StorageObject details;
 
     /**
      * Retrieve and cache object details.
@@ -130,77 +127,27 @@ public class S3Path extends CloudPath {
      */
     protected StorageObject getDetails() throws BackgroundException {
         final String container = this.getContainer().getName();
-        if(null == _details || !_details.isMetadataComplete()) {
-            try {
-                if(this.attributes().isDuplicate()) {
-                    _details = session.getClient().getVersionedObjectDetails(this.attributes().getVersionId(),
-                            container, this.getKey());
-                }
-                else {
-                    _details = session.getClient().getObjectDetails(container, this.getKey());
-                }
-            }
-            catch(ServiceException e) {
-                // Anonymous services can only get a publicly-readable object's details
-                log.warn("Cannot read object details:" + e.getMessage());
-            }
-        }
-        if(null == _details) {
-            log.warn("Cannot read object details.");
-            StorageObject object = new StorageObject(this.getKey());
+        if(session.getHost().getCredentials().isAnonymousLogin()) {
+            log.info("Anonymous cannot access object details");
+            final StorageObject object = new StorageObject(this.getKey());
             object.setBucketName(container);
             return object;
         }
-        return _details;
-    }
-
-    private static final String METADATA_HEADER_EXPIRES = "Expires";
-
-    /**
-     * Implements http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.21
-     *
-     * @param expiration Expiration date to set in header
-     */
-    public void setExpiration(final Date expiration) throws BackgroundException {
-        try {
-
-            // You can also copy an object and update its metadata at the same time. Perform a
-            // copy-in-place  (with the same bucket and object names for source and destination)
-            // to update an object's metadata while leaving the object's data unchanged.
-            final StorageObject target = this.getDetails();
-            target.addMetadata(METADATA_HEADER_EXPIRES, new RFC1123DateFormatter().format(expiration, TimeZone.getTimeZone("UTC")));
-            session.getClient().updateObjectMetadata(this.getContainer().getName(), target);
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e, this);
-        }
-    }
-
-    public static final String METADATA_HEADER_CACHE_CONTROL = "Cache-Control";
-
-    /**
-     * Implements http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
-     *
-     * @param maxage Timespan in seconds from when the file is requested
-     */
-    public void setCacheControl(final String maxage) throws BackgroundException {
-        try {
-
-            // You can also copy an object and update its metadata at the same time. Perform a
-            // copy-in-place  (with the same bucket and object nexames for source and destination)
-            // to update an object's metadata while leaving the object's data unchanged.
-            final StorageObject target = this.getDetails();
-            if(StringUtils.isEmpty(maxage)) {
-                target.removeMetadata(METADATA_HEADER_CACHE_CONTROL);
+        if(null == details || !details.isMetadataComplete()) {
+            try {
+                if(this.attributes().isDuplicate()) {
+                    details = session.getClient().getVersionedObjectDetails(this.attributes().getVersionId(),
+                            container, this.getKey());
+                }
+                else {
+                    details = session.getClient().getObjectDetails(container, this.getKey());
+                }
             }
-            else {
-                target.addMetadata(METADATA_HEADER_CACHE_CONTROL, maxage);
+            catch(ServiceException e) {
+                throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, this);
             }
-            session.getClient().updateObjectMetadata(this.getContainer().getName(), target);
         }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e, this);
-        }
+        return details;
     }
 
     @Override
