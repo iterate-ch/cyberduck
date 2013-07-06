@@ -47,11 +47,11 @@ public class S3AccessControlListFeature implements AccessControlList {
 
     @Override
     public Acl read(final Path file) throws BackgroundException {
+        final Credentials credentials = session.getHost().getCredentials();
+        if(credentials.isAnonymousLogin()) {
+            return Acl.EMPTY;
+        }
         try {
-            final Credentials credentials = session.getHost().getCredentials();
-            if(credentials.isAnonymousLogin()) {
-                return Acl.EMPTY;
-            }
             if(file.isContainer()) {
                 // This method can be performed by anonymous services, but can only succeed if the
                 // bucket's existing ACL already allows write access by the anonymous user.
