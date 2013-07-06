@@ -2894,6 +2894,8 @@ sv.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 sv.lproj/Status.strings -text svneol=unset#text/utf-16
 sv.lproj/Transfer.strings -text svneol=unset#text/utf-16
 test/ch/cyberduck/Test.csproj -text
+test/ch/cyberduck/core/aquaticprime/Info.plist -text
+test/ch/cyberduck/core/aquaticprime/receipt -text
 test/ch/cyberduck/core/history/mirror.switch.ch[!!-~]–[!!-~]FTP.duck -text
 test/ch/cyberduck/core/importer/com.fetchsoftworks.Fetch.Shortcuts.plist -text
 test/ch/cyberduck/core/importer/com.fivedetails.Bookmarks.plist -text
