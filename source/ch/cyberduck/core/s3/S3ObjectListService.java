@@ -21,6 +21,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -122,7 +123,7 @@ public class S3ObjectListService implements ListService {
 
             final StorageObject[] objects = chunk.getObjects();
             for(StorageObject object : objects) {
-                final Path p = new Path(parent, Path.getName(object.getKey()), Path.FILE_TYPE);
+                final Path p = new Path(parent, Path.getName(PathNormalizer.normalize(object.getKey())), Path.FILE_TYPE);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 p.attributes().setRegion(bucket.attributes().getRegion());
@@ -161,7 +162,7 @@ public class S3ObjectListService implements ListService {
                     log.warn("Skipping prefix " + common);
                     continue;
                 }
-                final Path p = new Path(parent, Path.getName(common), Path.DIRECTORY_TYPE);
+                final Path p = new Path(parent, Path.getName(PathNormalizer.normalize(common)), Path.DIRECTORY_TYPE);
                 if(children.contains(p.getReference())) {
                     // There is already a placeholder object
                     continue;
@@ -192,7 +193,7 @@ public class S3ObjectListService implements ListService {
             if((marker.isDeleteMarker() && marker.isLatest())
                     || !marker.isLatest()) {
                 // Latest version already in default listing
-                final Path p = new Path(parent, Path.getName(marker.getKey()), Path.FILE_TYPE);
+                final Path p = new Path(parent, Path.getName(PathNormalizer.normalize(marker.getKey())), Path.FILE_TYPE);
                 // Versioning is enabled if non null.
                 p.attributes().setVersionId(marker.getVersionId());
                 p.attributes().setRevision(++i);
