@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,16 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.synchronization;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.transfer.synchronisation;
-using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     internal class SyncPromptModel : TransferPromptModel
     {
-        private readonly PathFilter _filter;
+        private readonly Filter _filter;
 
         public SyncPromptModel(TransferPromptController controller, Transfer transfer) : base(controller, transfer)
         {
-            _filter = new SyncPathFilter(transfer);
+            _filter = new PromptFilter();
         }
 
         /// <summary>
@@ -38,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// decide which files to include in the prompt dialog
         /// </summary>
         /// <returns></returns>
-        public override PathFilter Filter()
+        public override Filter Filter()
         {
             return _filter;
         }
@@ -63,7 +62,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (path.attributes().isFile())
             {
-                if (path.exists())
+                if (Transfer.cache().lookup(path.getReference()) != null)
                 {
                     if (path.attributes().getSize() == 0)
                     {
@@ -83,7 +82,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override object GetCreateImage(Path path)
         {
-            if (!(path.exists() && path.getLocal().exists()))
+            if (!(Transfer.cache().lookup(path.getReference()) != null && path.getLocal().exists()))
             {
                 return IconCache.Instance.IconForName("plus");
             }
@@ -94,7 +93,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (path.attributes().isDirectory())
             {
-                if (path.exists() && path.getLocal().exists())
+                if (Transfer.cache().lookup(path.getReference()) != null && path.getLocal().exists())
                 {
                     return null;
                 }
@@ -109,24 +108,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 return IconCache.Instance.IconForName("transfer-upload", 16);
             }
             return null;
-        }
-
-        internal class SyncPathFilter : PromptFilter
-        {
-            protected static Logger Log = Logger.getLogger(typeof (SyncPathFilter).FullName);
-            private readonly Transfer _transfer;
-
-            public SyncPathFilter(Transfer transfer)
-            {
-                _transfer = transfer;
-            }
-
-            public override bool accept(AbstractPath ap)
-            {
-                Path child = (Path) ap;
-                Log.debug("accept:" + child);
-                return base.accept(child);
-            }
         }
     }
 }

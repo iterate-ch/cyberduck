@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using Ch.Cyberduck.Ui.Controller;
 using Microsoft.Win32;
+using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using java.util;
 using org.apache.log4j;
@@ -53,9 +54,9 @@ namespace Ch.Cyberduck.Core.Editor
             return Utils.ConvertToJavaList(_registeredEditors);
         }
 
-        public override ch.cyberduck.core.editor.Editor create(Controller c, Application application, Path path)
+        public override ch.cyberduck.core.editor.Editor create(Controller c, Session s, Application application, Path path)
         {
-            return new WatchEditor((BrowserController) c, application, path);
+            return new WatchEditor((BrowserController) c, s, application, path);
         }
 
         protected override object create()

@@ -173,7 +173,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                    .getModificationDate()));
                     }
 
-                    View.RemoteFileUrl = selected.toURL(false);
+                    View.RemoteFileUrl = ((Session) Transfer.getSessions().iterator().next()).toURL(selected);
                     if (selected.attributes().getSize() == -1)
                     {
                         View.RemoteFileSize = UnknownString;

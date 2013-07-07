@@ -816,7 +816,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             toolStripProgress.Visible = false;
         }
 
-        public PathFilter FilenameFilter
+        public Filter FilenameFilter
         {
             set
             {
@@ -2756,9 +2756,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         /// </summary>
         private class FilterWrapper : IModelFilter
         {
-            private readonly PathFilter _del;
+            private readonly Filter _del;
 
-            public FilterWrapper(PathFilter del)
+            public FilterWrapper(Filter del)
             {
                 _del = del;
             }

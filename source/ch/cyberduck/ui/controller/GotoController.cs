@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Path dir;
             if (!filename.StartsWith(Path.DELIMITER.ToString()))
             {
-                dir = PathFactory.createPath(BrowserController.getSession(), workdir.getAbsolute(), filename,
+                dir = PathFactory.createPath(BrowserController.getSession(), workdir, filename,
                                              AbstractPath.DIRECTORY_TYPE);
             }
             else

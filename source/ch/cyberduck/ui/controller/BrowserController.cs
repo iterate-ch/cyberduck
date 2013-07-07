@@ -43,6 +43,8 @@ using ch.cyberduck.core.transfer.move;
 using ch.cyberduck.core.transfer.synchronisation;
 using ch.cyberduck.core.transfer.upload;
 using ch.cyberduck.ui;
+using ch.cyberduck.ui.action;
+using ch.cyberduck.ui.controller.threading;
 using java.lang;
 using java.security.cert;
 using java.util;
@@ -60,28 +62,27 @@ using Timer = System.Threading.Timer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class BrowserController : WindowController<IBrowserView>, TranscriptListener, CollectionListener
+    public class BrowserController : WindowController<IBrowserView>, TranscriptListener, CollectionListener,
+                                     ProgressListener
     {
         public delegate void CallbackDelegate();
 
         public delegate bool DialogCallbackDelegate(DialogResult result);
 
-        internal static readonly PathFilter HiddenFilter = new HiddenFilesPathFilter();
+        internal static readonly Filter HiddenFilter = new HiddenFilesPathFilter();
 
         private static readonly Logger Log = Logger.getLogger(typeof (BrowserController).FullName);
-        private static readonly PathFilter NullFilter = new NullPathFilter();
+        private static readonly Filter NullFilter = new NullPathFilter();
         protected static string DEFAULT = Locale.localizedString("Default");
-        private readonly List<Path> _backHistory = new List<Path>();
         private readonly BookmarkCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
         private readonly BookmarkModel _bookmarkModel;
         private readonly TreeBrowserModel _browserModel;
-        private readonly List<Path> _forwardHistory = new List<Path>();
+        private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
         private Comparator _comparator = new NullComparator();
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
         private ConnectionListener _listener;
-        private ProgessListener _progress;
 
         /*
          * No file filter.
@@ -89,8 +90,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private Session _session;
         private bool _sessionShouldBeConnected;
         private bool _showHiddenFiles;
-        private Path _workdir;
         private String dropFolder; // holds the drop folder of the current drag operation
+
+        /**
+         * Navigation history
+        */
 
         public BrowserController(IBrowserView view)
         {
@@ -332,21 +336,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public List<Path> BackHistory
-        {
-            get { return _backHistory; }
-        }
-
-        public List<Path> ForwardHistory
-        {
-            get { return _forwardHistory; }
-        }
-
-        public Path Workdir
-        {
-            get { return _workdir; }
-            set { _workdir = value; }
-        }
+        public Path Workdir { get; set; }
 
         /// <summary>
         ///
@@ -381,7 +371,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public PathFilter FilenameFilter { get; set; }
+        public Filter FilenameFilter { get; set; }
 
         public Comparator FilenameComparator
         {
@@ -416,6 +406,28 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             AsyncDelegate mainAction = delegate { PopulateQuickConnect(); };
             Invoke(mainAction);
+        }
+
+        public void message(string msg)
+        {
+            string label = null;
+            if (Utils.IsNotBlank(msg))
+            {
+                label = msg;
+            }
+            else
+            {
+                if (IsConnected())
+                {
+                    label = String.Format(Locale.localizedString("{0} Files"), View.NumberOfFiles);
+                }
+                else
+                {
+                    label = Locale.localizedString("Disconnected", "Status");
+                }
+            }
+            AsyncDelegate updateLabel = delegate { View.StatusLabel = label; };
+            Invoke(updateLabel);
         }
 
         public void log(bool request, string transcript)
@@ -539,17 +551,17 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                for (int i = 0; i < SelectedPath.getURLs().size(); i++)
+                for (int i = 0; i < _session.getURLs(SelectedPath).size(); i++)
                 {
                     DescriptiveUrl descUrl =
-                        (DescriptiveUrl) SelectedPath.getURLs().toArray()[i];
+                        (DescriptiveUrl) _session.getURLs(SelectedPath).toArray()[i];
                     KeyValuePair<String, List<String>> entry =
                         new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                     items.Add(entry);
 
                     foreach (Path path in selected)
                     {
-                        entry.Value.Add(((DescriptiveUrl) path.getURLs().toArray()[i]).getUrl());
+                        entry.Value.Add(((DescriptiveUrl) _session.getURLs(path).toArray()[i]).getUrl());
                     }
                 }
             }
@@ -569,10 +581,10 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                for (int i = 0; i < SelectedPath.getHttpURLs().size(); i++)
+                for (int i = 0; i < _session.getHttpURLs(SelectedPath).size(); i++)
                 {
                     DescriptiveUrl descUrl =
-                        (DescriptiveUrl) SelectedPath.getHttpURLs().toArray()[i];
+                        (DescriptiveUrl) _session.getHttpURLs(SelectedPath).toArray()[i];
                     KeyValuePair<String, List<String>> entry =
                         new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                     items.Add(entry);
@@ -580,7 +592,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (Path path in selected)
                     {
                         entry.Value.Add(
-                            ((DescriptiveUrl) path.getHttpURLs().toArray()[i]).getUrl());
+                            ((DescriptiveUrl) _session.getHttpURLs(path).toArray()[i]).getUrl());
                     }
                 }
             }
@@ -671,10 +683,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 if (e.DropTargetLocation == DropTargetLocation.Item)
                 {
-                    foreach (string file in data.GetFileDropList())
+                    foreach (string filename in data.GetFileDropList())
                     {
                         //check if we received at least one non-duck file
-                        if (!".duck".Equals(Utils.GetSafeExtension(file)))
+                        if (!".duck".Equals(Utils.GetSafeExtension(filename)))
                         {
                             // The bookmark this file has been dropped onto
                             Host destination = (Host) e.DropTargetItem.RowObject;
@@ -688,8 +700,10 @@ namespace Ch.Cyberduck.Ui.Controller
                                 }
                                 // Upload to the remote host this bookmark points to
                                 roots.Add(PathFactory.createPath(session,
-                                                                 destination.getDefaultPath(),
-                                                                 LocalFactory.createLocal(upload)));
+                                                                 PathFactory.createPath(session,
+                                                                                        destination.getDefaultPath(),
+                                                                                        AbstractPath.DIRECTORY_TYPE),
+                                                                 LocalFactory.createLocal(filename)));
                             }
                             if (roots.Count > 0)
                             {
@@ -990,7 +1004,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         Session source = SessionFactory.createSession(path.getSession().getHost());
                         Path next = PathFactory.createPath(source, path.getAsDictionary());
-                        Path renamed = PathFactory.createPath(target, destination.getAbsolute(), next.getName(),
+                        Path renamed = PathFactory.createPath(target, destination, next.getName(),
                                                               next.attributes().getType());
                         files.Add(next, renamed);
                     }
@@ -1003,7 +1017,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (Path path in dropargs.SourceModels)
                     {
                         Path next = PathFactory.createPath(session, path.getAsDictionary());
-                        Path renamed = PathFactory.createPath(session, destination.getAbsolute(), next.getName(),
+                        Path renamed = PathFactory.createPath(session, destination, next.getName(),
                                                               next.attributes().getType());
                         files.Add(next, renamed);
                     }
@@ -1061,7 +1075,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ItemsChanged()
         {
-            UpdateStatusLabel();
+            SetStatus();
         }
 
         private void View_Certificate()
@@ -1136,7 +1150,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return;
                 }
-                background(new EncodingBrowserBackgroundAction(this, encoding));
+                _session.getHost().setEncoding(encoding);
+                Mount(_session.getHost());
             }
         }
 
@@ -1263,19 +1278,15 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected override void Invalidate()
         {
-            if (HasSession())
-            {
-                _session.removeProgressListener(_progress);
-                _session.removeConnectionListener(_listener);
-            }
             _bookmarkCollection.removeListener(this);
+            base.Invalidate();
         }
 
         private void View_OpenUrl()
         {
             foreach (Path selected in SelectedPaths)
             {
-                Utils.StartProcess(selected.toHttpURL());
+                Utils.StartProcess(_session.toHttpURL(selected));
             }
         }
 
@@ -1339,12 +1350,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateHistoryForward()
         {
-            return IsMounted() && ForwardHistory.Count > 0;
+            return IsMounted() && _navigation.getForward().size() > 0;
         }
 
         private bool View_ValidateHistoryBack()
         {
-            return IsMounted() && BackHistory.Count > 1;
+            return IsMounted() && _navigation.getBack().size() > 1;
         }
 
         private bool View_ValidateGotoFolder()
@@ -1374,6 +1385,10 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private void Disconnect()
         {
+            if (_inspector != null)
+            {
+                _inspector.View.Close();
+            }
             Background(new DisconnectAction(this));
         }
 
@@ -1693,7 +1708,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             Session session = getTransferSession();
             List roots = Utils.ConvertToJavaList(paths, path => PathFactory.createPath(session,
-                                                                                       destination.getAbsolute(),
+                                                                                       destination,
                                                                                        LocalFactory.createLocal(path)));
             Transfer q = new UploadTransfer(roots);
             transfer(q);
@@ -1839,7 +1854,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (!String.IsNullOrEmpty(newName) && !newName.Equals(path.getName()))
             {
-                Path renamed = PathFactory.createPath(getSession(), path.getParent().getAbsolute(), newName,
+                Path renamed = PathFactory.createPath(getSession(), path.getParent(), newName,
                                                       path.attributes().getType());
                 RenamePath(path, renamed);
             }
@@ -1937,7 +1952,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     Session session = getTransferSession();
                     foreach (string file in dropList)
                     {
-                        Path p = PathFactory.createPath(session, destination.getAbsolute(),
+                        Path p = PathFactory.createPath(session, destination,
                                                         LocalFactory.createLocal(file));
                         roots.Add(p);
                     }
@@ -2048,11 +2063,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 Editor editor;
                 if (Utils.IsBlank(exe))
                 {
-                    editor = EditorFactory.instance().create(this, selected);
+                    editor = EditorFactory.instance().create(this, _session, selected);
                 }
                 else
                 {
-                    editor = EditorFactory.instance().create(this, new Application(exe, null), selected);
+                    editor = EditorFactory.instance().create(this, _session, new Application(exe, null), selected);
                 }
                 editor.open();
             }
@@ -2106,17 +2121,21 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_PathSelectionChanged()
         {
             string selected = View.SelectedComboboxPath;
-            if(selected != null) {
-                final Path workdir = Workdir;
+            if (selected != null)
+            {
+                Path workdir = Workdir;
                 Path p = workdir;
                 while(!p.getAbsolute().equals(selected)) {
+                {
                     p = p.getParent();
                 }
                 SetWorkdir(p);
-                if(workdir.getParent().equals(p)) {
+                if (workdir.getParent().equals(p))
+                {
                     SetWorkdir(p, workdir);
                 }
-                else {
+                else
+                {
                     SetWorkdir(p);
                 }
             }
@@ -2133,18 +2152,9 @@ namespace Ch.Cyberduck.Ui.Controller
             SetWorkdir(previous.getParent(), previous);
         }
 
-        private void View_HistoryForward()
-        {
-            Path selected = GetForwardPath();
-            if (selected != null)
-            {
-                SetWorkdir(selected);
-            }
-        }
-
         private void View_HistoryBack()
         {
-            Path selected = GetPreviousPath();
+            Path selected = _navigation.back();
             if (selected != null)
             {
                 Path previous = Workdir;
@@ -2156,6 +2166,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     SetWorkdir(selected);
                 }
+            }
+        }
+
+        private void View_HistoryForward()
+        {
+            Path selected = _navigation.forward();
+            if (selected != null)
+            {
+                SetWorkdir(selected);
             }
         }
 
@@ -2243,7 +2262,12 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="useBrowserConnection"></param>
         public void transfer(Transfer transfer, List<Path> selected, bool browser)
         {
-            this.transfer(transfer, selected, browser, new LazyTransferPrompt(this, transfer));
+            List<Path> selected = new List<Path>();
+            foreach (Path s in Utils.ConvertFromJavaList<Path>(transfer.getRoots(), null))
+            {
+                selected.Add(PathFactory.createPath(getSession(), s.getAsDictionary()));
+            }
+            this.transfer(transfer, selected, browser, prompt);        }
         }
 
         /// <summary>
@@ -2255,12 +2279,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="prompt"></param>
         public void transfer(Transfer transfer, bool browser, TransferPrompt prompt)
         {
-            List<Path> selected = new List<Path>();
-            foreach (Path s in Utils.ConvertFromJavaList<Path>(transfer.getRoots(), null))
-            {
-                selected.Add(PathFactory.createPath(getSession(), s.getAsDictionary()));
-            }
-            this.transfer(transfer, selected, browser, prompt);
+            this.transfer(transfer, Utils.ConvertFromJavaList<Path>(transfer.getRoots(), null), browser, prompt);
         }
 
         public void transfer(Transfer transfer, IList<Path> changed, bool browser, TransferPrompt prompt)
@@ -2344,6 +2363,15 @@ namespace Ch.Cyberduck.Ui.Controller
             RefreshParentPaths(changed, new List<Path>());
         }
 
+        public Path Lookup(PathReference reference)
+        {
+            if (IsMounted())
+            {
+                return getSession().cache().lookup(reference);
+            }
+            return null;
+        }
+
         public void RefreshParentPaths(IList<Path> changed, IList<Path> selected)
         {
             bool rootRefreshed = false; //prevent multiple root updates
@@ -2392,7 +2420,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.SetBrowserModel(null);
             }
             View.FilenameFilter = FilenameFilter;
-            UpdateStatusLabel();
         }
 
         public void SetWorkdir(Path directory)
@@ -2415,18 +2442,34 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="selected"></param>
         public void SetWorkdir(Path directory, List<Path> selected)
         {
-            if (null == directory)
+            Workdir = directory;
+            if (Workdir != null)
             {
-                // Clear the browser view if no working directory is given
-                Invoke(delegate
-                    {
-                        Workdir = null;
-                        UpdateNavigationPaths();
-                        ReloadData(false);
-                    });
-                return;
+                // Update the current working directory
+                _navigation.add(Workdir);
+                // Change to last selected browser view
+                BrowserSwitch(selected);
             }
-            Background(new WorkdirAction(this, directory, selected));
+            else
+            {
+                ReloadData(false);
+            }
+        }
+
+        private void BrowserSwitch(List<Path> selected)
+        {
+            // Remove any custom file filter
+            SetPathFilter(null);
+
+            UpdateNavigationPaths();
+
+            // Mark the browser data source as dirty
+            ReloadData(selected);
+
+            // Change to the browser view
+            ToggleView(BrowserView.File);
+
+            View.FocusBrowser();
         }
 
         private void UpdateNavigationPaths()
@@ -2479,11 +2522,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             SelectedPaths = selected;
-            UpdateStatusLabel();
+            SetStatus();
         }
 
         public void Mount(Host host)
         {
+            if (Log.isDebugEnabled())
+            {
+                Log.debug(string.Format("Mount session for {0}", host));
+            }
             CallbackDelegate callbackDelegate = delegate
                 {
                     // The browser has no session, we are allowed to proceed
@@ -2502,37 +2549,13 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>A session object bound to this browser controller</returns>
         private Session Init(Host host)
         {
-            if (HasSession())
-            {
-                _session.removeProgressListener(_progress);
-                _session.removeConnectionListener(_listener);
-            }
             _session = SessionFactory.createSession(host);
             SetWorkdir(null);
             View.SelectedEncoding = _session.getEncoding();
-            _session.addProgressListener(_progress = new ProgessListener(this));
-            _session.addConnectionListener(_listener = new ConnectionAdapter(this, host));
             View.ClearTranscript();
-            ClearBackHistory();
-            ClearForwardHistory();
+            _navigation.clear();
             _session.addTranscriptListener(this);
             return _session;
-        }
-
-        /// <summary>
-        /// Remove all entries from the back path history
-        /// </summary>
-        public void ClearBackHistory()
-        {
-            _backHistory.Clear();
-        }
-
-        /// <summary>
-        /// Remove all entries from the forward path history
-        /// </summary>
-        public void ClearForwardHistory()
-        {
-            _forwardHistory.Clear();
         }
 
         // some simple caching as _session.isConnected() throws a ConnectionCanceledException if not connected
@@ -2684,113 +2707,30 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
 
-        /// <summary>
-        /// Will close the session but still display the current working directory without any confirmation
-        /// from the user
-        /// </summary>
-        private void UnmountImpl()
+        public void SetStatus()
         {
-            // This is not synchronized to the <code>mountingLock</code> intentionally; this allows to unmount
-            // sessions not yet connected
-            if (HasSession())
-            {
-                //Close the connection gracefully
-                _session.close();
-            }
-        }
-
-        public void UpdateStatusLabel()
-        {
-            string label = Locale.localizedString("Disconnected", "Status");
-
             switch (View.CurrentView)
             {
+                case BrowserView.Bookmark:
+                    message(string.Format("{0} {1}", View.NumberOfBookmarks, Locale.localizedString("Bookmarks")));
+                    break;
                 case BrowserView.File:
                     BackgroundAction current = getActions().getCurrent();
                     if (null == current)
                     {
-                        if (IsConnected())
-                        {
-                            label = String.Format(Locale.localizedString("{0} Files"), View.NumberOfFiles);
-                        }
+                        message(null);
                     }
                     else
                     {
-                        if (Utils.IsNotBlank(_progress.Laststatus))
-                        {
-                            label = _progress.Laststatus;
-                        }
-                        else
-                        {
-                            label = current.getActivity();
-                        }
+                        message(current.getActivity());
                     }
                     break;
-                case BrowserView.Bookmark:
-                case BrowserView.History:
-                case BrowserView.Bonjour:
-                    label = View.NumberOfBookmarks + " " + Locale.localizedString("Bookmarks");
-                    break;
             }
-            UpdateStatusLabel(label);
         }
 
-        public void UpdateStatusLabel(string label)
+        public void SetStatus(string label)
         {
             View.StatusLabel = label;
-        }
-
-        public void AddPathToHistory(Path path)
-        {
-            if (_backHistory.Count > 0)
-            {
-                // Do not add if this was a reload
-                if (path.equals(_backHistory.Contains(_backHistory[_backHistory.Count - 1])))
-                {
-                    return;
-                }
-            }
-            _backHistory.Add(path);
-        }
-
-        /// <summary>
-        /// Returns the prevously browsed path and moves it to the forward history
-        /// </summary>
-        /// <returns>The previously browsed path or null if there is none</returns>
-        public Path GetPreviousPath()
-        {
-            int size = _backHistory.Count;
-            if (size > 1)
-            {
-                _forwardHistory.Add(_backHistory[size - 1]);
-                Path p = _backHistory[size - 2];
-                //delete the fetched path - otherwise we produce a loop
-                _backHistory.RemoveAt(size - 1);
-                _backHistory.RemoveAt(size - 2);
-                return p;
-            }
-            if (1 == size)
-            {
-                _forwardHistory.Add(_backHistory[size - 1]);
-                return _backHistory[size - 1];
-            }
-            return null;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns>The last path browsed before #getPreviousPath was called</returns>
-        public Path GetForwardPath()
-        {
-            int size = _forwardHistory.Count;
-            if (size > 0)
-            {
-                Path path = _forwardHistory[size - 1];
-                _forwardHistory.RemoveAt(size - 1);
-                return path;
-            }
-            return null;
         }
 
         private void PopulateQuickConnect()
@@ -2955,7 +2895,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void DeletePathsImpl(List<Path> files)
         {
-            background(new DeleteAction(this, files));
+            background(new DeleteAction(this, LoginControllerFactory.get(this), Utils.ConvertToJavaList(files)));
         }
 
         public void SetPathFilter(string searchString)
@@ -3001,7 +2941,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 for (enumerator = selected.GetEnumerator(); enumerator.MoveNext();)
                 {
                     Path item = enumerator.Current;
-                    if (item.exists())
+                    if (Lookup(item.getReference()) != null)
                     {
                         if (i < 10)
                         {
@@ -3076,7 +3016,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 case BrowserView.File:
                     View.CurrentView = BrowserView.File;
-                    UpdateStatusLabel();
+                    SetStatus();
                     //ReloadData(false); //not necessary?
                     break;
                 case BrowserView.Bookmark:
@@ -3123,7 +3063,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             //Note: expensive for a big bookmark list (might need a refactoring)
             View.SetBookmarkModel(_bookmarkModel.Source, selected);
-            UpdateStatusLabel();
+            SetStatus();
         }
 
         private class BookmarkFilter : HostFilter
@@ -3143,64 +3083,6 @@ namespace Ch.Cyberduck.Ui.Controller
                             ? false
                             : host.getComment().ToLower().Contains(_searchString.ToLower()))
                        || host.getHostname().ToLower().Contains(_searchString.ToLower());
-            }
-        }
-
-        internal class ConnectionAdapter : ConnectionListener
-        {
-            private readonly BrowserController _controller;
-            private readonly Host _host;
-
-            public ConnectionAdapter(BrowserController controller, Host host)
-            {
-                _controller = controller;
-                _host = host;
-            }
-
-            public void connectionWillOpen()
-            {
-                _controller._sessionShouldBeConnected = true;
-                AsyncDelegate mainAction = delegate
-                    {
-                        _controller.View.RefreshBookmark(_controller.getSession().getHost());
-                        _controller.View.WindowTitle = _host.getNickname();
-                    };
-                _controller.Invoke(new SimpleWindowMainAction(mainAction, _controller));
-            }
-
-            public void connectionDidOpen()
-            {
-                AsyncDelegate mainAction = delegate
-                    {
-                        _controller.View.RefreshBookmark(_controller.getSession().getHost());
-                        _controller.View.SecureConnection = _controller._session.isSecure();
-                        _controller.View.CertBasedConnection =
-                            _controller._session is SSLSession;
-                        _controller.View.SecureConnectionVisible = true;
-                    };
-                _controller.Invoke(new SimpleWindowMainAction(mainAction, _controller));
-            }
-
-            public void connectionWillClose()
-            {
-            }
-
-            public void connectionDidClose()
-            {
-                _controller._sessionShouldBeConnected = false;
-                AsyncDelegate mainAction = delegate
-                    {
-                        _controller.View.RefreshBookmark(_controller.getSession().getHost());
-                        if (!_controller.IsMounted())
-                        {
-                            _controller.View.WindowTitle =
-                                Preferences.instance().getProperty(
-                                    "application.name");
-                        }
-                        _controller.View.SecureConnectionVisible = false;
-                        _controller.UpdateStatusLabel();
-                    };
-                _controller.Invoke(new SimpleWindowMainAction(mainAction, _controller));
             }
         }
 
@@ -3236,7 +3118,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class CustomPathFilter : PathFilter, IModelFilter
+        private class CustomPathFilter : Filter, IModelFilter
         {
             private readonly BrowserController _controller;
             private readonly String _searchString;
@@ -3247,61 +3129,54 @@ namespace Ch.Cyberduck.Ui.Controller
                 _controller = controller;
             }
 
-            public bool Filter(object modelObject)
+            public bool accept(object p)
             {
-                return accept((Path) modelObject);
-            }
-
-            public bool accept(AbstractPath file)
-            {
-                if (file.getName().ToLower().IndexOf(_searchString.ToLower()) != -1)
+                AbstractPath path = (AbstractPath) p;
+                if (path.getName().ToLower().IndexOf(_searchString.ToLower()) != -1)
                 {
                     // Matching filename
                     return true;
                 }
-                if (file.attributes().isDirectory())
+                if (path.attributes().isDirectory())
                 {
                     // #471. Expanded item childs may match search string
-                    return _controller.getSession().cache().isCached(file.getReference());
+                    return _controller.getSession().cache().isCached(path.getReference());
                 }
                 return false;
             }
+
+            public bool Filter(object modelObject)
+            {
+                return accept(modelObject);
+            }
         }
 
-        private class DeleteAction : BrowserBackgroundAction
+        private class DeleteAction : WorkerBackgroundAction
         {
-            private readonly List<Path> _normalized;
-
-            public DeleteAction(BrowserController controller, List<Path> normalized)
-                : base(controller)
+            public DeleteAction(BrowserController controller, ch.cyberduck.core.LoginController prompt, List files)
+                : base(controller, new InnerDeleteWorker(controller, prompt, files))
             {
-                _normalized = normalized;
             }
 
-            public override void run()
+            private class InnerDeleteWorker : DeleteWorker
             {
-                foreach (Path p in _normalized)
+                private readonly BrowserController _controller;
+                private readonly List _files;
+
+                public InnerDeleteWorker(BrowserController controller, ch.cyberduck.core.LoginController prompt,
+                                         List files) : base(prompt, files)
                 {
-                    if (isCanceled())
+                    _controller = controller;
+                    _files = files;
+                }
+
+                public override void cleanup(object result)
+                {
+                    if ((bool) result)
                     {
-                        break;
-                    }
-                    p.delete();
-                    if (!BrowserController.IsConnected())
-                    {
-                        break;
+                        _controller.RefreshParentPaths((IList<Path>) Utils.ConvertFromJavaList<Path>(_files));
                     }
                 }
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(Locale.localizedString("Deleting {0}", "Status"), String.Empty);
-            }
-
-            public override void cleanup()
-            {
-                BrowserController.RefreshParentPaths(_normalized);
             }
         }
 
@@ -3314,7 +3189,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                BrowserController.UnmountImpl();
+                BrowserController._session.close();
             }
 
             public override void cleanup()
@@ -3333,34 +3208,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return String.Format(Locale.localizedString("Disconnecting {0}", "Status"),
                                      BrowserController.getSession().getHost().getHostname());
-            }
-        }
-
-        private class EncodingBrowserBackgroundAction : BrowserBackgroundAction
-        {
-            private readonly string _encoding;
-
-            public EncodingBrowserBackgroundAction(BrowserController controller, string encoding)
-                : base(controller)
-            {
-                _encoding = encoding;
-            }
-
-            public override void run()
-            {
-                BrowserController.UnmountImpl();
-            }
-
-            public override void cleanup()
-            {
-                BrowserController._session.getHost().setEncoding(_encoding);
-                BrowserController.View_RefreshBrowser();
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(Locale.localizedString("Disconnecting {0}", "Status"),
-                                     BrowserController._session.getHost().getHostname());
             }
         }
 
@@ -3438,6 +3285,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 _session = session;
             }
 
+            public override void init()
+            {
+                base.init();
+                BrowserController.View.WindowTitle = _host.getNickname();
+                BrowserController.View.RefreshBookmark(BrowserController.getSession().getHost());
+            }
+
             public override void run()
             {
                 // Mount this session
@@ -3448,10 +3302,14 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 // Set the working directory
                 BrowserController.SetWorkdir(_mount);
-                if (!_session.isConnected())
+                BrowserController.View.RefreshBookmark(BrowserController.getSession().getHost());
+                if (BrowserController.IsMounted())
                 {
-                    // Connection attempt failed
-                    BrowserController.UnmountImpl();
+                    BrowserController.View.WindowTitle = _host.getNickname();
+                    BrowserController.View.SecureConnection = BrowserController._session.isSecure();
+                    BrowserController.View.CertBasedConnection =
+                        BrowserController._session is SSLSession;
+                    BrowserController.View.SecureConnectionVisible = true;
                 }
             }
 
@@ -3459,29 +3317,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return String.Format(Locale.localizedString("Mounting {0}", "Status"),
                                      _host.getHostname());
-            }
-        }
-
-        internal class ProgessListener : ProgressListener
-        {
-            private readonly BrowserController _controller;
-            private string _laststatus;
-
-            public ProgessListener(BrowserController controller)
-            {
-                _controller = controller;
-            }
-
-            public string Laststatus
-            {
-                get { return _laststatus; }
-            }
-
-            public void message(string msg)
-            {
-                _laststatus = msg;
-                AsyncDelegate updateLabel = delegate { _controller.View.StatusLabel = msg; };
-                _controller.Invoke(updateLabel);
             }
         }
 
@@ -3656,21 +3491,19 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Log.debug("run: " + getActivity());
                 TransferOptions options = new TransferOptions();
-                options.closeSession = false;
                 _transfer.start(_prompt, options);
-            }
-
-            public override void cleanup()
-            {
-                Log.debug("cleanup: " + getActivity());
-                BrowserController.UpdateStatusLabel();
-                base.cleanup();
             }
 
             public override void cancel()
             {
-                Log.debug("cancel: " + getActivity());
-                _transfer.cancel();
+                try
+                {
+                    _transfer.cancel();
+                }
+                catch (BackgroundException e)
+                {
+                    error(e);
+                }
                 base.cancel();
             }
 
@@ -3725,7 +3558,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                _controller.UnmountImpl();
+                _controller._session.close();
             }
 
             public override void cleanup()
@@ -3733,6 +3566,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Clear the cache on the main thread to make sure the browser model is not in an invalid state
                 _controller._session.cache().clear();
                 _controller._session.getHost().getCredentials().setPassword(null);
+                BrowserController.View.RefreshBookmark(BrowserController.getSession().getHost());
+                _controller.View.WindowTitle = Preferences.instance().getProperty("application.name");
 
                 _callback();
             }
@@ -3775,59 +3610,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (BrowserController._inspector != null)
                 {
                     BrowserController._inspector.Files = _selected;
-                }
-            }
-        }
-
-        private class WorkdirAction : BrowserBackgroundAction
-        {
-            private readonly Path _directory;
-            private readonly List<Path> _selected;
-
-            public WorkdirAction(BrowserController controller, Path directory, List<Path> selected)
-                : base(controller)
-            {
-                _directory = directory;
-                _selected = selected;
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(Locale.localizedString("Listing directory {0}", "Status"),
-                                     _directory.getName());
-            }
-
-            public override void cleanup()
-            {
-                // Remove any custom file filter
-                BrowserController.SetPathFilter(null);
-
-                BrowserController.UpdateNavigationPaths();
-
-                // Mark the browser data source as dirty
-                BrowserController.ReloadData(_selected);
-
-                // Change to the browser view
-                BrowserController.ToggleView(BrowserView.File);
-
-                BrowserController.View.FocusBrowser();
-            }
-
-            public override void run()
-            {
-                AttributedList children = _directory.children();
-                if (BrowserController.getSession().cache().isCached(_directory.getReference()))
-                {
-                    //Reset the readable attribute
-                    children.attributes().setReadable(true);
-                }
-                // Get the directory listing in the background
-                if (children.attributes().isReadable() || !children.isEmpty())
-                {
-                    // Update the working directory if listing is successful
-                    BrowserController._workdir = _directory;
-                    // Update the current working directory
-                    BrowserController.AddPathToHistory(BrowserController.Workdir);
                 }
             }
         }

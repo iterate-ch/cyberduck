@@ -65,7 +65,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool HiddenFilesVisible { set; }
         bool LogDrawerVisible { get; set; }
 
-        PathFilter FilenameFilter { set; }
+        Filter FilenameFilter { set; }
         string SearchString { set; get; }
         IList<Path> VisiblePaths { get; }
         bool ToolbarVisible { set; get; }

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -110,11 +111,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 Session session = _controller.getSession();
                 if (((Host) rowobject).Equals(session.getHost()))
                 {
-                    if (session.isConnected())
+                    if (session.getState().Equals(Session.State.open))
                     {
                         return IconCache.Instance.IconForName("statusGreen", 16);
                     }
-                    if (session.isOpening())
+                    if (session.getState().Equals(Session.State.closing) ||
+                        session.getState().Equals(Session.State.opening))
                     {
                         return IconCache.Instance.IconForName("statusYellow", 16);
                     }
@@ -158,36 +160,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class FilterBookmarkListener : CollectionListener
-        {
-            private readonly AbstractHostCollection _source;
-
-            public FilterBookmarkListener(AbstractHostCollection source)
-            {
-                _source = source;
-            }
-
-            public void collectionLoaded()
-            {
-                _source.collectionLoaded();
-            }
-
-            public void collectionItemAdded(object host)
-            {
-                _source.add(host as Host);
-            }
-
-            public void collectionItemRemoved(object host)
-            {
-                _source.remove(host as Host);
-            }
-
-            public void collectionItemChanged(object host)
-            {
-                _source.collectionItemChanged(host);
-            }
-        }
-
         private class FilterBookmarkCollection : AbstractHostCollection
         {
             private readonly AbstractHostCollection _source;
@@ -225,6 +197,36 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void load()
             {
                 _source.load();
+            }
+        }
+
+        private class FilterBookmarkListener : CollectionListener
+        {
+            private readonly AbstractHostCollection _source;
+
+            public FilterBookmarkListener(AbstractHostCollection source)
+            {
+                _source = source;
+            }
+
+            public void collectionLoaded()
+            {
+                _source.collectionLoaded();
+            }
+
+            public void collectionItemAdded(object host)
+            {
+                _source.add(host as Host);
+            }
+
+            public void collectionItemRemoved(object host)
+            {
+                _source.remove(host as Host);
+            }
+
+            public void collectionItemChanged(object host)
+            {
+                _source.collectionItemChanged(host);
             }
         }
     }

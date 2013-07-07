@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -262,18 +262,6 @@ namespace Ch.Cyberduck.Ui.Controller
             protected override object create()
             {
                 return new LoginController(TransferController.Instance);
-            }
-
-            protected override ch.cyberduck.core.LoginController create(Session s)
-            {
-                foreach (BrowserController c in MainController.Browsers)
-                {
-                    if (c.getSession() == s)
-                    {
-                        return create(c);
-                    }
-                }
-                return (ch.cyberduck.core.LoginController) create();
             }
 
             protected override ch.cyberduck.core.LoginController create(ch.cyberduck.ui.Controller c)

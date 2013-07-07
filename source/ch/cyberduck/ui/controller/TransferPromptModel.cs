@@ -52,7 +52,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Transfer = transfer;
         }
 
-        public abstract PathFilter Filter();
+        public abstract Filter Filter();
 
         public virtual void Add(Path p)
         {
@@ -197,11 +197,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 return _transfer.getSessions().iterator().next();
             }
 
-            public override bool prepare()
+            public override void prepare()
             {
                 AsyncController.AsyncDelegate mainAction = () => _controller.View.StartActivityAnimation();
                 _controller.Invoke(mainAction);
-                return base.prepare();
+                base.prepare();
             }
 
             public override void run()
@@ -238,9 +238,9 @@ namespace Ch.Cyberduck.Ui.Controller
         }
     }
 
-    internal abstract class PromptFilter : PathFilter
+    internal class PromptFilter : Filter
     {
-        public virtual bool accept(AbstractPath ap)
+        public virtual bool accept(object obj)
         {
             return true;
         }

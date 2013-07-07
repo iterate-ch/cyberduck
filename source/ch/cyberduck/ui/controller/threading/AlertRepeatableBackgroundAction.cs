@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -16,22 +16,23 @@
 // yves@cyberduck.ch
 // 
 
-using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
-using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.ui.threading;
+using java.lang;
+using String = System.String;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
-    public abstract class AlertRepeatableBackgroundAction : RepeatableBackgroundAction
+    public abstract class AlertRepeatableBackgroundAction : ControllerRepeatableBackgroundAction
     {
         private readonly WindowController _controller;
 
-        protected AlertRepeatableBackgroundAction(WindowController controller)
+        protected AlertRepeatableBackgroundAction(WindowController controller, ProgressListener progressListener,
+                                                  TranscriptListener transcriptListener)
+            : base(controller, new DialogAlertCallback(controller), progressListener, transcriptListener)
         {
             _controller = controller;
         }
@@ -41,78 +42,46 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
             get { return _controller; }
         }
 
-        public override void finish()
+        private class DialogAlertCallback : AlertCallback
         {
-            base.finish();
-            // If there was any failure, display the summary now
-            if (hasFailed() && !isCanceled())
-            {
-                // Display alert if the action was not canceled intentionally
-                Alert();
-            }
-        }
+            private readonly WindowController _controller;
+            private RepeatableBackgroundAction _action;
 
-        /// <summary>
-        /// Display an alert dialog with a summary of all failed tasks
-        /// </summary>
-        protected void Alert()
-        {
-            _controller.Invoke(delegate
-                {
-                    if (getExceptions().size() == 1)
+            public DialogAlertCallback(WindowController controller)
+            {
+                _controller = controller;
+            }
+
+            public void alert(RepeatableBackgroundAction rba, BackgroundException failure, StringBuilder log)
+            {
+                _action = rba;
+                _controller.Invoke(delegate
                     {
-                        BackgroundException failure =
-                            getExceptions().get(0) as BackgroundException;
                         string footer = Preferences.instance().getProperty("website.help");
                         if (null != failure.getPath())
                         {
                             footer = Preferences.instance().getProperty("website.help") + "/" +
                                      failure.getPath().getSession().getHost().getProtocol().
-                                         getProvider();
+                                             getProvider();
                         }
                         DialogResult result =
                             _controller.WarningBox(failure.getReadableTitle(),
                                                    failure.getMessage(),
-                                                   failure.getDetailedCauseMessage(),
-                                                   hasTranscript() ? getTranscript() : null,
+                                                   failure.getDetail(),
+                                                   log.length() > 0 ? log.toString() : null,
                                                    String.Format("{0}", Locale.localizedString("Try Again", "Alert")),
                                                    true, footer);
                         Callback(result);
-                    }
-                    else
-                    {
-                        ICollection<BackgroundException> backgroundExceptions =
-                            Utils.ConvertFromJavaList<BackgroundException>(getExceptions());
-                        ErrorController errorController =
-                            new ErrorController(ObjectFactory.GetInstance<IErrorView>(),
-                                                backgroundExceptions, getTranscript());
-                        DialogResult result = errorController.View.ShowDialog(_controller.View);
-                        Callback(result);
-                    }
-                }, true);
-        }
+                    }, true);
+            }
 
-        private void Callback(DialogResult result)
-        {
-            if (DialogResult.OK == result)
+            private void Callback(DialogResult result)
             {
-                ICollection<BackgroundException> backgroundExceptions =
-                    Utils.ConvertFromJavaList<BackgroundException>(getExceptions());
-                foreach (BackgroundException e in backgroundExceptions)
+                if (DialogResult.OK == result)
                 {
-                    Path workdir = e.getPath();
-                    if (null == workdir)
-                    {
-                        continue;
-                    }
-                    foreach (Session session in Utils.ConvertFromJavaList<Session>(getSessions()))
-                    {
-                        session.cache().invalidate(workdir.getReference());
-                    }
+                    // Re-run the action with the previous lock used
+                    _controller.background(_action);
                 }
-                reset();
-                // Re-run the action with the previous lock used
-                _controller.background(this);
             }
         }
     }

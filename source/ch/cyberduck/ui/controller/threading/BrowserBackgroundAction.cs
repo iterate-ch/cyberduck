@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -16,43 +16,75 @@
 // yves@cyberduck.ch
 // 
 
+using Ch.Cyberduck.Core;
+using ch.cyberduck.core;
+using ch.cyberduck.core.threading;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
     public abstract class BrowserBackgroundAction : AlertRepeatableBackgroundAction
     {
-        protected BrowserBackgroundAction(BrowserController controller) : base(controller)
+        protected BrowserBackgroundAction(BrowserController controller) : base(controller, controller, controller)
         {
             BrowserController = controller;
         }
 
         public BrowserController BrowserController { get; private set; }
 
-        protected override List getSessions()
+        public override List getSessions()
         {
             return Collections.singletonList(BrowserController.getSession());
         }
 
-        public override bool prepare()
+        public override void log(bool request, string message)
+        {
+            if (Preferences.instance().getBoolean("browser.transcript.open"))
+            {
+                AsyncController.AsyncDelegate mainAction = delegate { BrowserController.log(request, message); };
+                BrowserController.Invoke(mainAction);
+            }
+        }
+
+        public override void prepare()
         {
             AsyncController.AsyncDelegate mainAction = delegate
-            {
-                BrowserController.View.StartActivityAnimation();
-                BrowserController.UpdateStatusLabel(getActivity());
-            };
+                {
+                    BrowserController.View.StartActivityAnimation();
+                    BrowserController.SetStatus(getActivity());
+                };
             BrowserController.Invoke(mainAction);
-            return base.prepare();
+            base.prepare();
+        }
+
+        public override void cancel()
+        {
+            if (isRunning())
+            {
+                List sessions = getSessions();
+                foreach (var s in Utils.ConvertFromJavaList<Session>(sessions))
+                {
+                    try
+                    {
+                        s.interrupt();
+                    }
+                    catch (BackgroundException e)
+                    {
+                        error(e);
+                    }
+                }
+            }
+            base.cancel();
         }
 
         public override void finish()
         {
             base.finish();
             AsyncController.AsyncDelegate mainAction = delegate
-            {
-                BrowserController.View.StopActivityAnimation();
-                BrowserController.UpdateStatusLabel();
-            };
+                {
+                    BrowserController.View.StopActivityAnimation();
+                    BrowserController.SetStatus();
+                };
             BrowserController.Invoke(mainAction);
         }
     }

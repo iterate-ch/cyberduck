@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using StructureMap;
 using ch.cyberduck.core;
@@ -444,7 +445,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         View.Local = transfer.getLocal();
                     }
-                    
                 }
                 else
                 {
@@ -572,7 +572,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.Show();
             }
-            background(new TransferBackgroundAction(this, transfer, resumeRequested, reloadRequested));
+            ProgressController progressController;
+            _transferMap.TryGetValue(transfer, out progressController);
+            background(new TransferBackgroundAction(this, progressController, transfer, resumeRequested, reloadRequested));
         }
 
         public void TaskbarOverlayIcon(Icon icon, string description)
@@ -608,8 +610,8 @@ namespace Ch.Cyberduck.Ui.Controller
             private bool _reload;
             private bool _resume;
 
-            public TransferBackgroundAction(TransferController controller, Transfer transfer, bool resumeRequested,
-                                            bool reloadRequested) : base(controller)
+            public TransferBackgroundAction(TransferController controller, ProgressListener progressListener, Transfer transfer, bool resumeRequested,
+                                            bool reloadRequested) : base(controller, progressListener, controller)
             {
                 _transfer = transfer;
                 _controller = controller;
@@ -629,6 +631,13 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void finish()
             {
                 base.finish();
+                ICollection<Session> convertFromJavaList = Utils.ConvertFromJavaList<Session>(_transfer.getSessions());
+                foreach (Session session in convertFromJavaList)
+                {
+                    session.close();
+                    // We have our own session independent of any browser.
+                    session.cache().clear();
+                }
                 _transfer.removeListener(_listener);
             }
 
@@ -651,7 +660,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 TransferCollection.defaultCollection().save();
             }
 
-            protected override List getSessions()
+            public override List getSessions()
             {
                 return _transfer.getSessions();
             }

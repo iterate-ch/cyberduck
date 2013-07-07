@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -36,18 +36,20 @@ namespace Ch.Cyberduck.Core.Local
 
         private Attributes info;
 
-        public LocalImpl(string parent, string name) : base(parent, name)
+        public LocalImpl(string parent, string name) : base(MakeValidPath(parent) + '\\' + MakeValidFilename(name))
         {
-            ;
         }
 
         public LocalImpl(ch.cyberduck.core.local.Local parent, string name)
-            : base(parent, name)
+            : base(parent.getAbsolute() + '\\' + name)
         {
             ;
         }
 
-        public LocalImpl(string path) : base(path)
+        public LocalImpl(string path)
+            : base(Path.Combine(FilenameUtils.getPrefix(path),
+                                MakeValidPath(FilenameUtils.getPath(path))) +
+                   MakeValidFilename(FilenameUtils.getName(path)))
         {
             ;
         }
@@ -101,22 +103,7 @@ namespace Ch.Cyberduck.Core.Local
             delete();
         }
 
-        public override void setPath(string parent, string name)
-        {
-            string p = MakeValidPath(parent);
-            string n = MakeValidFilename(name);
-            base.setPath(p, n);
-        }
-
-        protected override void setPath(string filename)
-        {
-            string parent = Path.Combine(FilenameUtils.getPrefix(filename),
-                                         MakeValidPath(FilenameUtils.getPath(filename)));
-            string name = MakeValidFilename(FilenameUtils.getName(filename));
-            base.setPath(parent + name);
-        }
-
-        private string MakeValidPath(string path)
+        private static string MakeValidPath(string path)
         {
             if (Utils.IsNotBlank(path))
             {
@@ -153,7 +140,7 @@ namespace Ch.Cyberduck.Core.Local
             return path;
         }
 
-        private string MakeValidFilename(string name)
+        private static string MakeValidFilename(string name)
         {
             if (Utils.IsNotBlank(name))
             {

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -33,18 +33,13 @@ namespace Ch.Cyberduck.Ui.Growl
 
         private readonly GrowlConnector _connector = new GrowlConnector();
 
-        public static void Register()
-        {
-            GrowlFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        public override void notify(string title, string description)
+        public void notify(string title, string description)
         {
             _connector.Notify(new Notification(_app.Name, title, null, title,
                                                description));
         }
 
-        public override void setup()
+        public void setup()
         {
             _connector.Register(_app, new[]
                 {
@@ -61,11 +56,16 @@ namespace Ch.Cyberduck.Ui.Growl
                 });
         }
 
-        public override void notifyWithImage(string title, string description, string image)
+        public void notifyWithImage(string title, string description, string image)
         {
             Bitmap icon = (Bitmap) ResourcesBundle.ResourceManager.GetObject(image, ResourcesBundle.Culture);
             _connector.Notify(new Notification(_app.Name, title, null, title, description, icon, false, Priority.Normal,
                                                null));
+        }
+
+        public static void Register()
+        {
+            GrowlFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
         private class Factory : GrowlFactory

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,9 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class DownloadPromptModel : TransferPromptModel
     {
-        private readonly PathFilter _filter = new DownloadPathFilter();
+        private static readonly Logger Log = Logger.getLogger(typeof (DownloadPromptModel).Name);
+
+        private readonly Filter _filter = new DownloadPathFilter();
 
         public DownloadPromptModel(TransferPromptController controller, Transfer transfer) : base(controller, transfer)
         {
@@ -36,7 +38,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// decide which files to include in the prompt dialog
         /// </summary>
         /// <returns></returns>
-        public override PathFilter Filter()
+        public override Filter Filter()
         {
             return _filter;
         }
@@ -67,21 +69,24 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         protected static Logger Log = Logger.getLogger(typeof (DownloadPathFilter).FullName);
 
-        public override bool accept(AbstractPath ap)
+        public override bool accept(object ap)
         {
-            Path child = (Path) ap;
-            Log.debug("accept:" + child);
-            if (child.getLocal().exists())
+            Path path = (Path) ap;
+            if (path.getLocal().exists())
             {
-                if (child.attributes().isFile())
+                if (path.attributes().isFile())
                 {
-                    if (child.getLocal().attributes().getSize() == 0)
+                    if (path.getLocal().attributes().getSize() == 0)
                     {
+                        if (Log.isDebugEnabled())
+                        {
+                            Log.debug(string.Format("Skip prompt for zero sized file {0}", path.getName()));
+                        }
                         // Do not prompt for zero sized files
                         return false;
                     }
                 }
-                return base.accept(child);
+                return base.accept(path);
             }
             return false;
         }

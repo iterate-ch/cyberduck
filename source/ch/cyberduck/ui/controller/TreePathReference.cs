@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -47,9 +47,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 throw new NotImplementedException("Please provide a parameter");
             }
 
-            protected override PathReference create(AbstractPath ap)
+            protected override PathReference create(Path p)
             {
-                return new TreePathReference(ap);
+                return new TreePathReference(p);
             }
         }
     }

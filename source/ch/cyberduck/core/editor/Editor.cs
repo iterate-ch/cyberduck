@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,8 @@ namespace Ch.Cyberduck.Core.Editor
         private static readonly Logger Log = Logger.getLogger(typeof (Editor).Name);
         private readonly BrowserController _controller;
 
-        protected Editor(BrowserController controller, Application application, Path path) : base(application, path)
+        protected Editor(BrowserController controller, Session session, Application application, Path path)
+            : base(application, session, path)
         {
             _controller = controller;
         }

@@ -25,6 +25,7 @@ using ch.cyberduck.core.date;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.threading;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -45,48 +46,38 @@ namespace Ch.Cyberduck.Ui.Controller
             return ((Path) path).attributes().isDirectory();
         }
 
-        public IEnumerable<Path> ChildrenGetter(object path)
+        public IEnumerable<Path> ChildrenGetter(object p)
         {
-            Path p = (Path) path;
+            Path path = (Path) p;
             AttributedList list;
             lock (_isLoadingListingInBackground)
             {
                 Cache cache = _controller.getSession().cache();
-                if (!_isLoadingListingInBackground.Contains(p))
+                if (cache.isCached(path.getReference()))
                 {
-                    if (cache.isCached(p.getReference()))
+                    list = cache.get(path.getReference())
+                                .filter(_controller.FilenameComparator, _controller.FilenameFilter);
+                    for (int i = 0; i < list.size(); i++)
                     {
-                        list = cache.get(p.getReference()).filter(_controller.FilenameComparator,
-                                                                  _controller.FilenameFilter);
-                        for (int i = 0; i < list.size(); i++)
-                        {
-                            yield return (Path) list.get(i);
-                        }
-                        yield break;
+                        yield return (Path) list.get(i);
                     }
-                    _isLoadingListingInBackground.Add(p);
+                    yield break;
+                }
+                if (!_isLoadingListingInBackground.Contains(path))
+                {
+                    _isLoadingListingInBackground.Add(path);
                     // Reloading a workdir that is not cached yet would cause the interface to freeze;
                     // Delay until path is cached in the background
                     // switch to blocking children fetching
                     //path.childs();
-                    _controller.Background(new ChildGetterBrowserBackgrounAction(_controller, p,
+                    _controller.Background(new ChildGetterBrowserBackgrounAction(_controller, cache, path,
                                                                                  _isLoadingListingInBackground));
                 }
-                list = cache.get(p.getReference()).filter(_controller.FilenameComparator, _controller.FilenameFilter);
-//                if (list.size() == 0)
-//                {
-//                    yield return
-//                        new TreePathReference(PathFactory.createPath(_controller.getSession(), "Loading...",
-//                                                                     AbstractPath.FILE_TYPE));
-//                }
-//                else
-//                {
+                list = cache.get(path.getReference()).filter(_controller.FilenameComparator, _controller.FilenameFilter);
                 for (int i = 0; i < list.size(); i++)
                 {
                     yield return (Path) list.get(i);
                 }
-//                }
-                yield break;
             }
         }
 
@@ -95,7 +86,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null == _controller.Workdir)
                 yield break;
 
-            AttributedList list = _controller.Workdir.children(_controller.FilenameFilter);
+            AttributedList list = _controller.Workdir.list();
             for (int i = 0; i < list.size(); i++)
             {
                 yield return (Path) list.get(i);
@@ -176,23 +167,43 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class ChildGetterBrowserBackgrounAction : BrowserBackgroundAction
         {
+            private readonly Cache _cache;
             private readonly BrowserController _controller;
             private readonly List<AbstractPath> _isLoadingListingInBackground;
             private readonly Path _path;
 
             public ChildGetterBrowserBackgrounAction(BrowserController controller,
+                                                     Cache cache,
                                                      Path path,
                                                      List<AbstractPath> isLoadingListingInBackground)
                 : base(controller)
             {
                 _controller = controller;
+                _cache = cache;
                 _path = path;
                 _isLoadingListingInBackground = isLoadingListingInBackground;
             }
 
             public override void run()
             {
-                _path.children();
+                try
+                {
+                    AttributedList children = _path.list();
+                    _cache.put(_path.getReference(), children);
+                }
+                catch (BackgroundException e)
+                {
+                    _cache.put(_path.getReference(), AttributedList.emptyList());
+                    if (_path.attributes().getPermission().isReadable()
+                        && _path.attributes().getPermission().isExecutable())
+                    {
+                        throw e;
+                    }
+                    else
+                    {
+                        // Ignore directory listing failure
+                    }
+                }
             }
 
             public override string getActivity()

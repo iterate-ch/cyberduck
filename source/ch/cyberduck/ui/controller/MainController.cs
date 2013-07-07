@@ -27,6 +27,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Editor;
+using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Growl;
@@ -44,6 +45,7 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui;
+using ch.cyberduck.ui.growl;
 using org.apache.log4j;
 using org.apache.log4j.xml;
 using Object = java.lang.Object;
@@ -366,7 +368,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                    });
             }
             //Registering for Growl is an expensive operation. Takes up to 500ms on my machine.
-            _bc.Background(delegate { ch.cyberduck.ui.growl.Growl.instance().setup(); }, delegate { });
+            _bc.Background(delegate { GrowlFactory.get().setup(); }, delegate { });
 
             // User bookmarks and thirdparty applications
             CountdownEvent cde = new CountdownEvent(2);

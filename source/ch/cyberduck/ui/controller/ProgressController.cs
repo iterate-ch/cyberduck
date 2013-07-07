@@ -42,7 +42,7 @@ using TransferStatus = Ch.Cyberduck.Ui.Winforms.Controls.TransferStatus;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class ProgressController : WindowController<IProgressView>
+    public class ProgressController : WindowController<IProgressView>, ProgressListener
     {
         /// <summary>
         /// Keeping track of the current transfer rate
@@ -62,6 +62,30 @@ namespace Ch.Cyberduck.Ui.Controller
             View = ObjectFactory.GetInstance<IProgressView>();
             _meter = new Speedometer();
             Init();
+        }
+
+        public void message(string message)
+        {
+            _messageText = message;
+            StringBuilder b = new StringBuilder();
+            if (null == _messageText)
+            {
+                // Do not display any progress text when transfer is stopped
+                Date timestamp = _transfer.getTimestamp();
+                if (null != timestamp)
+                {
+                    _messageText =
+                        UserDateFormatterFactory.get()
+                                                .getLongFormat(
+                                                    UserDefaultsDateFormatter.ConvertJavaMillisecondsToDotNetMillis(
+                                                        timestamp.getTime()), false);
+                }
+            }
+            if (null != _messageText)
+            {
+                b.Append(_messageText);
+            }
+            View.MessageText = b.ToString();
         }
 
         private void UpdateOverallProgress()
@@ -93,10 +117,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             ICollection<Session> sessions =
                 Utils.ConvertFromJavaList<Session>(_transfer.getSessions());
-            foreach (Session s in sessions)
-            {
-                s.addProgressListener(new TransferProgressListener(this));
-            }
             _transfer.addListener(new TransferAdapter(this));
         }
 
@@ -124,6 +144,11 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private void SetMessageText()
+        {
+            message(null);
+        }
+
         private void SetIcon()
         {
             if (_transfer is DownloadTransfer)
@@ -142,29 +167,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.TransferDirection = TransferDirection.Sync;
             }
-        }
-
-        private void SetMessageText()
-        {
-            StringBuilder b = new StringBuilder();
-            if (null == _messageText)
-            {
-                // Do not display any progress text when transfer is stopped
-                Date timestamp = _transfer.getTimestamp();
-                if (null != timestamp)
-                {
-                    _messageText =
-                        UserDateFormatterFactory.get()
-                                                .getLongFormat(
-                                                    UserDefaultsDateFormatter.ConvertJavaMillisecondsToDotNetMillis(
-                                                        timestamp.getTime()), false);
-                }
-            }
-            if (null != _messageText)
-            {
-                b.Append(_messageText);
-            }
-            View.MessageText = b.ToString();
         }
 
         private void SetStatusText()
@@ -288,26 +290,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         };
                     _controller.Invoke(new SimpleDefaultMainAction(_controller, d));
                 }
-            }
-        }
-
-        private class TransferProgressListener : ProgressListener
-        {
-            private static readonly Logger Log = Logger.getLogger(typeof (TransferProgressListener).FullName);
-
-            private readonly ProgressController _controller;
-
-            public TransferProgressListener(ProgressController controller)
-            {
-                _controller = controller;
-            }
-
-            public void message(string msg)
-            {
-                _controller._messageText = msg;
-                SimpleDefaultMainAction action = new SimpleDefaultMainAction(_controller,
-                                                                             delegate { _controller.SetMessageText(); });
-                _controller.invoke(action);
             }
         }
     }

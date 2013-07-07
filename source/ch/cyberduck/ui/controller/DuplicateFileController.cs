@@ -1,5 +1,5 @@
-﻿﻿//
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+﻿// 
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,12 +15,13 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Ui.Winforms;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -32,7 +33,9 @@ namespace Ch.Cyberduck.Ui.Controller
             Path selected = browserController.SelectedPath;
             StringBuilder proposal = new StringBuilder();
             proposal.Append(System.IO.Path.GetFileNameWithoutExtension(selected.getName()));
-            string shortDate = UserDefaultsDateFormatter.GetShortFormat(DateTime.Now).Replace('/', '.').Replace(':', '.');
+            string shortDate = UserDefaultsDateFormatter.GetShortFormat(DateTime.Now)
+                                                        .Replace('/', '.')
+                                                        .Replace(':', '.');
             proposal.Append(" (").Append(shortDate).Append(")");
             if (!string.IsNullOrEmpty(selected.getExtension()))
             {
@@ -69,7 +72,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void DuplicateFile(Path selected, String filename)
         {
-            Path duplicate = PathFactory.createPath(Session, selected.getParent().getAbsolute(), filename, selected.attributes().getType());
+            Path duplicate = PathFactory.createPath(Session, selected.getParent(), filename,
+                                                    selected.attributes().getType());
             BrowserController.DuplicatePath(selected, duplicate);
         }
     }

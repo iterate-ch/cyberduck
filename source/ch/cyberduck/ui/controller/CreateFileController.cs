@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -63,17 +63,19 @@ namespace Ch.Cyberduck.Ui.Controller
                 _filename = filename;
                 _edit = edit;
                 _file = PathFactory.createPath(controller.getSession(),
-                                               _workdir.getAbsolute(),
+                                               _workdir,
                                                _filename, AbstractPath.FILE_TYPE);
             }
 
             public override void run()
             {
-                if(_file.touch()) {
+                if (_file.touch())
+                {
                     _file.touch();
                     if (_edit)
                     {
-                        Editor editor = EditorFactory.instance().create(BrowserController, _file);
+                        Editor editor = EditorFactory.instance()
+                                                     .create(BrowserController, BrowserController.getSession(), _file);
                         editor.open();
                     }
                 }

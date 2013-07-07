@@ -191,6 +191,7 @@
     <Compile Include="core\editor\EditorFactory.cs" />
     <Compile Include="core\editor\RegistryApplicationFinder.cs" />
     <Compile Include="core\editor\WatchEditor.cs" />
+    <Compile Include="core\i18n\LocaleImpl.cs" />
     <Compile Include="core\local\ExplorerRevealService.cs" />
     <Compile Include="core\local\LocalImpl.cs" />
     <Compile Include="core\local\TaskbarApplicationBadgeLabeler.cs" />
@@ -221,7 +222,7 @@
     <Compile Include="ui\controller\IGotoPromptView.cs" />
     <Compile Include="ui\controller\IUpdateView.cs" />
     <Compile Include="ui\controller\MainController.cs" />
-    <Compile Include="ui\controller\threading\InfoBackgroundAction.cs" />
+    <Compile Include="ui\controller\threading\WorkerBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
     <Compile Include="ui\growl\GrowlImpl.cs" />
     <Compile Include="ui\winforms\controls\ClickLinkLabel.cs">
@@ -388,7 +389,6 @@
     <Compile Include="ui\controller\DownloadPromptController.cs" />
     <Compile Include="ui\controller\DownloadPromptModel.cs" />
     <Compile Include="ui\controller\DuplicateFileController.cs" />
-    <Compile Include="ui\controller\ErrorController.cs" />
     <Compile Include="ui\controller\Events.cs" />
     <Compile Include="ui\controller\FileController.cs" />
     <Compile Include="ui\controller\FirefoxStyleRenderer.cs" />
@@ -416,7 +416,6 @@
     <Compile Include="ui\controller\ITransferView.cs" />
     <Compile Include="ui\controller\IView.cs" />
     <Compile Include="ui\controller\Keychain.cs" />
-    <Compile Include="ui\controller\LocaleImpl.cs" />
     <Compile Include="ui\controller\LoginController.cs" />
     <Compile Include="ui\controller\PathClipboard.cs" />
     <Compile Include="ui\controller\PersistentFormHandler.cs" />

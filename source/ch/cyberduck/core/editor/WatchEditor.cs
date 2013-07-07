@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Ch.Cyberduck.Ui.Controller;
+using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
@@ -31,8 +32,8 @@ namespace Ch.Cyberduck.Core.Editor
         private static readonly Logger Log = Logger.getLogger(typeof (WatchEditor).FullName);
         private FileSystemWatcher _watcher;
 
-        public WatchEditor(BrowserController controller, Application application, Path path)
-            : base(controller, application, path)
+        public WatchEditor(BrowserController controller, Session session, Application application, Path path)
+            : base(controller, session, application, path)
         {
         }
 

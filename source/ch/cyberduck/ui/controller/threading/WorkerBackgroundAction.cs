@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,19 +15,20 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
-using ch.cyberduck.ui.action;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using ch.cyberduck.ui.action;
 
 namespace ch.cyberduck.ui.controller.threading
 {
-    internal class InfoBackgroundAction : BrowserBackgroundAction
+    internal class WorkerBackgroundAction : BrowserBackgroundAction
     {
         private readonly Worker _worker;
         private Object _result;
 
-        public InfoBackgroundAction(BrowserController controller, Worker worker)
+        public WorkerBackgroundAction(BrowserController controller, Worker worker)
             : base(controller)
         {
             _worker = worker;
