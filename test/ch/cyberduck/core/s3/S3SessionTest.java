@@ -18,8 +18,8 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testFile() {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, "h"));
-        assertFalse(session.isCreateFileSupported(new S3Path(null, "/", Path.VOLUME_TYPE)));
-        assertTrue(session.isCreateFileSupported(new S3Path(new S3Path(null, "/", Path.VOLUME_TYPE), "/container", Path.VOLUME_TYPE)));
+        assertFalse(session.isCreateFileSupported(new S3Path("/", Path.VOLUME_TYPE)));
+        assertTrue(session.isCreateFileSupported(new S3Path(new S3Path("/", Path.VOLUME_TYPE), "/container", Path.VOLUME_TYPE)));
     }
 
     @Test
