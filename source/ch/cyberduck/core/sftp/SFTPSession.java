@@ -378,11 +378,6 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public Connection getClient() {
-        return super.getClient();
-    }
-
-    @Override
     public boolean exists(final Path path) throws BackgroundException {
         try {
             return this.sftp().canonicalPath(path.getAbsolute()) != null;
