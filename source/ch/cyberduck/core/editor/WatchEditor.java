@@ -80,7 +80,7 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
             monitor.register(edited.getLocal()).await();
         }
         catch(InterruptedException e) {
-            throw new IOException(String.format("Failure monitoring file %s", edited.getLocal()));
+            throw new IOException(String.format("Failure monitoring file %s", edited.getLocal()), e);
         }
         monitor.addListener(this);
     }
