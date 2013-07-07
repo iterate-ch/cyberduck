@@ -95,6 +95,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
 
             @Override
             public void cleanup() {
+                super.cleanup();
                 upload.cleanup();
             }
         });
