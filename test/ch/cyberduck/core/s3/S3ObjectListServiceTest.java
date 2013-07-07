@@ -48,21 +48,16 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("static.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("EU");
         final List<Path> list = new S3ObjectListService(session).list(container);
         assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(container, p.getParent());
+            assertNotNull(p.attributes().getRegion());
             if(p.attributes().isFile()) {
                 assertNotNull(p.attributes().getModificationDate());
                 assertNotNull(p.attributes().getSize());
                 assertNotNull(p.attributes().getChecksum());
-                assertNotNull(p.attributes().getETag());
-            }
-            else if(p.attributes().isDirectory()) {
-                assertTrue(p.attributes().isPlaceholder());
-            }
-            else {
-                fail();
             }
         }
     }

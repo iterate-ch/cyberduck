@@ -79,7 +79,8 @@ public class S3ObjectListService implements ListService {
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
             final AttributedList<Path> children = new AttributedList<Path>();
-            children.addAll(this.listObjects(new PathContainerService().getContainer(file), prefix, String.valueOf(Path.DELIMITER)));
+            children.addAll(this.listObjects(
+                    new PathContainerService().getContainer(file), file, prefix, String.valueOf(Path.DELIMITER)));
             if(Preferences.instance().getBoolean("s3.revisions.enable")) {
                 if(new S3VersioningFeature(session).getConfiguration(new PathContainerService().getContainer(file)).isEnabled()) {
                     String priorLastKey = null;
@@ -89,7 +90,8 @@ public class S3ObjectListService implements ListService {
                                 new PathContainerService().getContainer(file).getName(), prefix, String.valueOf(Path.DELIMITER),
                                 Preferences.instance().getInteger("s3.listing.chunksize"),
                                 priorLastKey, priorLastVersionId, true);
-                        children.addAll(this.listVersions(new PathContainerService().getContainer(file), Arrays.asList(chunk.getItems())));
+                        children.addAll(this.listVersions(new PathContainerService().getContainer(file), file,
+                                Arrays.asList(chunk.getItems())));
                         priorLastKey = chunk.getNextKeyMarker();
                         priorLastVersionId = chunk.getNextVersionIdMarker();
                     }
@@ -106,7 +108,7 @@ public class S3ObjectListService implements ListService {
         }
     }
 
-    private AttributedList<Path> listObjects(final Path bucket, final String prefix, final String delimiter)
+    private AttributedList<Path> listObjects(final Path bucket, final Path parent, final String prefix, final String delimiter)
             throws IOException, ServiceException, BackgroundException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // Null if listing is complete
@@ -120,7 +122,7 @@ public class S3ObjectListService implements ListService {
 
             final StorageObject[] objects = chunk.getObjects();
             for(StorageObject object : objects) {
-                final Path p = new Path(bucket.getName() + Path.DELIMITER + object.getKey(), Path.FILE_TYPE);
+                final Path p = new Path(parent, Path.getName(object.getKey()), Path.FILE_TYPE);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 p.attributes().setRegion(bucket.attributes().getRegion());
@@ -159,7 +161,7 @@ public class S3ObjectListService implements ListService {
                     log.warn("Skipping prefix " + common);
                     continue;
                 }
-                final Path p = new Path(bucket.getName() + Path.DELIMITER + common, Path.DIRECTORY_TYPE);
+                final Path p = new Path(parent, Path.getName(common), Path.DIRECTORY_TYPE);
                 if(children.contains(p.getReference())) {
                     // There is already a placeholder object
                     continue;
@@ -174,7 +176,7 @@ public class S3ObjectListService implements ListService {
         return children;
     }
 
-    private List<Path> listVersions(final Path bucket, final List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
+    private List<Path> listVersions(final Path bucket, final Path parent, final List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
             throws IOException, ServiceException {
         // Amazon S3 returns object versions in the order in which they were
         // stored, with the most recently stored returned first.
@@ -190,7 +192,7 @@ public class S3ObjectListService implements ListService {
             if((marker.isDeleteMarker() && marker.isLatest())
                     || !marker.isLatest()) {
                 // Latest version already in default listing
-                final Path p = new Path(bucket.getName() + Path.DELIMITER + marker.getKey(), Path.FILE_TYPE);
+                final Path p = new Path(parent, Path.getName(marker.getKey()), Path.FILE_TYPE);
                 // Versioning is enabled if non null.
                 p.attributes().setVersionId(marker.getVersionId());
                 p.attributes().setRevision(++i);
