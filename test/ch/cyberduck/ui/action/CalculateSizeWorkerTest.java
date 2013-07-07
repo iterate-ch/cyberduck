@@ -1,7 +1,9 @@
 package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;
@@ -12,7 +14,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CalculateSizeWorkerTest extends AbstractTestCase {
 
@@ -25,7 +27,7 @@ public class CalculateSizeWorkerTest extends AbstractTestCase {
         final NullPath b = new NullPath("a", Path.FILE_TYPE);
         b.attributes().setSize(3L);
         files.add(b);
-        assertEquals(4L, new CalculateSizeWorker(files) {
+        assertEquals(4L, new CalculateSizeWorker(new NullSession(new Host("h")), files) {
             int i = 0;
 
             @Override

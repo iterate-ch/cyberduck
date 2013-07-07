@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.i18n.Locale;
@@ -32,6 +33,8 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class WritePermissionWorker extends Worker<Permission> {
+
+    private Session<?> session;
 
     private UnixPermission feature;
 
@@ -50,7 +53,9 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
      */
     private boolean recursive;
 
-    public WritePermissionWorker(final UnixPermission feature, final List<Path> files, final Permission permission, final boolean recursive) {
+    public WritePermissionWorker(final Session session, final UnixPermission feature, final List<Path> files,
+                                 final Permission permission, final boolean recursive) {
+        this.session = session;
         this.feature = feature;
         this.files = files;
         this.permission = permission;
@@ -90,7 +95,7 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
         }
         if(recursive) {
             if(file.attributes().isDirectory()) {
-                for(Path child : file.list()) {
+                for(Path child : session.list(file)) {
                     this.write(child);
                 }
             }

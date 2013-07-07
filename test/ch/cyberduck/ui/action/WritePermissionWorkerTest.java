@@ -20,7 +20,9 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -41,15 +43,15 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
     @Test
     public void testRun() throws Exception {
         final Permission permission = new Permission(744);
-        final NullPath path = new NullPath("a", Path.DIRECTORY_TYPE) {
+        final NullPath path = new NullPath("a", Path.DIRECTORY_TYPE);
+        final WritePermissionWorker worker = new WritePermissionWorker(new NullSession(new Host("h")) {
             @Override
-            public AttributedList<Path> list() {
+            public AttributedList<Path> list(final Path file) {
                 final AttributedList<Path> children = new AttributedList<Path>();
                 children.add(new NullPath("b", Path.FILE_TYPE));
                 return children;
             }
-        };
-        final WritePermissionWorker worker = new WritePermissionWorker(new UnixPermission() {
+        }, new UnixPermission() {
             @Override
             public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
                 throw new UnsupportedOperationException();
@@ -72,7 +74,8 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
                     fail();
                 }
             }
-        }, Arrays.<Path>asList(path), permission, true) {
+        }, Arrays.<Path>asList(path), permission, true
+        ) {
             @Override
             public void cleanup(Permission result) {
                 throw new UnsupportedOperationException();

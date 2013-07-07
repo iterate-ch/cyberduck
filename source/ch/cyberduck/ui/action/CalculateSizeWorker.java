@@ -20,6 +20,7 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -31,12 +32,15 @@ import java.util.List;
  */
 public abstract class CalculateSizeWorker extends Worker<Long> {
 
+    private Session<?> session;
+
     /**
      * Selected files.
      */
     private List<Path> files;
 
-    public CalculateSizeWorker(final List<Path> files) {
+    public CalculateSizeWorker(final Session session, final List<Path> files) {
+        this.session = session;
         this.files = files;
     }
 
@@ -60,7 +64,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
     private long calculateSize(final Path p) throws BackgroundException {
         long size = 0;
         if(p.attributes().isDirectory()) {
-            for(Path next : p.list()) {
+            for(Path next : session.list(p)) {
                 size += this.calculateSize(next);
             }
         }

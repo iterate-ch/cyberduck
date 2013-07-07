@@ -20,6 +20,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -33,6 +34,8 @@ import java.util.List;
  */
 public abstract class DeleteWorker extends Worker<Boolean> {
 
+    private Session<?> session;
+
     /**
      * Selected files.
      */
@@ -40,7 +43,8 @@ public abstract class DeleteWorker extends Worker<Boolean> {
 
     private LoginController prompt;
 
-    public DeleteWorker(final LoginController prompt, final List<Path> files) {
+    public DeleteWorker(final Session session, final LoginController prompt, final List<Path> files) {
+        this.session = session;
         this.prompt = prompt;
         this.files = files;
     }
@@ -48,7 +52,7 @@ public abstract class DeleteWorker extends Worker<Boolean> {
     @Override
     public Boolean run() throws BackgroundException {
         for(Path file : files) {
-            file.delete(prompt);
+            session.delete(file, prompt);
         }
         return true;
     }

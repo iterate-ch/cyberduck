@@ -53,7 +53,8 @@ public abstract class WriteAclWorker extends Worker<Acl> {
      */
     private boolean recursive;
 
-    public WriteAclWorker(final AccessControlList feature, final List<Path> files, final Acl acl, final boolean recursive) {
+    public WriteAclWorker(final AccessControlList feature, final List<Path> files,
+                          final Acl acl, final boolean recursive) {
         this.feature = feature;
         this.files = files;
         this.acl = acl;
