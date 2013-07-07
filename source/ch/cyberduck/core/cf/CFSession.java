@@ -17,7 +17,15 @@ package ch.cyberduck.core.cf;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -42,8 +50,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
-import org.w3c.util.DateParser;
-import org.w3c.util.InvalidDateException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,9 +58,7 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,7 +66,6 @@ import com.rackspacecloud.client.cloudfiles.FilesAuthenticationResponse;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
 import com.rackspacecloud.client.cloudfiles.FilesException;
 import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
-import com.rackspacecloud.client.cloudfiles.FilesObject;
 import com.rackspacecloud.client.cloudfiles.FilesRegion;
 
 /**
@@ -189,64 +192,14 @@ public class CFSession extends HttpSession<FilesClient> {
 
     @Override
     public AttributedList<Path> list(final Path file) throws BackgroundException {
-        try {
-            this.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    file.getName()));
+        this.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                file.getName()));
 
-            if(file.isRoot()) {
-                return new AttributedList<Path>(new SwiftContainerListService().list(this));
-            }
-            else {
-                final AttributedList<Path> children = new AttributedList<Path>();
-                final int limit = Preferences.instance().getInteger("cf.list.limit");
-                String marker = null;
-                List<FilesObject> list;
-                do {
-                    final Path container = file.getContainer();
-                    list = this.getClient().listObjectsStartingWith(this.getRegion(container), container.getName(),
-                            file.isContainer() ? StringUtils.EMPTY : file.getKey() + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
-                    for(FilesObject object : list) {
-                        final Path child = new CFPath(file,
-                                Path.getName(PathNormalizer.normalize(object.getName())),
-                                "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                        child.attributes().setOwner(child.attributes().getOwner());
-                        child.attributes().setRegion(container.attributes().getRegion());
-                        if(child.attributes().isFile()) {
-                            child.attributes().setSize(object.getSize());
-                            child.attributes().setChecksum(object.getMd5sum());
-                            child.attributes().setETag(object.getMd5sum());
-                            try {
-                                final Date modified = DateParser.parse(object.getLastModified());
-                                if(null != modified) {
-                                    child.attributes().setModificationDate(modified.getTime());
-                                }
-                            }
-                            catch(InvalidDateException e) {
-                                log.warn("Not ISO 8601 format:" + e.getMessage());
-                            }
-                        }
-                        if(child.attributes().isDirectory()) {
-                            child.attributes().setPlaceholder(true);
-                            if(children.contains(child.getReference())) {
-                                // There is already a placeholder object
-                                continue;
-                            }
-                        }
-                        children.add(child);
-                        marker = object.getName();
-                    }
-                }
-                while(list.size() == limit);
-                return children;
-            }
+        if(file.isRoot()) {
+            return new AttributedList<Path>(new SwiftContainerListService().list(this));
         }
-        catch(FilesException e) {
-            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
-            throw new FilesExceptionMappingService().map("Listing directory failed", e, file);
-        }
-        catch(IOException e) {
-            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
-            throw new DefaultIOExceptionMappingService().map(e, file);
+        else {
+            return new SwiftObjectListService(this).list(file);
         }
     }
 
