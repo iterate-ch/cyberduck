@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Copy;
@@ -26,7 +27,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3CopyFeature implements Copy {
 
@@ -40,7 +41,8 @@ public class S3CopyFeature implements Copy {
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
             if(source.attributes().isFile()) {
-                final StorageObject destination = new StorageObject(copy.getKey());
+                final PathContainerService containerService = new PathContainerService();
+                final StorageObject destination = new StorageObject(containerService.getKey(copy));
                 // Keep same storage class
                 destination.setStorageClass(source.attributes().getStorageClass());
                 // Keep encryption setting
@@ -49,8 +51,9 @@ public class S3CopyFeature implements Copy {
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
                 destination.setAcl(acl.convert(acl.read(source)));
                 // Copying object applying the metadata of the original
-                session.getClient().copyObject(source.getContainer().getName(), source.getKey(),
-                        copy.getContainer().getName(), destination, false);
+                session.getClient().copyObject(containerService.getContainer(source).getName(),
+                        containerService.getKey(source),
+                        containerService.getContainer(copy).getName(), destination, false);
             }
         }
         catch(ServiceException e) {

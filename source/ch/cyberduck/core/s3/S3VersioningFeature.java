@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Versioning;
@@ -124,7 +125,8 @@ public class S3VersioningFeature implements Versioning {
     public void revert(final Path file) throws BackgroundException {
         if(file.attributes().isFile()) {
             try {
-                final S3Object destination = new S3Object(file.getKey());
+                final PathContainerService containerService = new PathContainerService();
+                final S3Object destination = new S3Object(containerService.getKey(file));
                 // Keep same storage class
                 destination.setStorageClass(file.attributes().getStorageClass());
                 // Keep encryption setting
@@ -133,7 +135,7 @@ public class S3VersioningFeature implements Versioning {
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
                 destination.setAcl(acl.convert(acl.read(file)));
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
-                        file.getContainer().getName(), file.getKey(), file.getContainer().getName(), destination, false);
+                        containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
             }
             catch(ServiceException e) {
                 throw new ServiceExceptionMappingService().map("Cannot revert file", e, file);

@@ -18,6 +18,7 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
@@ -28,7 +29,7 @@ import java.io.IOException;
 import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftCopyFeature implements Copy {
 
@@ -41,10 +42,11 @@ public class SwiftCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
+            final PathContainerService containerService = new PathContainerService();
             if(source.attributes().isFile()) {
-                session.getClient().copyObject(session.getRegion(source.getContainer()),
-                        source.getContainer().getName(), source.getKey(),
-                        copy.getContainer().getName(), copy.getKey());
+                session.getClient().copyObject(session.getRegion(containerService.getContainer(source)),
+                        containerService.getContainer(source).getName(), containerService.getKey(source),
+                        containerService.getContainer(copy).getName(), containerService.getKey(copy));
             }
         }
         catch(FilesException e) {

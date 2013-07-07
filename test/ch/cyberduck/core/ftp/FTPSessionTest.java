@@ -52,8 +52,7 @@ public class FTPSessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
 
 
-        final FTPPath path = new FTPPath("/pub/debian/README.html", Path.FILE_TYPE) {
-        };
+        final Path path = new Path("/pub/debian/README.html", Path.FILE_TYPE);
         final TransferStatus status = new TransferStatus();
         final FTPSession.DataConnectionAction<Void> action = new FTPSession.DataConnectionAction<Void>() {
             @Override

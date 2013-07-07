@@ -18,6 +18,7 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
@@ -42,6 +43,8 @@ public class SwiftHeadersFeature implements Headers {
 
     private CFSession session;
 
+    private PathContainerService containerService = new PathContainerService();
+
     public SwiftHeadersFeature(final CFSession session) {
         this.session = session;
     }
@@ -51,14 +54,14 @@ public class SwiftHeadersFeature implements Headers {
         try {
             if(file.attributes().isFile()) {
                 final FilesObjectMetaData meta
-                        = session.getClient().getObjectMetaData(session.getRegion(file.getContainer()),
-                        file.getContainer().getName(), file.getKey());
+                        = session.getClient().getObjectMetaData(session.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
                 return meta.getMetaData();
             }
             if(file.attributes().isVolume()) {
                 final FilesContainerMetaData meta
-                        = session.getClient().getContainerMetaData(session.getRegion(file.getContainer()),
-                        file.getContainer().getName());
+                        = session.getClient().getContainerMetaData(session.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName());
                 return meta.getMetaData();
             }
             return Collections.emptyMap();
@@ -76,8 +79,8 @@ public class SwiftHeadersFeature implements Headers {
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         try {
             if(file.attributes().isFile()) {
-                session.getClient().updateObjectMetadata(session.getRegion(file.getContainer()),
-                        file.getContainer().getName(), file.getKey(), metadata);
+                session.getClient().updateObjectMetadata(session.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
             }
             else if(file.attributes().isVolume()) {
                 for(Map.Entry<String, String> entry : file.attributes().getMetadata().entrySet()) {
@@ -87,8 +90,8 @@ public class SwiftHeadersFeature implements Headers {
                         metadata.put(entry.getKey(), StringUtils.EMPTY);
                     }
                 }
-                session.getClient().updateContainerMetadata(session.getRegion(file.getContainer()),
-                        file.getContainer().getName(), metadata);
+                session.getClient().updateContainerMetadata(session.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), metadata);
             }
         }
         catch(FilesException e) {

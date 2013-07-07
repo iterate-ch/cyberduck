@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3BucketCreateServiceTest extends AbstractTestCase {
 
@@ -44,7 +44,7 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DefaultHostKeyController()));
-        final S3Path bucket = new S3Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new S3BucketCreateService(session).create(
                 bucket);
         assertTrue(session.exists(bucket));

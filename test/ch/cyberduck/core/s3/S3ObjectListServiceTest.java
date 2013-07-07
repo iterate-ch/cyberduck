@@ -34,7 +34,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3ObjectListServiceTest extends AbstractTestCase {
 
@@ -47,7 +47,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new S3Path("static.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("static.cyberduck.ch", Path.VOLUME_TYPE);
         final List<Path> list = new S3ObjectListService(session).list(container);
         assertFalse(list.isEmpty());
         for(Path p : list) {
@@ -76,7 +76,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new S3Path("notfound.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("notfound.cyberduck.ch", Path.VOLUME_TYPE);
         new S3ObjectListService(session).list(container);
     }
 }

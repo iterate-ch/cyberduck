@@ -341,7 +341,7 @@ public class SFTPSession extends Session<Connection> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-        return new SFTPPath(directory,
+        return new Path(directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 
@@ -397,75 +397,7 @@ public class SFTPSession extends Session<Connection> {
 
     @Override
     public AttributedList<Path> list(final Path file) throws BackgroundException {
-        try {
-            this.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    file.getName()));
-
-            final AttributedList<Path> children = new AttributedList<Path>();
-
-            for(SFTPv3DirectoryEntry f : this.sftp().ls(file.getAbsolute())) {
-                if(f.filename.equals(".") || f.filename.equals("..")) {
-                    continue;
-                }
-                SFTPv3FileAttributes attributes = f.attributes;
-                final SFTPPath p = new SFTPPath(file,
-                        f.filename, attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                if(null != attributes.size) {
-                    if(p.attributes().isFile()) {
-                        p.attributes().setSize(attributes.size);
-                    }
-                }
-                String perm = attributes.getOctalPermissions();
-                if(null != perm) {
-                    try {
-                        String octal = Integer.toOctalString(attributes.permissions);
-                        p.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
-                    }
-                    catch(IndexOutOfBoundsException e) {
-                        log.warn(String.format("Failure parsing mode:%s", e.getMessage()));
-                    }
-                    catch(NumberFormatException e) {
-                        log.warn(String.format("Failure parsing mode:%s", e.getMessage()));
-                    }
-                }
-                if(null != attributes.uid) {
-                    p.attributes().setOwner(attributes.uid.toString());
-                }
-                if(null != attributes.gid) {
-                    p.attributes().setGroup(attributes.gid.toString());
-                }
-                if(null != attributes.mtime) {
-                    p.attributes().setModificationDate(Long.parseLong(attributes.mtime.toString()) * 1000L);
-                }
-                if(null != attributes.atime) {
-                    p.attributes().setAccessedDate(Long.parseLong(attributes.atime.toString()) * 1000L);
-                }
-                if(attributes.isSymlink()) {
-                    final String target = this.sftp().readLink(p.getAbsolute());
-                    final int type;
-                    final SFTPv3FileAttributes targetAttributes = this.sftp().stat(target);
-                    if(targetAttributes.isDirectory()) {
-                        type = Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE;
-                    }
-                    else {
-                        type = Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE;
-                    }
-                    p.attributes().setType(type);
-                    if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                        p.setSymlinkTarget(new SFTPPath(target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE));
-                    }
-                    else {
-                        p.setSymlinkTarget(new SFTPPath(p.getParent(), target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE));
-                    }
-                }
-                children.add(p);
-            }
-            return children;
-        }
-        catch(IOException e) {
-            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
-            throw new SFTPExceptionMappingService().map("Listing directory failed", e, file);
-        }
+        return new SFTPListService(this).list(file);
     }
 
     @Override

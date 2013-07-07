@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Location;
@@ -45,7 +46,8 @@ public class S3LocationFeature implements Location {
             return null;
         }
         try {
-            final String location = session.getClient().getBucketLocation(container.getContainer().getName());
+            final String location = session.getClient().getBucketLocation(
+                    new PathContainerService().getContainer(container).getName());
             if(StringUtils.isBlank(location)) {
                 return "US"; //Default location US is null
             }

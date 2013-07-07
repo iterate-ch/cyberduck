@@ -104,6 +104,8 @@ import java.util.concurrent.ThreadFactory;
 public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
+    private PathContainerService containerService = new PathContainerService();
+
     public S3Session(Host h) {
         super(h);
     }
@@ -335,7 +337,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(this.configure(this.getHost().getHostname(true)).getBoolProperty("s3service.disable-dns-buckets", false)) {
             return this.getHost().getHostname(true);
         }
-        if(!ServiceUtils.isBucketNameValidDNSName(bucket.getContainer().getName())) {
+        if(!ServiceUtils.isBucketNameValidDNSName(containerService.getContainer(bucket).getName())) {
             return this.getHost().getHostname(true);
         }
         if(this.getHost().getHostname().equals(this.getHost().getProtocol().getDefaultHostname())) {
@@ -490,23 +492,23 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      * @param scheme Protocol
      * @return URL to be displayed in browser
      */
-    private String toURL(final Path path, final String scheme) {
+    private String toURL(final Path file, final String scheme) {
         final StringBuilder url = new StringBuilder(scheme);
         url.append("://");
-        if(path.isRoot()) {
+        if(file.isRoot()) {
             url.append(this.getHost().getHostname());
         }
         else {
-            final String hostname = this.getHostnameForContainer(path.getContainer());
-            if(hostname.startsWith(path.getContainer().getName())) {
+            final String hostname = this.getHostnameForContainer(containerService.getContainer(file));
+            if(hostname.startsWith(containerService.getContainer(file).getName())) {
                 url.append(hostname);
-                if(!path.isContainer()) {
-                    url.append(URIEncoder.encode(path.getKey()));
+                if(!containerService.isContainer(file)) {
+                    url.append(URIEncoder.encode(containerService.getKey(file)));
                 }
             }
             else {
                 url.append(this.getHost().getHostname());
-                url.append(URIEncoder.encode(path.getAbsolute()));
+                url.append(URIEncoder.encode(file.getAbsolute()));
             }
         }
         return url.toString();
@@ -544,7 +546,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      * @param expiry Validity of URL
      * @return Temporary URL to be displayed in browser
      */
-    private String createSignedUrl(final Path path, final int expiry) {
+    private String createSignedUrl(final Path file, final int expiry) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
             log.info("Anonymous cannot create signed URL");
             return null;
@@ -556,7 +558,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
         // Generate URL
         return client.createSignedUrl("GET",
-                path.getContainer().getName(), path.getKey(), null,
+                containerService.getContainer(file).getName(), containerService.getKey(file), null,
                 null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
     }
 
@@ -568,7 +570,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      */
     public DescriptiveUrl toTorrentUrl(final Path path) {
         if(path.attributes().isFile()) {
-            return new DescriptiveUrl(client.createTorrentUrl(path.getContainer().getName(),
+            return new DescriptiveUrl(client.createTorrentUrl(containerService.getContainer(path).getName(),
                     path.getKey()));
         }
         return new DescriptiveUrl(null, null);
@@ -606,14 +608,14 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         try {
             if(file.attributes().isDuplicate()) {
                 return this.getClient().getVersionedObject(file.attributes().getVersionId(),
-                        file.getContainer().getName(), file.getKey(),
+                        containerService.getContainer(file).getName(), containerService.getKey(file),
                         null, // ifModifiedSince
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
                         status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
             }
-            return this.getClient().getObject(file.getContainer().getName(), file.getKey(),
+            return this.getClient().getObject(containerService.getContainer(file).getName(), containerService.getKey(file),
                     null, // ifModifiedSince
                     null, // ifUnmodifiedSince
                     null, // ifMatch
@@ -670,7 +672,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     private StorageObject createObjectDetails(final Path file) throws BackgroundException {
-        final StorageObject object = new StorageObject(file.getKey());
+        final StorageObject object = new StorageObject(containerService.getKey(file));
         final String type = new MappingMimeTypeService().getMime(file.getName());
         object.setContentType(type);
         if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
@@ -803,12 +805,13 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
             // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
             // not yet been completed or aborted.
-            final List<MultipartUpload> uploads = this.getClient().multipartListUploads(file.getContainer().getName());
+            final List<MultipartUpload> uploads = this.getClient().multipartListUploads(
+                    containerService.getContainer(file).getName());
             for(MultipartUpload upload : uploads) {
-                if(!upload.getBucketName().equals(file.getContainer().getName())) {
+                if(!upload.getBucketName().equals(containerService.getContainer(file).getName())) {
                     continue;
                 }
-                if(!upload.getObjectKey().equals(file.getKey())) {
+                if(!upload.getObjectKey().equals(containerService.getKey(file))) {
                     continue;
                 }
                 if(log.isInfoEnabled()) {
@@ -833,7 +836,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             }
 
             multipart = this.getClient().multipartStartUpload(
-                    file.getContainer().getName(), file.getKey(), metadata);
+                    containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
         }
 
         final List<MultipartPart> completed;
@@ -958,7 +961,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                     else {
                         in = new DigestInputStream(file.getLocal().getInputStream(), digest);
                     }
-                    out = write(file, new StorageObject(file.getKey()), length, requestParameters);
+                    out = write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
                     upload(file, out, in, throttle, listener, offset, length, status);
                 }
                 catch(IOException e) {
@@ -999,7 +1002,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    getClient().putObjectWithRequestEntityImpl(file.getContainer().getName(), part, entity, requestParams);
+                    getClient().putObjectWithRequestEntityImpl(containerService.getContainer(file).getName(), part, entity, requestParams);
                 }
                 catch(ServiceException e) {
                     throw new ServiceExceptionMappingService().map("Upload failed", e, file);
@@ -1029,18 +1032,18 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     @Override
     public void mkdir(final Path file) throws BackgroundException {
         try {
-            if(file.isContainer()) {
+            if(containerService.isContainer(file)) {
                 new S3BucketCreateService(this).create(file);
             }
             else {
                 // Add placeholder object
-                final StorageObject object = new StorageObject(file.getKey() + Path.DELIMITER);
-                object.setBucketName(file.getContainer().getName());
+                final StorageObject object = new StorageObject(containerService.getKey(file) + Path.DELIMITER);
+                object.setBucketName(containerService.getContainer(file).getName());
                 // Set object explicitly to private access by default.
                 object.setAcl(this.getPrivateCannedAcl());
                 object.setContentLength(0);
                 object.setContentType("application/x-directory");
-                this.getClient().putObject(file.getContainer().getName(), object);
+                this.getClient().putObject(containerService.getContainer(file).getName(), object);
             }
         }
         catch(ServiceException e) {
@@ -1055,8 +1058,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                     file.getName()));
 
             if(file.attributes().isFile()) {
-                this.delete(prompt, file.getContainer(), Collections.singletonList(
-                        new ObjectKeyAndVersion(file.getKey(), file.attributes().getVersionId())));
+                this.delete(prompt, containerService.getContainer(file), Collections.singletonList(
+                        new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId())));
             }
             else if(file.attributes().isDirectory()) {
                 final List<ObjectKeyAndVersion> files = new ArrayList<ObjectKeyAndVersion>();
@@ -1068,26 +1071,26 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                         this.delete(child, prompt);
                     }
                     else {
-                        files.add(new ObjectKeyAndVersion(child.getKey(), child.attributes().getVersionId()));
+                        files.add(new ObjectKeyAndVersion(containerService.getKey(child), child.attributes().getVersionId()));
                     }
                 }
-                if(!file.isContainer()) {
+                if(!containerService.isContainer(file)) {
                     // Because we normalize paths and remove a trailing delimiter we add it here again as the
                     // default directory placeholder formats has the format `/placeholder/' as a key.
-                    files.add(new ObjectKeyAndVersion(file.getKey() + Path.DELIMITER,
+                    files.add(new ObjectKeyAndVersion(containerService.getKey(file) + Path.DELIMITER,
                             file.attributes().getVersionId()));
                     // Always returning 204 even if the key does not exist.
                     // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
-                    files.add(new ObjectKeyAndVersion(file.getKey(),
+                    files.add(new ObjectKeyAndVersion(containerService.getKey(file),
                             file.attributes().getVersionId()));
                     // AWS does not return 404 for non-existing keys
                 }
                 if(!files.isEmpty()) {
-                    this.delete(prompt, file.getContainer(), files);
+                    this.delete(prompt, containerService.getContainer(file), files);
                 }
-                if(file.isContainer()) {
+                if(containerService.isContainer(file)) {
                     // Finally delete bucket itself
-                    this.getClient().deleteBucket(file.getContainer().getName());
+                    this.getClient().deleteBucket(containerService.getContainer(file).getName());
                 }
             }
         }
@@ -1132,7 +1135,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                     file.getName(), renamed));
 
             if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
-                final StorageObject destination = new StorageObject(renamed.getKey());
+                final StorageObject destination = new StorageObject(containerService.getKey(renamed));
                 // Keep same storage class
                 destination.setStorageClass(file.attributes().getStorageClass());
                 // Keep encryption setting
@@ -1141,7 +1144,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
                 destination.setAcl(acl.convert(acl.read(file)));
                 // Moving the object retaining the metadata of the original.
-                this.getClient().moveObject(file.getContainer().getName(), file.getKey(), renamed.getContainer().getName(),
+                this.getClient().moveObject(containerService.getContainer(file).getName(), containerService.getKey(file),
+                        containerService.getContainer(renamed).getName(),
                         destination, false);
             }
             else if(file.attributes().isDirectory()) {
@@ -1149,7 +1153,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                     if(!this.isConnected()) {
                         throw new ConnectionCanceledException();
                     }
-                    this.rename(i, new S3Path(renamed, i.getName(), i.attributes().getType()));
+                    this.rename(i, new Path(renamed, i.getName(), i.attributes().getType()));
                 }
             }
         }

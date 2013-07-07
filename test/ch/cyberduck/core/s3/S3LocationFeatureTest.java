@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3LocationFeatureTest extends AbstractTestCase {
 
@@ -46,7 +46,7 @@ public class S3LocationFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertEquals("EU", new S3LocationFeature(session).getLocation(
-                new S3Path("test.cyberduck.ch", Path.DIRECTORY_TYPE)
+                new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE)
         ));
     }
 }

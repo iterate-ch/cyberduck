@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
@@ -67,7 +68,7 @@ public class S3HeadersFeature implements Headers {
                 // Apply non standard ACL
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
                 target.setAcl(acl.convert(acl.read(file)));
-                session.getClient().updateObjectMetadata(file.getContainer().getName(), target);
+                session.getClient().updateObjectMetadata(new PathContainerService().getContainer(file).getName(), target);
                 target.setMetadataComplete(false);
             }
             catch(ServiceException e) {

@@ -55,7 +55,7 @@ import com.googlecode.sardine.impl.methods.HttpPropFind;
  * @version $Id$
  */
 public class DAVSession extends HttpSession<DAVClient> {
-    private static final Logger log = Logger.getLogger(DAVPath.class);
+    private static final Logger log = Logger.getLogger(DAVSession.class);
 
     public DAVSession(Host h) {
         super(h);

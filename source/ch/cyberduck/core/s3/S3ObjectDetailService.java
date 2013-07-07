@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 
@@ -26,7 +27,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3ObjectDetailService {
     private static final Logger log = Logger.getLogger(S3ObjectDetailService.class);
@@ -43,20 +44,20 @@ public class S3ObjectDetailService {
      * @return Object details
      */
     public StorageObject getDetails(final Path file) throws BackgroundException {
-        final String container = file.getContainer().getName();
+        final String container = new PathContainerService().getContainer(file).getName();
         if(session.getHost().getCredentials().isAnonymousLogin()) {
             log.info("Anonymous cannot access object details");
-            final StorageObject object = new StorageObject(file.getKey());
+            final StorageObject object = new StorageObject(new PathContainerService().getKey(file));
             object.setBucketName(container);
             return object;
         }
         try {
             if(file.attributes().isDuplicate()) {
                 return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
-                        container, file.getKey());
+                        container, new PathContainerService().getKey(file));
             }
             else {
-                return session.getClient().getObjectDetails(container, file.getKey());
+                return session.getClient().getObjectDetails(container, new PathContainerService().getKey(file));
             }
         }
         catch(ServiceException e) {

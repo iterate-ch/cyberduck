@@ -190,24 +190,6 @@ public class Path extends AbstractPath implements Serializable {
         return String.valueOf(DELIMITER).charAt(0);
     }
 
-    /**
-     * @return True if this path denotes a container
-     */
-    public boolean isContainer() {
-        return this.isRoot();
-    }
-
-    /**
-     * @return Default path or root with volume attributes set
-     */
-    public Path getContainer() {
-        Path container = this;
-        while(!container.isContainer()) {
-            container = container.getParent();
-        }
-        return container;
-    }
-
     public Path getParent() {
         if(this.isRoot()) {
             return this;

@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.s3.S3Session;
+
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -157,5 +159,43 @@ public class PathTest extends AbstractTestCase {
             assertEquals("/p", path.getAbsolute());
             assertEquals("/", path.getParent().getAbsolute());
         }
+    }
+
+    @Test
+    public void testCreateRelative() throws Exception {
+        final Path path = new Path(".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        assertEquals("/.CDN_ACCESS_LOGS", path.getAbsolute());
+        assertEquals(".CDN_ACCESS_LOGS", path.getName());
+        assertEquals(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE, path.attributes().getType());
+        assertNotNull(path.getParent());
+        assertEquals("/", path.getParent().getAbsolute());
+        assertTrue(new PathContainerService().isContainer(path));
+        assertFalse(path.isRoot());
+    }
+
+    @Test
+    public void testCreateAbsolute() throws Exception {
+        final Path path = new Path("/.CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        assertEquals("/.CDN_ACCESS_LOGS", path.getAbsolute());
+        assertEquals(".CDN_ACCESS_LOGS", path.getName());
+        assertEquals(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE, path.attributes().getType());
+        assertNotNull(path.getParent());
+        assertEquals("/", path.getParent().getAbsolute());
+        assertTrue(new PathContainerService().isContainer(path));
+        assertFalse(path.isRoot());
+    }
+
+    @Test
+    public void testToURL() throws Exception {
+        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        Path p = new Path("/bucket/f/key", Path.FILE_TYPE);
+        assertEquals("https://bucket.s3.amazonaws.com/f/key", session.toURL(p));
+    }
+
+    @Test
+    public void testToHttpURL() throws Exception {
+        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        Path p = new Path("/bucket/f/key", Path.FILE_TYPE);
+        assertEquals("http://bucket.s3.amazonaws.com/f/key", session.toHttpURL(p));
     }
 }

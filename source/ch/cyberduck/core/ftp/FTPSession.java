@@ -305,7 +305,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
         }
-        return new FTPPath(directory,
+        return new Path(directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 

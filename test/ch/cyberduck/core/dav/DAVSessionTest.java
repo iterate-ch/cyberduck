@@ -32,10 +32,10 @@ public class DAVSessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
         assertFalse(session.cache().isEmpty());
-        assertTrue(session.cache().containsKey(new DAVPath("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertNotNull(session.cache().lookup(new DAVPath("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertNotNull(session.cache().lookup(new DAVPath("/branches", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertNotNull(session.cache().lookup(new DAVPath("/tags", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertTrue(session.cache().containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new Path("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new Path("/branches", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new Path("/tags", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -219,8 +219,8 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/my/documentroot");
         final DAVSession session = new DAVSession(host);
-        assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toURL(new DAVPath("/my/documentroot/f", Path.DIRECTORY_TYPE)));
-        assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toHttpURL(new DAVPath("/my/documentroot/f", Path.DIRECTORY_TYPE)));
+        assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toURL(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)));
+        assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toHttpURL(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)));
     }
 
 

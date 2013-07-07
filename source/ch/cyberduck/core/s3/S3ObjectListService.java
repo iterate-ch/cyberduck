@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -43,7 +44,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3ObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(S3Session.class);
@@ -62,12 +63,12 @@ public class S3ObjectListService implements ListService {
             // a special character that delimits hierarchy, you can use the list
             // operation to select and browse keys hierarchically
             String prefix = StringUtils.EMPTY;
-            if(!file.isContainer()) {
+            if(!new PathContainerService().isContainer(file)) {
                 // estricts the response to only contain results that begin with the
                 // specified prefix. If you omit this optional argument, the value
                 // of Prefix for your query will be the empty string.
                 // In other words, the results will be not be restricted by prefix.
-                prefix = file.getKey();
+                prefix = new PathContainerService().getKey(file);
                 if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
                     prefix += Path.DELIMITER;
                 }
@@ -78,17 +79,17 @@ public class S3ObjectListService implements ListService {
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
             final AttributedList<Path> children = new AttributedList<Path>();
-            children.addAll(this.listObjects(file.getContainer(), prefix, String.valueOf(Path.DELIMITER)));
+            children.addAll(this.listObjects(new PathContainerService().getContainer(file), prefix, String.valueOf(Path.DELIMITER)));
             if(Preferences.instance().getBoolean("s3.revisions.enable")) {
-                if(new S3VersioningFeature(session).getConfiguration(file.getContainer()).isEnabled()) {
+                if(new S3VersioningFeature(session).getConfiguration(new PathContainerService().getContainer(file)).isEnabled()) {
                     String priorLastKey = null;
                     String priorLastVersionId = null;
                     do {
                         final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                                file.getContainer().getName(), prefix, String.valueOf(Path.DELIMITER),
+                                new PathContainerService().getContainer(file).getName(), prefix, String.valueOf(Path.DELIMITER),
                                 Preferences.instance().getInteger("s3.listing.chunksize"),
                                 priorLastKey, priorLastVersionId, true);
-                        children.addAll(this.listVersions(file.getContainer(), Arrays.asList(chunk.getItems())));
+                        children.addAll(this.listVersions(new PathContainerService().getContainer(file), Arrays.asList(chunk.getItems())));
                         priorLastKey = chunk.getNextKeyMarker();
                         priorLastVersionId = chunk.getNextVersionIdMarker();
                     }
@@ -119,7 +120,7 @@ public class S3ObjectListService implements ListService {
 
             final StorageObject[] objects = chunk.getObjects();
             for(StorageObject object : objects) {
-                final S3Path p = new S3Path(bucket.getName() + Path.DELIMITER + object.getKey(), Path.FILE_TYPE);
+                final Path p = new Path(bucket.getName() + Path.DELIMITER + object.getKey(), Path.FILE_TYPE);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 p.attributes().setRegion(bucket.attributes().getRegion());
@@ -158,7 +159,7 @@ public class S3ObjectListService implements ListService {
                     log.warn("Skipping prefix " + common);
                     continue;
                 }
-                final Path p = new S3Path(bucket.getName() + Path.DELIMITER + common, Path.DIRECTORY_TYPE);
+                final Path p = new Path(bucket.getName() + Path.DELIMITER + common, Path.DIRECTORY_TYPE);
                 if(children.contains(p.getReference())) {
                     // There is already a placeholder object
                     continue;
@@ -189,7 +190,7 @@ public class S3ObjectListService implements ListService {
             if((marker.isDeleteMarker() && marker.isLatest())
                     || !marker.isLatest()) {
                 // Latest version already in default listing
-                final S3Path p = new S3Path(bucket.getName() + Path.DELIMITER + marker.getKey(), Path.FILE_TYPE);
+                final Path p = new Path(bucket.getName() + Path.DELIMITER + marker.getKey(), Path.FILE_TYPE);
                 // Versioning is enabled if non null.
                 p.attributes().setVersionId(marker.getVersionId());
                 p.attributes().setRevision(++i);

@@ -20,6 +20,7 @@ package ch.cyberduck.core.cf;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -58,11 +59,12 @@ public class SwiftObjectListService implements ListService {
             String marker = null;
             List<FilesObject> list;
             do {
-                final Path container = file.getContainer();
+                final PathContainerService containerService = new PathContainerService();
+                final Path container = containerService.getContainer(file);
                 list = session.getClient().listObjectsStartingWith(session.getRegion(container), container.getName(),
-                        file.isContainer() ? StringUtils.EMPTY : file.getKey() + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
+                        containerService.isContainer(file) ? StringUtils.EMPTY : containerService.getKey(file) + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                 for(FilesObject object : list) {
-                    final Path child = new CFPath(file,
+                    final Path child = new Path(file,
                             Path.getName(PathNormalizer.normalize(object.getName())),
                             "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                     child.attributes().setOwner(child.attributes().getOwner());

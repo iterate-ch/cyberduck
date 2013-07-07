@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3LifecycleConfigurationTest extends AbstractTestCase {
 
@@ -43,10 +43,10 @@ public class S3LifecycleConfigurationTest extends AbstractTestCase {
                         )));
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertEquals(31, new S3LifecycleConfiguration(session).getConfiguration(
-                new S3Path("lifecycle-cyberduck-test", Path.DIRECTORY_TYPE)
+                new Path("lifecycle-cyberduck-test", Path.DIRECTORY_TYPE)
         ).getExpiration(), 0L);
         assertEquals(1, new S3LifecycleConfiguration(session).getConfiguration(
-                new S3Path("lifecycle-cyberduck-test", Path.DIRECTORY_TYPE)
+                new Path("lifecycle-cyberduck-test", Path.DIRECTORY_TYPE)
         ).getTransition(), 0L);
     }
 }

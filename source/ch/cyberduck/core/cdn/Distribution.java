@@ -21,6 +21,7 @@ package ch.cyberduck.core.cdn;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.i18n.Locale;
@@ -432,8 +433,8 @@ public class Distribution {
      */
     public String getOrigin(final Path file) {
         StringBuilder url = new StringBuilder().append(String.format("%s://%s", this.getMethod().getScheme(), this.getOrigin()));
-        if(!file.isContainer()) {
-            url.append(Path.DELIMITER).append(URIEncoder.encode(file.getKey()));
+        if(!new PathContainerService().isContainer(file)) {
+            url.append(Path.DELIMITER).append(URIEncoder.encode(new PathContainerService().getKey(file)));
         }
         try {
             return new URI(url.toString()).normalize().toString();
@@ -505,8 +506,8 @@ public class Distribution {
             return null;
         }
         StringBuilder b = new StringBuilder(base);
-        if(StringUtils.isNotEmpty(file.getKey())) {
-            b.append(Path.DELIMITER).append(URIEncoder.encode(file.getKey()));
+        if(StringUtils.isNotEmpty(new PathContainerService().getKey(file))) {
+            b.append(Path.DELIMITER).append(URIEncoder.encode(new PathContainerService().getKey(file)));
         }
         try {
             return new URI(b.toString()).normalize().toString();
@@ -574,8 +575,8 @@ public class Distribution {
     private String getCnameURL(final String cname, final Path file) {
         StringBuilder b = new StringBuilder();
         b.append(String.format("%s://%s", this.getMethod().getScheme(), cname)).append(this.getMethod().getContext());
-        if(StringUtils.isNotEmpty(file.getKey())) {
-            b.append(Path.DELIMITER).append(URIEncoder.encode(file.getKey()));
+        if(StringUtils.isNotEmpty(new PathContainerService().getKey(file))) {
+            b.append(Path.DELIMITER).append(URIEncoder.encode(new PathContainerService().getKey(file)));
         }
         try {
             return new URI(b.toString()).normalize().toString();

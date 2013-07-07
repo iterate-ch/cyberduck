@@ -17,15 +17,7 @@ package ch.cyberduck.core.cf;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -81,6 +73,8 @@ public class CFSession extends HttpSession<FilesClient> {
 
     private Map<Path, Distribution> distributions
             = new HashMap<Path, Distribution>();
+
+    private PathContainerService containerService = new PathContainerService();
 
     public CFSession(Host h) {
         super(h);
@@ -160,9 +154,9 @@ public class CFSession extends HttpSession<FilesClient> {
      * @return Publicy accessible URL of given object
      */
     @Override
-    public String toHttpURL(final Path path) {
-        if(distributions.containsKey(path.getContainer())) {
-            return distributions.get(path.getContainer()).getURL(path);
+    public String toHttpURL(final Path file) {
+        if(distributions.containsKey(containerService.getContainer(file))) {
+            return distributions.get(containerService.getContainer(file)).getURL(file);
         }
         return null;
     }
@@ -175,9 +169,9 @@ public class CFSession extends HttpSession<FilesClient> {
 
     @Override
     public boolean exists(final Path file) throws BackgroundException {
-        if(file.isContainer()) {
+        if(containerService.isContainer(file)) {
             try {
-                return this.getClient().containerExists(this.getRegion(file.getContainer()),
+                return this.getClient().containerExists(this.getRegion(containerService.getContainer(file)),
                         file.getName());
             }
             catch(FilesException e) {
@@ -204,12 +198,12 @@ public class CFSession extends HttpSession<FilesClient> {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(status.isResume()) {
-                return this.getClient().getObject(this.getRegion(file.getContainer()),
-                        file.getContainer().getName(), file.getKey(),
+                return this.getClient().getObject(this.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), containerService.getKey(file),
                         status.getCurrent(), status.getLength());
             }
-            return this.getClient().getObject(this.getRegion(file.getContainer()),
-                    file.getContainer().getName(), file.getKey());
+            return this.getClient().getObject(this.getRegion(containerService.getContainer(file)),
+                    containerService.getContainer(file).getName(), containerService.getKey(file));
         }
         catch(FilesException e) {
             throw new FilesExceptionMappingService().map("Download failed", e, file);
@@ -284,12 +278,12 @@ public class CFSession extends HttpSession<FilesClient> {
                     throw new IOException("Mismatch between MD5 hash of uploaded data ("
                             + expectedETag + ") and ETag returned ("
                             + result + ") for object key: "
-                            + file.getKey());
+                            + containerService.getKey(file));
                 }
                 else {
                     if(log.isDebugEnabled()) {
                         log.debug("Object upload was automatically verified, the calculated MD5 hash " +
-                                "value matched the ETag returned: " + file.getKey());
+                                "value matched the ETag returned: " + containerService.getKey(file));
                     }
                 }
             }
@@ -342,8 +336,8 @@ public class CFSession extends HttpSession<FilesClient> {
             public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     return getClient().storeObject(
-                            getRegion(file.getContainer()), file.getContainer().getName(),
-                            file.getKey(), entity,
+                            getRegion(containerService.getContainer(file)), containerService.getContainer(file).getName(),
+                            containerService.getKey(file), entity,
                             metadata, md5sum);
                 }
                 catch(FilesException e) {
@@ -365,13 +359,14 @@ public class CFSession extends HttpSession<FilesClient> {
     @Override
     public void mkdir(final Path file) throws BackgroundException {
         try {
-            if(file.isContainer()) {
+            if(containerService.isContainer(file)) {
                 // Create container at top level
-                this.getClient().createContainer(this.getRegion(file.getContainer()), file.getName());
+                this.getClient().createContainer(this.getRegion(containerService.getContainer(file)), file.getName());
             }
             else {
                 // Create virtual directory
-                this.getClient().createPath(this.getRegion(file.getContainer()), file.getContainer().getName(), file.getKey());
+                this.getClient().createPath(this.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
             }
         }
         catch(FilesException e) {
@@ -388,8 +383,8 @@ public class CFSession extends HttpSession<FilesClient> {
             this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             if(file.attributes().isFile()) {
-                this.getClient().deleteObject(this.getRegion(file.getContainer()),
-                        file.getContainer().getName(), file.getKey());
+                this.getClient().deleteObject(this.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             else if(file.attributes().isDirectory()) {
                 for(Path i : this.list(file)) {
@@ -398,14 +393,14 @@ public class CFSession extends HttpSession<FilesClient> {
                     }
                     this.delete(i, prompt);
                 }
-                if(file.isContainer()) {
-                    this.getClient().deleteContainer(this.getRegion(file.getContainer()),
-                            file.getContainer().getName());
+                if(containerService.isContainer(file)) {
+                    this.getClient().deleteContainer(this.getRegion(containerService.getContainer(file)),
+                            containerService.getContainer(file).getName());
                 }
                 else {
                     try {
-                        this.getClient().deleteObject(this.getRegion(file.getContainer()),
-                                file.getContainer().getName(), file.getKey());
+                        this.getClient().deleteObject(this.getRegion(containerService.getContainer(file)),
+                                containerService.getContainer(file).getName(), containerService.getKey(file));
                     }
                     catch(FilesNotFoundException e) {
                         // No real placeholder but just a delimiter returned in the object listing.
@@ -429,22 +424,22 @@ public class CFSession extends HttpSession<FilesClient> {
                     file.getName(), renamed));
 
             if(file.attributes().isFile()) {
-                this.getClient().copyObject(this.getRegion(file.getContainer()),
-                        file.getContainer().getName(), file.getKey(),
-                        renamed.getContainer().getName(), renamed.getKey());
-                this.getClient().deleteObject(this.getRegion(file.getContainer()),
-                        file.getContainer().getName(), file.getKey());
+                this.getClient().copyObject(this.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), containerService.getKey(file),
+                        containerService.getContainer(renamed).getName(), containerService.getKey(renamed));
+                this.getClient().deleteObject(this.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             else if(file.attributes().isDirectory()) {
                 for(Path i : this.list(file)) {
                     if(!this.isConnected()) {
                         throw new ConnectionCanceledException();
                     }
-                    this.rename(i, new CFPath(renamed, i.getName(), i.attributes().getType()));
+                    this.rename(i, new Path(renamed, i.getName(), i.attributes().getType()));
                 }
                 try {
-                    this.getClient().deleteObject(this.getRegion(file.getContainer()),
-                            file.getContainer().getName(), file.getKey());
+                    this.getClient().deleteObject(this.getRegion(containerService.getContainer(file)),
+                            containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
                 catch(FilesNotFoundException e) {
                     // No real placeholder but just a delimiter returned in the object listing.

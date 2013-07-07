@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
@@ -41,6 +42,8 @@ public class S3AccessControlListFeature implements AccessControlList {
 
     private S3Session session;
 
+    private PathContainerService containerService = new PathContainerService();
+
     public S3AccessControlListFeature(final S3Session session) {
         this.session = session;
     }
@@ -52,23 +55,23 @@ public class S3AccessControlListFeature implements AccessControlList {
             return Acl.EMPTY;
         }
         try {
-            if(file.isContainer()) {
+            if(containerService.isContainer(file)) {
                 // This method can be performed by anonymous services, but can only succeed if the
                 // bucket's existing ACL already allows write access by the anonymous user.
                 // In general, you can only access the ACL of a bucket if the ACL already in place
                 // for that bucket (in S3) allows you to do so.
-                return this.convert(session.getClient().getBucketAcl(file.getContainer().getName()));
+                return this.convert(session.getClient().getBucketAcl(containerService.getContainer(file).getName()));
             }
             else if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
                 org.jets3t.service.acl.AccessControlList list;
-                if(new S3VersioningFeature(session).getConfiguration(file.getContainer()).isEnabled()) {
+                if(new S3VersioningFeature(session).getConfiguration(containerService.getContainer(file)).isEnabled()) {
                     list = session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
-                            file.getContainer().getName(), file.getKey());
+                            containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
                 else {
                     // This method can be performed by anonymous services, but can only succeed if the
                     // object's existing ACL already allows read access by the anonymous user.
-                    list = session.getClient().getObjectAcl(file.getContainer().getName(), file.getKey());
+                    list = session.getClient().getObjectAcl(containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
                 return this.convert(list);
             }
@@ -86,12 +89,12 @@ public class S3AccessControlListFeature implements AccessControlList {
                 // Owner is lost in controller
                 acl.setOwner(file.attributes().getAcl().getOwner());
             }
-            if(file.isContainer()) {
-                session.getClient().putBucketAcl(file.getContainer().getName(), this.convert(acl));
+            if(containerService.isContainer(file)) {
+                session.getClient().putBucketAcl(containerService.getContainer(file).getName(), this.convert(acl));
             }
             else {
                 if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
-                    session.getClient().putObjectAcl(file.getContainer().getName(), file.getKey(), this.convert(acl));
+                    session.getClient().putObjectAcl(containerService.getContainer(file).getName(), containerService.getKey(file), this.convert(acl));
                 }
                 if(file.attributes().isDirectory()) {
                     if(recursive) {

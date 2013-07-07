@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cf;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -17,30 +17,11 @@ package ch.cyberduck.core.cf;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cloud.CloudPath;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * Rackspace Cloud Files Implementation
- *
- * @version $Id$
+ * @version $Id:$
  */
-public class CFPath extends CloudPath {
-
-    public CFPath(Path parent, String name, int type) {
-        super(parent, name, type);
-    }
-
-    public CFPath(String path, int type) {
-        super(path, type);
-    }
-
-    public CFPath(Path parent, Local file) {
-        super(parent, file);
-    }
-
-    public <T> CFPath(T dict) {
-        super(dict);
-    }
+public interface ListService {
+    public AttributedList<Path> list(Path directory) throws BackgroundException;
 }

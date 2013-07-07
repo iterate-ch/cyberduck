@@ -33,7 +33,7 @@ import com.googlecode.sardine.DavResource;
 import com.googlecode.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVListService implements ListService {
 
@@ -55,7 +55,7 @@ public class DAVListService implements ListService {
                 if(href.equals(file.getAbsolute())) {
                     continue;
                 }
-                final DAVPath p = new DAVPath(file,
+                final Path p = new Path(file,
                         Path.getName(href), resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 if(resource.getModified() != null) {
                     p.attributes().setModificationDate(resource.getModified().getTime());

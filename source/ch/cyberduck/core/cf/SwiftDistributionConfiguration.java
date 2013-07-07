@@ -18,6 +18,7 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -109,7 +110,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
                     distribution.setDefaultRootObject(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
-                distribution.setContainers(Collections.<Path>singletonList(new CFPath(".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
+                distribution.setContainers(Collections.<Path>singletonList(new Path(".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
                 return distribution;
             }
             catch(FilesNotFoundException e) {
@@ -132,14 +133,15 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     @Override
     public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final boolean recursive) throws BackgroundException {
         try {
+            final PathContainerService containerService = new PathContainerService();
             for(Path file : files) {
-                if(file.isContainer()) {
-                    session.getClient().purgeCDNContainer(session.getRegion(file.getContainer()),
+                if(containerService.isContainer(file)) {
+                    session.getClient().purgeCDNContainer(session.getRegion(containerService.getContainer(file)),
                             container.getName(), null);
                 }
                 else {
-                    session.getClient().purgeCDNObject(session.getRegion(file.getContainer()),
-                            container.getName(), file.getKey(), null);
+                    session.getClient().purgeCDNObject(session.getRegion(containerService.getContainer(file)),
+                            container.getName(), containerService.getKey(file), null);
                 }
             }
         }

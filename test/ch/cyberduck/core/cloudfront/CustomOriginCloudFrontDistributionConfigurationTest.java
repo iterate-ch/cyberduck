@@ -10,7 +10,6 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.sftp.SFTPPath;
 
 import org.junit.Test;
 
@@ -29,13 +28,13 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         assertEquals(Arrays.asList(Distribution.CUSTOM),
                 new CustomOriginCloudFrontDistributionConfiguration(new Host("o"), session, new DisabledLoginController()).getMethods(
-                        new SFTPPath("/bbb", Path.VOLUME_TYPE)));
+                        new Path("/bbb", Path.VOLUME_TYPE)));
     }
 
     @Test
     public void testGetOrigin() throws Exception {
         final Host h = new Host("m");
-        final SFTPPath container = new SFTPPath("/", Path.VOLUME_TYPE);
+        final Path container = new Path("/", Path.VOLUME_TYPE);
         h.setWebURL("http://w.example.net");
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         final CustomOriginCloudFrontDistributionConfiguration configuration
@@ -56,7 +55,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         final S3Session session = new S3Session(host);
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(new Host("myhost.localdomain"), session, new DisabledLoginController());
-        final SFTPPath container = new SFTPPath("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.CUSTOM);
         assertNull(distribution.getId());
         assertEquals("myhost.localdomain", distribution.getOrigin());
@@ -82,7 +81,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
                 throw new LoginCanceledException();
             }
         });
-        final SFTPPath container = new SFTPPath("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         configuration.read(container, Distribution.CUSTOM);
     }
 }

@@ -31,7 +31,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final List<Path> list = new SwiftContainerListService().list(session);
-        final CFPath container = new CFPath("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
         assertTrue(list.contains(container));
         container.attributes().setRegion("ORD");

@@ -34,7 +34,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftObjectListServiceTest extends AbstractTestCase {
 
@@ -47,7 +47,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final CFPath container = new CFPath("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final List<Path> list = new SwiftObjectListService(session).list(container);
         assertFalse(list.isEmpty());
         for(Path p : list) {
@@ -76,7 +76,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final CFPath container = new CFPath("notfound.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("notfound.cyberduck.ch", Path.VOLUME_TYPE);
         new SwiftObjectListService(session).list(container);
     }
 }

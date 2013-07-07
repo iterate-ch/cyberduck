@@ -37,7 +37,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final CFPath container = new CFPath("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD);
         assertNotNull(test);
@@ -65,7 +65,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final CFPath container = new CFPath(new Path(String.valueOf(Path.DELIMITER),
+        final Path container = new Path(new Path(String.valueOf(Path.DELIMITER),
                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE), "test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("region-a.geo-1");
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD);
@@ -93,7 +93,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         ));
         final CFSession session = new CFSession(host);
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final CFPath container = new CFPath("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("region-a.geo-1");
         configuration.read(container, Distribution.DOWNLOAD);
     }

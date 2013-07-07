@@ -32,7 +32,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3LoggingFeatureTest extends AbstractTestCase {
 
@@ -46,7 +46,7 @@ public class S3LoggingFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final LoggingConfiguration configuration = new S3LoggingFeature(session).getConfiguration(
-                new S3Path("test.cyberduck.ch", Path.DIRECTORY_TYPE)
+                new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE)
         );
         assertNotNull(configuration);
         assertEquals("log.cyberduck.ch", configuration.getLoggingTarget());

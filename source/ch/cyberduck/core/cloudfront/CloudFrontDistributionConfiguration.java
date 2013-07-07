@@ -19,6 +19,7 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
@@ -293,11 +294,11 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     protected List<String> getInvalidationKeys(final List<Path> files, final boolean recursive) throws BackgroundException {
         List<String> keys = new ArrayList<String>();
         for(Path file : files) {
-            if(file.isContainer()) {
+            if(new PathContainerService().isContainer(file)) {
                 keys.add(String.valueOf(Path.DELIMITER));
             }
             else {
-                keys.add(file.getKey());
+                keys.add(new PathContainerService().getKey(file));
             }
             if(file.attributes().isDirectory()) {
                 if(recursive) {

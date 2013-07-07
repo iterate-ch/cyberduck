@@ -56,7 +56,7 @@ public class FTPMlsdListResponseReader implements FTPResponseReader {
                 continue;
             }
             for(String name : file.keySet()) {
-                final Path parsed = new FTPPath(parent, Path.getName(name), Path.FILE_TYPE);
+                final Path parsed = new Path(parent, Path.getName(name), Path.FILE_TYPE);
                 // size       -- Size in octets
                 // modify     -- Last modification time
                 // create     -- Creation time

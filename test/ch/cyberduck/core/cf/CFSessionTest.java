@@ -27,10 +27,10 @@ public class CFSessionTest extends AbstractTestCase {
         assertNotNull(session.mount());
         assertTrue(session.isConnected());
         assertFalse(session.cache().isEmpty());
-        final CFPath container = new CFPath("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        assertNull(session.toHttpURL(new CFPath(container, "d/f", Path.FILE_TYPE)));
+        final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        assertNull(session.toHttpURL(new Path(container, "d/f", Path.FILE_TYPE)));
         container.attributes().setRegion("DFW");
-        assertEquals("http://2b72124779a6075376a9-dc3ef5db7541ebd1f458742f9170bbe4.r64.cf1.rackcdn.com/d/f", session.toHttpURL(new CFPath(container, "d/f", Path.FILE_TYPE)));
+        assertEquals("http://2b72124779a6075376a9-dc3ef5db7541ebd1f458742f9170bbe4.r64.cf1.rackcdn.com/d/f", session.toHttpURL(new Path(container, "d/f", Path.FILE_TYPE)));
         session.close();
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());
@@ -95,7 +95,7 @@ public class CFSessionTest extends AbstractTestCase {
     @Test
     public void testFile() {
         final CFSession session = new CFSession(new Host(Protocol.SWIFT, "h"));
-        assertFalse(session.isCreateFileSupported(new CFPath("/", Path.VOLUME_TYPE)));
-        assertTrue(session.isCreateFileSupported(new CFPath("/container", Path.VOLUME_TYPE)));
+        assertFalse(session.isCreateFileSupported(new Path("/", Path.VOLUME_TYPE)));
+        assertTrue(session.isCreateFileSupported(new Path("/container", Path.VOLUME_TYPE)));
     }
 }

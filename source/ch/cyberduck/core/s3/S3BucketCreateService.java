@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
@@ -29,7 +30,7 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.utils.ServiceUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3BucketCreateService {
     private static final Logger log = Logger.getLogger(S3BucketCreateService.class);
@@ -59,7 +60,7 @@ public class S3BucketCreateService {
             acl = session.getPrivateCannedAcl();
         }
         try {
-            session.getClient().createBucket(bucket.getContainer().getName(), location, acl);
+            session.getClient().createBucket(new PathContainerService().getContainer(bucket).getName(), location, acl);
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, bucket);

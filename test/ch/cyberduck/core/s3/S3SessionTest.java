@@ -18,8 +18,8 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testFile() {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, "h"));
-        assertFalse(session.isCreateFileSupported(new S3Path("/", Path.VOLUME_TYPE)));
-        assertTrue(session.isCreateFileSupported(new S3Path(new S3Path("/", Path.VOLUME_TYPE), "/container", Path.VOLUME_TYPE)));
+        assertFalse(session.isCreateFileSupported(new Path("/", Path.VOLUME_TYPE)));
+        assertTrue(session.isCreateFileSupported(new Path(new Path("/", Path.VOLUME_TYPE), "/container", Path.VOLUME_TYPE)));
     }
 
     @Test
@@ -34,8 +34,8 @@ public class S3SessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
         assertFalse(session.cache().isEmpty());
-        assertTrue(session.cache().containsKey(new S3Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertNotNull(session.cache().lookup(new S3Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertTrue(session.cache().containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -95,12 +95,12 @@ public class S3SessionTest extends AbstractTestCase {
     public void testUri() throws Exception {
         final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         assertEquals("https://test.cyberduck.ch.s3.amazonaws.com/key",
-                aws.toURL(new S3Path("/test.cyberduck.ch/key", Path.FILE_TYPE)));
+                aws.toURL(new Path("/test.cyberduck.ch/key", Path.FILE_TYPE)));
     }
 
     @Test
     public void testHttpUri() throws Exception {
         final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        assertEquals("http://test.cyberduck.ch.s3.amazonaws.com/key", aws.toHttpURL(new S3Path("/test.cyberduck.ch/key", Path.FILE_TYPE)));
+        assertEquals("http://test.cyberduck.ch.s3.amazonaws.com/key", aws.toHttpURL(new Path("/test.cyberduck.ch/key", Path.FILE_TYPE)));
     }
 }
