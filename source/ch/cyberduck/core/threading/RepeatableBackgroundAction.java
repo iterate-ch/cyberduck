@@ -223,7 +223,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 this.call();
             }
         }
-        progressListener.message(null);
         for(Session session : this.getSessions()) {
             session.removeProgressListener(progressListener);
             // It is important _not_ to do this in #cleanup as otherwise
@@ -246,6 +245,10 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         }
     }
 
+    @Override
+    public void cleanup() {
+        progressListener.message(null);
+    }
 
     @Override
     public void cancel() {
