@@ -65,6 +65,9 @@ import java.util.TimeZone;
 public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
+    /**
+     * Directory listing parser depending on response for SYST command
+     */
     private CompositeFileEntryParser parser;
 
     public FTPSession(Host h) {
@@ -86,14 +89,6 @@ public class FTPSession extends SSLSession<FTPClient> {
             }
         }
         return workdir;
-    }
-
-    /**
-     * @return Directory listing parser depending on response for SYST command
-     * @throws IOException Failure initializing parser
-     */
-    public CompositeFileEntryParser getParser() throws IOException {
-        return parser;
     }
 
     /**
@@ -433,13 +428,9 @@ public class FTPSession extends SSLSession<FTPClient> {
     @Override
     public AttributedList<Path> list(final Path file) throws BackgroundException {
         try {
-            this.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    file.getName()));
-
             final AttributedList<Path> children = new AttributedList<Path>();
 
             // Cached file parser determined from SYST response with the timezone set from the bookmark
-            final FTPFileEntryParser parser = this.getParser();
             boolean success = false;
             try {
                 if(this.isStatListSupportedEnabled()) {
