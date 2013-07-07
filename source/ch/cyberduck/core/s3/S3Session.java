@@ -1214,27 +1214,11 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public void mkdir(final Path file) throws BackgroundException {
         try {
             if(file.isContainer()) {
-                // Create bucket
-                if(!ServiceUtils.isBucketNameValidDNSName(file.getName())) {
-                    throw new ServiceException(Locale.localizedString("Bucket name is not DNS compatible", "S3"));
-                }
-                String location = Preferences.instance().getProperty("s3.location");
-                if(!this.getHost().getProtocol().getLocations().contains(location)) {
-                    log.warn("Default bucket location not supported by provider:" + location);
-                    location = "US";
-                    log.warn("Fallback to US");
-                }
-                AccessControlList acl;
-                if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
-                    acl = this.getPublicCannedReadAcl();
-                }
-                else {
-                    acl = this.getPrivateCannedAcl();
-                }
-                this.getClient().createBucket(file.getContainer().getName(), location, acl);
+                new S3BucketCreateService(this).create(file);
             }
             else {
-                StorageObject object = new StorageObject(file.getKey() + Path.DELIMITER);
+                // Add placeholder object
+                final StorageObject object = new StorageObject(file.getKey() + Path.DELIMITER);
                 object.setBucketName(file.getContainer().getName());
                 // Set object explicitly to private access by default.
                 object.setAcl(this.getPrivateCannedAcl());

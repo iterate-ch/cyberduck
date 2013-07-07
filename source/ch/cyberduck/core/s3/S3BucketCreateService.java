@@ -1,0 +1,68 @@
+package ch.cyberduck.core.s3;
+
+/*
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ */
+
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ServiceExceptionMappingService;
+import ch.cyberduck.core.i18n.Locale;
+
+import org.apache.log4j.Logger;
+import org.jets3t.service.ServiceException;
+import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.utils.ServiceUtils;
+
+/**
+ * @version $Id:$
+ */
+public class S3BucketCreateService {
+    private static final Logger log = Logger.getLogger(S3BucketCreateService.class);
+
+    private S3Session session;
+
+    public S3BucketCreateService(final S3Session session) {
+        this.session = session;
+    }
+
+    public void create(final Path bucket) throws BackgroundException {
+        // Create bucket
+        if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
+            throw new BackgroundException(Locale.localizedString("Bucket name is not DNS compatible", "S3"));
+        }
+        String location = Preferences.instance().getProperty("s3.location");
+        if(!session.getHost().getProtocol().getLocations().contains(location)) {
+            log.warn("Default bucket location not supported by provider:" + location);
+            location = "US";
+            log.warn("Fallback to US");
+        }
+        AccessControlList acl;
+        if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
+            acl = session.getPublicCannedReadAcl();
+        }
+        else {
+            acl = session.getPrivateCannedAcl();
+        }
+        try {
+            session.getClient().createBucket(bucket.getContainer().getName(), location, acl);
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, bucket);
+        }
+    }
+}
