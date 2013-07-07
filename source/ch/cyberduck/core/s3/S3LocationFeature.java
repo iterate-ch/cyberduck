@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3LocationFeature implements Location {
     private static final Logger log = Logger.getLogger(S3LocationFeature.class);
@@ -45,14 +45,11 @@ public class S3LocationFeature implements Location {
             return null;
         }
         try {
-            if(null == container.attributes().getRegion()) {
-                final String location = session.getClient().getBucketLocation(container.getContainer().getName());
-                if(StringUtils.isBlank(location)) {
-                    return "US"; //Default location US is null
-                }
-                return location;
+            final String location = session.getClient().getBucketLocation(container.getContainer().getName());
+            if(StringUtils.isBlank(location)) {
+                return "US"; //Default location US is null
             }
-            return container.attributes().getRegion();
+            return location;
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
