@@ -20,25 +20,25 @@ using System.Xml;
 using ch.cyberduck.core;
 using ch.cyberduck.core.serializer;
 
-namespace Ch.Cyberduck.Ui.Winforms.Serializer
+namespace Ch.Cyberduck.Core.Serializer.Impl
 {
-    public class ProfilePlistReader : PlistReader<Profile>
+    public class HostPlistReader : PlistReader<Host>
     {
         public static void Register()
         {
-            ProfileReaderFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
+            HostReaderFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
-        public override Profile deserialize(XmlNode dictNode)
+        public override Host deserialize(XmlNode dictNode)
         {
-            return new Profile(dictNode);
+            return new Host(dictNode);
         }
 
-        private class Factory : ProfileReaderFactory
+        private class Factory : HostReaderFactory
         {
             protected override object create()
             {
-                return new ProfilePlistReader();
+                return new HostPlistReader();
             }
         }
     }

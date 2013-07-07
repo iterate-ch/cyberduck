@@ -2559,6 +2559,13 @@ source/ch/cyberduck/core/local/WindowsApplicationLauncher.cs -text
 source/ch/cyberduck/core/local/WindowsTemporaryFileService.cs -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
+source/ch/cyberduck/core/serializer/impl/HostPlistReader.cs -text
+source/ch/cyberduck/core/serializer/impl/PlistDeserializer.cs -text
+source/ch/cyberduck/core/serializer/impl/PlistReader.cs -text
+source/ch/cyberduck/core/serializer/impl/PlistSerializer.cs -text
+source/ch/cyberduck/core/serializer/impl/PlistWriter.cs -text
+source/ch/cyberduck/core/serializer/impl/ProfilePlistReader.cs -text
+source/ch/cyberduck/core/serializer/impl/TransferPlistReader.cs -text
 source/ch/cyberduck/core/sparkle/Updater.java -text
 source/ch/cyberduck/core/ssl/AbstractX509KeyManager.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
@@ -2754,13 +2761,6 @@ source/ch/cyberduck/ui/winforms/controls/TransferControl.resx -text svneol=unset
 source/ch/cyberduck/ui/winforms/controls/VistaMenu.cs -text
 source/ch/cyberduck/ui/winforms/controls/VistaMenuOwnerDrawn.cs -text
 source/ch/cyberduck/ui/winforms/controls/design/SearchTextBoxDesigner.cs -text
-source/ch/cyberduck/ui/winforms/serializer/HostPlistReader.cs -text
-source/ch/cyberduck/ui/winforms/serializer/PlistDeserializer.cs -text
-source/ch/cyberduck/ui/winforms/serializer/PlistReader.cs -text
-source/ch/cyberduck/ui/winforms/serializer/PlistSerializer.cs -text
-source/ch/cyberduck/ui/winforms/serializer/PlistWriter.cs -text
-source/ch/cyberduck/ui/winforms/serializer/ProfilePlistReader.cs -text
-source/ch/cyberduck/ui/winforms/serializer/TransferPlistReader.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/CommandButton.Designer.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/CommandButton.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/TaskDialog.cs -text

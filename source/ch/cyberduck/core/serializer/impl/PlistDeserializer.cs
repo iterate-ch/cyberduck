@@ -19,7 +19,7 @@ using System.Xml;
 using ch.cyberduck.core.serializer;
 using java.util;
 
-namespace Ch.Cyberduck.Ui.Winforms.Serializer
+namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public class PlistDeserializer : Deserializer
     {

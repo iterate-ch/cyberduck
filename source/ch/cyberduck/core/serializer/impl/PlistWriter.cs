@@ -23,7 +23,7 @@ using ch.cyberduck.core.serializer;
 using java.util;
 using Collection = java.util.Collection;
 
-namespace Ch.Cyberduck.Ui.Winforms.Serializer
+namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public class PlistWriter : Writer
     {

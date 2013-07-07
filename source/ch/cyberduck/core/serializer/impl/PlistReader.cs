@@ -20,7 +20,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.serializer;
 
-namespace Ch.Cyberduck.Ui.Winforms.Serializer
+namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public abstract class PlistReader<T> : Reader where T : Serializable
     {

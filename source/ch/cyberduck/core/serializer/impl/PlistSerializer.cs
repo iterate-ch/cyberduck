@@ -20,7 +20,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.serializer;
 using java.util;
 
-namespace Ch.Cyberduck.Ui.Winforms.Serializer
+namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public class PlistSerializer : ch.cyberduck.core.serializer.Serializer
     {

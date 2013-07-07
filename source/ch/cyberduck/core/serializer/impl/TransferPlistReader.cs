@@ -27,7 +27,7 @@ using ch.cyberduck.core.transfer.synchronisation;
 using ch.cyberduck.core.transfer.upload;
 using org.apache.log4j;
 
-namespace Ch.Cyberduck.Ui.Winforms.Serializer
+namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public class TransferPlistReader : PlistReader<Transfer>
     {
