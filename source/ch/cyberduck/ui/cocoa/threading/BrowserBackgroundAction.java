@@ -35,6 +35,9 @@ public abstract class BrowserBackgroundAction extends ControllerRepeatableBackgr
 
     private BrowserController controller;
 
+    private BackgroundActionRegistry registry
+            = BackgroundActionRegistry.global();
+
     public BrowserBackgroundAction(final BrowserController controller) {
         super(controller, new PanelAlertCallback(controller), controller, controller);
         this.controller = controller;
@@ -49,7 +52,13 @@ public abstract class BrowserBackgroundAction extends ControllerRepeatableBackgr
     @Override
     public void init() {
         // Add to the registry so it will be displayed in the activity window.
-        BackgroundActionRegistry.global().add(this);
+        registry.add(this);
+    }
+
+    @Override
+    public void cleanup() {
+        registry.remove(this);
+        super.cleanup();
     }
 
     @Override
