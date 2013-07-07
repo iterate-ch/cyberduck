@@ -29,10 +29,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
@@ -62,7 +64,6 @@ import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
-import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
@@ -423,16 +424,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public boolean isCreateFileSupported(final Path workdir) {
         // Creating files is only possible inside a bucket.
         return !workdir.isRoot();
-    }
-
-    public List<String> getSupportedStorageClasses() {
-        return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD,
-                S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-                "GLACIER");
-    }
-
-    public List<String> getSupportedEncryptionAlgorithms() {
-        return Arrays.asList("AES256");
     }
 
     protected AccessControlList getPrivateCannedAcl() {
@@ -1002,7 +993,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    getClient().putObjectWithRequestEntityImpl(containerService.getContainer(file).getName(), part, entity, requestParams);
+                    getClient().putObjectWithRequestEntityImpl(
+                            containerService.getContainer(file).getName(), part, entity, requestParams);
                 }
                 catch(ServiceException e) {
                     throw new ServiceExceptionMappingService().map("Upload failed", e, file);
@@ -1203,8 +1195,25 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 return (T) new S3LifecycleConfiguration(this);
             }
         }
+        if(type == Encryption.class) {
+            // Only for AWS
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                return (T) new S3EncryptionFeature(this);
+            }
+            return null;
+        }
+        if(type == Redundancy.class) {
+            // Only for AWS
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                return (T) new S3StorageClassFeature(this);
+            }
+            return null;
+        }
         if(type == IdentityConfiguration.class) {
-            return (T) new AWSIdentityConfiguration(host, prompt);
+            // Only for AWS
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                return (T) new AWSIdentityConfiguration(host, prompt);
+            }
         }
         if(type == DistributionConfiguration.class) {
             if(host.getHostname().endsWith(Protocol.S3_SSL.getDefaultHostname())) {

@@ -27,10 +27,12 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AccessControlList;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -40,7 +42,6 @@ import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.core.s3.S3CopyFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
@@ -361,13 +362,10 @@ public class InfoController extends ToolbarWindowController {
             this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
-                    final S3Session session = (S3Session) controller.getSession();
-                    final S3CopyFeature copy = new S3CopyFeature(session);
+                    final Redundancy feature = controller.getSession().getFeature(Redundancy.class, prompt);
                     for(Path next : files) {
                         if(next.attributes().isFile()) {
-                            next.attributes().setStorageClass(sender.selectedItem().representedObject());
-                            // Copy item in place to write new attributes
-                            copy.copy(next, next);
+                            feature.setClass(next, sender.selectedItem().representedObject());
                         }
                     }
                 }
@@ -403,14 +401,11 @@ public class InfoController extends ToolbarWindowController {
             this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
-                    final S3Session session = (S3Session) controller.getSession();
-                    final S3CopyFeature copy = new S3CopyFeature(session);
+                    final Encryption feature = controller.getSession().getFeature(Encryption.class, prompt);
                     for(Path next : files) {
                         if(next.attributes().isFile()) {
-                            next.attributes().setEncryption(encryptionButton.state() == NSCell.NSOnState ?
-                                    session.getSupportedEncryptionAlgorithms().iterator().next() : null);
-                            // Copy item in place to write new attributes
-                            copy.copy(next, next);
+                            feature.setEncryption(next, encryptionButton.state() == NSCell.NSOnState ?
+                                    feature.getAlgorithms().iterator().next() : null);
                         }
                     }
                 }
@@ -1925,8 +1920,8 @@ public class InfoController extends ToolbarWindowController {
             analytics = session.getFeature(AnalyticsProvider.class, prompt) != null;
             versioning = session.getFeature(Versioning.class, prompt) != null;
             lifecycle = session.getFeature(Lifecycle.class, prompt) != null;
-            encryption = ((S3Session) session).getSupportedEncryptionAlgorithms().size() > 0;
-            storageclass = ((S3Session) session).getSupportedStorageClasses().size() > 1;
+            encryption = controller.getSession().getFeature(Encryption.class, prompt) != null;
+            storageclass = controller.getSession().getFeature(Redundancy.class, prompt) != null;
         }
         storageClassPopup.setEnabled(stop && enable && storageclass);
         encryptionButton.setEnabled(stop && enable && encryption);
@@ -1976,7 +1971,7 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
 
         if(this.toggleS3Settings(false)) {
-            for(String redundancy : ((S3Session) controller.getSession()).getSupportedStorageClasses()) {
+            for(String redundancy : controller.getSession().getFeature(Redundancy.class, prompt).getClasses()) {
                 storageClassPopup.addItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 storageClassPopup.lastItem().setRepresentedObject(redundancy);
             }
@@ -1994,7 +1989,7 @@ public class InfoController extends ToolbarWindowController {
                     storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 }
                 if(file.attributes().isFile()) {
-                    if(file instanceof Path) {
+                    if(controller.getSession() instanceof S3Session) {
                         final DescriptiveUrl url = ((S3Session) controller.getSession()).toSignedUrl(file);
                         if(StringUtils.isNotBlank(url.getUrl())) {
                             s3PublicUrlField.setAttributedStringValue(

@@ -30,8 +30,10 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
@@ -49,7 +51,6 @@ import org.jets3t.service.acl.gs.GSAccessControlList;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
-import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
@@ -63,7 +64,6 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -162,16 +162,6 @@ public class GSSession extends S3Session {
             client.setProviderCredentials(oauth);
         }
         super.login(keychain, controller);
-    }
-
-    @Override
-    public List<String> getSupportedStorageClasses() {
-        return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD);
-    }
-
-    @Override
-    public List<String> getSupportedEncryptionAlgorithms() {
-        return Collections.emptyList();
     }
 
     @Override
@@ -355,6 +345,12 @@ public class GSSession extends S3Session {
             return null;
         }
         if(type == Versioning.class) {
+            return null;
+        }
+        if(type == Encryption.class) {
+            return null;
+        }
+        if(type == Redundancy.class) {
             return null;
         }
         return super.getFeature(type, prompt);
