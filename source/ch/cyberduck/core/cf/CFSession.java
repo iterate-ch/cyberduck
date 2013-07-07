@@ -192,9 +192,6 @@ public class CFSession extends HttpSession<FilesClient> {
 
     @Override
     public AttributedList<Path> list(final Path file) throws BackgroundException {
-        this.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                file.getName()));
-
         if(file.isRoot()) {
             return new AttributedList<Path>(new SwiftContainerListService().list(this));
         }

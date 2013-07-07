@@ -18,6 +18,7 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
@@ -38,9 +39,9 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
 import com.rackspacecloud.client.cloudfiles.FilesObject;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class SwiftObjectListService {
+public class SwiftObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(SwiftObjectListService.class);
 
     private CFSession session;
@@ -49,6 +50,7 @@ public class SwiftObjectListService {
         this.session = session;
     }
 
+    @Override
     public AttributedList<Path> list(final Path file) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
