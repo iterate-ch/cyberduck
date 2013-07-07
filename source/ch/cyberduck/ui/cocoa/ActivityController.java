@@ -22,7 +22,6 @@ import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
@@ -30,7 +29,6 @@ import ch.cyberduck.ui.cocoa.application.NSView;
 import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
 import org.apache.log4j.Logger;
@@ -50,21 +48,13 @@ import java.util.Map;
 public final class ActivityController extends WindowController {
     private static Logger log = Logger.getLogger(ActivityController.class);
 
-    private static ActivityController instance = null;
-
-    public static ActivityController instance() {
-        synchronized(NSApplication.sharedApplication()) {
-            if(null == instance) {
-                instance = new ActivityController();
-            }
-            return instance;
-        }
-    }
+    private BackgroundActionRegistry registry
+            = BackgroundActionRegistry.global();
 
     private final Map<BackgroundAction, TaskController> tasks
             = Collections.synchronizedMap(new LinkedHashMap<BackgroundAction, TaskController>());
 
-    private ActivityController() {
+    public ActivityController() {
         this.loadBundle();
         // Initialize to listen for background tasks
         this.init();
@@ -72,7 +62,7 @@ public final class ActivityController extends WindowController {
 
     @Override
     protected void invalidate() {
-        BackgroundActionRegistry.global().removeListener(backgroundActionListener);
+        registry.removeListener(backgroundActionListener);
         table.setDataSource(null);
         table.setDelegate(null);
         super.invalidate();
@@ -83,35 +73,25 @@ public final class ActivityController extends WindowController {
 
         @Override
         public void collectionItemAdded(final BackgroundAction action) {
-            invoke(new WindowMainAction(ActivityController.this) {
-                @Override
-                public void run() {
-                    log.debug("collectionItemAdded:" + action);
-                    tasks.put(action, new TaskController(action));
-                    reload();
-                }
-            });
+            log.debug(String.format("Add background action %s", action));
+            tasks.put(action, new TaskController(action));
+            reload();
         }
 
         @Override
         public void collectionItemRemoved(final BackgroundAction action) {
-            invoke(new WindowMainAction(ActivityController.this) {
-                @Override
-                public void run() {
-                    log.debug("collectionItemRemoved:" + action);
-                    final TaskController controller = tasks.remove(action);
-                    if(null == controller) {
-                        return;
-                    }
-                    controller.invalidate();
-                    reload();
-                }
-            });
+            log.debug(String.format("Remove background action %s", action));
+            final TaskController controller = tasks.remove(action);
+            if(null == controller) {
+                return;
+            }
+            controller.invalidate();
+            reload();
         }
     };
 
     private void init() {
-        BackgroundActionRegistry.global().addListener(backgroundActionListener);
+        registry.addListener(backgroundActionListener);
         // Add already running background actions
         final BackgroundAction[] actions = BackgroundActionRegistry.global().toArray(
                 new BackgroundAction[BackgroundActionRegistry.global().size()]);
