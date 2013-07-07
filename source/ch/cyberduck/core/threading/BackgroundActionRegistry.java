@@ -78,7 +78,7 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
         if(super.remove(action)) {
             ((BackgroundAction) action).removeListener(this);
         }
-        return false;
+        return true;
     }
 
     public BackgroundActionRegistry() {
