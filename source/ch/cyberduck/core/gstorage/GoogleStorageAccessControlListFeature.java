@@ -34,16 +34,13 @@ import org.jets3t.service.acl.gs.UserByEmailAddressGrantee;
 import org.jets3t.service.acl.gs.UserByIdGrantee;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GoogleStorageAccessControlListFeature extends S3AccessControlListFeature {
     private static final Logger log = Logger.getLogger(GoogleStorageAccessControlListFeature.class);
 
-    private GSSession session;
-
     public GoogleStorageAccessControlListFeature(final GSSession session) {
         super(session);
-        this.session = session;
     }
 
     @Override
