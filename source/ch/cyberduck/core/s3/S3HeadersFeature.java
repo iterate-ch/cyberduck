@@ -61,6 +61,9 @@ public class S3HeadersFeature implements Headers {
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Write metadata %s for file %s", metadata, file));
+            }
             try {
                 final StorageObject target = new S3ObjectDetailService(session).getDetails(file);
                 target.replaceAllMetadata(new HashMap<String, Object>(metadata));

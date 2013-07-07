@@ -27,13 +27,11 @@ import ch.cyberduck.core.serializer.SerializerFactory;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public class Path extends AbstractPath implements Serializable {
-    private static final Logger log = Logger.getLogger(Path.class);
 
     /**
      * The absolute remote path

@@ -24,6 +24,8 @@ import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +38,7 @@ import com.googlecode.sardine.impl.SardineException;
  * @version $Id$
  */
 public class DAVHeadersFeature implements Headers {
+    private static final Logger log = Logger.getLogger(DAVHeadersFeature.class);
 
     private DAVSession session;
 
@@ -65,6 +68,9 @@ public class DAVHeadersFeature implements Headers {
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         if(file.attributes().isFile()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Write metadata %s for file %s", metadata, file));
+            }
             try {
                 session.getClient().setCustomProps(URIEncoder.encode(file.getAbsolute()),
                         metadata, Collections.<java.lang.String>emptyList());

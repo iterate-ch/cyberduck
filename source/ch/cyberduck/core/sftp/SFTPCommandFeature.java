@@ -32,7 +32,7 @@ import java.io.InputStreamReader;
 import ch.ethz.ssh2.StreamGobbler;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPCommandFeature implements Command {
     private static final Logger log = Logger.getLogger(SFTPCommandFeature.class);
@@ -45,6 +45,9 @@ public class SFTPCommandFeature implements Command {
 
     @Override
     public void send(final String command) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Send command %s", command));
+        }
         ch.ethz.ssh2.Session sess = null;
         try {
             sess = session.getClient().openSession();

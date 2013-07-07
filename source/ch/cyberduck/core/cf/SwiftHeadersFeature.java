@@ -79,6 +79,9 @@ public class SwiftHeadersFeature implements Headers {
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         try {
             if(file.attributes().isFile()) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Write metadata %s for file %s", metadata, file));
+                }
                 session.getClient().updateObjectMetadata(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
             }
@@ -89,6 +92,9 @@ public class SwiftHeadersFeature implements Headers {
                         log.debug(String.format("Remove metadata with key %s", entry.getKey()));
                         metadata.put(entry.getKey(), StringUtils.EMPTY);
                     }
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Write metadata %s for file %s", metadata, file));
                 }
                 session.getClient().updateContainerMetadata(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), metadata);

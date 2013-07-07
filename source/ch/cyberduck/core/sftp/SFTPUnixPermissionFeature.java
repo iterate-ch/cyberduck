@@ -24,18 +24,15 @@ import ch.cyberduck.core.exception.SFTPExceptionMappingService;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.i18n.Locale;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.text.MessageFormat;
 
 import ch.ethz.ssh2.SFTPv3FileAttributes;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPUnixPermissionFeature implements UnixPermission {
-    private static final Logger log = Logger.getLogger(SFTPUnixPermissionFeature.class);
 
     private SFTPSession session;
 

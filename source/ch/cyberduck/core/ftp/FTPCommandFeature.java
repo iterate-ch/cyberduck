@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPCommandFeature implements Command {
     private static final Logger log = Logger.getLogger(FTPCommandFeature.class);
@@ -39,6 +39,9 @@ public class FTPCommandFeature implements Command {
 
     @Override
     public void send(final String command) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Send command %s", command));
+        }
         session.message(command);
         try {
             session.getClient().sendSiteCommand(command);
