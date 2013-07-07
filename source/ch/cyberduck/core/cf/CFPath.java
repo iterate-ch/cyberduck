@@ -36,7 +36,7 @@ public class CFPath extends CloudPath {
         super(path, type);
     }
 
-    public CFPath(CFSession s, Path parent, Local file) {
+    public CFPath(Path parent, Local file) {
         super(parent, file);
     }
 
