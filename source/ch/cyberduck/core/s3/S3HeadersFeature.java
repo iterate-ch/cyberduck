@@ -53,7 +53,6 @@ public class S3HeadersFeature implements Headers {
             for(Map.Entry<String, Object> entry : source.entrySet()) {
                 metadata.put(entry.getKey(), entry.getValue().toString());
             }
-//            file.attributes().setEncryption(target.getServerSideEncryptionAlgorithm());
             return metadata;
         }
         return Collections.emptyMap();
@@ -69,7 +68,6 @@ public class S3HeadersFeature implements Headers {
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
                 target.setAcl(acl.convert(acl.read(file)));
                 session.getClient().updateObjectMetadata(new PathContainerService().getContainer(file).getName(), target);
-                target.setMetadataComplete(false);
             }
             catch(ServiceException e) {
                 throw new ServiceExceptionMappingService().map("Cannot write file attributes", e, file);
