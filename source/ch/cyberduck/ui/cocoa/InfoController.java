@@ -978,40 +978,6 @@ public class InfoController extends ToolbarWindowController {
     public static final String HEADER_METADATA_VALUE_COLUMN = "VALUE";
 
     /**
-     *
-     */
-    private static final class Header implements Comparable<Header> {
-        private String name;
-        private String value;
-
-        private Header(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public int compareTo(Header o) {
-            return this.getName().compareTo(o.getName());
-        }
-    }
-
-    /**
      * Custom HTTP headers for REST protocols
      */
     private List<Header> metadata
