@@ -23,7 +23,6 @@ import ch.cyberduck.core.AbstractStreamListener;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
@@ -69,18 +68,16 @@ public class CopyTransfer extends Transfer {
     /**
      * @param files Source to destination mapping
      */
-    public CopyTransfer(final Map<Path, Path> files) {
-        this(new CopyRootPathsNormalizer().normalize(files),
+    public CopyTransfer(final Session session, final Session destination, final Map<Path, Path> files) {
+        this(session, destination, new CopyRootPathsNormalizer().normalize(files),
                 new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }
 
-    private CopyTransfer(final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
-        super(new ArrayList<Path>(selected.keySet()), bandwidth);
-        destination = SessionFactory.createSession(selected.values().iterator().next().getSession().getHost());
-        files = new HashMap<Path, Path>();
-        for(Map.Entry<Path, Path> e : selected.entrySet()) {
-            files.put(e.getKey(), PathFactory.createPath(destination, e.getValue().getAsDictionary()));
-        }
+    private CopyTransfer(final Session session, final Session destination,
+                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
+        super(session, new ArrayList<Path>(selected.keySet()), bandwidth);
+        this.destination = destination;
+        this.files = selected;
     }
 
     public <T> CopyTransfer(T serialized, Session s) {
@@ -96,7 +93,7 @@ public class CopyTransfer extends Transfer {
             final List<Path> roots = this.getRoots();
             if(destinationsObj.size() == roots.size()) {
                 for(int i = 0; i < roots.size(); i++) {
-                    this.files.put(roots.get(i), PathFactory.createPath(destination, destinationsObj.get(i)));
+                    this.files.put(roots.get(i), new Path(destinationsObj.get(i)));
                 }
             }
         }
@@ -167,10 +164,10 @@ public class CopyTransfer extends Transfer {
             return AttributedList.emptyList();
         }
         else {
-            final AttributedList<Path> list = parent.list();
+            final AttributedList<Path> list = session.list(parent);
             final Path copy = files.get(parent);
             for(Path p : list) {
-                files.put(p, PathFactory.createPath(destination, copy, p.getName(), p.attributes().getType()));
+                files.put(p, new Path(copy, p.getName(), p.attributes().getType()));
             }
             return list;
         }
@@ -192,7 +189,7 @@ public class CopyTransfer extends Transfer {
                 status.setComplete();
             }
             else {
-                source.copy(copy, bandwidth, new AbstractStreamListener() {
+                session.copy(source, copy, bandwidth, new AbstractStreamListener() {
                     @Override
                     public void bytesSent(long bytes) {
                         addTransferred(bytes);
@@ -203,7 +200,7 @@ public class CopyTransfer extends Transfer {
         else {
             session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
-            copy.mkdir();
+            session.mkdir(copy);
         }
     }
 

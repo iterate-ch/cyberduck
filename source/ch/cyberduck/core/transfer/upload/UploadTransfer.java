@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.AbstractStreamListener;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -55,12 +54,12 @@ public class UploadTransfer extends Transfer {
 
     private UploadRegexFilter filter = new UploadRegexFilter();
 
-    public UploadTransfer(final Path root) {
-        this(Collections.singletonList(root));
+    public UploadTransfer(final Session session, final Path root) {
+        this(session, Collections.singletonList(root));
     }
 
-    public UploadTransfer(final List<Path> roots) {
-        super(new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
+    public UploadTransfer(final Session session, final List<Path> roots) {
+        super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
     }
 
@@ -91,7 +90,7 @@ public class UploadTransfer extends Transfer {
         else {
             AttributedList<Path> list = new AttributedList<Path>();
             for(Local local : parent.getLocal().list().filter(filter)) {
-                final Path child = PathFactory.createPath(session, parent, local);
+                final Path child = new Path(parent, local);
                 list.add(child);
             }
             return list;
@@ -134,7 +133,7 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path upload : this.getRoots()) {
-                if(upload.exists()) {
+                if(session.exists(upload)) {
                     if(upload.attributes().isDirectory()) {
                         if(this.children(upload).isEmpty()) {
                             // Do not prompt for existing empty directories
@@ -201,7 +200,7 @@ public class UploadTransfer extends Transfer {
                         file.getName(), UUID.randomUUID().toString()));
             }
             // Transfer
-            file.upload(bandwidth, new AbstractStreamListener() {
+            session.upload(file, bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     addTransferred(bytes);
@@ -209,7 +208,7 @@ public class UploadTransfer extends Transfer {
             }, status);
             if(status.isComplete()) {
                 if(temporary) {
-                    file.rename(PathFactory.createPath(session, file.getParent(),
+                    session.rename(file, new Path(file.getParent(),
                             original, file.attributes().getType()));
                     file.setPath(file.getParent(), original);
                 }
@@ -218,7 +217,7 @@ public class UploadTransfer extends Transfer {
         else if(file.attributes().isDirectory()) {
             session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
-            file.mkdir();
+            session.mkdir(file);
         }
     }
 

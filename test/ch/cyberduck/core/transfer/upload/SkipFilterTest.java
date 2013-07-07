@@ -6,6 +6,7 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
@@ -24,11 +25,6 @@ public class SkipFilterTest extends AbstractTestCase {
         SkipFilter f = new SkipFilter(new NullSymlinkResolver());
         assertTrue(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.FILE_TYPE) {
             @Override
-            public boolean exists() {
-                return false;
-            }
-
-            @Override
             public Local getLocal() {
                 return new NullLocal(null, "a") {
                     @Override
@@ -38,21 +34,22 @@ public class SkipFilterTest extends AbstractTestCase {
                 };
             }
         }));
-        assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.FILE_TYPE) {
-            @Override
-            public boolean exists() {
-                return true;
-            }
-
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "a") {
-                    @Override
-                    public boolean exists() {
-                        return false;
-                    }
-                };
-            }
-        }));
+        assertFalse(f.accept(new NullSession(new Host("h")) {
+                                 @Override
+                                 public boolean exists(final Path path) throws BackgroundException {
+                                     return true;
+                                 }
+                             }, new NullPath("a", Path.FILE_TYPE) {
+                                 @Override
+                                 public Local getLocal() {
+                                     return new NullLocal(null, "a") {
+                                         @Override
+                                         public boolean exists() {
+                                             return false;
+                                         }
+                                     };
+                                 }
+                             }
+        ));
     }
 }

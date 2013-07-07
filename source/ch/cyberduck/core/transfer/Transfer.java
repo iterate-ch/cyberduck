@@ -22,7 +22,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
@@ -156,20 +155,20 @@ public abstract class Transfer implements Serializable {
      *
      * @param root File or directory
      */
-    public Transfer(final Path root, final BandwidthThrottle bandwidth) {
-        this(new Collection<Path>(Collections.<Path>singletonList(root)), bandwidth);
+    public Transfer(final Session session, final Path root, final BandwidthThrottle bandwidth) {
+        this(session, new Collection<Path>(Collections.<Path>singletonList(root)), bandwidth);
     }
 
     /**
      * @param roots List of files to add to transfer
      */
-    public Transfer(final List<Path> roots, final BandwidthThrottle bandwidth) {
+    public Transfer(final Session session, final List<Path> roots, final BandwidthThrottle bandwidth) {
+        this.session = session;
         this.roots = roots;
         this.status = new HashMap<Path, TransferStatus>();
         for(Path root : this.roots) {
             this.status.put(root, new TransferStatus());
         }
-        this.session = this.getRoot().getSession();
         this.bandwidth = bandwidth;
     }
 
@@ -182,7 +181,7 @@ public abstract class Transfer implements Serializable {
             roots = new ArrayList<Path>();
             status = new HashMap<Path, TransferStatus>();
             for(Object rootDict : rootsObj) {
-                final Path root = PathFactory.createPath(session, rootDict);
+                final Path root = new Path(rootDict);
                 roots.add(root);
             }
         }

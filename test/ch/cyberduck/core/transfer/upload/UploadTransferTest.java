@@ -5,6 +5,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -31,7 +32,7 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new UploadTransfer(new NullPath("t", Path.FILE_TYPE));
+        Transfer t = new UploadTransfer(new NullSession(new Host("t")), new NullPath("t", Path.FILE_TYPE));
         t.addSize(4L);
         t.addTransferred(3L);
         final UploadTransfer serialized = new UploadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
@@ -55,7 +56,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 };
             }
         };
-        Transfer t = new UploadTransfer(root);
+        Transfer t = new UploadTransfer(new NullSession(new Host("t")), root);
         assertTrue(t.children(root).isEmpty());
     }
 
@@ -66,10 +67,6 @@ public class UploadTransferTest extends AbstractTestCase {
             @Override
             public Path getParent() {
                 return new NullPath("/", Path.DIRECTORY_TYPE) {
-                    @Override
-                    public AttributedList<Path> list() {
-                        return new AttributedList<Path>(Collections.<Path>singletonList(new NullPath("/t", Path.DIRECTORY_TYPE)));
-                    }
                 };
             }
         };
@@ -81,7 +78,12 @@ public class UploadTransferTest extends AbstractTestCase {
                 return l;
             }
         });
-        final Transfer t = new UploadTransfer(root) {
+        final Transfer t = new UploadTransfer(new NullSession(new Host("t")) {
+            @Override
+            public AttributedList<Path> list(final Path file) {
+                return new AttributedList<Path>(Collections.<Path>singletonList(new NullPath("/t", Path.DIRECTORY_TYPE)));
+            }
+        }, root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
                                     final TransferOptions options, final TransferStatus status) throws BackgroundException {
@@ -116,12 +118,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Path getParent() {
-                return new NullPath("/", Path.DIRECTORY_TYPE) {
-                    @Override
-                    public AttributedList<Path> list() {
-                        return AttributedList.emptyList();
-                    }
-                };
+                return new NullPath("/", Path.DIRECTORY_TYPE);
             }
         };
         root.setLocal(new NullLocal(null, "l") {
@@ -132,7 +129,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 return l;
             }
         });
-        final Transfer t = new UploadTransfer(root) {
+        final Transfer t = new UploadTransfer(new NullSession(new Host("t")), root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
                                     final TransferOptions options, final TransferStatus status) throws BackgroundException {
@@ -172,7 +169,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 };
             }
         };
-        Transfer t = new UploadTransfer(root);
+        Transfer t = new UploadTransfer(new NullSession(new Host("t")), root);
         assertEquals(Collections.<Path>singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
     }
 
@@ -193,14 +190,16 @@ public class UploadTransferTest extends AbstractTestCase {
                     }
                 };
             }
-
+        };
+        Transfer t = new UploadTransfer(new NullSession(new Host("t")) {
             @Override
-            public AttributedList<Path> list() {
-                c.incrementAndGet();
+            public AttributedList<Path> list(final Path file) {
+                if(file.equals(root.getParent())) {
+                    c.incrementAndGet();
+                }
                 return AttributedList.emptyList();
             }
-        };
-        Transfer t = new UploadTransfer(root) {
+        }, root) {
             @Override
             public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 //
@@ -232,14 +231,14 @@ public class UploadTransferTest extends AbstractTestCase {
                     }
                 };
             }
-
+        };
+        Transfer t = new UploadTransfer(new NullSession(new Host("t")) {
             @Override
-            public AttributedList<Path> list() {
+            public AttributedList<Path> list(final Path file) {
                 c.incrementAndGet();
                 return AttributedList.emptyList();
             }
-        };
-        Transfer t = new UploadTransfer(root) {
+        }, root) {
             @Override
             public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 //

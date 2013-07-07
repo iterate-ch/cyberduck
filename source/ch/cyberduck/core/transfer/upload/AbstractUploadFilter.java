@@ -48,13 +48,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.symlinkResolver = symlinkResolver;
     }
 
-    protected boolean exists(final Session session, final Path file) throws BackgroundException {
+    protected boolean exists(final Session<?> session, final Path file) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }
         final Cache cache = session.cache();
         if(!cache.isCached(file.getParent().getReference())) {
-            final AttributedList<Path> list = file.getParent().list();
+            final AttributedList<Path> list = session.list(file.getParent());
             cache.put(file.getParent().getReference(), list);
         }
         return cache.get(file.getParent().getReference()).contains(file.getReference());

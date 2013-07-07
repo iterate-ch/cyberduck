@@ -52,20 +52,16 @@ public class ResumeFilterTest extends AbstractTestCase {
     public void testPrepare() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
         final NullPath t = new NullPath("t", Path.FILE_TYPE) {
-            @Override
-            public Path getParent() {
-                return new NullPath("/", Path.DIRECTORY_TYPE) {
-                    @Override
-                    public AttributedList<Path> list() {
-                        final NullPath f = new NullPath("t", Path.FILE_TYPE);
-                        f.attributes().setSize(7L);
-                        return new AttributedList<Path>(Collections.<Path>singletonList(f));
-                    }
-                };
-            }
         };
         t.setLocal(new NullLocal(null, "t"));
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), t);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")) {
+            @Override
+            public AttributedList<Path> list(final Path file) {
+                final NullPath f = new NullPath("t", Path.FILE_TYPE);
+                f.attributes().setSize(7L);
+                return new AttributedList<Path>(Collections.<Path>singletonList(f));
+            }
+        }, t);
         assertTrue(status.isResume());
         assertEquals(7L, status.getCurrent());
     }

@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
@@ -57,27 +58,23 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 };
             }
         }));
-        assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.DIRECTORY_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
-                };
-            }
-
-            @Override
-            public Path getParent() {
-                return new NullPath("/", Path.DIRECTORY_TYPE) {
-                    @Override
-                    public AttributedList<Path> list() {
-                        return new AttributedList<Path>(Collections.<Path>singletonList(new NullPath("a", Path.DIRECTORY_TYPE)));
-                    }
-                };
-            }
-        }));
+        assertFalse(f.accept(new NullSession(new Host("h")) {
+                                 @Override
+                                 public AttributedList<Path> list(final Path file) {
+                                     return new AttributedList<Path>(Collections.<Path>singletonList(new NullPath("a", Path.DIRECTORY_TYPE)));
+                                 }
+                             }, new NullPath("a", Path.DIRECTORY_TYPE) {
+                                 @Override
+                                 public Local getLocal() {
+                                     return new NullLocal(null, "t") {
+                                         @Override
+                                         public boolean exists() {
+                                             return true;
+                                         }
+                                     };
+                                 }
+                             }
+        ));
     }
 
     @Test
@@ -114,14 +111,14 @@ public class OverwriteFilterTest extends AbstractTestCase {
     @Test
     public void testPermissionsExistsNoChange() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
-        final NullPath file = new NullPath("/t", Path.FILE_TYPE) {
+        final NullPath file = new NullPath("/t", Path.FILE_TYPE);
+        file.setLocal(new NullLocal(null, "a"));
+        assertFalse(f.prepare(new NullSession(new Host("h")) {
             @Override
-            public boolean exists() {
+            public boolean exists(final Path path) throws BackgroundException {
                 return true;
             }
-        };
-        file.setLocal(new NullLocal(null, "a"));
-        assertFalse(f.prepare(new NullSession(new Host("h")), file).isComplete());
+        }, file).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }

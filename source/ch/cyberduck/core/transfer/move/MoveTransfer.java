@@ -49,13 +49,13 @@ public class MoveTransfer extends Transfer {
 
     private Map<Path, Path> files;
 
-    public MoveTransfer(final Map<Path, Path> files) {
-        this(new CopyRootPathsNormalizer().normalize(files),
+    public MoveTransfer(final Session session, final Map<Path, Path> files) {
+        this(session, new CopyRootPathsNormalizer().normalize(files),
                 new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }
 
-    private MoveTransfer(final Map<Path, Path> files, final BandwidthThrottle bandwidth) {
-        super(new ArrayList<Path>(files.keySet()), bandwidth);
+    private MoveTransfer(final Session session, final Map<Path, Path> files, final BandwidthThrottle bandwidth) {
+        super(session, new ArrayList<Path>(files.keySet()), bandwidth);
         this.files = files;
     }
 
@@ -109,7 +109,7 @@ public class MoveTransfer extends Transfer {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Path destination = files.get(file);
-        file.rename(destination);
+        session.rename(file, destination);
     }
 
     @Override

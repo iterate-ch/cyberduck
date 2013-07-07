@@ -59,12 +59,12 @@ public class DownloadTransfer extends Transfer {
     private final IconService icon
             = IconServiceFactory.get();
 
-    public DownloadTransfer(final Path root) {
-        this(Collections.singletonList(root));
+    public DownloadTransfer(final Session session, final Path root) {
+        this(session, Collections.singletonList(root));
     }
 
-    public DownloadTransfer(final List<Path> roots) {
-        super(new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
+    public DownloadTransfer(final Session session, final List<Path> roots) {
+        super(session, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }
 
@@ -93,7 +93,7 @@ public class DownloadTransfer extends Transfer {
             return AttributedList.emptyList();
         }
         else {
-            AttributedList<Path> list = parent.list().filter(filter);
+            AttributedList<Path> list = session.list(parent).filter(filter);
             session.cache().put(parent.getReference(), list);
             for(Path download : list) {
                 // Change download path relative to parent local folder
@@ -194,7 +194,7 @@ public class DownloadTransfer extends Transfer {
         else if(file.attributes().isFile()) {
             session.message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                     this.getName()));
-            file.download(bandwidth, new AbstractStreamListener() {
+            session.download(file, bandwidth, new AbstractStreamListener() {
                 // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
                 // overhead when transferring a large amount of files
                 private final boolean threshold

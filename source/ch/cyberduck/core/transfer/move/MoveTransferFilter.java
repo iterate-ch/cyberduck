@@ -45,7 +45,7 @@ public class MoveTransferFilter implements TransferPathFilter {
         if(source.attributes().isDirectory()) {
             final Path destination = files.get(source);
             // Do not attempt to create a directory that already exists
-            if(destination.exists()) {
+            if(session.exists(destination)) {
                 return false;
             }
         }

@@ -54,8 +54,8 @@ import java.util.Set;
 public class SyncTransfer extends Transfer {
     private static Logger log = Logger.getLogger(SyncTransfer.class);
 
-    public SyncTransfer(final Path root) {
-        super(root, new BandwidthThrottle(
+    public SyncTransfer(final Session session, final Path root) {
+        super(session, root, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         this.init();
     }
@@ -67,8 +67,8 @@ public class SyncTransfer extends Transfer {
     }
 
     private void init() {
-        _delegateUpload = new UploadTransfer(this.getRoots());
-        _delegateDownload = new DownloadTransfer(this.getRoots());
+        _delegateUpload = new UploadTransfer(session, this.getRoots());
+        _delegateDownload = new DownloadTransfer(session, this.getRoots());
     }
 
     @Override
@@ -230,7 +230,7 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Children for %s", parent));
         }
         final Set<Path> children = new HashSet<Path>();
-        if(parent.exists()) {
+        if(session.exists(parent)) {
             children.addAll(_delegateDownload.children(parent));
         }
         if(parent.getLocal().exists()) {
@@ -240,7 +240,7 @@ public class SyncTransfer extends Transfer {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Compare path %s with local", path));
             }
-            final Comparison result = new CombinedComparisionService().compare(path);
+            final Comparison result = new CombinedComparisionService(session).compare(path);
             comparisons.put(path.getReference(), result);
         }
         return new AttributedList<Path>(children);

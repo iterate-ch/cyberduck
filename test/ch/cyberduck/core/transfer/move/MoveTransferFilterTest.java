@@ -4,7 +4,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -22,12 +22,7 @@ public class MoveTransferFilterTest {
     public void testAcceptDirectoryNew() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         final NullPath source = new NullPath("a", Path.DIRECTORY_TYPE);
-        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE) {
-            @Override
-            public boolean exists() {
-                return false;
-            }
-        });
+        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE));
         MoveTransferFilter f = new MoveTransferFilter(files);
         assertTrue(f.accept(new NullSession(new Host("h")), source));
     }
@@ -36,14 +31,14 @@ public class MoveTransferFilterTest {
     public void testAcceptDirectoryExists() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         final NullPath source = new NullPath("a", Path.DIRECTORY_TYPE);
-        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE) {
+        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE));
+        MoveTransferFilter f = new MoveTransferFilter(files);
+        assertFalse(f.accept(new NullSession(new Host("h")) {
             @Override
-            public boolean exists() {
+            public boolean exists(final Path path) throws BackgroundException {
                 return true;
             }
-        });
-        MoveTransferFilter f = new MoveTransferFilter(files);
-        assertFalse(f.accept(new NullSession(new Host("h")), source));
+        }, source));
     }
 
     @Test
@@ -63,17 +58,8 @@ public class MoveTransferFilterTest {
         final NullPath source = new NullPath("a", Path.DIRECTORY_TYPE);
         source.attributes().setSize(1L);
         final NullPath target = new NullPath("a", Path.DIRECTORY_TYPE) {
-            @Override
-            public boolean exists() {
-                return false;
-            }
-
             NullSession session = new NullSession(new Host("t"));
 
-            @Override
-            public Session getSession() {
-                return session;
-            }
         };
         files.put(source, target);
         MoveTransferFilter f = new MoveTransferFilter(files);

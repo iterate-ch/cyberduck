@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
@@ -39,7 +40,8 @@ public class CopyTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        CopyTransfer t = new CopyTransfer(Collections.<Path, Path>singletonMap(new NullPath("t", Path.FILE_TYPE), new NullPath("d", Path.FILE_TYPE)));
+        CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(Protocol.SFTP, "t")),
+                new FTPSession(new Host(Protocol.FTP, "t")), Collections.<Path, Path>singletonMap(new NullPath("t", Path.FILE_TYPE), new NullPath("d", Path.FILE_TYPE)));
         t.addSize(4L);
         t.addTransferred(3L);
         final CopyTransfer serialized = new CopyTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));

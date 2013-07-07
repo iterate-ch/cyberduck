@@ -8,7 +8,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
@@ -30,12 +29,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
     public void testAcceptDirectoryNew() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         final NullPath source = new NullPath("a", Path.DIRECTORY_TYPE);
-        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE) {
-            @Override
-            public boolean exists() {
-                return false;
-            }
-        });
+        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE));
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
         assertTrue(f.accept(new NullSession(new Host("h")), source));
     }
@@ -44,14 +38,14 @@ public class CopyTransferFilterTest extends AbstractTestCase {
     public void testAcceptDirectoryExists() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         final NullPath source = new NullPath("a", Path.DIRECTORY_TYPE);
-        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE) {
+        files.put(source, new NullPath("a", Path.DIRECTORY_TYPE));
+        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
+        assertFalse(f.accept(new NullSession(new Host("h")) {
             @Override
-            public boolean exists() {
+            public boolean exists(final Path path) throws BackgroundException {
                 return true;
             }
-        });
-        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
-        assertFalse(f.accept(new NullSession(new Host("h")), source));
+        }, source));
     }
 
     @Test
@@ -72,17 +66,8 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         source.attributes().setSize(1L);
         final NullPath target = new NullPath("a", Path.DIRECTORY_TYPE) {
 
-            @Override
-            public boolean exists() {
-                return false;
-            }
-
             NullSession session = new NullSession(new Host("t"));
 
-            @Override
-            public Session getSession() {
-                return session;
-            }
         };
         files.put(source, target);
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);

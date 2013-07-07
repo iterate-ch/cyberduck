@@ -5,6 +5,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,7 +33,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new DownloadTransfer(new NullPath("t", Path.FILE_TYPE));
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), new NullPath("t", Path.FILE_TYPE));
         t.addSize(4L);
         t.addTransferred(3L);
         final DownloadTransfer serialized = new DownloadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
@@ -46,7 +47,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerializeComplete() throws Exception {
-        Transfer t = new DownloadTransfer(new NullPath("/t", Path.DIRECTORY_TYPE) {
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), new NullPath("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -82,27 +83,29 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testChildren() throws Exception {
         final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        };
+        root.setLocal(new NullLocal(null, "l"));
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")) {
             @Override
-            public AttributedList<Path> list() {
+            public AttributedList<Path> list(final Path file) {
                 final AttributedList<Path> children = new AttributedList<Path>();
                 children.add(new NullPath("/t/c", Path.FILE_TYPE));
                 return children;
             }
-        };
-        root.setLocal(new NullLocal(null, "l"));
-        Transfer t = new DownloadTransfer(root);
+        }, root);
         assertEquals(Collections.<Path>singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
     }
 
     @Test
     public void testChildrenEmpty() throws Exception {
         final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        };
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")) {
             @Override
-            public AttributedList<Path> list() {
+            public AttributedList<Path> list(final Path file) {
                 return AttributedList.emptyList();
             }
-        };
-        Transfer t = new DownloadTransfer(root);
+        }, root);
         assertTrue(t.children(root).isEmpty());
     }
 
@@ -110,12 +113,6 @@ public class DownloadTransferTest extends AbstractTestCase {
     public void testPrepareOverride() throws Exception {
         final NullPath child = new NullPath("/t/c", Path.FILE_TYPE);
         final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
-            @Override
-            public AttributedList<Path> list() {
-                final AttributedList<Path> children = new AttributedList<Path>();
-                children.add(child);
-                return children;
-            }
         };
         root.setLocal(new NullLocal(null, "l") {
             @Override
@@ -123,7 +120,14 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return true;
             }
         });
-        final Transfer t = new DownloadTransfer(root) {
+        final Transfer t = new DownloadTransfer(new NullSession(new Host("t")) {
+            @Override
+            public AttributedList<Path> list(final Path file) {
+                final AttributedList<Path> children = new AttributedList<Path>();
+                children.add(child);
+                return children;
+            }
+        }, root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
                                     final TransferOptions options, final TransferStatus status) throws BackgroundException {
@@ -160,7 +164,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         List<Path> roots = new ArrayList<Path>();
         roots.add(root);
         roots.add(root);
-        Transfer t = new DownloadTransfer(roots);
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), roots);
     }
 
     @Test
@@ -169,14 +173,14 @@ public class DownloadTransferTest extends AbstractTestCase {
         final NullLocal l = new NullLocal(null, "n");
         root.setLocal(l);
         assertNotNull(root.getLocal());
-        Transfer t = new DownloadTransfer(root);
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), root);
         assertEquals(l, root.getLocal());
     }
 
     @Test
     public void testExclude() throws Exception {
         final NullPath parent = new NullPath("t", Path.FILE_TYPE);
-        Transfer t = new DownloadTransfer(parent);
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), parent);
         t.setSelected(null, false);
     }
 }

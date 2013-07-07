@@ -6,6 +6,7 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
@@ -20,14 +21,14 @@ public class RenameFilterTest extends AbstractTestCase {
     @Test
     public void testPrepare() throws Exception {
         RenameFilter f = new RenameFilter(new NullSymlinkResolver());
-        final NullPath t = new NullPath("t", Path.FILE_TYPE) {
-            @Override
-            public boolean exists() {
-                return this.getName().equals("t");
-            }
-        };
+        final NullPath t = new NullPath("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal(null, "t"));
-        f.prepare(new NullSession(new Host("h")), t);
+        f.prepare(new NullSession(new Host("h")) {
+            @Override
+            public boolean exists(final Path path) throws BackgroundException {
+                return path.getName().equals("t");
+            }
+        }, t);
         assertNotSame("t", t.getName());
     }
 }

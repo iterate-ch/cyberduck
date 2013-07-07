@@ -5,10 +5,8 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
-import ch.cyberduck.core.NullProtocol;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
@@ -45,29 +43,26 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     public void testPrepare() throws Exception {
         final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
         final NullPath p = new NullPath("t", Path.FILE_TYPE) {
-            @Override
-            public Session getSession() {
-                return new NullSession(new Host(new NullProtocol(), "t"));
-            }
 
             @Override
             public Path getParent() {
                 return new NullPath("p", Path.DIRECTORY_TYPE) {
-                    @Override
-                    public AttributedList<Path> list() {
-                        final AttributedList<Path> l = new AttributedList<Path>();
-                        l.add(new NullPath("t", Path.FILE_TYPE));
-                        return l;
-                    }
-
-                    @Override
-                    public void rename(final Path renamed) {
-                        assertNotSame(this.getName(), renamed.getName());
-                    }
                 };
             }
         };
         p.setLocal(new NullLocal("/Downloads", "n"));
-        f.prepare(new NullSession(new Host("h")), p);
+        f.prepare(new NullSession(new Host("h")) {
+            @Override
+            public void rename(final Path file, final Path renamed) {
+                assertNotSame(file.getName(), renamed.getName());
+            }
+
+            @Override
+            public AttributedList<Path> list(final Path file) {
+                final AttributedList<Path> l = new AttributedList<Path>();
+                l.add(new NullPath("t", Path.FILE_TYPE));
+                return l;
+            }
+        }, p);
     }
 }

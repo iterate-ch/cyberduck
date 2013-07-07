@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
@@ -57,11 +56,11 @@ public class RenameExistingFilter extends AbstractUploadFilter {
                         FilenameUtils.getBaseName(file.getName()),
                         UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-                renamed = PathFactory.createPath(session, renamed.getParent(),
+                renamed = new Path(renamed.getParent(),
                         proposal, file.attributes().getType());
             }
             if(!renamed.equals(file)) {
-                file.rename(renamed);
+                session.rename(file, renamed);
             }
         }
         return super.prepare(session, file);
