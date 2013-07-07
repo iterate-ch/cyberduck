@@ -45,10 +45,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.googlecode.sardine.DavResource;
 import com.googlecode.sardine.impl.SardineException;
 import com.googlecode.sardine.impl.handler.VoidResponseHandler;
 import com.googlecode.sardine.impl.methods.HttpPropFind;
@@ -142,44 +140,7 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public AttributedList<Path> list(final Path file) throws BackgroundException {
-        try {
-            this.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    file.getName()));
-
-            final AttributedList<Path> children = new AttributedList<Path>();
-
-            final List<DavResource> resources = this.getClient().list(URIEncoder.encode(file.getAbsolute()));
-            for(final DavResource resource : resources) {
-                // Try to parse as RFC 2396
-                final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
-                if(href.equals(file.getAbsolute())) {
-                    continue;
-                }
-                final DAVPath p = new DAVPath(file,
-                        Path.getName(href), resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                if(resource.getModified() != null) {
-                    p.attributes().setModificationDate(resource.getModified().getTime());
-                }
-                if(resource.getCreation() != null) {
-                    p.attributes().setCreationDate(resource.getCreation().getTime());
-                }
-                if(resource.getContentLength() != null) {
-                    p.attributes().setSize(resource.getContentLength());
-                }
-                p.attributes().setChecksum(resource.getEtag());
-                p.attributes().setETag(resource.getEtag());
-                children.add(p);
-            }
-            return children;
-        }
-        catch(SardineException e) {
-            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
-            throw new SardineExceptionMappingService().map("Listing directory failed", e, file);
-        }
-        catch(IOException e) {
-            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
-            throw new DefaultIOExceptionMappingService().map(e, file);
-        }
+        return new DAVListService(this).list(file);
     }
 
     @Override
