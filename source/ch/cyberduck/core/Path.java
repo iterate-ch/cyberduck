@@ -18,41 +18,21 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.IOResumeException;
-import ch.cyberduck.core.io.ThrottledInputStream;
-import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 /**
  * @version $Id$
  */
-public abstract class Path extends AbstractPath implements Serializable {
+public class Path extends AbstractPath implements Serializable {
     private static final Logger log = Logger.getLogger(Path.class);
 
     /**
@@ -80,11 +60,11 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     private PathAttributes attributes;
 
-    protected <T> Path(final Session session, T serialized) {
+    public <T> Path(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         String pathObj = dict.stringForKey("Remote");
         if(pathObj != null) {
-            this.setPath(session, pathObj);
+            this.setPath(pathObj);
         }
         final String localObj = dict.stringForKey("Local");
         if(localObj != null) {
@@ -92,7 +72,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         final Object symlinkObj = dict.objectForKey("Symbolic Link");
         if(symlinkObj != null) {
-            this.symlink = PathFactory.createPath(session, symlinkObj);
+            this.symlink = new Path(symlinkObj);
         }
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
@@ -139,8 +119,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param absolute The absolute path of the remote file
      * @param type     File type
      */
-    public Path(final Session session, final String absolute, final int type) {
-        this.setPath(session, absolute);
+    public Path(final String absolute, final int type) {
+        this.setPath(absolute);
         this.attributes = new PathAttributes(type);
     }
 
@@ -158,12 +138,12 @@ public abstract class Path extends AbstractPath implements Serializable {
         this.attributes = new PathAttributes(local.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
     }
 
-    private void setPath(final Session session, final String absolute) {
+    private void setPath(final String absolute) {
         if(absolute.equals(String.valueOf(Path.DELIMITER))) {
             this.setPath((Path) null, Path.getName(PathNormalizer.normalize(absolute, true)));
         }
         else {
-            final Path parent = PathFactory.createPath(session, Path.getParent(PathNormalizer.normalize(absolute, true), Path.DELIMITER),
+            final Path parent = new Path(Path.getParent(PathNormalizer.normalize(absolute, true), Path.DELIMITER),
                     Path.DIRECTORY_TYPE);
             if(parent.isRoot()) {
                 parent.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
@@ -234,11 +214,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         return parent;
     }
-
-    /**
-     * @return The session this path uses to send commands
-     */
-    public abstract Session<?> getSession();
 
     /**
      * Default implementation returning a reference to self. You can override this
@@ -317,239 +292,6 @@ public abstract class Path extends AbstractPath implements Serializable {
             return symlink;
         }
         return null;
-    }
-
-    public abstract void mkdir() throws BackgroundException;
-
-    public abstract AttributedList<Path> list() throws BackgroundException;
-
-    /**
-     * @param renamed Must be an absolute path
-     */
-    public abstract void rename(Path renamed) throws BackgroundException;
-
-    /**
-     * Upload an empty file.
-     */
-    public boolean touch() throws BackgroundException {
-        final Local temp = TemporaryFileServiceFactory.get().create(this);
-        temp.touch();
-        this.setLocal(temp);
-        TransferOptions options = new TransferOptions();
-        UploadTransfer upload = new UploadTransfer(this);
-        try {
-            upload.start(new TransferPrompt() {
-                @Override
-                public TransferAction prompt() throws BackgroundException {
-                    return TransferAction.ACTION_OVERWRITE;
-                }
-            }, options);
-        }
-        finally {
-            temp.delete();
-            this.setLocal(null);
-        }
-        return upload.isComplete();
-    }
-
-    /**
-     * Remove this file from the remote host. Does not affect any corresponding local file
-     *
-     * @param prompt Login prompt for multi factor authentication
-     */
-    public abstract void delete(final LoginController prompt) throws BackgroundException;
-
-    /**
-     * @param status Transfer status
-     * @return Stream to read from to download file
-     */
-    public abstract InputStream read(final TransferStatus status) throws BackgroundException;
-
-    /**
-     * @param throttle The bandwidth limit
-     * @param listener The stream listener to notify about bytes received and sent
-     * @param status   Transfer status
-     */
-    public abstract void download(BandwidthThrottle throttle, StreamListener listener,
-                                  TransferStatus status) throws BackgroundException;
-
-    /**
-     * @param status Transfer status
-     * @return Stream to write to for upload
-     */
-    public abstract OutputStream write(TransferStatus status) throws BackgroundException;
-
-    /**
-     * @param throttle The bandwidth limit
-     * @param listener The stream listener to notify about bytes received and sent
-     * @param status   Transfer status
-     */
-    public abstract void upload(BandwidthThrottle throttle, StreamListener listener,
-                                TransferStatus status) throws BackgroundException;
-
-    /**
-     * @param out      Remote stream
-     * @param in       Local stream
-     * @param throttle The bandwidth limit
-     * @param l        Listener for bytes sent
-     * @param status   Transfer status
-     * @throws IOException Write not completed due to a I/O problem
-     */
-    protected void upload(final OutputStream out, final InputStream in,
-                          final BandwidthThrottle throttle,
-                          final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
-        this.upload(out, in, throttle, l, status.getCurrent(), -1, status);
-    }
-
-    /**
-     * Will copy from in to out. Will attempt to skip Status#getCurrent
-     * from the inputstream but not from the outputstream. The outputstream
-     * is asssumed to append to a already existing file if
-     * Status#getCurrent > 0
-     *
-     * @param out      The stream to write to
-     * @param in       The stream to read from
-     * @param throttle The bandwidth limit
-     * @param l        The stream listener to notify about bytes received and sent
-     * @param offset   Start reading at offset in file
-     * @param limit    Transfer only up to this length
-     * @param status   Transfer status
-     * @throws IOResumeException If the input stream fails to skip the appropriate
-     *                           number of bytes
-     * @throws IOException       Write not completed due to a I/O problem
-     */
-    protected void upload(final OutputStream out, final InputStream in, final BandwidthThrottle throttle,
-                          final StreamListener l, long offset, final long limit, final TransferStatus status) throws IOException, ConnectionCanceledException {
-        if(log.isDebugEnabled()) {
-            log.debug("upload(" + out.toString() + ", " + in.toString());
-        }
-        if(offset > 0) {
-            long skipped = in.skip(offset);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skipping %d bytes", skipped));
-            }
-            if(skipped < status.getCurrent()) {
-                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
-                        skipped, status.getCurrent()));
-            }
-        }
-        this.transfer(in, new ThrottledOutputStream(out, throttle), l, limit, status);
-    }
-
-    /**
-     * Will copy from in to out. Does not attempt to skip any bytes from the streams.
-     *
-     * @param in       The stream to read from
-     * @param out      The stream to write to
-     * @param throttle The bandwidth limit
-     * @param l        The stream listener to notify about bytes received and sent
-     * @param status   Transfer status
-     * @throws IOException Write not completed due to a I/O problem
-     */
-    protected void download(final InputStream in, final OutputStream out, final BandwidthThrottle throttle,
-                            final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
-        if(log.isDebugEnabled()) {
-            log.debug("download(" + in.toString() + ", " + out.toString());
-        }
-        this.transfer(new ThrottledInputStream(in, throttle), out, l, -1, status);
-    }
-
-    /**
-     * Updates the current number of bytes transferred in the status reference.
-     *
-     * @param in       The stream to read from
-     * @param out      The stream to write to
-     * @param listener The stream listener to notify about bytes received and sent
-     * @param limit    Transfer only up to this length
-     * @param status   Transfer status
-     * @throws IOException Write not completed due to a I/O problem
-     */
-    protected void transfer(final InputStream in, final OutputStream out,
-                            final StreamListener listener, final long limit,
-                            final TransferStatus status) throws IOException, ConnectionCanceledException {
-        final BufferedInputStream bi = new BufferedInputStream(in);
-        final BufferedOutputStream bo = new BufferedOutputStream(out);
-        try {
-            final int chunksize = Preferences.instance().getInteger("connection.chunksize");
-            final byte[] chunk = new byte[chunksize];
-            long bytesTransferred = 0;
-            while(!status.isCanceled()) {
-                final int read = bi.read(chunk, 0, chunksize);
-                if(-1 == read) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("End of file reached");
-                    }
-                    // End of file
-                    status.setComplete();
-                    break;
-                }
-                else {
-                    status.addCurrent(read);
-                    listener.bytesReceived(read);
-                    bo.write(chunk, 0, read);
-                    listener.bytesSent(read);
-                    bytesTransferred += read;
-                    if(limit == bytesTransferred) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Limit %d reached reading from stream", limit));
-                        }
-                        // Part reached
-                        if(0 == bi.available()) {
-                            // End of file
-                            status.setComplete();
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-        finally {
-            bo.flush();
-        }
-        if(status.isCanceled()) {
-            throw new ConnectionCanceledException();
-        }
-    }
-
-    /**
-     * Default implementation using a temporary file on localhost as an intermediary
-     * with a download and upload transfer.
-     *
-     * @param copy     Destination
-     * @param throttle The bandwidth limit
-     * @param listener Callback
-     * @param status   Transfer status
-     */
-    public void copy(final Path copy, final BandwidthThrottle throttle,
-                     final StreamListener listener, final TransferStatus status) throws BackgroundException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            if(this.attributes().isFile()) {
-                this.transfer(in = new ThrottledInputStream(this.read(status), throttle),
-                        out = new ThrottledOutputStream(copy.write(status), throttle),
-                        listener, -1, status);
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, this);
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
-        }
-    }
-
-    /**
-     * Check for file existence. The default implementation does a directory listing of the parent folder.
-     *
-     * @return True if the path is cached.
-     */
-    public boolean exists() throws BackgroundException {
-        if(this.isRoot()) {
-            return true;
-        }
-        return this.getParent().list().contains(this.getReference());
     }
 
     /**

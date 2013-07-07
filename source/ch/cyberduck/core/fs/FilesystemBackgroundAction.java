@@ -43,6 +43,11 @@ public abstract class FilesystemBackgroundAction<T> extends AbstractBackgroundAc
     }
 
     @Override
+    public void cleanup() {
+        //
+    }
+
+    @Override
     public String getActivity() {
         return Locale.localizedString("Filesystem");
     }

@@ -70,17 +70,17 @@ public class FTPListResponseReader implements FTPResponseReader {
                 }
                 continue;
             }
-            final Path parsed = new FTPPath(session, parent,
+            final Path parsed = new FTPPath(parent,
                     Path.getName(name), f.getType() == FTPFile.DIRECTORY_TYPE ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
                     parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                     // Symbolic link target may be an absolute or relative path
                     if(f.getLink().startsWith(String.valueOf(Path.DELIMITER))) {
-                        parsed.setSymlinkTarget(new FTPPath(session, f.getLink(), parsed.attributes().getType()));
+                        parsed.setSymlinkTarget(new FTPPath(f.getLink(), parsed.attributes().getType()));
                     }
                     else {
-                        parsed.setSymlinkTarget(new FTPPath(session, parent, f.getLink(), parsed.attributes().getType()));
+                        parsed.setSymlinkTarget(new FTPPath(parent, f.getLink(), parsed.attributes().getType()));
                     }
                     break;
             }

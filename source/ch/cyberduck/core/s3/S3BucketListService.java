@@ -54,7 +54,7 @@ public class S3BucketListService implements RootListService<S3Session> {
                 String bucketname = this.getContainer(session.getHost());
                 if(StringUtils.isEmpty(bucketname)) {
                     if(StringUtils.isNotBlank(session.getHost().getDefaultPath())) {
-                        S3Path d = new S3Path(session, session.getHost().getDefaultPath(), Path.DIRECTORY_TYPE);
+                        S3Path d = new S3Path(session.getHost().getDefaultPath(), Path.DIRECTORY_TYPE);
                         bucketname = d.getContainer().getName();
                         log.info(String.format("Using default path to determine bucket name %s", bucketname));
                     }
@@ -69,7 +69,7 @@ public class S3BucketListService implements RootListService<S3Session> {
                 if(!session.getClient().isBucketAccessible(bucketname)) {
                     throw new ServiceException(String.format("Bucket %s not accessible", bucketname));
                 }
-                final S3Path bucket = new S3Path(session,
+                final S3Path bucket = new S3Path(
                         bucketname, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                 buckets.add(bucket);
             }
@@ -80,14 +80,14 @@ public class S3BucketListService implements RootListService<S3Session> {
                     if(!session.getClient().isBucketAccessible(bucketname)) {
                         throw new ServiceException(String.format("Bucket %s not accessible", bucketname));
                     }
-                    final S3Path bucket = new S3Path(session,
+                    final S3Path bucket = new S3Path(
                             bucketname, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     buckets.add(bucket);
                 }
                 else {
                     // List all buckets owned
                     for(StorageBucket b : session.getClient().listAllBuckets()) {
-                        final S3Path bucket = new S3Path(session,
+                        final S3Path bucket = new S3Path(
                                 b.getName(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                         bucket.attributes().setOwner(b.getOwner().getDisplayName());
                         bucket.attributes().setCreationDate(b.getCreationDate().getTime());

@@ -174,11 +174,11 @@ public abstract class Archive {
             return null;
         }
         if(files.size() == 1) {
-            return PathFactory.createPath(files.get(0).getSession(), files.get(0).getParent(),
+            return new Path(files.get(0).getParent(),
                     files.get(0).getName() + "." + this.getIdentifier(),
                     Path.FILE_TYPE);
         }
-        return PathFactory.createPath(files.get(0).getSession(), files.get(0).getParent(),
+        return new Path(files.get(0).getParent(),
                 Locale.localizedString("Archive", "Archive") + "." + this.getIdentifier(),
                 Path.FILE_TYPE);
     }
@@ -190,7 +190,7 @@ public abstract class Archive {
     public List<Path> getExpanded(final List<Path> files) {
         final List<Path> expanded = new ArrayList<Path>();
         for(Path file : files) {
-            expanded.add(PathFactory.createPath(file.getSession(), file.getParent(),
+            expanded.add(new Path(file.getParent(),
                     StringUtils.remove(file.getName(), "." + this.getIdentifier()), Path.FILE_TYPE));
         }
         return expanded;

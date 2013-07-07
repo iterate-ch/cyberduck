@@ -20,10 +20,7 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.sftp.SFTPPath;
-import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
 
@@ -57,7 +54,7 @@ public class DefaultIOExceptionMappingServiceTest extends AbstractTestCase {
     @Test
     public void testplaceholder() throws Exception {
         final BackgroundException e = new DefaultIOExceptionMappingService().map("{0} message", new SocketException("s"),
-                new SFTPPath(new SFTPSession(new Host(Protocol.SFTP, "localhost")), "/n", AbstractPath.VOLUME_TYPE));
+                new SFTPPath("/n", AbstractPath.VOLUME_TYPE));
         assertEquals("n message", e.getMessage());
     }
 }

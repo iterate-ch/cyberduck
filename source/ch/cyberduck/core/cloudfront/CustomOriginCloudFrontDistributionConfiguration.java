@@ -44,11 +44,14 @@ import java.util.concurrent.Callable;
 public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
     private static Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
 
+    private Host origin;
     private LoginController prompt;
     private S3Session session;
 
-    public CustomOriginCloudFrontDistributionConfiguration(final S3Session session, final LoginController prompt) {
+    public CustomOriginCloudFrontDistributionConfiguration(final Host origin, final S3Session session,
+                                                           final LoginController prompt) {
         super(session);
+        this.origin = origin;
         this.session = session;
         this.prompt = prompt;
     }
@@ -60,7 +63,6 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     @Override
     public String getOrigin(final Path container, final Distribution.Method method) {
-        final Host origin = container.getSession().getHost();
         try {
             return new URI(origin.getWebURL()).getHost();
         }

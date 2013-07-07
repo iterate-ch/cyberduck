@@ -20,12 +20,15 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id$
  */
 public class CombinedComparisionService implements ComparisonService {
+
+    private Session session;
 
     private ComparisonService checksum
             = new ChecksumComparisonService();
@@ -36,6 +39,10 @@ public class CombinedComparisionService implements ComparisonService {
     private ComparisonService timestamp
             = new TimestampComparisonService();
 
+    public CombinedComparisionService(final Session session) {
+        this.session = session;
+    }
+
     /**
      * @see Comparison#EQUAL
      * @see Comparison#REMOTE_NEWER
@@ -43,7 +50,7 @@ public class CombinedComparisionService implements ComparisonService {
      */
     @Override
     public Comparison compare(final Path p) throws BackgroundException {
-        if(p.getLocal().exists() && p.exists()) {
+        if(p.getLocal().exists() && session.exists(p)) {
             if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                 // MD5/ETag Checksum is supported
                 Comparison comparison = checksum.compare(p);
@@ -66,7 +73,7 @@ public class CombinedComparisionService implements ComparisonService {
                 return comparison;
             }
         }
-        else if(p.exists()) {
+        else if(session.exists(p)) {
             // Only the remote file exists
             return Comparison.REMOTE_NEWER;
         }

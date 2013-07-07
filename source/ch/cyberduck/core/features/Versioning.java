@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Versioning {
 
@@ -31,4 +31,5 @@ public interface Versioning {
 
     void setConfiguration(Path container, LoginController prompt, VersioningConfiguration configuration) throws BackgroundException;
 
+    void revert(Path file) throws BackgroundException;
 }

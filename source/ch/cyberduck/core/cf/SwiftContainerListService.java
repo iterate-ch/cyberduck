@@ -55,7 +55,7 @@ public class SwiftContainerListService implements RootListService<CFSession> {
             for(FilesRegion region : client.getRegions()) {
                 // List all containers
                 for(FilesContainer f : client.listContainers(region)) {
-                    final Path container = new CFPath(session, String.format("/%s", f.getName()),
+                    final Path container = new CFPath(String.format("/%s", f.getName()),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     container.attributes().setRegion(f.getRegion().getRegionId());
                     if(Preferences.instance().getBoolean("cf.cdn.preload")) {

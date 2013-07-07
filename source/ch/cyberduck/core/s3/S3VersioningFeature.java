@@ -28,9 +28,10 @@ import ch.cyberduck.core.versioning.VersioningConfiguration;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
+import org.jets3t.service.model.S3Object;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3VersioningFeature implements Versioning {
     private static final Logger log = Logger.getLogger(S3VersioningFeature.class);
@@ -115,4 +116,28 @@ public class S3VersioningFeature implements Versioning {
         }
     }
 
+    /**
+     * Versioning support. Copy a previous version of the object into the same bucket.
+     * The copied object becomes the latest version of that object and all object versions are preserved.
+     */
+    @Override
+    public void revert(final Path file) throws BackgroundException {
+        if(file.attributes().isFile()) {
+            try {
+                final S3Object destination = new S3Object(file.getKey());
+                // Keep same storage class
+                destination.setStorageClass(file.attributes().getStorageClass());
+                // Keep encryption setting
+                destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
+                // Apply non standard ACL
+                final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+                destination.setAcl(acl.convert(acl.read(file)));
+                session.getClient().copyVersionedObject(file.attributes().getVersionId(),
+                        file.getContainer().getName(), file.getKey(), file.getContainer().getName(), destination, false);
+            }
+            catch(ServiceException e) {
+                throw new ServiceExceptionMappingService().map("Cannot revert file", e, file);
+            }
+        }
+    }
 }

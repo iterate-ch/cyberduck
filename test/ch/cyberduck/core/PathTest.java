@@ -18,19 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.io.output.NullOutputStream;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 import static org.junit.Assert.*;
 
@@ -44,24 +34,24 @@ public class PathTest extends AbstractTestCase {
     @Test
     public void testDictionary() {
         final Session s = SessionFactory.createSession(new Host("localhost"));
-        Path path = PathFactory.createPath(s, "/path", Path.DIRECTORY_TYPE);
-        assertEquals(path, PathFactory.createPath(s, path.getAsDictionary()));
+        Path path = new Path("/path", Path.DIRECTORY_TYPE);
+        assertEquals(path, new Path(path.getAsDictionary()));
     }
 
     @Test
     public void testNormalize() throws Exception {
         {
-            final Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            final Path path = new Path(
                     "/path/to/remove/..", Path.DIRECTORY_TYPE);
             assertEquals("/path/to", path.getAbsolute());
         }
         {
-            final Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            final Path path = new Path(
                     "/path/to/remove/.././", Path.DIRECTORY_TYPE);
             assertEquals("/path/to", path.getAbsolute());
         }
         {
-            final Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            final Path path = new Path(
                     "/path/remove/../to/remove/.././", Path.DIRECTORY_TYPE);
             assertEquals("/path/to", path.getAbsolute());
         }
@@ -70,37 +60,37 @@ public class PathTest extends AbstractTestCase {
 //        path.setPath("/../path/to");
 //        assertEquals( "/path/to", path.getAbsolute());
         {
-            final Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            final Path path = new Path(
                     "/path/to/remove/remove/../../", Path.DIRECTORY_TYPE);
             assertEquals("/path/to", path.getAbsolute());
         }
         {
-            final Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            final Path path = new Path(
                     "/path/././././to", Path.DIRECTORY_TYPE);
             assertEquals("/path/to", path.getAbsolute());
         }
         {
-            final Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            final Path path = new Path(
                     "./.path/to", Path.DIRECTORY_TYPE);
             assertEquals("/.path/to", path.getAbsolute());
         }
         {
-            final Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            final Path path = new Path(
                     ".path/to", Path.DIRECTORY_TYPE);
             assertEquals("/.path/to", path.getAbsolute());
         }
         {
-            final Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            final Path path = new Path(
                     "/path/.to", Path.DIRECTORY_TYPE);
             assertEquals("/path/.to", path.getAbsolute());
         }
         {
-            final Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            final Path path = new Path(
                     "/path//to", Path.DIRECTORY_TYPE);
             assertEquals("/path/to", path.getAbsolute());
         }
         {
-            final Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            final Path path = new Path(
                     "/path///to////", Path.DIRECTORY_TYPE);
             assertEquals("/path/to", path.getAbsolute());
         }
@@ -109,13 +99,13 @@ public class PathTest extends AbstractTestCase {
     @Test
     public void testName() throws Exception {
         {
-            Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            Path path = new Path(
                     "/path/to/file/", Path.DIRECTORY_TYPE);
             assertEquals("file", path.getName());
             assertEquals("/path/to/file", path.getAbsolute());
         }
         {
-            Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+            Path path = new Path(
                     "/path/to/file", Path.DIRECTORY_TYPE);
             assertEquals("file", path.getName());
             assertEquals("/path/to/file", path.getAbsolute());
@@ -125,89 +115,10 @@ public class PathTest extends AbstractTestCase {
     @Test
     @Ignore
     public void test1067() throws Exception {
-        Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+        Path path = new Path(
                 "\\\\directory", Path.DIRECTORY_TYPE);
         assertEquals("\\\\directory", path.getAbsolute());
         assertEquals("/", path.getParent().getAbsolute());
-    }
-
-    @Test
-    public void testTransfer() throws Exception {
-        Path p = new NullPath("/t", Path.FILE_TYPE);
-        final TransferStatus status = new TransferStatus();
-        status.setLength(432768L);
-        p.transfer(new NullInputStream(status.getLength()), new NullOutputStream(),
-                new StreamListener() {
-                    long sent;
-                    long received;
-
-                    @Override
-                    public void bytesSent(long bytes) {
-                        assertTrue(bytes > 0L);
-                        assertTrue(bytes <= 32768L);
-                        sent += bytes;
-                        assertTrue(sent == received);
-                    }
-
-                    @Override
-                    public void bytesReceived(long bytes) {
-                        assertTrue(bytes > 0L);
-                        assertTrue(bytes <= 32768L);
-                        received += bytes;
-                        assertTrue(received > sent);
-                    }
-                }, -1, status);
-        assertTrue(status.isComplete());
-        assertTrue(status.getCurrent() == status.getLength());
-    }
-
-    @Test
-    public void testTransferInterrupt() throws Exception {
-        final Path p = new NullPath("/t", Path.FILE_TYPE);
-        final TransferStatus status = new TransferStatus();
-        final CyclicBarrier lock = new CyclicBarrier(2);
-        final CyclicBarrier exit = new CyclicBarrier(2);
-        status.setLength(432768L);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    p.transfer(new NullInputStream(status.getLength()), new NullOutputStream(),
-                            new StreamListener() {
-                                @Override
-                                public void bytesSent(long bytes) {
-                                    //
-                                }
-
-                                @Override
-                                public void bytesReceived(long bytes) {
-                                    try {
-                                        lock.await();
-                                        exit.await();
-                                    }
-                                    catch(InterruptedException e) {
-                                        fail(e.getMessage());
-                                    }
-                                    catch(BrokenBarrierException e) {
-                                        fail(e.getMessage());
-                                    }
-                                }
-                            }, -1, status);
-                }
-                catch(IOException e) {
-                    fail();
-                }
-                catch(BackgroundException e) {
-                    assertTrue(e instanceof ConnectionCanceledException);
-                }
-            }
-        }).start();
-        lock.await();
-        status.setCanceled();
-        exit.await();
-        assertFalse(status.isComplete());
-        assertTrue(status.isCanceled());
-        assertEquals(32768L, status.getCurrent());
     }
 
     @Test
@@ -236,5 +147,15 @@ public class PathTest extends AbstractTestCase {
     @Test
     public void testGetParent() {
         assertEquals(new NullPath("/b/t", Path.DIRECTORY_TYPE), new NullPath("/b/t/f.type", Path.FILE_TYPE).getParent());
+    }
+
+    @Test
+    public void testCreatePath() throws Exception {
+        for(Protocol p : ProtocolFactory.getKnownProtocols()) {
+            final Path path = new Path("p", Path.FILE_TYPE);
+            assertNotNull(path);
+            assertEquals("/p", path.getAbsolute());
+            assertEquals("/", path.getParent().getAbsolute());
+        }
     }
 }

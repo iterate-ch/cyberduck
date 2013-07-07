@@ -1626,7 +1626,8 @@ public interface KfsLibrary extends Library {
 
 
     /// <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/sys/unistd.h:137</i>
-    public static class accessx_descriptor extends Structure {
+    public static class
+            accessx_descriptor extends Structure {
         public int ad_name_offset;
         public int ad_flags;
         /// C type : int[2]

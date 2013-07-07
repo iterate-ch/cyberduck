@@ -31,7 +31,7 @@ public class FTPTimezoneCalculator {
      */
     public List<TimeZone> get(final FTPSession session, final Path workdir) throws BackgroundException {
         // Determine the server offset from UTC
-        final AttributedList<Path> list = workdir.list();
+        final AttributedList<Path> list = session.list(workdir);
         if(list.isEmpty()) {
             log.warn("Cannot determine timezone with empty directory listing");
             return Collections.emptyList();

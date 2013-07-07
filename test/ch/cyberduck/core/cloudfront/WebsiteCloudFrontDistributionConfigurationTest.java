@@ -10,7 +10,6 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPPath;
-import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
 
@@ -24,12 +23,12 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
     @Test
     public void testGetMethods() throws Exception {
         final S3Session s3 = new S3Session(new Host("s3"));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(s3, new S3Path(s3, null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.DOWNLOAD));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(s3, new S3Path(s3, null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.STREAMING));
-        assertFalse(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(s3, new S3Path(s3, null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.CUSTOM));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(s3, new S3Path(s3, null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE_CDN));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(s3, new S3Path(s3, null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
-        assertFalse(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(s3, new S3Path(s3, null, "/", Path.VOLUME_TYPE), "/bbb_b", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(new S3Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.DOWNLOAD));
+        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(new S3Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.STREAMING));
+        assertFalse(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(new S3Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.CUSTOM));
+        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(new S3Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE_CDN));
+        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(new S3Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+        assertFalse(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new S3Path(new S3Path("/", Path.VOLUME_TYPE), "/bbb_b", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
     }
 
     @Test
@@ -59,10 +58,10 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
                 session
         );
         assertEquals("bbb.s3.amazonaws.com",
-                configuration.getOrigin(new S3Path(session, new S3Path(session, null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD));
+                configuration.getOrigin(new S3Path(new S3Path(null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD));
         assertEquals("bbb.s3.amazonaws.com",
-                configuration.getOrigin(new S3Path(session, new S3Path(session, null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE), Distribution.WEBSITE));
-        final S3Path container = new S3Path(session, new S3Path(session, null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE);
+                configuration.getOrigin(new S3Path(new S3Path(null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE), Distribution.WEBSITE));
+        final S3Path container = new S3Path(new S3Path(null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE);
         container.attributes().setRegion("US");
         assertEquals("bbb.s3-website-us-east-1.amazonaws.com",
                 configuration.getOrigin(container, Distribution.WEBSITE_CDN));
@@ -80,7 +79,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session);
-        final SFTPPath container = new SFTPPath(new SFTPSession(new Host(Protocol.SFTP, "myhost.localdomain")), "test.cyberduck.ch", Path.VOLUME_TYPE);
+        final SFTPPath container = new SFTPPath("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.WEBSITE);
         assertEquals("The specified bucket does not have a website configuration", distribution.getStatus());
     }

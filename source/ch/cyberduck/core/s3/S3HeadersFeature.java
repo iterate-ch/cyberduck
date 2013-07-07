@@ -46,7 +46,7 @@ public class S3HeadersFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
-            final StorageObject target = ((S3Path) file).getDetails();
+            final StorageObject target = session.getDetails(file);
             HashMap<String, String> metadata = new HashMap<String, String>();
             Map<String, Object> source = target.getModifiableMetadata();
             for(Map.Entry<String, Object> entry : source.entrySet()) {
@@ -62,7 +62,7 @@ public class S3HeadersFeature implements Headers {
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
             try {
-                final StorageObject target = ((S3Path) file).getDetails();
+                final StorageObject target = session.getDetails(file);
                 target.replaceAllMetadata(new HashMap<String, Object>(metadata));
                 // Apply non standard ACL
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

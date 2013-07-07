@@ -19,24 +19,36 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.IOResumeException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.protocol.HTTP;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import com.googlecode.sardine.DavResource;
 import com.googlecode.sardine.impl.SardineException;
 import com.googlecode.sardine.impl.handler.VoidResponseHandler;
 import com.googlecode.sardine.impl.methods.HttpPropFind;
@@ -45,6 +57,7 @@ import com.googlecode.sardine.impl.methods.HttpPropFind;
  * @version $Id$
  */
 public class DAVSession extends HttpSession<DAVClient> {
+    private static final Logger log = Logger.getLogger(DAVPath.class);
 
     public DAVSession(Host h) {
         super(h);
@@ -93,6 +106,233 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public String toHttpURL(final Path path) {
         return this.toURL(path);
+    }
+
+    @Override
+    public boolean exists(final Path path) throws BackgroundException {
+        if(path.attributes().isDirectory()) {
+            // Parent directory may not be accessible. Issue #5662
+            try {
+                return this.getClient().exists(URIEncoder.encode(path.getAbsolute()));
+            }
+            catch(SardineException e) {
+                throw new SardineExceptionMappingService().map("Cannot read file attributes", e, path);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e, path);
+            }
+        }
+        return super.exists(path);
+    }
+
+    @Override
+    public void delete(final Path file, final LoginController prompt) throws BackgroundException {
+        try {
+            this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    file.getName()));
+            this.getClient().delete(URIEncoder.encode(file.getAbsolute()));
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Cannot delete {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e, file);
+        }
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path file) throws BackgroundException {
+        try {
+            this.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                    file.getName()));
+
+            final AttributedList<Path> children = new AttributedList<Path>();
+
+            final List<DavResource> resources = this.getClient().list(URIEncoder.encode(file.getAbsolute()));
+            for(final DavResource resource : resources) {
+                // Try to parse as RFC 2396
+                final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
+                if(href.equals(file.getAbsolute())) {
+                    continue;
+                }
+                final DAVPath p = new DAVPath(file,
+                        Path.getName(href), resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                if(resource.getModified() != null) {
+                    p.attributes().setModificationDate(resource.getModified().getTime());
+                }
+                if(resource.getCreation() != null) {
+                    p.attributes().setCreationDate(resource.getCreation().getTime());
+                }
+                if(resource.getContentLength() != null) {
+                    p.attributes().setSize(resource.getContentLength());
+                }
+                p.attributes().setChecksum(resource.getEtag());
+                p.attributes().setETag(resource.getEtag());
+                children.add(p);
+            }
+            return children;
+        }
+        catch(SardineException e) {
+            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
+            throw new SardineExceptionMappingService().map("Listing directory failed", e, file);
+        }
+        catch(IOException e) {
+            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
+            throw new DefaultIOExceptionMappingService().map(e, file);
+        }
+    }
+
+    @Override
+    public void mkdir(final Path file) throws BackgroundException {
+        try {
+            this.getClient().createDirectory(URIEncoder.encode(file.getAbsolute()));
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Cannot create folder {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e, file);
+        }
+    }
+
+    @Override
+    public void rename(final Path file, final Path renamed) throws BackgroundException {
+        try {
+            this.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+                    file.getName(), renamed.getName()));
+
+            this.getClient().move(URIEncoder.encode(file.getAbsolute()), URIEncoder.encode(renamed.getAbsolute()));
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Cannot rename {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e, file);
+        }
+    }
+
+    @Override
+    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+        Map<String, String> headers = new HashMap<String, String>();
+        if(status.isResume()) {
+            headers.put(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-");
+        }
+        try {
+            return this.getClient().get(URIEncoder.encode(file.getAbsolute()), headers);
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Download failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
+        }
+    }
+
+    @Override
+    public void download(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+                         final TransferStatus status) throws BackgroundException {
+        OutputStream out = null;
+        InputStream in = null;
+        try {
+            in = this.read(file, status);
+            out = file.getLocal().getOutputStream(status.isResume());
+            this.download(file, in, out, throttle, listener, status);
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Download failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
+        }
+    }
+
+    @Override
+    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
+        try {
+            InputStream in = null;
+            ResponseOutputStream<Void> out = null;
+            try {
+                in = file.getLocal().getInputStream();
+                if(status.isResume()) {
+                    long skipped = in.skip(status.getCurrent());
+                    log.info(String.format("Skipping %d bytes", skipped));
+                    if(skipped < status.getCurrent()) {
+                        throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
+                    }
+                }
+                out = this.write(file, status);
+                this.upload(file, out, in, throttle, listener, status);
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+            }
+            if(null != out) {
+                out.getResponse();
+            }
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Upload failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+        }
+    }
+
+    @Override
+    public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
+        final Map<String, String> headers = new HashMap<String, String>();
+        if(status.isResume()) {
+            headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
+                    + status.getCurrent()
+                    + "-" + (status.getLength() - 1)
+                    + "/" + status.getLength()
+            );
+        }
+        if(Preferences.instance().getBoolean("webdav.expect-continue")) {
+            headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
+        }
+        return this.write(file, headers, status);
+    }
+
+    private ResponseOutputStream<Void> write(final Path file, final Map<String, String> headers, final TransferStatus status)
+            throws BackgroundException {
+        // Submit store call to background thread
+        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
+            /**
+             * @return The ETag returned by the server for the uploaded object
+             */
+            @Override
+            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
+                try {
+                    getClient().put(URIEncoder.encode(file.getAbsolute()), entity, headers);
+                }
+                catch(SardineException e) {
+                    if(e.getStatusCode() == HttpStatus.SC_EXPECTATION_FAILED) {
+                        // Retry with the Expect header removed
+                        headers.remove(HTTP.EXPECT_DIRECTIVE);
+                        return this.call(entity);
+                    }
+                    else {
+                        throw new SardineExceptionMappingService().map("Upload failed", e, file);
+                    }
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+                }
+                return null;
+            }
+
+            @Override
+            public long getContentLength() {
+                return status.getLength() - status.getCurrent();
+            }
+        };
+        return this.write(file, command);
     }
 
     @Override

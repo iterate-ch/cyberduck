@@ -35,10 +35,10 @@ public class S3PathTest extends AbstractTestCase {
     @Test
     public void testToURL() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        S3Path p = new S3Path(session, "/bucket/f/key", Path.FILE_TYPE) {
+        S3Path p = new S3Path("/bucket/f/key", Path.FILE_TYPE) {
             @Override
             public Path getContainer() {
-                return new S3Path(session, "/bucket", Path.VOLUME_TYPE);
+                return new S3Path("/bucket", Path.VOLUME_TYPE);
             }
         };
         assertEquals("https://bucket.s3.amazonaws.com/f/key", session.toURL(p));
@@ -47,10 +47,10 @@ public class S3PathTest extends AbstractTestCase {
     @Test
     public void testToHttpURL() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        S3Path p = new S3Path(session, "/bucket/f/key", Path.FILE_TYPE) {
+        S3Path p = new S3Path("/bucket/f/key", Path.FILE_TYPE) {
             @Override
             public Path getContainer() {
-                return new S3Path(session, "/bucket", Path.VOLUME_TYPE);
+                return new S3Path("/bucket", Path.VOLUME_TYPE);
             }
         };
         assertEquals("http://bucket.s3.amazonaws.com/f/key", session.toHttpURL(p));

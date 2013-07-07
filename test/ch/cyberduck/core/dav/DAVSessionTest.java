@@ -32,10 +32,10 @@ public class DAVSessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
         assertFalse(session.cache().isEmpty());
-        assertTrue(session.cache().containsKey(new DAVPath(session, "/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertNotNull(session.cache().lookup(new DAVPath(session, "/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertNotNull(session.cache().lookup(new DAVPath(session, "/branches", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertNotNull(session.cache().lookup(new DAVPath(session, "/tags", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertTrue(session.cache().containsKey(new DAVPath("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new DAVPath("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new DAVPath("/branches", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new DAVPath("/tags", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -166,7 +166,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/dav/anon");
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
-        assertNotNull(session.home().list());
+        assertNotNull(session.list(session.home()));
     }
 
     @Test(expected = LoginFailureException.class)
@@ -219,8 +219,8 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/my/documentroot");
         final DAVSession session = new DAVSession(host);
-        assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toURL(new DAVPath(session, "/my/documentroot/f", Path.DIRECTORY_TYPE)));
-        assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toHttpURL(new DAVPath(session, "/my/documentroot/f", Path.DIRECTORY_TYPE)));
+        assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toURL(new DAVPath("/my/documentroot/f", Path.DIRECTORY_TYPE)));
+        assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toHttpURL(new DAVPath("/my/documentroot/f", Path.DIRECTORY_TYPE)));
     }
 
 

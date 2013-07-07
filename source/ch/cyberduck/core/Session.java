@@ -21,13 +21,32 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.IOResumeException;
+import ch.cyberduck.core.io.ThrottledInputStream;
+import ch.cyberduck.core.io.ThrottledOutputStream;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -185,14 +204,14 @@ public abstract class Session<C> implements TranscriptListener {
         try {
             final Path home = this.home();
             // Retrieve directory listing of default path
-            cache.put(home.getReference(), home.list());
+            cache.put(home.getReference(), this.list(home));
             return home;
         }
         catch(NotfoundException e) {
             // The default path does not exist or is not readable due to possible permission issues
             // Fallback to default working directory
             final Path workdir = this.workdir();
-            cache.put(workdir.getReference(), workdir.list());
+            cache.put(workdir.getReference(), this.list(workdir));
             return workdir;
         }
         finally {
@@ -218,11 +237,11 @@ public abstract class Session<C> implements TranscriptListener {
                 final Path workdir = this.workdir();
                 if(host.getDefaultPath().startsWith(Path.HOME)) {
                     // Relative path to the home directory
-                    return PathFactory.createPath(this, workdir, host.getDefaultPath().substring(1), Path.DIRECTORY_TYPE);
+                    return new Path(workdir, host.getDefaultPath().substring(1), Path.DIRECTORY_TYPE);
                 }
                 else {
                     // Relative path
-                    return PathFactory.createPath(this, workdir, host.getDefaultPath(), Path.DIRECTORY_TYPE);
+                    return new Path(workdir, host.getDefaultPath(), Path.DIRECTORY_TYPE);
                 }
             }
         }
@@ -230,7 +249,7 @@ public abstract class Session<C> implements TranscriptListener {
             // No default path configured
             return this.workdir();
         }
-        return PathFactory.createPath(this, directory,
+        return new Path(directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 
@@ -238,7 +257,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
      */
     public Path workdir() throws BackgroundException {
-        return PathFactory.createPath(this, String.valueOf(Path.DELIMITER),
+        return new Path(String.valueOf(Path.DELIMITER),
                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
     }
 
@@ -275,7 +294,6 @@ public abstract class Session<C> implements TranscriptListener {
     /**
      * @param workdir The workdir to create query
      * @return True if creating an empty file is possible.
-     * @see Path#touch()
      */
     public boolean isCreateFileSupported(final Path workdir) {
         return true;
@@ -558,6 +576,263 @@ public abstract class Session<C> implements TranscriptListener {
         return new DescriptiveUrl(null, null);
     }
 
+    /**
+     * Upload an empty file.
+     */
+    public boolean touch(final Path file) throws BackgroundException {
+        final Local temp = TemporaryFileServiceFactory.get().create(file);
+        temp.touch();
+        file.setLocal(temp);
+        TransferOptions options = new TransferOptions();
+        UploadTransfer upload = new UploadTransfer(this, file);
+        try {
+            upload.start(new TransferPrompt() {
+                @Override
+                public TransferAction prompt() throws BackgroundException {
+                    return TransferAction.ACTION_OVERWRITE;
+                }
+            }, options);
+        }
+        finally {
+            temp.delete();
+        }
+        return upload.isComplete();
+    }
+
+    /**
+     * Check for file existence. The default implementation does a directory listing of the parent folder.
+     *
+     * @return True if the path is cached.
+     */
+    public boolean exists(final Path path) throws BackgroundException {
+        if(path.isRoot()) {
+            return true;
+        }
+        return this.list(path.getParent()).contains(path.getReference());
+    }
+
+    public abstract void mkdir(Path file) throws BackgroundException;
+
+    public abstract AttributedList<Path> list(Path file) throws BackgroundException;
+
+    /**
+     * @param renamed Must be an absolute path
+     */
+    public abstract void rename(Path file, Path renamed) throws BackgroundException;
+
+    /**
+     * Remove this file from the remote host. Does not affect any corresponding local file
+     *
+     * @param prompt Login prompt for multi factor authentication
+     */
+    public abstract void delete(Path file, final LoginController prompt) throws BackgroundException;
+
+    /**
+     * @param status Transfer status
+     * @return Stream to read from to download file
+     */
+    public abstract InputStream read(Path file, final TransferStatus status) throws BackgroundException;
+
+    public void download(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+                         final TransferStatus status) throws BackgroundException {
+        try {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = read(file, status);
+                out = file.getLocal().getOutputStream(status.isResume());
+                this.download(file, in, out, throttle, listener, status);
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+            }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
+        }
+    }
+
+    /**
+     * @param status Transfer status
+     * @return Stream to write to for upload
+     */
+    public abstract OutputStream write(Path file, TransferStatus status) throws BackgroundException;
+
+    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+                       final TransferStatus status) throws BackgroundException {
+        try {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = file.getLocal().getInputStream();
+                out = write(file, status);
+                this.upload(file, out, in, throttle, listener, status);
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+            }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+        }
+    }
+
+    /**
+     * @param out      Remote stream
+     * @param in       Local stream
+     * @param throttle The bandwidth limit
+     * @param l        Listener for bytes sent
+     * @param status   Transfer status
+     * @throws java.io.IOException Write not completed due to a I/O problem
+     */
+    protected void upload(final Path file, final OutputStream out, final InputStream in,
+                          final BandwidthThrottle throttle,
+                          final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
+        this.upload(file, out, in, throttle, l, status.getCurrent(), -1, status);
+    }
+
+    /**
+     * Will copy from in to out. Will attempt to skip Status#getCurrent
+     * from the inputstream but not from the outputstream. The outputstream
+     * is asssumed to append to a already existing file if
+     * Status#getCurrent > 0
+     *
+     * @param out      The stream to write to
+     * @param in       The stream to read from
+     * @param throttle The bandwidth limit
+     * @param l        The stream listener to notify about bytes received and sent
+     * @param offset   Start reading at offset in file
+     * @param limit    Transfer only up to this length
+     * @param status   Transfer status
+     * @throws ch.cyberduck.core.io.IOResumeException
+     *                     If the input stream fails to skip the appropriate
+     *                     number of bytes
+     * @throws IOException Write not completed due to a I/O problem
+     */
+    protected void upload(final Path file, final OutputStream out, final InputStream in, final BandwidthThrottle throttle,
+                          final StreamListener l, long offset, final long limit, final TransferStatus status) throws IOException, ConnectionCanceledException {
+        if(log.isDebugEnabled()) {
+            log.debug("upload(" + out.toString() + ", " + in.toString());
+        }
+        if(offset > 0) {
+            long skipped = in.skip(offset);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Skipping %d bytes", skipped));
+            }
+            if(skipped < status.getCurrent()) {
+                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
+                        skipped, status.getCurrent()));
+            }
+        }
+        this.transfer(file, in, new ThrottledOutputStream(out, throttle), l, limit, status);
+    }
+
+    /**
+     * Will copy from in to out. Does not attempt to skip any bytes from the streams.
+     *
+     * @param in       The stream to read from
+     * @param out      The stream to write to
+     * @param throttle The bandwidth limit
+     * @param l        The stream listener to notify about bytes received and sent
+     * @param status   Transfer status
+     * @throws IOException Write not completed due to a I/O problem
+     */
+    protected void download(final Path file, final InputStream in, final OutputStream out, final BandwidthThrottle throttle,
+                            final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
+        if(log.isDebugEnabled()) {
+            log.debug("download(" + in.toString() + ", " + out.toString());
+        }
+        this.transfer(file, new ThrottledInputStream(in, throttle), out, l, -1, status);
+    }
+
+    /**
+     * Updates the current number of bytes transferred in the status reference.
+     *
+     * @param in       The stream to read from
+     * @param out      The stream to write to
+     * @param listener The stream listener to notify about bytes received and sent
+     * @param limit    Transfer only up to this length
+     * @param status   Transfer status
+     * @throws IOException Write not completed due to a I/O problem
+     */
+    public void transfer(final Path file, final InputStream in, final OutputStream out,
+                         final StreamListener listener, final long limit,
+                         final TransferStatus status) throws IOException, ConnectionCanceledException {
+        final BufferedInputStream bi = new BufferedInputStream(in);
+        final BufferedOutputStream bo = new BufferedOutputStream(out);
+        try {
+            final int chunksize = Preferences.instance().getInteger("connection.chunksize");
+            final byte[] chunk = new byte[chunksize];
+            long bytesTransferred = 0;
+            while(!status.isCanceled()) {
+                final int read = bi.read(chunk, 0, chunksize);
+                if(-1 == read) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("End of file reached");
+                    }
+                    // End of file
+                    status.setComplete();
+                    break;
+                }
+                else {
+                    status.addCurrent(read);
+                    listener.bytesReceived(read);
+                    bo.write(chunk, 0, read);
+                    listener.bytesSent(read);
+                    bytesTransferred += read;
+                    if(limit == bytesTransferred) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Limit %d reached reading from stream", limit));
+                        }
+                        // Part reached
+                        if(0 == bi.available()) {
+                            // End of file
+                            status.setComplete();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        finally {
+            bo.flush();
+        }
+        if(status.isCanceled()) {
+            throw new ConnectionCanceledException();
+        }
+    }
+
+    /**
+     * Default implementation using a temporary file on localhost as an intermediary
+     * with a download and upload transfer.
+     *
+     * @param copy     Destination
+     * @param throttle The bandwidth limit
+     * @param listener Callback
+     * @param status   Transfer status
+     */
+    public void copy(final Path file, final Path copy, final BandwidthThrottle throttle,
+                     final StreamListener listener, final TransferStatus status) throws BackgroundException {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            if(file.attributes().isFile()) {
+                this.transfer(file, in = new ThrottledInputStream(this.read(file, status), throttle),
+                        out = new ThrottledOutputStream(this.write(copy, status), throttle),
+                        listener, -1, status);
+            }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, file);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
+        }
+    }
+
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == DistributionConfiguration.class) {
             // Configure with the same host as S3 to get the same credentials from the keychain.
@@ -565,6 +840,7 @@ public abstract class Session<C> implements TranscriptListener {
                     new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCdnCredentials()));
             session.addTranscriptListener(this);
             return (T) new CustomOriginCloudFrontDistributionConfiguration(
+                    this.getHost(),
                     session,
                     // Use login context of current session
                     prompt);

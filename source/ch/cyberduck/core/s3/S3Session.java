@@ -27,36 +27,51 @@ import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
-import ch.cyberduck.core.features.Revert;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.threading.NamedThreadFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.StorageObjectsChunk;
+import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
+import org.jets3t.service.model.BaseVersionOrDeleteMarker;
+import org.jets3t.service.model.MultipartPart;
+import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.S3Version;
 import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
+import org.jets3t.service.model.container.ObjectKeyAndVersion;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
@@ -64,15 +79,29 @@ import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @version $Id$
@@ -578,6 +607,758 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
+    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+        try {
+            if(file.attributes().isDuplicate()) {
+                return this.getClient().getVersionedObject(file.attributes().getVersionId(),
+                        file.getContainer().getName(), file.getKey(),
+                        null, // ifModifiedSince
+                        null, // ifUnmodifiedSince
+                        null, // ifMatch
+                        null, // ifNoneMatch
+                        status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
+            }
+            return this.getClient().getObject(file.getContainer().getName(), file.getKey(),
+                    null, // ifModifiedSince
+                    null, // ifUnmodifiedSince
+                    null, // ifMatch
+                    null, // ifNoneMatch
+                    status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Download failed", e, file);
+        }
+    }
+
+    /**
+     * Default size threshold for when to use multipart uploads.
+     */
+    private static final long DEFAULT_MULTIPART_UPLOAD_THRESHOLD =
+            Preferences.instance().getLong("s3.upload.multipart.threshold");
+
+    /**
+     * Default minimum part size for upload parts.
+     */
+    private static final int DEFAULT_MINIMUM_UPLOAD_PART_SIZE =
+            Preferences.instance().getInteger("s3.upload.multipart.size");
+
+    /**
+     * The maximum allowed parts in a multipart upload.
+     */
+    public static final int MAXIMUM_UPLOAD_PARTS = 10000;
+
+    @Override
+    public void upload(final Path file, final BandwidthThrottle throttle,
+                       final StreamListener listener, final TransferStatus status) throws BackgroundException {
+        try {
+            if(file.attributes().isFile()) {
+                final StorageObject object = this.createObjectDetails(file);
+
+                this.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                        file.getName()));
+
+                if(this.isMultipartUploadSupported()
+                        && status.getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
+                    this.uploadMultipart(file, throttle, listener, status, object);
+                }
+                else {
+                    this.uploadSingle(file, throttle, listener, status, object);
+                }
+            }
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Upload failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+        }
+    }
+
+    private StorageObject createObjectDetails(final Path file) throws BackgroundException {
+        final StorageObject object = new StorageObject(file.getKey());
+        final String type = new MappingMimeTypeService().getMime(file.getName());
+        object.setContentType(type);
+        if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+            this.message(MessageFormat.format(
+                    Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
+            object.setMd5Hash(ServiceUtils.fromHex(file.getLocal().attributes().getChecksum()));
+        }
+        Acl acl = file.attributes().getAcl();
+        if(Acl.EMPTY.equals(acl)) {
+            if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
+                object.setAcl(this.getPublicCannedReadAcl());
+            }
+            else {
+                // Owner gets FULL_CONTROL. No one else has access rights (default).
+                object.setAcl(this.getPrivateCannedAcl());
+            }
+        }
+        else {
+            object.setAcl(new S3AccessControlListFeature(this).convert(acl));
+        }
+        // Storage class
+        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
+            object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
+        }
+        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
+            object.setServerSideEncryptionAlgorithm(Preferences.instance().getProperty("s3.encryption.algorithm"));
+        }
+        // Default metadata for new files
+        for(String m : Preferences.instance().getList("s3.metadata.default")) {
+            if(StringUtils.isBlank(m)) {
+                continue;
+            }
+            if(!m.contains("=")) {
+                log.warn(String.format("Invalid header %s", m));
+                continue;
+            }
+            int split = m.indexOf('=');
+            String name = m.substring(0, split);
+            if(StringUtils.isBlank(name)) {
+                log.warn(String.format("Missing key in header %s", m));
+                continue;
+            }
+            String value = m.substring(split + 1);
+            if(StringUtils.isEmpty(value)) {
+                log.warn(String.format("Missing value in header %s", m));
+                continue;
+            }
+            object.addMetadata(name, value);
+        }
+        return object;
+    }
+
+    /**
+     * @param throttle Bandwidth throttle
+     * @param listener Callback for bytes sent
+     * @param status   Transfer status
+     * @param object   File location
+     */
+    private void uploadSingle(final Path file,
+                              final BandwidthThrottle throttle, final StreamListener listener,
+                              final TransferStatus status, final StorageObject object) throws BackgroundException {
+
+        InputStream in = null;
+        ResponseOutputStream<StorageObject> out = null;
+        MessageDigest digest = null;
+        if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+            // Content-MD5 not set. Need to verify ourselves instad of S3
+            try {
+                digest = MessageDigest.getInstance("MD5");
+            }
+            catch(NoSuchAlgorithmException e) {
+                log.error(e.getMessage());
+            }
+        }
+        try {
+            if(null == digest) {
+                log.warn("MD5 calculation disabled");
+                in = file.getLocal().getInputStream();
+            }
+            else {
+                in = new DigestInputStream(file.getLocal().getInputStream(), digest);
+            }
+            out = this.write(file, object, status.getLength() - status.getCurrent(),
+                    Collections.<String, String>emptyMap());
+            try {
+                this.upload(file, out, in, throttle, listener, status);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+            }
+        }
+        catch(FileNotFoundException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
+        }
+        if(null != digest) {
+            final StorageObject part = out.getResponse();
+            this.message(MessageFormat.format(
+                    Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
+            // Obtain locally-calculated MD5 hash.
+            String hexMD5 = ServiceUtils.toHex(digest.digest());
+            try {
+                this.getClient().verifyExpectedAndActualETagValues(hexMD5, part);
+            }
+            catch(ServiceException e) {
+                throw new ServiceExceptionMappingService().map("Upload failed", e, file);
+            }
+        }
+    }
+
+    /**
+     * @param throttle Bandwidth throttle
+     * @param listener Callback for bytes sent
+     * @param status   Transfer status
+     * @param object   File location
+     * @throws IOException      I/O error
+     * @throws ServiceException Service error
+     */
+    private void uploadMultipart(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+                                 final TransferStatus status, final StorageObject object)
+            throws IOException, ServiceException, BackgroundException {
+
+        final ThreadFactory threadFactory = new NamedThreadFactory("multipart");
+
+        MultipartUpload multipart = null;
+        if(status.isResume()) {
+            // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
+            // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
+            // not yet been completed or aborted.
+            final List<MultipartUpload> uploads = this.getClient().multipartListUploads(file.getContainer().getName());
+            for(MultipartUpload upload : uploads) {
+                if(!upload.getBucketName().equals(file.getContainer().getName())) {
+                    continue;
+                }
+                if(!upload.getObjectKey().equals(file.getKey())) {
+                    continue;
+                }
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Resume multipart upload %s", upload.getUploadId()));
+                }
+                multipart = upload;
+                break;
+            }
+        }
+        if(null == multipart) {
+            log.info("No pending multipart upload found");
+
+            // Initiate multipart upload with metadata
+            Map<String, Object> metadata = object.getModifiableMetadata();
+            if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
+                metadata.put(this.getClient().getRestHeaderPrefix() + "storage-class",
+                        Preferences.instance().getProperty("s3.storage.class"));
+            }
+            if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
+                metadata.put(this.getClient().getRestHeaderPrefix() + "server-side-encryption",
+                        Preferences.instance().getProperty("s3.encryption.algorithm"));
+            }
+
+            multipart = this.getClient().multipartStartUpload(
+                    file.getContainer().getName(), file.getKey(), metadata);
+        }
+
+        final List<MultipartPart> completed;
+        if(status.isResume()) {
+            log.info(String.format("List completed parts of %s", multipart.getUploadId()));
+            // This operation lists the parts that have been uploaded for a specific multipart upload.
+            completed = this.getClient().multipartListParts(multipart);
+        }
+        else {
+            completed = new ArrayList<MultipartPart>();
+        }
+
+        /**
+         * At any point, at most
+         * <tt>nThreads</tt> threads will be active processing tasks.
+         */
+        final ExecutorService pool = Executors.newFixedThreadPool(
+                Preferences.instance().getInteger("s3.upload.multipart.concurency"), threadFactory);
+
+        try {
+            final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
+
+            final long defaultPartSize = Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS),
+                    DEFAULT_MINIMUM_UPLOAD_PART_SIZE);
+
+            long remaining = status.getLength();
+            long marker = 0;
+
+            for(int partNumber = 1; remaining > 0; partNumber++) {
+                boolean skip = false;
+                if(status.isResume()) {
+                    log.info(String.format("Determine if part %d can be skipped", partNumber));
+                    for(MultipartPart c : completed) {
+                        if(c.getPartNumber().equals(partNumber)) {
+                            log.info("Skip completed part number " + partNumber);
+                            listener.bytesSent(c.getSize());
+                            skip = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Last part can be less than 5 MB. Adjust part size.
+                final long length = Math.min(defaultPartSize, remaining);
+
+                if(!skip) {
+                    // Submit to queue
+                    parts.add(this.submitPart(file, throttle, listener, status, multipart, pool, partNumber, marker, length));
+                }
+
+                remaining -= length;
+                marker += length;
+            }
+            for(Future<MultipartPart> future : parts) {
+                try {
+                    completed.add(future.get());
+                }
+                catch(InterruptedException e) {
+                    log.error("Part upload failed:" + e.getMessage());
+                    throw new ConnectionCanceledException(e);
+                }
+                catch(ExecutionException e) {
+                    log.warn("Part upload failed:" + e.getMessage());
+                    if(e.getCause() instanceof ServiceException) {
+                        throw (ServiceException) e.getCause();
+                    }
+                    if(e.getCause() instanceof IOException) {
+                        throw (IOException) e.getCause();
+                    }
+                    throw new ConnectionCanceledException(e);
+                }
+            }
+            if(status.isComplete()) {
+                this.getClient().multipartCompleteUpload(multipart, completed);
+            }
+        }
+        finally {
+            if(!status.isComplete()) {
+                // Cancel all previous parts
+                log.info(String.format("Cancel multipart upload %s", multipart.getUploadId()));
+                this.getClient().multipartAbortUpload(multipart);
+            }
+            // Cancel future tasks
+            pool.shutdown();
+        }
+    }
+
+    private Future<MultipartPart> submitPart(final Path file,
+                                             final BandwidthThrottle throttle, final StreamListener listener,
+                                             final TransferStatus status, final MultipartUpload multipart,
+                                             final ExecutorService pool,
+                                             final int partNumber,
+                                             final long offset, final long length) throws BackgroundException {
+        if(pool.isShutdown()) {
+            throw new ConnectionCanceledException();
+        }
+        log.info(String.format("Submit part %d to queue", partNumber));
+        return pool.submit(new Callable<MultipartPart>() {
+            @Override
+            public MultipartPart call() throws BackgroundException {
+                final Map<String, String> requestParameters = new HashMap<String, String>();
+                requestParameters.put("uploadId", multipart.getUploadId());
+                requestParameters.put("partNumber", String.valueOf(partNumber));
+
+                InputStream in = null;
+                ResponseOutputStream<StorageObject> out = null;
+                MessageDigest digest = null;
+                try {
+                    if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+                        // Content-MD5 not set. Need to verify ourselves instad of S3
+                        try {
+                            digest = MessageDigest.getInstance("MD5");
+                        }
+                        catch(NoSuchAlgorithmException e) {
+                            log.error(e.getMessage());
+                        }
+                    }
+                    if(null == digest) {
+                        log.warn("MD5 calculation disabled");
+                        in = file.getLocal().getInputStream();
+                    }
+                    else {
+                        in = new DigestInputStream(file.getLocal().getInputStream(), digest);
+                    }
+                    out = write(file, new StorageObject(file.getKey()), length, requestParameters);
+                    upload(file, out, in, throttle, listener, offset, length, status);
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map(e);
+                }
+                finally {
+                    IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
+                }
+                final StorageObject part = out.getResponse();
+                if(null != digest) {
+                    // Obtain locally-calculated MD5 hash
+                    String hexMD5 = ServiceUtils.toHex(digest.digest());
+                    try {
+                        getClient().verifyExpectedAndActualETagValues(hexMD5, part);
+                    }
+                    catch(ServiceException e) {
+                        throw new ServiceExceptionMappingService().map("Upload failed", e, file);
+                    }
+                }
+                // Populate part with response data that is accessible via the object's metadata
+                return new MultipartPart(partNumber, part.getLastModifiedDate(),
+                        part.getETag(), part.getContentLength());
+            }
+        });
+    }
+
+    @Override
+    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+        return this.write(file, this.createObjectDetails(file), status.getLength() - status.getCurrent(),
+                Collections.<String, String>emptyMap());
+    }
+
+    private ResponseOutputStream<StorageObject> write(final Path file,
+                                                      final StorageObject part, final Long contentLength,
+                                                      final Map<String, String> requestParams) throws BackgroundException {
+        DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
+            @Override
+            public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
+                try {
+                    getClient().putObjectWithRequestEntityImpl(file.getContainer().getName(), part, entity, requestParams);
+                }
+                catch(ServiceException e) {
+                    throw new ServiceExceptionMappingService().map("Upload failed", e, file);
+                }
+                return part;
+            }
+
+            @Override
+            public long getContentLength() {
+                return contentLength;
+            }
+        };
+        return this.write(file, command);
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path file) throws BackgroundException {
+        try {
+            this.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                    file.getName()));
+
+            if(file.isRoot()) {
+                // List all buckets
+                return new AttributedList<Path>(new S3BucketListService().list(this));
+            }
+            else {
+                // Keys can be listed by prefix. By choosing a common prefix
+                // for the names of related keys and marking these keys with
+                // a special character that delimits hierarchy, you can use the list
+                // operation to select and browse keys hierarchically
+                String prefix = StringUtils.EMPTY;
+                if(!file.isContainer()) {
+                    // estricts the response to only contain results that begin with the
+                    // specified prefix. If you omit this optional argument, the value
+                    // of Prefix for your query will be the empty string.
+                    // In other words, the results will be not be restricted by prefix.
+                    prefix = file.getKey();
+                    if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
+                        prefix += Path.DELIMITER;
+                    }
+                }
+                // If this optional, Unicode string parameter is included with your request,
+                // then keys that contain the same string between the prefix and the first
+                // occurrence of the delimiter will be rolled up into a single result
+                // element in the CommonPrefixes collection. These rolled-up keys are
+                // not returned elsewhere in the response.
+                final AttributedList<Path> children = new AttributedList<Path>();
+                children.addAll(this.listObjects(file.getContainer(), prefix, String.valueOf(Path.DELIMITER)));
+                if(Preferences.instance().getBoolean("s3.revisions.enable")) {
+                    if(new S3VersioningFeature(this).getConfiguration(file.getContainer()).isEnabled()) {
+                        String priorLastKey = null;
+                        String priorLastVersionId = null;
+                        do {
+                            final VersionOrDeleteMarkersChunk chunk = this.getClient().listVersionedObjectsChunked(
+                                    file.getContainer().getName(), prefix, String.valueOf(Path.DELIMITER),
+                                    Preferences.instance().getInteger("s3.listing.chunksize"),
+                                    priorLastKey, priorLastVersionId, true);
+                            children.addAll(this.listVersions(file.getContainer(), Arrays.asList(chunk.getItems())));
+                            priorLastKey = chunk.getNextKeyMarker();
+                            priorLastVersionId = chunk.getNextVersionIdMarker();
+                        }
+                        while(priorLastKey != null);
+                    }
+                }
+                return children;
+            }
+        }
+        catch(ServiceException e) {
+            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
+            throw new ServiceExceptionMappingService().map("Listing directory failed", e, file);
+        }
+        catch(IOException e) {
+            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
+            throw new DefaultIOExceptionMappingService().map(e, file);
+        }
+    }
+
+    private AttributedList<Path> listObjects(final Path bucket, final String prefix, final String delimiter)
+            throws IOException, ServiceException, BackgroundException {
+        final AttributedList<Path> children = new AttributedList<Path>();
+        // Null if listing is complete
+        String priorLastKey = null;
+        do {
+            // Read directory listing in chunks. List results are always returned
+            // in lexicographic (alphabetical) order.
+            final StorageObjectsChunk chunk = this.getClient().listObjectsChunked(
+                    bucket.getName(), prefix, delimiter,
+                    Preferences.instance().getInteger("s3.listing.chunksize"), priorLastKey);
+
+            final StorageObject[] objects = chunk.getObjects();
+            for(StorageObject object : objects) {
+                final S3Path p = new S3Path(null, bucket.getName() + Path.DELIMITER + object.getKey(), Path.FILE_TYPE);
+                p.attributes().setSize(object.getContentLength());
+                p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
+                p.attributes().setRegion(bucket.attributes().getRegion());
+                p.attributes().setStorageClass(object.getStorageClass());
+                p.attributes().setEncryption(object.getServerSideEncryptionAlgorithm());
+                // Directory placeholders
+                if(object.isDirectoryPlaceholder()) {
+                    p.attributes().setType(Path.DIRECTORY_TYPE);
+                    p.attributes().setPlaceholder(true);
+                }
+                else if(0 == object.getContentLength()) {
+                    if("application/x-directory".equals(this.getDetails(p).getContentType())) {
+                        p.attributes().setType(Path.DIRECTORY_TYPE);
+                        p.attributes().setPlaceholder(true);
+                    }
+                }
+                final Object etag = object.getMetadataMap().get(StorageObject.METADATA_HEADER_ETAG);
+                if(null != etag) {
+                    final String checksum = etag.toString().replaceAll("\"", StringUtils.EMPTY);
+                    p.attributes().setChecksum(checksum);
+                    if(checksum.equals("d66759af42f282e1ba19144df2d405d0")) {
+                        // Fix #5374 s3sync.rb interoperability
+                        p.attributes().setType(Path.DIRECTORY_TYPE);
+                        p.attributes().setPlaceholder(true);
+                    }
+                }
+                if(object instanceof S3Object) {
+                    p.attributes().setVersionId(((S3Object) object).getVersionId());
+                }
+                children.add(p);
+            }
+            final String[] prefixes = chunk.getCommonPrefixes();
+            for(String common : prefixes) {
+                if(common.equals(String.valueOf(Path.DELIMITER))) {
+                    log.warn("Skipping prefix " + common);
+                    continue;
+                }
+                final Path p = new S3Path(null, bucket.getName() + Path.DELIMITER + common, Path.DIRECTORY_TYPE);
+                if(children.contains(p.getReference())) {
+                    // There is already a placeholder object
+                    continue;
+                }
+                p.attributes().setRegion(bucket.attributes().getRegion());
+                p.attributes().setPlaceholder(false);
+                children.add(p);
+            }
+            priorLastKey = chunk.getPriorLastKey();
+        }
+        while(priorLastKey != null);
+        return children;
+    }
+
+    /**
+     * Retrieve and cache object details.
+     *
+     * @return Object details
+     */
+    protected StorageObject getDetails(final Path file) throws BackgroundException {
+        final String container = file.getContainer().getName();
+        if(this.getHost().getCredentials().isAnonymousLogin()) {
+            log.info("Anonymous cannot access object details");
+            final StorageObject object = new StorageObject(file.getKey());
+            object.setBucketName(container);
+            return object;
+        }
+        try {
+            if(file.attributes().isDuplicate()) {
+                return this.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
+                        container, file.getKey());
+            }
+            else {
+                return this.getClient().getObjectDetails(container, file.getKey());
+            }
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, file);
+        }
+    }
+
+    private List<Path> listVersions(final Path bucket, final List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
+            throws IOException, ServiceException {
+        // Amazon S3 returns object versions in the order in which they were
+        // stored, with the most recently stored returned first.
+        Collections.sort(versionOrDeleteMarkers, new Comparator<BaseVersionOrDeleteMarker>() {
+            @Override
+            public int compare(BaseVersionOrDeleteMarker o1, BaseVersionOrDeleteMarker o2) {
+                return o1.getLastModified().compareTo(o2.getLastModified());
+            }
+        });
+        final List<Path> versions = new ArrayList<Path>();
+        int i = 0;
+        for(BaseVersionOrDeleteMarker marker : versionOrDeleteMarkers) {
+            if((marker.isDeleteMarker() && marker.isLatest())
+                    || !marker.isLatest()) {
+                // Latest version already in default listing
+                final S3Path p = new S3Path(null, bucket.getName() + Path.DELIMITER + marker.getKey(), Path.FILE_TYPE);
+                // Versioning is enabled if non null.
+                p.attributes().setVersionId(marker.getVersionId());
+                p.attributes().setRevision(++i);
+                p.attributes().setDuplicate(true);
+                p.attributes().setModificationDate(marker.getLastModified().getTime());
+                p.attributes().setRegion(bucket.attributes().getRegion());
+                if(marker instanceof S3Version) {
+                    p.attributes().setSize(((S3Version) marker).getSize());
+                    p.attributes().setETag(((S3Version) marker).getEtag());
+                    p.attributes().setStorageClass(((S3Version) marker).getStorageClass());
+                }
+                versions.add(p);
+            }
+        }
+        return versions;
+    }
+
+    @Override
+    public void mkdir(final Path file) throws BackgroundException {
+        try {
+            if(file.isContainer()) {
+                // Create bucket
+                if(!ServiceUtils.isBucketNameValidDNSName(file.getName())) {
+                    throw new ServiceException(Locale.localizedString("Bucket name is not DNS compatible", "S3"));
+                }
+                String location = Preferences.instance().getProperty("s3.location");
+                if(!this.getHost().getProtocol().getLocations().contains(location)) {
+                    log.warn("Default bucket location not supported by provider:" + location);
+                    location = "US";
+                    log.warn("Fallback to US");
+                }
+                AccessControlList acl;
+                if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
+                    acl = this.getPublicCannedReadAcl();
+                }
+                else {
+                    acl = this.getPrivateCannedAcl();
+                }
+                this.getClient().createBucket(file.getContainer().getName(), location, acl);
+            }
+            else {
+                StorageObject object = new StorageObject(file.getKey() + Path.DELIMITER);
+                object.setBucketName(file.getContainer().getName());
+                // Set object explicitly to private access by default.
+                object.setAcl(this.getPrivateCannedAcl());
+                object.setContentLength(0);
+                object.setContentType("application/x-directory");
+                this.getClient().putObject(file.getContainer().getName(), object);
+            }
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, file);
+        }
+    }
+
+    @Override
+    public void delete(final Path file, final LoginController prompt) throws BackgroundException {
+        try {
+            this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    file.getName()));
+
+            if(file.attributes().isFile()) {
+                this.delete(prompt, file.getContainer(), Collections.singletonList(
+                        new ObjectKeyAndVersion(file.getKey(), file.attributes().getVersionId())));
+            }
+            else if(file.attributes().isDirectory()) {
+                final List<ObjectKeyAndVersion> files = new ArrayList<ObjectKeyAndVersion>();
+                for(Path child : this.list(file)) {
+                    if(!this.isConnected()) {
+                        throw new ConnectionCanceledException();
+                    }
+                    if(child.attributes().isDirectory()) {
+                        this.delete(child, prompt);
+                    }
+                    else {
+                        files.add(new ObjectKeyAndVersion(child.getKey(), child.attributes().getVersionId()));
+                    }
+                }
+                if(!file.isContainer()) {
+                    // Because we normalize paths and remove a trailing delimiter we add it here again as the
+                    // default directory placeholder formats has the format `/placeholder/' as a key.
+                    files.add(new ObjectKeyAndVersion(file.getKey() + Path.DELIMITER,
+                            file.attributes().getVersionId()));
+                    // Always returning 204 even if the key does not exist.
+                    // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
+                    files.add(new ObjectKeyAndVersion(file.getKey(),
+                            file.attributes().getVersionId()));
+                    // AWS does not return 404 for non-existing keys
+                }
+                if(!files.isEmpty()) {
+                    this.delete(prompt, file.getContainer(), files);
+                }
+                if(file.isContainer()) {
+                    // Finally delete bucket itself
+                    this.getClient().deleteBucket(file.getContainer().getName());
+                }
+            }
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
+        }
+    }
+
+    /**
+     * @param container Bucket
+     * @param keys      Key and version ID for versioned object or null
+     * @throws ConnectionCanceledException Authentication canceled for MFA delete
+     * @throws ServiceException            Service error
+     */
+    protected void delete(final LoginController prompt, final Path container, final List<ObjectKeyAndVersion> keys) throws ServiceException, BackgroundException {
+        if(new S3VersioningFeature(this).getConfiguration(container).isMultifactor()) {
+            final Credentials factor = this.mfa(prompt);
+            this.getClient().deleteMultipleObjectsWithMFA(container.getName(),
+                    keys.toArray(new ObjectKeyAndVersion[keys.size()]),
+                    factor.getUsername(),
+                    factor.getPassword(),
+                    true);
+        }
+        else {
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                this.getClient().deleteMultipleObjects(container.getName(),
+                        keys.toArray(new ObjectKeyAndVersion[keys.size()]),
+                        true);
+            }
+            else {
+                for(ObjectKeyAndVersion k : keys) {
+                    this.getClient().deleteObject(container.getName(), k.getKey());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void rename(final Path file, final Path renamed) throws BackgroundException {
+        try {
+            this.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+                    file.getName(), renamed));
+
+            if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
+                final StorageObject destination = new StorageObject(renamed.getKey());
+                // Keep same storage class
+                destination.setStorageClass(file.attributes().getStorageClass());
+                // Keep encryption setting
+                destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
+                // Apply non standard ACL
+                final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
+                destination.setAcl(acl.convert(acl.read(file)));
+                // Moving the object retaining the metadata of the original.
+                this.getClient().moveObject(file.getContainer().getName(), file.getKey(), renamed.getContainer().getName(),
+                        destination, false);
+            }
+            else if(file.attributes().isDirectory()) {
+                for(Path i : this.list(file)) {
+                    if(!this.isConnected()) {
+                        throw new ConnectionCanceledException();
+                    }
+                    this.rename(i, new S3Path(renamed, i.getName(), i.attributes().getType()));
+                }
+            }
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot rename {0}", e, file);
+        }
+    }
+
+    @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == ch.cyberduck.core.features.AccessControlList.class) {
             return (T) new S3AccessControlListFeature(this);
@@ -609,13 +1390,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             // Only for AWS
             if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
                 return (T) new S3LoggingFeature(this);
-            }
-            return null;
-        }
-        if(type == Revert.class) {
-            // Only for AWS
-            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
-                return (T) new S3RevertFeature(this);
             }
             return null;
         }

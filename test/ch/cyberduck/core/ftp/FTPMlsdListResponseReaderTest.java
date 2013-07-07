@@ -21,7 +21,6 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Protocol;
 
 import org.junit.Ignore;
@@ -34,7 +33,7 @@ import java.util.TimeZone;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
 
@@ -43,7 +42,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = (FTPPath) PathFactory.createPath(s,
+        FTPPath path = new FTPPath(
                 "/www", Path.DIRECTORY_TYPE);
 
         String[] replies = new String[]{
@@ -66,7 +65,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     @Test
     public void testMlsdCdir() {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/www", Path.DIRECTORY_TYPE);
 
         {
@@ -96,7 +95,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/www", Path.DIRECTORY_TYPE);
 
         String[] replies = new String[]{
@@ -113,7 +112,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/www", Path.DIRECTORY_TYPE);
 
         String[] replies = new String[]{
@@ -129,7 +128,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/www", Path.DIRECTORY_TYPE);
 
         String[] replies = new String[]{
@@ -149,7 +148,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/www", Path.DIRECTORY_TYPE);
 
         String[] replies = new String[]{
@@ -167,7 +166,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/www", Path.DIRECTORY_TYPE);
 
         String[] replies = new String[]{
@@ -186,7 +185,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     @Test
     public void testBrokenMlsd() {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/Dummies_Infoblaetter", Path.DIRECTORY_TYPE);
 
         {
@@ -226,7 +225,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     @Test
     public void testParseMlsdMode() {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/www", Path.DIRECTORY_TYPE);
 
         {
@@ -257,7 +256,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     @Ignore
     public void testParseMlsdSymbolic() {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/www", Path.DIRECTORY_TYPE);
 
         {

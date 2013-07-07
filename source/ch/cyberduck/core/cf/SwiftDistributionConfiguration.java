@@ -109,7 +109,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
                     distribution.setDefaultRootObject(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
-                distribution.setContainers(Collections.<Path>singletonList(new CFPath(session, null, ".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
+                distribution.setContainers(Collections.<Path>singletonList(new CFPath(".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
                 return distribution;
             }
             catch(FilesNotFoundException e) {

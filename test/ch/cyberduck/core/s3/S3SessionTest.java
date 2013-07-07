@@ -4,7 +4,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.features.Revert;
 import ch.cyberduck.core.features.Versioning;
 
 import org.junit.Test;
@@ -19,8 +18,8 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testFile() {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, "h"));
-        assertFalse(session.isCreateFileSupported(new S3Path(session, null, "/", Path.VOLUME_TYPE)));
-        assertTrue(session.isCreateFileSupported(new S3Path(session, new S3Path(session, null, "/", Path.VOLUME_TYPE), "/container", Path.VOLUME_TYPE)));
+        assertFalse(session.isCreateFileSupported(new S3Path(null, "/", Path.VOLUME_TYPE)));
+        assertTrue(session.isCreateFileSupported(new S3Path(new S3Path(null, "/", Path.VOLUME_TYPE), "/container", Path.VOLUME_TYPE)));
     }
 
     @Test
@@ -35,8 +34,8 @@ public class S3SessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
         assertFalse(session.cache().isEmpty());
-        assertTrue(session.cache().containsKey(new S3Path(session, "/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertNotNull(session.cache().lookup(new S3Path(session, "/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertTrue(session.cache().containsKey(new S3Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(session.cache().lookup(new S3Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -85,24 +84,23 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(aws.getFeature(AnalyticsProvider.class, null));
         assertNotNull(aws.getFeature(Lifecycle.class, null));
         assertNotNull(aws.getFeature(Location.class, null));
-        assertNotNull(aws.getFeature(Revert.class, null));
         final S3Session o = new S3Session(new Host(Protocol.S3_SSL, "o"));
         assertNull(o.getFeature(Versioning.class, null));
         assertNull(o.getFeature(AnalyticsProvider.class, null));
         assertNull(o.getFeature(Lifecycle.class, null));
         assertNull(o.getFeature(Location.class, null));
-        assertNull(o.getFeature(Revert.class, null));
     }
 
     @Test
     public void testUri() throws Exception {
         final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        assertEquals("https://test.cyberduck.ch.s3.amazonaws.com/key", aws.toURL(new S3Path(aws, "/test.cyberduck.ch/key", Path.FILE_TYPE)));
+        assertEquals("https://test.cyberduck.ch.s3.amazonaws.com/key",
+                aws.toURL(new S3Path("/test.cyberduck.ch/key", Path.FILE_TYPE)));
     }
 
     @Test
     public void testHttpUri() throws Exception {
         final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        assertEquals("http://test.cyberduck.ch.s3.amazonaws.com/key", aws.toHttpURL(new S3Path(aws, "/test.cyberduck.ch/key", Path.FILE_TYPE)));
+        assertEquals("http://test.cyberduck.ch.s3.amazonaws.com/key", aws.toHttpURL(new S3Path("/test.cyberduck.ch/key", Path.FILE_TYPE)));
     }
 }

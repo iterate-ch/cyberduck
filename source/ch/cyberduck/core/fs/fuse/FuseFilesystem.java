@@ -22,7 +22,6 @@ package ch.cyberduck.core.fs.fuse;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -246,12 +245,12 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
         public NSArray contentsOfDirectoryAtPath_error(final String path, long/*ObjCObjectByReference*/ error) {
             log.debug("contentsOfDirectoryAtPath_error:" + path);
             final Future<NSArray> future = background(new FilesystemBackgroundAction<NSArray>(session) {
-                final Path directory = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
+                final Path directory = new Path(path, Path.DIRECTORY_TYPE);
 
                 @Override
                 public NSArray call() throws BackgroundException {
                     final NSMutableArray contents = NSMutableArray.array();
-                    for(Path child : directory.list()) {
+                    for(Path child : session.list(directory)) {
                         contents.addObject(child.getName());
                     }
                     return contents;
@@ -281,14 +280,14 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<NSDictionary> future = background(new FilesystemBackgroundAction<NSDictionary>(session) {
                 @Override
                 public NSDictionary call() throws BackgroundException {
-                    final Path selected = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
+                    final Path selected = new Path(path, Path.DIRECTORY_TYPE);
                     if(selected.isRoot()) {
                         attributes.setObjectForKey(NSFileManager.NSFileTypeDirectory,
                                 NSFileManager.NSFileType);
                         return attributes;
                     }
                     final Path directory = selected.getParent();
-                    final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
+                    final Path file = session.list(directory).get(new NSObjectPathReference(NSString.stringWithString(path)));
                     attributes.setObjectForKey(file.attributes().isDirectory() ? NSFileManager.NSFileTypeDirectory : NSFileManager.NSFileTypeRegular,
                             NSFileManager.NSFileType);
                     attributes.setObjectForKey(NSNumber.numberWithFloat(file.attributes().getSize()),
@@ -322,12 +321,12 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
                 public Boolean call() throws BackgroundException {
-                    final Path selected = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
+                    final Path selected = new Path(path, Path.DIRECTORY_TYPE);
                     if(selected.isRoot()) {
                         return false;
                     }
                     final Path directory = selected.getParent();
-                    final Path file = directory.list().get(new NSObjectPathReference(NSString.stringWithString(path)));
+                    final Path file = session.list(directory).get(new NSObjectPathReference(NSString.stringWithString(path)));
                     final UnixPermission unix = session.getFeature(UnixPermission.class, new DisabledLoginController());
                     if(unix != null) {
                         final NSObject posixNumber = attributes.objectForKey(NSFileManager.NSFilePosixPermissions);
@@ -365,8 +364,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
                 public Boolean call() throws BackgroundException {
-                    final Path directory = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
-                    directory.mkdir();
+                    final Path directory = new Path(path, Path.DIRECTORY_TYPE);
+                    session.mkdir(directory);
                     return true;
                 }
             });
@@ -387,9 +386,9 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
                 public Boolean call() throws BackgroundException {
-                    final Path file = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
+                    final Path file = new Path(path, Path.DIRECTORY_TYPE);
                     if(session.isCreateFileSupported(file.getParent())) {
-                        file.touch();
+                        session.touch(file);
                         return true;
                     }
                     return false;
@@ -412,8 +411,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
                 public Boolean call() throws BackgroundException {
-                    final Path file = PathFactory.createPath(session, path, Path.DIRECTORY_TYPE);
-                    file.delete(new DisabledLoginController());
+                    final Path file = new Path(path, Path.DIRECTORY_TYPE);
+                    session.delete(file, new DisabledLoginController());
                     return true;
                 }
             });
@@ -434,8 +433,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
                 public Boolean call() throws BackgroundException {
-                    final Path file = PathFactory.createPath(session, path, Path.FILE_TYPE);
-                    file.delete(new DisabledLoginController());
+                    final Path file = new Path(path, Path.FILE_TYPE);
+                    session.delete(file, new DisabledLoginController());
                     return true;
                 }
             });
@@ -456,11 +455,11 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
                 public Boolean call() throws BackgroundException {
-                    final Path file = PathFactory.createPath(session, source, Path.FILE_TYPE);
+                    final Path file = new Path(source, Path.FILE_TYPE);
                     if(!session.isRenameSupported(file)) {
                         return false;
                     }
-                    file.rename(PathFactory.createPath(session, destination, Path.FILE_TYPE));
+                    session.rename(file, new Path(destination, Path.FILE_TYPE));
                     return true;
                 }
             });

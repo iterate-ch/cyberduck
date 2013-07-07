@@ -1,7 +1,5 @@
 package ch.cyberduck.core.text;
 
-import ch.cyberduck.core.text.NaturalOrderComparator;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

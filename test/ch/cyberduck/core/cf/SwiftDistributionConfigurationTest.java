@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -38,7 +37,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
+        final CFPath container = new CFPath("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD);
         assertNotNull(test);
@@ -66,7 +65,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final CFPath container = new CFPath(session, PathFactory.createPath(session, String.valueOf(Path.DELIMITER),
+        final CFPath container = new CFPath(new Path(String.valueOf(Path.DELIMITER),
                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE), "test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("region-a.geo-1");
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD);
@@ -94,7 +93,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         ));
         final CFSession session = new CFSession(host);
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final CFPath container = new CFPath(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
+        final CFPath container = new CFPath("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("region-a.geo-1");
         configuration.read(container, Distribution.DOWNLOAD);
     }

@@ -34,7 +34,7 @@ import java.util.Collections;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPListResponseReaderTest extends AbstractTestCase {
 
@@ -43,7 +43,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s, "/SunnyD", Path.DIRECTORY_TYPE);
+        FTPPath path = new FTPPath("/SunnyD", Path.DIRECTORY_TYPE);
         assertEquals("SunnyD", path.getName());
         assertEquals("/SunnyD", path.getAbsolute());
 
@@ -60,7 +60,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s, "/", Path.DIRECTORY_TYPE);
+        FTPPath path = new FTPPath("/", Path.DIRECTORY_TYPE);
         assertEquals("/", path.getName());
         assertEquals("/", path.getAbsolute());
 
@@ -79,7 +79,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s, "/www", Path.DIRECTORY_TYPE);
+        FTPPath path = new FTPPath("/www", Path.DIRECTORY_TYPE);
         assertEquals("www", path.getName());
         assertEquals("/www", path.getAbsolute());
 
@@ -96,7 +96,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     public void testParseHardlinkCountBadFormat() {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
 
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/store/public/brain", Path.DIRECTORY_TYPE);
 
         final AttributedList<Path> list = new AttributedList<Path>();
@@ -116,7 +116,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     @Test
     public void testParseAbsolutePaths() {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
-        FTPPath path = new FTPPath(s,
+        FTPPath path = new FTPPath(
                 "/data/FTP_pub", Path.DIRECTORY_TYPE);
 
         final AttributedList<Path> children = new AttributedList<Path>();

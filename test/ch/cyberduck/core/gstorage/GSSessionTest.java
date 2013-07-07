@@ -8,10 +8,15 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.AccessControlList;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
+import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.junit.Test;
 
@@ -60,6 +65,11 @@ public class GSSessionTest extends AbstractTestCase {
 
     @Test
     public void testFeatures() {
+        assertNotNull(new GSSession(new Host("t")).getFeature(AccessControlList.class, null));
+        assertNotNull(new GSSession(new Host("t")).getFeature(DistributionConfiguration.class, null));
+        assertNotNull(new GSSession(new Host("t")).getFeature(IdentityConfiguration.class, null));
+        assertNotNull(new GSSession(new Host("t")).getFeature(Logging.class, null));
+        assertNotNull(new GSSession(new Host("t")).getFeature(Headers.class, null));
         assertNull(new GSSession(new Host("t")).getFeature(Lifecycle.class, null));
         assertNull(new GSSession(new Host("t")).getFeature(Versioning.class, null));
     }

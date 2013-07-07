@@ -39,4 +39,8 @@ public class NullSession extends FTPSession {
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         return null;
     }
+
+    public AttributedList<Path> list(final Path file) {
+        return AttributedList.emptyList();
+    }
 }

@@ -19,22 +19,20 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CFPathTest extends AbstractTestCase {
 
     @Test
     public void testCreateRelative() throws Exception {
-        final CFPath path = new CFPath(new CFSession(new Host(Protocol.SWIFT, "h")), ".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final CFPath path = new CFPath(".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         assertEquals("/.CDN_ACCESS_LOGS", path.getAbsolute());
         assertEquals(".CDN_ACCESS_LOGS", path.getName());
         assertEquals(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE, path.attributes().getType());
@@ -46,7 +44,7 @@ public class CFPathTest extends AbstractTestCase {
 
     @Test
     public void testCreateAbsolute() throws Exception {
-        final CFPath path = new CFPath(new CFSession(new Host(Protocol.SWIFT, "h")), "/.CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final CFPath path = new CFPath("/.CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         assertEquals("/.CDN_ACCESS_LOGS", path.getAbsolute());
         assertEquals(".CDN_ACCESS_LOGS", path.getName());
         assertEquals(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE, path.attributes().getType());

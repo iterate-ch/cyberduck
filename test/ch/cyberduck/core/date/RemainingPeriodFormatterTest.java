@@ -1,7 +1,5 @@
 package ch.cyberduck.core.date;
 
-import ch.cyberduck.core.AbstractTestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

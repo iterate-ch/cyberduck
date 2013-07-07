@@ -20,25 +20,23 @@ package ch.cyberduck.core.cloud;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathRelativizer;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.local.Local;
 
 /**
  * @version $Id$
  */
-public abstract class CloudPath extends HttpPath {
+public class CloudPath extends Path {
 
-    public <T> CloudPath(final Session session, T dict) {
-        super(session, dict);
+    public <T> CloudPath(T dict) {
+        super(dict);
     }
 
     protected CloudPath(Path parent, String name, int type) {
         super(parent, name, type);
     }
 
-    protected CloudPath(Session session, String path, int type) {
-        super(session, path, type);
+    protected CloudPath(String path, int type) {
+        super(path, type);
     }
 
     protected CloudPath(Path parent, final Local local) {

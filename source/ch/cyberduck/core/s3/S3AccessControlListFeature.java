@@ -95,7 +95,7 @@ public class S3AccessControlListFeature implements AccessControlList {
                 }
                 if(file.attributes().isDirectory()) {
                     if(recursive) {
-                        for(Path child : file.list()) {
+                        for(Path child : session.list(file)) {
                             if(!session.isConnected()) {
                                 throw new ConnectionCanceledException();
                             }

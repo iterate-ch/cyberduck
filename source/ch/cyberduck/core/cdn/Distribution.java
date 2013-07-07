@@ -430,7 +430,7 @@ public class Distribution {
      * @param file File in origin container
      * @return Origin URL of specific file.
      */
-    public String getOrigin(Path file) {
+    public String getOrigin(final Path file) {
         StringBuilder url = new StringBuilder().append(String.format("%s://%s", this.getMethod().getScheme(), this.getOrigin()));
         if(!file.isContainer()) {
             url.append(Path.DELIMITER).append(URIEncoder.encode(file.getKey()));

@@ -14,7 +14,6 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPPath;
-import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
 
@@ -31,7 +30,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     public void testGetMethods() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         assertEquals(Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING),
-                new CloudFrontDistributionConfiguration(session).getMethods(new SFTPPath(new SFTPSession(new Host(Protocol.SFTP, "h")), "/bbb", Path.VOLUME_TYPE)));
+                new CloudFrontDistributionConfiguration(session).getMethods(new SFTPPath("/bbb", Path.VOLUME_TYPE)));
     }
 
     @Test
@@ -49,7 +48,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session);
         assertEquals("bbb.s3.amazonaws.com",
-                configuration.getOrigin(new S3Path(session, "/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD));
+                configuration.getOrigin(new S3Path("/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD));
     }
 
     @Test
@@ -62,7 +61,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session);
-        final S3Path container = new S3Path(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
+        final S3Path container = new S3Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD);
         assertEquals("E2N9XG26504TZI", distribution.getId());
     }
@@ -72,7 +71,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
         final S3Session session = new S3Session(host);
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session);
-        final S3Path container = new S3Path(session, "test.cyberduck.ch", Path.VOLUME_TYPE);
+        final S3Path container = new S3Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         configuration.read(container, Distribution.DOWNLOAD);
     }
 }

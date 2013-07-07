@@ -301,7 +301,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             }
             if(file.attributes().isDirectory()) {
                 if(recursive) {
-                    keys.addAll(this.getInvalidationKeys(file.list(), recursive));
+                    keys.addAll(this.getInvalidationKeys(session.list(file), recursive));
                 }
             }
         }

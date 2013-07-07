@@ -17,15 +17,10 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -38,9 +33,15 @@ import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.CountingInputStream;
+import org.apache.commons.io.output.CountingOutputStream;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ProtocolCommandListener;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClientConfig;
+import org.apache.commons.net.ftp.FTPCommand;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
@@ -48,6 +49,9 @@ import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -306,7 +310,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
         }
-        return new FTPPath(this, directory,
+        return new FTPPath(directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 
@@ -367,6 +371,344 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     public void setUtimeSupported(boolean utimeSupported) {
         this.utimeSupported = utimeSupported;
+    }
+
+    protected abstract static class DataConnectionAction<T> {
+        public abstract T run() throws IOException;
+    }
+
+    /**
+     * @param action Action that needs to open a data connection
+     * @return True if action was successful
+     */
+    protected <T> T data(final Path file, final DataConnectionAction<T> action)
+            throws IOException, BackgroundException {
+        try {
+            // Make sure to always configure data mode because connect event sets defaults.
+            if(this.getConnectMode().equals(FTPConnectMode.PASV)) {
+                this.getClient().enterLocalPassiveMode();
+            }
+            else if(this.getConnectMode().equals(FTPConnectMode.PORT)) {
+                this.getClient().enterLocalActiveMode();
+            }
+            return action.run();
+        }
+        catch(SocketTimeoutException failure) {
+            log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
+            // Fallback handling
+            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+                this.interrupt();
+                this.open(new DefaultHostKeyController());
+                this.login(new DisabledPasswordStore(), new DisabledLoginController());
+                try {
+                    return this.fallback(action);
+                }
+                catch(IOException e) {
+                    this.interrupt();
+                    log.warn("Connect mode fallback failed:" + e.getMessage());
+                    // Throw original error message
+                }
+            }
+            throw new DefaultIOExceptionMappingService().map(failure, file);
+        }
+    }
+
+    /**
+     * @param action Action that needs to open a data connection
+     * @return True if action was successful
+     */
+    protected <T> T fallback(final DataConnectionAction<T> action) throws ConnectionCanceledException, IOException {
+        // Fallback to other connect mode
+        if(this.getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
+            log.warn("Fallback to active data connection");
+            this.getClient().enterLocalActiveMode();
+        }
+        else if(this.getClient().getDataConnectionMode() == FTPClient.ACTIVE_LOCAL_DATA_CONNECTION_MODE) {
+            log.warn("Fallback to passive data connection");
+            this.getClient().enterLocalPassiveMode();
+        }
+        return action.run();
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path file) throws BackgroundException {
+        try {
+            this.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                    file.getName()));
+
+            final AttributedList<Path> children = new AttributedList<Path>();
+
+            // Cached file parser determined from SYST response with the timezone set from the bookmark
+            final FTPFileEntryParser parser = this.getParser();
+            boolean success = false;
+            try {
+                if(this.isStatListSupportedEnabled()) {
+                    int response = this.getClient().stat(file.getAbsolute());
+                    if(FTPReply.isPositiveCompletion(response)) {
+                        final String[] reply = this.getClient().getReplyStrings();
+                        final List<String> result = new ArrayList<String>(reply.length);
+                        for(final String line : reply) {
+                            //Some servers include the status code for every line.
+                            if(line.startsWith(String.valueOf(response))) {
+                                try {
+                                    result.add(line.substring(line.indexOf(response) + line.length() + 1).trim());
+                                }
+                                catch(IndexOutOfBoundsException e) {
+                                    log.error(String.format("Failed parsing line %s", line), e);
+                                }
+                            }
+                            else {
+                                result.add(StringUtils.stripStart(line, null));
+                            }
+                        }
+                        success = new FTPListResponseReader().read(children, this, file, parser, result);
+                    }
+                    else {
+                        this.setStatListSupportedEnabled(false);
+                    }
+                }
+            }
+            catch(IOException e) {
+                log.warn("Command STAT failed with I/O error:" + e.getMessage());
+                this.interrupt();
+                this.open(new DefaultHostKeyController());
+                this.login(new DisabledPasswordStore(), new DisabledLoginController());
+            }
+            if(!success || children.isEmpty()) {
+                success = this.data(file, new DataConnectionAction<Boolean>() {
+                    @Override
+                    public Boolean run() throws IOException {
+                        if(!getClient().changeWorkingDirectory(file.getAbsolute())) {
+                            throw new FTPException(getClient().getReplyCode(),
+                                    getClient().getReplyString());
+                        }
+                        if(!getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
+                            // Set transfer type for traditional data socket file listings. The data transfer is over the
+                            // data connection in type ASCII or type EBCDIC.
+                            throw new FTPException(getClient().getReplyCode(),
+                                    getClient().getReplyString());
+                        }
+                        boolean success = false;
+                        // STAT listing failed or empty
+                        if(isMlsdListSupportedEnabled()
+                                // Note that there is no distinct FEAT output for MLSD.
+                                // The presence of the MLST feature indicates that both MLST and MLSD are supported.
+                                && getClient().isFeatureSupported(FTPCommand.MLST)) {
+                            success = new FTPMlsdListResponseReader().read(children, FTPSession.this, file,
+                                    null, getClient().list(FTPCommand.MLSD));
+                            if(!success) {
+                                setMlsdListSupportedEnabled(false);
+                            }
+                        }
+                        if(!success) {
+                            // MLSD listing failed or not enabled
+                            if(isExtendedListEnabled()) {
+                                try {
+                                    success = new FTPListResponseReader().read(children, FTPSession.this, file,
+                                            parser, getClient().list(FTPCommand.LIST, "-a"));
+                                }
+                                catch(FTPException e) {
+                                    setExtendedListEnabled(false);
+                                }
+                            }
+                            if(!success) {
+                                // LIST -a listing failed or not enabled
+                                success = new FTPListResponseReader().read(children, FTPSession.this, file,
+                                        parser, getClient().list(FTPCommand.LIST));
+                            }
+                        }
+                        return success;
+                    }
+                });
+            }
+            for(Path child : children) {
+                if(child.attributes().isSymbolicLink()) {
+                    if(this.getClient().changeWorkingDirectory(child.getAbsolute())) {
+                        child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                    }
+                    else {
+                        // Try if CWD to symbolic link target succeeds
+                        if(this.getClient().changeWorkingDirectory(child.getSymlinkTarget().getAbsolute())) {
+                            // Workdir change succeeded
+                            child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                        }
+                        else {
+                            child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                        }
+                    }
+                }
+            }
+            if(!success) {
+                // LIST listing failed
+                log.error("No compatible file listing method found");
+            }
+            return children;
+        }
+        catch(IOException e) {
+            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
+            throw new FTPExceptionMappingService().map("Listing directory failed", e, file);
+        }
+    }
+
+    @Override
+    public void mkdir(final Path file) throws BackgroundException {
+        try {
+            if(!this.getClient().makeDirectory(file.getAbsolute())) {
+                throw new FTPException(this.getClient().getReplyCode(),
+                        this.getClient().getReplyString());
+            }
+        }
+        catch(IOException e) {
+            throw new FTPExceptionMappingService().map("Cannot create folder {0}", e, file);
+        }
+    }
+
+    @Override
+    public void rename(final Path file, final Path renamed) throws BackgroundException {
+        try {
+            this.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+                    file.getName(), renamed));
+
+            if(!this.getClient().rename(file.getAbsolute(), renamed.getAbsolute())) {
+                throw new FTPException(this.getClient().getReplyCode(),
+                        this.getClient().getReplyString());
+            }
+        }
+        catch(IOException e) {
+            throw new FTPExceptionMappingService().map("Cannot rename {0}", e, file);
+        }
+    }
+
+    @Override
+    public void delete(final Path file, final LoginController prompt) throws BackgroundException {
+        try {
+            this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    file.getName()));
+
+            if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
+                if(!this.getClient().deleteFile(file.getAbsolute())) {
+                    throw new FTPException(this.getClient().getReplyCode(),
+                            this.getClient().getReplyString());
+                }
+            }
+            else if(file.attributes().isDirectory()) {
+                for(Path child : this.list(file)) {
+                    if(!this.isConnected()) {
+                        throw new ConnectionCanceledException();
+                    }
+                    this.delete(child, prompt);
+                }
+                this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                        file.getName()));
+
+                if(!this.getClient().removeDirectory(file.getAbsolute())) {
+                    throw new FTPException(this.getClient().getReplyCode(),
+                            this.getClient().getReplyString());
+                }
+            }
+        }
+        catch(IOException e) {
+            throw new FTPExceptionMappingService().map("Cannot delete {0}", e, file);
+
+        }
+    }
+
+    @Override
+    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+        try {
+            if(!this.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
+                throw new FTPException(this.getClient().getReplyCode(),
+                        this.getClient().getReplyString());
+            }
+            if(status.isResume()) {
+                // Where a server process supports RESTart in STREAM mode
+                if(!this.getClient().isFeatureSupported("REST STREAM")) {
+                    status.setResume(false);
+                }
+                else {
+                    this.getClient().setRestartOffset(status.getCurrent());
+                }
+            }
+            final InputStream in = this.data(file, new DataConnectionAction<InputStream>() {
+                @Override
+                public InputStream run() throws IOException {
+                    return getClient().retrieveFileStream(file.getAbsolute());
+                }
+            });
+            return new CountingInputStream(in) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        if(this.getByteCount() == status.getLength()) {
+                            // Read 226 status
+                            if(!getClient().completePendingCommand()) {
+                                throw new FTPException(getClient().getReplyCode(),
+                                        getClient().getReplyString());
+                            }
+                        }
+                        else {
+                            // Interrupted transfer
+                            if(!getClient().abort()) {
+                                log.error("Error closing data socket:" + getClient().getReplyString());
+                            }
+                        }
+                    }
+                }
+            };
+        }
+        catch(IOException e) {
+            throw new FTPExceptionMappingService().map("Download failed", e, file);
+        }
+    }
+
+    @Override
+    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+        try {
+            if(!this.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+                throw new FTPException(this.getClient().getReplyCode(),
+                        this.getClient().getReplyString());
+            }
+            final OutputStream out = this.data(file, new DataConnectionAction<OutputStream>() {
+                @Override
+                public OutputStream run() throws IOException {
+                    if(status.isResume()) {
+                        return getClient().appendFileStream(file.getAbsolute());
+                    }
+                    else {
+                        return getClient().storeFileStream(file.getAbsolute());
+                    }
+                }
+            });
+            return new CountingOutputStream(out) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        if(this.getByteCount() == status.getLength()) {
+                            // Read 226 status
+                            if(!getClient().completePendingCommand()) {
+                                throw new FTPException(getClient().getReplyCode(),
+                                        getClient().getReplyString());
+                            }
+                        }
+                        else {
+                            // Interrupted transfer
+                            if(!getClient().abort()) {
+                                log.error("Error closing data socket:" + getClient().getReplyString());
+                            }
+                        }
+                    }
+                }
+            };
+        }
+        catch(IOException e) {
+            throw new FTPExceptionMappingService().map("Upload failed", e, file);
+        }
     }
 
     @Override
