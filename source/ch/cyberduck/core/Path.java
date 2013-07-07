@@ -109,7 +109,7 @@ public class Path extends AbstractPath implements Serializable {
      * @param type   File type
      */
     public Path(final Path parent, final String name, final int type) {
-        this.setPath(parent, name);
+        this._setPath(parent, name);
         this.attributes = new PathAttributes(type);
     }
 
@@ -133,14 +133,14 @@ public class Path extends AbstractPath implements Serializable {
      * @param file   The associated local file
      */
     public Path(final Path parent, final Local file) {
-        this.setPath(parent, file.getName());
+        this._setPath(parent, file.getName());
         this.setLocal(file);
         this.attributes = new PathAttributes(local.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
     }
 
     private void setPath(final String absolute) {
         if(absolute.equals(String.valueOf(Path.DELIMITER))) {
-            this.setPath((Path) null, Path.getName(PathNormalizer.normalize(absolute, true)));
+            this._setPath((Path) null, Path.getName(PathNormalizer.normalize(absolute, true)));
         }
         else {
             final Path parent = new Path(Path.getParent(PathNormalizer.normalize(absolute, true), Path.DELIMITER),
@@ -148,7 +148,7 @@ public class Path extends AbstractPath implements Serializable {
             if(parent.isRoot()) {
                 parent.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
             }
-            this.setPath(parent,
+            this._setPath(parent,
                     Path.getName(PathNormalizer.normalize(absolute, true)));
         }
     }
@@ -158,6 +158,10 @@ public class Path extends AbstractPath implements Serializable {
      * @param name   The filename
      */
     public void setPath(final Path parent, final String name) {
+        this._setPath(parent, name);
+    }
+
+    private void _setPath(final Path parent, final String name) {
         this.parent = parent;
         if(null == parent) {
             this.path = name;
