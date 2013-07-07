@@ -25,8 +25,8 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
-import ch.cyberduck.core.features.Revert;
 import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Application;
@@ -445,7 +445,7 @@ public class BrowserController extends WindowController
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     @Override
                     public void run() throws BackgroundException {
-                        Transfer transfer = new DownloadTransfer(downloads);
+                        Transfer transfer = new DownloadTransfer(session, downloads);
                         TransferOptions options = new TransferOptions();
                         transfer.start(new TransferPrompt() {
                             @Override
@@ -2250,7 +2250,8 @@ public class BrowserController extends WindowController
         this.checkOverwrite(selected.values(), new DefaultMainAction() {
             @Override
             public void run() {
-                transfer(new CopyTransfer(selected), new ArrayList<Path>(selected.values()), browser);
+                transfer(new CopyTransfer(session, SessionFactory.createSession(session.getHost()), selected),
+                        new ArrayList<Path>(selected.values()), browser);
             }
         });
     }
@@ -2274,7 +2275,7 @@ public class BrowserController extends WindowController
                 final ArrayList<Path> changed = new ArrayList<Path>();
                 changed.addAll(selected.keySet());
                 changed.addAll(selected.values());
-                transfer(new MoveTransfer(selected), changed, true);
+                transfer(new MoveTransfer(session, selected), changed, true);
             }
         });
     }
@@ -2442,7 +2443,7 @@ public class BrowserController extends WindowController
 
     private void deletePathsImpl(final List<Path> files) {
         this.background(new WorkerBackgroundAction<Boolean>(this,
-                new DeleteWorker(LoginControllerFactory.get(BrowserController.this), files) {
+                new DeleteWorker(session, LoginControllerFactory.get(BrowserController.this), files) {
                     @Override
                     public void cleanup(final Boolean result) {
                         if(result) {
@@ -2460,7 +2461,7 @@ public class BrowserController extends WindowController
         this.background(new BrowserBackgroundAction(this) {
             @Override
             public void run() throws BackgroundException {
-                session.getFeature(Revert.class, LoginControllerFactory.get(BrowserController.this)).revert(selected);
+                session.getFeature(Versioning.class, LoginControllerFactory.get(BrowserController.this)).revert(selected);
             }
 
             @Override
@@ -2674,9 +2675,9 @@ public class BrowserController extends WindowController
                 else {
                     selected = this.workdir();
                 }
-                Path root = PathFactory.createPath(getTransferSession(true), selected.getAsDictionary());
-                root.setLocal(LocalFactory.createLocal(sheet.filenames().lastObject().toString()));
-                this.transfer(new SyncTransfer(root));
+                final Session session = getTransferSession(true);
+                selected.setLocal(LocalFactory.createLocal(sheet.filenames().lastObject().toString()));
+                this.transfer(new SyncTransfer(session, selected));
             }
         }
     }
@@ -2701,13 +2702,10 @@ public class BrowserController extends WindowController
      */
     public void download(final List<Path> downloads, final Local downloadfolder) {
         final Session session = this.getTransferSession();
-        final List<Path> roots = new Collection<Path>();
         for(Path selected : downloads) {
-            Path path = PathFactory.createPath(session, selected.getAsDictionary());
-            path.setLocal(LocalFactory.createLocal(downloadfolder, path.getName()));
-            roots.add(path);
+            selected.setLocal(LocalFactory.createLocal(downloadfolder, selected.getName()));
         }
-        final Transfer transfer = new DownloadTransfer(roots);
+        final Transfer transfer = new DownloadTransfer(session, downloads);
         this.transfer(transfer, Collections.<Path>emptyList());
     }
 
@@ -2764,9 +2762,9 @@ public class BrowserController extends WindowController
             final List<Path> roots = new Collection<Path>();
             NSObject next;
             while((next = iterator.nextObject()) != null) {
-                roots.add(PathFactory.createPath(session, destination, LocalFactory.createLocal(next.toString())));
+                roots.add(new Path(destination, LocalFactory.createLocal(next.toString())));
             }
-            transfer(new UploadTransfer(roots));
+            transfer(new UploadTransfer(session, roots));
         }
         lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
         uploadPanel = null;
@@ -2797,11 +2795,7 @@ public class BrowserController extends WindowController
     }
 
     protected void transfer(final Transfer transfer) {
-        final List<Path> selected = new ArrayList<Path>();
-        for(Path s : transfer.getRoots()) {
-            selected.add(PathFactory.createPath(session, s.getAsDictionary()));
-        }
-        this.transfer(transfer, selected);
+        this.transfer(transfer, transfer.getRoots());
     }
 
     /**
@@ -3112,11 +3106,8 @@ public class BrowserController extends WindowController
                 }
             }
             for(final Path next : pasteboard) {
-                Path current = PathFactory.createPath(session,
-                        next.getAbsolute(), next.attributes().getType());
-                Path renamed = PathFactory.createPath(session,
-                        parent, current.getName(), next.attributes().getType());
-                files.put(current, renamed);
+                Path renamed = new Path(parent, next.getName(), next.attributes().getType());
+                files.put(next, renamed);
             }
             pasteboard.clear();
             if(pasteboard.isCut()) {
@@ -3144,10 +3135,10 @@ public class BrowserController extends WindowController
                 final Session session = this.getTransferSession();
                 final List<Path> roots = new Collection<Path>();
                 for(int i = 0; i < elements.count().intValue(); i++) {
-                    Path p = PathFactory.createPath(session, workdir, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                    Path p = new Path(workdir, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                     roots.add(p);
                 }
-                final Transfer t = new UploadTransfer(roots);
+                final Transfer t = new UploadTransfer(session, roots);
                 if(t.numberOfRoots() > 0) {
                     this.transfer(t);
                     return true;
@@ -3437,6 +3428,7 @@ public class BrowserController extends WindowController
                                     : IconCacheFactory.<NSImage>get().iconNamed("unlocked.tiff"));
                             securityLabel.setEnabled(session instanceof SSLSession);
                         }
+                        super.cleanup();
                     }
 
                     @Override
@@ -3622,6 +3614,7 @@ public class BrowserController extends WindowController
                 if(Preferences.instance().getBoolean("browser.disconnect.showBookmarks")) {
                     selectBookmarks();
                 }
+                super.cleanup();
             }
 
             @Override
@@ -3819,7 +3812,7 @@ public class BrowserController extends WindowController
             return false;
         }
         else if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
-            return this.isBrowser() && !isActivityRunning();
+            return this.isBrowser() && !this.isActivityRunning();
         }
         else if(action.equals(Foundation.selector("connectBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {
@@ -3923,7 +3916,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted() && this.getSelectionCount() == 1) {
-                return session.getFeature(Revert.class, LoginControllerFactory.get(this)) != null;
+                return session.getFeature(Versioning.class, LoginControllerFactory.get(this)) != null;
             }
             return false;
         }
@@ -4059,7 +4052,7 @@ public class BrowserController extends WindowController
             }
         }
         else if(identifier.equals(TOOLBAR_DISCONNECT)) {
-            if(isActivityRunning()) {
+            if(this.isActivityRunning()) {
                 item.setLabel(Locale.localizedString("Stop"));
                 item.setPaletteLabel(Locale.localizedString("Stop"));
                 item.setToolTip(Locale.localizedString("Cancel current operation in progress"));

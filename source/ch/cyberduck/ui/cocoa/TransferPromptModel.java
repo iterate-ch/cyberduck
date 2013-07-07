@@ -142,6 +142,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
                     @Override
                     public void cleanup() {
+                        super.cleanup();
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);
                             if(isLoadingListingInBackground.isEmpty()) {

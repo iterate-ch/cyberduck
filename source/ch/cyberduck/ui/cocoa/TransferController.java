@@ -23,6 +23,8 @@ import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
@@ -889,13 +891,13 @@ public final class TransferController extends WindowController implements NSTool
             if(log.isDebugEnabled()) {
                 log.debug("Paste download transfer from pasteboard");
             }
-            final List<Path> downloads = pasteboard.copy();
-            for(Path download : downloads) {
+            final Session session = SessionFactory.createSession(pasteboard.getSession().getHost());
+            for(Path download : pasteboard) {
                 download.setLocal(LocalFactory.createLocal(
                         pasteboard.getSession().getHost().getDownloadFolder(),
                         download.getName()));
             }
-            this.addTransfer(new DownloadTransfer(downloads), new AbstractBackgroundAction() {
+            this.addTransfer(new DownloadTransfer(session, pasteboard), new AbstractBackgroundAction() {
                 @Override
                 public void run() throws BackgroundException {
                     //

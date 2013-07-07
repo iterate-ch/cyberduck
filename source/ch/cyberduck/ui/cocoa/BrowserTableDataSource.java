@@ -133,7 +133,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     @Override
                     public void run() throws BackgroundException {
                         try {
-                            final AttributedList<Path> children = path.list();
+                            final AttributedList<Path> children = controller.getSession().list(path);
                             cache.put(path.getReference(), children);
                         }
                         catch(BackgroundException e) {
@@ -156,6 +156,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
                     @Override
                     public void cleanup() {
+                        super.cleanup();
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);
                             if(isLoadingListingInBackground.isEmpty()) {
@@ -163,7 +164,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                                 controller.reloadData(true, false);
                             }
                         }
-                        super.cleanup();
                     }
                 });
             }
@@ -181,7 +181,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(identifier.equals(FILENAME_COLUMN)) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
-                final Path renamed = PathFactory.createPath(controller.getSession(),
+                final Path renamed = new Path(
                         item.getParent(), value.toString(), item.attributes().getType());
                 controller.renamePath(item, renamed);
             }
@@ -329,11 +329,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final Session session = controller.getTransferSession();
                     final List<Path> roots = new Collection<Path>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
-                        Path p = PathFactory.createPath(session,
+                        Path p = new Path(
                                 destination, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                         roots.add(p);
                     }
-                    final Transfer t = new UploadTransfer(roots);
+                    final Transfer t = new UploadTransfer(session, roots);
                     if(t.numberOfRoots() > 0) {
                         controller.transfer(t);
                     }
@@ -350,10 +350,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()
                         || !pasteboard.getSession().equals(controller.getSession())) {
                     // Drag to browser windows with different session or explicit copy requested by user.
-                    final Session target = controller.getTransferSession(true);
                     final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard.copy()) {
-                        final Path copy = PathFactory.createPath(target,
+                    for(Path next : pasteboard) {
+                        final Path copy = new Path(
                                 destination, next.getName(), next.attributes().getType());
                         files.put(next, copy);
                     }
@@ -362,8 +361,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 else {
                     // The file should be renamed
                     final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard.copy(controller.getSession())) {
-                        Path renamed = PathFactory.createPath(controller.getSession(),
+                    for(Path next : pasteboard) {
+                        Path renamed = new Path(
                                 destination, next.getName(), next.attributes().getType());
                         files.put(next, renamed);
                     }
@@ -586,7 +585,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
             }
             else {
-                final DownloadTransfer transfer = new DownloadTransfer(pasteboard.copy(controller.getTransferSession()));
+                final DownloadTransfer transfer = new DownloadTransfer(controller.getTransferSession(),
+                        pasteboard);
                 controller.transfer(transfer, Collections.<Path>emptyList());
             }
             pasteboard.clear();

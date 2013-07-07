@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.LoginControllerFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
@@ -67,7 +66,7 @@ public class CreateSymlinkController extends FileController {
     protected void createSymlink(final Path selected, final String symlink, final boolean edit) {
         final BrowserController c = (BrowserController) parent;
         final Session<?> session = this.getSession();
-        final Path link = PathFactory.createPath(session, this.getWorkdir(), symlink, Path.FILE_TYPE);
+        final Path link = new Path(this.getWorkdir(), symlink, Path.FILE_TYPE);
         c.background(new BrowserBackgroundAction(c) {
             @Override
             public void run() throws BackgroundException {
@@ -83,6 +82,7 @@ public class CreateSymlinkController extends FileController {
 
             @Override
             public void cleanup() {
+                super.cleanup();
                 if(symlink.charAt(0) == '.') {
                     c.setShowHiddenFiles(true);
                 }

@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -123,10 +122,10 @@ public class GotoController extends AlertController {
         final BrowserController c = (BrowserController) parent;
         final Path dir;
         if(!filename.startsWith(String.valueOf(Path.DELIMITER))) {
-            dir = PathFactory.createPath(this.getSession(), workdir, filename, Path.DIRECTORY_TYPE);
+            dir = new Path(workdir, filename, Path.DIRECTORY_TYPE);
         }
         else {
-            dir = PathFactory.createPath(this.getSession(), filename, Path.DIRECTORY_TYPE);
+            dir = new Path(filename, Path.DIRECTORY_TYPE);
         }
         if(workdir.getParent().equals(dir)) {
             c.setWorkdir(dir, workdir);

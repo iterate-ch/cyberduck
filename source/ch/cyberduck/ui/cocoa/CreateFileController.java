@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -61,12 +60,12 @@ public class CreateFileController extends FileController {
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
         final BrowserController c = (BrowserController) parent;
         c.background(new BrowserBackgroundAction(c) {
-            final Path file = PathFactory.createPath(c.getSession(), workdir,
+            final Path file = new Path(workdir,
                     filename, Path.FILE_TYPE);
 
             @Override
             public void run() throws BackgroundException {
-                if(file.touch()) {
+                if(c.getSession().touch(file)) {
                     if(edit) {
                         Editor editor = EditorFactory.instance().create(c, c.getSession(), file);
                         editor.open();
@@ -82,6 +81,7 @@ public class CreateFileController extends FileController {
 
             @Override
             public void cleanup() {
+                super.cleanup();
                 if(filename.charAt(0) == '.') {
                     c.setShowHiddenFiles(true);
                 }

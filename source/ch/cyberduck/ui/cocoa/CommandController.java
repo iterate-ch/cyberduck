@@ -118,6 +118,7 @@ public class CommandController extends SheetController implements TranscriptList
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     progress.stopAnimation(null);
                     sender.setEnabled(true);
                     if(close) {

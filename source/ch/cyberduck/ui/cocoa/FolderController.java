@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -56,12 +55,12 @@ public class FolderController extends FileController {
     protected void createFolder(final Path workdir, final String filename) {
         final BrowserController c = (BrowserController) parent;
         c.background(new BrowserBackgroundAction(c) {
-            final Path folder = PathFactory.createPath(c.getSession(), workdir,
+            final Path folder = new Path(workdir,
                     filename, Path.DIRECTORY_TYPE);
 
             @Override
             public void run() throws BackgroundException {
-                folder.mkdir();
+                c.getSession().mkdir(folder);
             }
 
             @Override
@@ -72,6 +71,7 @@ public class FolderController extends FileController {
 
             @Override
             public void cleanup() {
+                super.cleanup();
                 if(filename.charAt(0) == '.') {
                     c.setShowHiddenFiles(true);
                 }

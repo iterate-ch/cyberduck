@@ -23,6 +23,7 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.transfer.NullTransferFilter;
 import ch.cyberduck.core.transfer.Transfer;
@@ -212,11 +213,11 @@ public class TransferTableDataSource extends ListDataSource {
             if(pasteboard.isEmpty()) {
                 continue;
             }
-            final List<Path> downloads = pasteboard.copy();
-            for(Path download : downloads) {
-                download.setLocal(LocalFactory.createLocal(pasteboard.getSession().getHost().getDownloadFolder(), download.getName()));
+            final Session session = SessionFactory.createSession(pasteboard.getSession().getHost());
+            for(Path download : pasteboard) {
+                download.setLocal(LocalFactory.createLocal(session.getHost().getDownloadFolder(), download.getName()));
             }
-            TransferCollection.defaultCollection().add(row.intValue(), new DownloadTransfer(downloads));
+            TransferCollection.defaultCollection().add(row.intValue(), new DownloadTransfer(session, pasteboard));
             view.reloadData();
             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             view.scrollRowToVisible(row);

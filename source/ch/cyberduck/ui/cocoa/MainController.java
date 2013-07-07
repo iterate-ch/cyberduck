@@ -154,9 +154,9 @@ public class MainController extends BundleController implements NSApplication.De
         else {
             final Host h = Host.parse(url);
             if(Path.FILE_TYPE == detector.detect(h.getDefaultPath())) {
-                final Session s = SessionFactory.createSession(h);
-                final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.FILE_TYPE);
-                TransferController.instance().startTransfer(new DownloadTransfer(p));
+                final Session session = SessionFactory.createSession(h);
+                TransferController.instance().startTransfer(new DownloadTransfer(session,
+                        new Path(h.getDefaultPath(), Path.FILE_TYPE)));
             }
             else {
                 for(BrowserController controller : MainController.getBrowsers()) {
@@ -524,7 +524,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void showActivityWindowClicked(final ID sender) {
-        ActivityController c = ActivityController.instance();
+        ActivityController c = ActivityControllerFactory.instance();
         if(c.isVisible()) {
             c.window().close();
         }
@@ -722,7 +722,7 @@ public class MainController extends BundleController implements NSApplication.De
                             else {
                                 // No mounted browser
                                 if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
-                                    upload(bookmark, files, PathFactory.createPath(SessionFactory.createSession(bookmark),
+                                    upload(bookmark, files, new Path(
                                             bookmark.getDefaultPath(), Path.DIRECTORY_TYPE));
                                 }
                                 else {
@@ -749,10 +749,10 @@ public class MainController extends BundleController implements NSApplication.De
         final Session session = SessionFactory.createSession(bookmark);
         List<Path> roots = new ArrayList<Path>();
         for(Local file : files) {
-            roots.add(PathFactory.createPath(session, destination, file));
+            roots.add(new Path(destination, file));
         }
         final TransferController t = TransferController.instance();
-        t.startTransfer(new UploadTransfer(roots));
+        t.startTransfer(new UploadTransfer(session, roots));
     }
 
     /**
@@ -809,7 +809,9 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             }
         }
-        log.debug("Mounting default bookmark " + bookmark);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Mounting default bookmark %s", bookmark));
+        }
         controller.mount(bookmark);
     }
 

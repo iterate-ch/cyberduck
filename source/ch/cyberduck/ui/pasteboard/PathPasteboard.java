@@ -21,18 +21,12 @@ package ch.cyberduck.ui.pasteboard;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @version $Id$
  */
 public final class PathPasteboard extends Collection<Path> implements Pasteboard<Path> {
-
     private static final long serialVersionUID = -6390582952938739270L;
 
     private boolean cut;
@@ -61,26 +55,5 @@ public final class PathPasteboard extends Collection<Path> implements Pasteboard
 
     public boolean isCopy() {
         return !cut;
-    }
-
-    /**
-     * @return Content of pasteboard with a new session
-     */
-    public List<Path> copy() {
-        return this.copy(SessionFactory.createSession(session.getHost()));
-    }
-
-    /**
-     * Get content of pasteboard with a given session
-     *
-     * @param session Session to use
-     * @return Content of pasteboard
-     */
-    public List<Path> copy(final Session session) {
-        List<Path> content = new ArrayList<Path>();
-        for(Path path : this) {
-            content.add(PathFactory.createPath(session, path.getAsDictionary()));
-        }
-        return content;
     }
 }

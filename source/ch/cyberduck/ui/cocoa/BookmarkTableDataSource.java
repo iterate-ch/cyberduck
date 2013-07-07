@@ -423,12 +423,11 @@ public class BookmarkTableDataSource extends ListDataSource {
                         session = SessionFactory.createSession(h);
                     }
                     // Upload to the remote host this bookmark points to
-                    roots.add(PathFactory.createPath(session,
-                            PathFactory.createPath(session, h.getDefaultPath(), Path.DIRECTORY_TYPE), LocalFactory.createLocal(filename)));
+                    roots.add(new Path(new Path(h.getDefaultPath(), Path.DIRECTORY_TYPE), LocalFactory.createLocal(filename)));
                 }
             }
             if(!roots.isEmpty()) {
-                final Transfer t = new UploadTransfer(roots);
+                final Transfer t = new UploadTransfer(session, roots);
                 // If anything has been added to the queue, then process the queue
                 if(t.numberOfRoots() > 0) {
                     TransferController.instance().startTransfer(t);

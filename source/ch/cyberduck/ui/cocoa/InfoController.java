@@ -357,7 +357,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void storageClassPopupClicked(final NSPopUpButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
                     final S3Session session = (S3Session) controller.getSession();
@@ -370,6 +370,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     toggleS3Settings(true);
                     initS3();
                 }
@@ -395,7 +396,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void encryptionButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
                     final S3Session session = (S3Session) controller.getSession();
@@ -409,8 +410,8 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     toggleS3Settings(true);
-                    initMetadata();
                     initS3();
                 }
 
@@ -434,7 +435,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketLoggingButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
                     controller.getSession().getFeature(Logging.class, prompt).setConfiguration(getSelected().getContainer(),
@@ -446,6 +447,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     toggleS3Settings(true);
                     initS3();
                 }
@@ -486,7 +488,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -504,6 +506,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     toggleS3Settings(true);
                     initS3();
                 }
@@ -531,7 +534,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
                     controller.getSession().getFeature(Versioning.class, prompt).setConfiguration(getSelected().getContainer(), prompt,
@@ -543,6 +546,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     toggleS3Settings(true);
                     initS3();
                 }
@@ -561,7 +565,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketMfaButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
                     controller.getSession().getFeature(Versioning.class, prompt).setConfiguration(getSelected().getContainer(),
@@ -574,6 +578,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     toggleS3Settings(true);
                     initS3();
                 }
@@ -652,7 +657,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void lifecyclePopupClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
                     controller.getSession().getFeature(Lifecycle.class, prompt).setConfiguration(getSelected().getContainer(),
@@ -664,6 +669,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     toggleS3Settings(true);
                     initS3();
                 }
@@ -951,10 +957,10 @@ public class InfoController extends ToolbarWindowController {
 
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Acl>(controller,
+            this.background(new WorkerBackgroundAction<Acl>(controller,
                     new WriteAclWorker(controller.getSession().getFeature(AccessControlList.class, prompt), files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
                         @Override
-                        public void cleanup(Acl permission) {
+                        public void cleanup(final Acl permission) {
                             toggleAclSettings(true);
                             initAcl();
                         }
@@ -1273,16 +1279,11 @@ public class InfoController extends ToolbarWindowController {
             for(Header header : metadata) {
                 update.put(header.getName(), header.getValue());
             }
-            controller.background(new WorkerBackgroundAction<Map<String, String>>(controller,
+            this.background(new WorkerBackgroundAction<Map<String, String>>(controller,
                     new WriteMetadataWorker(controller.getSession().getFeature(Headers.class, prompt), files, update) {
                         @Override
                         public void cleanup(Map<String, String> metadata) {
-                            try {
-                                initMetadata();
-                            }
-                            finally {
-                                toggleMetadataSettings(true);
-                            }
+                            toggleMetadataSettings(true);
                         }
                     })
             );
@@ -1426,7 +1427,6 @@ public class InfoController extends ToolbarWindowController {
             this.initDistribution();
         }
         if(identifier.equals(TOOLBAR_ITEM_S3)) {
-            this.initMetadata();
             this.initS3();
         }
         if(identifier.equals(TOOLBAR_ITEM_METADATA)) {
@@ -1768,21 +1768,17 @@ public class InfoController extends ToolbarWindowController {
         permissionsField.setStringValue(Locale.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
-            controller.background(new WorkerBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
+            this.background(new WorkerBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
                 @Override
                 public void cleanup(List<Permission> permissions) {
-                    try {
-                        initPermissions(permissions);
-                    }
-                    finally {
-                        togglePermissionSettings(true);
-                    }
+                    setPermissions(permissions);
+                    togglePermissionSettings(true);
                 }
             }));
         }
     }
 
-    private void initPermissions(List<Permission> permissions) {
+    private void setPermissions(List<Permission> permissions) {
         boolean overwrite = true;
         for(Permission permission : permissions) {
             updateCheckbox(ownerr, overwrite, permission.getOwnerPermissions()[Permission.READ]);
@@ -1885,7 +1881,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initSize() {
         if(this.toggleSizeSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Long>(controller, new ReadSizeWorker(files) {
+            this.background(new WorkerBackgroundAction<Long>(controller, new ReadSizeWorker(files) {
                 @Override
                 public void cleanup(Long size) {
                     try {
@@ -1912,7 +1908,7 @@ public class InfoController extends ToolbarWindowController {
         else {
             checksumField.setStringValue(Locale.localizedString("Unknown"));
             if(this.toggleSizeSettings(false)) {
-                controller.background(new WorkerBackgroundAction<List<String>>(controller, new ChecksumWorker(files) {
+                this.background(new WorkerBackgroundAction<List<String>>(controller, new ChecksumWorker(files) {
                     @Override
                     public void cleanup(List<String> checksums) {
                         try {
@@ -2047,7 +2043,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             final Path selected = getSelected();
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 String location;
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
@@ -2065,7 +2061,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(session.getFeature(Logging.class, prompt) != null) {
                         logging = session.getFeature(Logging.class, prompt).getConfiguration(container);
-                        for(Path c : getSelected().getContainer().getParent().list()) {
+                        for(Path c : session.list(getSelected().getContainer().getParent())) {
                             containers.add(c.getName());
                         }
                     }
@@ -2086,68 +2082,65 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
-                    try {
-                        if(logging != null) {
-                            bucketLoggingButton.setState(logging.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
-                            if(!containers.isEmpty()) {
-                                bucketLoggingPopup.removeAllItems();
-                            }
-                            for(String c : containers) {
-                                bucketLoggingPopup.addItemWithTitle(c);
-                                bucketLoggingPopup.lastItem().setRepresentedObject(c);
-                            }
-                            if(logging.isEnabled()) {
-                                bucketLoggingPopup.selectItemWithTitle(logging.getLoggingTarget());
-                            }
-                            else {
-                                // Default to write log files to origin bucket
-                                bucketLoggingPopup.selectItemWithTitle(selected.getContainer().getName());
-                            }
+                    super.cleanup();
+                    if(logging != null) {
+                        bucketLoggingButton.setState(logging.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(!containers.isEmpty()) {
+                            bucketLoggingPopup.removeAllItems();
                         }
-                        if(StringUtils.isNotBlank(location)) {
-                            bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
+                        for(String c : containers) {
+                            bucketLoggingPopup.addItemWithTitle(c);
+                            bucketLoggingPopup.lastItem().setRepresentedObject(c);
                         }
-                        if(versioning != null) {
-                            bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
-                            bucketMfaButton.setState(versioning.isMultifactor() ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(logging.isEnabled()) {
+                            bucketLoggingPopup.selectItemWithTitle(logging.getLoggingTarget());
                         }
-                        encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(null != credentials) {
-                            bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                                    controller.getSession().getFeature(AnalyticsProvider.class, prompt).getSetup(controller.getSession().getHost().getProtocol(),
-                                            controller.getSession().getHost().getProtocol().getScheme(),
-                                            selected.getContainer().getName(), credentials)
-                            ));
-                        }
-                        bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(lifecycle != null) {
-                            lifecycleDeleteCheckbox.setState(lifecycle.getExpiration() != null ? NSCell.NSOnState : NSCell.NSOffState);
-                            if(lifecycle.getExpiration() != null) {
-                                final NSInteger index = lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration()));
-                                if(-1 == index.intValue()) {
-                                    lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getExpiration())));
-                                    lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
-                                    lifecycleDeletePopup.lastItem().setTarget(id());
-                                    lifecycleDeletePopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getExpiration()));
-                                }
-                                lifecycleDeletePopup.selectItemAtIndex(lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration())));
-                            }
-                            lifecycleTransitionCheckbox.setState(lifecycle.getTransition() != null ? NSCell.NSOnState : NSCell.NSOffState);
-                            if(lifecycle.getTransition() != null) {
-                                final NSInteger index = lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition()));
-                                if(-1 == index.intValue()) {
-                                    lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getTransition())));
-                                    lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
-                                    lifecycleTransitionPopup.lastItem().setTarget(id());
-                                    lifecycleTransitionPopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getTransition()));
-                                }
-                                lifecycleTransitionPopup.selectItemAtIndex(lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition())));
-                            }
+                        else {
+                            // Default to write log files to origin bucket
+                            bucketLoggingPopup.selectItemWithTitle(selected.getContainer().getName());
                         }
                     }
-                    finally {
-                        toggleS3Settings(true);
+                    if(StringUtils.isNotBlank(location)) {
+                        bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
                     }
+                    if(versioning != null) {
+                        bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
+                        bucketMfaButton.setState(versioning.isMultifactor() ? NSCell.NSOnState : NSCell.NSOffState);
+                    }
+                    encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
+                    if(null != credentials) {
+                        bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
+                                controller.getSession().getFeature(AnalyticsProvider.class, prompt).getSetup(controller.getSession().getHost().getProtocol(),
+                                        controller.getSession().getHost().getProtocol().getScheme(),
+                                        selected.getContainer().getName(), credentials)
+                        ));
+                    }
+                    bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
+                    if(lifecycle != null) {
+                        lifecycleDeleteCheckbox.setState(lifecycle.getExpiration() != null ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(lifecycle.getExpiration() != null) {
+                            final NSInteger index = lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration()));
+                            if(-1 == index.intValue()) {
+                                lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getExpiration())));
+                                lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
+                                lifecycleDeletePopup.lastItem().setTarget(id());
+                                lifecycleDeletePopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getExpiration()));
+                            }
+                            lifecycleDeletePopup.selectItemAtIndex(lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration())));
+                        }
+                        lifecycleTransitionCheckbox.setState(lifecycle.getTransition() != null ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(lifecycle.getTransition() != null) {
+                            final NSInteger index = lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition()));
+                            if(-1 == index.intValue()) {
+                                lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getTransition())));
+                                lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
+                                lifecycleTransitionPopup.lastItem().setTarget(id());
+                                lifecycleTransitionPopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getTransition()));
+                            }
+                            lifecycleTransitionPopup.selectItemAtIndex(lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition())));
+                        }
+                    }
+                    toggleS3Settings(true);
                 }
 
                 @Override
@@ -2200,6 +2193,7 @@ public class InfoController extends ToolbarWindowController {
         metadataRemoveButton.setEnabled(stop && enable && selection);
         if(stop) {
             metadataProgress.stopAnimation(null);
+            this.initMetadata();
         }
         else if(enable) {
             metadataProgress.startAnimation(null);
@@ -2213,7 +2207,7 @@ public class InfoController extends ToolbarWindowController {
     private void initMetadata() {
         this.setMetadata(Collections.<Header>emptyList());
         if(this.toggleMetadataSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(
+            this.background(new WorkerBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(
                     controller.getSession().getFeature(Headers.class, prompt), files) {
                 @Override
                 public void cleanup(Map<String, String> updated) {
@@ -2260,16 +2254,12 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
-            controller.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new ReadAclWorker(
+            this.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new ReadAclWorker(
                     controller.getSession().getFeature(AccessControlList.class, prompt), files) {
                 @Override
-                public void cleanup(List<Acl.UserAndRole> updated) {
-                    try {
-                        setAcl(updated);
-                    }
-                    finally {
-                        toggleAclSettings(true);
-                    }
+                public void cleanup(final List<Acl.UserAndRole> updated) {
+                    setAcl(updated);
+                    toggleAclSettings(true);
                 }
             }));
         }
@@ -2297,7 +2287,7 @@ public class InfoController extends ToolbarWindowController {
                     filenameField.setStringValue(current.getName());
                 }
                 else {
-                    final Path renamed = PathFactory.createPath(controller.getSession(),
+                    final Path renamed = new Path(
                             current.getParent(), filenameField.stringValue(), current.attributes().getType());
                     controller.renamePath(current, renamed);
                     this.initWebUrl();
@@ -2321,7 +2311,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             if(change) {
-                this.initPermissions(Collections.singletonList(permission));
+                this.setPermissions(Collections.singletonList(permission));
                 this.changePermissions(permission, false);
             }
         }
@@ -2362,7 +2352,7 @@ public class InfoController extends ToolbarWindowController {
             sender.setState(NSCell.NSOnState);
         }
         Permission p = this.getPermissionFromCheckboxes();
-        this.initPermissions(Collections.singletonList(p));
+        this.setPermissions(Collections.singletonList(p));
         this.changePermissions(p, false);
     }
 
@@ -2395,16 +2385,13 @@ public class InfoController extends ToolbarWindowController {
      */
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Permission>(controller,
-                    new WritePermissionWorker(controller.getSession().getFeature(UnixPermission.class, prompt), files, permission, recursive) {
+            this.background(new WorkerBackgroundAction<Permission>(controller,
+                    new WritePermissionWorker(controller.getSession(),
+                            controller.getSession().getFeature(UnixPermission.class, prompt), files, permission, recursive) {
                         @Override
-                        public void cleanup(Permission permission) {
-                            try {
-                                initPermissions(Collections.singletonList(permission));
-                            }
-                            finally {
-                                togglePermissionSettings(true);
-                            }
+                        public void cleanup(final Permission permission) {
+                            setPermissions(Collections.singletonList(permission));
+                            togglePermissionSettings(true);
                         }
                     })
             );
@@ -2500,7 +2487,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -2512,6 +2499,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     // Refresh the current distribution status
                     distributionStatusButtonClicked(sender);
                 }
@@ -2536,7 +2524,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionApplyButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -2564,6 +2552,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     // Refresh the current distribution status
                     distributionStatusButtonClicked(sender);
                 }
@@ -2585,7 +2574,7 @@ public class InfoController extends ToolbarWindowController {
                     = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
             final List<Path> rootDocuments = new ArrayList<Path>();
 
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 private Distribution distribution = new Distribution(container.getName(), method);
 
                 @Override
@@ -2595,12 +2584,13 @@ public class InfoController extends ToolbarWindowController {
                     distribution = cdn.read(container, method);
                     if(cdn.isDefaultRootSupported(distribution.getMethod())) {
                         // Make sure container items are cached for default root object.
-                        rootDocuments.addAll(container.list());
+                        rootDocuments.addAll(session.list(container));
                     }
                 }
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     try {
                         final Session<?> session = controller.getSession();
                         final Path container = getSelected().getContainer();
@@ -2731,7 +2721,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleDistributionSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
+            this.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -2746,6 +2736,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    super.cleanup();
                     toggleDistributionSettings(true);
                     initDistribution();
                 }
@@ -2765,27 +2756,28 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void calculateSizeButtonClicked(final ID sender) {
         if(this.toggleSizeSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Long>(controller, new CalculateSizeWorker(files) {
-                @Override
-                public void cleanup(Long size) {
-                    try {
-                        updateSize(size);
-                    }
-                    finally {
-                        toggleSizeSettings(true);
-                    }
-                }
-
-                @Override
-                protected void update(final long size) {
-                    invoke(new WindowMainAction(InfoController.this) {
+            this.background(new WorkerBackgroundAction<Long>(controller,
+                    new CalculateSizeWorker(controller.getSession(), files) {
                         @Override
-                        public void run() {
-                            updateSize(size);
+                        public void cleanup(Long size) {
+                            try {
+                                updateSize(size);
+                            }
+                            finally {
+                                toggleSizeSettings(true);
+                            }
                         }
-                    });
-                }
-            }));
+
+                        @Override
+                        protected void update(final long size) {
+                            invoke(new WindowMainAction(InfoController.this) {
+                                @Override
+                                public void run() {
+                                    updateSize(size);
+                                }
+                            });
+                        }
+                    }));
         }
     }
 

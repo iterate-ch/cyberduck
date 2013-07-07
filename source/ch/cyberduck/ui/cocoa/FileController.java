@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -91,7 +90,7 @@ public abstract class FileController extends AlertController {
             return false;
         }
         if(StringUtils.isNotBlank(filenameField.stringValue())) {
-            Path file = PathFactory.createPath(this.getSession(), this.getWorkdir(),
+            Path file = new Path(this.getWorkdir(),
                     filenameField.stringValue(), Path.FILE_TYPE);
             return ((BrowserController) parent).lookup(file.getReference()) == null;
         }

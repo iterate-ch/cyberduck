@@ -20,9 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.DefaultPathKindDetector;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.transfer.Transfer;
@@ -72,9 +73,9 @@ public class DownloadController extends AlertController {
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             final Host host = Host.parse(urlField.stringValue());
-            final Transfer transfer = new DownloadTransfer(
-                    PathFactory.createPath(SessionFactory.createSession(host),
-                            host.getDefaultPath(), detector.detect(host.getDefaultPath()))
+            final Session session = SessionFactory.createSession(host);
+            final Transfer transfer = new DownloadTransfer(session,
+                    new Path(host.getDefaultPath(), detector.detect(host.getDefaultPath()))
             );
             TransferController.instance().startTransfer(transfer);
         }
