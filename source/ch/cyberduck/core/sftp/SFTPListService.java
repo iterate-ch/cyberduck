@@ -32,7 +32,7 @@ import ch.ethz.ssh2.SFTPv3DirectoryEntry;
 import ch.ethz.ssh2.SFTPv3FileAttributes;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPListService implements ListService {
     private static final Logger log = Logger.getLogger(SFTPListService.class);
@@ -63,7 +63,7 @@ public class SFTPListService implements ListService {
                 String perm = attributes.getOctalPermissions();
                 if(null != perm) {
                     try {
-                        String octal = Integer.toOctalString(attributes.permissions);
+                        final String octal = Integer.toOctalString(attributes.permissions);
                         p.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
                     }
                     catch(IndexOutOfBoundsException e) {
@@ -88,7 +88,15 @@ public class SFTPListService implements ListService {
                 if(attributes.isSymlink()) {
                     final String target = session.sftp().readLink(p.getAbsolute());
                     final int type;
-                    final SFTPv3FileAttributes targetAttributes = session.sftp().stat(target);
+                    final Path symlink;
+                    if(target.startsWith(String.valueOf(Path.DELIMITER))) {
+                        symlink = new Path(target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                    }
+                    else {
+                        symlink = new Path(p.getParent(), target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                    }
+                    p.setSymlinkTarget(symlink);
+                    final SFTPv3FileAttributes targetAttributes = session.sftp().stat(symlink.getAbsolute());
                     if(targetAttributes.isDirectory()) {
                         type = Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE;
                     }
@@ -96,12 +104,6 @@ public class SFTPListService implements ListService {
                         type = Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE;
                     }
                     p.attributes().setType(type);
-                    if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                        p.setSymlinkTarget(new Path(target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE));
-                    }
-                    else {
-                        p.setSymlinkTarget(new Path(p.getParent(), target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE));
-                    }
                 }
                 children.add(p);
             }
