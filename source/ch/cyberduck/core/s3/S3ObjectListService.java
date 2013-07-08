@@ -128,7 +128,6 @@ public class S3ObjectListService implements ListService {
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 p.attributes().setRegion(bucket.attributes().getRegion());
                 p.attributes().setStorageClass(object.getStorageClass());
-                p.attributes().setEncryption(object.getServerSideEncryptionAlgorithm());
                 // Directory placeholders
                 if(object.isDirectoryPlaceholder()) {
                     p.attributes().setType(Path.DIRECTORY_TYPE);
