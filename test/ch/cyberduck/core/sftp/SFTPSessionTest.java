@@ -10,9 +10,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 
 import org.junit.Test;
+
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -77,5 +80,53 @@ public class SFTPSessionTest extends AbstractTestCase {
         ));
         final Session session = new SFTPSession(host);
         assertNotNull(session.getFeature(UnixPermission.class, null));
+    }
+
+    @Test
+    public void testMakeDirectory() throws Exception {
+        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        session.mkdir(test);
+        assertTrue(session.exists(test));
+        session.close();
+    }
+
+    @Test
+    public void testTouch() throws Exception {
+        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        session.touch(test);
+        assertTrue(session.exists(test));
+        session.close();
+    }
+
+    @Test
+    public void testTouchFeature() throws Exception {
+        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        session.getFeature(Touch.class, null).touch(test);
+        assertTrue(session.exists(test));
+        session.close();
     }
 }
