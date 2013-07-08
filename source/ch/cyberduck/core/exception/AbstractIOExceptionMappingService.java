@@ -57,7 +57,7 @@ public abstract class AbstractIOExceptionMappingService<T extends Exception> imp
         if(buffer.length() > 0) {
             buffer.append(" ");
         }
-        buffer.append(message);
+        buffer.append(StringUtils.trim(message));
         if(buffer.charAt(buffer.length() - 1) == '.') {
             return buffer;
         }

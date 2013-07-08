@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPExceptionMappingServiceTest extends AbstractTestCase {
 
@@ -36,5 +36,10 @@ public class FTPExceptionMappingServiceTest extends AbstractTestCase {
     @Test
     public void testFile() throws Exception {
         assertTrue(new FTPExceptionMappingService().map(new FTPException(550, "")) instanceof NotfoundException);
+    }
+
+    @Test
+    public void testTrim() throws Exception {
+        assertEquals("m.", new FTPExceptionMappingService().map(new FTPException(500, "m\n")).getDetail());
     }
 }
