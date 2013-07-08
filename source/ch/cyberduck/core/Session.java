@@ -157,9 +157,13 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public void close() throws BackgroundException {
         this.fireConnectionWillCloseEvent();
-        this.logout();
-        this.disconnect();
-        this.fireConnectionDidCloseEvent();
+        try {
+            this.logout();
+            this.disconnect();
+        }
+        finally {
+            this.fireConnectionDidCloseEvent();
+        }
     }
 
     public void interrupt() throws BackgroundException {

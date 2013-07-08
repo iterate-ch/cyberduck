@@ -81,6 +81,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
+        assertFalse(session.isSecured());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
@@ -99,8 +100,10 @@ public class FTPSessionTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
+        assertFalse(session.isSecured());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertTrue(session.isSecured());
         final Path path = session.mount();
         assertNotNull(path);
         assertEquals(path, session.workdir());
@@ -324,5 +327,29 @@ public class FTPSessionTest extends AbstractTestCase {
         assertFalse(status.isComplete());
         assertTrue(status.isCanceled());
         assertEquals(32768L, status.getCurrent());
+    }
+
+    @Test
+    public void testCloseFailure() throws Exception {
+        final Host host = new Host(Protocol.FTP, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final BackgroundException failure = new BackgroundException("f", new FTPException(500, "f"));
+        final FTPSession session = new FTPSession(host) {
+            @Override
+            protected void logout() throws BackgroundException {
+                throw failure;
+            }
+        };
+        session.open(new DefaultHostKeyController());
+        assertEquals(Session.State.open, session.getState());
+        try {
+            session.close();
+            fail();
+        }
+        catch(BackgroundException e) {
+            assertEquals(failure, e);
+        }
+        assertEquals(Session.State.closed, session.getState());
     }
 }
