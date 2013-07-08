@@ -16,6 +16,7 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -100,11 +101,45 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        final Path path = session.mount();
+        assertNotNull(path);
+        assertEquals(path, session.workdir());
         assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
+    }
+
+    @Test
+    public void testMakeDirectory() throws Exception {
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        session.mkdir(test);
+        assertTrue(session.exists(test));
+        session.close();
+    }
+
+    @Test
+    public void testTouch() throws Exception {
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        session.touch(test);
+        assertTrue(session.exists(test));
+        session.close();
     }
 
     @Test(expected = LoginFailureException.class)
