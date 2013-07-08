@@ -116,6 +116,9 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public boolean exists(final Path path) throws BackgroundException {
+        if(super.exists(path)) {
+            return true;
+        }
         if(path.attributes().isDirectory()) {
             // Parent directory may not be accessible. Issue #5662
             try {
@@ -128,7 +131,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 throw new DefaultIOExceptionMappingService().map(e, path);
             }
         }
-        return super.exists(path);
+        return false;
     }
 
     @Override

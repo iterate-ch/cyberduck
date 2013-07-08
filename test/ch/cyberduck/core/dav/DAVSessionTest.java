@@ -13,6 +13,8 @@ import ch.cyberduck.ui.Controller;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.UUID;
+
 import static org.junit.Assert.*;
 
 /**
@@ -69,6 +71,7 @@ public class DAVSessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
+        session.close();
     }
 
     @Test
@@ -82,6 +85,7 @@ public class DAVSessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
+        session.close();
     }
 
     @Test
@@ -95,6 +99,7 @@ public class DAVSessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
+        session.close();
     }
 
     @Test
@@ -107,6 +112,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.close();
     }
 
     @Test
@@ -132,6 +138,7 @@ public class DAVSessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
+        session.close();
     }
 
     @Test(expected = BackgroundException.class)
@@ -144,6 +151,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNull(session.mount());
+        session.close();
     }
 
     @Test
@@ -156,6 +164,37 @@ public class DAVSessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.mount());
+        session.close();
+    }
+
+    @Test
+    public void testMakeDirectory() throws Exception {
+        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        session.mkdir(test);
+        assertTrue(session.exists(test));
+        session.close();
+    }
+
+    @Test
+    public void testTouch() throws Exception {
+        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        session.touch(test);
+        assertTrue(session.exists(test));
+        session.close();
     }
 
     @Test
@@ -178,6 +217,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.close();
     }
 
     @Test(expected = LoginFailureException.class)
