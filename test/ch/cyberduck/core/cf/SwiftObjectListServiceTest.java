@@ -53,7 +53,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(container, p.getParent());
-            assertNotNull(p.attributes().getRegion());
+            assertEquals("DFW", p.attributes().getRegion());
             if(p.attributes().isFile()) {
                 assertNotNull(p.attributes().getModificationDate());
                 assertNotNull(p.attributes().getSize());
