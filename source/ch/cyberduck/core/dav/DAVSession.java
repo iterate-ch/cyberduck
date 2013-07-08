@@ -31,6 +31,7 @@ import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
@@ -311,6 +312,9 @@ public class DAVSession extends HttpSession<DAVClient> {
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Headers.class) {
             return (T) new DAVHeadersFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new DAVCopyFeature(this);
         }
         return super.getFeature(type, prompt);
     }

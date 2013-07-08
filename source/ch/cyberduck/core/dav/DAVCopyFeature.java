@@ -42,7 +42,7 @@ public class DAVCopyFeature implements Copy {
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
             if(source.attributes().isFile()) {
-                session.getClient().copy(new DAVPathEncoder().encode(source), new DAVPathEncoder().encode(copy));
+                session.getClient().copy(new DAVPathEncoder().encode(source), session.toURL(copy, false));
             }
         }
         catch(SardineException e) {
