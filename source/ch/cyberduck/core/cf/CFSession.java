@@ -458,7 +458,7 @@ public class CFSession extends HttpSession<FilesClient> {
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Headers.class) {
-            return (T) new SwiftHeadersFeature(this);
+            return (T) new SwiftMetadataFeature(this);
         }
         if(type == Location.class) {
             return (T) new Location() {

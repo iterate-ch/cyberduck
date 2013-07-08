@@ -38,14 +38,14 @@ import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 /**
  * @version $Id$
  */
-public class SwiftHeadersFeature implements Headers {
-    private static final Logger log = Logger.getLogger(SwiftHeadersFeature.class);
+public class SwiftMetadataFeature implements Headers {
+    private static final Logger log = Logger.getLogger(SwiftMetadataFeature.class);
 
     private CFSession session;
 
     private PathContainerService containerService = new PathContainerService();
 
-    public SwiftHeadersFeature(final CFSession session) {
+    public SwiftMetadataFeature(final CFSession session) {
         this.session = session;
     }
 
@@ -58,7 +58,7 @@ public class SwiftHeadersFeature implements Headers {
                         containerService.getContainer(file).getName(), containerService.getKey(file));
                 return meta.getMetaData();
             }
-            if(file.attributes().isVolume()) {
+            else if(containerService.isContainer(file)) {
                 final FilesContainerMetaData meta
                         = session.getClient().getContainerMetaData(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName());
@@ -85,7 +85,7 @@ public class SwiftHeadersFeature implements Headers {
                 session.getClient().updateObjectMetadata(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
             }
-            else if(file.attributes().isVolume()) {
+            else if(containerService.isContainer(file)) {
                 for(Map.Entry<String, String> entry : file.attributes().getMetadata().entrySet()) {
                     // Choose metadata values to remove
                     if(!metadata.containsKey(entry.getKey())) {
@@ -101,10 +101,10 @@ public class SwiftHeadersFeature implements Headers {
             }
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot read file attributes", e, file);
+            throw new FilesExceptionMappingService().map("Cannot write file attributes", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, file);
+            throw new DefaultIOExceptionMappingService().map("Cannot write file attributes", e, file);
         }
     }
 }
