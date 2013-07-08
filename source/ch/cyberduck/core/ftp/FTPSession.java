@@ -75,6 +75,14 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
+    public boolean isConnected() {
+        if(super.isConnected()) {
+            return client.isConnected();
+        }
+        return false;
+    }
+
+    @Override
     public Path mount() throws BackgroundException {
         final Path workdir = super.mount();
         if(Preferences.instance().getBoolean("ftp.timezone.auto")) {

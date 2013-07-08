@@ -3424,7 +3424,7 @@ public class BrowserController extends WindowController
                             if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                                 window.setDocumentEdited(true);
                             }
-                            securityLabel.setImage(session.isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
+                            securityLabel.setImage(session.isSecured() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
                                     : IconCacheFactory.<NSImage>get().iconNamed("unlocked.tiff"));
                             securityLabel.setEnabled(session instanceof SSLSession);
                         }

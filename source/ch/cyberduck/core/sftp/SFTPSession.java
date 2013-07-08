@@ -62,9 +62,12 @@ public class SFTPSession extends Session<Connection> {
         super(h);
     }
 
+    /**
+     * @return True if authentication is complete
+     */
     @Override
-    public boolean isSecure() {
-        if(super.isSecure()) {
+    public boolean isSecured() {
+        if(super.isSecured()) {
             return client.isAuthenticationComplete();
         }
         return false;

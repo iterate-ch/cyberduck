@@ -189,11 +189,9 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
-     * No information about the curren state of the connection but only the protocol.
-     *
      * @return True if the control channel is either tunneled using TLS or SSH
      */
-    public boolean isSecure() {
+    public boolean isSecured() {
         if(this.isConnected()) {
             return host.getProtocol().isSecure();
         }
