@@ -69,6 +69,10 @@ public class FTPClient extends FTPSClient {
      */
     private List<String> features = Collections.emptyList();
 
+    public List<String> getFeatures() {
+        return features;
+    }
+
     /**
      * Get the server supplied features
      *
