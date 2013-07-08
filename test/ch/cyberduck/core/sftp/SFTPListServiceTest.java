@@ -32,7 +32,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPListServiceTest extends AbstractTestCase {
 
@@ -54,5 +54,6 @@ public class SFTPListServiceTest extends AbstractTestCase {
         assertEquals(new Path(home, "test", Path.FILE_TYPE), list.get(new Path(home, "test.symlink", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE).getReference()).getSymlinkTarget());
         assertTrue(list.contains(new Path(home, "test.symlink-absolute", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE).getReference()));
         assertEquals(new Path(home, "test", Path.FILE_TYPE), list.get(new Path(home, "test.symlink-absolute", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE).getReference()).getSymlinkTarget());
+        session.disconnect();
     }
 }

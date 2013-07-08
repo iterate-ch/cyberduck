@@ -31,7 +31,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPTimestampFeatureTest extends AbstractTestCase {
 
@@ -52,5 +52,6 @@ public class SFTPTimestampFeatureTest extends AbstractTestCase {
         assertEquals(modified / 1000 * 1000, session.list(home).get(test.getReference()).attributes().getModificationDate());
         assertTrue(session.list(home).get(test.getReference()).attributes().getCreationDate() == -1L);
         assertFalse(session.list(home).get(test.getReference()).attributes().getAccessedDate() == -1L);
+        session.disconnect();
     }
 }

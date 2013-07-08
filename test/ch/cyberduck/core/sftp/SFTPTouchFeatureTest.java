@@ -34,7 +34,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPTouchFeatureTest extends AbstractTestCase {
 
@@ -55,5 +55,6 @@ public class SFTPTouchFeatureTest extends AbstractTestCase {
         final AttributedList<Path> list = session.list(home);
         assertTrue(list.contains(test.getReference()));
         assertEquals("644", list.get(test.getReference()).attributes().getPermission().getOctalString());
+        session.disconnect();
     }
 }
