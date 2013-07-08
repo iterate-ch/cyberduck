@@ -80,10 +80,10 @@ public class SFTPListService implements ListService {
                     p.attributes().setGroup(attributes.gid.toString());
                 }
                 if(null != attributes.mtime) {
-                    p.attributes().setModificationDate(Long.parseLong(attributes.mtime.toString()) * 1000L);
+                    p.attributes().setModificationDate(attributes.mtime * 1000L);
                 }
                 if(null != attributes.atime) {
-                    p.attributes().setAccessedDate(Long.parseLong(attributes.atime.toString()) * 1000L);
+                    p.attributes().setAccessedDate(attributes.atime * 1000L);
                 }
                 if(attributes.isSymlink()) {
                     final String target = session.sftp().readLink(p.getAbsolute());
