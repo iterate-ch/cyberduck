@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3EncryptionFeature implements Encryption {
 
@@ -41,10 +41,20 @@ public class S3EncryptionFeature implements Encryption {
     }
 
     @Override
+    public String getEncryption(final Path file) throws BackgroundException {
+        if(file.attributes().isFile()) {
+            return new S3ObjectDetailService(session).getDetails(file).getServerSideEncryptionAlgorithm();
+        }
+        return null;
+    }
+
+    @Override
     public void setEncryption(final Path file, final String algorithm) throws BackgroundException {
-        final S3CopyFeature copy = new S3CopyFeature(session);
-        file.attributes().setEncryption(algorithm);
-        // Copy item in place to write new attributes
-        copy.copy(file, file);
+        if(file.attributes().isFile()) {
+            final S3CopyFeature copy = new S3CopyFeature(session);
+            // Copy item in place to write new attributes
+            copy.copy(file, file, file.attributes().getStorageClass(), algorithm,
+                    new S3AccessControlListFeature(session).read(file));
+        }
     }
 }

@@ -2032,7 +2032,9 @@ public class InfoController extends ToolbarWindowController {
                                 session.getFeature(AnalyticsProvider.class, prompt).getName());
                     }
                     if(numberOfFiles() == 1) {
-                        encryption = getSelected().attributes().getEncryption();
+                        if(session.getFeature(Encryption.class, prompt) != null) {
+                            encryption = session.getFeature(Encryption.class, prompt).getEncryption(getSelected());
+                        }
                     }
                 }
 

@@ -23,11 +23,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Encryption {
 
     List<String> getAlgorithms();
 
     void setEncryption(Path file, String algorithm) throws BackgroundException;
+
+    String getEncryption(Path file) throws BackgroundException;
 }
