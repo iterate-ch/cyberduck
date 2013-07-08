@@ -94,7 +94,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                     return (T) new Timestamp() {
 
                         @Override
-                        public void update(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
+                        public void setTimestamp(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
                             assertEquals(time, modified);
                             timestampWrite[0] = true;
                         }
