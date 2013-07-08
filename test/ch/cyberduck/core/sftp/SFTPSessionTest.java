@@ -30,10 +30,14 @@ public class SFTPSessionTest extends AbstractTestCase {
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
+        assertFalse(session.isConnected());
+        assertFalse(session.isSecured());
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
+        assertFalse(session.isSecured());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertTrue(session.isSecured());
         assertNotNull(session.mount());
         assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
