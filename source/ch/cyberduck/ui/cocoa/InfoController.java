@@ -45,7 +45,6 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
-import ch.cyberduck.ui.action.ChecksumWorker;
 import ch.cyberduck.ui.action.ReadAclWorker;
 import ch.cyberduck.ui.action.ReadMetadataWorker;
 import ch.cyberduck.ui.action.ReadPermissionWorker;
@@ -1875,23 +1874,12 @@ public class InfoController extends ToolbarWindowController {
             checksumField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
         }
         else {
-            checksumField.setStringValue(Locale.localizedString("Unknown"));
-            if(this.toggleSizeSettings(false)) {
-                this.background(new WorkerBackgroundAction<List<String>>(controller, new ChecksumWorker(files) {
-                    @Override
-                    public void cleanup(List<String> checksums) {
-                        try {
-                            for(String checksum : checksums) {
-                                if(StringUtils.isNotBlank(checksum)) {
-                                    updateField(checksumField, checksum, TRUNCATE_MIDDLE_ATTRIBUTES);
-                                }
-                            }
-                        }
-                        finally {
-                            toggleSizeSettings(true);
-                        }
-                    }
-                }));
+            final Path file = this.getSelected();
+            if(StringUtils.isBlank(file.attributes().getChecksum())) {
+                checksumField.setStringValue(Locale.localizedString("Unknown"));
+            }
+            else {
+                this.updateField(checksumField, file.attributes().getChecksum(), TRUNCATE_MIDDLE_ATTRIBUTES);
             }
         }
     }
@@ -2161,7 +2149,6 @@ public class InfoController extends ToolbarWindowController {
         metadataRemoveButton.setEnabled(stop && enable && selection);
         if(stop) {
             metadataProgress.stopAnimation(null);
-            this.initMetadata();
         }
         else if(enable) {
             metadataProgress.startAnimation(null);
