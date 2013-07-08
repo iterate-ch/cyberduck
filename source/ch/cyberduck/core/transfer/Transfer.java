@@ -38,6 +38,7 @@ import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -531,6 +532,7 @@ public abstract class Transfer implements Serializable {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Accepted in %s transfer", p));
                 }
+                session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
                 s = filter.prepare(session, p);
                 // Add transfer length to total bytes
                 this.addSize(s.getLength());
