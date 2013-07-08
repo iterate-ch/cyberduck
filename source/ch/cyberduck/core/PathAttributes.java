@@ -88,8 +88,6 @@ public class PathAttributes extends Attributes implements Serializable {
 
     /**
      * Unique identifier for a given version of a file.
-     *
-     * @see ch.cyberduck.core.s3.S3Session#isVersioningSupported()
      */
     private String versionId;
 
