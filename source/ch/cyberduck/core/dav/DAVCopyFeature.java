@@ -18,7 +18,6 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
@@ -29,7 +28,7 @@ import java.io.IOException;
 import com.googlecode.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVCopyFeature implements Copy {
 
@@ -43,7 +42,7 @@ public class DAVCopyFeature implements Copy {
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
             if(source.attributes().isFile()) {
-                session.getClient().copy(URIEncoder.encode(source.getAbsolute()), URIEncoder.encode(copy.getAbsolute()));
+                session.getClient().copy(new DAVPathEncoder().encode(source), new DAVPathEncoder().encode(copy));
             }
         }
         catch(SardineException e) {

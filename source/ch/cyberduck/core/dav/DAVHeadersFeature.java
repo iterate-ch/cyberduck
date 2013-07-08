@@ -18,7 +18,6 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
@@ -48,41 +47,35 @@ public class DAVHeadersFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        if(file.attributes().isFile()) {
-            try {
-                final List<DavResource> resources = session.getClient().list(URIEncoder.encode(file.getAbsolute()));
-                for(DavResource resource : resources) {
-                    return resource.getCustomProps();
-                }
+        try {
+            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(file));
+            for(DavResource resource : resources) {
+                return resource.getCustomProps();
             }
-            catch(SardineException e) {
-                throw new SardineExceptionMappingService().map("Cannot read file attributes", e, file);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, file);
-            }
+            return Collections.emptyMap();
         }
-        return Collections.emptyMap();
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Cannot read file attributes", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e, file);
+        }
     }
 
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
-        if(file.attributes().isFile()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Write metadata %s for file %s", metadata, file));
-            }
-            try {
-                session.getClient().setCustomProps(URIEncoder.encode(file.getAbsolute()),
-                        metadata, Collections.<java.lang.String>emptyList());
-            }
-            catch(SardineException e) {
-                throw new SardineExceptionMappingService().map("Cannot write file attributes", e, file);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, file);
-            }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Write metadata %s for file %s", metadata, file));
+        }
+        try {
+            session.getClient().setCustomProps(new DAVPathEncoder().encode(file),
+                    metadata, Collections.<java.lang.String>emptyList());
+        }
+        catch(SardineException e) {
+            throw new SardineExceptionMappingService().map("Cannot write file attributes", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e, file);
         }
     }
-
-
 }

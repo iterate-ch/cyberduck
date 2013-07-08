@@ -25,7 +25,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVListServiceTest extends AbstractTestCase {
 
@@ -40,6 +40,7 @@ public class DAVListServiceTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         new DAVListService(session).list(new Path("/notfound", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE));
+        session.close();
     }
 
     @Test
@@ -62,5 +63,6 @@ public class DAVListServiceTest extends AbstractTestCase {
             assertNotNull(p.attributes().getChecksum());
             assertNotNull(p.attributes().getETag());
         }
+        session.close();
     }
 }

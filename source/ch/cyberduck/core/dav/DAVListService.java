@@ -21,7 +21,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
@@ -48,7 +47,7 @@ public class DAVListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
 
-            final List<DavResource> resources = session.getClient().list(URIEncoder.encode(file.getAbsolute()));
+            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(file));
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);

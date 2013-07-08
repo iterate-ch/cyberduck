@@ -19,7 +19,15 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.SardineExceptionMappingService;
@@ -78,7 +86,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         try {
             try {
-                client.execute(new HttpHead(this.toURL(this.home())), new VoidResponseHandler());
+                client.execute(new HttpHead(new DAVPathEncoder().encode(this.home())), new VoidResponseHandler());
             }
             catch(SardineException e) {
                 if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN
@@ -86,7 +94,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                         || e.getStatusCode() == HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE
                         || e.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
                     // Possibly only HEAD requests are not allowed
-                    client.execute(new HttpPropFind(this.toURL(this.home())), new VoidResponseHandler());
+                    client.execute(new HttpPropFind(new DAVPathEncoder().encode(this.home())), new VoidResponseHandler());
                 }
                 else {
                     throw new SardineExceptionMappingService().map(e);
@@ -111,7 +119,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(path.attributes().isDirectory()) {
             // Parent directory may not be accessible. Issue #5662
             try {
-                return this.getClient().exists(URIEncoder.encode(path.getAbsolute()));
+                return this.getClient().exists(new DAVPathEncoder().encode(path));
             }
             catch(SardineException e) {
                 throw new SardineExceptionMappingService().map("Cannot read file attributes", e, path);
@@ -128,7 +136,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         try {
             this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     file.getName()));
-            this.getClient().delete(URIEncoder.encode(file.getAbsolute()));
+            this.getClient().delete(new DAVPathEncoder().encode(file));
         }
         catch(SardineException e) {
             throw new SardineExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -146,7 +154,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public void mkdir(final Path file) throws BackgroundException {
         try {
-            this.getClient().createDirectory(URIEncoder.encode(file.getAbsolute()));
+            this.getClient().createDirectory(new DAVPathEncoder().encode(file));
         }
         catch(SardineException e) {
             throw new SardineExceptionMappingService().map("Cannot create folder {0}", e, file);
@@ -162,7 +170,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             this.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     file.getName(), renamed.getName()));
 
-            this.getClient().move(URIEncoder.encode(file.getAbsolute()), URIEncoder.encode(renamed.getAbsolute()));
+            this.getClient().move(new DAVPathEncoder().encode(file), new DAVPathEncoder().encode(renamed));
         }
         catch(SardineException e) {
             throw new SardineExceptionMappingService().map("Cannot rename {0}", e, file);
@@ -179,7 +187,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             headers.put(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-");
         }
         try {
-            return this.getClient().get(URIEncoder.encode(file.getAbsolute()), headers);
+            return this.getClient().get(new DAVPathEncoder().encode(file), headers);
         }
         catch(SardineException e) {
             throw new SardineExceptionMappingService().map("Download failed", e, file);
@@ -270,7 +278,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             @Override
             public Void call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    getClient().put(URIEncoder.encode(file.getAbsolute()), entity, headers);
+                    getClient().put(new DAVPathEncoder().encode(file), entity, headers);
                 }
                 catch(SardineException e) {
                     if(e.getStatusCode() == HttpStatus.SC_EXPECTATION_FAILED) {
