@@ -1,4 +1,4 @@
-package ch.cyberduck.core.s3;
+package ch.cyberduck.core.cf;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -20,6 +20,8 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -31,22 +33,24 @@ import java.util.UUID;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class S3CopyFeatureTest extends AbstractTestCase {
+public class SwiftCopyFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCopy() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
-                new Credentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"))
-        );
-        final S3Session session = new S3Session(host);
+        final CFSession session = new CFSession(
+                new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
         session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         session.touch(test);
         final Path copy = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new S3CopyFeature(session).copy(test, copy);
+        new SwiftCopyFeature(session).copy(test, copy);
         assertTrue(session.exists(test));
         assertTrue(session.exists(copy));
         session.close();
