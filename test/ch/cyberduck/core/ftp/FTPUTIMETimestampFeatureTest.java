@@ -31,10 +31,11 @@ import ch.cyberduck.core.features.Timestamp;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
 
@@ -65,6 +66,5 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertNotNull(session.getFeature(Timestamp.class, null));
-        assertEquals(FTPUTIMETimestampFeature.class, session.getFeature(Timestamp.class, null).getClass());
     }
 }
