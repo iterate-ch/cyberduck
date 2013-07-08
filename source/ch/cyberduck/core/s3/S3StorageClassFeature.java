@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3StorageClassFeature implements Redundancy {
 
@@ -46,9 +46,10 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
-        final S3CopyFeature copy = new S3CopyFeature(session);
-        // Copy item in place to write new attributes
-        file.attributes().setStorageClass(redundancy);
-        copy.copy(file, file);
+        if(file.attributes().isFile()) {
+            final S3CopyFeature copy = new S3CopyFeature(session);
+            copy.copy(file, file, redundancy, file.attributes().getEncryption(),
+                    new S3AccessControlListFeature(session).read(file));
+        }
     }
 }

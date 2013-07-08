@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -39,25 +40,35 @@ public class S3CopyFeature implements Copy {
 
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
-        try {
-            if(source.attributes().isFile()) {
-                final PathContainerService containerService = new PathContainerService();
-                final StorageObject destination = new StorageObject(containerService.getKey(copy));
-                // Keep same storage class
-                destination.setStorageClass(source.attributes().getStorageClass());
-                // Keep encryption setting
-                destination.setServerSideEncryptionAlgorithm(source.attributes().getEncryption());
-                // Apply non standard ACL
-                final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-                destination.setAcl(acl.convert(acl.read(source)));
+        if(source.attributes().isFile()) {
+            // Keep same storage class
+            final String storageClass = source.attributes().getStorageClass();
+            // Keep encryption setting
+            final String encryptionAlgorithm = source.attributes().getEncryption();
+            // Apply non standard ACL
+            final S3AccessControlListFeature accessControlListFeature = new S3AccessControlListFeature(session);
+            final Acl acl = accessControlListFeature.read(source);
+            this.copy(source, copy, storageClass, encryptionAlgorithm, acl);
+        }
+    }
+
+    protected void copy(final Path source, final Path copy, final String storageClass, final String encryptionAlgorithm,
+                        final Acl acl) throws BackgroundException {
+        if(source.attributes().isFile()) {
+            final PathContainerService containerService = new PathContainerService();
+            final StorageObject destination = new StorageObject(containerService.getKey(copy));
+            destination.setStorageClass(storageClass);
+            destination.setServerSideEncryptionAlgorithm(encryptionAlgorithm);
+            destination.setAcl(new S3AccessControlListFeature(session).convert(acl));
+            try {
                 // Copying object applying the metadata of the original
                 session.getClient().copyObject(containerService.getContainer(source).getName(),
                         containerService.getKey(source),
                         containerService.getContainer(copy).getName(), destination, false);
             }
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot copy {0}", e, source);
+            catch(ServiceException e) {
+                throw new ServiceExceptionMappingService().map("Cannot copy {0}", e, source);
+            }
         }
     }
 }
