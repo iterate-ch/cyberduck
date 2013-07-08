@@ -20,7 +20,7 @@ using System;
 using System.Net;
 using ch.cyberduck.core;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Core
 {
     public class Proxy : AbstractProxy
     {

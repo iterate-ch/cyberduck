@@ -27,7 +27,7 @@ using ch.cyberduck.core.i18n;
 using org.apache.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Core
 {
     public class Keychain : AbstractKeychain
     {
