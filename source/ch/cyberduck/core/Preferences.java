@@ -514,7 +514,6 @@ public abstract class Preferences {
         defaults.put("ftp.command.lista", String.valueOf(true));
         defaults.put("ftp.command.stat", String.valueOf(true));
         defaults.put("ftp.command.mlsd", String.valueOf(true));
-        defaults.put("ftp.command.utime", String.valueOf(true));
 
         /**
          * Fallback to active or passive mode respectively

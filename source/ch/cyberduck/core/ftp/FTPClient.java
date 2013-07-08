@@ -22,7 +22,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.Preferences;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.ftp.FTPCommand;
+import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.log4j.Logger;
@@ -44,10 +44,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,72 +60,6 @@ public class FTPClient extends FTPSClient {
     public FTPClient(final SSLSocketFactory f, final SSLContext c) {
         super(false, c);
         this.sslSocketFactory = f;
-    }
-
-    /**
-     * Cached
-     */
-    private List<String> features = Collections.emptyList();
-
-    public List<String> getFeatures() {
-        return features;
-    }
-
-    /**
-     * Get the server supplied features
-     *
-     * @return string containing server features, or null if no features or not
-     *         supported
-     * @throws IOException I/O failure
-     */
-    public List<String> listFeatures() throws IOException {
-        if(features.isEmpty()) {
-            if(FTPReply.isPositiveCompletion(this.feat())) {
-                features = Arrays.asList(this.getReplyStrings());
-            }
-        }
-        return features;
-    }
-
-    public boolean isFeatureSupported(final int command) throws IOException {
-        return this.isFeatureSupported(this.getCommand(command));
-    }
-
-    public boolean isFeatureSupported(final String feature) throws IOException {
-        for(String item : this.listFeatures()) {
-            if(item.trim().startsWith(feature)) {
-                return true;
-            }
-        }
-        log.warn(String.format("No %s support", feature));
-        return false;
-    }
-
-    /**
-     * Additional commands supported
-     */
-    private static final Map<Integer, String> commands
-            = new HashMap<Integer, String>();
-
-    public static final int SIZE = 52;
-    public static final int PRET = 53;
-
-    static {
-        commands.put(SIZE, "SIZE");
-        commands.put(PRET, "PRET");
-    }
-
-    @Override
-    public int sendCommand(final int command, final String args) throws IOException {
-        return super.sendCommand(this.getCommand(command), args);
-    }
-
-    protected String getCommand(final int command) {
-        final String value = commands.get(command);
-        if(null == value) {
-            return FTPCommand.getCommand(command);
-        }
-        return value;
     }
 
     @Override
@@ -216,12 +148,12 @@ public class FTPClient extends FTPSClient {
         super.sslNegotiation();
     }
 
-    public List<String> list(final int command) throws IOException {
+    public List<String> list(final FTPCmd command) throws IOException {
         return this.list(command, null);
     }
 
-    public List<String> list(final int command, final String pathname) throws IOException {
-        this.pret(this.getCommand(command), pathname);
+    public List<String> list(final FTPCmd command, final String pathname) throws IOException {
+        this.pret(command, pathname);
 
         Socket socket = _openDataConnection_(command, pathname);
 
@@ -245,37 +177,37 @@ public class FTPClient extends FTPSClient {
 
     @Override
     public boolean retrieveFile(String remote, OutputStream local) throws IOException {
-        this.pret(this.getCommand(FTPCommand.RETR), remote);
+        this.pret(FTPCmd.RETR, remote);
         return super.retrieveFile(remote, local);
     }
 
     @Override
     public InputStream retrieveFileStream(String remote) throws IOException {
-        this.pret(this.getCommand(FTPCommand.RETR), remote);
+        this.pret(FTPCmd.RETR, remote);
         return super.retrieveFileStream(remote);
     }
 
     @Override
     public boolean storeFile(String remote, InputStream local) throws IOException {
-        this.pret(this.getCommand(FTPCommand.STOR), remote);
+        this.pret(FTPCmd.STOR, remote);
         return super.storeFile(remote, local);
     }
 
     @Override
     public OutputStream storeFileStream(String remote) throws IOException {
-        this.pret(this.getCommand(FTPCommand.STOR), remote);
+        this.pret(FTPCmd.STOR, remote);
         return super.storeFileStream(remote);
     }
 
     @Override
     public boolean appendFile(String remote, InputStream local) throws IOException {
-        this.pret(this.getCommand(FTPCommand.APPE), remote);
+        this.pret(FTPCmd.APPE, remote);
         return super.appendFile(remote, local);
     }
 
     @Override
     public OutputStream appendFileStream(String remote) throws IOException {
-        this.pret(this.getCommand(FTPCommand.APPE), remote);
+        this.pret(FTPCmd.APPE, remote);
         return super.appendFileStream(remote);
     }
 
@@ -286,21 +218,20 @@ public class FTPClient extends FTPSClient {
      * @param file    Remote file
      * @throws IOException I/O failure
      */
-    protected void pret(final String command, final String file) throws IOException {
-        if(this.isFeatureSupported(PRET)) {
-            // PRET support
-            if(!FTPReply.isPositiveCompletion(this.sendCommand(PRET, command + " " + file))) {
-                log.warn("PRET command failed:" + this.getReplyString());
+    protected void pret(final FTPCmd command, final String file) throws IOException {
+        if(this.hasFeature("PRET")) {
+            if(!FTPReply.isPositiveCompletion(this.sendCommand("PRET", String.format("%s %s", command.getCommand(), file)))) {
+                throw new FTPException(this.getReplyCode(), this.getReplyString());
             }
         }
     }
 
     public long size(final String pathname) throws IOException {
-        if(this.isFeatureSupported(SIZE)) {
+        if(this.hasFeature("SIZE")) {
             if(!this.setFileType(FTPClient.BINARY_FILE_TYPE)) {
                 throw new FTPException(this.getReplyCode(), this.getReplyString());
             }
-            if(FTPReply.isPositiveCompletion(this.sendCommand(SIZE, pathname))) {
+            if(FTPReply.isPositiveCompletion(this.sendCommand("SIZE", pathname))) {
                 String status = StringUtils.chomp(this.getReplyString().substring(3).trim());
                 // Trim off any trailing characters after a space, e.g. webstar
                 // responds to SIZE with 213 55564 bytes

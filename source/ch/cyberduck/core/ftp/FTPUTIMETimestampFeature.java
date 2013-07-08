@@ -61,7 +61,6 @@ public class FTPUTIMETimestampFeature implements Timestamp {
                     formatter.format(new Date(accessed), TimeZone.getTimeZone("UTC")),
                     formatter.format(new Date(modified), TimeZone.getTimeZone("UTC")),
                     formatter.format(new Date(created), TimeZone.getTimeZone("UTC"))))) {
-                session.setUtimeSupported(false);
                 throw new FTPException(session.getClient().getReplyCode(),
                         session.getClient().getReplyString());
             }

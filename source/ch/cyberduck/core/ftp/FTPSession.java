@@ -41,7 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPCommand;
+import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
@@ -69,6 +69,10 @@ public class FTPSession extends SSLSession<FTPClient> {
      * Directory listing parser depending on response for SYST command
      */
     private CompositeFileEntryParser parser;
+
+    private Timestamp timestamp = new FTPUTIMETimestampFeature(this);
+
+    private UnixPermission permission = new FTPUnixPermissionFeature(this);
 
     public FTPSession(Host h) {
         super(h);
@@ -198,9 +202,9 @@ public class FTPSession extends SSLSession<FTPClient> {
      */
     protected boolean isTLSSupported() throws BackgroundException {
         try {
-            return client.isFeatureSupported("AUTH TLS")
-                    && client.isFeatureSupported("PBSZ")
-                    && client.isFeatureSupported("PROT");
+            return client.hasFeature("AUTH", "TLS")
+                    && client.hasFeature("PBSZ")
+                    && client.hasFeature("PROT");
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
@@ -233,6 +237,9 @@ public class FTPSession extends SSLSession<FTPClient> {
                 log.warn(String.format("SYST command failed %s", e.getMessage()));
             }
             parser = new FTPParserSelector().getParser(system, zone);
+            if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
+                timestamp = new FTPMFMTTimestampFeature(this);
+            }
             return client;
         }
         catch(IOException e) {
@@ -288,7 +295,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     client.execPROT(Preferences.instance().getProperty("ftp.tls.datachannel"));
                 }
                 if("UTF-8".equals(this.getEncoding())) {
-                    if(client.isFeatureSupported("UTF8")) {
+                    if(client.hasFeature("UTF8")) {
                         if(!FTPReply.isPositiveCompletion(client.sendCommand("OPTS UTF8 ON"))) {
                             log.warn(String.format("Failed to negotiate UTF-8 charset %s", client.getReplyString()));
                         }
@@ -364,16 +371,6 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     public boolean isExtendedListEnabled() {
         return extendedListEnabled;
-    }
-
-    private boolean utimeSupported = Preferences.instance().getBoolean("ftp.command.utime");
-
-    public boolean isUtimeSupported() {
-        return utimeSupported;
-    }
-
-    public void setUtimeSupported(boolean utimeSupported) {
-        this.utimeSupported = utimeSupported;
     }
 
     protected abstract static class DataConnectionAction<T> {
@@ -492,9 +489,9 @@ public class FTPSession extends SSLSession<FTPClient> {
                         if(isMlsdListSupportedEnabled()
                                 // Note that there is no distinct FEAT output for MLSD.
                                 // The presence of the MLST feature indicates that both MLST and MLSD are supported.
-                                && getClient().isFeatureSupported(FTPCommand.MLST)) {
+                                && getClient().hasFeature(FTPCmd.MLST.getCommand())) {
                             success = new FTPMlsdListResponseReader().read(children, FTPSession.this, file,
-                                    null, getClient().list(FTPCommand.MLSD));
+                                    null, getClient().list(FTPCmd.MLSD));
                             if(!success) {
                                 setMlsdListSupportedEnabled(false);
                             }
@@ -504,7 +501,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                             if(isExtendedListEnabled()) {
                                 try {
                                     success = new FTPListResponseReader().read(children, FTPSession.this, file,
-                                            parser, getClient().list(FTPCommand.LIST, "-a"));
+                                            parser, getClient().list(FTPCmd.LIST, "-a"));
                                 }
                                 catch(FTPException e) {
                                     setExtendedListEnabled(false);
@@ -513,7 +510,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                             if(!success) {
                                 // LIST -a listing failed or not enabled
                                 success = new FTPListResponseReader().read(children, FTPSession.this, file,
-                                        parser, getClient().list(FTPCommand.LIST));
+                                        parser, getClient().list(FTPCmd.LIST));
                             }
                         }
                         return success;
@@ -621,7 +618,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             }
             if(status.isResume()) {
                 // Where a server process supports RESTart in STREAM mode
-                if(!this.getClient().isFeatureSupported("REST STREAM")) {
+                if(!this.getClient().hasFeature("REST STREAM")) {
                     status.setResume(false);
                 }
                 else {
@@ -713,18 +710,48 @@ public class FTPSession extends SSLSession<FTPClient> {
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == UnixPermission.class) {
-            return (T) new FTPUnixPermissionFeature(this);
+            if(null == permission) {
+                return null;
+            }
+            return (T) new UnixPermission() {
+                @Override
+                public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                    permission.setUnixOwner(file, owner);
+                }
+
+                @Override
+                public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                    permission.setUnixGroup(file, group);
+                }
+
+                @Override
+                public void setUnixPermission(final Path file, final Permission value) throws BackgroundException {
+                    try {
+                        permission.setUnixPermission(file, value);
+                    }
+                    catch(BackgroundException e) {
+                        permission = null;
+                        throw e;
+                    }
+                }
+            };
         }
         if(type == Timestamp.class) {
-            if(this.getClient().getFeatures().contains(this.getClient().getCommand(FTPCommand.MFMT))) {
-                return (T) new FTPMFMTTimestampFeature(this);
+            if(null == timestamp) {
+                return null;
             }
-            else {
-                if(this.isUtimeSupported()) {
-                    return (T) new FTPUTIMETimestampFeature(this);
+            return (T) new Timestamp() {
+                @Override
+                public void setTimestamp(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
+                    try {
+                        timestamp.setTimestamp(file, created, modified, accessed);
+                    }
+                    catch(BackgroundException e) {
+                        timestamp = null;
+                        throw e;
+                    }
                 }
-            }
-            return null;
+            };
         }
         if(type == Command.class) {
             return (T) new FTPCommandFeature(this);

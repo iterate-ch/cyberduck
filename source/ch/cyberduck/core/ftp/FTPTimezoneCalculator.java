@@ -6,7 +6,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 
-import org.apache.commons.net.ftp.FTPCommand;
+import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class FTPTimezoneCalculator {
                 local -= local % 60000;
                 // Read the modify fact which must be UTC
                 try {
-                    if(session.getClient().isFeatureSupported(FTPCommand.MDTM)) {
+                    if(session.getClient().hasFeature(FTPCmd.MDTM.getCommand())) {
                         final String timestamp = session.getClient().getModificationTime(test.getAbsolute());
                         if(null != timestamp) {
                             Long utc = new FTPMlsdListResponseReader().parseTimestamp(timestamp);
