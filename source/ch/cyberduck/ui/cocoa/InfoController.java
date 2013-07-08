@@ -101,7 +101,8 @@ public class InfoController extends ToolbarWindowController {
 
     private LoginController prompt;
 
-    private PathContainerService containerService;
+    private PathContainerService containerService
+            = new PathContainerService();
 
     public InfoController() {
         this.prompt = LoginControllerFactory.get(this);
@@ -1816,7 +1817,7 @@ public class InfoController extends ToolbarWindowController {
         distributionDefaultRootPopup.menu().addItem(NSMenuItem.separatorItem());
 
         final Session<?> session = controller.getSession();
-        final Path container = this.containerService.getContainer(getSelected());
+        final Path container = containerService.getContainer(getSelected());
 
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
