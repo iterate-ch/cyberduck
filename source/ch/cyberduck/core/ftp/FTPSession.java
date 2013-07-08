@@ -708,7 +708,15 @@ public class FTPSession extends SSLSession<FTPClient> {
             return (T) new FTPUnixPermissionFeature(this);
         }
         if(type == Timestamp.class) {
-            return (T) new FTPTimestampFeature(this);
+            if(this.getClient().getFeatures().contains(this.getClient().getCommand(FTPCommand.MFMT))) {
+                return (T) new FTPMFMTTimestampFeature(this);
+            }
+            else {
+                if(this.isUtimeSupported()) {
+                    return (T) new FTPUTIMETimestampFeature(this);
+                }
+            }
+            return null;
         }
         if(type == Command.class) {
             return (T) new FTPCommandFeature(this);
