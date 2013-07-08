@@ -1160,7 +1160,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             return (T) new S3AccessControlListFeature(this);
         }
         if(type == Headers.class) {
-            return (T) new S3HeadersFeature(this);
+            return (T) new S3MetadataFeature(this);
         }
         if(type == Location.class) {
             // Only for AWS

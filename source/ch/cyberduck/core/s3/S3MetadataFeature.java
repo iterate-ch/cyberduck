@@ -35,12 +35,12 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class S3HeadersFeature implements Headers {
-    private static final Logger log = Logger.getLogger(S3HeadersFeature.class);
+public class S3MetadataFeature implements Headers {
+    private static final Logger log = Logger.getLogger(S3MetadataFeature.class);
 
     private S3Session session;
 
-    public S3HeadersFeature(final S3Session session) {
+    public S3MetadataFeature(final S3Session session) {
         this.session = session;
     }
 
