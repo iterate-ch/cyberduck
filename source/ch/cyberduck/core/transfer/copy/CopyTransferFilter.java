@@ -28,12 +28,15 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 import java.util.Map;
 
 /**
  * @version $Id$
  */
 public class CopyTransferFilter implements TransferPathFilter {
+    private static final Logger log = Logger.getLogger(CopyTransferFilter.class);
 
     private Session<?> destination;
 
@@ -73,16 +76,28 @@ public class CopyTransferFilter implements TransferPathFilter {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     Permission permission = source.attributes().getPermission();
                     if(!Permission.EMPTY.equals(permission)) {
-                        unix.setUnixPermission(files.get(source), permission);
+                        try {
+                            unix.setUnixPermission(files.get(source), permission);
+                        }
+                        catch(BackgroundException e) {
+                            // Ignore
+                            log.warn(e.getMessage());
+                        }
                     }
                 }
             }
             final Timestamp timestamp = destination.getFeature(Timestamp.class, null);
             if(timestamp != null) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    timestamp.update(files.get(source), source.attributes().getCreationDate(),
-                            source.attributes().getModificationDate(),
-                            source.attributes().getAccessedDate());
+                    try {
+                        timestamp.setTimestamp(files.get(source), source.attributes().getCreationDate(),
+                                source.attributes().getModificationDate(),
+                                source.attributes().getAccessedDate());
+                    }
+                    catch(BackgroundException e) {
+                        // Ignore
+                        log.warn(e.getMessage());
+                    }
                 }
             }
         }

@@ -134,7 +134,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     final Permission permission = file.attributes().getPermission();
                     if(!Permission.EMPTY.equals(permission)) {
-                        unix.setUnixPermission(file, permission);
+                        try {
+                            unix.setUnixPermission(file, permission);
+                        }
+                        catch(BackgroundException e) {
+                            // Ignore
+                            log.warn(e.getMessage());
+                        }
                     }
                 }
             }
@@ -143,9 +149,15 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     // Read timestamps from local file
                     final Attributes attributes = file.getLocal().attributes();
-                    timestamp.update(file, attributes.getCreationDate(),
-                            attributes.getModificationDate(),
-                            attributes.getAccessedDate());
+                    try {
+                        timestamp.setTimestamp(file, attributes.getCreationDate(),
+                                attributes.getModificationDate(),
+                                attributes.getAccessedDate());
+                    }
+                    catch(BackgroundException e) {
+                        // Ignore
+                        log.warn(e.getMessage());
+                    }
                 }
             }
         }
