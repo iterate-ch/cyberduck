@@ -31,7 +31,7 @@ import java.text.MessageFormat;
 import ch.ethz.ssh2.SFTPv3FileAttributes;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPTouchFeature implements Touch {
 
@@ -43,22 +43,23 @@ public class SFTPTouchFeature implements Touch {
 
     @Override
     public void touch(final Path file) throws BackgroundException {
-        try {
+        if(file.attributes().isFile()) {
             session.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                     file.getName()));
+            try {
+                final SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+                final Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                attr.permissions = Integer.parseInt(permission.getOctalString(), 8);
+                session.sftp().createFile(file.getAbsolute(), attr);
 
-            SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-            Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-            attr.permissions = Integer.parseInt(permission.getOctalString(), 8);
-            session.sftp().createFile(file.getAbsolute(), attr);
-
-            // Even if specified above when creating the file handle, we still need to update the
-            // permissions after the creating the file. SSH_FXP_OPEN does not support setting
-            // attributes in version 4 or lower.
-            new SFTPUnixPermissionFeature(session).setUnixPermission(file, permission);
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, file);
+                // Even if specified above when creating the file handle, we still need to update the
+                // permissions after the creating the file. SSH_FXP_OPEN does not support setting
+                // attributes in version 4 or lower.
+                new SFTPUnixPermissionFeature(session).setUnixPermission(file, permission);
+            }
+            catch(IOException e) {
+                throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, file);
+            }
         }
     }
 }
