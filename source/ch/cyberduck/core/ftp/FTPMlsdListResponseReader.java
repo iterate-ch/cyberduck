@@ -120,9 +120,11 @@ public class FTPMlsdListResponseReader implements FTPResponseReader {
                         }
                     }
                     if(facts.containsKey("modify")) {
+                        // Time values are always represented in UTC
                         parsed.attributes().setModificationDate(this.parseTimestamp(facts.get("modify")));
                     }
                     if(facts.containsKey("create")) {
+                        // Time values are always represented in UTC
                         parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
                     }
                     if(facts.containsKey("charset")) {
@@ -149,13 +151,13 @@ public class FTPMlsdListResponseReader implements FTPResponseReader {
             return -1;
         }
         try {
-            Date parsed = new MDTMSecondsDateFormatter().parse(timestamp);
+            final Date parsed = new MDTMSecondsDateFormatter().parse(timestamp);
             return parsed.getTime();
         }
         catch(ParseException e) {
             log.warn("Failed to parse timestamp:" + e.getMessage());
             try {
-                Date parsed = new MDTMMillisecondsDateFormatter().parse(timestamp);
+                final Date parsed = new MDTMMillisecondsDateFormatter().parse(timestamp);
                 return parsed.getTime();
             }
             catch(ParseException f) {
