@@ -212,7 +212,7 @@ application/vnd.accpac.simply.aso		aso
 application/vnd.accpac.simply.imp		imp
 application/vnd.acucobol			acu
 application/vnd.acucorp				atc acutc
-application/vnd.adobe.air-application-installer-package+zip	air
+application/vnd.adobe.air-application-installer-package+zip air
 # application/vnd.adobe.partial-upload
 application/vnd.adobe.xdp+xml			xdp
 application/vnd.adobe.xfdf			xfdf
@@ -224,7 +224,7 @@ application/vnd.americandynamics.acc		acc
 application/vnd.amiga.ami			ami
 application/vnd.android.package-archive		apk
 application/vnd.anser-web-certificate-issue-initiation	cii
-application/vnd.anser-web-funds-transfer-initiation	fti
+application/vnd.anser-web-funds-transfer-initiation fti
 application/vnd.antix.game-component		atx
 application/vnd.apple.installer+xml		mpkg
 # application/vnd.apple.mpegurl			m3u8
@@ -439,7 +439,7 @@ application/vnd.koan				skp skd skt skm
 application/vnd.kodak-descriptor		sse
 # application/vnd.liberty-request+xml
 application/vnd.llamagraphics.life-balance.desktop	lbd
-application/vnd.llamagraphics.life-balance.exchange+xml	lbe
+application/vnd.llamagraphics.life-balance.exchange+xml lbe
 application/vnd.lotus-1-2-3			123
 application/vnd.lotus-approach			apr
 application/vnd.lotus-freelance			pre
@@ -552,7 +552,7 @@ application/vnd.oasis.opendocument.chart		odc
 application/vnd.oasis.opendocument.chart-template	otc
 application/vnd.oasis.opendocument.database		odb
 application/vnd.oasis.opendocument.formula		odf
-application/vnd.oasis.opendocument.formula-template	odft
+application/vnd.oasis.opendocument.formula-template odft
 application/vnd.oasis.opendocument.graphics		odg
 application/vnd.oasis.opendocument.graphics-template	otg
 application/vnd.oasis.opendocument.image		odi
@@ -560,7 +560,7 @@ application/vnd.oasis.opendocument.image-template	oti
 application/vnd.oasis.opendocument.presentation		odp
 application/vnd.oasis.opendocument.presentation-template	otp
 application/vnd.oasis.opendocument.spreadsheet		ods
-application/vnd.oasis.opendocument.spreadsheet-template	ots
+application/vnd.oasis.opendocument.spreadsheet-template ots
 application/vnd.oasis.opendocument.text			odt
 application/vnd.oasis.opendocument.text-master		otm
 application/vnd.oasis.opendocument.text-template	ott
@@ -658,7 +658,7 @@ application/vnd.openxmlformats-officedocument.spreadsheetml.template	xltx
 # application/vnd.openxmlformats-officedocument.theme+xml
 # application/vnd.openxmlformats-officedocument.themeoverride+xml
 # application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml
-application/vnd.openxmlformats-officedocument.wordprocessingml.document	docx
+application/vnd.openxmlformats-officedocument.wordprocessingml.document docx
 # application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml
 # application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml
 # application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml
@@ -668,7 +668,7 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.document	docx
 # application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml
 # application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml
 # application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml
-application/vnd.openxmlformats-officedocument.wordprocessingml.template	dotx
+application/vnd.openxmlformats-officedocument.wordprocessingml.template dotx
 # application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml
 # application/vnd.openxmlformats-officedocument.wordprocessingml.websettings+xml
 # application/vnd.openxmlformats-package.core-properties+xml
@@ -747,7 +747,7 @@ application/vnd.sema				sema
 application/vnd.semd				semd
 application/vnd.semf				semf
 application/vnd.shana.informed.formdata		ifm
-application/vnd.shana.informed.formtemplate	itp
+application/vnd.shana.informed.formtemplate itp
 application/vnd.shana.informed.interchange	iif
 application/vnd.shana.informed.package		ipk
 application/vnd.simtech-mindmapper		twd twds
@@ -1217,7 +1217,7 @@ model/vrml					wrl vrml
 # multipart/report
 # multipart/signed
 # multipart/voice-message
-text/cache-manifest             appcache
+text/cache-manifest				appcache
 text/calendar					ics ifb
 text/css					css
 text/csv					csv
@@ -1351,5 +1351,5 @@ video/x-ms-wmx					wmx
 video/x-ms-wvx					wvx
 video/x-msvideo					avi
 video/x-sgi-movie				movie
-video/mp2t				ts
+video/mp2t					ts
 x-conference/x-cooltalk				ice
