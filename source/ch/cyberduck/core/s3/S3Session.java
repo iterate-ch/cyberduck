@@ -117,17 +117,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public class RequestEntityRestStorageService extends RestS3Service {
         public RequestEntityRestStorageService(final Jets3tProperties configuration) {
             super(host.getCredentials().isAnonymousLogin() ? null :
-                    new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()) {
-                        @Override
-                        public String getAccessKey() {
-                            return host.getCredentials().getUsername();
-                        }
-
-                        @Override
-                        public String getSecretKey() {
-                            return host.getCredentials().getPassword();
-                        }
-                    }, new PreferencesUseragentProvider().get(), null, configuration);
+                    new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()),
+                    new PreferencesUseragentProvider().get(), null, configuration);
         }
 
         @Override
@@ -354,6 +345,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
+        client.setProviderCredentials(new AWSCredentials(
+                host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         for(Path bucket : new S3BucketListService().list(this)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Found bucket %s", bucket));
