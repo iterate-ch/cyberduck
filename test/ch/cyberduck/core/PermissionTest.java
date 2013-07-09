@@ -21,8 +21,7 @@ package ch.cyberduck.core;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -34,10 +33,23 @@ public class PermissionTest extends AbstractTestCase {
         {
             Permission p = new Permission("rwxrwxrwx");
             assertEquals(p, new Permission(p.getAsDictionary()));
+            assertTrue(p.isReadable());
+            assertTrue(p.isWritable());
+            assertTrue(p.isExecutable());
         }
         {
             Permission p = new Permission("rwx------");
             assertEquals(p, new Permission(p.getAsDictionary()));
+            assertTrue(p.isReadable());
+            assertTrue(p.isWritable());
+            assertTrue(p.isExecutable());
+        }
+        {
+            Permission p = new Permission("r--------");
+            assertEquals(p, new Permission(p.getAsDictionary()));
+            assertTrue(p.isReadable());
+            assertFalse(p.isWritable());
+            assertFalse(p.isExecutable());
         }
     }
 

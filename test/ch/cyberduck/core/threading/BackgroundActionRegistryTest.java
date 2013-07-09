@@ -33,6 +33,11 @@ import static org.junit.Assert.*;
 public class BackgroundActionRegistryTest extends AbstractTestCase {
 
     @Test
+    public void testGlobal() throws Exception {
+        assertSame(BackgroundActionRegistry.global(), BackgroundActionRegistry.global());
+    }
+
+    @Test
     public void testGetCurrent() throws Exception {
         BackgroundActionRegistry r = new BackgroundActionRegistry();
         final CountDownLatch lock = new CountDownLatch(1);

@@ -15,6 +15,7 @@ public class PathAttributesTest extends AbstractTestCase {
         attributes.setSize(3L);
         attributes.setModificationDate(5343L);
         assertEquals(attributes, new PathAttributes(attributes.getAsDictionary()));
+        assertEquals(attributes.hashCode(), new PathAttributes(attributes.getAsDictionary()).hashCode());
     }
 
     @Test
@@ -53,5 +54,6 @@ public class PathAttributesTest extends AbstractTestCase {
         attributes.setVersionId("v-1");
         attributes.setModificationDate(System.currentTimeMillis());
         assertEquals(attributes, new PathAttributes(attributes.getAsDictionary()));
+        assertEquals(attributes.hashCode(), new PathAttributes(attributes.getAsDictionary()).hashCode());
     }
 }
