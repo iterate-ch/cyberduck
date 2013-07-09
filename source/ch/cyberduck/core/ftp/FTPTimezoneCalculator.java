@@ -48,8 +48,8 @@ public class FTPTimezoneCalculator {
                 // Read the modify fact which must be UTC
                 try {
                     if(session.getClient().hasFeature(FTPCmd.MDTM.getCommand())) {
-                        final String timestamp = session.getClient().getModificationTime(test.getAbsolute());
-                        if(null != timestamp) {
+                        try {
+                            final String timestamp = session.getClient().getModificationTime(test.getAbsolute());
                             Long utc = new FTPMlsdListResponseReader().parseTimestamp(timestamp);
                             if(-1 == utc) {
                                 log.warn("No UTC support on server");
@@ -81,7 +81,7 @@ public class FTPTimezoneCalculator {
                             }
                             return zones;
                         }
-                        else {
+                        catch(FTPException e) {
                             return Collections.emptyList();
                         }
                     }

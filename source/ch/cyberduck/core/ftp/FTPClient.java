@@ -46,8 +46,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @version $Id$
@@ -226,34 +224,11 @@ public class FTPClient extends FTPSClient {
         }
     }
 
-    public long size(final String pathname) throws IOException {
-        if(this.hasFeature("SIZE")) {
-            if(!this.setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                throw new FTPException(this.getReplyCode(), this.getReplyString());
-            }
-            if(FTPReply.isPositiveCompletion(this.sendCommand("SIZE", pathname))) {
-                String status = StringUtils.chomp(this.getReplyString().substring(3).trim());
-                // Trim off any trailing characters after a space, e.g. webstar
-                // responds to SIZE with 213 55564 bytes
-                Matcher matcher = Pattern.compile("\\d+").matcher(status);
-                if(matcher.matches()) {
-                    try {
-                        return Long.parseLong(matcher.group());
-                    }
-                    catch(NumberFormatException ex) {
-                        log.warn(String.format("Failed to parse reply:%s", status));
-                    }
-                }
-            }
-        }
-        return -1;
-    }
-
     @Override
     public String getModificationTime(final String file) throws IOException {
         final String status = super.getModificationTime(file);
         if(null == status) {
-            return null;
+            throw new FTPException(this.getReplyCode(), this.getReplyString());
         }
         return StringUtils.chomp(status.substring(3).trim());
     }
