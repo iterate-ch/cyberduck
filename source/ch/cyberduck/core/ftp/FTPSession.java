@@ -70,9 +70,9 @@ public class FTPSession extends SSLSession<FTPClient> {
      */
     private CompositeFileEntryParser parser;
 
-    private Timestamp timestamp = new FTPUTIMETimestampFeature(this);
+    private Timestamp timestamp;
 
-    private UnixPermission permission = new FTPUnixPermissionFeature(this);
+    private UnixPermission permission;
 
     public FTPSession(Host h) {
         super(h);
@@ -240,6 +240,10 @@ public class FTPSession extends SSLSession<FTPClient> {
             if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
                 timestamp = new FTPMFMTTimestampFeature(this);
             }
+            else {
+                timestamp = new FTPUTIMETimestampFeature(this);
+            }
+            permission = new FTPUnixPermissionFeature(this);
             return client;
         }
         catch(IOException e) {
@@ -710,48 +714,10 @@ public class FTPSession extends SSLSession<FTPClient> {
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == UnixPermission.class) {
-            if(null == permission) {
-                return null;
-            }
-            return (T) new UnixPermission() {
-                @Override
-                public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-                    permission.setUnixOwner(file, owner);
-                }
-
-                @Override
-                public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-                    permission.setUnixGroup(file, group);
-                }
-
-                @Override
-                public void setUnixPermission(final Path file, final Permission value) throws BackgroundException {
-                    try {
-                        permission.setUnixPermission(file, value);
-                    }
-                    catch(BackgroundException e) {
-                        permission = null;
-                        throw e;
-                    }
-                }
-            };
+            return (T) permission;
         }
         if(type == Timestamp.class) {
-            if(null == timestamp) {
-                return null;
-            }
-            return (T) new Timestamp() {
-                @Override
-                public void setTimestamp(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
-                    try {
-                        timestamp.setTimestamp(file, created, modified, accessed);
-                    }
-                    catch(BackgroundException e) {
-                        timestamp = null;
-                        throw e;
-                    }
-                }
-            };
+            return (T) timestamp;
         }
         if(type == Command.class) {
             return (T) new FTPCommandFeature(this);

@@ -40,12 +40,20 @@ public class FTPUTIMETimestampFeature implements Timestamp {
 
     private FTPSession session;
 
+    private FTPException failure;
+
     public FTPUTIMETimestampFeature(final FTPSession session) {
         this.session = session;
     }
 
     @Override
     public void setTimestamp(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
+        if(failure != null) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Skip setting timestamp for %s due to previous failure %s", file, failure.getMessage()));
+            }
+            throw new FTPExceptionMappingService().map("Cannot change timestamp", failure, file);
+        }
         session.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 file.getName(), UserDateFormatterFactory.get().getShortFormat(modified)));
 
@@ -61,7 +69,7 @@ public class FTPUTIMETimestampFeature implements Timestamp {
                     formatter.format(new Date(accessed), TimeZone.getTimeZone("UTC")),
                     formatter.format(new Date(modified), TimeZone.getTimeZone("UTC")),
                     formatter.format(new Date(created), TimeZone.getTimeZone("UTC"))))) {
-                throw new FTPException(session.getClient().getReplyCode(),
+                throw failure = new FTPException(session.getClient().getReplyCode(),
                         session.getClient().getReplyString());
             }
         }

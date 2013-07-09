@@ -24,18 +24,38 @@ import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.text.MessageFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPUnixPermissionFeature implements UnixPermission {
+    private static final Logger log = Logger.getLogger(FTPUnixPermissionFeature.class);
 
     private FTPSession session;
 
+    private FTPException failure;
+
     public FTPUnixPermissionFeature(final FTPSession session) {
         this.session = session;
+    }
+
+    private void sendCommand(final Path file, final String owner, final String command) throws IOException {
+        if(file.attributes().isFile() && !file.attributes().isSymbolicLink()) {
+            if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
+                throw new FTPException(session.getClient().getReplyCode(),
+                        session.getClient().getReplyString());
+            }
+        }
+        else if(file.attributes().isDirectory()) {
+            if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
+                throw new FTPException(session.getClient().getReplyCode(),
+                        session.getClient().getReplyString());
+            }
+        }
     }
 
     @Override
@@ -43,46 +63,23 @@ public class FTPUnixPermissionFeature implements UnixPermission {
         session.message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
                 file.getName(), owner));
 
-        String command = "chown";
+        final String command = "chown";
         try {
-            if(file.attributes().isFile() && !file.attributes().isSymbolicLink()) {
-                if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
-                    throw new FTPException(session.getClient().getReplyCode(),
-                            session.getClient().getReplyString());
-                }
-            }
-            else if(file.attributes().isDirectory()) {
-                if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
-                    throw new FTPException(session.getClient().getReplyCode(),
-                            session.getClient().getReplyString());
-                }
-            }
+            this.sendCommand(file, owner, command);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Cannot change owner", e, file);
         }
     }
 
-
     @Override
     public void setUnixGroup(final Path file, final String group) throws BackgroundException {
         session.message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
                 file.getName(), group));
 
-        String command = "chgrp";
+        final String command = "chgrp";
         try {
-            if(file.attributes().isFile() && !file.attributes().isSymbolicLink()) {
-                if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, group, file.getAbsolute()))) {
-                    throw new FTPException(session.getClient().getReplyCode(),
-                            session.getClient().getReplyString());
-                }
-            }
-            else if(file.attributes().isDirectory()) {
-                if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, group, file.getAbsolute()))) {
-                    throw new FTPException(session.getClient().getReplyCode(),
-                            session.getClient().getReplyString());
-                }
-            }
+            this.sendCommand(file, group, command);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Cannot change group", e, file);
@@ -91,18 +88,24 @@ public class FTPUnixPermissionFeature implements UnixPermission {
 
     @Override
     public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+        if(failure != null) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Skip setting permission for %s due to previous failure %s", file, failure.getMessage()));
+            }
+            throw new FTPExceptionMappingService().map("Cannot change permissions", failure, file);
+        }
         session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                 file.getName(), permission.getOctalString()));
         try {
             if(file.attributes().isFile() && !file.attributes().isSymbolicLink()) {
                 if(!session.getClient().sendSiteCommand(String.format("CHMOD %s %s", permission.getOctalString(), file.getAbsolute()))) {
-                    throw new FTPException(session.getClient().getReplyCode(),
+                    throw failure = new FTPException(session.getClient().getReplyCode(),
                             session.getClient().getReplyString());
                 }
             }
             else if(file.attributes().isDirectory()) {
                 if(!session.getClient().sendSiteCommand(String.format("CHMOD %s %s", permission.getOctalString(), file.getAbsolute()))) {
-                    throw new FTPException(session.getClient().getReplyCode(),
+                    throw failure = new FTPException(session.getClient().getReplyCode(),
                             session.getClient().getReplyString());
                 }
             }
