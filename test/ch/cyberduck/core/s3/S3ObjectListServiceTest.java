@@ -62,6 +62,20 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         }
     }
 
+    @Test
+    public void tetsEmptyPlaceholder() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final List<Path> list = new S3ObjectListService(session).list(new Path(container, "test", Path.DIRECTORY_TYPE));
+        assertTrue(list.isEmpty());
+    }
+
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final S3Session session = new S3Session(
