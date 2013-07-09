@@ -27,9 +27,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import static org.junit.Assert.*;
 
@@ -191,6 +189,12 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         assertEquals(11, new Date(time).getHours());
         assertEquals(12, new Date(time).getMinutes());
         assertEquals(1, new Date(time).getSeconds());
+    }
+
+    @Test
+    public void testParseTimestampInvalid() {
+        final long time = new FTPMlsdListResponseReader().parseTimestamp("2013");
+        assertEquals(-1L, time);
     }
 
     @Test
