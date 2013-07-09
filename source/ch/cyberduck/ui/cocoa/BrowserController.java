@@ -3970,7 +3970,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("archiveButtonClicked:")) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                if(session.getFeature(Archive.class, LoginControllerFactory.get(this)) == null) {
+                if(session.getFeature(Compress.class, LoginControllerFactory.get(this)) == null) {
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {
@@ -3987,7 +3987,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("unarchiveButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                if(session.getFeature(Archive.class, LoginControllerFactory.get(this)) == null) {
+                if(session.getFeature(Compress.class, LoginControllerFactory.get(this)) == null) {
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {
