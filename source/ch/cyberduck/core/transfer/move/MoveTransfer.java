@@ -104,12 +104,14 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void transfer(final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Transfer file %s with options %s", file, options));
+            log.debug(String.format("Transfer file %s with options %s", source, options));
         }
-        final Path destination = files.get(file);
-        session.rename(file, destination);
+        final Path destination = files.get(source);
+        session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+                source.getName(), destination.getName()));
+        session.rename(source, destination);
     }
 
     @Override

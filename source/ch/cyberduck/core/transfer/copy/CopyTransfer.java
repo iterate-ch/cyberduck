@@ -179,9 +179,9 @@ public class CopyTransfer extends Transfer {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
         final Path copy = files.get(source);
+        session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                source.getName(), copy.getName()));
         if(source.attributes().isFile()) {
-            session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                    source.getName(), copy));
             final Copy feature = session.getFeature(Copy.class, null);
             if(feature != null) {
                 feature.copy(source, copy);
@@ -198,8 +198,6 @@ public class CopyTransfer extends Transfer {
             }
         }
         else {
-            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
             session.mkdir(copy);
         }
     }
