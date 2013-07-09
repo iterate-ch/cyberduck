@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -132,33 +131,41 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final UnixPermission unix = session.getFeature(UnixPermission.class, null);
             if(unix != null) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    final Permission permission = file.attributes().getPermission();
-                    if(!Permission.EMPTY.equals(permission)) {
-                        try {
-                            unix.setUnixPermission(file, permission);
-                        }
-                        catch(BackgroundException e) {
-                            // Ignore
-                            log.warn(e.getMessage());
-                        }
-                    }
+                    this.permissions(file, unix);
                 }
             }
             final Timestamp timestamp = session.getFeature(Timestamp.class, null);
             if(timestamp != null) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    // Read timestamps from local file
-                    final Attributes attributes = file.getLocal().attributes();
-                    try {
-                        timestamp.setTimestamp(file, attributes.getCreationDate(),
-                                attributes.getModificationDate(),
-                                attributes.getAccessedDate());
-                    }
-                    catch(BackgroundException e) {
-                        // Ignore
-                        log.warn(e.getMessage());
-                    }
+                    this.timestamp(file, timestamp);
+
                 }
+            }
+        }
+    }
+
+    private void timestamp(final Path file, final Timestamp timestamp) {
+        // Read timestamps from local file
+        try {
+            timestamp.setTimestamp(file, file.getLocal().attributes().getCreationDate(),
+                    file.getLocal().attributes().getModificationDate(),
+                    file.getLocal().attributes().getAccessedDate());
+        }
+        catch(BackgroundException e) {
+            // Ignore
+            log.warn(e.getMessage());
+        }
+    }
+
+    private void permissions(final Path file, final UnixPermission unix) {
+        final Permission permission = file.attributes().getPermission();
+        if(!Permission.EMPTY.equals(permission)) {
+            try {
+                unix.setUnixPermission(file, permission);
+            }
+            catch(BackgroundException e) {
+                // Ignore
+                log.warn(e.getMessage());
             }
         }
     }
