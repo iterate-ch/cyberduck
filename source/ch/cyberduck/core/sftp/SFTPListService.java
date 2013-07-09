@@ -67,10 +67,10 @@ public class SFTPListService implements ListService {
                         p.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
                     }
                     catch(IndexOutOfBoundsException e) {
-                        log.warn(String.format("Failure parsing mode:%s", e.getMessage()));
+                        log.warn(String.format("Failure parsing mode %s", e.getMessage()));
                     }
                     catch(NumberFormatException e) {
-                        log.warn(String.format("Failure parsing mode:%s", e.getMessage()));
+                        log.warn(String.format("Failure parsing mode %s", e.getMessage()));
                     }
                 }
                 if(null != attributes.uid) {
@@ -93,7 +93,7 @@ public class SFTPListService implements ListService {
                         symlink = new Path(target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
                     }
                     else {
-                        symlink = new Path(p.getParent(), target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                        symlink = new Path(file, target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
                     }
                     p.setSymlinkTarget(symlink);
                     final SFTPv3FileAttributes targetAttributes = session.sftp().stat(symlink.getAbsolute());
