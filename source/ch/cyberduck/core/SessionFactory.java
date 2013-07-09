@@ -45,62 +45,66 @@ public abstract class SessionFactory {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Register protocol %s", p.getIdentifier()));
                 }
-                switch(p.getType()) {
-                    case ftp:
-                        factories.put(p, new SessionFactory() {
-                            @Override
-                            protected Session create(Host h) {
-                                return new FTPSession(h);
-                            }
-                        });
-                        break;
-                    case sftp:
-                        factories.put(p, new SessionFactory() {
-                            @Override
-                            protected Session create(Host h) {
-                                return new SFTPSession(h);
-                            }
-                        });
-                        break;
-                    case dav:
-                        factories.put(p, new SessionFactory() {
-                            @Override
-                            protected Session create(Host h) {
-                                return new DAVSession(h);
-                            }
-                        });
-                        break;
-                    case s3:
-                        factories.put(p, new SessionFactory() {
-                            @Override
-                            protected Session create(Host h) {
-                                return new S3Session(h);
-                            }
-                        });
-                        break;
-                    case googlestorage:
-                        factories.put(p, new SessionFactory() {
-                            @Override
-                            protected Session create(Host h) {
-                                return new GSSession(h);
-                            }
-                        });
-                        break;
-                    case swift:
-                        factories.put(p, new SessionFactory() {
-                            @Override
-                            protected Session create(Host h) {
-                                return new CFSession(h);
-                            }
-                        });
-                        break;
-                    default:
-                        throw new FactoryException(String.format("No factory for protocol %s", p));
-                }
+                register(p);
             }
             return super.get(key);
         }
     };
+
+    private static void register(final Protocol p) {
+        switch(p.getType()) {
+            case ftp:
+                factories.put(p, new SessionFactory() {
+                    @Override
+                    protected Session create(Host h) {
+                        return new FTPSession(h);
+                    }
+                });
+                break;
+            case sftp:
+                factories.put(p, new SessionFactory() {
+                    @Override
+                    protected Session create(Host h) {
+                        return new SFTPSession(h);
+                    }
+                });
+                break;
+            case dav:
+                factories.put(p, new SessionFactory() {
+                    @Override
+                    protected Session create(Host h) {
+                        return new DAVSession(h);
+                    }
+                });
+                break;
+            case s3:
+                factories.put(p, new SessionFactory() {
+                    @Override
+                    protected Session create(Host h) {
+                        return new S3Session(h);
+                    }
+                });
+                break;
+            case googlestorage:
+                factories.put(p, new SessionFactory() {
+                    @Override
+                    protected Session create(Host h) {
+                        return new GSSession(h);
+                    }
+                });
+                break;
+            case swift:
+                factories.put(p, new SessionFactory() {
+                    @Override
+                    protected Session create(Host h) {
+                        return new CFSession(h);
+                    }
+                });
+                break;
+            default:
+                throw new FactoryException(String.format("No factory for protocol %s", p));
+        }
+    }
 
     protected abstract Session create(Host h);
 
