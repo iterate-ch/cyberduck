@@ -61,7 +61,6 @@
 
     <path id="test.classpath">
         <path refid="build.classpath"/>
-        <pathelement location="${build.classes}"/>
         <pathelement location="${build.unittests}"/>
         <pathelement location="${build}/${configuration}"/>
         <fileset dir="${build}">
@@ -160,7 +159,6 @@
                 <include name="org/spearce/jgit/**/*.class"/>
             </fileset>
             <fileset dir="${lib}">
-                <include name="cloudfiles.properties"/>
                 <include name="mime.types"/>
                 <include name="log4j-*.xml"/>
             </fileset>
