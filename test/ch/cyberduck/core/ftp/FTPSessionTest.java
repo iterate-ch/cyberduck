@@ -234,20 +234,18 @@ public class FTPSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testUnixPermissionFeature() {
-        final Host host = new Host(Protocol.FTP, "test.cyberduck.ch", new Credentials(
-                "u", "p"
-        ));
-        final Session session = new FTPSession(host);
-        assertNotNull(session.getFeature(UnixPermission.class, null));
-    }
-
-    @Test
     public void testFeatures() throws Exception {
-        final Session session = new FTPSession(new Host("h"));
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
+        assertNull(session.getFeature(UnixPermission.class, null));
+        assertNull(session.getFeature(Timestamp.class, null));
+        session.open(new DefaultHostKeyController());
         assertNotNull(session.getFeature(UnixPermission.class, null));
         assertNotNull(session.getFeature(Timestamp.class, null));
-        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
+        session.close();
     }
 
     @Test
