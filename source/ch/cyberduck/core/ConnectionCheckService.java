@@ -21,7 +21,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -113,8 +112,6 @@ public class ConnectionCheckService {
 
         // The IP address could successfully be determined
         session.open(key);
-
-        GrowlFactory.get().notify("Connection opened", bookmark.getHostname());
 
         listener.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 bookmark.getProtocol().getName()));

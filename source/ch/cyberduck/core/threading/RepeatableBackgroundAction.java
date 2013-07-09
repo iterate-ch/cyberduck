@@ -29,6 +29,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
@@ -77,9 +78,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     private AlertCallback alert;
 
-    private ProgressListener progressListener;
+    protected ProgressListener progressListener;
 
     private TranscriptListener transcriptListener;
+
+    private Growl growl = GrowlFactory.get();
 
     public RepeatableBackgroundAction(final AlertCallback alert,
                                       final ProgressListener progressListener,
@@ -133,6 +136,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     progressListener);
             for(Session session : this.getSessions()) {
                 c.check(session);
+                growl.notify("Connection opened", session.getHost().getHostname());
             }
         }
         catch(BackgroundException failure) {
@@ -200,7 +204,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         }
         else {
             for(Session session : this.getSessions()) {
-                GrowlFactory.get().notify(failure.getMessage(), session.getHost().getHostname());
+                growl.notify(failure.getMessage(), session.getHost().getHostname());
             }
             exception = failure;
             failed = true;
