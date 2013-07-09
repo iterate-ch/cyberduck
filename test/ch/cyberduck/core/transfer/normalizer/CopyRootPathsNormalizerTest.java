@@ -19,7 +19,6 @@ package ch.cyberduck.core.transfer.normalizer;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class CopyRootPathsNormalizerTest extends AbstractTestCase {
     public void testNormalizeNone() throws Exception {
         CopyRootPathsNormalizer normalizer = new CopyRootPathsNormalizer();
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        files.put(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE));
+        files.put(new Path("/p", Path.DIRECTORY_TYPE), new Path("/d", Path.DIRECTORY_TYPE));
         assertEquals(files, normalizer.normalize(files));
     }
 
@@ -46,17 +45,17 @@ public class CopyRootPathsNormalizerTest extends AbstractTestCase {
     public void testNormalize() throws Exception {
         CopyRootPathsNormalizer normalizer = new CopyRootPathsNormalizer();
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        files.put(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE));
-        files.put(new NullPath("/p/child", Path.DIRECTORY_TYPE), new NullPath("/d/child", Path.DIRECTORY_TYPE));
-        assertEquals(Collections.<Path, Path>singletonMap(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE)), normalizer.normalize(files));
+        files.put(new Path("/p", Path.DIRECTORY_TYPE), new Path("/d", Path.DIRECTORY_TYPE));
+        files.put(new Path("/p/child", Path.DIRECTORY_TYPE), new Path("/d/child", Path.DIRECTORY_TYPE));
+        assertEquals(Collections.<Path, Path>singletonMap(new Path("/p", Path.DIRECTORY_TYPE), new Path("/d", Path.DIRECTORY_TYPE)), normalizer.normalize(files));
     }
 
     @Test
     public void testNormalize2() throws Exception {
         CopyRootPathsNormalizer normalizer = new CopyRootPathsNormalizer();
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        files.put(new NullPath("/p/child", Path.DIRECTORY_TYPE), new NullPath("/d/child", Path.DIRECTORY_TYPE));
-        files.put(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE));
-        assertEquals(Collections.<Path, Path>singletonMap(new NullPath("/p", Path.DIRECTORY_TYPE), new NullPath("/d", Path.DIRECTORY_TYPE)), normalizer.normalize(files));
+        files.put(new Path("/p/child", Path.DIRECTORY_TYPE), new Path("/d/child", Path.DIRECTORY_TYPE));
+        files.put(new Path("/p", Path.DIRECTORY_TYPE), new Path("/d", Path.DIRECTORY_TYPE));
+        assertEquals(Collections.<Path, Path>singletonMap(new Path("/p", Path.DIRECTORY_TYPE), new Path("/d", Path.DIRECTORY_TYPE)), normalizer.normalize(files));
     }
 }

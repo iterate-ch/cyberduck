@@ -3,7 +3,6 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
@@ -32,7 +31,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testPrepare() throws Exception {
         RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
-        final NullPath p = new NullPath("t", Path.FILE_TYPE) {
+        final Path p = new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -54,7 +53,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testPrepareRename() throws Exception {
         RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
-        final NullPath p = new NullPath("t", Path.FILE_TYPE) {
+        final Path p = new Path("t", Path.FILE_TYPE) {
             final NullLocal local = new NullLocal(null, "t") {
                 @Override
                 public boolean exists() {

@@ -1,6 +1,14 @@
 package ch.cyberduck.core.synchronization;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullPathAttributes;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Local;
 
@@ -24,7 +32,7 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
                 return true;
             }
         });
-        assertEquals(Comparison.EQUAL, s.compare(new NullPath("t", Path.FILE_TYPE) {
+        assertEquals(Comparison.EQUAL, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -55,7 +63,7 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
                 };
             }
         }));
-        assertEquals(Comparison.LOCAL_NEWER, s.compare(new NullPath("t", Path.FILE_TYPE) {
+        assertEquals(Comparison.LOCAL_NEWER, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {

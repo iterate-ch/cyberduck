@@ -4,7 +4,6 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Local;
@@ -25,7 +24,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testAccept() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
-        assertTrue(f.accept(new NullSession(new Host("h")), new NullPath("t", Path.FILE_TYPE) {
+        assertTrue(f.accept(new NullSession(new Host("h")), new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "a") {
@@ -41,7 +40,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testPrepareFalse() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
-        final NullPath t = new NullPath("t", Path.FILE_TYPE);
+        final Path t = new Path("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal(null, "t"));
         t.attributes().setSize(7L);
         final TransferStatus status = f.prepare(new NullSession(new Host("h")), t);
@@ -51,13 +50,13 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testPrepare() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
-        final NullPath t = new NullPath("t", Path.FILE_TYPE) {
+        final Path t = new Path("t", Path.FILE_TYPE) {
         };
         t.setLocal(new NullLocal(null, "t"));
         final TransferStatus status = f.prepare(new NullSession(new Host("h")) {
             @Override
             public AttributedList<Path> list(final Path file) {
-                final NullPath f = new NullPath("t", Path.FILE_TYPE);
+                final Path f = new Path("t", Path.FILE_TYPE);
                 f.attributes().setSize(7L);
                 return new AttributedList<Path>(Collections.<Path>singletonList(f));
             }
@@ -69,7 +68,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testPrepare0() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
-        final NullPath t = new NullPath("t", Path.FILE_TYPE);
+        final Path t = new Path("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal(null, "t"));
         t.attributes().setSize(0L);
         final TransferStatus status = f.prepare(new NullSession(new Host("h")), t);

@@ -125,22 +125,22 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testSymlink() {
-        Path p = new NullPath("t", Path.FILE_TYPE);
+        Path p = new Path("t", Path.FILE_TYPE);
         assertFalse(p.attributes().isSymbolicLink());
         assertNull(p.getSymlinkTarget());
         p.attributes().setType(Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
         assertTrue(p.attributes().isSymbolicLink());
-        p.setSymlinkTarget(new NullPath("s", Path.FILE_TYPE));
+        p.setSymlinkTarget(new Path("s", Path.FILE_TYPE));
         assertEquals("/s", p.getSymlinkTarget().getAbsolute());
     }
 
     @Test
     public void testIsChild() {
-        Path p = new NullPath("/a/t", Path.FILE_TYPE);
-        assertTrue(p.isChild(new NullPath("/a", Path.DIRECTORY_TYPE)));
-        assertTrue(p.isChild(new NullPath("/", Path.DIRECTORY_TYPE)));
-        assertFalse(p.isChild(new NullPath("/a", Path.FILE_TYPE)));
-        final NullPath d = new NullPath("/a", Path.DIRECTORY_TYPE);
+        Path p = new Path("/a/t", Path.FILE_TYPE);
+        assertTrue(p.isChild(new Path("/a", Path.DIRECTORY_TYPE)));
+        assertTrue(p.isChild(new Path("/", Path.DIRECTORY_TYPE)));
+        assertFalse(p.isChild(new Path("/a", Path.FILE_TYPE)));
+        final Path d = new Path("/a", Path.DIRECTORY_TYPE);
         d.attributes().setVersionId("1");
         d.attributes().setDuplicate(true);
         assertFalse(p.isChild(d));
@@ -148,7 +148,7 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testGetParent() {
-        assertEquals(new NullPath("/b/t", Path.DIRECTORY_TYPE), new NullPath("/b/t/f.type", Path.FILE_TYPE).getParent());
+        assertEquals(new Path("/b/t", Path.DIRECTORY_TYPE), new Path("/b/t/f.type", Path.FILE_TYPE).getParent());
     }
 
     @Test

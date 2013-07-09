@@ -1,7 +1,6 @@
 package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
@@ -47,7 +46,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
     @Test
     public void testEqual() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        final NullPath p = new NullPath("a", Path.FILE_TYPE);
+        final Path p = new Path("a", Path.FILE_TYPE);
         final Map<String, String> previous = new HashMap<String, String>();
         previous.put("key", "v1");
         p.attributes().setMetadata(previous);
@@ -76,7 +75,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
     @Test
     public void testRun() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        final NullPath p = new NullPath("a", Path.FILE_TYPE);
+        final Path p = new Path("a", Path.FILE_TYPE);
         final Map<String, String> previous = new HashMap<String, String>();
         previous.put("nullified", "hash");
         previous.put("key", "v1");

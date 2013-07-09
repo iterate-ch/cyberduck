@@ -20,7 +20,7 @@ public class CacheTest extends AbstractTestCase {
         }));
         final Object u = new Object();
         final AttributedList<Path> list = new AttributedList<Path>();
-        final Path file = new NullPath("name", Path.FILE_TYPE);
+        final Path file = new Path("name", Path.FILE_TYPE);
         list.add(file);
         cache.put(new PathReference() {
             @Override
@@ -93,7 +93,7 @@ public class CacheTest extends AbstractTestCase {
     @Test
     public void testGet() throws Exception {
         Cache cache = new Cache();
-        final Path file = new NullPath("name", Path.FILE_TYPE);
+        final Path file = new Path("name", Path.FILE_TYPE);
         assertEquals(AttributedList.<Path>emptyList(), cache.get(file.getReference()));
     }
 }

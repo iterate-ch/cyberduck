@@ -4,7 +4,6 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -33,7 +32,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), new NullPath("t", Path.FILE_TYPE));
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), new Path("t", Path.FILE_TYPE));
         t.addSize(4L);
         t.addTransferred(3L);
         final DownloadTransfer serialized = new DownloadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
@@ -47,7 +46,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerializeComplete() throws Exception {
-        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), new NullPath("/t", Path.DIRECTORY_TYPE) {
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), new Path("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -60,12 +59,12 @@ public class DownloadTransferTest extends AbstractTestCase {
         }) {
             @Override
             protected void fireWillTransferPath(Path path) {
-                assertEquals(new NullPath("/t", Path.DIRECTORY_TYPE), path);
+                assertEquals(new Path("/t", Path.DIRECTORY_TYPE), path);
             }
 
             @Override
             protected void fireDidTransferPath(Path path) {
-                assertEquals(new NullPath("/t", Path.DIRECTORY_TYPE), path);
+                assertEquals(new Path("/t", Path.DIRECTORY_TYPE), path);
             }
         };
         t.start(new TransferPrompt() {
@@ -82,23 +81,23 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testChildren() throws Exception {
-        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
         };
         root.setLocal(new NullLocal(null, "l"));
         Transfer t = new DownloadTransfer(new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file) {
                 final AttributedList<Path> children = new AttributedList<Path>();
-                children.add(new NullPath("/t/c", Path.FILE_TYPE));
+                children.add(new Path("/t/c", Path.FILE_TYPE));
                 return children;
             }
         }, root);
-        assertEquals(Collections.<Path>singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
+        assertEquals(Collections.<Path>singletonList(new Path("/t/c", Path.FILE_TYPE)), t.children(root));
     }
 
     @Test
     public void testChildrenEmpty() throws Exception {
-        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
         };
         Transfer t = new DownloadTransfer(new NullSession(new Host("t")) {
             @Override
@@ -111,8 +110,8 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareOverride() throws Exception {
-        final NullPath child = new NullPath("/t/c", Path.FILE_TYPE);
-        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        final Path child = new Path("/t/c", Path.FILE_TYPE);
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
         };
         root.setLocal(new NullLocal(null, "l") {
             @Override
@@ -159,7 +158,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test(expected = NullPointerException.class)
     public void testDownloadPath() throws Exception {
-        final NullPath root = new NullPath("/t", Path.FILE_TYPE);
+        final Path root = new Path("/t", Path.FILE_TYPE);
         assertNull(root.getLocal());
         List<Path> roots = new ArrayList<Path>();
         roots.add(root);
@@ -169,7 +168,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testCustomDownloadPath() throws Exception {
-        final NullPath root = new NullPath("/t", Path.FILE_TYPE);
+        final Path root = new Path("/t", Path.FILE_TYPE);
         final NullLocal l = new NullLocal(null, "n");
         root.setLocal(l);
         assertNotNull(root.getLocal());
@@ -179,7 +178,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testExclude() throws Exception {
-        final NullPath parent = new NullPath("t", Path.FILE_TYPE);
+        final Path parent = new Path("t", Path.FILE_TYPE);
         Transfer t = new DownloadTransfer(new NullSession(new Host("t")), parent);
         t.setSelected(null, false);
     }

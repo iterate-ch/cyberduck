@@ -4,7 +4,6 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -32,7 +31,7 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new UploadTransfer(new NullSession(new Host("t")), new NullPath("t", Path.FILE_TYPE));
+        Transfer t = new UploadTransfer(new NullSession(new Host("t")), new Path("t", Path.FILE_TYPE));
         t.addSize(4L);
         t.addTransferred(3L);
         final UploadTransfer serialized = new UploadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
@@ -45,7 +44,7 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testChildrenEmpty() throws Exception {
-        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -62,11 +61,11 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareOverrideRootExists() throws Exception {
-        final NullPath child = new NullPath("/t/c", Path.FILE_TYPE);
-        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        final Path child = new Path("/t/c", Path.FILE_TYPE);
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Path getParent() {
-                return new NullPath("/", Path.DIRECTORY_TYPE) {
+                return new Path("/", Path.DIRECTORY_TYPE) {
                 };
             }
         };
@@ -81,7 +80,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final Transfer t = new UploadTransfer(new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file) {
-                return new AttributedList<Path>(Collections.<Path>singletonList(new NullPath("/t", Path.DIRECTORY_TYPE)));
+                return new AttributedList<Path>(Collections.<Path>singletonList(new Path("/t", Path.DIRECTORY_TYPE)));
             }
         }, root) {
             @Override
@@ -114,11 +113,11 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareOverrideRootDoesNotExist() throws Exception {
-        final NullPath child = new NullPath("/t/c", Path.FILE_TYPE);
-        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        final Path child = new Path("/t/c", Path.FILE_TYPE);
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Path getParent() {
-                return new NullPath("/", Path.DIRECTORY_TYPE);
+                return new Path("/", Path.DIRECTORY_TYPE);
             }
         };
         root.setLocal(new NullLocal(null, "l") {
@@ -156,7 +155,7 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testChildren() throws Exception {
-        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -170,13 +169,13 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         };
         Transfer t = new UploadTransfer(new NullSession(new Host("t")), root);
-        assertEquals(Collections.<Path>singletonList(new NullPath("/t/c", Path.FILE_TYPE)), t.children(root));
+        assertEquals(Collections.<Path>singletonList(new Path("/t/c", Path.FILE_TYPE)), t.children(root));
     }
 
     @Test
     public void testCacheResume() throws Exception {
         final AtomicInteger c = new AtomicInteger();
-        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -217,7 +216,7 @@ public class UploadTransferTest extends AbstractTestCase {
     @Test
     public void testCacheRename() throws Exception {
         final AtomicInteger c = new AtomicInteger();
-        final NullPath root = new NullPath("/t", Path.DIRECTORY_TYPE) {
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {

@@ -24,7 +24,7 @@ public class NSObjectPathReferenceTest extends AbstractTestCase {
     @Test
     public void testEqualConstructors() throws Exception {
         assertEquals(new NSObjectPathReference(NSString.stringWithString("/b")), new NSObjectPathReference(
-                new NullPath("/b", Path.FILE_TYPE)
+                new Path("/b", Path.FILE_TYPE)
         ));
     }
 }

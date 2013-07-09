@@ -2,7 +2,6 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 
@@ -21,10 +20,10 @@ public class CalculateSizeWorkerTest extends AbstractTestCase {
     @Test
     public void testRun() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        final NullPath a = new NullPath("a", Path.FILE_TYPE);
+        final Path a = new Path("a", Path.FILE_TYPE);
         a.attributes().setSize(1L);
         files.add(a);
-        final NullPath b = new NullPath("a", Path.FILE_TYPE);
+        final Path b = new Path("a", Path.FILE_TYPE);
         b.attributes().setSize(3L);
         files.add(b);
         assertEquals(4L, new CalculateSizeWorker(new NullSession(new Host("h")), files) {

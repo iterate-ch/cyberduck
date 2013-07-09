@@ -20,7 +20,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     public void testAcceptNoLocal() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         // Local file does not exist
-        assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.FILE_TYPE) {
+        assertFalse(f.accept(new NullSession(new Host("h")), new Path("a", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -31,7 +31,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 };
             }
         }));
-        assertFalse(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.DIRECTORY_TYPE) {
+        assertFalse(f.accept(new NullSession(new Host("h")), new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -47,7 +47,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     @Test
     public void testAcceptRemoteExists() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
-        assertTrue(f.accept(new NullSession(new Host("h")), new NullPath("a", Path.DIRECTORY_TYPE) {
+        assertTrue(f.accept(new NullSession(new Host("h")), new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -61,9 +61,9 @@ public class OverwriteFilterTest extends AbstractTestCase {
         assertFalse(f.accept(new NullSession(new Host("h")) {
                                  @Override
                                  public AttributedList<Path> list(final Path file) {
-                                     return new AttributedList<Path>(Collections.<Path>singletonList(new NullPath("a", Path.DIRECTORY_TYPE)));
+                                     return new AttributedList<Path>(Collections.<Path>singletonList(new Path("a", Path.DIRECTORY_TYPE)));
                                  }
-                             }, new NullPath("a", Path.DIRECTORY_TYPE) {
+                             }, new Path("a", Path.DIRECTORY_TYPE) {
                                  @Override
                                  public Local getLocal() {
                                      return new NullLocal(null, "t") {
@@ -80,7 +80,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     @Test
     public void testSize() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
-        assertEquals(1L, f.prepare(new NullSession(new Host("h")), new NullPath("/t", Path.FILE_TYPE) {
+        assertEquals(1L, f.prepare(new NullSession(new Host("h")), new Path("/t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "/t") {
@@ -101,7 +101,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     @Test
     public void testPermissionsNoChange() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
-        final NullPath file = new NullPath("/t", Path.FILE_TYPE);
+        final Path file = new Path("/t", Path.FILE_TYPE);
         file.setLocal(new NullLocal(null, "a"));
         assertFalse(f.prepare(new NullSession(new Host("h")), file).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
@@ -111,7 +111,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     @Test
     public void testPermissionsExistsNoChange() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
-        final NullPath file = new NullPath("/t", Path.FILE_TYPE);
+        final Path file = new Path("/t", Path.FILE_TYPE);
         file.setLocal(new NullLocal(null, "a"));
         assertFalse(f.prepare(new NullSession(new Host("h")) {
             @Override

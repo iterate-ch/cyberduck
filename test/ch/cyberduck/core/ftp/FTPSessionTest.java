@@ -250,7 +250,7 @@ public class FTPSessionTest extends AbstractTestCase {
 
     @Test
     public void testTransfer() throws Exception {
-        Path p = new NullPath("/t", Path.FILE_TYPE);
+        Path p = new Path("/t", Path.FILE_TYPE);
         final TransferStatus status = new TransferStatus();
         status.setLength(432768L);
         new FTPSession(new Host("t")).transfer(p, new NullInputStream(status.getLength()), new NullOutputStream(),
@@ -280,7 +280,7 @@ public class FTPSessionTest extends AbstractTestCase {
 
     @Test
     public void testTransferInterrupt() throws Exception {
-        final Path p = new NullPath("/t", Path.FILE_TYPE);
+        final Path p = new Path("/t", Path.FILE_TYPE);
         final TransferStatus status = new TransferStatus();
         final CyclicBarrier lock = new CyclicBarrier(2);
         final CyclicBarrier exit = new CyclicBarrier(2);

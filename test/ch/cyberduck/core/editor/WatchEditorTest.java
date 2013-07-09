@@ -20,7 +20,6 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
@@ -42,7 +41,7 @@ public class WatchEditorTest extends AbstractTestCase {
 
     @Test
     public void testEdit() throws Exception {
-        final NullPath path = new NullPath("/f1/f2/t", Path.FILE_TYPE);
+        final Path path = new Path("/f1/f2/t", Path.FILE_TYPE);
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
         final WatchEditor editor = new WatchEditor(new Controller() {

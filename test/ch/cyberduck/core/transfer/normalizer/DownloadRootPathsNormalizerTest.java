@@ -2,7 +2,6 @@ package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Local;
 
@@ -22,18 +21,18 @@ public class DownloadRootPathsNormalizerTest extends AbstractTestCase {
     public void testNormalize() throws Exception {
         DownloadRootPathsNormalizer n = new DownloadRootPathsNormalizer();
         final List<Path> list = new ArrayList<Path>();
-        list.add(new NullPath("/a", Path.DIRECTORY_TYPE));
-        list.add(new NullPath("/a/b", Path.FILE_TYPE));
+        list.add(new Path("/a", Path.DIRECTORY_TYPE));
+        list.add(new Path("/a/b", Path.FILE_TYPE));
         final List<Path> normalized = n.normalize(list);
         assertEquals(1, normalized.size());
-        assertEquals(new NullPath("/a", Path.DIRECTORY_TYPE), normalized.get(0));
+        assertEquals(new Path("/a", Path.DIRECTORY_TYPE), normalized.get(0));
     }
 
     @Test
     public void testNameClash() throws Exception {
         DownloadRootPathsNormalizer n = new DownloadRootPathsNormalizer();
         final List<Path> list = new ArrayList<Path>();
-        final NullPath fa = new NullPath("/f/a", Path.FILE_TYPE);
+        final Path fa = new Path("/f/a", Path.FILE_TYPE);
         list.add(fa);
         {
             Local local = new NullLocal(null, fa.getName()) {
@@ -44,7 +43,7 @@ public class DownloadRootPathsNormalizerTest extends AbstractTestCase {
             };
             fa.setLocal(local);
         }
-        final NullPath ga = new NullPath("/g/a", Path.FILE_TYPE);
+        final Path ga = new Path("/g/a", Path.FILE_TYPE);
         list.add(ga);
         {
             Local local = new NullLocal(null, ga.getName()) {

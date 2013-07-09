@@ -17,8 +17,8 @@ public class PathReferenceTest {
 
     @Test
     public void testUnique() throws Exception {
-        Path one = new NullPath("a", Path.FILE_TYPE);
-        Path second = new NullPath("a", Path.FILE_TYPE);
+        Path one = new Path("a", Path.FILE_TYPE);
+        Path second = new Path("a", Path.FILE_TYPE);
         assertEquals(one.getReference(), second.getReference());
     }
 }

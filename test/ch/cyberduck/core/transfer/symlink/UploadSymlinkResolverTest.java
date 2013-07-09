@@ -4,7 +4,6 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.NullAttributes;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
@@ -26,7 +25,7 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
     @Test
     public void testNoSymbolicLink() throws Exception {
         UploadSymlinkResolver resolver = new UploadSymlinkResolver(null, Collections.<Path>emptyList());
-        NullPath p = new NullPath("a", Path.FILE_TYPE);
+        Path p = new Path("a", Path.FILE_TYPE);
         p.setLocal(new NullLocal(null, "a"));
         assertFalse(resolver.resolve(p));
     }
@@ -34,7 +33,7 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
     @Test
     public void testResolve() throws Exception {
         final ArrayList<Path> files = new ArrayList<Path>();
-        final NullPath a = new NullPath("/a", Path.DIRECTORY_TYPE);
+        final Path a = new Path("/a", Path.DIRECTORY_TYPE);
         a.setLocal(new NullLocal(null, "a"));
         files.add(a);
         UploadSymlinkResolver resolver = new UploadSymlinkResolver(new Symlink() {
@@ -43,7 +42,7 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
                 //
             }
         }, files);
-        assertTrue(resolver.resolve(new NullPath("/a/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE) {
+        assertTrue(resolver.resolve(new Path("/a/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "a/b") {
@@ -64,7 +63,7 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
                 };
             }
         }));
-        final NullPath ab = new NullPath("/a/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE) {
+        final Path ab = new Path("/a/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "a/b") {

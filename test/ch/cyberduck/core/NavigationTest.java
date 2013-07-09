@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NavigationTest extends AbstractTestCase {
 
@@ -23,8 +23,8 @@ public class NavigationTest extends AbstractTestCase {
     public void testBack() throws Exception {
         Navigation n = new Navigation();
         assertNull(n.back());
-        n.add(new NullPath("a", Path.DIRECTORY_TYPE));
-        n.add(new NullPath("b", Path.DIRECTORY_TYPE));
+        n.add(new Path("a", Path.DIRECTORY_TYPE));
+        n.add(new Path("b", Path.DIRECTORY_TYPE));
         assertEquals("a", n.back().getName());
         assertEquals("b", n.forward().getName());
     }

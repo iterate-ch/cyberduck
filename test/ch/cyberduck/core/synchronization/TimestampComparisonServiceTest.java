@@ -4,7 +4,6 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.NullAttributes;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -26,7 +25,7 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
     public void testCompare() throws Exception {
         ComparisonService s = new TimestampComparisonService();
         final long timestmap = Calendar.getInstance().getTimeInMillis();
-        assertEquals(Comparison.EQUAL, s.compare(new NullPath("t", Path.FILE_TYPE) {
+        assertEquals(Comparison.EQUAL, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -52,7 +51,7 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
                 };
             }
         }));
-        assertEquals(Comparison.LOCAL_NEWER, s.compare(new NullPath("t", Path.FILE_TYPE) {
+        assertEquals(Comparison.LOCAL_NEWER, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {

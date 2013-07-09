@@ -5,7 +5,6 @@ import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullAttributes;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Local;
@@ -31,7 +30,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testAcceptExistsTrue() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
-        Path p = new NullPath("a", Path.DIRECTORY_TYPE) {
+        Path p = new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "a");
@@ -44,7 +43,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testAcceptExistsFalse() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
-        Path p = new NullPath("a", Path.FILE_TYPE) {
+        Path p = new Path("a", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal("~/Downloads", "a") {
@@ -62,7 +61,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testPrepareFile() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
-        Path p = new NullPath("a", Path.FILE_TYPE) {
+        Path p = new Path("a", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal("~/Downloads", "a") {
@@ -92,7 +91,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testPrepareDirectory() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
-        Path p = new NullPath("a", Path.DIRECTORY_TYPE);
+        Path p = new Path("a", Path.DIRECTORY_TYPE);
         p.setLocal(new NullLocal(null, "a"));
         final TransferStatus status = f.prepare(new NullSession(new Host("h")), p);
         assertFalse(status.isResume());

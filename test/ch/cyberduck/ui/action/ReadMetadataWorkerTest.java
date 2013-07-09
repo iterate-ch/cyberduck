@@ -1,7 +1,6 @@
 package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
@@ -46,9 +45,9 @@ public class ReadMetadataWorkerTest extends AbstractTestCase {
     @Test
     public void testDifferent() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        files.add(new NullPath("a", Path.FILE_TYPE));
-        files.add(new NullPath("b", Path.FILE_TYPE));
-        files.add(new NullPath("c", Path.FILE_TYPE));
+        files.add(new Path("a", Path.FILE_TYPE));
+        files.add(new Path("b", Path.FILE_TYPE));
+        files.add(new Path("c", Path.FILE_TYPE));
         ReadMetadataWorker worker = new ReadMetadataWorker(new Headers() {
             @Override
             public Map<String, String> getMetadata(final Path file) throws BackgroundException {
@@ -85,9 +84,9 @@ public class ReadMetadataWorkerTest extends AbstractTestCase {
     @Test
     public void testRun() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        files.add(new NullPath("a", Path.FILE_TYPE));
-        files.add(new NullPath("b", Path.FILE_TYPE));
-        files.add(new NullPath("c", Path.FILE_TYPE));
+        files.add(new Path("a", Path.FILE_TYPE));
+        files.add(new Path("b", Path.FILE_TYPE));
+        files.add(new Path("c", Path.FILE_TYPE));
         ReadMetadataWorker worker = new ReadMetadataWorker(new Headers() {
             @Override
             public Map<String, String> getMetadata(final Path file) throws BackgroundException {

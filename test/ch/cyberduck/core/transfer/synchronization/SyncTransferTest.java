@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer.synchronization;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -41,7 +40,7 @@ public class SyncTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new SyncTransfer(new NullSession(new Host("t")), new NullPath("t", Path.FILE_TYPE)) {
+        Transfer t = new SyncTransfer(new NullSession(new Host("t")), new Path("t", Path.FILE_TYPE)) {
             @Override
             public long getSize() {
                 return 4L;
@@ -62,7 +61,7 @@ public class SyncTransferTest extends AbstractTestCase {
 
     @Test
     public void testFilter() throws Exception {
-        final NullPath p = new NullPath("t", Path.FILE_TYPE);
+        final Path p = new Path("t", Path.FILE_TYPE);
         Transfer t = new SyncTransfer(new NullSession(new Host("t")), p);
         t.filter(null, TransferAction.ACTION_OVERWRITE);
     }
