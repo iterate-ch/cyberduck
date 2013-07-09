@@ -198,4 +198,10 @@ public class PathTest extends AbstractTestCase {
         Path p = new Path("/bucket/f/key", Path.FILE_TYPE);
         assertEquals("http://bucket.s3.amazonaws.com/f/key", session.toHttpURL(p));
     }
+
+    @Test
+    public void testPathContainer() throws Exception {
+        final Path path = new Path(new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE), "/test", Path.DIRECTORY_TYPE);
+        assertEquals("/test.cyberduck.ch/test", path.getAbsolute());
+    }
 }

@@ -169,7 +169,12 @@ public class Path extends AbstractPath implements Serializable {
                 this.path = parent.getAbsolute() + name;
             }
             else {
-                this.path = parent.getAbsolute() + Path.DELIMITER + name;
+                if(name.startsWith(String.valueOf(DELIMITER))) {
+                    this.path = parent.getAbsolute() + name;
+                }
+                else {
+                    this.path = parent.getAbsolute() + Path.DELIMITER + name;
+                }
             }
         }
     }
