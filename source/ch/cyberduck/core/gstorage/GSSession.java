@@ -27,6 +27,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -38,7 +39,9 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -51,6 +54,7 @@ import org.jets3t.service.acl.gs.GSAccessControlList;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
+import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
@@ -165,8 +169,9 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public boolean isMultipartUploadSupported() {
-        return false;
+    protected void uploadMultipart(final Path file, final BandwidthThrottle throttle,
+                                   final StreamListener listener, final TransferStatus status, final StorageObject object) throws IOException, ServiceException, BackgroundException {
+        this.uploadSingle(file, throttle, listener, status, object);
     }
 
     @Override

@@ -407,14 +407,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         return false;
     }
 
-    public boolean isMultipartUploadSupported() {
-        // Only for AWS
-        if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
-            return Preferences.instance().getBoolean("s3.upload.multipart");
-        }
-        return false;
-    }
-
     @Override
     public boolean isRenameSupported(final Path file) {
         return !file.attributes().isVolume();
@@ -645,7 +637,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 this.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         file.getName()));
 
-                if(this.isMultipartUploadSupported()
+                // Only for AWS
+                if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())
+                        && Preferences.instance().getBoolean("s3.upload.multipart")
                         && status.getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
                     this.uploadMultipart(file, throttle, listener, status, object);
                 }
@@ -722,9 +716,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      * @param status   Transfer status
      * @param object   File location
      */
-    private void uploadSingle(final Path file,
-                              final BandwidthThrottle throttle, final StreamListener listener,
-                              final TransferStatus status, final StorageObject object) throws BackgroundException {
+    protected void uploadSingle(final Path file,
+                                final BandwidthThrottle throttle, final StreamListener listener,
+                                final TransferStatus status, final StorageObject object) throws BackgroundException {
 
         InputStream in = null;
         ResponseOutputStream<StorageObject> out = null;
@@ -785,8 +779,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      * @throws IOException      I/O error
      * @throws ServiceException Service error
      */
-    private void uploadMultipart(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
-                                 final TransferStatus status, final StorageObject object)
+    protected void uploadMultipart(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+                                   final TransferStatus status, final StorageObject object)
             throws IOException, ServiceException, BackgroundException {
 
         final ThreadFactory threadFactory = new NamedThreadFactory("multipart");
