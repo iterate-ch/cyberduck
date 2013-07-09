@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Archive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Compress;
@@ -24,14 +25,14 @@ import ch.cyberduck.core.features.Compress;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPCompressFeature implements Compress {
 
-    private SFTPSession session;
+    private SFTPCommandFeature command;
 
     public SFTPCompressFeature(final SFTPSession session) {
-        this.session = session;
+        this.command = new SFTPCommandFeature(session);
     }
 
     /**
@@ -40,8 +41,8 @@ public class SFTPCompressFeature implements Compress {
      * @param archive Archive format description
      * @param files   List of files to archive
      */
-    public void archive(final ch.cyberduck.core.Archive archive, final List<Path> files) throws BackgroundException {
-        new SFTPCommandFeature(session).send(archive.getCompressCommand(files));
+    public void archive(final Archive archive, final List<Path> files) throws BackgroundException {
+        command.send(archive.getCompressCommand(files));
     }
 
     /**
@@ -50,7 +51,7 @@ public class SFTPCompressFeature implements Compress {
      * @param archive Archive format description
      * @param file    File to decompress
      */
-    public void unarchive(final ch.cyberduck.core.Archive archive, final Path file) throws BackgroundException {
-        new SFTPCommandFeature(session).send(archive.getDecompressCommand(file));
+    public void unarchive(final Archive archive, final Path file) throws BackgroundException {
+        command.send(archive.getDecompressCommand(file));
     }
 }
