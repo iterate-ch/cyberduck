@@ -74,12 +74,21 @@ public class KeychainLoginService implements LoginService {
             listener.message(Locale.localizedString("Login successful", "Credentials"));
             // Write credentials to keychain
             this.save(bookmark);
+            // Reset password in memory
+            bookmark.getCredentials().setPassword(null);
         }
         catch(LoginFailureException e) {
             listener.message(Locale.localizedString("Login failed", "Credentials"));
-            controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
-                    Locale.localizedString("Login failed", "Credentials"), e.getDetail(),
-                    new LoginOptions(bookmark.getProtocol()));
+            try {
+                controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
+                        Locale.localizedString("Login failed", "Credentials"), e.getDetail(),
+                        new LoginOptions(bookmark.getProtocol()));
+            }
+            catch(LoginCanceledException c) {
+                // Reset password in memory
+                bookmark.getCredentials().setPassword(null);
+                throw c;
+            }
             this.login(session, listener);
         }
     }

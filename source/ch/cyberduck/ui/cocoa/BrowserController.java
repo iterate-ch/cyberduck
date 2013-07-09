@@ -3529,7 +3529,6 @@ public class BrowserController extends WindowController
             public void cleanup() {
                 // Clear the cache on the main thread to make sure the browser model is not in an invalid state
                 session.cache().clear();
-                session.getHost().getCredentials().setPassword(null);
 
                 window.setDocumentEdited(false);
                 window.setTitle(Preferences.instance().getProperty("application.name"));
