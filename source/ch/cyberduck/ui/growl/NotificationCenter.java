@@ -18,6 +18,7 @@ package ch.cyberduck.ui.growl;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.foundation.NSUserNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSUserNotificationCenter;
 
@@ -53,7 +54,7 @@ public class NotificationCenter implements Growl {
     @Override
     public void notify(final String title, final String description) {
         final NSUserNotification notification = NSUserNotification.notification();
-        notification.setTitle(title);
+        notification.setTitle(Locale.localizedString(title, "Status"));
         notification.setInformativeText(description);
         center.scheduleNotification(notification);
     }
