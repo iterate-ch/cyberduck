@@ -22,32 +22,26 @@ package ch.cyberduck.core.ftp;
 /**
  * @version $Id$
  */
-public class FTPConnectMode {
+public final class FTPConnectMode {
+
+    private String name;
 
     /**
      * Represents active connect mode
      */
-    public static final FTPConnectMode PORT = new FTPConnectMode() {
-        @Override
-        public String toString() {
-            return "active";
-        }
-    };
+    public static final FTPConnectMode PORT = new FTPConnectMode("active");
 
     /**
      * Represents PASV connect mode
      */
-    public static final FTPConnectMode PASV = new FTPConnectMode() {
-        @Override
-        public String toString() {
-            return "passive";
-        }
-    };
+    public static final FTPConnectMode PASV = new FTPConnectMode("passive");
 
-    /**
-     * Private so no-one else can instantiate this class
-     */
-    private FTPConnectMode() {
-        //
+    private FTPConnectMode(final String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }
