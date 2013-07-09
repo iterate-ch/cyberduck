@@ -94,7 +94,6 @@ public class DownloadTransfer extends Transfer {
         }
         else {
             AttributedList<Path> list = session.list(parent).filter(filter);
-            session.cache().put(parent.getReference(), list);
             for(Path download : list) {
                 // Change download path relative to parent local folder
                 download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));
