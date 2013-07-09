@@ -892,12 +892,12 @@ public class BrowserController extends WindowController
 
     @Action
     public void browserSwitchMenuClicked(final NSMenuItem sender) {
-        bookmarkSwitchView.setSelected_forSegment(false, SWITCH_BOOKMARK_VIEW);
-        browserSwitchView.setSelectedSegment(sender.tag());
+        // Highlight selected browser view
         this.selectBrowser(sender.tag());
     }
 
     private void selectBrowser(int selected) {
+        bookmarkSwitchView.setSelected_forSegment(false, SWITCH_BOOKMARK_VIEW);
         browserSwitchView.setSelectedSegment(selected);
         switch(selected) {
             case SWITCH_LIST_VIEW:
@@ -1756,7 +1756,6 @@ public class BrowserController extends WindowController
 
     public void setSearchField(NSTextField searchField) {
         this.searchField = searchField;
-        this.searchField.setEnabled(false);
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("searchFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
@@ -3324,7 +3323,6 @@ public class BrowserController extends WindowController
     }
 
     private void setNavigation(boolean enabled) {
-        searchField.setEnabled(enabled);
         if(!enabled) {
             searchField.setStringValue(StringUtils.EMPTY);
         }
@@ -3972,7 +3970,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("archiveButtonClicked:")) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                if(session.getFeature(Archive.class, null) != null) {
+                if(session.getFeature(Archive.class, LoginControllerFactory.get(this)) == null) {
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {
@@ -3989,7 +3987,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("unarchiveButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                if(session.getFeature(Archive.class, null) != null) {
+                if(session.getFeature(Archive.class, LoginControllerFactory.get(this)) == null) {
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {
