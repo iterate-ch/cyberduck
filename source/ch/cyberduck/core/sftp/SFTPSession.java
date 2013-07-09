@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.SFTPExceptionMappingService;
 import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
@@ -542,9 +543,9 @@ public class SFTPSession extends Session<Connection> {
         if(type == Command.class) {
             return (T) new SFTPCommandFeature(this);
         }
-        if(type == Archive.class) {
+        if(type == Compress.class) {
             return (T) new SFTPCompressFeature(this);
         }
-        return null;
+        return super.getFeature(type, prompt);
     }
 }

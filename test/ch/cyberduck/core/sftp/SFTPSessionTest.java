@@ -9,7 +9,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 
@@ -78,12 +83,16 @@ public class SFTPSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testUnixPermissionFeature() {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
-                "u", "p"
-        ));
+    public void testFeatures() throws Exception {
+        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch");
         final Session session = new SFTPSession(host);
+        assertNotNull(session.getFeature(Compress.class, null));
         assertNotNull(session.getFeature(UnixPermission.class, null));
+        assertNotNull(session.getFeature(Timestamp.class, null));
+        assertNotNull(session.getFeature(Touch.class, null));
+        assertNotNull(session.getFeature(Symlink.class, null));
+        assertNotNull(session.getFeature(Command.class, null));
+        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
     }
 
     @Test
