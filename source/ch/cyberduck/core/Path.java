@@ -132,7 +132,7 @@ public class Path extends AbstractPath implements Serializable {
      */
     public Path(final Path parent, final Local file) {
         this._setPath(parent, file.getName());
-        this.setLocal(file);
+        this.local = file;
         this.attributes = new PathAttributes(local.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
     }
 
