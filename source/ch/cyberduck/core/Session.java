@@ -226,14 +226,14 @@ public abstract class Session<C> implements TranscriptListener {
      * @return Home directory
      */
     public Path home() throws BackgroundException {
-        final String directory;
-        if(StringUtils.isNotBlank(host.getWorkdir())) {
-            directory = host.getWorkdir();
+        if(host.getWorkdir() != null) {
+            return host.getWorkdir();
         }
         else if(StringUtils.isNotBlank(host.getDefaultPath())) {
             if(host.getDefaultPath().startsWith(String.valueOf(Path.DELIMITER))) {
                 // Mount absolute path
-                directory = host.getDefaultPath();
+                return new Path(host.getDefaultPath(),
+                        host.getDefaultPath().equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
             }
             else {
                 final Path workdir = this.workdir();
@@ -251,8 +251,6 @@ public abstract class Session<C> implements TranscriptListener {
             // No default path configured
             return this.workdir();
         }
-        return new Path(directory,
-                directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 
     /**

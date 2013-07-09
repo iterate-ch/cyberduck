@@ -99,7 +99,7 @@ public final class Host implements Serializable {
     /**
      * Current working directory when session was interrupted
      */
-    private String workdir;
+    private Path workdir;
 
     /**
      * The character encoding to use for file listings
@@ -262,7 +262,7 @@ public final class Host implements Serializable {
         }
         Object workdirObj = dict.stringForKey("Workdir");
         if(workdirObj != null) {
-            this.setWorkdir(workdirObj.toString());
+            this.setWorkdir(new Path(workdirObj.toString(), Path.DIRECTORY_TYPE));
         }
         Object nicknameObj = dict.stringForKey("Nickname");
         if(nicknameObj != null) {
@@ -329,8 +329,8 @@ public final class Host implements Serializable {
         if(StringUtils.isNotBlank(this.getDefaultPath())) {
             dict.setStringForKey(this.getDefaultPath(), "Path");
         }
-        if(StringUtils.isNotBlank(this.getWorkdir())) {
-            dict.setStringForKey(this.getWorkdir(), "Workdir");
+        if(this.getWorkdir() != null) {
+            dict.setStringForKey(this.getWorkdir().getAbsolute(), "Workdir");
         }
         if(StringUtils.isNotBlank(this.getEncoding())) {
             dict.setStringForKey(this.getEncoding(), "Encoding");
@@ -480,11 +480,11 @@ public final class Host implements Serializable {
         return defaultpath;
     }
 
-    public String getWorkdir() {
+    public Path getWorkdir() {
         return workdir;
     }
 
-    public void setWorkdir(final String workdir) {
+    public void setWorkdir(final Path workdir) {
         this.workdir = workdir;
     }
 
