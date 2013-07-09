@@ -19,9 +19,9 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
@@ -77,7 +77,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
         options.anonymous = false;
         options.publickey = false;
         try {
-            final LoginService login = new LoginService(prompt, PasswordStoreFactory.get());
+            final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
             login.validate(session.getHost(), this.getName(), options);
             return run.call();
         }

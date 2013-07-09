@@ -215,7 +215,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         assertEquals(Protocol.FTP, host.getProtocol());
         final AtomicBoolean warned = new AtomicBoolean();
-        LoginService l = new LoginService(new DisabledLoginController() {
+        KeychainLoginService l = new KeychainLoginService(new DisabledLoginController() {
             @Override
             public void warn(final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 warned.set(true);

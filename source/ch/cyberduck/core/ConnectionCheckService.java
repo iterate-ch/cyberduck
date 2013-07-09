@@ -123,7 +123,7 @@ public class ConnectionCheckService {
         bookmark.setTimestamp(new Date());
 
         try {
-            final LoginService login = new LoginService(prompt, keychain);
+            final KeychainLoginService login = new KeychainLoginService(prompt, keychain);
             login.login(session, listener);
 
             final HistoryCollection history = HistoryCollection.defaultCollection();

@@ -67,7 +67,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
         options.anonymous = false;
         options.publickey = false;
         try {
-            final LoginService login = new LoginService(prompt, PasswordStoreFactory.get());
+            final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
             login.validate(host, Locale.localizedString("AWS Identity and Access Management", "S3"), options);
             return run.call();
         }

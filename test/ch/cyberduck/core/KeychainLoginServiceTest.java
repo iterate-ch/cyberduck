@@ -12,11 +12,11 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class LoginServiceTest extends AbstractTestCase {
+public class KeychainLoginServiceTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testCancel() throws Exception {
-        LoginService l = new LoginService(new DisabledLoginController(), new DisabledPasswordStore());
+        KeychainLoginService l = new KeychainLoginService(new DisabledLoginController(), new DisabledPasswordStore());
         l.login(new NullSession(new Host(Protocol.FTP, "h")), new ProgressListener() {
             @Override
             public void message(final String message) {
@@ -33,7 +33,7 @@ public class LoginServiceTest extends AbstractTestCase {
         final AtomicBoolean warned = new AtomicBoolean(false);
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
-        LoginService l = new LoginService(new DisabledLoginController() {
+        KeychainLoginService l = new KeychainLoginService(new DisabledLoginController() {
             @Override
             public void warn(final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
                 warned.set(true);
