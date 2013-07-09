@@ -70,73 +70,78 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                 continue;
             }
             if("Bookmark".equals(classname)) {
-                String server = bookmark.stringForKey("Server");
-                if(null == server) {
-                    continue;
-                }
-                Host host = new Host(server);
-                String port = bookmark.stringForKey("Port");
-                if(StringUtils.isNotBlank(port)) {
-                    host.setPort(Integer.parseInt(port));
-                }
-                String path = bookmark.stringForKey("InitialPath");
-                if(StringUtils.isNotBlank(path)) {
-                    host.setDefaultPath(path);
-                }
-                String name = bookmark.stringForKey("Name");
-                if(StringUtils.isNotBlank(name)) {
-                    host.setNickname(name);
-                }
-                String user = bookmark.stringForKey("Username");
-                if(StringUtils.isNotBlank(user)) {
-                    host.getCredentials().setUsername(user);
-                }
-                else {
-                    host.getCredentials().setUsername(
-                            Preferences.instance().getProperty("connection.login.anon.name"));
-                }
-                String mode = bookmark.stringForKey("PreferredFTPDataConnectionType");
-                if(StringUtils.isNotBlank(mode)) {
-                    if("Passive".equals(mode)) {
-                        host.setFTPConnectMode(FTPConnectMode.PASV);
-                    }
-                    if("Active".equals(mode)) {
-                        host.setFTPConnectMode(FTPConnectMode.PORT);
-                    }
-                }
-                String protocol = bookmark.stringForKey("Protocol");
-                if(StringUtils.isNotBlank(protocol)) {
-                    try {
-                        switch(Integer.parseInt(protocol)) {
-                            case 0:
-                                host.setProtocol(Protocol.FTP);
-                                break;
-                            case 1:
-                                host.setProtocol(Protocol.SFTP);
-                                break;
-                            case 3:
-                                host.setProtocol(Protocol.S3_SSL);
-                                break;
-                            case 2:
-                            case 4:
-                                if(host.getPort() == Protocol.WEBDAV_SSL.getDefaultPort()) {
-                                    host.setProtocol(Protocol.WEBDAV_SSL);
-                                }
-                                else {
-                                    host.setProtocol(Protocol.WEBDAV);
-                                }
-                                break;
-                        }
-                    }
-                    catch(NumberFormatException e) {
-                        log.warn("Unknown protocol:" + e.getMessage());
-                    }
-                }
-                this.add(host);
+                this.read(bookmark);
             }
             if("BookmarkFolder".equals(classname)) {
                 this.parse(item);
             }
         }
+    }
+
+    private boolean read(final PlistDeserializer bookmark) {
+        final String server = bookmark.stringForKey("Server");
+        if(null == server) {
+            return false;
+        }
+        Host host = new Host(server);
+        String port = bookmark.stringForKey("Port");
+        if(StringUtils.isNotBlank(port)) {
+            host.setPort(Integer.parseInt(port));
+        }
+        String path = bookmark.stringForKey("InitialPath");
+        if(StringUtils.isNotBlank(path)) {
+            host.setDefaultPath(path);
+        }
+        String name = bookmark.stringForKey("Name");
+        if(StringUtils.isNotBlank(name)) {
+            host.setNickname(name);
+        }
+        String user = bookmark.stringForKey("Username");
+        if(StringUtils.isNotBlank(user)) {
+            host.getCredentials().setUsername(user);
+        }
+        else {
+            host.getCredentials().setUsername(
+                    Preferences.instance().getProperty("connection.login.anon.name"));
+        }
+        String mode = bookmark.stringForKey("PreferredFTPDataConnectionType");
+        if(StringUtils.isNotBlank(mode)) {
+            if("Passive".equals(mode)) {
+                host.setFTPConnectMode(FTPConnectMode.PASV);
+            }
+            if("Active".equals(mode)) {
+                host.setFTPConnectMode(FTPConnectMode.PORT);
+            }
+        }
+        String protocol = bookmark.stringForKey("Protocol");
+        if(StringUtils.isNotBlank(protocol)) {
+            try {
+                switch(Integer.parseInt(protocol)) {
+                    case 0:
+                        host.setProtocol(Protocol.FTP);
+                        break;
+                    case 1:
+                        host.setProtocol(Protocol.SFTP);
+                        break;
+                    case 3:
+                        host.setProtocol(Protocol.S3_SSL);
+                        break;
+                    case 2:
+                    case 4:
+                        if(host.getPort() == Protocol.WEBDAV_SSL.getDefaultPort()) {
+                            host.setProtocol(Protocol.WEBDAV_SSL);
+                        }
+                        else {
+                            host.setProtocol(Protocol.WEBDAV);
+                        }
+                        break;
+                }
+            }
+            catch(NumberFormatException e) {
+                log.warn("Unknown protocol:" + e.getMessage());
+            }
+        }
+        this.add(host);
+        return true;
     }
 }

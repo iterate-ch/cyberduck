@@ -19,8 +19,8 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.local.Local;
@@ -113,53 +113,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                             log.warn("Failed to detect start of bookmark");
                             continue;
                         }
-                        Scanner scanner = new Scanner(line);
-                        scanner.useDelimiter("=");
-                        if(!scanner.hasNext()) {
-                            log.warn("Missing key in line:" + line);
-                            continue;
-                        }
-                        String name = scanner.next().toLowerCase(Locale.ENGLISH);
-                        if(!scanner.hasNext()) {
-                            log.warn("Missing value in line:" + line);
-                            continue;
-                        }
-                        String value = scanner.next().replaceAll("\"", StringUtils.EMPTY);
-                        if("conntype".equals(name)) {
-                            try {
-                                switch(Integer.parseInt(value)) {
-                                    case 4:
-                                        current.setProtocol(Protocol.SFTP);
-                                        break;
-                                    case 5:
-                                        current.setProtocol(Protocol.FTP_TLS);
-                                        break;
-                                }
-                            }
-                            catch(NumberFormatException e) {
-                                log.warn("Unknown Protocol:" + e.getMessage());
-                            }
-                        }
-                        else if("host".equals(name)) {
-                            current.setHostname(value);
-                        }
-                        else if("port".equals(name)) {
-                            try {
-                                current.setPort(Integer.parseInt(value));
-                            }
-                            catch(NumberFormatException e) {
-                                log.warn("Invalid Port:" + e.getMessage());
-                            }
-                        }
-                        else if("dir".equals(name)) {
-                            current.setDefaultPath(value);
-                        }
-                        else if("comment".equals(name)) {
-                            current.setComment(value);
-                        }
-                        else if("uid".equals(name)) {
-                            current.getCredentials().setUsername(value);
-                        }
+                        this.parse(current, line);
                     }
                 }
             }
@@ -170,6 +124,57 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
         catch(IOException e) {
             log.error(e.getMessage());
         }
+    }
+
+    private boolean parse(final Host current, final String line) {
+        final Scanner scanner = new Scanner(line);
+        scanner.useDelimiter("=");
+        if(!scanner.hasNext()) {
+            log.warn("Missing key in line:" + line);
+            return false;
+        }
+        String name = scanner.next().toLowerCase(Locale.ENGLISH);
+        if(!scanner.hasNext()) {
+            log.warn("Missing value in line:" + line);
+            return false;
+        }
+        String value = scanner.next().replaceAll("\"", StringUtils.EMPTY);
+        if("conntype".equals(name)) {
+            try {
+                switch(Integer.parseInt(value)) {
+                    case 4:
+                        current.setProtocol(Protocol.SFTP);
+                        break;
+                    case 5:
+                        current.setProtocol(Protocol.FTP_TLS);
+                        break;
+                }
+            }
+            catch(NumberFormatException e) {
+                log.warn("Unknown Protocol:" + e.getMessage());
+            }
+        }
+        else if("host".equals(name)) {
+            current.setHostname(value);
+        }
+        else if("port".equals(name)) {
+            try {
+                current.setPort(Integer.parseInt(value));
+            }
+            catch(NumberFormatException e) {
+                log.warn("Invalid Port:" + e.getMessage());
+            }
+        }
+        else if("dir".equals(name)) {
+            current.setDefaultPath(value);
+        }
+        else if("comment".equals(name)) {
+            current.setComment(value);
+        }
+        else if("uid".equals(name)) {
+            current.getCredentials().setUsername(value);
+        }
+        return true;
     }
 
     @Override
