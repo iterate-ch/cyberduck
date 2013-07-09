@@ -92,69 +92,7 @@ public abstract class AbstractController implements Controller {
         action.init();
         actions.add(action);
         // Start background task
-        final Callable<T> command = new Callable<T>() {
-            @Override
-            public T call() {
-                // Synchronize all background threads to this lock so actions run
-                // sequentially as they were initiated from the main interface thread
-                synchronized(action.lock()) {
-                    final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Acquired lock for background runnable %s", action));
-                    }
-                    try {
-                        action.prepare();
-                        // Execute the action of the runnable
-                        return action.call();
-                    }
-                    catch(ConnectionCanceledException e) {
-                        log.warn(String.format("Connection canceled for background task %s", action));
-                    }
-                    catch(BackgroundException e) {
-                        log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
-                    }
-                    catch(Exception e) {
-                        log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
-                    }
-                    finally {
-                        // Increase the run counter
-                        try {
-                            action.finish();
-                        }
-                        catch(ConnectionCanceledException e) {
-                            log.warn(String.format("Connection canceled for background task %s", action));
-                        }
-                        catch(BackgroundException e) {
-                            log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
-                        }
-                        catch(Exception e) {
-                            log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
-                        }
-                        finally {
-                            actions.remove(action);
-                        }
-                        // Invoke the cleanup on the main thread to let the action synchronize the user interface
-                        invoke(new ControllerMainAction(AbstractController.this) {
-                            @Override
-                            public void run() {
-                                try {
-                                    action.cleanup();
-                                }
-                                catch(Exception e) {
-                                    log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
-                                }
-                            }
-                        });
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Releasing lock for background runnable %s", action));
-                        }
-                        autorelease.operate();
-                    }
-                }
-                // Canceled action yields no result
-                return null;
-            }
-        };
+        final Callable<T> command = new BackgroundCallable<T>(action);
         try {
             return threadPool.execute(command);
         }
@@ -184,5 +122,75 @@ public abstract class AbstractController implements Controller {
     protected void invalidate() {
         timerPool.shutdownNow();
         threadPool.shutdown();
+    }
+
+    private final class BackgroundCallable<T> implements Callable<T> {
+        private final BackgroundAction<T> action;
+
+        public BackgroundCallable(final BackgroundAction<T> action) {
+            this.action = action;
+        }
+
+        @Override
+        public T call() {
+            // Synchronize all background threads to this lock so actions run
+            // sequentially as they were initiated from the main interface thread
+            synchronized(action.lock()) {
+                final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Acquired lock for background runnable %s", action));
+                }
+                try {
+                    action.prepare();
+                    // Execute the action of the runnable
+                    return action.call();
+                }
+                catch(ConnectionCanceledException e) {
+                    log.warn(String.format("Connection canceled for background task %s", action));
+                }
+                catch(BackgroundException e) {
+                    log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+                }
+                catch(Exception e) {
+                    log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+                }
+                finally {
+                    // Increase the run counter
+                    try {
+                        action.finish();
+                    }
+                    catch(ConnectionCanceledException e) {
+                        log.warn(String.format("Connection canceled for background task %s", action));
+                    }
+                    catch(BackgroundException e) {
+                        log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+                    }
+                    catch(Exception e) {
+                        log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+                    }
+                    finally {
+                        actions.remove(action);
+                    }
+                    // Invoke the cleanup on the main thread to let the action synchronize the user interface
+                    invoke(new ControllerMainAction(AbstractController.this) {
+                        @Override
+                        public void run() {
+                            try {
+                                action.cleanup();
+                            }
+                            catch(Exception e) {
+                                log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
+                            }
+                        }
+                    });
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Releasing lock for background runnable %s", action));
+                    }
+                    autorelease.operate();
+                }
+            }
+            // Canceled action yields no result
+            return null;
+        }
     }
 }
