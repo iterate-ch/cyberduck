@@ -142,6 +142,8 @@ public class FTPSessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         session.touch(test);
         assertTrue(session.exists(test));
+        session.delete(test, new DisabledLoginController());
+        assertFalse(session.exists(test));
         session.close();
     }
 
