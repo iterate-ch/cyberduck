@@ -201,7 +201,7 @@ public abstract class Archive {
      * @return Name of archive
      */
     public String getTitle(final List<Path> files) {
-        Path archive = this.getArchive(files);
+        final Path archive = this.getArchive(files);
         if(null == archive) {
             return this.getIdentifier();
         }
@@ -213,7 +213,7 @@ public abstract class Archive {
      * @return Archive command
      */
     public String getCompressCommand(final List<Path> files) {
-        StringBuilder archive = new StringBuilder();
+        final StringBuilder archive = new StringBuilder();
         if(files.size() == 1) {
             archive.append(files.get(0).getAbsolute());
         }
@@ -225,7 +225,7 @@ public abstract class Archive {
         for(Path path : files) {
             command.add(this.escape(path.getAbsolute()));
         }
-        return MessageFormat.format(Preferences.instance().getProperty("archive.command.create." + this.getIdentifier()),
+        return MessageFormat.format(Preferences.instance().getProperty(String.format("archive.command.create.%s", this.getIdentifier())),
                 this.escape(archive.toString()), StringUtils.join(command, " "));
     }
 
@@ -234,7 +234,7 @@ public abstract class Archive {
      * @return Unarchive command
      */
     public String getDecompressCommand(final Path path) {
-        return MessageFormat.format(Preferences.instance().getProperty("archive.command.expand." + this.getIdentifier()),
+        return MessageFormat.format(Preferences.instance().getProperty(String.format("archive.command.expand.%s", this.getIdentifier())),
                 this.escape(path.getAbsolute()), this.escape(path.getParent().getAbsolute()));
     }
 
