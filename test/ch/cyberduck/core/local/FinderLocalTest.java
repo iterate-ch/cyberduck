@@ -29,6 +29,11 @@ public class FinderLocalTest extends AbstractTestCase {
     }
 
     @Test
+    public void testList() throws Exception {
+        assertFalse(new FinderLocal("profiles").list().isEmpty());
+    }
+
+    @Test
     public void testTilde() throws Exception {
         assertEquals(System.getProperty("user.home") + "/f", new FinderLocal("~/f").getAbsolute());
         assertEquals("~/f", new FinderLocal("~/f").getAbbreviatedPath());
