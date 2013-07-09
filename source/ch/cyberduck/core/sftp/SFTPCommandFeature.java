@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.SFTPExceptionMappingService;
 import ch.cyberduck.core.features.Command;
 
 import org.apache.commons.io.IOUtils;
@@ -29,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
 
 /**
@@ -48,58 +50,57 @@ public class SFTPCommandFeature implements Command {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Send command %s", command));
         }
-        ch.ethz.ssh2.Session sess = null;
+        Session sess = null;
         try {
             sess = session.getClient().openSession();
+        }
+        catch(IOException e) {
+            throw new SFTPExceptionMappingService().map(e);
+        }
+        final BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
+        final BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStderr())));
+        try {
+            session.message(command);
+            sess.execCommand(command, session.getEncoding());
 
-            final BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
-            final BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStderr())));
-
-            try {
-                session.message(command);
-                sess.execCommand(command, session.getEncoding());
-
-                // Here is the output from stdout
-                while(true) {
-                    String line = stdoutReader.readLine();
-                    if(null == line) {
-                        break;
-                    }
-                    session.log(false, line);
+            // Here is the output from stdout
+            while(true) {
+                final String line = stdoutReader.readLine();
+                if(null == line) {
+                    break;
                 }
-                // Here is the output from stderr
-                StringBuilder error = new StringBuilder();
-                while(true) {
-                    String line = stderrReader.readLine();
-                    if(null == line) {
-                        break;
-                    }
-                    session.log(false, line);
-                    // Standard error output contains all status messages, not only errors.
-                    if(StringUtils.isNotBlank(error.toString())) {
-                        error.append(" ");
-                    }
-                    error.append(line).append(".");
+                session.log(false, line);
+            }
+            // Here is the output from stderr
+            final StringBuilder error = new StringBuilder();
+            while(true) {
+                String line = stderrReader.readLine();
+                if(null == line) {
+                    break;
                 }
+                session.log(false, line);
+                // Standard error output contains all status messages, not only errors.
                 if(StringUtils.isNotBlank(error.toString())) {
-                    throw new BackgroundException(error.toString(), null);
+                    error.append(" ");
                 }
+                error.append(line).append(".");
             }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+            if(StringUtils.isNotBlank(error.toString())) {
+                throw new BackgroundException(error.toString());
             }
-            finally {
-                IOUtils.closeQuietly(stdoutReader);
-                IOUtils.closeQuietly(stderrReader);
+            else {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Command %s returned no errors", command));
+                }
             }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            if(sess != null) {
-                sess.close();
-            }
+            IOUtils.closeQuietly(stdoutReader);
+            IOUtils.closeQuietly(stderrReader);
+            sess.close();
         }
     }
 }
