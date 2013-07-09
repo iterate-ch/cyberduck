@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -36,20 +37,14 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import com.ibm.icu.text.IDNA;
-import com.ibm.icu.text.StringPrepParseException;
-
 /**
  * @version $Id$
  */
 public final class Host implements Serializable {
     private static final Logger log = Logger.getLogger(Host.class);
+
     /**
-     * The protocol identifier. Must be one of <code>sftp</code>, <code>ftp</code> or <code>ftps</code>
-     *
-     * @see Protocol#FTP
-     * @see Protocol#FTP_TLS
-     * @see Protocol#SFTP
+     * The protocol identifier.
      */
     private Protocol protocol
             = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
@@ -79,11 +74,6 @@ public final class Host implements Serializable {
      * Unique identifier
      */
     private String uuid;
-
-    /**
-     * IDN normalized hostname
-     */
-    private String punycode;
 
     /**
      * The given name by the user for the bookmark
@@ -521,12 +511,6 @@ public final class Host implements Serializable {
         CredentialsConfiguratorFactory.get(this.protocol).configure(this.credentials, this.hostname);
     }
 
-    /**
-     * @return Scheme
-     * @see Protocol#FTP
-     * @see Protocol#FTP_TLS
-     * @see Protocol#SFTP
-     */
     public Protocol getProtocol() {
         return protocol;
     }
@@ -594,31 +578,9 @@ public final class Host implements Serializable {
      * @param punycode Use the ToASCII operation as defined in the IDNA RFC
      * @return Hostname decoded
      */
-    public String getHostname(boolean punycode) {
-        if(punycode && Preferences.instance().getBoolean("connection.hostname.idn")) {
-            if(null == this.punycode && StringUtils.isNotEmpty(hostname)) {
-                try {
-                    // Convenience function that implements the IDNToASCII operation as defined in
-                    // the IDNA RFC. This operation is done on complete domain names, e.g: "www.example.com".
-                    // It is important to note that this operation can fail. If it fails, then the input
-                    // domain name cannot be used as an Internationalized Domain Name and the application
-                    // should have methods defined to deal with the failure.
-                    // IDNA.DEFAULT Use default options, i.e., do not process unassigned code points
-                    // and do not use STD3 ASCII rules If unassigned code points are found
-                    // the operation fails with ParseException
-                    final String idn = IDNA.convertIDNToASCII(hostname, IDNA.DEFAULT).toString();
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("IDN hostname for %s is %s", hostname, idn));
-                    }
-                    this.punycode = idn;
-                }
-                catch(StringPrepParseException e) {
-                    log.error(String.format("Failed to convert hostname %s to IDNA", hostname), e);
-                }
-            }
-            if(StringUtils.isNotEmpty(this.punycode)) {
-                return this.punycode;
-            }
+    public String getHostname(final boolean punycode) {
+        if(punycode) {
+            return new PunycodeConverter().convert(hostname);
         }
         return hostname;
     }
@@ -637,7 +599,6 @@ public final class Host implements Serializable {
         else {
             this.hostname = protocol.getDefaultHostname();
         }
-        this.punycode = null;
         CredentialsConfiguratorFactory.get(this.protocol).configure(this.credentials, this.hostname);
     }
 
