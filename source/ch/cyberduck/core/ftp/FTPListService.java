@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPListService implements ListService {
     private static final Logger log = Logger.getLogger(FTPListService.class);
@@ -57,39 +57,15 @@ public class FTPListService implements ListService {
      */
     private boolean statListSupportedEnabled = Preferences.instance().getBoolean("ftp.command.stat");
 
-    public void setStatListSupportedEnabled(boolean e) {
-        this.statListSupportedEnabled = e;
-    }
-
-    public boolean isStatListSupportedEnabled() {
-        return statListSupportedEnabled;
-    }
-
     /**
      * The server supports MLSD
      */
     private boolean mlsdListSupportedEnabled = Preferences.instance().getBoolean("ftp.command.mlsd");
 
-    public void setMlsdListSupportedEnabled(boolean e) {
-        this.mlsdListSupportedEnabled = e;
-    }
-
-    public boolean isMlsdListSupportedEnabled() {
-        return mlsdListSupportedEnabled;
-    }
-
     /**
      * The server supports LIST -a
      */
     private boolean extendedListEnabled = Preferences.instance().getBoolean("ftp.command.lista");
-
-    public void setExtendedListEnabled(boolean e) {
-        this.extendedListEnabled = e;
-    }
-
-    public boolean isExtendedListEnabled() {
-        return extendedListEnabled;
-    }
 
     public FTPListService(final FTPSession session, final String system, final TimeZone zone) {
         this.session = session;
@@ -97,7 +73,7 @@ public class FTPListService implements ListService {
         if(StringUtils.isNotBlank(system)) {
             if(system.toUpperCase(java.util.Locale.ENGLISH).contains(FTPClientConfig.SYST_NT)) {
                 // Workaround for #5572.
-                this.setStatListSupportedEnabled(false);
+                statListSupportedEnabled = false;
             }
         }
     }
@@ -109,7 +85,7 @@ public class FTPListService implements ListService {
             // Cached file parser determined from SYST response with the timezone set from the bookmark
             boolean success = false;
             try {
-                if(this.isStatListSupportedEnabled()) {
+                if(statListSupportedEnabled) {
                     int response = session.getClient().stat(file.getAbsolute());
                     if(FTPReply.isPositiveCompletion(response)) {
                         final String[] reply = session.getClient().getReplyStrings();
@@ -131,7 +107,7 @@ public class FTPListService implements ListService {
                         success = new FTPListResponseReader().read(children, session, file, parser, result);
                     }
                     else {
-                        this.setStatListSupportedEnabled(false);
+                        statListSupportedEnabled = false;
                     }
                 }
             }
@@ -157,25 +133,25 @@ public class FTPListService implements ListService {
                         }
                         boolean success = false;
                         // STAT listing failed or empty
-                        if(isMlsdListSupportedEnabled()
+                        if(mlsdListSupportedEnabled
                                 // Note that there is no distinct FEAT output for MLSD.
                                 // The presence of the MLST feature indicates that both MLST and MLSD are supported.
                                 && session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
                             success = new FTPMlsdListResponseReader().read(children, session, file,
                                     null, session.getClient().list(FTPCmd.MLSD));
                             if(!success) {
-                                setMlsdListSupportedEnabled(false);
+                                mlsdListSupportedEnabled = false;
                             }
                         }
                         if(!success) {
                             // MLSD listing failed or not enabled
-                            if(isExtendedListEnabled()) {
+                            if(extendedListEnabled) {
                                 try {
                                     success = new FTPListResponseReader().read(children, session, file,
                                             parser, session.getClient().list(FTPCmd.LIST, "-a"));
                                 }
                                 catch(FTPException e) {
-                                    setExtendedListEnabled(false);
+                                    extendedListEnabled = false;
                                 }
                             }
                             if(!success) {
