@@ -432,7 +432,7 @@ public class Distribution {
      * @return Origin URL of specific file.
      */
     public String getOrigin(final Path file) {
-        StringBuilder url = new StringBuilder().append(String.format("%s://%s", this.getMethod().getScheme(), this.getOrigin()));
+        StringBuilder url = new StringBuilder().append(String.format("%s://%s", method.getScheme(), origin));
         if(!new PathContainerService().isContainer(file)) {
             url.append(Path.DELIMITER).append(URIEncoder.encode(new PathContainerService().getKey(file)));
         }
@@ -574,7 +574,7 @@ public class Distribution {
 
     private String getCnameURL(final String cname, final Path file) {
         StringBuilder b = new StringBuilder();
-        b.append(String.format("%s://%s", this.getMethod().getScheme(), cname)).append(this.getMethod().getContext());
+        b.append(String.format("%s://%s", method.getScheme(), cname)).append(method.getContext());
         if(StringUtils.isNotEmpty(new PathContainerService().getKey(file))) {
             b.append(Path.DELIMITER).append(URIEncoder.encode(new PathContainerService().getKey(file)));
         }
