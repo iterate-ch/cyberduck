@@ -38,6 +38,8 @@ import ch.cyberduck.ui.resources.NSImageIconCache;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -112,6 +114,8 @@ public class AbstractTestCase {
     @Before
     public void preferences() {
         Preferences.instance().setProperty("application.support.path", System.getProperty("java.io.tmpdir"));
+        final Logger root = Logger.getRootLogger();
+        root.setLevel(Level.DEBUG);
     }
 
     @After
