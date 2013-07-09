@@ -62,7 +62,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     }
 
     @Override
-    public String getOrigin(final Path container, final Distribution.Method method) {
+    protected String getOrigin(final Path container, final Distribution.Method method) {
         try {
             return new URI(origin.getWebURL()).getHost();
         }

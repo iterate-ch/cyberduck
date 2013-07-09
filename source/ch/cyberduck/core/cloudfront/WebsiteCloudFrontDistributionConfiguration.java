@@ -77,7 +77,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    public String getOrigin(final Path container, final Distribution.Method method) {
+    protected String getOrigin(final Path container, final Distribution.Method method) {
         if(method.equals(Distribution.WEBSITE_CDN)) {
             return this.getWebsiteHostname(container);
         }
