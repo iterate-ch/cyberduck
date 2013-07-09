@@ -33,7 +33,7 @@ public final class PathNormalizer {
         String normalized = path;
         if(Preferences.instance().getBoolean("path.normalize")) {
             if(absolute) {
-                while(!normalized.startsWith("\\\\") && !normalized.startsWith(String.valueOf(Path.DELIMITER))) {
+                while(!normalized.startsWith(String.valueOf(Path.DELIMITER))) {
                     normalized = Path.DELIMITER + normalized;
                 }
             }
@@ -68,9 +68,6 @@ public final class PathNormalizer {
                 n.append(Path.DELIMITER);
                 n.append(Path.DELIMITER);
             }
-            else if(normalized.startsWith("\\\\")) {
-                //
-            }
             else if(absolute) {
                 // convert to absolute path
                 n.append(Path.DELIMITER);
@@ -80,7 +77,7 @@ public final class PathNormalizer {
                 n.append(Path.DELIMITER);
             }
             // Remove duplicated Path.DELIMITERs
-            String[] segments = normalized.split(String.valueOf(Path.DELIMITER));
+            final String[] segments = normalized.split(String.valueOf(Path.DELIMITER));
             for(String segment : segments) {
                 if(segment.equals(StringUtils.EMPTY)) {
                     continue;

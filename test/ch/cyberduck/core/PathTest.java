@@ -115,15 +115,6 @@ public class PathTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
-    public void test1067() throws Exception {
-        Path path = new Path(
-                "\\\\directory", Path.DIRECTORY_TYPE);
-        assertEquals("\\\\directory", path.getAbsolute());
-        assertEquals("/", path.getParent().getAbsolute());
-    }
-
-    @Test
     public void testSymlink() {
         Path p = new Path("t", Path.FILE_TYPE);
         assertFalse(p.attributes().isSymbolicLink());
