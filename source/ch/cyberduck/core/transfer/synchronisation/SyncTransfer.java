@@ -155,67 +155,10 @@ public class SyncTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             // When synchronizing, either cancel or overwrite. Resume is not supported
-            return new TransferPathFilter() {
-                /**
-                 * Download delegate filter
-                 */
-                private TransferPathFilter _delegateFilterDownload
-                        = _delegateDownload.filter(null, TransferAction.ACTION_OVERWRITE);
-
-                /**
-                 * Upload delegate filter
-                 */
-                private TransferPathFilter _delegateFilterUpload
-                        = _delegateUpload.filter(null, TransferAction.ACTION_OVERWRITE);
-
-                @Override
-                public TransferStatus prepare(final Session session, final Path p) throws BackgroundException {
-                    final Comparison compare = SyncTransfer.this.compare(p);
-                    if(compare.equals(Comparison.REMOTE_NEWER)) {
-                        return _delegateFilterDownload.prepare(session, p);
-                    }
-                    if(compare.equals(Comparison.LOCAL_NEWER)) {
-                        return _delegateFilterUpload.prepare(session, p);
-                    }
-                    return new TransferStatus();
-                }
-
-                @Override
-                public boolean accept(final Session session, final Path p) throws BackgroundException {
-                    final Comparison compare = SyncTransfer.this.compare(p);
-                    if(compare.equals(Comparison.EQUAL)) {
-                        return false;
-                    }
-                    if(compare.equals(Comparison.REMOTE_NEWER)) {
-                        if(getTransferAction().equals(ACTION_UPLOAD)) {
-                            return false;
-                        }
-                        // Ask the download delegate for inclusion
-                        return _delegateFilterDownload.accept(session, p);
-                    }
-                    else if(compare.equals(Comparison.LOCAL_NEWER)) {
-                        if(getTransferAction().equals(ACTION_DOWNLOAD)) {
-                            return false;
-                        }
-                        // Ask the upload delegate for inclusion
-                        return _delegateFilterUpload.accept(session, p);
-                    }
-                    return false;
-                }
-
-                @Override
-                public void complete(final Session session, final Path p, final TransferOptions options, final TransferStatus status) throws BackgroundException {
-                    final Comparison compare = SyncTransfer.this.compare(p);
-                    if(compare.equals(Comparison.REMOTE_NEWER)) {
-                        _delegateFilterDownload.complete(session, p, options, status);
-                    }
-                    else if(compare.equals(Comparison.LOCAL_NEWER)) {
-                        _delegateFilterUpload.complete(session, p, options, status);
-                    }
-                    comparisons.remove(p.getReference());
-                    cache.remove(p.getReference());
-                }
-            };
+            return new DelegateTransferPathFilter(
+                    _delegateDownload.filter(null, TransferAction.ACTION_OVERWRITE),
+                    _delegateUpload.filter(null, TransferAction.ACTION_OVERWRITE)
+            );
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             final TransferAction result = prompt.prompt();
@@ -397,5 +340,72 @@ public class SyncTransfer extends Transfer {
     @Override
     public String getImage() {
         return "sync.tiff";
+    }
+
+    private final class DelegateTransferPathFilter implements TransferPathFilter {
+
+        /**
+         * Download delegate filter
+         */
+        private TransferPathFilter _delegateFilterDownload;
+
+        /**
+         * Upload delegate filter
+         */
+        private TransferPathFilter _delegateFilterUpload;
+
+        private DelegateTransferPathFilter(final TransferPathFilter _delegateFilterDownload,
+                                           final TransferPathFilter _delegateFilterUpload) {
+            this._delegateFilterDownload = _delegateFilterDownload;
+            this._delegateFilterUpload = _delegateFilterUpload;
+        }
+
+        @Override
+        public TransferStatus prepare(final Session session, final Path p) throws BackgroundException {
+            final Comparison compare = SyncTransfer.this.compare(p);
+            if(compare.equals(Comparison.REMOTE_NEWER)) {
+                return _delegateFilterDownload.prepare(session, p);
+            }
+            if(compare.equals(Comparison.LOCAL_NEWER)) {
+                return _delegateFilterUpload.prepare(session, p);
+            }
+            return new TransferStatus();
+        }
+
+        @Override
+        public boolean accept(final Session session, final Path p) throws BackgroundException {
+            final Comparison compare = SyncTransfer.this.compare(p);
+            if(compare.equals(Comparison.EQUAL)) {
+                return false;
+            }
+            if(compare.equals(Comparison.REMOTE_NEWER)) {
+                if(getTransferAction().equals(ACTION_UPLOAD)) {
+                    return false;
+                }
+                // Ask the download delegate for inclusion
+                return _delegateFilterDownload.accept(session, p);
+            }
+            else if(compare.equals(Comparison.LOCAL_NEWER)) {
+                if(getTransferAction().equals(ACTION_DOWNLOAD)) {
+                    return false;
+                }
+                // Ask the upload delegate for inclusion
+                return _delegateFilterUpload.accept(session, p);
+            }
+            return false;
+        }
+
+        @Override
+        public void complete(final Session session, final Path p, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            final Comparison compare = SyncTransfer.this.compare(p);
+            if(compare.equals(Comparison.REMOTE_NEWER)) {
+                _delegateFilterDownload.complete(session, p, options, status);
+            }
+            else if(compare.equals(Comparison.LOCAL_NEWER)) {
+                _delegateFilterUpload.complete(session, p, options, status);
+            }
+            comparisons.remove(p.getReference());
+            cache.remove(p.getReference());
+        }
     }
 }
