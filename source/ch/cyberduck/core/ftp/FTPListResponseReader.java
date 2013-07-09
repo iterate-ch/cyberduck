@@ -89,24 +89,22 @@ public class FTPListResponseReader implements FTPResponseReader {
             }
             parsed.attributes().setOwner(f.getUser());
             parsed.attributes().setGroup(f.getGroup());
-            if(session.isPermissionSupported(parser)) {
-                parsed.attributes().setPermission(new Permission(
-                        new boolean[][]{
-                                {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
-                                        f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
-                                        f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                                },
-                                {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
-                                        f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION),
-                                        f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                                },
-                                {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
-                                        f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION),
-                                        f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                                }
-                        }
-                ));
-            }
+            parsed.attributes().setPermission(new Permission(
+                    new boolean[][]{
+                            {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
+                                    f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
+                                    f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                            },
+                            {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
+                                    f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION),
+                                    f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                            },
+                            {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
+                                    f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION),
+                                    f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                            }
+                    }
+            ));
             final Calendar timestamp = f.getTimestamp();
             if(timestamp != null) {
                 parsed.attributes().setModificationDate(timestamp.getTimeInMillis());

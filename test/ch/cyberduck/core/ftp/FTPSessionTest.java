@@ -55,9 +55,9 @@ public class FTPSessionTest extends AbstractTestCase {
 
         final Path path = new Path("/pub/debian/README.html", Path.FILE_TYPE);
         final TransferStatus status = new TransferStatus();
-        final FTPSession.DataConnectionAction<Void> action = new FTPSession.DataConnectionAction<Void>() {
+        final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
             @Override
-            public Void run() throws IOException {
+            public Void execute() throws IOException {
                 try {
                     assertNotNull(session.read(path, status));
                     assertEquals(1, count.get());

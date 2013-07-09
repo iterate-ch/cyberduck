@@ -27,9 +27,6 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
-import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -37,15 +34,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.output.CountingOutputStream;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPCmd;
-import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
-import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -65,14 +57,10 @@ import java.util.TimeZone;
 public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
-    /**
-     * Directory listing parser depending on response for SYST command
-     */
-    private CompositeFileEntryParser parser;
-
     private Timestamp timestamp;
 
     private UnixPermission permission;
+    private FTPListService listService;
 
     public FTPSession(Host h) {
         super(h);
@@ -101,30 +89,6 @@ public class FTPSession extends SSLSession<FTPClient> {
             }
         }
         return workdir;
-    }
-
-    /**
-     * @param p Parser
-     * @return True if the parser will read the file permissions
-     */
-    protected boolean isPermissionSupported(final FTPFileEntryParser p) {
-        FTPFileEntryParser delegate;
-        if(p instanceof CompositeFileEntryParser) {
-            // Get the actual parser
-            delegate = ((CompositeFileEntryParser) p).getCurrent();
-            if(null == delegate) {
-                log.warn("Composite FTP parser has no cached delegate yet");
-                return false;
-            }
-        }
-        else {
-            // Not a composite parser
-            delegate = p;
-        }
-        return delegate instanceof UnixFTPEntryParser
-                || delegate instanceof LaxUnixFTPEntryParser
-                || delegate instanceof NetwareFTPEntryParser
-                || delegate instanceof RumpusFTPEntryParser;
     }
 
     @Override
@@ -228,15 +192,11 @@ public class FTPSession extends SSLSession<FTPClient> {
             String system = null; //Unknown
             try {
                 system = client.getSystemType();
-                if(system.toUpperCase(java.util.Locale.ENGLISH).contains(FTPClientConfig.SYST_NT)) {
-                    // Workaround for #5572.
-                    this.setStatListSupportedEnabled(false);
-                }
             }
             catch(IOException e) {
                 log.warn(String.format("SYST command failed %s", e.getMessage()));
             }
-            parser = new FTPParserSelector().getParser(system, zone);
+            listService = new FTPListService(this, system, zone);
             if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
                 timestamp = new FTPMFMTTimestampFeature(this);
             }
@@ -339,49 +299,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     /**
-     * The sever supports STAT file listings
-     */
-    private boolean statListSupportedEnabled = Preferences.instance().getBoolean("ftp.command.stat");
-
-    public void setStatListSupportedEnabled(boolean e) {
-        this.statListSupportedEnabled = e;
-    }
-
-    public boolean isStatListSupportedEnabled() {
-        return statListSupportedEnabled;
-    }
-
-    /**
-     * The server supports MLSD
-     */
-    private boolean mlsdListSupportedEnabled = Preferences.instance().getBoolean("ftp.command.mlsd");
-
-    public void setMlsdListSupportedEnabled(boolean e) {
-        this.mlsdListSupportedEnabled = e;
-    }
-
-    public boolean isMlsdListSupportedEnabled() {
-        return mlsdListSupportedEnabled;
-    }
-
-    /**
-     * The server supports LIST -a
-     */
-    private boolean extendedListEnabled = Preferences.instance().getBoolean("ftp.command.lista");
-
-    public void setExtendedListEnabled(boolean e) {
-        this.extendedListEnabled = e;
-    }
-
-    public boolean isExtendedListEnabled() {
-        return extendedListEnabled;
-    }
-
-    protected abstract static class DataConnectionAction<T> {
-        public abstract T run() throws IOException;
-    }
-
-    /**
      * @param action Action that needs to open a data connection
      * @return True if action was successful
      */
@@ -395,7 +312,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             else if(this.getConnectMode().equals(FTPConnectMode.PORT)) {
                 this.getClient().enterLocalActiveMode();
             }
-            return action.run();
+            return action.execute();
         }
         catch(SocketTimeoutException failure) {
             log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
@@ -431,123 +348,12 @@ public class FTPSession extends SSLSession<FTPClient> {
             log.warn("Fallback to passive data connection");
             this.getClient().enterLocalPassiveMode();
         }
-        return action.run();
+        return action.execute();
     }
 
     @Override
     public AttributedList<Path> list(final Path file) throws BackgroundException {
-        try {
-            final AttributedList<Path> children = new AttributedList<Path>();
-
-            // Cached file parser determined from SYST response with the timezone set from the bookmark
-            boolean success = false;
-            try {
-                if(this.isStatListSupportedEnabled()) {
-                    int response = this.getClient().stat(file.getAbsolute());
-                    if(FTPReply.isPositiveCompletion(response)) {
-                        final String[] reply = this.getClient().getReplyStrings();
-                        final List<String> result = new ArrayList<String>(reply.length);
-                        for(final String line : reply) {
-                            //Some servers include the status code for every line.
-                            if(line.startsWith(String.valueOf(response))) {
-                                try {
-                                    result.add(line.substring(line.indexOf(response) + line.length() + 1).trim());
-                                }
-                                catch(IndexOutOfBoundsException e) {
-                                    log.error(String.format("Failed parsing line %s", line), e);
-                                }
-                            }
-                            else {
-                                result.add(StringUtils.stripStart(line, null));
-                            }
-                        }
-                        success = new FTPListResponseReader().read(children, this, file, parser, result);
-                    }
-                    else {
-                        this.setStatListSupportedEnabled(false);
-                    }
-                }
-            }
-            catch(IOException e) {
-                log.warn("Command STAT failed with I/O error:" + e.getMessage());
-                this.interrupt();
-                this.open(new DefaultHostKeyController());
-                this.login(new DisabledPasswordStore(), new DisabledLoginController());
-            }
-            if(!success || children.isEmpty()) {
-                success = this.data(file, new DataConnectionAction<Boolean>() {
-                    @Override
-                    public Boolean run() throws IOException {
-                        if(!getClient().changeWorkingDirectory(file.getAbsolute())) {
-                            throw new FTPException(getClient().getReplyCode(),
-                                    getClient().getReplyString());
-                        }
-                        if(!getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
-                            // Set transfer type for traditional data socket file listings. The data transfer is over the
-                            // data connection in type ASCII or type EBCDIC.
-                            throw new FTPException(getClient().getReplyCode(),
-                                    getClient().getReplyString());
-                        }
-                        boolean success = false;
-                        // STAT listing failed or empty
-                        if(isMlsdListSupportedEnabled()
-                                // Note that there is no distinct FEAT output for MLSD.
-                                // The presence of the MLST feature indicates that both MLST and MLSD are supported.
-                                && getClient().hasFeature(FTPCmd.MLST.getCommand())) {
-                            success = new FTPMlsdListResponseReader().read(children, FTPSession.this, file,
-                                    null, getClient().list(FTPCmd.MLSD));
-                            if(!success) {
-                                setMlsdListSupportedEnabled(false);
-                            }
-                        }
-                        if(!success) {
-                            // MLSD listing failed or not enabled
-                            if(isExtendedListEnabled()) {
-                                try {
-                                    success = new FTPListResponseReader().read(children, FTPSession.this, file,
-                                            parser, getClient().list(FTPCmd.LIST, "-a"));
-                                }
-                                catch(FTPException e) {
-                                    setExtendedListEnabled(false);
-                                }
-                            }
-                            if(!success) {
-                                // LIST -a listing failed or not enabled
-                                success = new FTPListResponseReader().read(children, FTPSession.this, file,
-                                        parser, getClient().list(FTPCmd.LIST));
-                            }
-                        }
-                        return success;
-                    }
-                });
-            }
-            for(Path child : children) {
-                if(child.attributes().isSymbolicLink()) {
-                    if(this.getClient().changeWorkingDirectory(child.getAbsolute())) {
-                        child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-                    }
-                    else {
-                        // Try if CWD to symbolic link target succeeds
-                        if(this.getClient().changeWorkingDirectory(child.getSymlinkTarget().getAbsolute())) {
-                            // Workdir change succeeded
-                            child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-                        }
-                        else {
-                            child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
-                        }
-                    }
-                }
-            }
-            if(!success) {
-                // LIST listing failed
-                log.error("No compatible file listing method found");
-            }
-            return children;
-        }
-        catch(IOException e) {
-            log.warn(String.format("Directory listing failure for %s with failure %s", file, e.getMessage()));
-            throw new FTPExceptionMappingService().map("Listing directory failed", e, file);
-        }
+        return listService.list(file);
     }
 
     @Override
@@ -631,7 +437,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             }
             final InputStream in = this.data(file, new DataConnectionAction<InputStream>() {
                 @Override
-                public InputStream run() throws IOException {
+                public InputStream execute() throws IOException {
                     return getClient().retrieveFileStream(file.getAbsolute());
                 }
             });
@@ -673,7 +479,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             }
             final OutputStream out = this.data(file, new DataConnectionAction<OutputStream>() {
                 @Override
-                public OutputStream run() throws IOException {
+                public OutputStream execute() throws IOException {
                     if(status.isResume()) {
                         return getClient().appendFileStream(file.getAbsolute());
                     }
