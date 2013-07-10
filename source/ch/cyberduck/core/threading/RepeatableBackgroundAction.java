@@ -160,7 +160,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      * @return Greater than zero if a failed action should be repeated again
      */
     public int retry() {
-        if(!this.isCanceled()) {
+        if(this.hasFailed() && !this.isCanceled()) {
             // Check for an exception we consider possibly temporary
             if(exception.isNetworkFailure()) {
                 // The initial connection attempt does not count
@@ -213,7 +213,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     @Override
     public void finish() throws BackgroundException {
-        while(this.hasFailed() && this.retry() > 0) {
+        while(this.retry() > 0) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Retry failed background action %s", this));
             }
