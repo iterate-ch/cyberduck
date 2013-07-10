@@ -85,6 +85,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"), this.toString(files));
+        return MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                this.toString(files));
     }
 }

@@ -24,8 +24,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -59,6 +57,7 @@ public abstract class DeleteWorker extends Worker<Boolean> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"), StringUtils.EMPTY);
+        return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                this.toString(files));
     }
 }
