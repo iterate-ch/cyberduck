@@ -254,21 +254,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         progressListener.message(null);
     }
 
-    @Override
-    public void cancel() {
-        if(this.isRunning()) {
-            for(Session s : this.getSessions()) {
-                try {
-                    s.interrupt();
-                }
-                catch(BackgroundException e) {
-                    this.error(e);
-                }
-            }
-        }
-        super.cancel();
-    }
-
     /**
      * Idle this action for some time. Blocks the caller.
      */

@@ -34,7 +34,6 @@ import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
-import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
@@ -2883,24 +2882,25 @@ public class BrowserController extends WindowController
     }
 
     @Action
-    public void interruptButtonClicked(final ID sender) {
-        // Remove all pending actions
-        for(BackgroundAction action : this.getActions().toArray(
-                new BackgroundAction[this.getActions().size()])) {
-            action.cancel();
-        }
-        // Interrupt any pending operation by forcefully closing the socket
-        this.interrupt();
-    }
-
-    @Action
     public void disconnectButtonClicked(final ID sender) {
         if(this.isActivityRunning()) {
-            this.interruptButtonClicked(sender);
+            // Remove all pending actions
+            for(BackgroundAction action : this.getActions().toArray(
+                    new BackgroundAction[this.getActions().size()])) {
+                action.cancel();
+            }
         }
-        else {
-            this.disconnect();
-        }
+        this.disconnect(new Runnable() {
+            @Override
+            public void run() {
+                if(Preferences.instance().getBoolean("browser.disconnect.showBookmarks")) {
+                    selectBookmarks();
+                }
+                else {
+                    selectBrowser(Preferences.instance().getInteger("browser.view"));
+                }
+            }
+        });
     }
 
     @Action
@@ -3478,86 +3478,23 @@ public class BrowserController extends WindowController
      * @param disconnected Action to run after disconnected
      */
     private void unmountImpl(final Runnable disconnected) {
-        if(this.isActivityRunning()) {
-            this.interrupt();
-        }
-        this.background(new AbstractBackgroundAction<Void>() {
+        this.disconnect(new Runnable() {
             @Override
-            public void run() throws BackgroundException {
-                session.close();
-            }
-
-            @Override
-            public void cleanup() {
+            public void run() {
                 // Clear the cache on the main thread to make sure the browser model is not in an invalid state
                 session.cache().clear();
-
-                window.setDocumentEdited(false);
                 window.setTitle(Preferences.instance().getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
-
-                // Update status icon
-                bookmarkTable.setNeedsDisplay();
-
                 disconnected.run();
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
-                        session.getHost().getHostname());
             }
         });
     }
 
     /**
-     * Interrupt any operation in progress;
-     * just closes the socket without any quit message sent to the server
-     */
-    private void interrupt() {
-        if(this.hasSession()) {
-            if(this.isActivityRunning()) {
-                final BackgroundAction current = this.getActions().getCurrent();
-                if(null != current) {
-                    current.cancel();
-                }
-            }
-            this.background(new BrowserBackgroundAction(this) {
-                @Override
-                public void run() throws BackgroundException {
-                    if(hasSession()) {
-                        // Aggressively close the connection to interrupt the current task
-                        session.interrupt();
-                    }
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
-                            session.getHost().getHostname());
-                }
-
-                @Override
-                public int retry() {
-                    return 0;
-                }
-
-                private final Object lock = new Object();
-
-                @Override
-                public Object lock() {
-                    // No synchronization with other tasks
-                    return lock;
-                }
-            });
-        }
-    }
-
-    /**
      * Unmount this session
      */
-    private void disconnect() {
-        InfoController c = InfoControllerFactory.get(BrowserController.this);
+    private void disconnect(final Runnable disconnected) {
+        final InfoController c = InfoControllerFactory.get(BrowserController.this);
         if(null != c) {
             c.window().close();
         }
@@ -3569,11 +3506,9 @@ public class BrowserController extends WindowController
 
             @Override
             public void cleanup() {
-                window.setDocumentEdited(false);
-                if(Preferences.instance().getBoolean("browser.disconnect.showBookmarks")) {
-                    selectBookmarks();
-                }
                 super.cleanup();
+                window.setDocumentEdited(false);
+                disconnected.run();
             }
 
             @Override
@@ -3919,9 +3854,6 @@ public class BrowserController extends WindowController
                 }
                 return this.isConnected();
             }
-        }
-        else if(action.equals(Foundation.selector("interruptButtonClicked:"))) {
-            return this.isBrowser() && this.isActivityRunning();
         }
         else if(action.equals(Foundation.selector("gotofolderButtonClicked:"))) {
             return this.isBrowser() && this.isMounted();
