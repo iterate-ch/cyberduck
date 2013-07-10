@@ -153,39 +153,7 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void save() {
-        final BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
-            @Override
-            public void run() throws BackgroundException {
-                // If checksum still the same no need for save
-                if(checksum.equals(edited.getLocal().attributes().getChecksum())) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("File %s not modified with checkum %s", edited.getLocal(), checksum));
-                    }
-                    return;
-                }
-                checksum = edited.getLocal().attributes().getChecksum();
-                final TransferOptions options = new TransferOptions();
-                final Transfer upload = new UploadTransfer(session, edited) {
-                    @Override
-                    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-                        return TransferAction.ACTION_OVERWRITE;
-                    }
-                };
-                upload.start(null, options);
-                if(upload.isComplete()) {
-                    if(isClosed()) {
-                        delete();
-                    }
-                    setModified(false);
-                }
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                        edited.getName());
-            }
-        };
+        final BackgroundAction<Void> background = new SaveBackgroundAction();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Upload changes for %s", edited.getLocal().getAbsolute()));
         }
@@ -223,6 +191,40 @@ public abstract class AbstractEditor implements Editor {
                     throw new BackgroundException(e.getMessage(), e);
                 }
             }
+        }
+    }
+
+    private final class SaveBackgroundAction extends AbstractBackgroundAction<Void> {
+        @Override
+        public void run() throws BackgroundException {
+            // If checksum still the same no need for save
+            if(checksum.equals(edited.getLocal().attributes().getChecksum())) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("File %s not modified with checkum %s", edited.getLocal(), checksum));
+                }
+                return;
+            }
+            checksum = edited.getLocal().attributes().getChecksum();
+            final TransferOptions options = new TransferOptions();
+            final Transfer upload = new UploadTransfer(session, edited) {
+                @Override
+                public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+                    return TransferAction.ACTION_OVERWRITE;
+                }
+            };
+            upload.start(null, options);
+            if(upload.isComplete()) {
+                if(isClosed()) {
+                    delete();
+                }
+                setModified(false);
+            }
+        }
+
+        @Override
+        public String getActivity() {
+            return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                    edited.getName());
         }
     }
 }
