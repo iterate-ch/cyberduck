@@ -20,16 +20,20 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 /**
@@ -69,37 +73,47 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public void complete(final Session<?> session, final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void complete(final Session<?> session, final Path source, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(status.isComplete()) {
             final UnixPermission unix = destination.getFeature(UnixPermission.class, null);
             if(unix != null) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     Permission permission = source.attributes().getPermission();
                     if(!Permission.EMPTY.equals(permission)) {
-                        try {
-                            unix.setUnixPermission(files.get(source), permission);
-                        }
-                        catch(BackgroundException e) {
-                            // Ignore
-                            log.warn(e.getMessage());
-                        }
+                        this.permission(source, unix, permission);
                     }
                 }
             }
             final Timestamp timestamp = destination.getFeature(Timestamp.class, null);
             if(timestamp != null) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    try {
-                        timestamp.setTimestamp(files.get(source), source.attributes().getCreationDate(),
-                                source.attributes().getModificationDate(),
-                                source.attributes().getAccessedDate());
-                    }
-                    catch(BackgroundException e) {
-                        // Ignore
-                        log.warn(e.getMessage());
-                    }
+                    listener.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
+                            source.getName(), UserDateFormatterFactory.get().getShortFormat(source.attributes().getModificationDate())));
+                    this.timestamp(source, timestamp);
                 }
             }
+        }
+    }
+
+    private void timestamp(final Path source, final Timestamp timestamp) {
+        try {
+            timestamp.setTimestamp(files.get(source), source.attributes().getCreationDate(),
+                    source.attributes().getModificationDate(),
+                    source.attributes().getAccessedDate());
+        }
+        catch(BackgroundException e) {
+            // Ignore
+            log.warn(e.getMessage());
+        }
+    }
+
+    private void permission(final Path source, final UnixPermission unix, final Permission permission) {
+        try {
+            unix.setUnixPermission(files.get(source), permission);
+        }
+        catch(BackgroundException e) {
+            // Ignore
+            log.warn(e.getMessage());
         }
     }
 }

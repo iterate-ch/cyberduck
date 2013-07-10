@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -31,10 +32,12 @@ public interface TransferPathFilter {
     /**
      * Post processing of completed transfer.
      *
-     * @param session Connection
-     * @param file    File
-     * @param options Options
-     * @param status  Transfer status
+     * @param session  Connection
+     * @param file     File
+     * @param options  Options
+     * @param status   Transfer status
+     * @param listener Progress callback
      */
-    void complete(Session<?> session, Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
+    void complete(Session<?> session, Path file, TransferOptions options,
+                  TransferStatus status, final ProgressListener listener) throws BackgroundException;
 }

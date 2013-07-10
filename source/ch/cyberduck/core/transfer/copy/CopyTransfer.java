@@ -24,6 +24,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
@@ -174,12 +175,12 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void transfer(final Path source, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
         final Path copy = files.get(source);
-        session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+        listener.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
         if(source.attributes().isFile()) {
             final Copy feature = session.getFeature(Copy.class, null);

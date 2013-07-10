@@ -94,8 +94,6 @@ public class FTPUnixPermissionFeature implements UnixPermission {
             }
             throw new FTPExceptionMappingService().map("Cannot change permissions", failure, file);
         }
-        session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                file.getName(), permission.getOctalString()));
         try {
             if(file.attributes().isFile() && !file.attributes().isSymbolicLink()) {
                 if(!session.getClient().sendSiteCommand(String.format("CHMOD %s %s", permission.getOctalString(), file.getAbsolute()))) {

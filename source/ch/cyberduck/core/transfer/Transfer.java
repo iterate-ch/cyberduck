@@ -23,6 +23,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -358,13 +359,15 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param file    File
-     * @param filter  Filter to apply to exclude files from transfer
-     * @param options Quarantine option
-     * @param status  Transfer status
+     * @param file     File
+     * @param filter   Filter to apply to exclude files from transfer
+     * @param options  Quarantine option
+     * @param status   Transfer status
+     * @param listener Progress information callback
      */
     protected void transfer(final Path file, final TransferPathFilter filter,
-                            final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                            final TransferOptions options, final TransferStatus status,
+                            final ProgressListener listener) throws BackgroundException {
         if(!status.isSelected()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skip %s not selected in prompt", file.getAbsolute()));
@@ -375,11 +378,11 @@ public abstract class Transfer implements Serializable {
         this.check();
         if(filter.accept(session, file)) {
             // Transfer
-            this.transfer(file, options, status);
+            this.transfer(file, options, status, listener);
             if(file.attributes().isFile()) {
                 // Post process of file.
                 try {
-                    filter.complete(session, file, options, status);
+                    filter.complete(session, file, options, status, listener);
                 }
                 catch(BackgroundException e) {
                     log.warn(String.format("Ignore failure in completion filter for %s", file));
@@ -394,7 +397,7 @@ public abstract class Transfer implements Serializable {
             boolean failure = false;
             for(Path child : this.cache().get(file.getReference())) {
                 // Recursive
-                this.transfer(child, filter, options, this.status.get(child));
+                this.transfer(child, filter, options, this.status.get(child), listener);
                 if(!this.status.get(child).isComplete()) {
                     failure = true;
                 }
@@ -406,7 +409,7 @@ public abstract class Transfer implements Serializable {
             }
             // Post process of directory.
             try {
-                filter.complete(session, file, options, status);
+                filter.complete(session, file, options, status, listener);
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Ignore failure in completion filter for %s", file));
@@ -418,11 +421,12 @@ public abstract class Transfer implements Serializable {
     /**
      * The actual transfer implementation
      *
-     * @param file    File
-     * @param options Quarantine option
-     * @param status  Transfer status
+     * @param file     File
+     * @param options  Quarantine option
+     * @param status   Transfer status
+     * @param listener Progress information callback
      */
-    public abstract void transfer(Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
+    public abstract void transfer(Path file, TransferOptions options, TransferStatus status, final ProgressListener listener) throws BackgroundException;
 
     /**
      * To be called before any file is actually transferred
@@ -430,7 +434,7 @@ public abstract class Transfer implements Serializable {
      * @param p      File
      * @param filter Filter to apply to exclude files from transfer
      */
-    protected void prepare(final Path p, final TransferPathFilter filter) throws BackgroundException {
+    protected void prepare(final Path p, final TransferPathFilter filter, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer status of %s for transfer %s", p, this));
         }
@@ -442,7 +446,7 @@ public abstract class Transfer implements Serializable {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Accepted in %s transfer", p));
                 }
-                session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
+                listener.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
                 s = filter.prepare(session, p);
                 // Add transfer length to total bytes
                 this.addSize(s.getLength());
@@ -464,7 +468,7 @@ public abstract class Transfer implements Serializable {
                 this.cache().put(p.getReference(), children);
                 // Call recursively
                 for(Path child : children) {
-                    this.prepare(child, filter);
+                    this.prepare(child, filter, listener);
                 }
             }
         }
@@ -539,11 +543,11 @@ public abstract class Transfer implements Serializable {
             this.reset();
             // Calculate information about the files in advance to give progress information
             for(Path next : roots) {
-                this.prepare(next, filter);
+                this.prepare(next, filter, session);
             }
             // Transfer all files sequentially
             for(Path next : roots) {
-                this.transfer(next, filter, options, status.get(next));
+                this.transfer(next, filter, options, status.get(next), session);
             }
             this.clear(options);
         }

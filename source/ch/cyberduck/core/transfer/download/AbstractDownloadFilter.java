@@ -20,6 +20,7 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.ApplicationLauncher;
@@ -111,7 +112,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
      * Update timestamp and permission
      */
     @Override
-    public void complete(final Session session, final Path file, final TransferOptions options, final TransferStatus status) {
+    public void complete(final Session session, final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }

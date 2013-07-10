@@ -18,14 +18,11 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.SFTPExceptionMappingService;
 import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 
 import ch.ethz.ssh2.SFTPv3FileAttributes;
 
@@ -43,9 +40,6 @@ public class SFTPTimestampFeature implements Timestamp {
     @Override
     public void setTimestamp(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
         try {
-            session.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                    file.getName(), UserDateFormatterFactory.get().getShortFormat(modified)));
-
             final SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
             // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
             attrs.atime = (int) (System.currentTimeMillis() / 1000);

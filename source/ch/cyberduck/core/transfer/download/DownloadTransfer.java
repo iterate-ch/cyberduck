@@ -21,6 +21,7 @@ import ch.cyberduck.core.AbstractStreamListener;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
@@ -174,7 +175,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -191,7 +192,7 @@ public class DownloadTransfer extends Transfer {
             status.setComplete();
         }
         else if(file.attributes().isFile()) {
-            session.message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
+            listener.message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                     this.getName()));
             session.download(file, bandwidth, new AbstractStreamListener() {
                 // Only update the file custom icon if the size is > 5MB. Otherwise creating too much

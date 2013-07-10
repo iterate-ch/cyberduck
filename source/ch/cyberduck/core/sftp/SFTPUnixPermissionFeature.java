@@ -72,9 +72,6 @@ public class SFTPUnixPermissionFeature implements UnixPermission {
 
     @Override
     public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                file.getName(), permission.getOctalString()));
-
         SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
         attr.permissions = Integer.parseInt(permission.getOctalString(), 8);
         try {

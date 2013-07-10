@@ -19,16 +19,13 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -54,9 +51,6 @@ public class FTPUTIMETimestampFeature implements Timestamp {
             }
             throw new FTPExceptionMappingService().map("Cannot change timestamp", failure, file);
         }
-        session.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                file.getName(), UserDateFormatterFactory.get().getShortFormat(modified)));
-
         try {
             final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
             // The utime() function sets the access and modification times of the named

@@ -23,6 +23,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
@@ -280,16 +281,16 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void transfer(final Path file, TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Comparison compare = this.compare(file);
         if(compare.equals(Comparison.REMOTE_NEWER)) {
-            _delegateDownload.transfer(file, options, status);
+            _delegateDownload.transfer(file, options, status, listener);
         }
         else if(compare.equals(Comparison.LOCAL_NEWER)) {
-            _delegateUpload.transfer(file, options, status);
+            _delegateUpload.transfer(file, options, status, listener);
         }
     }
 
@@ -396,13 +397,13 @@ public class SyncTransfer extends Transfer {
         }
 
         @Override
-        public void complete(final Session session, final Path p, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+        public void complete(final Session session, final Path p, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(Comparison.REMOTE_NEWER)) {
-                _delegateFilterDownload.complete(session, p, options, status);
+                _delegateFilterDownload.complete(session, p, options, status, listener);
             }
             else if(compare.equals(Comparison.LOCAL_NEWER)) {
-                _delegateFilterUpload.complete(session, p, options, status);
+                _delegateFilterUpload.complete(session, p, options, status, listener);
             }
             comparisons.remove(p.getReference());
             cache.remove(p.getReference());
