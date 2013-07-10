@@ -58,7 +58,7 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public abstract class Session<C> implements TranscriptListener {
+public abstract class Session<C> implements TranscriptListener, ProgressListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
     /**
@@ -425,6 +425,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @param message The message to be displayed in a status field
      * @see ProgressListener
      */
+    @Override
     public void message(final String message) {
         if(log.isInfoEnabled()) {
             log.info(message);
