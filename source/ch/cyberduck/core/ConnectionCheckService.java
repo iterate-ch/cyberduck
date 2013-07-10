@@ -85,6 +85,8 @@ public class ConnectionCheckService implements ConnectionService {
     private void connect(final Session session) throws BackgroundException {
         if(session.isConnected()) {
             try {
+                listener.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
+                        session.getHost().getHostname()));
                 // Close the underlying socket first
                 session.interrupt();
             }
@@ -108,7 +110,6 @@ public class ConnectionCheckService implements ConnectionService {
             resolver.resolve();
         }
         catch(IOException e) {
-            session.fireConnectionDidCloseEvent();
             throw new DefaultIOExceptionMappingService().map(e);
         }
 

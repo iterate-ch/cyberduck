@@ -170,20 +170,33 @@ public abstract class Session<C> implements TranscriptListener {
      * @throws BackgroundException
      */
     public void close() throws BackgroundException {
-        this.fireConnectionWillCloseEvent();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Connection will close to %s", host));
+        }
+        state = State.closing;
         try {
             this.logout();
             this.disconnect();
         }
         finally {
-            this.fireConnectionDidCloseEvent();
+            state = State.closed;
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Connection did close to %s", host));
+            }
         }
     }
 
     public void interrupt() throws BackgroundException {
-        this.fireConnectionWillCloseEvent();
-        this.disconnect();
-        this.fireConnectionDidCloseEvent();
+        state = State.closing;
+        try {
+            this.disconnect();
+        }
+        finally {
+            state = State.closed;
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Connection did close to %s", host));
+            }
+        }
     }
 
     /**
@@ -337,46 +350,6 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public State getState() {
         return state;
-    }
-
-    public void addConnectionListener(final ConnectionListener listener) {
-        connectionListeners.add(listener);
-    }
-
-    public void removeConnectionListener(final ConnectionListener listener) {
-        connectionListeners.remove(listener);
-    }
-
-    /**
-     * Notifes all connection listeners that a connection is about to be closed
-     *
-     * @see ConnectionListener
-     */
-    protected void fireConnectionWillCloseEvent() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Connection will close to %s", host));
-        }
-        // Update status flag
-        state = State.closing;
-        for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
-            listener.connectionWillClose();
-        }
-    }
-
-    /**
-     * Notifes all connection listeners that a connection has been closed
-     *
-     * @see ConnectionListener
-     */
-    protected void fireConnectionDidCloseEvent() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Connection did close to %s", host));
-        }
-        // Update status flag
-        state = State.closed;
-        for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
-            listener.connectionDidClose();
-        }
     }
 
     public void addTranscriptListener(final TranscriptListener listener) {
