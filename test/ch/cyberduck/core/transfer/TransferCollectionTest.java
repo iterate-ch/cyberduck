@@ -27,7 +27,6 @@ public class TransferCollectionTest extends AbstractTestCase {
         assertEquals(0, c.size());
         c.load();
         assertEquals(1, c.size());
-        assertEquals(0, c.numberOfQueuedTransfers());
         assertEquals(0, c.numberOfRunningTransfers());
         assertNotNull(c.get(0));
         assertEquals(1, (c.get(0).getRoots().size()));
