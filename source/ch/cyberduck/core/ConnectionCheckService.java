@@ -84,8 +84,13 @@ public class ConnectionCheckService implements ConnectionService {
 
     private void connect(final Session session) throws BackgroundException {
         if(session.isConnected()) {
-            // Close the underlying socket first
-            session.interrupt();
+            try {
+                // Close the underlying socket first
+                session.interrupt();
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Ignore failure closing connection %s", e.getMessage()));
+            }
         }
         final Host bookmark = session.getHost();
 
