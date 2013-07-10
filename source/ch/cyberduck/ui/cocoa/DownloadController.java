@@ -77,7 +77,7 @@ public class DownloadController extends AlertController {
             final Transfer transfer = new DownloadTransfer(session,
                     new Path(host.getDefaultPath(), detector.detect(host.getDefaultPath()))
             );
-            TransferController.instance().startTransfer(transfer);
+            TransferControllerFactory.get().startTransfer(transfer);
         }
     }
 
