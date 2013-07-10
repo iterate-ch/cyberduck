@@ -199,7 +199,7 @@ public class TransferTableDataSource extends ListDataSource {
             String droppedText = draggingInfo.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
             if(StringUtils.isNotBlank(droppedText)) {
                 log.info("NSPasteboard.StringPboardType:" + droppedText);
-                DownloadController c = new DownloadController(TransferController.instance(), droppedText);
+                final DownloadController c = new DownloadController(TransferControllerFactory.get(), droppedText);
                 c.beginSheet();
                 return true;
             }
