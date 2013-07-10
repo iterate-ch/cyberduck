@@ -17,12 +17,12 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class ConnectionCheckServiceTest extends AbstractTestCase {
+public class LoginConnectionServiceTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
     public void testCheckUnknown() throws Exception {
         final FTPSession session = new FTPSession(new Host("unknownhost.local"));
-        final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new HostKeyController() {
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new HostKeyController() {
             @Override
             public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
                 assertEquals(Session.State.opening, session.getState());
@@ -61,7 +61,7 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
             }
         });
         final DAVSession session = new DAVSession(new Host(Protocol.WEBDAV_SSL, "54.228.253.92", new Credentials("user", "p")));
-        final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
@@ -74,7 +74,7 @@ public class ConnectionCheckServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
-        final ConnectionCheckService s = new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override

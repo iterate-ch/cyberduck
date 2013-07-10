@@ -32,15 +32,15 @@ import java.util.Date;
 /**
  * @version $Id$
  */
-public class ConnectionCheckService implements ConnectionService {
-    private static final Logger log = Logger.getLogger(ConnectionCheckService.class);
+public class LoginConnectionService implements ConnectionService {
+    private static final Logger log = Logger.getLogger(LoginConnectionService.class);
 
     private LoginController prompt;
     private HostKeyController key;
     private PasswordStore keychain;
     private ProgressListener listener;
 
-    public ConnectionCheckService(final LoginController prompt, final HostKeyController key,
+    public LoginConnectionService(final LoginController prompt, final HostKeyController key,
                                   final PasswordStore keychain,
                                   final ProgressListener listener) {
         this.prompt = prompt;

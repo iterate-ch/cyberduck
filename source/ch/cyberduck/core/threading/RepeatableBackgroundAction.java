@@ -19,8 +19,8 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCheckService;
 import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
@@ -132,7 +132,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             }
             // Clear the transcript and exceptions
             transcript = new StringBuilder();
-            final ConnectionCheckService c = new ConnectionCheckService(prompt, key, PasswordStoreFactory.get(),
+            final LoginConnectionService c = new LoginConnectionService(prompt, key, PasswordStoreFactory.get(),
                     progressListener);
             for(Session session : this.getSessions()) {
                 c.check(session);
