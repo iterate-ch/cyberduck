@@ -134,9 +134,23 @@ public abstract class Session<C> implements TranscriptListener {
      * @throws BackgroundException
      */
     public C open(final HostKeyController key) throws BackgroundException {
-        this.fireConnectionWillOpenEvent();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Connection will open to %s", host));
+        }
+        // Update status flag
+        state = State.opening;
+        for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
+            listener.connectionWillOpen();
+        }
         client = this.connect(key);
-        this.fireConnectionDidOpenEvent();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Connection did open to %s", host));
+        }
+        // Update status flag
+        state = State.open;
+        for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
+            listener.connectionDidOpen();
+        }
         return client;
     }
 
@@ -331,42 +345,6 @@ public abstract class Session<C> implements TranscriptListener {
 
     public void removeConnectionListener(final ConnectionListener listener) {
         connectionListeners.remove(listener);
-    }
-
-    /**
-     * Notifies all connection listeners that an attempt is made to open this session
-     *
-     * @throws BackgroundException If the name resolution has been canceled by the user
-     * @see ConnectionListener
-     */
-    protected void fireConnectionWillOpenEvent() throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Connection will open to %s", host));
-        }
-        // Update status flag
-        state = State.opening;
-        final ConnectionListener[] l = connectionListeners.toArray(new ConnectionListener[connectionListeners.size()]);
-        for(ConnectionListener listener : l) {
-            listener.connectionWillOpen();
-        }
-    }
-
-    /**
-     * Starts the <code>KeepAliveTask</code> if <code>connection.keepalive</code> is true
-     * Notifies all connection listeners that the connection has been opened successfully
-     *
-     * @see ConnectionListener
-     */
-    protected void fireConnectionDidOpenEvent() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Connection did open to %s", host));
-        }
-        // Update status flag
-        state = State.open;
-        final ConnectionListener[] l = connectionListeners.toArray(new ConnectionListener[connectionListeners.size()]);
-        for(ConnectionListener listener : l) {
-            listener.connectionDidOpen();
-        }
     }
 
     /**

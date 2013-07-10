@@ -32,7 +32,7 @@ import java.util.Date;
 /**
  * @version $Id$
  */
-public class ConnectionCheckService {
+public class ConnectionCheckService implements ConnectionService {
     private static final Logger log = Logger.getLogger(ConnectionCheckService.class);
 
     private LoginController prompt;
@@ -56,6 +56,7 @@ public class ConnectionCheckService {
      * @param session Session
      * @throws BackgroundException If opening connection fails
      */
+    @Override
     public void check(final Session session) throws BackgroundException {
         if(!session.isConnected()) {
             if(StringUtils.isBlank(session.getHost().getHostname())) {
@@ -99,7 +100,6 @@ public class ConnectionCheckService {
 
         // Try to resolve the hostname first
         try {
-            session.fireConnectionWillOpenEvent();
             resolver.resolve();
         }
         catch(IOException e) {
