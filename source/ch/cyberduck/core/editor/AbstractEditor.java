@@ -216,6 +216,8 @@ public abstract class AbstractEditor implements Editor {
             };
             upload.start(null, new TransferOptions());
             if(upload.isComplete()) {
+                // Update known remote file size
+                edited.attributes().setSize(upload.getTransferred());
                 if(isClosed()) {
                     delete();
                 }
