@@ -345,8 +345,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
-        client.setProviderCredentials(new AWSCredentials(
-                host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
+                new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         for(Path bucket : new S3BucketListService().list(this)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Found bucket %s", bucket));
