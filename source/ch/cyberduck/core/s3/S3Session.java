@@ -627,9 +627,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             if(file.attributes().isFile()) {
                 final StorageObject object = this.createObjectDetails(file);
 
-                this.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                        file.getName()));
-
                 // Only for AWS
                 if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())
                         && Preferences.instance().getBoolean("s3.upload.multipart")
