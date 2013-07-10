@@ -132,11 +132,13 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             }
             // Clear the transcript and exceptions
             transcript = new StringBuilder();
-            final LoginConnectionService c = new LoginConnectionService(prompt, key, PasswordStoreFactory.get(),
-                    progressListener);
+            final LoginConnectionService c = new LoginConnectionService(prompt, key,
+                    PasswordStoreFactory.get(), progressListener);
             for(Session session : this.getSessions()) {
-                c.check(session);
-                growl.notify("Connection opened", session.getHost().getHostname());
+                if(c.check(session)) {
+                    // New connection opened
+                    growl.notify("Connection opened", session.getHost().getHostname());
+                }
             }
         }
         catch(BackgroundException failure) {

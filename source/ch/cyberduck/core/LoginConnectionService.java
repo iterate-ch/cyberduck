@@ -57,14 +57,10 @@ public class LoginConnectionService implements ConnectionService {
      * @throws BackgroundException If opening connection fails
      */
     @Override
-    public void check(final Session session) throws BackgroundException {
+    public boolean check(final Session session) throws BackgroundException {
         if(!session.isConnected()) {
             if(StringUtils.isBlank(session.getHost().getHostname())) {
-                if(StringUtils.isBlank(session.getHost().getProtocol().getDefaultHostname())) {
-                    throw new ConnectionCanceledException();
-                }
-                // If hostname is missing update with default
-                session.getHost().setHostname(session.getHost().getProtocol().getDefaultHostname());
+                throw new ConnectionCanceledException();
             }
             this.connect(session);
         }
@@ -73,6 +69,7 @@ public class LoginConnectionService implements ConnectionService {
             try {
                 // Send a 'no operation command' to make sure the session is alive
                 session.noop();
+                return false;
             }
             catch(BackgroundException e) {
                 log.warn(String.format("No operation command failed for session %s. Attempt to reopen connection", session));
@@ -80,6 +77,7 @@ public class LoginConnectionService implements ConnectionService {
                 this.connect(session);
             }
         }
+        return true;
     }
 
     @Override

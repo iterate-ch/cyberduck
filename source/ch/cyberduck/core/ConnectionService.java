@@ -23,7 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
  * @version $Id$
  */
 public interface ConnectionService {
-    void check(Session session) throws BackgroundException;
+
+    boolean check(Session session) throws BackgroundException;
 
     void connect(Session session) throws BackgroundException;
 }
