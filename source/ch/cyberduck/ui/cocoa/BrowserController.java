@@ -442,19 +442,15 @@ public class BrowserController extends WindowController
                 downloads.add(path);
             }
             if(downloads.size() > 0) {
-                background(new BrowserBackgroundAction(BrowserController.this) {
-                    @Override
-                    public void run() throws BackgroundException {
-                        Transfer transfer = new DownloadTransfer(session, downloads);
-                        TransferOptions options = new TransferOptions();
-                        transfer.start(new TransferPrompt() {
+                final Transfer download = new DownloadTransfer(session, downloads);
+                TransferOptions options = new TransferOptions();
+                background(new TransferRepeatableBackgroundAction(this, new PanelAlertCallback(this), this, this, download,
+                        new TransferPrompt() {
                             @Override
                             public TransferAction prompt() throws BackgroundException {
                                 return TransferAction.ACTION_COMPARISON;
                             }
-                        }, options);
-                    }
-
+                        }, options) {
                     @Override
                     public void cleanup() {
                         super.cleanup();
@@ -466,9 +462,6 @@ public class BrowserController extends WindowController
                         quicklook.select(previews);
                         // Open Quick Look Preview Panel
                         quicklook.open();
-                        // Restore the focus to our window to demo the selection changing, scrolling
-                        // (left/right) and closing (space) functionality
-                        BrowserController.this.window().makeKeyWindow();
                     }
 
                     @Override
