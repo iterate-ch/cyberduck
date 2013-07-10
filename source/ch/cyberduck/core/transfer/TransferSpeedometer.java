@@ -47,6 +47,13 @@ public class TransferSpeedometer extends Speedometer {
         return this.getProgress(transfer.isRunning(), transfer.getSize(), transfer.getTransferred());
     }
 
+    public TransferProgress getStatus() {
+        final Long transferred = transfer.getTransferred();
+        final Long size = transfer.getSize();
+        return new TransferProgress(size, transferred,
+                this.getProgress(transfer.isRunning(), size, transferred), this.getSpeed(transferred));
+    }
+
     public void reset() {
         this.reset(transfer.getTransferred());
     }

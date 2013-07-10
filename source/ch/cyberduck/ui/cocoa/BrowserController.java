@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
@@ -42,9 +41,10 @@ import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferAdapter;
+import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.copy.CopyTransfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.move.MoveTransfer;
@@ -97,8 +97,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -444,13 +442,19 @@ public class BrowserController extends WindowController
             if(downloads.size() > 0) {
                 final Transfer download = new DownloadTransfer(session, downloads);
                 TransferOptions options = new TransferOptions();
-                background(new TransferRepeatableBackgroundAction(this, new PanelAlertCallback(this), this, this, download,
+                background(new TransferRepeatableBackgroundAction(this, new PanelAlertCallback(this), new TransferAdapter() {
+                    @Override
+                    public void progress(final TransferProgress status) {
+                        message(status.getProgress());
+                    }
+                }, this, this, download,
                         new TransferPrompt() {
                             @Override
                             public TransferAction prompt() throws BackgroundException {
                                 return TransferAction.ACTION_COMPARISON;
                             }
-                        }, options) {
+                        }, options
+                ) {
                     @Override
                     public void cleanup() {
                         super.cleanup();
@@ -2804,81 +2808,46 @@ public class BrowserController extends WindowController
      * @param browser  Transfer in browser window
      */
     private void transfer(final Transfer transfer, final List<Path> selected, boolean browser) {
-        if(!selected.isEmpty()) {
-            transfer.addListener(new TransferAdapter() {
-                @Override
-                public void transferDidEnd() {
-                    if(!transfer.isCanceled()) {
-                        invoke(new WindowMainAction(BrowserController.this) {
-                            @Override
-                            public void run() {
-                                reloadData(selected, selected, true);
-                            }
-
-                            @Override
-                            public boolean isValid() {
-                                return super.isValid() && BrowserController.this.isConnected();
-                            }
-                        });
+        final TransferCallback callback = new TransferCallback() {
+            @Override
+            public void complete(final Transfer transfer) {
+                invoke(new WindowMainAction(BrowserController.this) {
+                    @Override
+                    public void run() {
+                        reloadData(selected, selected, true);
                     }
-                    transfer.removeListener(this);
-                }
-            });
-        }
+
+                    @Override
+                    public boolean isValid() {
+                        return super.isValid() && BrowserController.this.isConnected();
+                    }
+                });
+            }
+        };
         if(browser) {
-            transfer.addListener(new TransferAdapter() {
-                private TransferSpeedometer meter = new TransferSpeedometer(transfer);
-
-                /**
-                 * Timer to update the progress indicator
-                 */
-                private ScheduledFuture<?> progressTimer;
-
+            this.background(new TransferRepeatableBackgroundAction(this, new PanelAlertCallback(this), new TransferAdapter() {
                 @Override
-                public void willTransferPath(Path path) {
-                    meter.reset();
-                    progressTimer = timerPool.scheduleAtFixedRate(new Runnable() {
-                        @Override
-                        public void run() {
-                            invoke(new WindowMainAction(BrowserController.this) {
-                                @Override
-                                public void run() {
-                                    message(meter.getProgress());
-                                }
-                            });
-                        }
-                    }, 0, 500, TimeUnit.MILLISECONDS);
+                public void progress(final TransferProgress status) {
+                    message(status.getProgress());
                 }
-
-                @Override
-                public void didTransferPath(Path path) {
-                    boolean canceled = false;
-                    while(!canceled) {
-                        canceled = progressTimer.cancel(false);
-                    }
-                    meter.reset();
-                }
-
-                @Override
-                public void bandwidthChanged(BandwidthThrottle bandwidth) {
-                    meter.reset();
-                }
-
-                @Override
-                public void transferDidEnd() {
-                    transfer.removeListener(this);
-                }
-            });
-            this.background(new TransferRepeatableBackgroundAction(this, new PanelAlertCallback(this), this, this, transfer,
+            }, this, this, transfer,
                     new TransferPrompt() {
                         @Override
                         public TransferAction prompt() throws BackgroundException {
                             return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
                         }
-                    }, new TransferOptions()));
+                    }, new TransferOptions()
+            ) {
+                @Override
+                public void finish() throws BackgroundException {
+                    if(transfer.isComplete()) {
+                        callback.complete(transfer);
+                    }
+                }
+            });
         }
         else {
-            TransferControllerFactory.get().startTransfer(transfer);
+            TransferControllerFactory.get().startTransfer(transfer, new TransferOptions(), callback);
         }
     }
 

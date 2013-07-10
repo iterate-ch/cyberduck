@@ -51,7 +51,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         if(file.isRoot()) {
             return true;
         }
-        final Cache cache = session.cache();
+        final Cache cache = session.cache();//todo
         if(!cache.isCached(file.getParent().getReference())) {
             final AttributedList<Path> list = session.list(file.getParent());
             cache.put(file.getParent().getReference(), list);

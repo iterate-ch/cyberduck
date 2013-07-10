@@ -18,22 +18,24 @@ package ch.cyberduck.core.transfer;
  */
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class TransferAdapter implements TransferListener {
+public final class QueueFactory {
 
-    @Override
-    public void start(Transfer transfer) {
-        //
+    private static Queue instance;
+
+    private static final Object lock = new Object();
+
+    public static Queue get() {
+        synchronized(lock) {
+            if(null == instance) {
+                instance = new Queue();
+            }
+            return instance;
+        }
     }
 
-    @Override
-    public void stop(Transfer transfer) {
-        //
-    }
-
-    @Override
-    public void progress(final TransferProgress status) {
+    private QueueFactory() {
         //
     }
 }

@@ -1,8 +1,5 @@
 package ch.cyberduck.core.transfer;
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.io.BandwidthThrottle;
-
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -29,41 +26,15 @@ public interface TransferListener {
     /**
      * The transfers are about to start transfering
      */
-    void transferWillStart();
-
-    /**
-     * The transfer is paused and waits for other transfers to finish first
-     */
-    void transferQueued();
-
-    /**
-     * The transfer has a slot in the queue allocated
-     */
-    void transferResumed();
+    void start(Transfer transfer);
 
     /**
      * All transfers did end
      */
-    void transferDidEnd();
+    void stop(Transfer transfer);
 
     /**
-     * The path part of this transfer will be transferred
-     *
-     * @param path File
+     * @param status Progress text
      */
-    void willTransferPath(Path path);
-
-    /**
-     * The path part of this transfer has been transferred
-     *
-     * @param path File
-     */
-    void didTransferPath(Path path);
-
-    /**
-     * Bandwidth throttle changed in controller
-     *
-     * @param bandwidth Settings
-     */
-    void bandwidthChanged(BandwidthThrottle bandwidth);
+    void progress(TransferProgress status);
 }

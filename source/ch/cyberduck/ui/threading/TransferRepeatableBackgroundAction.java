@@ -24,15 +24,23 @@ import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
+import ch.cyberduck.core.transfer.Queue;
+import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -44,29 +52,63 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
     protected TransferPrompt prompt;
     protected TransferOptions options;
 
-    final SleepPreventer sleep = SleepPreventerFactory.get();
+    private SleepPreventer sleep = SleepPreventerFactory.get();
+
+    private Queue queue = QueueFactory.get();
+
+    private Growl growl = GrowlFactory.get();
+
+    /**
+     * Keeping track of the current transfer rate
+     */
+    private TransferSpeedometer meter;
+
+    /**
+     * Timer to update the progress indicator
+     */
+    private ScheduledFuture progressTimer;
+
+    private Controller controller;
+
+    private TransferListener transferListener;
 
     public TransferRepeatableBackgroundAction(final Controller controller,
                                               final AlertCallback alert,
+                                              final TransferListener transferListener,
                                               final ProgressListener progressListener,
                                               final TranscriptListener transcriptListener,
                                               final Transfer transfer,
                                               final TransferPrompt prompt,
                                               final TransferOptions options) {
         super(controller, alert, progressListener, transcriptListener);
+        this.controller = controller;
         this.prompt = prompt;
         this.transfer = transfer;
         this.options = options;
+        this.transferListener = transferListener;
+        this.meter = new TransferSpeedometer(transfer);
     }
 
     @Override
     public void run() throws BackgroundException {
         final String lock = sleep.lock();
         try {
+            queue.add(transfer, progressListener);
+            progressTimer = controller.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    final TransferProgress status = meter.getStatus();
+                    transferListener.progress(status);
+                }
+            }, 500L, TimeUnit.MILLISECONDS);
+            transferListener.start(transfer);
             transfer.start(prompt, options);
         }
         finally {
             sleep.release(lock);
+            queue.remove(transfer);
+            progressTimer.cancel(false);
+            transferListener.stop(transfer);
         }
     }
 
@@ -86,7 +128,7 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
     @Override
     public void cleanup() {
         if(transfer.isReset() && transfer.isComplete() && !transfer.isCanceled() && !(transfer.getTransferred() == 0)) {
-            GrowlFactory.get().notify(transfer.getStatus(), transfer.getName());
+            growl.notify(transfer.getStatus(), transfer.getName());
         }
         super.cleanup();
     }
@@ -106,12 +148,10 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
         if(log.isDebugEnabled()) {
             log.debug(String.format("Pause background action for transfer %s", transfer));
         }
-        transfer.fireTransferQueued();
         // Upon retry do not suggest to overwrite already completed items from the transfer
         options.reloadRequested = false;
         options.resumeRequested = true;
         super.pause();
-        transfer.fireTransferResumed();
     }
 
     @Override

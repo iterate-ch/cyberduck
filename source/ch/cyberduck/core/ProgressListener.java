@@ -26,5 +26,5 @@ public interface ProgressListener {
     /**
      * @param message Progress message to display in status
      */
-    void message(final String message);
+    void message(String message);
 }

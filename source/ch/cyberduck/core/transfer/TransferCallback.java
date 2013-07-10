@@ -18,22 +18,9 @@ package ch.cyberduck.core.transfer;
  */
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class TransferAdapter implements TransferListener {
+public interface TransferCallback {
 
-    @Override
-    public void start(Transfer transfer) {
-        //
-    }
-
-    @Override
-    public void stop(Transfer transfer) {
-        //
-    }
-
-    @Override
-    public void progress(final TransferProgress status) {
-        //
-    }
+    void complete(Transfer transfer);
 }

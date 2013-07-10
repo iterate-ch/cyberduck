@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCollection;
+import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.ui.Controller;
@@ -38,9 +39,11 @@ public class TransferCollectionRepeatableBackgroundAction extends TransferRepeat
     private static final Logger log = Logger.getLogger(TransferCollectionRepeatableBackgroundAction.class);
 
     public TransferCollectionRepeatableBackgroundAction(final Controller controller, final AlertCallback alert,
-                                                        final ProgressListener progressListener, final TranscriptListener transcriptListener,
+                                                        final TransferListener transferListener,
+                                                        final ProgressListener progressListener,
+                                                        final TranscriptListener transcriptListener,
                                                         final Transfer transfer, final TransferPrompt prompt, final TransferOptions options) {
-        super(controller, alert, progressListener, transcriptListener, transfer, prompt, options);
+        super(controller, alert, transferListener, progressListener, transcriptListener, transfer, prompt, options);
     }
 
     @Override

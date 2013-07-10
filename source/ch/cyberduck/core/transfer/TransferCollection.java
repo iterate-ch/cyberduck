@@ -129,48 +129,4 @@ public final class TransferCollection extends Collection<Transfer> {
         }
         return running;
     }
-
-    /**
-     * @return Number of transfers in collection that are queued
-     * @see ch.cyberduck.core.transfer.Transfer#isQueued()
-     */
-    public int numberOfQueuedTransfers() {
-        int queued = 0;
-        // Count the number of queued transfers
-        for(Transfer t : this) {
-            if(null == t) {
-                continue;
-            }
-            if(t.isQueued()) {
-                queued++;
-            }
-        }
-        return queued;
-    }
-
-    /**
-     * @return Transfer progress of all transfers in this collection
-     */
-    public double getDataTransferred() {
-        double size = 0;
-        for(Transfer t : this) {
-            if(t.isRunning() || t.isQueued()) {
-                size += t.getTransferred();
-            }
-        }
-        return size;
-    }
-
-    /**
-     * @return Transfer size of all transfers in this collection
-     */
-    public double getDataSize() {
-        double size = 0;
-        for(Transfer t : this) {
-            if(t.isRunning() || t.isQueued()) {
-                size += t.getSize();
-            }
-        }
-        return size;
-    }
 }

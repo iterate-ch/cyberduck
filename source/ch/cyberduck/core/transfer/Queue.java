@@ -20,7 +20,13 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.ApplicationBadgeLabeler;
 import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
+import ch.cyberduck.ui.growl.Growl;
+import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -33,21 +39,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 /**
  * @version $Id$
  */
-public class Queue {
+public final class Queue {
     private static final Logger log = Logger.getLogger(Queue.class);
 
-    private static Queue instance;
-
-    private static final Object lock = new Object();
-
-    public static Queue instance() {
-        synchronized(lock) {
-            if(null == instance) {
-                instance = new Queue();
-            }
-            return instance;
-        }
-    }
+    private ApplicationBadgeLabeler label = ApplicationBadgeLabelerFactory.get();
 
     /**
      * One transfer at least is always allowed to run. Queued accesses for threads blocked
@@ -56,6 +51,7 @@ public class Queue {
     private ArrayBlockingQueue<Transfer> overflow
             = new ArrayBlockingQueue<Transfer>(1, true);
 
+    private Growl growl = GrowlFactory.get();
 
     /**
      * All running transfers.
@@ -63,20 +59,27 @@ public class Queue {
     private List<Transfer> running
             = Collections.synchronizedList(new ArrayList<Transfer>());
 
+    public Queue() {
+        //
+    }
+
     /**
      * Idle this transfer until a free slot is avilable depending on
      * the maximum number of concurrent transfers allowed in the Preferences.
      *
      * @param t This transfer should respect the settings for maximum number of transfers
      */
-    public void add(final Transfer t) {
+    public void add(final Transfer t, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
-            log.debug("add:" + t);
+            log.debug(String.format("Add transfer %s", t));
         }
         if(running.size() >= Preferences.instance().getInteger("queue.maxtransfers")) {
-            t.fireTransferQueued();
+            listener.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
             if(log.isInfoEnabled()) {
-                log.info("Queuing:" + t);
+                log.info(String.format("Queuing transfer %s", t));
+            }
+            for(Session s : t.getSessions()) {
+                growl.notify("Transfer queued", s.getHost().getHostname());
             }
             while(running.size() >= Preferences.instance().getInteger("queue.maxtransfers")) {
                 // The maximum number of transfers is already reached
@@ -92,12 +95,11 @@ public class Queue {
                 }
             }
             if(log.isInfoEnabled()) {
-                log.info("Released from queue:" + t);
+                log.info(String.format("Released from queue %s", t));
             }
-            t.fireTransferResumed();
         }
         running.add(t);
-        ApplicationBadgeLabelerFactory.get().badge(String.valueOf(running.size()));
+        label.badge(String.valueOf(running.size()));
     }
 
     /**
@@ -106,10 +108,10 @@ public class Queue {
     public void remove(final Transfer t) {
         if(running.remove(t)) {
             if(0 == running.size()) {
-                ApplicationBadgeLabelerFactory.get().badge(StringUtils.EMPTY);
+                label.badge(StringUtils.EMPTY);
             }
             else {
-                ApplicationBadgeLabelerFactory.get().badge(String.valueOf(running.size()));
+                label.badge(String.valueOf(running.size()));
             }
             // Transfer has finished.
             this.poll();

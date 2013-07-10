@@ -56,17 +56,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                     }
                 };
             }
-        }) {
-            @Override
-            protected void fireWillTransferPath(Path path) {
-                assertEquals(new Path("/t", Path.DIRECTORY_TYPE), path);
-            }
-
-            @Override
-            protected void fireDidTransferPath(Path path) {
-                assertEquals(new Path("/t", Path.DIRECTORY_TYPE), path);
-            }
-        };
+        });
         t.start(new TransferPrompt() {
             @Override
             public TransferAction prompt() throws BackgroundException {

@@ -21,13 +21,13 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.formatter.SizeFormatter;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferListener;
-import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
@@ -42,129 +42,29 @@ import org.apache.commons.lang.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import java.text.MessageFormat;
 import java.util.Date;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
  */
-public class ProgressController extends BundleController implements ProgressListener {
+public class ProgressController extends BundleController implements TransferListener, ProgressListener {
 
     private Transfer transfer;
 
     /**
-     * Keeping track of the current transfer rate
+     * Formatter for file size
      */
-    private TransferSpeedometer meter;
+    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
-    /**
-     * The current connection status message
-     *
-     * @see ch.cyberduck.core.ProgressListener#message(String)
-     */
-    private String messageText;
-
-    public ProgressController(final Transfer transfer) {
-        this.transfer = transfer;
-        this.meter = new TransferSpeedometer(transfer);
-        this.init();
-    }
+    private static final long delay = 0;
+    private static final long period = 500; //in milliseconds
 
     private TransferListener transferListener;
 
-    @Override
-    protected void invalidate() {
-        transfer.removeListener(transferListener);
-        filesPopup.menu().setDelegate(null);
-        super.invalidate();
-    }
-
-    @Override
-    protected String getBundleName() {
-        return "Progress.nib";
-    }
-
-    private void init() {
+    public ProgressController(final Transfer transfer) {
+        this.transfer = transfer;
         this.loadBundle();
-        this.transfer.addListener(transferListener = new TransferAdapter() {
-            /**
-             * Timer to update the progress indicator
-             */
-            private ScheduledFuture progressTimer;
-
-            final static long delay = 0;
-            final static long period = 500; //in milliseconds
-
-            @Override
-            public void transferWillStart() {
-                invoke(new DefaultMainAction() {
-                    @Override
-                    public void run() {
-                        progressBar.setHidden(false);
-                        progressBar.setIndeterminate(true);
-                        progressBar.startAnimation(null);
-                        statusIconView.setImage(YELLOW_ICON);
-                        setProgressText();
-                        setStatusText();
-                    }
-                });
-            }
-
-            @Override
-            public void transferDidEnd() {
-                invoke(new DefaultMainAction() {
-                    @Override
-                    public void run() {
-                        progressBar.stopAnimation(null);
-                        progressBar.setIndeterminate(true);
-                        progressBar.setHidden(true);
-                        messageText = null;
-                        setMessageText();
-                        setProgressText();
-                        setStatusText();
-                        statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
-                    }
-                });
-            }
-
-            @Override
-            public void willTransferPath(final Path path) {
-                meter.reset();
-                progressTimer = timerPool.scheduleAtFixedRate(new Runnable() {
-                    @Override
-                    public void run() {
-                        invoke(new DefaultMainAction() {
-                            @Override
-                            public void run() {
-                                setProgressText();
-                                final double transferred = transfer.getTransferred();
-                                final double size = transfer.getSize();
-                                if(transferred > 0 && size > 0) {
-                                    progressBar.setIndeterminate(false);
-                                    progressBar.setMaxValue(size);
-                                    progressBar.setDoubleValue(transferred);
-                                }
-                            }
-                        });
-                    }
-                }, delay, period, TimeUnit.MILLISECONDS);
-            }
-
-            @Override
-            public void didTransferPath(final Path path) {
-                boolean canceled = false;
-                while(!canceled) {
-                    canceled = progressTimer.cancel(false);
-                }
-                meter.reset();
-            }
-
-            @Override
-            public void bandwidthChanged(BandwidthThrottle bandwidth) {
-                meter.reset();
-            }
-        });
     }
 
     /**
@@ -172,44 +72,100 @@ public class ProgressController extends BundleController implements ProgressList
      */
     @Override
     public void awakeFromNib() {
-        this.setProgressText();
-        this.setMessageText();
-        this.setStatusText();
-
+        this.progress(MessageFormat.format(Locale.localizedString("{0} of {1}"),
+                sizeFormatter.format(transfer.getTransferred()),
+                sizeFormatter.format(transfer.getSize())));
+        this.message(StringUtils.EMPTY);
+        this.status(Locale.localizedString(transfer.getStatus(), "Status"));
         super.awakeFromNib();
     }
 
-    private void setMessageText() {
-        this.message(null);
+    @Override
+    protected String getBundleName() {
+        return "Progress.nib";
+    }
+
+    @Override
+    protected void invalidate() {
+        filesPopup.menu().setDelegate(null);
+        super.invalidate();
+    }
+
+    @Override
+    public void start(final Transfer transfer) {
+        invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                progressBar.setHidden(false);
+                progressBar.setIndeterminate(true);
+                progressBar.startAnimation(null);
+                statusIconView.setImage(YELLOW_ICON);
+                progress(StringUtils.EMPTY);
+                status(StringUtils.EMPTY);
+            }
+        });
+    }
+
+    @Override
+    public void stop(final Transfer transfer) {
+        invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                progressBar.stopAnimation(null);
+                progressBar.setIndeterminate(true);
+                progressBar.setHidden(true);
+                message(StringUtils.EMPTY);
+                progress(MessageFormat.format(Locale.localizedString("{0} of {1}"),
+                        sizeFormatter.format(transfer.getTransferred()),
+                        sizeFormatter.format(transfer.getSize())));
+                status(Locale.localizedString(transfer.getStatus(), "Status"));
+                statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
+            }
+        });
+    }
+
+    @Override
+    public void progress(final TransferProgress progress) {
+        this.progress(progress.getProgress());
+        final double transferred = progress.getTransferred();
+        final double size = progress.getSize();
+        if(transferred > 0 && size > 0) {
+            progressBar.setIndeterminate(false);
+            progressBar.setMaxValue(size);
+            progressBar.setDoubleValue(transferred);
+        }
+        else {
+            progressBar.setIndeterminate(true);
+        }
+    }
+
+    private void progress(final String message) {
+        progressField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                message, TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     @Override
     public void message(final String message) {
+        final String text;
         if(StringUtils.isBlank(message)) {
             // Do not display any progress text when transfer is stopped
             final Date timestamp = transfer.getTimestamp();
             if(null != timestamp) {
-                messageText = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime(), false);
+                text = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime(), false);
             }
             else {
-                messageText = StringUtils.EMPTY;
+                text = StringUtils.EMPTY;
             }
         }
         else {
-            messageText = message;
+            text = message;
         }
         messageField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                messageText, TRUNCATE_MIDDLE_ATTRIBUTES));
+                text, TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
-    private void setProgressText() {
-        progressField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                meter.getProgress(), TRUNCATE_MIDDLE_ATTRIBUTES));
-    }
-
-    private void setStatusText() {
-        statusField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                transfer.isRunning() ? StringUtils.EMPTY : Locale.localizedString(transfer.getStatus(), "Status"),
+    private void status(final String status) {
+        statusField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(status,
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 

@@ -18,22 +18,36 @@ package ch.cyberduck.core.transfer;
  */
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class TransferAdapter implements TransferListener {
+public final class TransferProgress {
 
-    @Override
-    public void start(Transfer transfer) {
-        //
+    private Long size;
+    private Long transferred;
+
+    private String progress;
+    private Double speed;
+
+    public TransferProgress(final Long size, final Long transferred, final String progress, final Double speed) {
+        this.size = size;
+        this.transferred = transferred;
+        this.progress = progress;
+        this.speed = speed;
     }
 
-    @Override
-    public void stop(Transfer transfer) {
-        //
+    public Long getSize() {
+        return size;
     }
 
-    @Override
-    public void progress(final TransferProgress status) {
-        //
+    public Long getTransferred() {
+        return transferred;
+    }
+
+    public String getProgress() {
+        return progress;
+    }
+
+    public Double getSpeed() {
+        return speed;
     }
 }

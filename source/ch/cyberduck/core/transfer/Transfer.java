@@ -34,7 +34,6 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
-import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
@@ -43,10 +42,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @version $Id$
@@ -74,11 +71,6 @@ public abstract class Transfer implements Serializable {
      */
     private long transferred = 0;
 
-    /**
-     * The transfer has been canceled and should not continue any further processing
-     */
-    private boolean canceled;
-
     // Backward compatibility for serialization
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
@@ -88,24 +80,6 @@ public abstract class Transfer implements Serializable {
 
     protected Transfer() {
         //
-    }
-
-    private boolean running;
-
-    /**
-     * @return True if in <code>running</code> state
-     */
-    public boolean isRunning() {
-        return running;
-    }
-
-    private boolean queued;
-
-    /**
-     * @return True if in <code>queued</code> state
-     */
-    public boolean isQueued() {
-        return queued;
     }
 
     protected Session<?> session;
@@ -133,6 +107,34 @@ public abstract class Transfer implements Serializable {
     private Cache cache = new Cache();
 
     /**
+     * Transfer state
+     */
+    private State state;
+
+    private enum State {
+        running,
+        /**
+         * The transfer has been canceled and should not continue any further processing
+         */
+        canceled,
+        stopped
+    }
+
+    /**
+     * @return True if in <code>running</code> state
+     */
+    public boolean isRunning() {
+        return state == State.running;
+    }
+
+    /**
+     * @return True if in <code>canceled</code> state
+     */
+    public boolean isCanceled() {
+        return state == State.canceled;
+    }
+
+    /**
      * @return True if appending to files is supported
      */
     public abstract boolean isResumable();
@@ -142,13 +144,6 @@ public abstract class Transfer implements Serializable {
     public abstract String getStatus();
 
     public abstract String getImage();
-
-    /**
-     * @return True if in <code>canceled</code> state
-     */
-    public boolean isCanceled() {
-        return canceled;
-    }
 
     /**
      * Create a transfer with a single root which can
@@ -222,84 +217,6 @@ public abstract class Transfer implements Serializable {
         return dict;
     }
 
-    private Set<TransferListener> listeners
-            = Collections.synchronizedSet(new HashSet<TransferListener>());
-
-    /**
-     * @param listener Callback
-     */
-    public void addListener(TransferListener listener) {
-        listeners.add(listener);
-    }
-
-    /**
-     * @param listener Callback
-     */
-    public void removeListener(TransferListener listener) {
-        listeners.remove(listener);
-    }
-
-    protected void fireTransferWillStart() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Transfer %s starts now", this.getName()));
-        }
-        canceled = false;
-        running = true;
-        queued = false;
-        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
-            listener.transferWillStart();
-        }
-    }
-
-    public void fireTransferQueued() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Transfer %s queued", this.getName()));
-        }
-        for(Session s : this.getSessions()) {
-            GrowlFactory.get().notify("Transfer queued", s.getHost().getHostname());
-            s.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
-        }
-        queued = true;
-        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
-            listener.transferQueued();
-        }
-    }
-
-    public void fireTransferResumed() {
-        if(log.isDebugEnabled()) {
-            log.debug("fireTransferResumed:" + this);
-        }
-        queued = false;
-        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
-            listener.transferResumed();
-        }
-    }
-
-    protected void fireTransferDidEnd() {
-        if(log.isDebugEnabled()) {
-            log.debug("fireTransferDidEnd:" + this);
-        }
-        running = false;
-        queued = false;
-        timestamp = new Date();
-        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
-            listener.transferDidEnd();
-        }
-        Queue.instance().remove(this);
-    }
-
-    protected void fireWillTransferPath(Path path) {
-        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
-            listener.willTransferPath(path);
-        }
-    }
-
-    protected void fireDidTransferPath(Path path) {
-        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
-            listener.didTransferPath(path);
-        }
-    }
-
     /**
      * @param bytesPerSecond Maximum number of bytes to transfer by second
      */
@@ -308,9 +225,6 @@ public abstract class Transfer implements Serializable {
             log.debug(String.format("Throttle bandwidth to %s bytes per second", bytesPerSecond));
         }
         bandwidth.setRate(bytesPerSecond);
-        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
-            listener.bandwidthChanged(bandwidth);
-        }
     }
 
     public void setBandwidth(final BandwidthThrottle bandwidth) {
@@ -460,8 +374,6 @@ public abstract class Transfer implements Serializable {
         }
         this.check();
         if(filter.accept(session, file)) {
-            // Notification
-            this.fireWillTransferPath(file);
             // Transfer
             this.transfer(file, options, status);
             if(file.attributes().isFile()) {
@@ -473,8 +385,6 @@ public abstract class Transfer implements Serializable {
                     log.warn(String.format("Ignore failure in completion filter for %s", file));
                 }
             }
-            // Notification
-            this.fireDidTransferPath(file);
         }
         else {
             status.setComplete();
@@ -601,11 +511,10 @@ public abstract class Transfer implements Serializable {
      */
     public void start(final TransferPrompt prompt, final TransferOptions options) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Start transfer with prompt %s", prompt));
+            log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
         }
+        state = State.running;
         try {
-            this.fireTransferWillStart();
-            this.queue();
             this.check();
             // Determine the filter to match files against
             final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
@@ -639,15 +548,9 @@ public abstract class Transfer implements Serializable {
             this.clear(options);
         }
         finally {
-            this.fireTransferDidEnd();
+            state = State.stopped;
+            timestamp = new Date();
         }
-    }
-
-    private synchronized void queue() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Queue transfer %s", this.getName()));
-        }
-        Queue.instance().add(this);
     }
 
     /**
@@ -671,6 +574,7 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel transfer %s", this.getName()));
         }
+        state = State.canceled;
         for(TransferStatus s : status.values()) {
             s.setCanceled();
         }
@@ -678,7 +582,6 @@ public abstract class Transfer implements Serializable {
             // Called previously; now force
             this.interrupt();
         }
-        canceled = true;
     }
 
     /**

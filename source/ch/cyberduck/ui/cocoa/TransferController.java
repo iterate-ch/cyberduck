@@ -35,9 +35,10 @@ import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.transfer.Queue;
+import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferCollection;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -58,7 +59,6 @@ import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 import ch.cyberduck.ui.threading.ControllerMainAction;
-import ch.cyberduck.ui.threading.ControllerRepeatableBackgroundAction;
 import ch.cyberduck.ui.threading.TransferCollectionRepeatableBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -234,7 +234,7 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void queueSizeStepperChanged(final ID sender) {
-        Queue.instance().resize();
+        QueueFactory.get().resize();
     }
 
     @Outlet
@@ -673,9 +673,22 @@ public final class TransferController extends WindowController implements NSTool
     /**
      * @param transfer Transfer
      */
-    private void startTransfer(final Transfer transfer, final TransferOptions options) {
-        final ControllerRepeatableBackgroundAction action = new TransferCollectionRepeatableBackgroundAction(this,
-                new PanelAlertCallback(this), transferTableModel.getController(transfer), transcript,
+    public void startTransfer(final Transfer transfer, final TransferOptions options) {
+        this.startTransfer(transfer, options, new TransferCallback() {
+            @Override
+            public void complete(final Transfer transfer) {
+                //
+            }
+        });
+    }
+
+    /**
+     * @param transfer Transfer
+     */
+    public void startTransfer(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
+        final ProgressController controller = transferTableModel.getController(transfer);
+        final BackgroundAction action = new TransferCollectionRepeatableBackgroundAction(this,
+                new PanelAlertCallback(this), controller, controller, transcript,
                 transfer, new TransferPrompt() {
             @Override
             public TransferAction prompt() throws BackgroundException {
@@ -684,10 +697,18 @@ public final class TransferController extends WindowController implements NSTool
         }, options) {
             @Override
             public void init() {
+                super.init();
                 if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
                     window.makeKeyAndOrderFront(null);
                 }
-                super.init();
+            }
+
+            @Override
+            public void finish() throws BackgroundException {
+                super.finish();
+                if(transfer.isComplete()) {
+                    callback.complete(transfer);
+                }
             }
 
             @Override
