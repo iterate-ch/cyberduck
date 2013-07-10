@@ -40,6 +40,11 @@ public class S3SessionTest extends AbstractTestCase {
         session.close();
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());
+        session.open(new DefaultHostKeyController());
+        assertTrue(session.isConnected());
+        assertNotNull(session.mount());
+        session.close();
+        assertFalse(session.isConnected());
     }
 
     @Test

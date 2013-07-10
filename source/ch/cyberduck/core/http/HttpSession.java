@@ -78,16 +78,18 @@ import java.util.concurrent.ThreadFactory;
 public abstract class HttpSession<C> extends SSLSession<C> {
     private static final Logger log = Logger.getLogger(HttpSession.class);
 
-    private AbstractHttpClient http;
-
     /**
      * Target hostname of current request
      */
     private String target;
 
+    protected AbstractHttpClient route;
+
     protected HttpSession(final Host h) {
         super(h);
+    }
 
+    protected AbstractHttpClient connect() {
         final HttpParams params = new BasicHttpParams();
         HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, getEncoding());
@@ -158,14 +160,14 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         final PoolingClientConnectionManager manager = new PoolingClientConnectionManager(registry);
         manager.setMaxTotal(Preferences.instance().getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
-        http = new DefaultHttpClient(manager, params);
-        http.addRequestInterceptor(new HttpRequestInterceptor() {
+        route = new DefaultHttpClient(manager, params);
+        route.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 target = ((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName();
             }
         });
-        http.addRequestInterceptor(new HttpRequestInterceptor() {
+        route.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 log(true, request.getRequestLine().toString());
@@ -174,7 +176,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 }
             }
         });
-        http.addResponseInterceptor(new HttpResponseInterceptor() {
+        route.addResponseInterceptor(new HttpResponseInterceptor() {
             @Override
             public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
                 log(false, response.getStatusLine().toString());
@@ -184,23 +186,20 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             }
         });
         if(Preferences.instance().getBoolean("http.compression.enable")) {
-            http.addRequestInterceptor(new RequestAcceptEncoding());
-            http.addResponseInterceptor(new ResponseContentEncoding());
+            route.addRequestInterceptor(new RequestAcceptEncoding());
+            route.addResponseInterceptor(new ResponseContentEncoding());
         }
+        return route;
     }
 
     @Override
     protected void logout() throws BackgroundException {
-        http.getConnectionManager().shutdown();
+        route.getConnectionManager().shutdown();
     }
 
     @Override
     public String getTarget() {
         return target;
-    }
-
-    public AbstractHttpClient http() {
-        return http;
     }
 
     @Override

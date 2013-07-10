@@ -82,7 +82,7 @@ public class CFSession extends HttpSession<FilesClient> {
 
     @Override
     public FilesClient connect(final HostKeyController key) throws BackgroundException {
-        return new FilesClient(this.http());
+        return new FilesClient(super.connect());
     }
 
     protected FilesRegion getRegion(final Path container) throws BackgroundException {
@@ -420,9 +420,6 @@ public class CFSession extends HttpSession<FilesClient> {
     @Override
     public void rename(final Path file, final Path renamed) throws BackgroundException {
         try {
-            this.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
-                    file.getName(), renamed));
-
             if(file.attributes().isFile()) {
                 this.getClient().copyObject(this.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file),

@@ -72,7 +72,7 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public DAVClient connect(final HostKeyController key) throws BackgroundException {
-        return new DAVClient(host, this.http());
+        return new DAVClient(host, super.connect());
     }
 
     @Override

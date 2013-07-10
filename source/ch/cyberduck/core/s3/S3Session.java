@@ -123,7 +123,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
         @Override
         protected HttpClient initHttpConnection() {
-            final AbstractHttpClient client = S3Session.this.http();
+            final AbstractHttpClient client = connect();
             if(Preferences.instance().getBoolean("s3.expect-continue")) {
                 // Activates 'Expect: 100-Continue' handshake for the entity enclosing methods
                 HttpProtocolParams.setUseExpectContinue(client.getParams(), true);

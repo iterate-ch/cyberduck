@@ -122,7 +122,7 @@ public class GSSession extends S3Session {
         if(NumberUtils.isNumber(host.getCredentials().getUsername())) {
             // Project ID needs OAuth2 authentication
             final OAuth2Credentials oauth = new OAuth2Credentials(
-                    new OAuthUtils(this.http(),
+                    new OAuthUtils(route,
                             OAuthUtils.OAuthImplementation.GOOGLE_STORAGE_OAUTH2_10,
                             Preferences.instance().getProperty("google.storage.oauth.clientid"),
                             Preferences.instance().getProperty("google.storage.oauth.secret")),
