@@ -73,4 +73,12 @@ public class TransferCollectionRepeatableBackgroundAction extends TransferRepeat
         }
         collection.save();
     }
+
+    private final Object lock = new Object();
+
+    @Override
+    public Object lock() {
+        // No synchronization with other tasks
+        return lock;
+    }
 }

@@ -153,12 +153,4 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
     public boolean isCanceled() {
         return transfer.isCanceled();
     }
-
-    private final Object lock = new Object();
-
-    @Override
-    public Object lock() {
-        // No synchronization with other tasks
-        return lock;
-    }
 }
