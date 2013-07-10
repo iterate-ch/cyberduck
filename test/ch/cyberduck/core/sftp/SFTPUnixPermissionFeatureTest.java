@@ -33,7 +33,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
 
@@ -53,7 +53,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         new SFTPUnixPermissionFeature(session).setUnixOwner(test, "80");
         assertEquals("80", session.list(home).get(test.getReference()).attributes().getOwner());
-        session.disconnect();
+        session.close();
     }
 
     @Test
@@ -72,7 +72,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         new SFTPUnixPermissionFeature(session).setUnixGroup(test, "80");
         assertEquals("80", session.list(home).get(test.getReference()).attributes().getGroup());
-        session.disconnect();
+        session.close();
     }
 
     @Test
@@ -90,6 +90,6 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         new SFTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
         assertEquals("666", session.list(home).get(test.getReference()).attributes().getPermission().getOctalString());
-        session.disconnect();
+        session.close();
     }
 }

@@ -55,6 +55,6 @@ public class SFTPTouchFeatureTest extends AbstractTestCase {
         final AttributedList<Path> list = session.list(home);
         assertTrue(list.contains(test.getReference()));
         assertEquals("644", list.get(test.getReference()).attributes().getPermission().getOctalString());
-        session.disconnect();
+        session.close();
     }
 }

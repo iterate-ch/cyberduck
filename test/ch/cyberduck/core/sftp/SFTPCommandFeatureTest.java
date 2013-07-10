@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPCommandFeatureTest extends AbstractTestCase {
 
@@ -58,6 +58,6 @@ public class SFTPCommandFeatureTest extends AbstractTestCase {
         new SFTPCommandFeature(session).send("ps");
         assertTrue("PID TTY          TIME CMD22417 ?        00:00:00 sshd22418 ?        00:00:00 sftp-server22427 ?        00:00:00 ps", t.toString().startsWith(
                 "  PID TTY          TIME"));
-        session.disconnect();
+        session.close();
     }
 }
