@@ -78,7 +78,7 @@ public class MoveTransfer extends Transfer {
     @Override
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(KIND_MOVE), "Kind");
+        dict.setStringForKey(String.valueOf(Type.move.ordinal()), "Kind");
         return dict.getSerialized();
     }
 

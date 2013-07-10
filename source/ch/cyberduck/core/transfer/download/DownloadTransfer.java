@@ -77,7 +77,7 @@ public class DownloadTransfer extends Transfer {
     @Override
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(KIND_DOWNLOAD), "Kind");
+        dict.setStringForKey(String.valueOf(Type.download.ordinal()), "Kind");
         return dict.getSerialized();
     }
 

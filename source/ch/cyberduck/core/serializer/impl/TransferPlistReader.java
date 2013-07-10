@@ -26,6 +26,7 @@ import ch.cyberduck.core.serializer.TransferReaderFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.copy.CopyTransfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
+import ch.cyberduck.core.transfer.move.MoveTransfer;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -54,19 +55,20 @@ public class TransferPlistReader extends PlistReader<Transfer> {
     public Transfer deserialize(NSDictionary dict, Session s) {
         NSObject kindObj = dict.objectForKey("Kind");
         if(kindObj != null) {
-            int kind = Integer.parseInt(kindObj.toString());
-            switch(kind) {
-                case Transfer.KIND_DOWNLOAD:
+            switch(Transfer.Type.values()[Integer.parseInt(kindObj.toString())]) {
+                case download:
                     return new DownloadTransfer(dict, s);
-                case Transfer.KIND_UPLOAD:
+                case upload:
                     return new UploadTransfer(dict, s);
-                case Transfer.KIND_SYNC:
+                case sync:
                     return new SyncTransfer(dict, s);
-                case Transfer.KIND_COPY:
+                case copy:
                     return new CopyTransfer(dict, s);
+                case move:
+                    return new MoveTransfer(dict, s);
             }
         }
-        log.error("Unknown transfer:" + kindObj);
+        log.error(String.format("Unknown transfer %s", kindObj));
         return null;
     }
 

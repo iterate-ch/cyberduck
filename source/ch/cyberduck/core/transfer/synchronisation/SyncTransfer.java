@@ -75,7 +75,7 @@ public class SyncTransfer extends Transfer {
     @Override
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(KIND_SYNC), "Kind");
+        dict.setStringForKey(String.valueOf(Type.sync.ordinal()), "Kind");
         return dict.getSerialized();
     }
 

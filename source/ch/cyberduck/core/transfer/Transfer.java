@@ -72,12 +72,13 @@ public abstract class Transfer implements Serializable {
      */
     private long transferred = 0;
 
-    // Backward compatibility for serialization
-    public static final int KIND_DOWNLOAD = 0;
-    public static final int KIND_UPLOAD = 1;
-    public static final int KIND_SYNC = 2;
-    public static final int KIND_COPY = 3;
-    public static final int KIND_MOVE = 4;
+    public enum Type {
+        download,
+        upload,
+        sync,
+        copy,
+        move
+    }
 
     protected Transfer() {
         //

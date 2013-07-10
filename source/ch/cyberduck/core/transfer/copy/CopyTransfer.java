@@ -113,7 +113,7 @@ public class CopyTransfer extends Transfer {
     @Override
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(KIND_COPY), "Kind");
+        dict.setStringForKey(String.valueOf(Type.copy.ordinal()), "Kind");
         if(destination != null) {
             dict.setObjectForKey(destination.getHost(), "Destination");
         }

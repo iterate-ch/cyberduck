@@ -72,7 +72,7 @@ public class UploadTransfer extends Transfer {
     @Override
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(KIND_UPLOAD), "Kind");
+        dict.setStringForKey(String.valueOf(Type.upload.ordinal()), "Kind");
         return dict.getSerialized();
     }
 
