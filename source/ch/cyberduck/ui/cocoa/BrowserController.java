@@ -2878,7 +2878,7 @@ public class BrowserController extends WindowController
                     }, new TransferOptions()));
         }
         else {
-            TransferController.instance().startTransfer(transfer);
+            TransferControllerFactory.get().startTransfer(transfer);
         }
     }
 

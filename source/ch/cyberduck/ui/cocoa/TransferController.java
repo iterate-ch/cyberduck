@@ -86,11 +86,44 @@ import java.util.StringTokenizer;
 public final class TransferController extends WindowController implements NSToolbar.Delegate {
     private static final Logger log = Logger.getLogger(TransferController.class);
 
-    private static TransferController instance = null;
-
     private NSToolbar toolbar;
 
     private RevealService reveal = RevealServiceFactory.get();
+
+    public TransferController() {
+        this.loadBundle();
+        TransferCollection.defaultCollection().addListener(new AbstractCollectionListener<Transfer>() {
+            @Override
+            public void collectionLoaded() {
+                invoke(new ControllerMainAction(TransferController.this) {
+                    @Override
+                    public void run() {
+                        reload();
+                    }
+                });
+            }
+
+            @Override
+            public void collectionItemAdded(Transfer item) {
+                invoke(new ControllerMainAction(TransferController.this) {
+                    @Override
+                    public void run() {
+                        reload();
+                    }
+                });
+            }
+
+            @Override
+            public void collectionItemRemoved(Transfer item) {
+                invoke(new ControllerMainAction(TransferController.this) {
+                    @Override
+                    public void run() {
+                        reload();
+                    }
+                });
+            }
+        });
+    }
 
     @Override
     public void awakeFromNib() {
@@ -372,53 +405,6 @@ public final class TransferController extends WindowController implements NSTool
         this.updateBandwidthPopup();
     }
 
-    /**
-     * Loading bundle
-     */
-    private TransferController() {
-        this.loadBundle();
-        TransferCollection.defaultCollection().addListener(new AbstractCollectionListener<Transfer>() {
-            @Override
-            public void collectionLoaded() {
-                invoke(new ControllerMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        reload();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemAdded(Transfer item) {
-                invoke(new ControllerMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        reload();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemRemoved(Transfer item) {
-                invoke(new ControllerMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        reload();
-                    }
-                });
-            }
-        });
-    }
-
-    public static TransferController instance() {
-        synchronized(NSApplication.sharedApplication()) {
-            if(null == instance) {
-                instance = new TransferController();
-            }
-            return instance;
-        }
-    }
-
     @Override
     protected String getBundleName() {
         return "Transfer";
@@ -431,49 +417,6 @@ public final class TransferController extends WindowController implements NSTool
         transferTableModel.invalidate();
         bandwidthPopup.menu().setDelegate(null);
         super.invalidate();
-    }
-
-    /**
-     * @param app Singleton
-     * @return NSApplication.TerminateLater or NSApplication.TerminateNow depending if there are
-     *         running transfers to be checked first
-     */
-    public static NSUInteger applicationShouldTerminate(final NSApplication app) {
-        if(null != instance) {
-            //Saving state of transfer window
-            Preferences.instance().setProperty("queue.openByDefault", instance.window().isVisible());
-            if(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0) {
-                final NSAlert alert = NSAlert.alert(Locale.localizedString("Transfer in progress"), //title
-                        Locale.localizedString("There are files currently being transferred. Quit anyway?"), // message
-                        Locale.localizedString("Quit"), // defaultbutton
-                        Locale.localizedString("Cancel"), //alternative button
-                        null //other button
-                );
-                instance.alert(alert, new SheetCallback() {
-                    @Override
-                    public void callback(int returncode) {
-                        if(returncode == DEFAULT_OPTION) { //Quit
-                            for(Transfer transfer : TransferCollection.defaultCollection()) {
-                                if(transfer.isRunning()) {
-                                    try {
-                                        transfer.interrupt();
-                                    }
-                                    catch(BackgroundException e) {
-                                        // Ignore
-                                    }
-                                }
-                            }
-                            app.replyToApplicationShouldTerminate(true);
-                        }
-                        if(returncode == CANCEL_OPTION) { //Cancel
-                            app.replyToApplicationShouldTerminate(false);
-                        }
-                    }
-                });
-                return NSApplication.NSTerminateLater; //break
-            }
-        }
-        return NSApplication.NSTerminateNow;
     }
 
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();

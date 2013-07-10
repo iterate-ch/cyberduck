@@ -155,7 +155,7 @@ public class MainController extends BundleController implements NSApplication.De
             final Host h = Host.parse(url);
             if(Path.FILE_TYPE == detector.detect(h.getDefaultPath())) {
                 final Session session = SessionFactory.createSession(h);
-                TransferController.instance().startTransfer(new DownloadTransfer(session,
+                TransferControllerFactory.get().startTransfer(new DownloadTransfer(session,
                         new Path(h.getDefaultPath(), Path.FILE_TYPE)));
             }
             else {
@@ -507,7 +507,7 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void newDownloadMenuClicked(final ID sender) {
         this.showTransferQueueClicked(sender);
-        SheetController c = new DownloadController(TransferController.instance());
+        SheetController c = new DownloadController(TransferControllerFactory.get());
         c.beginSheet();
     }
 
@@ -518,7 +518,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void showTransferQueueClicked(final ID sender) {
-        TransferController c = TransferController.instance();
+        TransferController c = TransferControllerFactory.get();
         c.window().makeKeyAndOrderFront(null);
     }
 
@@ -698,7 +698,7 @@ public class MainController extends BundleController implements NSApplication.De
             // No bookmark for current browser found
             bookmarksPopup.selectItemAtIndex(new NSInteger(0));
         }
-        final TransferController t = TransferController.instance();
+        final TransferController t = TransferControllerFactory.get();
         final Host mount = open;
         final Path destination = workdir;
         AlertController alert = new AlertController(t, NSAlert.alert("Select Bookmark",
@@ -751,7 +751,7 @@ public class MainController extends BundleController implements NSApplication.De
         for(Local file : files) {
             roots.add(new Path(destination, file));
         }
-        final TransferController t = TransferController.instance();
+        final TransferController t = TransferControllerFactory.get();
         t.startTransfer(new UploadTransfer(session, roots));
     }
 
@@ -841,7 +841,7 @@ public class MainController extends BundleController implements NSApplication.De
         // be expanded and made active. If no documents are open, the application should
         // open a new window. (If your application is not document-based, display the
         // application’s main window.)
-        if(MainController.getBrowsers().isEmpty() && !TransferController.instance().isVisible()) {
+        if(MainController.getBrowsers().isEmpty() && !TransferControllerFactory.get().isVisible()) {
             this.openDefaultBookmark(MainController.newDocument());
         }
         NSWindow miniaturized = null;
@@ -1194,7 +1194,7 @@ public class MainController extends BundleController implements NSApplication.De
     public NSUInteger applicationShouldTerminate(final NSApplication app) {
         log.debug("applicationShouldTerminate");
         // Determine if there are any running transfers
-        NSUInteger result = TransferController.applicationShouldTerminate(app);
+        NSUInteger result = TransferControllerFactory.applicationShouldTerminate(app);
         if(!result.equals(NSApplication.NSTerminateNow)) {
             return result;
         }
