@@ -59,6 +59,8 @@ import ch.ethz.ssh2.crypto.PEMDecryptException;
 public class SFTPSession extends Session<Connection> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
+    private SFTPv3Client sftp;
+
     public SFTPSession(Host h) {
         super(h);
     }
@@ -73,8 +75,6 @@ public class SFTPSession extends Session<Connection> {
         }
         return false;
     }
-
-    private SFTPv3Client sftp;
 
     @Override
     public Connection connect(final HostKeyController key) throws BackgroundException {
