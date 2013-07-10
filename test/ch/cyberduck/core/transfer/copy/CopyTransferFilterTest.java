@@ -123,11 +123,12 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         }, files);
         Preferences.instance().setProperty("queue.upload.preserveDate", true);
         final TransferStatus status = new TransferStatus();
-        f.complete(new NullSession(new Host("h")), source, new TransferOptions(), status);
+        final NullSession session = new NullSession(new Host("h"));
+        f.complete(session, source, new TransferOptions(), status, session);
         assertFalse(permissionWrite[0]);
         assertFalse(timestampWrite[0]);
         status.setComplete();
-        f.complete(new NullSession(new Host("h")), source, new TransferOptions(), status);
+        f.complete(session, source, new TransferOptions(), status, session);
         assertTrue(permissionWrite[0]);
         assertTrue(timestampWrite[0]);
     }

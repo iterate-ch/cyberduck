@@ -6,6 +6,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Local;
@@ -119,18 +120,18 @@ public class DownloadTransferTest extends AbstractTestCase {
         }, root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                                    final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options, status);
+                super.transfer(file, filter, options, status, listener);
                 if(file.equals(root)) {
                     assertFalse(this.cache().containsKey(root.getReference()));
                 }
             }
 
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
                 if(file.equals(root)) {
                     fail();
                 }
