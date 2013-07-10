@@ -83,7 +83,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
             @Override
             protected HttpClient initHttpConnection() {
-                return session.getClient().getHttpClient();
+                return session.connect();
             }
         };
     }

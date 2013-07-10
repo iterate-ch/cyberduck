@@ -89,7 +89,10 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         super(h);
     }
 
-    protected AbstractHttpClient connect() {
+    public AbstractHttpClient connect() {
+        if(null != route) {
+            return route;
+        }
         final HttpParams params = new BasicHttpParams();
         HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, getEncoding());
@@ -195,6 +198,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     @Override
     protected void logout() throws BackgroundException {
         route.getConnectionManager().shutdown();
+        route = null;
     }
 
     @Override
