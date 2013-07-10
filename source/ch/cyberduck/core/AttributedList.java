@@ -33,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version $Id$
  */
 public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList<E> {
-    private static final Logger log = Logger.getLogger(Cache.class);
+    private static final Logger log = Logger.getLogger(AttributedList.class);
 
     private static final long serialVersionUID = 8900332123622028341L;
 
