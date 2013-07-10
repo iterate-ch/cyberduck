@@ -37,6 +37,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -104,6 +106,11 @@ public abstract class AbstractController implements Controller {
             log.info(String.format("Scheduled background runnable %s for execution", action));
         }
         return null;
+    }
+
+    @Override
+    public ScheduledFuture schedule(final Runnable runnable, final Long period, final TimeUnit unit) {
+        return timerPool.scheduleAtFixedRate(runnable, 0L, period, unit);
     }
 
     public void openUrl(final DescriptiveUrl url) {

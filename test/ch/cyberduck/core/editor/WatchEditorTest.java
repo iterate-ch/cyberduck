@@ -31,6 +31,8 @@ import ch.cyberduck.ui.Controller;
 import org.junit.Test;
 
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -58,6 +60,11 @@ public class WatchEditorTest extends AbstractTestCase {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
                 //
+            }
+
+            @Override
+            public ScheduledFuture schedule(final Runnable runnable, final Long period, final TimeUnit unit) {
+                return null;
             }
         }, new NullSession(new Host("h")), new Application("com.apple.TextEdit", null), path);
         assertEquals(new Application("com.apple.TextEdit", null), editor.getApplication());
