@@ -82,7 +82,8 @@ public class ConnectionCheckService implements ConnectionService {
         }
     }
 
-    private void connect(final Session session) throws BackgroundException {
+    @Override
+    public void connect(final Session session) throws BackgroundException {
         if(session.isConnected()) {
             try {
                 listener.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),

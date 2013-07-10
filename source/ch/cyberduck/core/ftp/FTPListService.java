@@ -114,14 +114,14 @@ public class FTPListService implements ListService {
                 }
             }
             catch(IOException e) {
-                log.warn("Command STAT failed with I/O error:" + e.getMessage());
+                log.warn(String.format("Command STAT failed with I/O error %s", e.getMessage()));
                 new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController(),
                         new DisabledPasswordStore(), new ProgressListener() {
                     @Override
                     public void message(final String message) {
                         session.message(message);
                     }
-                }).check(session);
+                }).connect(session);
             }
             if(!success || children.isEmpty()) {
                 success = session.data(file, new DataConnectionAction<Boolean>() {

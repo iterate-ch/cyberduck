@@ -324,7 +324,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     public void message(final String message) {
                         FTPSession.this.message(message);
                     }
-                }).check(this);
+                }).connect(this);
                 try {
                     return this.fallback(action);
                 }
