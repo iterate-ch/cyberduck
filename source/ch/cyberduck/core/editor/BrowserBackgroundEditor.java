@@ -21,13 +21,19 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.growl.Growl;
+import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
+
+import java.text.MessageFormat;
+import java.util.concurrent.Callable;
 
 /**
  * @version $Id$
@@ -36,6 +42,8 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(BrowserBackgroundEditor.class);
 
     private Controller controller;
+
+    private Growl growl = GrowlFactory.get();
 
     /**
      * @param controller  Browser
@@ -52,24 +60,29 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * Open the file in the parent directory
      */
     @Override
-    public void open(final BackgroundAction<Void> download) {
+    public void open(final Callable<Transfer> download) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Open %s in %s", edited.getLocal().getAbsolute(), this.getApplication()));
         }
         controller.background(new BrowserBackgroundAction((BrowserController) controller) {
             @Override
             public void run() throws BackgroundException {
-                download.run();
+                try {
+                    final Transfer transfer = download.call();
+                    growl.notify(transfer.getStatus(), transfer.getName());
+                }
+                catch(BackgroundException e) {
+                    throw e;
+                }
+                catch(Exception e) {
+                    throw new BackgroundException(e.getMessage(), e);
+                }
             }
 
             @Override
             public String getActivity() {
-                return download.getActivity();
-            }
-
-            @Override
-            public void cleanup() {
-                download.cleanup();
+                return MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
+                        edited.getName());
             }
         });
     }
@@ -78,25 +91,29 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * Upload the edited file to the server
      */
     @Override
-    public void save(final BackgroundAction<Void> upload) {
+    public void save(final Callable<Transfer> upload) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), edited.getLocal().getAbsolute()));
         }
         controller.background(new BrowserBackgroundAction((BrowserController) controller) {
             @Override
             public void run() throws BackgroundException {
-                upload.run();
+                try {
+                    final Transfer transfer = upload.call();
+                    growl.notify(transfer.getStatus(), transfer.getName());
+                }
+                catch(BackgroundException e) {
+                    throw e;
+                }
+                catch(Exception e) {
+                    throw new BackgroundException(e.getMessage(), e);
+                }
             }
 
             @Override
             public String getActivity() {
-                return upload.getActivity();
-            }
-
-            @Override
-            public void cleanup() {
-                super.cleanup();
-                upload.cleanup();
+                return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                        edited.getName());
             }
         });
     }

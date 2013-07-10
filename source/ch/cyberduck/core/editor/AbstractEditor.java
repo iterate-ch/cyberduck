@@ -22,12 +22,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
-import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -37,7 +34,7 @@ import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
+import java.util.concurrent.Callable;
 
 /**
  * @version $Id$
@@ -70,7 +67,10 @@ public abstract class AbstractEditor implements Editor {
      */
     private String checksum;
 
-    protected Session session;
+    /**
+     * Session for transfers
+     */
+    private Session session;
 
     public AbstractEditor(final Application application, final Session session, final Path path) {
         this.application = application;
@@ -82,12 +82,12 @@ public abstract class AbstractEditor implements Editor {
     /**
      * @param background Download transfer
      */
-    protected abstract void open(BackgroundAction<Void> background);
+    protected abstract void open(Callable<Transfer> background);
 
     /**
      * @param background Upload transfer
      */
-    protected abstract void save(BackgroundAction<Void> background);
+    protected abstract void save(Callable<Transfer> background);
 
     public Path getEdited() {
         return edited;
@@ -136,7 +136,7 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void open() {
-        final BackgroundAction<Void> background = new EditBackgroundAction();
+        final Callable<Transfer> background = new EditBackgroundAction();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Download file for edit %s", edited.getLocal().getAbsolute()));
         }
@@ -153,16 +153,26 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void save() {
-        final BackgroundAction<Void> background = new SaveBackgroundAction();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Upload changes for %s", edited.getLocal().getAbsolute()));
+        // If checksum still the same no need for save
+        if(checksum.equals(edited.getLocal().attributes().getChecksum())) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("File %s not modified with checkum %s", edited.getLocal(), checksum));
+            }
         }
-        this.save(background);
+        else {
+            // Store current checksum
+            checksum = edited.getLocal().attributes().getChecksum();
+            final Callable<Transfer> background = new SaveBackgroundAction();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Upload changes for %s", edited.getLocal().getAbsolute()));
+            }
+            this.save(background);
+        }
     }
 
-    private final class EditBackgroundAction extends AbstractBackgroundAction<Void> {
+    private final class EditBackgroundAction implements Callable<Transfer> {
         @Override
-        public void run() throws BackgroundException {
+        public Transfer call() throws BackgroundException {
             // Delete any existing file which might be used by a watch editor already
             final Local local = edited.getLocal();
             local.trash();
@@ -191,40 +201,27 @@ public abstract class AbstractEditor implements Editor {
                     throw new BackgroundException(e.getMessage(), e);
                 }
             }
+            return download;
         }
     }
 
-    private final class SaveBackgroundAction extends AbstractBackgroundAction<Void> {
+    private final class SaveBackgroundAction implements Callable<Transfer> {
         @Override
-        public void run() throws BackgroundException {
-            // If checksum still the same no need for save
-            if(checksum.equals(edited.getLocal().attributes().getChecksum())) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("File %s not modified with checkum %s", edited.getLocal(), checksum));
-                }
-                return;
-            }
-            checksum = edited.getLocal().attributes().getChecksum();
-            final TransferOptions options = new TransferOptions();
+        public Transfer call() throws BackgroundException {
             final Transfer upload = new UploadTransfer(session, edited) {
                 @Override
                 public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
                     return TransferAction.ACTION_OVERWRITE;
                 }
             };
-            upload.start(null, options);
+            upload.start(null, new TransferOptions());
             if(upload.isComplete()) {
                 if(isClosed()) {
                     delete();
                 }
                 setModified(false);
             }
-        }
-
-        @Override
-        public String getActivity() {
-            return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                    edited.getName());
+            return upload;
         }
     }
 }

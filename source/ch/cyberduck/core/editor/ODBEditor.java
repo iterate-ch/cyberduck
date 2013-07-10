@@ -38,8 +38,11 @@ public class ODBEditor extends BrowserBackgroundEditor {
         Native.load("ODBEdit");
     }
 
+    private Session session;
+
     public ODBEditor(final Controller c, final Session session, final Application application, final Path path) {
         super(c, session, application, path);
+        this.session = session;
     }
 
     /**
