@@ -409,6 +409,11 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
+    public void touch(final Path file) throws BackgroundException {
+        new SFTPTouchFeature(this).touch(file);
+    }
+
+    @Override
     public void rename(final Path file, final Path renamed) throws BackgroundException {
         try {
             this.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),

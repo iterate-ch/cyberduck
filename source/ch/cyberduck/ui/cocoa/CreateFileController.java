@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -65,11 +66,11 @@ public class CreateFileController extends FileController {
 
             @Override
             public void run() throws BackgroundException {
-                if(c.getSession().touch(file)) {
-                    if(edit) {
-                        Editor editor = EditorFactory.instance().create(c, c.getSession(), file);
-                        editor.open();
-                    }
+                final Session<?> session = c.getSession();
+                session.touch(file);
+                if(edit) {
+                    Editor editor = EditorFactory.instance().create(c, session, file);
+                    editor.open();
                 }
             }
 

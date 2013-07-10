@@ -23,10 +23,8 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.SFTPExceptionMappingService;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 
 import ch.ethz.ssh2.SFTPv3FileAttributes;
 
@@ -44,8 +42,6 @@ public class SFTPTouchFeature implements Touch {
     @Override
     public void touch(final Path file) throws BackgroundException {
         if(file.attributes().isFile()) {
-            session.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                    file.getName()));
             try {
                 final SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                 final Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));

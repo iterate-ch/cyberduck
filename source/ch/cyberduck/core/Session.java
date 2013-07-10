@@ -32,11 +32,7 @@ import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -531,24 +527,18 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     /**
      * Upload an empty file.
      */
-    public boolean touch(final Path file) throws BackgroundException {
+    public void touch(final Path file) throws BackgroundException {
         final Local temp = TemporaryFileServiceFactory.get().create(file);
         temp.touch();
         file.setLocal(temp);
-        TransferOptions options = new TransferOptions();
-        UploadTransfer upload = new UploadTransfer(this, file);
+        final TransferStatus status = new TransferStatus();
         try {
-            upload.start(new TransferPrompt() {
-                @Override
-                public TransferAction prompt() throws BackgroundException {
-                    return TransferAction.ACTION_OVERWRITE;
-                }
-            }, options);
+            this.upload(file, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                    new AbstractStreamListener(), status);
         }
         finally {
             temp.delete();
         }
-        return upload.isComplete();
     }
 
     /**
