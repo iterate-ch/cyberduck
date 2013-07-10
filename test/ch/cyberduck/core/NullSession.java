@@ -20,8 +20,6 @@ public class NullSession extends FTPSession {
 
     @Override
     public FTPClient open(HostKeyController c) throws BackgroundException {
-        this.fireConnectionWillOpenEvent();
-        this.fireConnectionDidOpenEvent();
         return null;
     }
 
