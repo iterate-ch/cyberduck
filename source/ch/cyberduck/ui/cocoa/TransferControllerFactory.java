@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCollection;
@@ -28,7 +27,7 @@ import ch.cyberduck.ui.cocoa.application.NSApplication;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferControllerFactory {
 
@@ -71,12 +70,7 @@ public class TransferControllerFactory {
                     if(returncode == DEFAULT_OPTION) { //Quit
                         for(Transfer transfer : TransferCollection.defaultCollection()) {
                             if(transfer.isRunning()) {
-                                try {
-                                    transfer.interrupt();
-                                }
-                                catch(BackgroundException e) {
-                                    // Ignore
-                                }
+                                transfer.cancel();
                             }
                         }
                         app.replyToApplicationShouldTerminate(true);

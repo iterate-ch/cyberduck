@@ -554,33 +554,17 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @see Session#interrupt()
-     */
-    public void interrupt() throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Interrupt transfer %s", this.getName()));
-        }
-        for(Session s : this.getSessions()) {
-            s.interrupt();
-        }
-    }
-
-    /**
      * Marks all items in the queue as canceled. Canceled items will be
      * skipped when processed. If the transfer is already in a <code>canceled</code>
      * state, the underlying session's socket is interrupted to force exit.
      */
-    public void cancel() throws BackgroundException {
+    public void cancel() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel transfer %s", this.getName()));
         }
         state = State.canceled;
         for(TransferStatus s : status.values()) {
             s.setCanceled();
-        }
-        if(this.isCanceled()) {
-            // Called previously; now force
-            this.interrupt();
         }
     }
 

@@ -877,12 +877,7 @@ public final class TransferController extends WindowController implements NSTool
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
             if(transfer.isRunning()) {
-                this.background(new AbstractBackgroundAction<Void>() {
-                    @Override
-                    public void run() throws BackgroundException {
-                        transfer.cancel();
-                    }
-                });
+                transfer.cancel();
             }
         }
     }
@@ -892,12 +887,7 @@ public final class TransferController extends WindowController implements NSTool
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(final Transfer transfer : transfers) {
             if(transfer.isRunning()) {
-                this.background(new AbstractBackgroundAction<Void>() {
-                    @Override
-                    public void run() throws BackgroundException {
-                        transfer.cancel();
-                    }
-                });
+                transfer.cancel();
             }
         }
     }

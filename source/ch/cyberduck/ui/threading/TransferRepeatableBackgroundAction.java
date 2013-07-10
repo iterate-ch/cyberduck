@@ -114,15 +114,10 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
 
     @Override
     public void cancel() {
-        try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Cancel background action for transfer %s", transfer));
-            }
-            transfer.cancel();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cancel background action for transfer %s", transfer));
         }
-        catch(BackgroundException failure) {
-            this.error(failure);
-        }
+        transfer.cancel();
     }
 
     @Override
