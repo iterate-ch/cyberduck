@@ -1,7 +1,15 @@
 package ch.cyberduck.core.cf;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Lifecycle;
+import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.ProfileReaderFactory;
 
@@ -13,6 +21,20 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class CFSessionTest extends AbstractTestCase {
+
+    @Test
+    public void testFeatures() throws Exception {
+        final CFSession session = new CFSession(new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname()));
+        assertNull(session.getFeature(Versioning.class, null));
+        assertNotNull(session.getFeature(AnalyticsProvider.class, null));
+        assertNull(session.getFeature(Lifecycle.class, null));
+        assertNotNull(session.getFeature(Location.class, null));
+        assertNull(session.getFeature(Encryption.class, null));
+        assertNull(session.getFeature(Redundancy.class, null));
+        assertNull(session.getFeature(Logging.class, null));
+//        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
+        assertNotNull(session.getFeature(IdentityConfiguration.class, null));
+    }
 
     @Test
     public void testConnectRackspace() throws Exception {

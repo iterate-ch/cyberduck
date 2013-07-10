@@ -2,9 +2,13 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.junit.Test;
 
@@ -89,11 +93,21 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(aws.getFeature(AnalyticsProvider.class, null));
         assertNotNull(aws.getFeature(Lifecycle.class, null));
         assertNotNull(aws.getFeature(Location.class, null));
+        assertNotNull(aws.getFeature(Encryption.class, null));
+        assertNotNull(aws.getFeature(Redundancy.class, null));
+        assertNotNull(aws.getFeature(Logging.class, null));
+//        assertNotNull(aws.getFeature(DistributionConfiguration.class, null));
+        assertNotNull(aws.getFeature(IdentityConfiguration.class, null));
         final S3Session o = new S3Session(new Host(Protocol.S3_SSL, "o"));
         assertNull(o.getFeature(Versioning.class, null));
         assertNull(o.getFeature(AnalyticsProvider.class, null));
         assertNull(o.getFeature(Lifecycle.class, null));
         assertNull(o.getFeature(Location.class, null));
+        assertNull(o.getFeature(Encryption.class, null));
+        assertNull(o.getFeature(Redundancy.class, null));
+        assertNull(o.getFeature(Logging.class, null));
+//        assertNotNull(o.getFeature(DistributionConfiguration.class, null));
+        assertNull(o.getFeature(IdentityConfiguration.class, null));
     }
 
     @Test
