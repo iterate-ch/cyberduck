@@ -22,10 +22,8 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.SFTPExceptionMappingService;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 
 import ch.ethz.ssh2.SFTPv3FileAttributes;
 
@@ -42,10 +40,7 @@ public class SFTPUnixPermissionFeature implements UnixPermission {
 
     @Override
     public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
-                file.getName(), owner));
-
-        SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+        final SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
         attr.uid = new Integer(owner);
         try {
             session.sftp().setstat(file.getAbsolute(), attr);
@@ -57,10 +52,7 @@ public class SFTPUnixPermissionFeature implements UnixPermission {
 
     @Override
     public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
-                file.getName(), group));
-
-        SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+        final SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
         attr.gid = new Integer(group);
         try {
             session.sftp().setstat(file.getAbsolute(), attr);

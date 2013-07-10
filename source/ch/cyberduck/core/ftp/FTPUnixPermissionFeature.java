@@ -22,12 +22,10 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -60,9 +58,6 @@ public class FTPUnixPermissionFeature implements UnixPermission {
 
     @Override
     public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
-                file.getName(), owner));
-
         final String command = "chown";
         try {
             this.sendCommand(file, owner, command);
@@ -74,9 +69,6 @@ public class FTPUnixPermissionFeature implements UnixPermission {
 
     @Override
     public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
-                file.getName(), group));
-
         final String command = "chgrp";
         try {
             this.sendCommand(file, group, command);
