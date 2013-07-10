@@ -18,12 +18,14 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCheckService;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
@@ -113,9 +115,13 @@ public class FTPListService implements ListService {
             }
             catch(IOException e) {
                 log.warn("Command STAT failed with I/O error:" + e.getMessage());
-                session.interrupt();
-                session.open(new DefaultHostKeyController());
-                session.login(new DisabledPasswordStore(), new DisabledLoginController());
+                new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController(),
+                        new DisabledPasswordStore(), new ProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        session.message(message);
+                    }
+                }).check(session);
             }
             if(!success || children.isEmpty()) {
                 success = session.data(file, new DataConnectionAction<Boolean>() {

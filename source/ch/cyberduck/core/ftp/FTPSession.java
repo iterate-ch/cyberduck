@@ -318,9 +318,13 @@ public class FTPSession extends SSLSession<FTPClient> {
             log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
             // Fallback handling
             if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
-                this.interrupt();
-                this.open(new DefaultHostKeyController());
-                this.login(new DisabledPasswordStore(), new DisabledLoginController());
+                new ConnectionCheckService(new DisabledLoginController(), new DefaultHostKeyController(),
+                        new DisabledPasswordStore(), new ProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        FTPSession.this.message(message);
+                    }
+                }).check(this);
                 try {
                     return this.fallback(action);
                 }
