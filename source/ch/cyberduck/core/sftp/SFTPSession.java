@@ -147,7 +147,6 @@ public class SFTPSession extends Session<Connection> {
                 }
             }
             if(client.isAuthenticationComplete()) {
-                this.message(Locale.localizedString("Starting SFTP subsystem", "Status"));
                 try {
                     sftp = new SFTPv3Client(client, new PacketListener() {
                         @Override
@@ -160,7 +159,6 @@ public class SFTPSession extends Session<Connection> {
                             SFTPSession.this.log(true, packet);
                         }
                     });
-                    this.message(Locale.localizedString("SFTP subsystem ready", "Status"));
                     sftp.setCharset(this.getEncoding());
                 }
                 catch(IOException e) {
