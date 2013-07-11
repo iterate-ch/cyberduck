@@ -198,14 +198,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         return false;
     }
 
-    protected void error(final BackgroundException failure) {
-        // Do not report an error when the action was canceled intentionally
-        if(failure instanceof ConnectionCanceledException) {
-            // Do not report as failed if instanceof ConnectionCanceledException
-            log.warn(String.format("Connection canceled %s", failure.getMessage()));
-        }
-    }
-
     @Override
     public void finish() {
         while(this.retry() > 0) {
