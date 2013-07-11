@@ -90,7 +90,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 // No custom timezone set
                 final List<TimeZone> matches = new FTPTimezoneCalculator().get(this, workdir);
                 for(TimeZone tz : matches) {
-                    // Save in bookmark. User should have the option to choose from determined zones.
+                    // Show prompt to change timezone in bookmark.
                     host.setTimezone(tz);
                     break;
                 }
@@ -360,7 +360,7 @@ public class FTPSession extends SSLSession<FTPClient> {
      * @param action Action that needs to open a data connection
      * @return True if action was successful
      */
-    protected <T> T fallback(final DataConnectionAction<T> action) throws IOException {
+    protected <T> T fallback(final DataConnectionAction<T> action) throws IOException, FTPInvalidListException {
         // Fallback to other connect mode
         if(this.getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
             log.warn("Fallback to active data connection");

@@ -24,13 +24,14 @@ import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,17 +39,14 @@ import java.util.regex.Pattern;
 /**
  * @version $Id$
  */
-public class FTPMlsdListResponseReader implements FTPResponseReader {
+public class FTPMlsdListResponseReader {
     private static final Logger log = Logger.getLogger(FTPMlsdListResponseReader.class);
 
-    @Override
-    public boolean read(final AttributedList<Path> children, final FTPSession session, final Path parent,
-                        final FTPFileEntryParser parser, final List<String> replies) {
-        if(null == replies) {
-            // This is an empty directory
-            return false;
-        }
-        boolean success = false; // At least one entry successfully parsed
+    public AttributedList<Path> read(final FTPSession session, final Path parent,
+                                     final List<String> replies) throws IOException, FTPInvalidListException {
+        final AttributedList<Path> children = new AttributedList<Path>();
+        // At least one entry successfully parsed
+        boolean success = false;
         for(String line : replies) {
             final Map<String, Map<String, String>> file = this.parseFacts(line);
             if(null == file) {
@@ -71,14 +69,24 @@ public class FTPMlsdListResponseReader implements FTPResponseReader {
                         log.error(String.format("No type fact in line %s", line));
                         continue;
                     }
-                    if("dir".equals(facts.get("type").toLowerCase(java.util.Locale.ENGLISH))) {
+                    if("dir".equals(facts.get("type").toLowerCase(Locale.ENGLISH))) {
                         parsed.attributes().setType(Path.DIRECTORY_TYPE);
                     }
-                    else if("file".equals(facts.get("type").toLowerCase(java.util.Locale.ENGLISH))) {
+                    else if("file".equals(facts.get("type").toLowerCase(Locale.ENGLISH))) {
                         parsed.attributes().setType(Path.FILE_TYPE);
                     }
+                    else if(facts.get("type").toLowerCase(Locale.ENGLISH).startsWith("os.unix=slink")) {
+                        parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                        final String target = facts.get("type").split(":")[1];
+                        if(target.startsWith(String.valueOf(Path.DELIMITER))) {
+                            parsed.setSymlinkTarget(new Path(target, parsed.attributes().getType()));
+                        }
+                        else {
+                            parsed.setSymlinkTarget(new Path(parent, target, parsed.attributes().getType()));
+                        }
+                    }
                     else {
-                        log.warn("Ignored type: " + line);
+                        log.warn(String.format("Ignored type %s in line %s", facts.get("type"), line));
                         break;
                     }
                     if(name.contains(String.valueOf(Path.DELIMITER))) {
@@ -89,8 +97,8 @@ public class FTPMlsdListResponseReader implements FTPResponseReader {
                         }
                     }
                     if(!success) {
-                        if("dir".equals(facts.get("type").toLowerCase(java.util.Locale.ENGLISH)) && parent.getName().equals(name)) {
-                            log.warn("Possibly bogus response:" + line);
+                        if("dir".equals(facts.get("type").toLowerCase(Locale.ENGLISH)) && parent.getName().equals(name)) {
+                            log.warn(String.format("Possibly bogus response line %s", line));
                         }
                         else {
                             success = true;
@@ -127,17 +135,14 @@ public class FTPMlsdListResponseReader implements FTPResponseReader {
                         // Time values are always represented in UTC
                         parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
                     }
-                    if(facts.containsKey("charset")) {
-                        if(!facts.get("charset").equalsIgnoreCase(session.getEncoding())) {
-                            log.error(String.format("Incompatible charset %s but session is configured with %s",
-                                    facts.get("charset"), session.getEncoding()));
-                        }
-                    }
                     children.add(parsed);
                 }
             }
         }
-        return success;
+        if(!success) {
+            throw new FTPInvalidListException();
+        }
+        return children;
     }
 
     /**
@@ -202,7 +207,7 @@ public class FTPMlsdListResponseReader implements FTPResponseReader {
     protected Map<String, Map<String, String>> parseFacts(final String line) {
         final Pattern p = Pattern.compile("\\s?(\\S+\\=\\S+;)*\\s(.*)");
         final Matcher result = p.matcher(line);
-        Map<String, Map<String, String>> file = new HashMap<String, Map<String, String>>();
+        final Map<String, Map<String, String>> file = new HashMap<String, Map<String, String>>();
         if(result.matches()) {
             final String filename = result.group(2);
             final Map<String, String> facts = new HashMap<String, String>();
@@ -215,7 +220,7 @@ public class FTPMlsdListResponseReader implements FTPResponseReader {
                 if(StringUtils.isBlank(value)) {
                     continue;
                 }
-                facts.put(key.toLowerCase(java.util.Locale.ENGLISH), value);
+                facts.put(key.toLowerCase(Locale.ENGLISH), value);
             }
             file.put(filename, facts);
             return file;

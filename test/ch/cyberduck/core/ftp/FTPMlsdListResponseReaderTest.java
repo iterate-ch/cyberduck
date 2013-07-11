@@ -23,14 +23,14 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id$
@@ -38,9 +38,7 @@ import static org.junit.Assert.*;
 public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
 
     @Test
-    public void testMlsd() {
-        final AttributedList<Path> children = new AttributedList<Path>();
-
+    public void testMlsd() throws Exception {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
         Path path = new Path(
                 "/www", Path.DIRECTORY_TYPE);
@@ -52,8 +50,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         };
 
 
-        boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-        assertTrue(success);
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
         assertEquals(3, children.size());
         assertEquals("writable", children.get(0).getName());
         assertTrue(children.get(0).attributes().isFile());
@@ -62,36 +59,32 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         assertTrue(children.get(2).attributes().isDirectory());
     }
 
-    @Test
-    public void testMlsdCdir() {
+    @Test(expected = FTPInvalidListException.class)
+    public void testMlsdCdir1() throws Exception {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
         Path path = new Path(
                 "/www", Path.DIRECTORY_TYPE);
 
-        {
-            final AttributedList<Path> children = new AttributedList<Path>();
-            String[] replies = new String[]{
-                    "Type=cdir;Perm=el;Unique=keVO1+ZF4; test", //skipped
-            };
-
-            boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-            assertFalse(success);
-            assertEquals(0, children.size());
-        }
-        {
-            final AttributedList<Path> children = new AttributedList<Path>();
-            String[] replies = new String[]{
-                    "Type=cdir;Modify=19990112033515; /iana/assignments/character-set-info", //skipped
-            };
-
-            boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-            assertFalse(success);
-            assertEquals(0, children.size());
-        }
+        String[] replies = new String[]{
+                "Type=cdir;Perm=el;Unique=keVO1+ZF4; test", //skipped
+        };
+        new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
     }
 
-    @Test
-    public void testMlsdPdir() {
+    @Test(expected = FTPInvalidListException.class)
+    public void testMlsdCdir2() throws Exception {
+        final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
+        Path path = new Path(
+                "/www", Path.DIRECTORY_TYPE);
+
+        String[] replies = new String[]{
+                "Type=cdir;Modify=19990112033515; /iana/assignments/character-set-info", //skipped
+        };
+        new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
+    }
+
+    @Test(expected = FTPInvalidListException.class)
+    public void testMlsdPdir() throws Exception {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
@@ -101,15 +94,11 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         String[] replies = new String[]{
                 "Type=pdir;Perm=e;Unique=keVO1+d?3; ..", //skipped
         };
-
-        boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-        assertFalse(success);
-        assertEquals(0, children.size());
+        new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
     }
 
-    @Test
-    public void testMlsdDirInvalid() {
-        final AttributedList<Path> children = new AttributedList<Path>();
+    @Test(expected = FTPInvalidListException.class)
+    public void testMlsdDirInvalid() throws Exception {
 
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
         Path path = new Path(
@@ -118,15 +107,11 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         String[] replies = new String[]{
                 "Type=dir;Unique=aaaaacUYqaaa;Perm=cpmel; /", //skipped
         };
-
-        boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-        assertFalse(success);
-        assertEquals(0, children.size());
+        new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
     }
 
-    public void testSkipParentDir() {
-        final AttributedList<Path> children = new AttributedList<Path>();
-
+    @Test
+    public void testSkipParentDir() throws Exception {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
         Path path = new Path(
                 "/www", Path.DIRECTORY_TYPE);
@@ -137,16 +122,13 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
                 "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
         };
 
-        boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-        assertTrue(success);
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
         assertEquals(1, children.size());
         assertEquals("ftpd.c", children.get(0).getName());
     }
 
     @Test
-    public void testSize() {
-        final AttributedList<Path> children = new AttributedList<Path>();
-
+    public void testSize() throws Exception {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
         Path path = new Path(
                 "/www", Path.DIRECTORY_TYPE);
@@ -155,16 +137,13 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
                 "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
         };
 
-        boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-        assertTrue(success);
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
         assertEquals(1, children.size());
         assertEquals(34589, children.get(0).attributes().getSize());
     }
 
     @Test
-    public void testTimestamp() {
-        final AttributedList<Path> children = new AttributedList<Path>();
-
+    public void testTimestamp() throws Exception {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
         Path path = new Path(
                 "/www", Path.DIRECTORY_TYPE);
@@ -173,7 +152,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         String[] replies = new String[]{
                 "Type=dir;Modify=19990112033045; text" //yyyyMMddHHmmss
         };
-        assertTrue(new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies)));
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
         assertEquals(1, children.size());
         assertEquals(916111845000L, children.get(0).attributes().getModificationDate());
         Calendar date = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -183,105 +162,93 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     }
 
     @Test
-    public void testParseTimestamp() {
+    public void testParseTimestamp() throws Exception {
         // Pass UTC time
         final long time = new FTPMlsdListResponseReader().parseTimestamp("20130709111201");
         assertEquals(1373368321000L, time);
     }
 
     @Test
-    public void testParseTimestampInvalid() {
+    public void testParseTimestampInvalid() throws Exception {
         final long time = new FTPMlsdListResponseReader().parseTimestamp("2013");
         assertEquals(-1L, time);
     }
 
-    @Test
-    public void testBrokenMlsd() {
+    @Test(expected = FTPInvalidListException.class)
+    public void testBrokenMlsd() throws Exception {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
         Path path = new Path(
                 "/Dummies_Infoblaetter", Path.DIRECTORY_TYPE);
+        String[] replies = new String[]{
+                "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter",
+        };
+        new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
+    }
 
+    public void testDir() throws Exception {
+        final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
+        Path path = new Path(
+                "/Dummies_Infoblaetter", Path.DIRECTORY_TYPE);
         {
-            final AttributedList<Path> children = new AttributedList<Path>();
-            String[] replies = new String[]{
-                    "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter",
-            };
-
-            boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-            assertFalse(success);
-            assertEquals(1, children.size());
-        }
-        {
-            final AttributedList<Path> children = new AttributedList<Path>();
             String[] replies = new String[]{
                     "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter",
                     "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
             };
 
-            boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-            assertTrue(success);
+            final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
             assertEquals(2, children.size());
         }
         {
-            final AttributedList<Path> children = new AttributedList<Path>();
             String[] replies = new String[]{
                     "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c",
                     "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter"
             };
 
-            boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-            assertTrue(success);
+            final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
             assertEquals(2, children.size());
         }
     }
 
     @Test
-    public void testParseMlsdMode() {
+    public void testParseMlsdMode664() throws Exception {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
         Path path = new Path(
                 "/www", Path.DIRECTORY_TYPE);
+        String[] replies = new String[]{
+                "modify=19990307234236;perm=adfr;size=60;type=file;unique=FE03U10001724;UNIX.group=1001;UNIX.mode=0664;UNIX.owner=2000; kalahari.diz"
+        };
 
-        {
-            final AttributedList<Path> children = new AttributedList<Path>();
-            String[] replies = new String[]{
-                    "modify=19990307234236;perm=adfr;size=60;type=file;unique=FE03U10001724;UNIX.group=1001;UNIX.mode=0664;UNIX.owner=2000; kalahari.diz"
-            };
-
-            boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-            assertTrue(success);
-            assertEquals(1, children.size());
-            assertEquals("664", children.get(0).attributes().getPermission().getOctalString());
-        }
-        {
-            final AttributedList<Path> children = new AttributedList<Path>();
-            String[] replies = new String[]{
-                    "modify=20090210192929;perm=fle;type=dir;unique=FE03U10006D95;UNIX.group=1001;UNIX.mode=02775;UNIX.owner=2000; tangerine"
-            };
-
-            boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-            assertTrue(success);
-            assertEquals(1, children.size());
-            assertEquals("775", children.get(0).attributes().getPermission().getOctalString());
-        }
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
+        assertEquals(1, children.size());
+        assertEquals("664", children.get(0).attributes().getPermission().getOctalString());
     }
 
     @Test
-    @Ignore
-    public void testParseMlsdSymbolic() {
+    public void testParseMlsdMode775() throws Exception {
         final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
         Path path = new Path(
                 "/www", Path.DIRECTORY_TYPE);
+        String[] replies = new String[]{
+                "modify=20090210192929;perm=fle;type=dir;unique=FE03U10006D95;UNIX.group=1001;UNIX.mode=02775;UNIX.owner=2000; tangerine"
+        };
 
-        {
-            final AttributedList<Path> children = new AttributedList<Path>();
-            String[] replies = new String[]{
-                    "Type=OS.unix=slink:/foobar;Perm=;Unique=keVO1+4G4; foobar"
-            };
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
+        assertEquals(1, children.size());
+        assertEquals("775", children.get(0).attributes().getPermission().getOctalString());
+    }
 
-            boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-            assertTrue(success);
-            assertEquals(1, children.size());
-            assertEquals("/foobar", children.get(0).getSymlinkTarget().getAbsolute());
-        }
+    @Test
+    public void testParseMlsdSymbolic() throws Exception {
+        final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
+        Path path = new Path(
+                "/www", Path.DIRECTORY_TYPE);
+        String[] replies = new String[]{
+                "Type=OS.unix=slink:/foobar;Perm=;Unique=keVO1+4G4; foobar"
+        };
+
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
+        assertEquals(1, children.size());
+        assertEquals("/www/foobar", children.get(0).getAbsolute());
+        assertEquals("/foobar", children.get(0).getSymlinkTarget().getAbsolute());
     }
 }

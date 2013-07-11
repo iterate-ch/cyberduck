@@ -167,10 +167,10 @@ public class FTPClient extends FTPSClient {
         reader.close();
         socket.close();
 
-        if(completePendingCommand()) {
-            return results;
+        if(!this.completePendingCommand()) {
+            throw new FTPException(this.getReplyCode(), this.getReplyString());
         }
-        return Collections.emptyList();
+        return results;
     }
 
     @Override

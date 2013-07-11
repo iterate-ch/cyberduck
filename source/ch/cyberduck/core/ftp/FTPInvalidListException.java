@@ -17,17 +17,13 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Path;
-
-import org.apache.commons.net.ftp.FTPFileEntryParser;
-
-import java.util.List;
+import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id:$
  */
-public interface FTPResponseReader {
-    boolean read(AttributedList<Path> children, FTPSession session, Path parent,
-                 FTPFileEntryParser parser, List<String> replies);
+public class FTPInvalidListException extends BackgroundException {
+
+    public FTPInvalidListException() {
+    }
 }

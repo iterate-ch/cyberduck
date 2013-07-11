@@ -20,8 +20,8 @@ package ch.cyberduck.core.ftp;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface DataConnectionAction<T> {
-    T execute() throws IOException;
+    T execute() throws IOException, FTPInvalidListException;
 }

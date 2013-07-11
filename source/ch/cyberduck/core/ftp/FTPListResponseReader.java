@@ -25,22 +25,20 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
 /**
  * @version $Id$
  */
-public class FTPListResponseReader implements FTPResponseReader {
+public class FTPListResponseReader {
     private static final Logger log = Logger.getLogger(FTPListResponseReader.class);
 
-    @Override
-    public boolean read(final AttributedList<Path> children, final FTPSession session, final Path parent,
-                        final FTPFileEntryParser parser, final List<String> replies) {
-        if(null == replies) {
-            // This is an empty directory
-            return false;
-        }
+    public AttributedList<Path> read(final FTPSession session, final Path parent,
+                                     final FTPFileEntryParser parser, final List<String> replies) throws IOException, FTPInvalidListException {
+        final AttributedList<Path> children = new AttributedList<Path>();
+        // At least one entry successfully parsed
         boolean success = false;
         for(String line : replies) {
             final FTPFile f = parser.parseFTPEntry(line);
@@ -58,7 +56,7 @@ public class FTPListResponseReader implements FTPResponseReader {
                 if(name.contains(String.valueOf(Path.DELIMITER))) {
                     if(!name.startsWith(parent.getAbsolute() + Path.DELIMITER)) {
                         // Workaround for #2434.
-                        log.warn("Skip listing entry with delimiter:" + name);
+                        log.warn(String.format("Skip listing entry with delimiter %s", name));
                         continue;
                     }
                 }
@@ -111,6 +109,9 @@ public class FTPListResponseReader implements FTPResponseReader {
             }
             children.add(parsed);
         }
-        return success;
+        if(!success) {
+            throw new FTPInvalidListException();
+        }
+        return children;
     }
 }

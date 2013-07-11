@@ -44,7 +44,7 @@ public class FTPSessionTest extends AbstractTestCase {
             }
 
             @Override
-            protected <T> T fallback(final DataConnectionAction<T> action) throws IOException {
+            protected <T> T fallback(final DataConnectionAction<T> action) throws IOException, FTPInvalidListException {
                 count.incrementAndGet();
                 return super.fallback(action);
             }
@@ -90,7 +90,7 @@ public class FTPSessionTest extends AbstractTestCase {
             }
 
             @Override
-            protected <T> T fallback(final DataConnectionAction<T> action) throws IOException {
+            protected <T> T fallback(final DataConnectionAction<T> action) throws IOException, FTPInvalidListException {
                 count.incrementAndGet();
                 return super.fallback(action);
             }
@@ -264,7 +264,8 @@ public class FTPSessionTest extends AbstractTestCase {
         final AtomicBoolean warned = new AtomicBoolean();
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginController() {
             @Override
-            public void warn(final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final String title, final String message, final String continueButton,
+                             final String disconnectButton, final String preference) throws LoginCanceledException {
                 warned.set(true);
                 // Cancel to switch
                 throw new LoginCanceledException();
