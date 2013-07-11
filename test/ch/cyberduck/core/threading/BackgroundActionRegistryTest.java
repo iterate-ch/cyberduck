@@ -47,7 +47,7 @@ public class BackgroundActionRegistryTest extends AbstractTestCase {
             }
 
             @Override
-            public void finish() throws BackgroundException {
+            public void finish() {
                 super.finish();
                 lock.countDown();
             }
