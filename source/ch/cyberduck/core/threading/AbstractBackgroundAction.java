@@ -36,19 +36,25 @@ import java.util.Set;
 public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T> {
     private static final Logger log = Logger.getLogger(AbstractBackgroundAction.class);
 
+    private State state;
+
     @Override
     public void init() {
         //
     }
 
-    private boolean canceled;
+    private enum State {
+        running,
+        canceled,
+        stopped
+    }
 
     @Override
     public void cancel() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel background task %s", this));
         }
-        canceled = true;
+        state = State.canceled;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(BackgroundActionListener listener : l) {
@@ -64,14 +70,12 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
      */
     @Override
     public boolean isCanceled() {
-        return canceled;
+        return state == State.canceled;
     }
-
-    private boolean running;
 
     @Override
     public boolean isRunning() {
-        return running;
+        return state == State.running;
     }
 
     @Override
@@ -79,7 +83,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prepare background task %s", this));
         }
-        running = true;
+        state = State.running;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(BackgroundActionListener listener : l) {
@@ -88,11 +92,11 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     @Override
-    public void finish() throws BackgroundException {
+    public void finish() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Finish background task %s", this));
         }
-        running = false;
+        state = State.stopped;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(BackgroundActionListener listener : l) {
