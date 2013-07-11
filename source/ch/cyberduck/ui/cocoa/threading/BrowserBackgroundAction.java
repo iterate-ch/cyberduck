@@ -52,6 +52,7 @@ public abstract class BrowserBackgroundAction extends ControllerRepeatableBackgr
     public void init() {
         // Add to the registry so it will be displayed in the activity window.
         registry.add(this);
+        super.init();
     }
 
     @Override
