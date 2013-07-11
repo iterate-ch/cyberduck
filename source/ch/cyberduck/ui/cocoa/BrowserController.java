@@ -23,6 +23,7 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Symlink;
@@ -3499,6 +3500,15 @@ public class BrowserController extends WindowController
             c.window().close();
         }
         this.background(new BrowserBackgroundAction(this) {
+
+            @Override
+            public void prepare() throws ConnectionCanceledException {
+                if(!session.isConnected()) {
+                    throw new ConnectionCanceledException();
+                }
+                super.prepare();
+            }
+
             @Override
             public void run() throws BackgroundException {
                 session.close();
