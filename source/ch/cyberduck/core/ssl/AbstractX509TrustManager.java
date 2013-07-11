@@ -22,8 +22,8 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,20 +41,13 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
     private Set<X509Certificate> accepted
             = new HashSet<X509Certificate>();
 
-    protected void acceptCertificate(final X509Certificate[] certs) {
+    protected void accept(final List<X509Certificate> certs) {
         if(log.isDebugEnabled()) {
             for(X509Certificate cert : certs) {
                 log.debug("Certificate trusted:" + cert.toString());
             }
         }
-        accepted.addAll(Arrays.asList(certs));
-    }
-
-    protected void acceptCertificate(final X509Certificate cert) {
-        if(log.isDebugEnabled()) {
-            log.debug("Certificate trusted:" + cert.toString());
-        }
-        accepted.add(cert);
+        accepted.addAll(certs);
     }
 
     /**

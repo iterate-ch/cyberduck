@@ -73,7 +73,7 @@ public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
             // We still accept the certificate if we find it in the Keychain
             // regardless of its trust settings. There is currently no way I am
             // aware of to read the trust settings for a certificate in the Keychain
-            this.acceptCertificate(certs);
+            this.accept(Arrays.asList(certs));
         }
         else {
             // The certificate has not been trusted
