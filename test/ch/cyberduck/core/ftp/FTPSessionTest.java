@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 public class FTPSessionTest extends AbstractTestCase {
 
     @Test
-    public void testFallbackDataConnection() throws Exception {
+    public void testFallbackDataConnectionSocketTimeout() throws Exception {
         final Host host = new Host(Protocol.FTP, "mirror.switch.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
@@ -44,7 +44,7 @@ public class FTPSessionTest extends AbstractTestCase {
             }
 
             @Override
-            protected <T> T fallback(final DataConnectionAction<T> action) throws ConnectionCanceledException, IOException {
+            protected <T> T fallback(final DataConnectionAction<T> action) throws IOException {
                 count.incrementAndGet();
                 return super.fallback(action);
             }
@@ -52,8 +52,53 @@ public class FTPSessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
 
-
         final Path path = new Path("/pub/debian/README.html", Path.FILE_TYPE);
+        final TransferStatus status = new TransferStatus();
+        final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
+            @Override
+            public Void execute() throws IOException {
+                try {
+                    assertNotNull(session.read(path, status));
+                    assertEquals(1, count.get());
+                }
+                catch(BackgroundException e) {
+                    fail();
+                }
+                return null;
+            }
+        };
+        session.data(path, action);
+    }
+
+    @Test
+    public void testFallbackDataConnection500Error() throws Exception {
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        host.setFTPConnectMode(FTPConnectMode.PORT);
+
+        final AtomicInteger count = new AtomicInteger();
+
+        // Expect failure from server
+        // 220 (vsFTPd 2.2.2)
+        // PORT 192,168,1,38,241,18
+        // 550 Permission denied.
+
+        final FTPSession session = new FTPSession(host) {
+            protected int timeout() {
+                return 2000;
+            }
+
+            @Override
+            protected <T> T fallback(final DataConnectionAction<T> action) throws IOException {
+                count.incrementAndGet();
+                return super.fallback(action);
+            }
+        };
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+
+        final Path path = new Path(session.home(), "test", Path.FILE_TYPE);
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
             @Override

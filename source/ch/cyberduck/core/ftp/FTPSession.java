@@ -17,7 +17,15 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
@@ -314,23 +322,33 @@ public class FTPSession extends SSLSession<FTPClient> {
             }
             return action.execute();
         }
-        catch(SocketTimeoutException failure) {
-            log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
+        catch(FTPException failure) {
+            log.warn(String.format("Server denied data socket %s", failure.getMessage()));
             // Fallback handling
             if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
-                new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
-                        new DisabledPasswordStore(), new ProgressListener() {
-                    @Override
-                    public void message(final String message) {
-                        FTPSession.this.message(message);
-                    }
-                }).connect(this);
                 try {
                     return this.fallback(action);
                 }
                 catch(IOException e) {
-                    this.interrupt();
-                    log.warn("Connect mode fallback failed:" + e.getMessage());
+                    log.warn(String.format("Connect mode fallback failed %s", e.getMessage()));
+                    // Throw original error message
+                }
+            }
+            throw new FTPExceptionMappingService().map("", failure, file);
+        }
+        catch(SocketTimeoutException failure) {
+            log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
+            // Fallback handling
+            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+                try {
+                    this.getClient().completePendingCommand();
+                    // Expect 421 response
+                    log.warn(String.format("Aborted connection %d %s",
+                            this.getClient().getReplyCode(), this.getClient().getReplyString()));
+                    return this.fallback(action);
+                }
+                catch(IOException e) {
+                    log.warn(String.format("Connect mode fallback failed %s", e.getMessage()));
                     // Throw original error message
                 }
             }
@@ -342,7 +360,7 @@ public class FTPSession extends SSLSession<FTPClient> {
      * @param action Action that needs to open a data connection
      * @return True if action was successful
      */
-    protected <T> T fallback(final DataConnectionAction<T> action) throws ConnectionCanceledException, IOException {
+    protected <T> T fallback(final DataConnectionAction<T> action) throws IOException {
         // Fallback to other connect mode
         if(this.getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
             log.warn("Fallback to active data connection");
@@ -364,8 +382,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     public void mkdir(final Path file) throws BackgroundException {
         try {
             if(!this.getClient().makeDirectory(file.getAbsolute())) {
-                throw new FTPException(this.getClient().getReplyCode(),
-                        this.getClient().getReplyString());
+                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
             }
         }
         catch(IOException e) {
@@ -380,8 +397,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     file.getName(), renamed));
 
             if(!this.getClient().rename(file.getAbsolute(), renamed.getAbsolute())) {
-                throw new FTPException(this.getClient().getReplyCode(),
-                        this.getClient().getReplyString());
+                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
             }
         }
         catch(IOException e) {
@@ -397,8 +413,7 @@ public class FTPSession extends SSLSession<FTPClient> {
 
             if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
                 if(!this.getClient().deleteFile(file.getAbsolute())) {
-                    throw new FTPException(this.getClient().getReplyCode(),
-                            this.getClient().getReplyString());
+                    throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
                 }
             }
             else if(file.attributes().isDirectory()) {
@@ -412,8 +427,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                         file.getName()));
 
                 if(!this.getClient().removeDirectory(file.getAbsolute())) {
-                    throw new FTPException(this.getClient().getReplyCode(),
-                            this.getClient().getReplyString());
+                    throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
                 }
             }
         }
@@ -427,8 +441,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(!this.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
-                throw new FTPException(this.getClient().getReplyCode(),
-                        this.getClient().getReplyString());
+                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
             }
             if(status.isResume()) {
                 // Where a server process supports RESTart in STREAM mode
@@ -455,8 +468,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                         if(this.getByteCount() == status.getLength()) {
                             // Read 226 status
                             if(!getClient().completePendingCommand()) {
-                                throw new FTPException(getClient().getReplyCode(),
-                                        getClient().getReplyString());
+                                throw new FTPException(getClient().getReplyCode(), getClient().getReplyString());
                             }
                         }
                         else {
@@ -478,8 +490,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(!this.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                throw new FTPException(this.getClient().getReplyCode(),
-                        this.getClient().getReplyString());
+                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
             }
             final OutputStream out = this.data(file, new DataConnectionAction<OutputStream>() {
                 @Override
@@ -502,8 +513,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                         if(this.getByteCount() == status.getLength()) {
                             // Read 226 status
                             if(!getClient().completePendingCommand()) {
-                                throw new FTPException(getClient().getReplyCode(),
-                                        getClient().getReplyString());
+                                throw new FTPException(getClient().getReplyCode(), getClient().getReplyString());
                             }
                         }
                         else {
