@@ -27,7 +27,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import static org.junit.Assert.*;
 
@@ -168,27 +169,24 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         Path path = new Path(
                 "/www", Path.DIRECTORY_TYPE);
 
+        // Tuesday, January 12, 1999 3:30:45 AM GMT
         String[] replies = new String[]{
                 "Type=dir;Modify=19990112033045; text" //yyyyMMddHHmmss
         };
-
-        boolean success = new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies));
-        assertTrue(success);
+        assertTrue(new FTPMlsdListResponseReader().read(children, s, path, null, Arrays.asList(replies)));
         assertEquals(1, children.size());
-        assertEquals(916108245000L, children.get(0).attributes().getModificationDate());
-//        Calendar date = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-//        date.set(1999, Calendar.JANUARY, 12, 3, 30, 45);
-//        date.set(Calendar.MILLISECOND, 0);
-//        assertEquals(date.getTimeInMillis(), children.get(0).attributes().getModificationDate());
+        assertEquals(916111845000L, children.get(0).attributes().getModificationDate());
+        Calendar date = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        date.set(1999, Calendar.JANUARY, 12, 3, 30, 45);
+        date.set(Calendar.MILLISECOND, 0);
+        assertEquals(date.getTimeInMillis(), children.get(0).attributes().getModificationDate());
     }
 
     @Test
     public void testParseTimestamp() {
+        // Pass UTC time
         final long time = new FTPMlsdListResponseReader().parseTimestamp("20130709111201");
-        assertEquals(6, new Date(time).getMonth());
-        assertEquals(11, new Date(time).getHours());
-        assertEquals(12, new Date(time).getMinutes());
-        assertEquals(1, new Date(time).getSeconds());
+        assertEquals(1373368321000L, time);
     }
 
     @Test

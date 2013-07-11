@@ -13,11 +13,12 @@ public class MDTMSecondsDateFormatterTest {
 
     @Test
     public void testParse() throws Exception {
-        assertEquals(7.862976E11, new MDTMSecondsDateFormatter().parse("19941201170000").getTime(), 0L);
+        // Thursday, December 1, 1994 10:00:00 PM GMT
+        assertEquals(786319200000L, new MDTMSecondsDateFormatter().parse("19941201220000").getTime(), 0L);
     }
 
     @Test
     public void testPrint() throws Exception {
-        assertEquals("19941201170000", new MDTMSecondsDateFormatter().format((long) 7.862976E11, TimeZone.getDefault()));
+        assertEquals("19941201170000", new MDTMSecondsDateFormatter().format(786297600000L, TimeZone.getTimeZone("Europe/Zurich")));
     }
 }
