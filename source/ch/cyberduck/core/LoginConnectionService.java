@@ -125,8 +125,7 @@ public class LoginConnectionService implements ConnectionService {
         bookmark.setTimestamp(new Date());
 
         try {
-            final KeychainLoginService login = new KeychainLoginService(prompt, keychain);
-            login.login(session, listener);
+            this.login(session);
 
             final HistoryCollection history = HistoryCollection.defaultCollection();
             history.add(new Host(bookmark.getAsDictionary()));
@@ -140,5 +139,10 @@ public class LoginConnectionService implements ConnectionService {
             session.interrupt();
             throw e;
         }
+    }
+
+    protected void login(final Session session) throws BackgroundException {
+        final KeychainLoginService login = new KeychainLoginService(prompt, keychain);
+        login.login(session, listener);
     }
 }
