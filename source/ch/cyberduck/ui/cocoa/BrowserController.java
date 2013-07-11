@@ -2839,7 +2839,7 @@ public class BrowserController extends WindowController
                     }, new TransferOptions()
             ) {
                 @Override
-                public void finish() throws BackgroundException {
+                public void finish() {
                     if(transfer.isComplete()) {
                         callback.complete(transfer);
                     }

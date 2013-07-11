@@ -704,7 +704,7 @@ public final class TransferController extends WindowController implements NSTool
             }
 
             @Override
-            public void finish() throws BackgroundException {
+            public void finish() {
                 super.finish();
                 if(transfer.isComplete()) {
                     callback.complete(transfer);

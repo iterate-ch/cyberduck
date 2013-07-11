@@ -47,13 +47,18 @@ public class TransferCollectionRepeatableBackgroundAction extends TransferRepeat
     }
 
     @Override
-    public void finish() throws BackgroundException {
+    public void finish() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Finish background action for transfer %s", transfer));
         }
         super.finish();
         for(Session s : transfer.getSessions()) {
-            s.close();
+            try {
+                s.close();
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Error closing connection %s", e.getMessage()));
+            }
             // We have our own session independent of any browser.
             s.cache().clear();
         }

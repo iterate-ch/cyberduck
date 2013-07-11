@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa.threading;
  */
 
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.BrowserController;
@@ -68,7 +67,7 @@ public abstract class BrowserBackgroundAction extends ControllerRepeatableBackgr
     }
 
     @Override
-    public void finish() throws BackgroundException {
+    public void finish() {
         controller.getProgress().stopAnimation(null);
         super.finish();
     }
