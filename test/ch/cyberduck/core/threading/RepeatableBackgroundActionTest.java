@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 public class RepeatableBackgroundActionTest extends AbstractTestCase {
 
     @Test
-    public void testGetExceptions() throws Exception {
+    public void testGetExceptionCanceled() throws Exception {
         final BackgroundException failure = new BackgroundException(null, null, null);
         RepeatableBackgroundAction a = new RepeatableBackgroundAction(new AlertCallback() {
             @Override
@@ -69,13 +69,46 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
 
             @Override
             public void run() throws BackgroundException {
-                //
+                throw new ConnectionCanceledException();
             }
         };
-        a.error(new ConnectionCanceledException());
+        a.call();
         assertFalse(a.hasFailed());
         assertNull(a.getException());
-        a.error(failure);
+    }
+
+    @Test
+    public void testGetExceptionFailure() throws Exception {
+        final BackgroundException failure = new BackgroundException(null, null, null);
+        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new AlertCallback() {
+            @Override
+            public void alert(final RepeatableBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+                assertEquals(failure, f);
+            }
+        }, new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+        }, new TranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                //
+            }
+        }, new DisabledLoginController(), new DefaultHostKeyController()
+        ) {
+
+            @Override
+            public List<Session<?>> getSessions() {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public void run() throws BackgroundException {
+                throw failure;
+            }
+        };
+        a.call();
         assertTrue(a.hasFailed());
         assertNotNull(a.getException());
     }
@@ -107,10 +140,9 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
 
             @Override
             public void run() throws BackgroundException {
-                //
+                throw failure;
             }
         };
-        a.error(failure);
         assertEquals(Preferences.instance().getInteger("connection.retry"), a.retry());
     }
 }

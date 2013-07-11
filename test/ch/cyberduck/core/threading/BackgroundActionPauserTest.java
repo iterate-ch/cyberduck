@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class BackgroundActionPauserTest extends AbstractTestCase {
 
@@ -61,21 +61,16 @@ public class BackgroundActionPauserTest extends AbstractTestCase {
         }, new DisabledLoginController(), new DefaultHostKeyController()
         ) {
             @Override
-            protected boolean hasFailed() {
-                this.error(new BackgroundException());
-                return true;
-            }
-
-            @Override
             public List<Session<?>> getSessions() {
                 return Collections.emptyList();
             }
 
             @Override
             public void run() throws BackgroundException {
-                //
+                throw new BackgroundException();
             }
         };
+        action.call();
         new BackgroundActionPauser(action).await(new ProgressListener() {
             String previous;
 
