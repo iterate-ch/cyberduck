@@ -166,15 +166,6 @@ public abstract class AbstractController implements Controller {
                     try {
                         action.finish();
                     }
-                    catch(ConnectionCanceledException e) {
-                        log.warn(String.format("Connection canceled for background task %s", action));
-                    }
-                    catch(BackgroundException e) {
-                        log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
-                    }
-                    catch(Exception e) {
-                        log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
-                    }
                     finally {
                         actions.remove(action);
                     }

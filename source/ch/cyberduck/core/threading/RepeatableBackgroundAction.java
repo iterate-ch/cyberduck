@@ -39,12 +39,8 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean>
-        implements TranscriptListener {
+public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean> implements TranscriptListener {
     private static final Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
-
-    private static final String lineSeparator
-            = System.getProperty("line.separator");
 
     /**
      * Contains all exceptions thrown while this action was running
@@ -71,6 +67,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     private static final int TRANSCRIPT_MAX_LENGTH =
             Preferences.instance().getInteger("transcript.length");
+
+    private static final String LINE_SEPARATOR
+            = System.getProperty("line.separator");
 
     private LoginController prompt;
 
@@ -112,7 +111,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         if(transcript.length() > TRANSCRIPT_MAX_LENGTH) {
             transcript = new StringBuilder();
         }
-        transcript.append(message).append(lineSeparator);
+        transcript.append(message).append(LINE_SEPARATOR);
         transcriptListener.log(request, message);
     }
 
@@ -125,26 +124,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     public void prepare() throws ConnectionCanceledException {
         super.prepare();
         progressListener.message(this.getActivity());
-        try {
-            for(Session s : this.getSessions()) {
-                s.addProgressListener(progressListener);
-                s.addTranscriptListener(this);
-            }
-            // Clear the transcript and exceptions
-            transcript = new StringBuilder();
-            final LoginConnectionService c = new LoginConnectionService(prompt, key,
-                    PasswordStoreFactory.get(), progressListener);
-            for(Session session : this.getSessions()) {
-                if(c.check(session)) {
-                    // New connection opened
-                    growl.notify("Connection opened", session.getHost().getHostname());
-                }
-            }
-        }
-        catch(BackgroundException failure) {
-            log.warn(String.format("Failure starting background action: %s", failure));
-            this.error(failure);
-            throw new ConnectionCanceledException(failure);
+        for(Session s : this.getSessions()) {
+            s.addProgressListener(progressListener);
+            s.addTranscriptListener(this);
         }
     }
 
@@ -173,6 +155,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     }
 
     protected void reset() {
+        // Clear the transcript and exceptions
+        transcript = new StringBuilder();
         failed = false;
         exception = null;
     }
@@ -189,32 +173,41 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     @Override
     public Boolean call() {
         try {
+            final LoginConnectionService connection = new LoginConnectionService(prompt, key,
+                    PasswordStoreFactory.get(), progressListener);
+            for(Session session : this.getSessions()) {
+                if(connection.check(session)) {
+                    // New connection opened
+                    growl.notify("Connection opened", session.getHost().getHostname());
+                }
+            }
             return super.call();
         }
-        catch(BackgroundException failure) {
-            log.warn(String.format("Failure executing background action: %s", failure));
-            this.error(failure);
-        }
-        return false;
-    }
-
-    public void error(final BackgroundException failure) {
-        // Do not report an error when the action was canceled intentionally
-        if(failure instanceof ConnectionCanceledException) {
+        catch(ConnectionCanceledException failure) {
             // Do not report as failed if instanceof ConnectionCanceledException
             log.warn(String.format("Connection canceled %s", failure.getMessage()));
         }
-        else {
+        catch(BackgroundException failure) {
+            log.warn(String.format("Failure executing background action: %s", failure));
             for(Session session : this.getSessions()) {
                 growl.notify(failure.getMessage(), session.getHost().getHostname());
             }
             exception = failure;
             failed = true;
         }
+        return false;
+    }
+
+    protected void error(final BackgroundException failure) {
+        // Do not report an error when the action was canceled intentionally
+        if(failure instanceof ConnectionCanceledException) {
+            // Do not report as failed if instanceof ConnectionCanceledException
+            log.warn(String.format("Connection canceled %s", failure.getMessage()));
+        }
     }
 
     @Override
-    public void finish() throws BackgroundException {
+    public void finish() {
         while(this.retry() > 0) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Retry failed background action %s", this));
@@ -236,19 +229,13 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             // is already running
             session.removeTranscriptListener(this);
         }
-        try {
-            super.finish();
-            // If there was any failure, display the summary now
-            if(this.hasFailed() && !this.isCanceled()) {
-                // Display alert if the action was not canceled intentionally
-                alert.alert(this, exception, transcript);
-            }
-            this.reset();
+        super.finish();
+        // If there was any failure, display the summary now
+        if(this.hasFailed() && !this.isCanceled()) {
+            // Display alert if the action was not canceled intentionally
+            alert.alert(this, exception, transcript);
         }
-        catch(BackgroundException failure) {
-            log.warn(String.format("Failure finishing background action: %s", failure));
-            this.error(failure);
-        }
+        this.reset();
     }
 
     @Override

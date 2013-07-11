@@ -53,7 +53,7 @@ public interface BackgroundAction<T> extends Callable<T> {
      *
      * @see #run
      */
-    void finish() throws BackgroundException;
+    void finish();
 
     boolean isRunning();
 
