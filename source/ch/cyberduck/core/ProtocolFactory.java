@@ -60,11 +60,30 @@ public final class ProtocolFactory {
         register(Protocol.GOOGLESTORAGE_SSL);
         register(Protocol.CLOUDFILES);
         register(Protocol.SWIFT);
-
+        // Order determines list in connection dropdown
+        final Local bundled = LocalFactory.createLocal(Preferences.instance().getProperty("application.profiles.path"));
+        if(bundled.exists()) {
+            for(Local profile : bundled.list().filter(new Filter<Local>() {
+                @Override
+                public boolean accept(Local file) {
+                    return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
+                }
+            })) {
+                final Profile protocol = ProfileReaderFactory.get().read(profile);
+                if(null == protocol) {
+                    continue;
+                }
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Adding bundled protocol %s", protocol));
+                }
+                // Replace previous possibly disable protocol in Preferences
+                register(protocol);
+            }
+        }
         // Load thirdparty protocols
-        final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
-        if(profiles.exists()) {
-            for(Local profile : profiles.list().filter(new Filter<Local>() {
+        final Local library = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
+        if(library.exists()) {
+            for(Local profile : library.list().filter(new Filter<Local>() {
                 @Override
                 public boolean accept(Local file) {
                     return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
@@ -78,7 +97,7 @@ public final class ProtocolFactory {
                     log.info(String.format("Adding thirdparty protocol %s", protocol));
                 }
                 // Replace previous possibly disable protocol in Preferences
-                protocol.register();
+                register(protocol);
             }
         }
     }
@@ -162,7 +181,7 @@ public final class ProtocolFactory {
                 }
             }
         }
-        log.fatal("Unknown scheme:" + scheme);
+        log.fatal(String.format("Unknown scheme %s", scheme));
         return forName(
                 Preferences.instance().getProperty("connection.protocol.default"));
     }

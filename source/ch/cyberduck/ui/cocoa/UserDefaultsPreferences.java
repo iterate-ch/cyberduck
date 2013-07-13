@@ -204,6 +204,7 @@ public class UserDefaultsPreferences extends Preferences {
                     bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
             defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
             defaults.put("application.bookmarks.path", bundle.bundlePath() + "/Contents/Resources/Bookmarks");
+            defaults.put("application.profiles.path", bundle.bundlePath() + "/Contents/Resources/Profiles");
         }
 
         defaults.put("update.feed.release", "http://version.cyberduck.ch/changelog.rss");
