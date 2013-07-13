@@ -288,6 +288,9 @@ public class FTPSession extends SSLSession<FTPClient> {
         final String directory;
         try {
             directory = client.printWorkingDirectory();
+            if(null == directory) {
+                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
+            }
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);

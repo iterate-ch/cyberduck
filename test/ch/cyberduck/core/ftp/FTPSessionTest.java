@@ -158,6 +158,16 @@ public class FTPSessionTest extends AbstractTestCase {
         assertFalse(session.isConnected());
     }
 
+    @Test(expected = BackgroundException.class)
+    public void testWorkdir() throws Exception {
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        session.workdir();
+    }
+
     @Test
     public void testMakeDirectory() throws Exception {
         final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
