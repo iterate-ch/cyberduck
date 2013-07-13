@@ -961,6 +961,7 @@ public class BrowserController extends WindowController
                 this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
             }
         }
+        this.getFocus();
     }
 
     /**
@@ -968,7 +969,6 @@ public class BrowserController extends WindowController
      */
     public void reloadBookmarks() {
         bookmarkTable.reloadData();
-        this.getFocus();
     }
 
     private abstract class AbstractBrowserOutlineViewDelegate<E> extends AbstractBrowserTableDelegate<E>
@@ -1776,11 +1776,11 @@ public class BrowserController extends WindowController
 
     private void setBookmarkFilter(final String searchString) {
         if(StringUtils.isBlank(searchString)) {
-            this.searchField.setStringValue(StringUtils.EMPTY);
-            this.bookmarkModel.setFilter(null);
+            searchField.setStringValue(StringUtils.EMPTY);
+            bookmarkModel.setFilter(null);
         }
         else {
-            this.bookmarkModel.setFilter(new HostFilter() {
+            bookmarkModel.setFilter(new HostFilter() {
                 @Override
                 public boolean accept(Host host) {
                     return StringUtils.lowerCase(host.getNickname()).contains(searchString.toLowerCase(java.util.Locale.ENGLISH))
