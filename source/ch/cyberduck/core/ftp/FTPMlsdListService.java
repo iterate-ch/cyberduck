@@ -29,7 +29,7 @@ import org.apache.commons.net.ftp.FTPCmd;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPMlsdListService implements ListService {
 
@@ -56,7 +56,6 @@ public class FTPMlsdListService implements ListService {
                         // data connection in type ASCII or type EBCDIC.
                         throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                     }
-                    boolean success = false;
                     return new FTPMlsdListResponseReader().read(session, file, session.getClient().list(FTPCmd.MLSD));
                 }
             });

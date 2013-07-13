@@ -27,7 +27,7 @@ import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPDefaultListService implements ListService {
 
@@ -57,7 +57,6 @@ public class FTPDefaultListService implements ListService {
                         // data connection in type ASCII or type EBCDIC.
                         throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                     }
-                    boolean success = false;
                     return new FTPListResponseReader().read(session, file, parser, session.getClient().list(command.getCommand(), command.getArg()));
                 }
             });
