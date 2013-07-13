@@ -776,8 +776,8 @@ public class BookmarkController extends WindowController {
                     host.getMaxConnections() == 1 ? TRANSFER_BROWSERCONNECTION : TRANSFER_NEWCONNECTION);
         }
         encodingPopup.setEnabled(host.getProtocol().isEncodingConfigurable());
-        connectmodePopup.setEnabled(host.getProtocol().isConnectModeConfigurable());
-        if(host.getProtocol().isConnectModeConfigurable()) {
+        connectmodePopup.setEnabled(host.getProtocol().getType() == Protocol.Type.ftp);
+        if(host.getProtocol().getType() == Protocol.Type.ftp) {
             if(null == host.getFTPConnectMode()) {
                 connectmodePopup.selectItemWithTitle(DEFAULT);
             }
@@ -788,7 +788,7 @@ public class BookmarkController extends WindowController {
                 connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
             }
         }
-        pkCheckbox.setEnabled(host.getProtocol().equals(Protocol.SFTP));
+        pkCheckbox.setEnabled(host.getProtocol().getType() == Protocol.Type.sftp);
         if(host.getCredentials().isPublicKeyAuthentication()) {
             pkCheckbox.setState(NSCell.NSOnState);
             this.updateField(pkLabel, host.getCredentials().getIdentity().getAbbreviatedPath());

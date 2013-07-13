@@ -142,7 +142,7 @@ public class ConnectionController extends SheetController {
         hostField.cell().setPlaceholderString(protocol.getDefaultHostname());
         usernameField.cell().setPlaceholderString(protocol.getUsernamePlaceholder());
         passField.cell().setPlaceholderString(protocol.getPasswordPlaceholder());
-        connectmodePopup.setEnabled(protocol.isConnectModeConfigurable());
+        connectmodePopup.setEnabled(protocol.getType() == Protocol.Type.ftp);
         if(!protocol.isEncodingConfigurable()) {
             encodingPopup.selectItemWithTitle(DEFAULT);
         }
@@ -160,7 +160,7 @@ public class ConnectionController extends SheetController {
      */
     private void updateIdentity() {
         final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
-        pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
+        pkCheckbox.setEnabled(protocol.getType() == Protocol.Type.sftp);
         if(StringUtils.isNotEmpty(hostField.stringValue())) {
             final Credentials credentials = new Credentials();
             CredentialsConfiguratorFactory.get(protocol).configure(credentials, hostField.stringValue());
@@ -579,7 +579,7 @@ public class ConnectionController extends SheetController {
                     hostField.stringValue(),
                     portField.intValue(),
                     pathField.stringValue());
-            if(protocol.isConnectModeConfigurable()) {
+            if(protocol.getType() == Protocol.Type.ftp) {
                 if(connectmodePopup.titleOfSelectedItem().equals(DEFAULT)) {
                     host.setFTPConnectMode(null);
                 }
