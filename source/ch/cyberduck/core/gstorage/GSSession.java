@@ -88,8 +88,8 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    protected Jets3tProperties configure(final String hostname) {
-        final Jets3tProperties configuration = super.configure(hostname);
+    protected Jets3tProperties configure() {
+        final Jets3tProperties configuration = super.configure();
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
         configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         return configuration;
@@ -236,7 +236,7 @@ public class GSSession extends S3Session {
 
     @Override
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
-        return new XmlResponsesSaxParser(this.configure(host.getHostname()), false) {
+        return new XmlResponsesSaxParser(this.configure(), false) {
             @Override
             public AccessControlListHandler parseAccessControlListResponse(InputStream inputStream) throws ServiceException {
                 return this.parseAccessControlListResponse(inputStream, new GSAccessControlListHandler());
