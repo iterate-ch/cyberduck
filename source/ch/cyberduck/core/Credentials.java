@@ -166,7 +166,7 @@ public class Credentials {
      * @return True if the login credential are valid for the given protocol.
      */
     public boolean validate(final Protocol protocol, final LoginOptions options) {
-        return protocol.validate(this, options);
+        return protocol.getType().validate(this, options);
     }
 
     public String getUsernamePlaceholder() {
