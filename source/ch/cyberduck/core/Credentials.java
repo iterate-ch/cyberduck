@@ -120,7 +120,7 @@ public class Credentials {
     }
 
     /**
-     * @return true if the username is anononymous
+     * @return true if the username is anonymous.
      */
     public boolean isAnonymousLogin() {
         final String u = this.getUsername();
