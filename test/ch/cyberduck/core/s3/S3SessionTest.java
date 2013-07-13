@@ -2,6 +2,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
@@ -68,7 +69,6 @@ public class S3SessionTest extends AbstractTestCase {
         assertEquals(Session.State.closed, session.getState());
     }
 
-
     @Test
     public void testConnectBuckenameAnonymous() throws Exception {
         final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org.s3.amazonaws.com", new Credentials(
@@ -96,7 +96,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(aws.getFeature(Encryption.class, null));
         assertNotNull(aws.getFeature(Redundancy.class, null));
         assertNotNull(aws.getFeature(Logging.class, null));
-//        assertNotNull(aws.getFeature(DistributionConfiguration.class, null));
+        assertNotNull(aws.getFeature(DistributionConfiguration.class, null));
         assertNotNull(aws.getFeature(IdentityConfiguration.class, null));
         final S3Session o = new S3Session(new Host(Protocol.S3_SSL, "o"));
         assertNull(o.getFeature(Versioning.class, null));
@@ -106,7 +106,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertNull(o.getFeature(Encryption.class, null));
         assertNull(o.getFeature(Redundancy.class, null));
         assertNull(o.getFeature(Logging.class, null));
-//        assertNotNull(o.getFeature(DistributionConfiguration.class, null));
+        assertNotNull(o.getFeature(DistributionConfiguration.class, null));
         assertNull(o.getFeature(IdentityConfiguration.class, null));
     }
 
