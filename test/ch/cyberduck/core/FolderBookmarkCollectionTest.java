@@ -8,6 +8,7 @@ import ch.cyberduck.core.serializer.Writer;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -19,7 +20,7 @@ public class FolderBookmarkCollectionTest extends AbstractTestCase {
     @Test
     public void testLoad() throws Exception {
         final FinderLocal source = new FinderLocal(System.getProperty("java.io.tmpdir"));
-        final FinderLocal b = new FinderLocal(source, "t.duck");
+        final FinderLocal b = new FinderLocal(source, String.format("%s.duck", UUID.randomUUID()));
         final String bookmark = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
                 "<plist version=\"1.0\">\n" +
@@ -35,7 +36,7 @@ public class FolderBookmarkCollectionTest extends AbstractTestCase {
                 "\t<key>Protocol</key>\n" +
                 "\t<string>ftp</string>\n" +
                 "\t<key>UUID</key>\n" +
-                "\t<string>4d6b034c-8635-4e2f-93b1-7306ba22da24</string>\n" +
+                "\t<string>4d6b034c-8635-4e2f-93b1-7306ba22da22</string>\n" +
                 "\t<key>Username</key>\n" +
                 "\t<string>anonymous</string>\n" +
                 "</dict>\n" +
@@ -47,9 +48,10 @@ public class FolderBookmarkCollectionTest extends AbstractTestCase {
         collection.load();
         assertFalse(collection.isEmpty());
         assertEquals(1, collection.size());
-        assertEquals("4d6b034c-8635-4e2f-93b1-7306ba22da24", collection.get(0).getUuid());
-        assertEquals("4d6b034c-8635-4e2f-93b1-7306ba22da24.duck", collection.getFile(collection.get(0)).getName());
+        assertEquals("4d6b034c-8635-4e2f-93b1-7306ba22da22", collection.get(0).getUuid());
+        assertEquals("4d6b034c-8635-4e2f-93b1-7306ba22da22.duck", collection.getFile(collection.get(0)).getName());
         assertFalse(b.exists());
+        collection.getFile(collection.get(0)).delete();
     }
 
     @Test
