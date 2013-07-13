@@ -1,5 +1,6 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ftp.FTPSession;
 
@@ -13,6 +14,35 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class KeychainLoginServiceTest extends AbstractTestCase {
+
+    @Test(expected = LoginCanceledException.class)
+    public void testMessages() throws Exception {
+        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        KeychainLoginService l = new KeychainLoginService(new DisabledLoginController(), new DisabledPasswordStore());
+        l.login(session, new ProgressListener() {
+            int i = 0;
+
+            @Override
+            public void message(final String message) {
+                if(0 == i) {
+                    assertEquals("Authenticating as anonymous", message);
+                }
+                else if(1 == i) {
+                    assertEquals("Login failed", message);
+                }
+                else {
+                    fail();
+                }
+                i++;
+            }
+        });
+    }
+
 
     @Test(expected = LoginCanceledException.class)
     public void testCancel() throws Exception {
