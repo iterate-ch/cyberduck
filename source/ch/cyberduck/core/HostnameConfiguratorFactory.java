@@ -34,7 +34,7 @@ public final class HostnameConfiguratorFactory {
      * @return Configurator for default settings
      */
     public static ch.cyberduck.core.HostnameConfigurator get(final Protocol protocol) {
-        if(protocol.equals(Protocol.SFTP)) {
+        if(protocol.getType() == Protocol.Type.sftp) {
             return new OpenSSHHostnameConfigurator();
         }
         return new NullHostnameConfigurator();

@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.sftp.OpenSSHCredentialsConfigurator;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class CredentialsConfiguratorFactory {
 
@@ -34,7 +34,7 @@ public final class CredentialsConfiguratorFactory {
      * @return Configurator for default settings
      */
     public static CredentialsConfigurator get(final Protocol protocol) {
-        if(protocol.equals(Protocol.SFTP)) {
+        if(protocol.getType() == Protocol.Type.sftp) {
             return new OpenSSHCredentialsConfigurator();
         }
         return new NullCredentialsConfigurator();
