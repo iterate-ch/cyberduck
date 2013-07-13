@@ -83,23 +83,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public Path mount() throws BackgroundException {
-        final Path workdir = super.mount();
-        if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
-            if(null == host.getTimezone()) {
-                // No custom timezone set
-                final List<TimeZone> matches = new FTPTimezoneCalculator().get(this, workdir);
-                for(TimeZone tz : matches) {
-                    // Show prompt to change timezone in bookmark.
-                    host.setTimezone(tz);
-                    break;
-                }
-            }
-        }
-        return workdir;
-    }
-
-    @Override
     protected void logout() throws BackgroundException {
         try {
             client.logout();
