@@ -202,6 +202,11 @@ public interface Protocol {
 
     public static final Protocol SFTP = new AbstractProtocol() {
         @Override
+        public Type getType() {
+            return Type.ssh;
+        }
+
+        @Override
         public String getIdentifier() {
             return this.getScheme().name();
         }
