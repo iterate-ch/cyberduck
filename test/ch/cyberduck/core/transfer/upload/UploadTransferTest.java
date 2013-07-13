@@ -201,16 +201,20 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, root) {
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
-                //
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status,
+                                 final ProgressListener listener) throws BackgroundException {
+                assertEquals(true, options.resumeRequested);
             }
         };
+        final TransferOptions options = new TransferOptions();
+        options.resumeRequested = true;
         t.start(new TransferPrompt() {
             @Override
             public TransferAction prompt() throws BackgroundException {
-                return TransferAction.ACTION_RESUME;
+                fail();
+                return null;
             }
-        }, new TransferOptions());
+        }, options);
         assertEquals(1, c.get());
     }
 
