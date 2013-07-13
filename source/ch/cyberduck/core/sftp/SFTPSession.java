@@ -79,7 +79,7 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public Connection connect(final HostKeyController key) throws BackgroundException {
         try {
-            Connection connection = new Connection(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()), host.getPort(),
+            final Connection connection = new Connection(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()), host.getPort(),
                     new PreferencesUseragentProvider().get());
             connection.setTCPNoDelay(true);
             connection.addConnectionMonitor(new ConnectionMonitor() {
@@ -177,7 +177,10 @@ public class SFTPSession extends Session<Connection> {
         }
     }
 
-    public SFTPv3Client sftp() {
+    public SFTPv3Client sftp() throws LoginCanceledException {
+        if(null == sftp) {
+            throw new LoginCanceledException();
+        }
         return sftp;
     }
 
@@ -338,7 +341,7 @@ public class SFTPSession extends Session<Connection> {
         // "." as referring to the current directory
         final String directory;
         try {
-            directory = sftp.canonicalPath(".");
+            directory = this.sftp().canonicalPath(".");
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
