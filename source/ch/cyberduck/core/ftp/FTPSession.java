@@ -241,7 +241,9 @@ public class FTPSession extends SSLSession<FTPClient> {
     @Override
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         try {
-            if(!host.getProtocol().isSecure() && this.isTLSSupported()) {
+            if(!host.getCredentials().isAnonymousLogin()
+                    && !host.getProtocol().isSecure()
+                    && this.isTLSSupported()) {
                 // Propose protocol change if AUTH TLS is available.
                 try {
                     prompt.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
