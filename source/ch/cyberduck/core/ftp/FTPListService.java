@@ -98,12 +98,13 @@ public class FTPListService implements ListService {
         this.implementations.put(Command.list, new FTPDefaultListService(session, parser, Command.list));
         if(Preferences.instance().getBoolean("ftp.command.stat")) {
             if(StringUtils.isNotBlank(system)) {
-                if(system.toUpperCase(java.util.Locale.ENGLISH).contains(FTPClientConfig.SYST_NT)) {
+                if(!system.toUpperCase(java.util.Locale.ENGLISH).contains(FTPClientConfig.SYST_NT)) {
                     // Workaround for #5572.
-                }
-                else {
                     this.implementations.put(Command.stat, new FTPStatListService(session, parser));
                 }
+            }
+            else {
+                this.implementations.put(Command.stat, new FTPStatListService(session, parser));
             }
         }
         if(Preferences.instance().getBoolean("ftp.command.mlsd")) {
