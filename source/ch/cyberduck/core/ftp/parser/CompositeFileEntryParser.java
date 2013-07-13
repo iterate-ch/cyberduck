@@ -24,7 +24,7 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
     private final List<? extends FTPFileEntryParser> parsers;
     private FTPFileEntryParser current;
 
-    public CompositeFileEntryParser(List<? extends FTPFileEntryParser> parsers) {
+    public CompositeFileEntryParser(final List<? extends FTPFileEntryParser> parsers) {
         this.parsers = parsers;
     }
 
