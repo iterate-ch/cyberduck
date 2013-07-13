@@ -15,6 +15,8 @@ import ch.cyberduck.core.serializer.ProfileReaderFactory;
 
 import org.junit.Test;
 
+import java.util.UUID;
+
 import static org.junit.Assert.*;
 
 /**
@@ -119,5 +121,36 @@ public class CFSessionTest extends AbstractTestCase {
         final CFSession session = new CFSession(new Host(Protocol.SWIFT, "h"));
         assertFalse(session.isCreateFileSupported(new Path("/", Path.VOLUME_TYPE)));
         assertTrue(session.isCreateFileSupported(new Path("/container", Path.VOLUME_TYPE)));
+    }
+
+    @Test
+    public void testCreateContainer() throws Exception {
+        final Host host = new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
+                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+        ));
+        final CFSession session = new CFSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path c = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        session.mkdir(c);
+        assertTrue(session.exists(c));
+        session.delete(c, new DisabledLoginController());
+        assertFalse(session.exists(c));
+    }
+
+    @Test
+    public void testCreatePlaceholder() throws Exception {
+        final Host host = new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
+                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+        ));
+        final CFSession session = new CFSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path placeholder = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        session.mkdir(placeholder);
+        assertTrue(session.exists(placeholder));
+        session.delete(placeholder, new DisabledLoginController());
+        assertFalse(session.exists(placeholder));
     }
 }
