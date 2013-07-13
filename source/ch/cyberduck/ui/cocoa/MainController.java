@@ -597,7 +597,10 @@ public class MainController extends BundleController implements NSApplication.De
                     return false;
                 }
                 if(profile.isEnabled()) {
-                    profile.register();
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Register profile %s", profile));
+                    }
+                    ProtocolFactory.register(profile);
                     final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                     MainController.newDocument().addBookmark(host);
                     // Register in application support
@@ -997,7 +1000,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(Preferences.instance().getBoolean("defaulthandler.reminder")
                 && Preferences.instance().getInteger("uses") > 0) {
             if(!SchemeHandlerFactory.get().isDefaultHandler(
-                    Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()),
+                    Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
                     new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()))) {
                 final NSAlert alert = NSAlert.alert(
                         Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
@@ -1016,7 +1019,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 if(choice == SheetCallback.DEFAULT_OPTION) {
                     SchemeHandlerFactory.get().setDefaultHandler(
-                            Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()),
+                            Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
                             new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString())
                     );
                 }
