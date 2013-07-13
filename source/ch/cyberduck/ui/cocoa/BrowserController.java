@@ -931,27 +931,27 @@ public class BrowserController extends WindowController
         else {
             source = AbstractHostCollection.empty();
         }
-        bookmarkModel.setSource(source);
         if(!source.isLoaded()) {
             browserSpinner.startAnimation(null);
+            source.addListener(new AbstractCollectionListener<Host>() {
+                @Override
+                public void collectionLoaded() {
+                    invoke(new WindowMainAction(BrowserController.this) {
+                        @Override
+                        public void run() {
+                            browserSpinner.stopAnimation(null);
+                            bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
+                        }
+                    });
+                    source.removeListener(this);
+                }
+            });
         }
-        source.addListener(new AbstractCollectionListener<Host>() {
-            @Override
-            public void collectionLoaded() {
-                invoke(new WindowMainAction(BrowserController.this) {
-                    @Override
-                    public void run() {
-                        browserSpinner.stopAnimation(null);
-                        bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
-                    }
-                });
-                source.removeListener(this);
-            }
-        });
-        if(source.isLoaded()) {
+        else {
             browserSpinner.stopAnimation(null);
             bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
+        bookmarkModel.setSource(source);
         this.setBookmarkFilter(null);
         this.reloadBookmarks();
         if(this.isMounted()) {
