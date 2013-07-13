@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Set;
@@ -30,7 +29,6 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class AbstractProtocol implements Protocol {
-    private static final Logger log = Logger.getLogger(AbstractProtocol.class);
 
     @Override
     public String getProvider() {
