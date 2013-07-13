@@ -108,7 +108,7 @@ public class FTPListService implements ListService {
             }
         }
         if(Preferences.instance().getBoolean("ftp.command.mlsd")) {
-            this.implementations.put(Command.mlsd, new FTPMlsdListService(session, parser));
+            this.implementations.put(Command.mlsd, new FTPMlsdListService(session));
         }
         if(Preferences.instance().getBoolean("ftp.command.lista")) {
             this.implementations.put(Command.lista, new FTPDefaultListService(session, parser, Command.lista));

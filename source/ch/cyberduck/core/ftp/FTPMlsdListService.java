@@ -22,7 +22,6 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.FTPExceptionMappingService;
-import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.apache.commons.net.ftp.FTPCmd;
 
@@ -35,11 +34,8 @@ public class FTPMlsdListService implements ListService {
 
     private FTPSession session;
 
-    private CompositeFileEntryParser parser;
-
-    public FTPMlsdListService(final FTPSession session, final CompositeFileEntryParser parser) {
+    public FTPMlsdListService(final FTPSession session) {
         this.session = session;
-        this.parser = parser;
     }
 
     @Override
