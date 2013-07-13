@@ -16,6 +16,17 @@ public class ProtocolTest extends AbstractTestCase {
     }
 
     @Test
+    public void testConfigurable() {
+        assertTrue(Protocol.S3_SSL.isHostnameConfigurable());
+        assertTrue(Protocol.SWIFT.isHostnameConfigurable());
+        assertTrue(Protocol.FTP.isHostnameConfigurable());
+        assertTrue(Protocol.SFTP.isHostnameConfigurable());
+        assertTrue(Protocol.WEBDAV.isHostnameConfigurable());
+        assertFalse(Protocol.CLOUDFILES.isHostnameConfigurable());
+        assertFalse(Protocol.GOOGLESTORAGE_SSL.isHostnameConfigurable());
+    }
+
+    @Test
     public void testIcons() {
         for(Protocol p : ProtocolFactory.getKnownProtocols()) {
             assertNotNull(p.disk());

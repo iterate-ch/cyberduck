@@ -355,6 +355,11 @@ public interface Protocol {
         }
 
         @Override
+        public boolean isHostnameConfigurable() {
+            return true;
+        }
+
+        @Override
         public String getDefaultHostname() {
             return "s3.amazonaws.com";
         }
