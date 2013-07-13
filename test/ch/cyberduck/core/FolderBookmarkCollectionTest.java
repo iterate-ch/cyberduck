@@ -18,12 +18,38 @@ public class FolderBookmarkCollectionTest extends AbstractTestCase {
 
     @Test
     public void testLoad() throws Exception {
-        final FinderLocal source = new FinderLocal("bookmarks");
+        final FinderLocal source = new FinderLocal(System.getProperty("java.io.tmpdir"));
+        final FinderLocal b = new FinderLocal(source, "t.duck");
+        final String bookmark = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+                "<plist version=\"1.0\">\n" +
+                "<dict>\n" +
+                "\t<key>Access Timestamp</key>\n" +
+                "\t<string>1296634123295</string>\n" +
+                "\t<key>Hostname</key>\n" +
+                "\t<string>mirror.switch.ch</string>\n" +
+                "\t<key>Nickname</key>\n" +
+                "\t<string>mirror.switch.ch – FTP</string>\n" +
+                "\t<key>Port</key>\n" +
+                "\t<string>21</string>\n" +
+                "\t<key>Protocol</key>\n" +
+                "\t<string>ftp</string>\n" +
+                "\t<key>UUID</key>\n" +
+                "\t<string>4d6b034c-8635-4e2f-93b1-7306ba22da24</string>\n" +
+                "\t<key>Username</key>\n" +
+                "\t<string>anonymous</string>\n" +
+                "</dict>\n" +
+                "</plist>\n";
+        b.touch();
+        b.getOutputStream(false).write(bookmark.getBytes("UTF-8"));
         assertTrue(source.exists());
         final FolderBookmarkCollection collection = new FolderBookmarkCollection(source);
         collection.load();
         assertFalse(collection.isEmpty());
-        assertEquals(4, collection.size());
+        assertEquals(1, collection.size());
+        assertEquals("4d6b034c-8635-4e2f-93b1-7306ba22da24", collection.get(0).getUuid());
+        assertEquals("4d6b034c-8635-4e2f-93b1-7306ba22da24.duck", collection.getFile(collection.get(0)).getName());
+        assertFalse(b.exists());
     }
 
     @Test

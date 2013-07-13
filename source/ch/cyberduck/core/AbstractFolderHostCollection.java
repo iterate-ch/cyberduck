@@ -26,6 +26,7 @@ import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
 import ch.cyberduck.core.serializer.Reader;
+import ch.cyberduck.core.serializer.Writer;
 
 import org.apache.log4j.Logger;
 
@@ -36,6 +37,10 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     private static Logger log = Logger.getLogger(AbstractFolderHostCollection.class);
 
     private static final long serialVersionUID = 6598370606581477494L;
+
+    private Writer<Host> writer = HostWriterFactory.get();
+
+    private Reader<Host> reader = HostReaderFactory.get();
 
     protected Local folder;
 
@@ -68,7 +73,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemAdded(final Host bookmark) {
-        HostWriterFactory.get().write(bookmark, this.getFile(bookmark));
+        writer.write(bookmark, this.getFile(bookmark));
         super.collectionItemAdded(bookmark);
     }
 
@@ -80,7 +85,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemChanged(final Host bookmark) {
-        HostWriterFactory.get().write(bookmark, this.getFile(bookmark));
+        writer.write(bookmark, this.getFile(bookmark));
         super.collectionItemChanged(bookmark);
     }
 
@@ -99,7 +104,6 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                         }
                     }
             );
-            final Reader<Host> reader = HostReaderFactory.get();
             for(Local next : bookmarks) {
                 Host bookmark = reader.read(next);
                 if(null == bookmark) {
