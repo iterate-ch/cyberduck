@@ -65,7 +65,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * The window this controller is owner of
      */
     @Outlet
-    private NSWindow window;
+    protected NSWindow window;
 
     private Set<WindowListener> listeners
             = Collections.synchronizedSet(new HashSet<WindowListener>());
