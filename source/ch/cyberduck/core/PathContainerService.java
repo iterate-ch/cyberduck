@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PathContainerService {
 
@@ -37,6 +37,7 @@ public class PathContainerService {
         while(!this.isContainer(container)) {
             container = container.getParent();
         }
+        container.attributes().setType(Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
         return container;
     }
 
