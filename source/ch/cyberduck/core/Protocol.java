@@ -21,25 +21,111 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @version $Id$
  */
-public abstract class Protocol {
-    private static final Logger log = Logger.getLogger(Protocol.class);
+public interface Protocol {
+
+    public enum Type {
+        ftp {
+            /**
+             * Allows empty string for password.
+             *
+             * @return True if username is not blank and password is not null
+             */
+            @Override
+            public boolean validate(final Credentials credentials, final LoginOptions options) {
+                // Allow empty passwords
+                return StringUtils.isNotBlank(credentials.getUsername()) && null != credentials.getPassword();
+            }
+        },
+        sftp {
+            @Override
+            public boolean validate(Credentials credentials, final LoginOptions options) {
+                if(credentials.isPublicKeyAuthentication()) {
+                    return StringUtils.isNotBlank(credentials.getUsername());
+                }
+                return super.validate(credentials, options);
+            }
+        },
+        s3,
+        googlestorage {
+            @Override
+            public boolean validate(final Credentials credentials, final LoginOptions options) {
+                // OAuth only requires the project token
+                return StringUtils.isNotBlank(credentials.getUsername());
+            }
+        },
+        swift,
+        dav;
+
+        /**
+         * Check login credentials for validity for this protocol.
+         *
+         * @param credentials Login credentials
+         * @param options     Options
+         * @return True if username is not a blank string and password is not empty ("") and not null.
+         */
+        public boolean validate(Credentials credentials, final LoginOptions options) {
+            if(options.user) {
+                if(StringUtils.isBlank(credentials.getUsername())) {
+                    return false;
+                }
+            }
+            if(options.password) {
+                if(StringUtils.isEmpty(credentials.getPassword())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 
     /**
-     * Must be unique across all available protocols.
-     *
-     * @return The identifier for this protocol which is the scheme by default
+     * @return True if anonymous logins are possible.
      */
-    public abstract String getIdentifier();
+    boolean isAnonymousConfigurable();
+
+    boolean isHostnameConfigurable();
+
+    /**
+     * @return False if the port to connect is static.
+     */
+    boolean isPortConfigurable();
+
+    boolean isWebUrlConfigurable();
+
+    /**
+     * @return True if the character set is not defined in the protocol.
+     */
+    boolean isEncodingConfigurable();
+
+    /**
+     * @return True if protocol uses UTC timezone for timestamps
+     */
+    boolean isUTCTimezone();
+
+    Set<String> getLocations();
+
+    /**
+     * @return Human readable short name
+     */
+    String getName();
+
+    /**
+     * @return Available in connection selection
+     */
+    boolean isEnabled();
+
+    /**
+     * @return True if the protocol is inherently secure.
+     */
+    boolean isSecure();
 
     /**
      * Provider identification
@@ -47,206 +133,74 @@ public abstract class Protocol {
      * @return Identifier if no vendor specific profile
      * @see #getIdentifier()
      */
-    public String getProvider() {
-        return this.getIdentifier();
-    }
-
-    public String getName() {
-        return this.getScheme().name().toUpperCase(java.util.Locale.ENGLISH);
-    }
-
-    public String favicon() {
-        return null;
-    }
-
-    public boolean isEnabled() {
-        return true;
-    }
+    String getProvider();
 
     /**
-     * Statically register protocol implementations.
+     * @return Protocol family
      */
-    public void register() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Register protocol %s", this.getIdentifier()));
-        }
-        ProtocolFactory.register(this);
-    }
+    Type getType();
+
+    /**
+     * Must be unique across all available protocols.
+     *
+     * @return The identifier for this protocol which is the scheme by default
+     */
+    String getIdentifier();
 
     /**
      * @return Human readable description
      */
-    public abstract String getDescription();
+    String getDescription();
+
 
     /**
      * @return Protocol scheme
      */
-    public abstract Scheme getScheme();
+    Scheme getScheme();
 
-    public String[] getSchemes() {
-        return new String[]{this.getScheme().name()};
-    }
+    /**
+     * @return Protocol schemes
+     */
+    String[] getSchemes();
 
-    @Override
-    public boolean equals(Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(!(o instanceof Protocol)) {
-            return false;
-        }
-        Protocol protocol = (Protocol) o;
-        if(this.getIdentifier() != null ? !this.getIdentifier().equals(protocol.getIdentifier()) : protocol.getIdentifier() != null) {
-            return false;
-        }
-        if(this.getScheme() != null ? !this.getScheme().equals(protocol.getScheme()) : protocol.getScheme() != null) {
-            return false;
-        }
-        if(this.getProvider() != null ? !this.getProvider().equals(protocol.getProvider()) : protocol.getProvider() != null) {
-            return false;
-        }
-        return true;
-    }
+    /**
+     * @return Default hostname for server
+     */
+    String getDefaultHostname();
 
-    @Override
-    public int hashCode() {
-        int result = this.getIdentifier() != null ? this.getIdentifier().hashCode() : 0;
-        result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);
-        result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
-        return result;
-    }
+    /**
+     * @return Default port for server
+     */
+    int getDefaultPort();
 
-    @Override
-    public String toString() {
-        return this.getProvider();
-    }
+    /**
+     * @return Authentication context path
+     */
+    String getContext();
 
     /**
      * @return A mounted disk icon to display
      */
-    public String disk() {
-        return String.format("%s.tiff", this.getIdentifier());
-    }
+    String disk();
 
     /**
-     * @return A small icon to display
+     * @return Replacement for small disk icon
      */
-    public String icon() {
-        return this.disk();
-    }
+    String icon();
+
+    String favicon();
 
     /**
-     * @return True if the protocol is inherently secure.
+     * @return Username label
      */
-    public boolean isSecure() {
-        return this.getScheme().isSecure();
-    }
-
-    public boolean isHostnameConfigurable() {
-        return true;
-    }
+    String getUsernamePlaceholder();
 
     /**
-     * @return False if the port to connect is static.
+     * @return Password label
      */
-    public boolean isPortConfigurable() {
-        return true;
-    }
+    String getPasswordPlaceholder();
 
-    public boolean isWebUrlConfigurable() {
-        return true;
-    }
-
-    /**
-     * @return True if the character set is not defined in the protocol.
-     */
-    public boolean isEncodingConfigurable() {
-        return false;
-    }
-
-    /**
-     * @return True if there are different connect mode. Only applies to FTP.
-     */
-    public boolean isConnectModeConfigurable() {
-        return false;
-    }
-
-    /**
-     * @return True if anonymous logins are possible.
-     */
-    public boolean isAnonymousConfigurable() {
-        return true;
-    }
-
-    public boolean isUTCTimezone() {
-        return true;
-    }
-
-    public String getUsernamePlaceholder() {
-        return Locale.localizedString("Username", "Credentials");
-    }
-
-    public String getPasswordPlaceholder() {
-        return Locale.localizedString("Password", "Credentials");
-    }
-
-    public String getDefaultHostname() {
-        return Preferences.instance().getProperty("connection.hostname.default");
-    }
-
-    public Set<String> getLocations() {
-        return Collections.emptySet();
-    }
-
-    /**
-     * Check login credentials for validity for this protocol.
-     *
-     * @param credentials Login credentials
-     * @param options     Options
-     * @return True if username is not a blank string and password is not empty ("") and not null.
-     */
-    public boolean validate(Credentials credentials, final LoginOptions options) {
-        if(options.user) {
-            if(StringUtils.isBlank(credentials.getUsername())) {
-                return false;
-            }
-        }
-        if(options.password) {
-            if(StringUtils.isEmpty(credentials.getPassword())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * @return The default port this protocol connects to
-     */
-    public int getDefaultPort() {
-        return this.getScheme().getPort();
-    }
-
-    /**
-     * @return Authentication path
-     */
-    public String getContext() {
-        return null;
-    }
-
-    public Type getType() {
-        return Type.valueOf(this.getIdentifier());
-    }
-
-    public enum Type {
-        ftp,
-        sftp,
-        s3,
-        googlestorage,
-        swift,
-        dav
-    }
-
-    public static final Protocol SFTP = new Protocol() {
+    public static final Protocol SFTP = new AbstractProtocol() {
         @Override
         public String getIdentifier() {
             return this.getScheme().name();
@@ -268,14 +222,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public boolean validate(Credentials credentials, final LoginOptions options) {
-            if(credentials.isPublicKeyAuthentication()) {
-                return StringUtils.isNotBlank(credentials.getUsername());
-            }
-            return super.validate(credentials, options);
-        }
-
-        @Override
         public boolean isAnonymousConfigurable() {
             return false;
         }
@@ -284,14 +230,9 @@ public abstract class Protocol {
         public String disk() {
             return FTP_TLS.disk();
         }
-
-        @Override
-        public String icon() {
-            return FTP_TLS.icon();
-        }
     };
 
-    public static final Protocol SCP = new Protocol() {
+    public static final Protocol SCP = new AbstractProtocol() {
         @Override
         public String getIdentifier() {
             return "scp";
@@ -313,7 +254,7 @@ public abstract class Protocol {
         }
     };
 
-    public static final Protocol FTP = new Protocol() {
+    public static final Protocol FTP = new AbstractProtocol() {
         @Override
         public String getIdentifier() {
             return this.getScheme().name();
@@ -338,27 +279,9 @@ public abstract class Protocol {
         public boolean isEncodingConfigurable() {
             return true;
         }
-
-        @Override
-        public boolean isConnectModeConfigurable() {
-            return true;
-        }
-
-        /**
-         * Allows empty string for password.
-         *
-         * @param credentials Login credentials
-         * @param options
-         * @return True if username is not blank and password is not null
-         */
-        @Override
-        public boolean validate(Credentials credentials, final LoginOptions options) {
-            // Allow empty passwords
-            return StringUtils.isNotBlank(credentials.getUsername()) && null != credentials.getPassword();
-        }
     };
 
-    public static final Protocol FTP_TLS = new Protocol() {
+    public static final Protocol FTP_TLS = new AbstractProtocol() {
         @Override
         public String getIdentifier() {
             return this.getScheme().name();
@@ -390,11 +313,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public String icon() {
-            return FTP.icon();
-        }
-
-        @Override
         public boolean isUTCTimezone() {
             return false;
         }
@@ -403,14 +321,9 @@ public abstract class Protocol {
         public boolean isEncodingConfigurable() {
             return true;
         }
-
-        @Override
-        public boolean isConnectModeConfigurable() {
-            return true;
-        }
     };
 
-    public static final Protocol S3_SSL = new Protocol() {
+    public static final Protocol S3_SSL = new AbstractProtocol() {
         @Override
         public String getName() {
             return "S3";
@@ -479,11 +392,12 @@ public abstract class Protocol {
 
         @Override
         public String favicon() {
+            // Return static icon as endpoint has no favicon configured
             return this.icon();
         }
     };
 
-    public static final Protocol CLOUDFRONT = new Protocol() {
+    public static final Protocol CLOUDFRONT = new AbstractProtocol() {
         @Override
         public String getName() {
             return "Cloudfront";
@@ -525,7 +439,7 @@ public abstract class Protocol {
         }
     };
 
-    public static final Protocol WEBDAV = new Protocol() {
+    public static final Protocol WEBDAV = new AbstractProtocol() {
         @Override
         public String getName() {
             return "WebDAV (HTTP)";
@@ -555,14 +469,9 @@ public abstract class Protocol {
         public String disk() {
             return FTP.disk();
         }
-
-        @Override
-        public String icon() {
-            return FTP.icon();
-        }
     };
 
-    public static final Protocol WEBDAV_SSL = new Protocol() {
+    public static final Protocol WEBDAV_SSL = new AbstractProtocol() {
         @Override
         public String getName() {
             return "WebDAV (HTTPS)";
@@ -597,14 +506,9 @@ public abstract class Protocol {
         public String disk() {
             return FTP_TLS.disk();
         }
-
-        @Override
-        public String icon() {
-            return FTP_TLS.icon();
-        }
     };
 
-    public static final Protocol CLOUDFILES = new Protocol() {
+    public static final Protocol CLOUDFILES = new AbstractProtocol() {
         @Override
         public String getName() {
             return Locale.localizedString("Cloud Files", "Mosso");
@@ -638,11 +542,6 @@ public abstract class Protocol {
         @Override
         public String disk() {
             return SWIFT.disk();
-        }
-
-        @Override
-        public String icon() {
-            return SWIFT.icon();
         }
 
         @Override
@@ -681,7 +580,7 @@ public abstract class Protocol {
         }
     };
 
-    public static final Protocol SWIFT = new Protocol() {
+    public static final Protocol SWIFT = new AbstractProtocol() {
         @Override
         public String getName() {
             return Locale.localizedString("Swift", "Mosso");
@@ -733,7 +632,7 @@ public abstract class Protocol {
         }
     };
 
-    public static final Protocol GOOGLESTORAGE_SSL = new Protocol() {
+    public static final Protocol GOOGLESTORAGE_SSL = new AbstractProtocol() {
         @Override
         public String getName() {
             return "Google Cloud Storage";
@@ -808,13 +707,8 @@ public abstract class Protocol {
 
         @Override
         public String favicon() {
+            // Return static icon as endpoint has no favicon configured
             return this.icon();
-        }
-
-        @Override
-        public boolean validate(final Credentials credentials, final LoginOptions options) {
-            // OAuth only requires the project token
-            return StringUtils.isNotBlank(credentials.getUsername());
         }
     };
 }

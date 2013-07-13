@@ -38,7 +38,7 @@ import java.util.UUID;
 /**
  * @version $Id$
  */
-public final class Profile extends Protocol implements Serializable {
+public final class Profile extends AbstractProtocol implements Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
     private Deserializer dict;
@@ -145,6 +145,15 @@ public final class Profile extends Protocol implements Serializable {
     }
 
     @Override
+    public String getName() {
+        final String v = this.getValue("Name");
+        if(StringUtils.isBlank(v)) {
+            return parent.getName();
+        }
+        return v;
+    }
+
+    @Override
     public String getDescription() {
         final String v = this.getValue("Description");
         if(StringUtils.isBlank(v)) {
@@ -166,16 +175,6 @@ public final class Profile extends Protocol implements Serializable {
             log.warn(String.format("Port %s is not a number", e.getMessage()));
         }
         return parent.getDefaultPort();
-    }
-
-    @Override
-    public String getName() {
-        return parent.getName();
-    }
-
-    @Override
-    public String favicon() {
-        return this.icon();
     }
 
     @Override
@@ -218,11 +217,6 @@ public final class Profile extends Protocol implements Serializable {
     }
 
     @Override
-    public boolean isHostnameConfigurable() {
-        return parent.isHostnameConfigurable();
-    }
-
-    @Override
     public boolean isWebUrlConfigurable() {
         return parent.isWebUrlConfigurable();
     }
@@ -246,18 +240,8 @@ public final class Profile extends Protocol implements Serializable {
     }
 
     @Override
-    public boolean isPortConfigurable() {
-        return parent.isPortConfigurable();
-    }
-
-    @Override
     public boolean isEncodingConfigurable() {
         return parent.isEncodingConfigurable();
-    }
-
-    @Override
-    public boolean isConnectModeConfigurable() {
-        return parent.isConnectModeConfigurable();
     }
 
     @Override
@@ -268,10 +252,5 @@ public final class Profile extends Protocol implements Serializable {
     @Override
     public boolean isUTCTimezone() {
         return parent.isUTCTimezone();
-    }
-
-    @Override
-    public boolean validate(Credentials credentials, final LoginOptions options) {
-        return parent.validate(credentials, options);
     }
 }
