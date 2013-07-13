@@ -17,26 +17,20 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPMlsdListServiceTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
-    public void testList() throws Exception {
+    public void testListNotSupported() throws Exception {
         final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
@@ -46,5 +40,19 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         list.list(directory);
+    }
+
+    @Test
+    public void testList() throws Exception {
+        final Host host = new Host(Protocol.FTP, "ftp.crushftp.com", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final ListService s = new FTPMlsdListService(session);
+        final Path directory = session.workdir();
+        final AttributedList<Path> list = s.list(directory);
+        assertFalse(list.isEmpty());
     }
 }

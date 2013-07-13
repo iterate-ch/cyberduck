@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -46,9 +47,9 @@ public class FTPDefaultListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path file) throws BackgroundException {
         try {
-            return session.data(file, new DataConnectionAction<AttributedList<Path>>() {
+            final List<String> list = session.data(file, new DataConnectionAction<List<String>>() {
                 @Override
-                public AttributedList<Path> execute() throws IOException, FTPInvalidListException {
+                public List<String> execute() throws IOException, FTPInvalidListException {
                     if(!session.getClient().changeWorkingDirectory(file.getAbsolute())) {
                         throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                     }
@@ -57,9 +58,10 @@ public class FTPDefaultListService implements ListService {
                         // data connection in type ASCII or type EBCDIC.
                         throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                     }
-                    return new FTPListResponseReader().read(session, file, parser, session.getClient().list(command.getCommand(), command.getArg()));
+                    return session.getClient().list(command.getCommand(), command.getArg());
                 }
             });
+            return new FTPListResponseReader().read(session, file, parser, list);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory failed", e, file);
