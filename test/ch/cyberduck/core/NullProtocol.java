@@ -3,7 +3,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class NullProtocol extends Protocol {
+public class NullProtocol extends AbstractProtocol {
 
     @Override
     public String getIdentifier() {
