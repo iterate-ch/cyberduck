@@ -313,9 +313,13 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
             configuration.setProperty("s3service.s3-endpoint-virtual-path", PathNormalizer.normalize(host.getProtocol().getContext()));
         }
-        configuration.setProperty("s3service.s3-endpoint-http-port", String.valueOf(host.getPort()));
-        configuration.setProperty("s3service.s3-endpoint-https-port", String.valueOf(host.getPort()));
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
+        if(host.getProtocol().isSecure()) {
+            configuration.setProperty("s3service.s3-endpoint-https-port", String.valueOf(host.getPort()));
+        }
+        else {
+            configuration.setProperty("s3service.s3-endpoint-http-port", String.valueOf(host.getPort()));
+        }
         // The maximum number of retries that will be attempted when an S3 connection fails
         // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
         configuration.setProperty("s3service.internal-error-retry-max", String.valueOf(0));
@@ -534,7 +538,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
 
         // Generate URL
-        return client.createSignedUrl("GET",
+        return new RequestEntityRestStorageService(this.configure(host.getHostname())).createSignedUrl("GET",
                 containerService.getContainer(file).getName(), containerService.getKey(file), null,
                 null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
     }
@@ -547,8 +551,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      */
     public DescriptiveUrl toTorrentUrl(final Path path) {
         if(path.attributes().isFile()) {
-            return new DescriptiveUrl(client.createTorrentUrl(containerService.getContainer(path).getName(),
-                    path.getKey()));
+            return new DescriptiveUrl(new RequestEntityRestStorageService(this.configure(host.getHostname())).createTorrentUrl(
+                    containerService.getContainer(path).getName(),
+                    containerService.getKey(path)));
         }
         return new DescriptiveUrl(null, null);
     }
@@ -559,20 +564,20 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         // Always include HTTP URL
         urls.add(new DescriptiveUrl(this.toURL(path, Scheme.http.name()),
                 MessageFormat.format(Locale.localizedString("{0} URL"), Scheme.http.name().toUpperCase(java.util.Locale.ENGLISH))));
-        DescriptiveUrl hour = this.toSignedUrl(path, 60 * 60);
+        final DescriptiveUrl hour = this.toSignedUrl(path, 60 * 60);
         if(StringUtils.isNotBlank(hour.getUrl())) {
             urls.add(hour);
         }
         // Default signed URL expiring in 24 hours.
-        DescriptiveUrl day = this.toSignedUrl(path, Preferences.instance().getInteger("s3.url.expire.seconds"));
+        final DescriptiveUrl day = this.toSignedUrl(path, Preferences.instance().getInteger("s3.url.expire.seconds"));
         if(StringUtils.isNotBlank(day.getUrl())) {
             urls.add(day);
         }
-        DescriptiveUrl week = this.toSignedUrl(path, 7 * 24 * 60 * 60);
+        final DescriptiveUrl week = this.toSignedUrl(path, 7 * 24 * 60 * 60);
         if(StringUtils.isNotBlank(week.getUrl())) {
             urls.add(week);
         }
-        DescriptiveUrl torrent = this.toTorrentUrl(path);
+        final DescriptiveUrl torrent = this.toTorrentUrl(path);
         if(StringUtils.isNotBlank(torrent.getUrl())) {
             urls.add(new DescriptiveUrl(torrent.getUrl(),
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Torrent"))));

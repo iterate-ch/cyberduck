@@ -239,10 +239,6 @@ public class Path extends AbstractPath implements Serializable {
         return abs.substring(index + 1);
     }
 
-    public String getKey() {
-        return this.getAbsolute();
-    }
-
     /**
      * @return the absolute path name, e.g. /home/user/filename
      */

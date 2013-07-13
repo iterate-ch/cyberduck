@@ -23,7 +23,7 @@ import ch.cyberduck.core.i18n.Locale;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DescriptiveUrl {
     private String url = StringUtils.EMPTY;
@@ -48,15 +48,22 @@ public class DescriptiveUrl {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof DescriptiveUrl) {
-            return this.getUrl().equals(((DescriptiveUrl) obj).getUrl());
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
         }
-        return false;
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final DescriptiveUrl that = (DescriptiveUrl) o;
+        if(url != null ? !url.equals(that.url) : that.url != null) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return this.getUrl().hashCode();
+        return url != null ? url.hashCode() : 0;
     }
 }
