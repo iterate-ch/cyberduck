@@ -44,7 +44,7 @@ public interface Protocol {
                 return StringUtils.isNotBlank(credentials.getUsername()) && null != credentials.getPassword();
             }
         },
-        sftp {
+        ssh {
             @Override
             public boolean validate(Credentials credentials, final LoginOptions options) {
                 if(credentials.isPublicKeyAuthentication()) {
@@ -234,6 +234,11 @@ public interface Protocol {
 
     public static final Protocol SCP = new AbstractProtocol() {
         @Override
+        public Type getType() {
+            return Type.ssh;
+        }
+
+        @Override
         public String getIdentifier() {
             return "scp";
         }
@@ -403,6 +408,11 @@ public interface Protocol {
     };
 
     public static final Protocol CLOUDFRONT = new AbstractProtocol() {
+        @Override
+        public Type getType() {
+            return Type.s3;
+        }
+
         @Override
         public String getName() {
             return "Cloudfront";

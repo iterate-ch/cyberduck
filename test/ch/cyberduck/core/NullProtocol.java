@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @version $Id$
  */
@@ -12,12 +14,7 @@ public class NullProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Type getType() {
-        return Type.ftp;
+        return StringUtils.EMPTY;
     }
 
     @Override

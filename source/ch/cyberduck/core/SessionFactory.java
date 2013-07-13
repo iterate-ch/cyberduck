@@ -61,7 +61,7 @@ public abstract class SessionFactory {
                     }
                 });
                 break;
-            case sftp:
+            case ssh:
                 factories.put(p, new SessionFactory() {
                     @Override
                     protected Session create(Host h) {

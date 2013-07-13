@@ -34,7 +34,7 @@ public final class CredentialsConfiguratorFactory {
      * @return Configurator for default settings
      */
     public static CredentialsConfigurator get(final Protocol protocol) {
-        if(protocol.getType() == Protocol.Type.sftp) {
+        if(protocol.getType() == Protocol.Type.ssh) {
             return new OpenSSHCredentialsConfigurator();
         }
         return new NullCredentialsConfigurator();

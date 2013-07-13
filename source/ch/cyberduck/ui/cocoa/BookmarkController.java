@@ -788,7 +788,7 @@ public class BookmarkController extends WindowController {
                 connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
             }
         }
-        pkCheckbox.setEnabled(host.getProtocol().getType() == Protocol.Type.sftp);
+        pkCheckbox.setEnabled(host.getProtocol().getType() == Protocol.Type.ssh);
         if(host.getCredentials().isPublicKeyAuthentication()) {
             pkCheckbox.setState(NSCell.NSOnState);
             this.updateField(pkLabel, host.getCredentials().getIdentity().getAbbreviatedPath());

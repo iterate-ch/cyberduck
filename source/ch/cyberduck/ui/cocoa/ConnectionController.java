@@ -160,7 +160,7 @@ public class ConnectionController extends SheetController {
      */
     private void updateIdentity() {
         final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
-        pkCheckbox.setEnabled(protocol.getType() == Protocol.Type.sftp);
+        pkCheckbox.setEnabled(protocol.getType() == Protocol.Type.ssh);
         if(StringUtils.isNotEmpty(hostField.stringValue())) {
             final Credentials credentials = new Credentials();
             CredentialsConfiguratorFactory.get(protocol).configure(credentials, hostField.stringValue());
