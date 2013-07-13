@@ -1,5 +1,6 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.HostWriterFactory;
 import ch.cyberduck.core.serializer.Writer;
@@ -11,9 +12,19 @@ import java.util.Collection;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FolderBookmarkCollectionTest extends AbstractTestCase {
+
+    @Test
+    public void testLoad() throws Exception {
+        final FinderLocal source = new FinderLocal("bookmarks");
+        assertTrue(source.exists());
+        final FolderBookmarkCollection collection = new FolderBookmarkCollection(source);
+        collection.load();
+        assertFalse(collection.isEmpty());
+        assertEquals(4, collection.size());
+    }
 
     @Test
     public void testIndex() {
