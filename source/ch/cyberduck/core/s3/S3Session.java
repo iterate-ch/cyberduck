@@ -293,20 +293,20 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         return null;
     }
 
-    protected Jets3tProperties configure(final String hostname) {
+    protected Jets3tProperties configure() {
         final Jets3tProperties configuration = new Jets3tProperties();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Configure for endpoint %s", hostname));
+            log.debug(String.format("Configure for endpoint %s", host.getHostname(true)));
         }
         if(StringUtils.isNotBlank(host.getProtocol().getDefaultHostname())
-                && hostname.endsWith(host.getProtocol().getDefaultHostname())) {
+                && host.getHostname(true).endsWith(host.getProtocol().getDefaultHostname())) {
             // The user specified a DNS bucket endpoint. Connect to the default hostname instead.
             configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
             configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         }
         else {
             // Standard configuration
-            configuration.setProperty("s3service.s3-endpoint", hostname);
+            configuration.setProperty("s3service.s3-endpoint", host.getHostname(true));
             configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
             configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
         }
@@ -331,7 +331,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     private String getHostnameForContainer(final Path bucket) {
-        if(this.configure(this.getHost().getHostname(true)).getBoolProperty("s3service.disable-dns-buckets", false)) {
+        if(this.configure().getBoolProperty("s3service.disable-dns-buckets", false)) {
             return this.getHost().getHostname(true);
         }
         if(!ServiceUtils.isBucketNameValidDNSName(containerService.getContainer(bucket).getName())) {
@@ -345,7 +345,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public RequestEntityRestStorageService connect(final HostKeyController key) throws BackgroundException {
-        return new RequestEntityRestStorageService(this.configure(host.getHostname()));
+        return new RequestEntityRestStorageService(this.configure());
     }
 
     @Override
@@ -538,7 +538,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
 
         // Generate URL
-        return new RequestEntityRestStorageService(this.configure(host.getHostname())).createSignedUrl("GET",
+        return new RequestEntityRestStorageService(this.configure()).createSignedUrl("GET",
                 containerService.getContainer(file).getName(), containerService.getKey(file), null,
                 null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
     }
@@ -551,7 +551,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      */
     public DescriptiveUrl toTorrentUrl(final Path path) {
         if(path.attributes().isFile()) {
-            return new DescriptiveUrl(new RequestEntityRestStorageService(this.configure(host.getHostname())).createTorrentUrl(
+            return new DescriptiveUrl(new RequestEntityRestStorageService(this.configure()).createTorrentUrl(
                     containerService.getContainer(path).getName(),
                     containerService.getKey(path)));
         }
