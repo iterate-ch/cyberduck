@@ -74,7 +74,6 @@ public abstract class AlertController extends SheetController {
             b.setAction(Foundation.selector("closeSheet:"));
         }
         alert.beginSheet(parent.window(), this.id(), Foundation.selector("alertDidEnd:returnCode:contextInfo:"), null);
-        sheetRegistry.add(this);
     }
 
     protected void focus() {

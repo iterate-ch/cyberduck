@@ -121,7 +121,7 @@ public final class PromptLoginController implements LoginController {
             @Override
             public void awakeFromNib() {
                 this.update();
-                this.window.makeFirstResponder(this.usernameField);
+                this.window().makeFirstResponder(this.usernameField);
                 super.awakeFromNib();
             }
 
@@ -372,7 +372,6 @@ public final class PromptLoginController implements LoginController {
             }
         };
         c.beginSheet();
-
         if(c.returnCode() == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
         }

@@ -41,6 +41,13 @@ public abstract class SheetController extends WindowController implements SheetC
     private static Logger log = Logger.getLogger(SheetController.class);
 
     /**
+     * Keep a reference to the sheet to protect it from being
+     * deallocated as a weak reference before the callback from the runtime
+     */
+    protected static final Set<SheetController> sheetRegistry
+            = new HashSet<SheetController>();
+
+    /**
      * The controller of the parent window
      */
     protected final WindowController parent;
@@ -59,17 +66,7 @@ public abstract class SheetController extends WindowController implements SheetC
      */
     public SheetController(final WindowController parent) {
         this.parent = parent;
-    }
-
-    /**
-     * Use this if no custom sheet is given (and no NIB file loaded)
-     *
-     * @param parent The controller of the parent window
-     * @param sheet  The window to attach as the sheet
-     */
-    public SheetController(final WindowController parent, NSWindow sheet) {
-        this.parent = parent;
-        this.window = sheet;
+        sheetRegistry.add(this);
     }
 
     /**
@@ -138,12 +135,9 @@ public abstract class SheetController extends WindowController implements SheetC
         return true;
     }
 
-    /**
-     *
-     */
     public void beginSheet() {
         synchronized(parent.window()) {
-            this.signal = new CountDownLatch(1);
+            signal = new CountDownLatch(1);
             if(NSThread.isMainThread()) {
                 // No need to call invoke on main thread
                 this.beginSheetImpl();
@@ -161,21 +155,15 @@ public abstract class SheetController extends WindowController implements SheetC
                 }
                 // Synchronize on parent controller. Only display one sheet at once.
                 try {
-                    this.signal.await();
+                    signal.await();
                 }
                 catch(InterruptedException e) {
                     log.error("Error waiting for sheet dismiss", e);
+                    this.callback(CANCEL_OPTION);
                 }
             }
         }
     }
-
-    /**
-     * Keep a reference to the sheet to protect it from being
-     * deallocated as a weak reference before the callback from the runtime
-     */
-    protected static final Set<SheetController> sheetRegistry
-            = new HashSet<SheetController>();
 
     protected void beginSheetImpl() {
         this.loadBundle();
@@ -185,7 +173,6 @@ public abstract class SheetController extends WindowController implements SheetC
                 this.id(), // modalDelegate
                 Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
                 null); //context
-        sheetRegistry.add(this);
     }
 
     /**
@@ -201,11 +188,16 @@ public abstract class SheetController extends WindowController implements SheetC
         sheet.orderOut(null);
         this.returncode = returncode;
         this.callback(returncode);
-        this.signal.countDown();
+        signal.countDown();
         if(!this.isSingleton()) {
             this.invalidate();
         }
+    }
+
+    @Override
+    protected void invalidate() {
         sheetRegistry.remove(this);
+        super.invalidate();
     }
 
     /**

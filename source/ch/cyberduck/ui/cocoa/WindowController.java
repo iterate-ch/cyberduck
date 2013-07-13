@@ -65,7 +65,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * The window this controller is owner of
      */
     @Outlet
-    protected NSWindow window;
+    private NSWindow window;
 
     private Set<WindowListener> listeners
             = Collections.synchronizedSet(new HashSet<WindowListener>());
@@ -302,10 +302,15 @@ public abstract class WindowController extends BundleController implements NSWin
      * @see SheetController#beginSheet()
      */
     protected void alert(final NSWindow sheet, final SheetCallback callback) {
-        SheetController c = new SheetController(this, sheet) {
+        final SheetController c = new SheetController(this) {
             @Override
             public void callback(final int returncode) {
                 callback.callback(returncode);
+            }
+
+            @Override
+            public NSWindow window() {
+                return sheet;
             }
         };
         c.beginSheet();
