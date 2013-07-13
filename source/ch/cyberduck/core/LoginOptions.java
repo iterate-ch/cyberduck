@@ -78,7 +78,7 @@ public final class LoginOptions {
     }
 
     public LoginOptions(Protocol protocol) {
-        publickey = protocol.equals(Protocol.SFTP);
+        publickey = protocol.getType() == Protocol.Type.sftp;
         anonymous = protocol.isAnonymousConfigurable();
     }
 

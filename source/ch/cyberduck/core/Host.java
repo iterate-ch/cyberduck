@@ -328,7 +328,7 @@ public final class Host implements Serializable {
         if(null != this.getCredentials().getIdentity()) {
             dict.setStringForKey(this.getCredentials().getIdentity().getAbbreviatedPath(), "Private Key File");
         }
-        if(this.getProtocol().isConnectModeConfigurable()) {
+        if(this.getProtocol().getType() == Protocol.Type.ftp) {
             if(null != this.getFTPConnectMode()) {
                 if(this.getFTPConnectMode().equals(FTPConnectMode.PORT)) {
                     dict.setStringForKey(FTPConnectMode.PORT.toString(), "FTP Connect Mode");
