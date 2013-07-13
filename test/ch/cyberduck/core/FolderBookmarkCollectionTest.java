@@ -19,8 +19,8 @@ public class FolderBookmarkCollectionTest extends AbstractTestCase {
 
     @Test
     public void testLoad() throws Exception {
-        final FinderLocal source = new FinderLocal(System.getProperty("java.io.tmpdir"));
-        final FinderLocal b = new FinderLocal(source, String.format("%s.duck", UUID.randomUUID()));
+        final FinderLocal source = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final FinderLocal b = new FinderLocal(source, String.format("%s.duck", UUID.randomUUID().toString()));
         final String bookmark = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
                 "<plist version=\"1.0\">\n" +
