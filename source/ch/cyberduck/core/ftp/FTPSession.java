@@ -330,7 +330,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     return this.fallback(action);
                 }
                 catch(IOException e) {
-                    log.warn(String.format("Connect mode fallback failed %s", e.getMessage()));
+                    log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
                     // Throw original error message
                 }
             }
@@ -348,7 +348,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     return this.fallback(action);
                 }
                 catch(IOException e) {
-                    log.warn(String.format("Connect mode fallback failed %s", e.getMessage()));
+                    log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
                     // Throw original error message
                 }
             }
