@@ -89,7 +89,6 @@ public class SFTPSession extends Session<Connection> {
                     disconnect();
                 }
             });
-
             final int timeout = this.timeout();
             connection.connect(new ServerHostKeyVerifier() {
                 @Override
