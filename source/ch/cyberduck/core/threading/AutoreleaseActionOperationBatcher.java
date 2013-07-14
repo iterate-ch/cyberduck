@@ -22,9 +22,10 @@ package ch.cyberduck.core.threading;
 import org.rococoa.internal.AutoreleaseBatcher;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class AutoreleaseActionOperationBatcher implements ActionOperationBatcher {
+public final class AutoreleaseActionOperationBatcher implements ActionOperationBatcher {
+
     public static void register() {
         ActionOperationBatcherFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
@@ -41,7 +42,7 @@ public class AutoreleaseActionOperationBatcher implements ActionOperationBatcher
      * mechanism for Objective-C objects. If you start off a thread
      * that calls Cocoa, there won't be a top-level pool.
      */
-    final AutoreleaseBatcher impl = AutoreleaseBatcher.forThread(1);
+    private final AutoreleaseBatcher impl = AutoreleaseBatcher.forThread(1);
 
     public void operate() {
         impl.operate();

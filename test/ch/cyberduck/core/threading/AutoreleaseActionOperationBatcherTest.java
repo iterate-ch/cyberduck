@@ -20,27 +20,21 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.AbstractTestCase;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.concurrent.Callable;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AutoreleaseActionOperationBatcherTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        AutoreleaseActionOperationBatcher.register();
-    }
 
     @Test
     public void testOperate() throws Exception {
         this.repeat(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                ActionOperationBatcherFactory.get().operate();
+                new AutoreleaseActionOperationBatcher().operate();
                 return null;
             }
         }, 20);
