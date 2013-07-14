@@ -47,7 +47,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testCancel() throws Exception {
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginController(), new DisabledPasswordStore());
-        l.login(new NullSession(new Host(Protocol.FTP, "h")), new ProgressListener() {
+        l.login(new FTPSession(new Host(Protocol.FTP, "h")), new ProgressListener() {
             @Override
             public void message(final String message) {
                 //
