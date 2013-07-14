@@ -47,17 +47,13 @@ public class DAVClient extends SardineImpl {
 
     @Override
     public <T> T execute(final HttpRequestBase request, final ResponseHandler<T> responseHandler) throws IOException {
-        request.setURI(URI.create(host.toURL(false) + request.getURI().getPath()));
+        request.setURI(URI.create(host.toURL(false) + request.getURI().getRawPath()));
         return super.execute(request, responseHandler);
     }
 
     @Override
     protected HttpResponse execute(final HttpRequestBase request) throws IOException {
-        request.setURI(URI.create(host.toURL(false) + request.getURI().getPath()));
+        request.setURI(URI.create(host.toURL(false) + request.getURI().getRawPath()));
         return super.execute(request);
-    }
-
-    public void disconnect() {
-        http.getConnectionManager().shutdown();
     }
 }
