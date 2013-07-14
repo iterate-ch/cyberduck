@@ -25,7 +25,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVPathEncoderTest extends AbstractTestCase {
 
@@ -34,5 +34,6 @@ public class DAVPathEncoderTest extends AbstractTestCase {
         assertEquals("/", new DAVPathEncoder().encode(new Path("/", Path.DIRECTORY_TYPE)));
         assertEquals("/dav/", new DAVPathEncoder().encode(new Path("/dav", Path.DIRECTORY_TYPE)));
         assertEquals("/dav", new DAVPathEncoder().encode(new Path("/dav", Path.FILE_TYPE)));
+        assertEquals("/dav/file%20path", new DAVPathEncoder().encode(new Path("/dav/file path", Path.FILE_TYPE)));
     }
 }
