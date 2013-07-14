@@ -213,10 +213,10 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     private abstract class FutureHttpResponse<T> implements Runnable {
 
-        BackgroundException exception;
+        Exception exception;
         T response;
 
-        public BackgroundException getException() {
+        public Exception getException() {
             return exception;
         }
 
@@ -274,7 +274,10 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             // Wait for output stream to become available
             entry.await();
             if(null != target.getException()) {
-                throw target.getException();
+                if(target.getException() instanceof BackgroundException) {
+                    throw (BackgroundException) target.getException();
+                }
+                throw new BackgroundException(target.getException());
             }
             final OutputStream stream = entity.getStream();
             return new ResponseOutputStream<T>(stream) {
@@ -293,7 +296,10 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                         throw new BackgroundException(e);
                     }
                     if(null != target.getException()) {
-                        throw target.getException();
+                        if(target.getException() instanceof BackgroundException) {
+                            throw (BackgroundException) target.getException();
+                        }
+                        throw new BackgroundException(target.getException());
                     }
                     return target.getResponse();
                 }
