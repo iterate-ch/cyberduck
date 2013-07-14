@@ -1,8 +1,6 @@
-package ch.cyberduck.core.threading;
+package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.junit.Test;
 
@@ -36,5 +34,6 @@ public class BackgroundExceptionTest extends AbstractTestCase {
         assertEquals("Unknown", e.getMessage());
         assertEquals("s", e.getDetail());
         assertEquals("Network Error", e.getTitle());
+        assertEquals("Unknown. s", e.toString());
     }
 }

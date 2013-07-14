@@ -123,6 +123,11 @@ public class BackgroundException extends Exception {
     }
 
     @Override
+    public String toString() {
+        return String.format("%s. %s", message, detail);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if(this == o) {
             return true;
