@@ -21,11 +21,11 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.ftp.FTPSession;
 
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
     public void testRun() throws Exception {
         final Permission permission = new Permission(744);
         final Path path = new Path("a", Path.DIRECTORY_TYPE);
-        final WritePermissionWorker worker = new WritePermissionWorker(new NullSession(new Host("h")) {
+        final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
             @Override
             public AttributedList<Path> list(final Path file) {
                 final AttributedList<Path> children = new AttributedList<Path>();

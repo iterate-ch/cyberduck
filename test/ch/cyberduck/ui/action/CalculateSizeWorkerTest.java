@@ -2,8 +2,8 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ftp.FTPSession;
 
 import org.junit.Test;
 
@@ -26,7 +26,7 @@ public class CalculateSizeWorkerTest extends AbstractTestCase {
         final Path b = new Path("a", Path.FILE_TYPE);
         b.attributes().setSize(3L);
         files.add(b);
-        assertEquals(4L, new CalculateSizeWorker(new NullSession(new Host("h")), files) {
+        assertEquals(4L, new CalculateSizeWorker(new FTPSession(new Host("h")), files) {
             int i = 0;
 
             @Override
