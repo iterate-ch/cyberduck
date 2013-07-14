@@ -393,7 +393,6 @@ public abstract class Transfer implements Serializable {
         else {
             status.setComplete();
         }
-        this.check();
         if(file.attributes().isDirectory()) {
             boolean failure = false;
             for(Path child : this.cache().get(file.getReference())) {
@@ -478,23 +477,10 @@ public abstract class Transfer implements Serializable {
         }
     }
 
-    /**
-     * @throws ConnectionCanceledException If the transfer has been canceled or the socket is
-     *                                     no longer connected
-     */
-    protected void check() throws ConnectionCanceledException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Check connection for transfer %s", this.getName()));
-        }
-        // Bail out if canceled
+    private void check() throws ConnectionCanceledException {
         if(this.isCanceled()) {
+            // Bail out if canceled
             throw new ConnectionCanceledException(String.format("Canceled transfer %s in progress", this.getName()));
-        }
-        for(Session s : this.getSessions()) {
-            if(!s.isConnected()) {
-                // Bail out if no more connected
-                throw new ConnectionCanceledException(String.format("Disconnected transfer %s in progress", this.getName()));
-            }
         }
     }
 
@@ -520,7 +506,6 @@ public abstract class Transfer implements Serializable {
         }
         state = State.running;
         try {
-            this.check();
             // Determine the filter to match files against
             final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
             if(log.isDebugEnabled()) {
@@ -533,7 +518,6 @@ public abstract class Transfer implements Serializable {
                 throw new ConnectionCanceledException();
             }
             this.clear(options);
-            this.check();
             // Get the transfer filter from the concrete transfer class
             final TransferPathFilter filter = this.filter(prompt, action);
             if(null == filter) {
