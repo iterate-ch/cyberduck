@@ -1745,7 +1745,7 @@ public class BrowserController extends WindowController
             }
         }
         // Try to parse the input as a URL and extract protocol, hostname, username and password if any.
-        this.mount(Host.parse(input));
+        this.mount(HostParser.parse(input));
     }
 
     @Outlet

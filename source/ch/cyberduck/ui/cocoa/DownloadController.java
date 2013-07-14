@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.DefaultPathKindDetector;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.Preferences;
@@ -72,7 +73,7 @@ public class DownloadController extends AlertController {
     @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            final Host host = Host.parse(urlField.stringValue());
+            final Host host = HostParser.parse(urlField.stringValue());
             final Session session = SessionFactory.createSession(host);
             final Transfer transfer = new DownloadTransfer(session,
                     new Path(host.getDefaultPath(), detector.detect(host.getDefaultPath()))
@@ -90,7 +91,7 @@ public class DownloadController extends AlertController {
 
     @Override
     protected boolean validateInput() {
-        Host host = Host.parse(urlField.stringValue());
+        Host host = HostParser.parse(urlField.stringValue());
         return StringUtils.isNotBlank(host.getDefaultPath());
     }
 

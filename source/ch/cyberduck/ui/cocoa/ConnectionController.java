@@ -224,7 +224,7 @@ public class ConnectionController extends SheetController {
 
     public void hostFieldTextDidChange(final NSNotification sender) {
         if(ProtocolFactory.isURL(hostField.stringValue())) {
-            final Host parsed = Host.parse(hostField.stringValue());
+            final Host parsed = HostParser.parse(hostField.stringValue());
             this.hostChanged(parsed);
         }
         else {
@@ -294,7 +294,7 @@ public class ConnectionController extends SheetController {
 
     @Action
     public void launchNetworkAssistant(final NSButton sender) {
-        ReachabilityFactory.get().diagnose(Host.parse(urlLabel.stringValue()));
+        ReachabilityFactory.get().diagnose(HostParser.parse(urlLabel.stringValue()));
     }
 
     @Outlet

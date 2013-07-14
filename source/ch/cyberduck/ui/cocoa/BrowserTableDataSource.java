@@ -314,7 +314,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     if(ProtocolFactory.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
-                        controller.mount(Host.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                        controller.mount(HostParser.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
                         return true;
                     }
                 }

@@ -152,7 +152,7 @@ public class MainController extends BundleController implements NSApplication.De
             this.updateMenuClicked(null);
         }
         else {
-            final Host h = Host.parse(url);
+            final Host h = HostParser.parse(url);
             if(Path.FILE_TYPE == detector.detect(h.getDefaultPath())) {
                 final Session session = SessionFactory.createSession(h);
                 TransferControllerFactory.get().startTransfer(new DownloadTransfer(session,

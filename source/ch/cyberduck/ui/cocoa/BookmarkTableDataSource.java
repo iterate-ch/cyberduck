@@ -392,7 +392,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(null == o) {
                 return false;
             }
-            final Host h = Host.parse(o);
+            final Host h = HostParser.parse(o);
             source.add(row.intValue(), h);
             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             view.scrollRowToVisible(row);
@@ -442,7 +442,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     final String url = elements.objectAtIndex(new NSUInteger(i)).toString();
                     if(StringUtils.isNotBlank(url)) {
-                        final Host h = Host.parse(url);
+                        final Host h = HostParser.parse(url);
                         source.add(row.intValue(), h);
                         view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
                         view.scrollRowToVisible(row);

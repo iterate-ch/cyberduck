@@ -20,6 +20,7 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
@@ -80,7 +81,7 @@ public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
             if(null == url) {
                 continue;
             }
-            final Host host = Host.parse(url);
+            final Host host = HostParser.parse(url);
             host.setNickname(reader.stringForKey("Name"));
             this.add(host);
         }

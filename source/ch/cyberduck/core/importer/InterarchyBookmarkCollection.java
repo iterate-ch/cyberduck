@@ -20,6 +20,7 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
@@ -80,7 +81,7 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
             // Possibly a folder
             return;
         }
-        Host host = Host.parse(url);
+        Host host = HostParser.parse(url);
         if(StringUtils.isBlank(host.getHostname())) {
             // Possibly file://
             return;

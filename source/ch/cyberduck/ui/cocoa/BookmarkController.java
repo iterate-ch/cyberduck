@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
@@ -631,7 +632,7 @@ public class BookmarkController extends WindowController {
     public void hostFieldDidChange(final NSNotification sender) {
         String input = hostField.stringValue();
         if(ProtocolFactory.isURL(input)) {
-            final Host parsed = Host.parse(input);
+            final Host parsed = HostParser.parse(input);
             host.setProtocol(parsed.getProtocol());
             host.setPort(parsed.getPort());
             host.setHostname(parsed.getHostname());
