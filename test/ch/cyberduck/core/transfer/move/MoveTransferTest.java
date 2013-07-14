@@ -20,9 +20,9 @@ package ch.cyberduck.core.transfer.move;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
 
@@ -40,7 +40,7 @@ public class MoveTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new MoveTransfer(new NullSession(new Host("t")), Collections.<Path, Path>singletonMap(new Path("t", Path.FILE_TYPE), new Path("d", Path.FILE_TYPE)));
+        Transfer t = new MoveTransfer(new FTPSession(new Host("t")), Collections.<Path, Path>singletonMap(new Path("t", Path.FILE_TYPE), new Path("d", Path.FILE_TYPE)));
         t.addSize(4L);
         t.addTransferred(3L);
         final MoveTransfer serialized = new MoveTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));

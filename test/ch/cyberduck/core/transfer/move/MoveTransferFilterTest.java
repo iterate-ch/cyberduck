@@ -1,5 +1,6 @@
 package ch.cyberduck.core.transfer.move;
 
+import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -15,7 +16,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class MoveTransferFilterTest {
+public class MoveTransferFilterTest extends AbstractTestCase {
 
     @Test
     public void testAcceptDirectoryNew() throws Exception {
@@ -56,10 +57,7 @@ public class MoveTransferFilterTest {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         final Path source = new Path("a", Path.DIRECTORY_TYPE);
         source.attributes().setSize(1L);
-        final Path target = new Path("a", Path.DIRECTORY_TYPE) {
-            NullSession session = new NullSession(new Host("t"));
-
-        };
+        final Path target = new Path("a", Path.DIRECTORY_TYPE);
         files.put(source, target);
         MoveTransferFilter f = new MoveTransferFilter(files);
         final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
