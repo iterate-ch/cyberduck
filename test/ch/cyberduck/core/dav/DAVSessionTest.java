@@ -8,11 +8,14 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.Controller;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.OutputStream;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -179,6 +182,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         session.mkdir(test);
         assertTrue(session.exists(test));
+        session.delete(test, new DisabledLoginController());
         session.close();
     }
 
@@ -273,5 +277,27 @@ public class DAVSessionTest extends AbstractTestCase {
         assertNull(session.getFeature(Timestamp.class, null));
         assertNotNull(session.getFeature(Headers.class, null));
         assertNotNull(session.getFeature(DistributionConfiguration.class, null));
+    }
+
+    @Test
+    public void testWrite() throws Exception {
+        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = "test".getBytes("UTF-8");
+        status.setLength(content.length);
+        final Path test = new Path(session.mount(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final OutputStream out = session.write(test, status);
+        assertNotNull(out);
+        IOUtils.write(content, out);
+        IOUtils.closeQuietly(out);
+        assertTrue(session.exists(test));
+        assertEquals(content.length, session.list(test.getParent()).get(test.getReference()).attributes().getSize());
+        session.delete(test, new DisabledLoginController());
     }
 }

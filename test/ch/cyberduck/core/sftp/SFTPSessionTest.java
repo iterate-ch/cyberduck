@@ -18,9 +18,12 @@ import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.OutputStream;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -154,5 +157,26 @@ public class SFTPSessionTest extends AbstractTestCase {
         session.getFeature(Touch.class, null).touch(test);
         assertTrue(session.exists(test));
         session.close();
+    }
+
+    @Test
+    public void testWrite() throws Exception {
+        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = "test".getBytes("UTF-8");
+        status.setLength(content.length);
+        final Path test = new Path(session.mount(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final OutputStream out = session.write(test, status);
+        assertNotNull(out);
+        IOUtils.write(content, out);
+        IOUtils.closeQuietly(out);
+        assertTrue(session.exists(test));
+        assertEquals(content.length, session.list(test.getParent()).get(test.getReference()).attributes().getSize());
+        session.delete(test, new DisabledLoginController());
     }
 }

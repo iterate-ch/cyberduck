@@ -11,11 +11,13 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.UUID;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -409,5 +411,27 @@ public class FTPSessionTest extends AbstractTestCase {
             assertEquals(failure, e);
         }
         assertEquals(Session.State.closed, session.getState());
+    }
+
+
+    @Test
+    public void testWrite() throws Exception {
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = "test".getBytes("UTF-8");
+        status.setLength(content.length);
+        final Path test = new Path(session.mount(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final OutputStream out = session.write(test, status);
+        assertNotNull(out);
+        IOUtils.write(content, out);
+        IOUtils.closeQuietly(out);
+        assertTrue(session.exists(test));
+        assertEquals(content.length, session.list(test.getParent()).get(test.getReference()).attributes().getSize());
+        session.delete(test, new DisabledLoginController());
     }
 }

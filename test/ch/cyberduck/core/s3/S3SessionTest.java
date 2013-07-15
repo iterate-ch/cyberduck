@@ -10,8 +10,13 @@ import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
+import java.io.OutputStream;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -147,5 +152,58 @@ public class S3SessionTest extends AbstractTestCase {
                 new Credentials("anonymous", null)));
         assertEquals(new DescriptiveUrl("http://test.cyberduck.ch.s3.amazonaws.com/test?torrent"),
                 session.toTorrentUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE)));
+    }
+
+    @Test
+    public void testWrite() throws Exception {
+        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = "test".getBytes("UTF-8");
+        status.setLength(content.length);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final OutputStream out = session.write(test, status);
+        assertNotNull(out);
+        IOUtils.write(content, out);
+        IOUtils.closeQuietly(out);
+        assertTrue(session.exists(test));
+        assertEquals(content.length, session.list(test.getParent()).get(test.getReference()).attributes().getSize());
+        session.delete(test, new DisabledLoginController());
+    }
+
+    @Test
+    public void testMakeDirectory() throws Exception {
+        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        session.mkdir(test);
+        assertTrue(session.exists(test));
+        session.delete(test, new DisabledLoginController());
+        session.close();
+    }
+
+    @Test
+    public void testTouch() throws Exception {
+        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        session.touch(test);
+        assertTrue(session.exists(test));
+        session.delete(test, new DisabledLoginController());
+        assertFalse(session.exists(test));
+        session.close();
     }
 }
