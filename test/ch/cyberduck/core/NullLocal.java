@@ -15,14 +15,4 @@ public class NullLocal extends Local {
     public boolean exists() {
         return true;
     }
-
-    @Override
-    public void trash() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void writeUnixPermission(final Permission permission) {
-        throw new UnsupportedOperationException();
-    }
 }
