@@ -445,20 +445,12 @@ public abstract class TransferPromptController extends SheetController
         final TransferAction defaultAction
                 = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
 
-        boolean renameSupported = true;
-        for(Session s : transfer.getSessions()) {
-            if(!s.isRenameSupported(transfer.getRoot())) {
-                renameSupported = false;
-                break;
-            }
-        }
-
         final TransferAction[] actions = new TransferAction[]{
                 transfer.isResumable() ? TransferAction.ACTION_RESUME : null,
                 TransferAction.ACTION_OVERWRITE,
                 TransferAction.ACTION_RENAME,
                 TransferAction.ACTION_SKIP,
-                renameSupported ? TransferAction.ACTION_RENAME_EXISTING : null};
+                TransferAction.ACTION_RENAME_EXISTING};
 
         for(TransferAction action : actions) {
             if(null == action) {
