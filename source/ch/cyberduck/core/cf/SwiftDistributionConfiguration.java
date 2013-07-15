@@ -180,7 +180,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
 
     @Override
     public Protocol getProtocol() {
-        return Protocol.SWIFT;
+        return session.getHost().getProtocol();
     }
 
     @Override
