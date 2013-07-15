@@ -18,6 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
@@ -49,8 +50,9 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
 
     private S3Session session;
 
-    public WebsiteCloudFrontDistributionConfiguration(final S3Session session) {
-        super(session);
+    public WebsiteCloudFrontDistributionConfiguration(final S3Session session,
+                                                      final LoginController prompt) {
+        super(session, prompt);
         this.session = session;
     }
 

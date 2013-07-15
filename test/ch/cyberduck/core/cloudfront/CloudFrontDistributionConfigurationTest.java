@@ -11,7 +11,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.jets3t.service.CloudFrontService;
@@ -34,14 +34,14 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     public void testGetMethods() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         assertEquals(Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING),
-                new CloudFrontDistributionConfiguration(session).getMethods(new Path("/bbb", Path.VOLUME_TYPE)));
+                new CloudFrontDistributionConfiguration(session, new DisabledLoginController()).getMethods(new Path("/bbb", Path.VOLUME_TYPE)));
     }
 
     @Test
     public void testGetName() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(
-                session
+                session, new DisabledLoginController()
         );
         assertEquals("Amazon CloudFront", configuration.getName());
         assertEquals("Amazon CloudFront", configuration.getName(Distribution.CUSTOM));
@@ -50,7 +50,8 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testGetOrigin() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session);
+        final CloudFrontDistributionConfiguration configuration
+                = new CloudFrontDistributionConfiguration(session, new DisabledLoginController());
         assertEquals("bbb.s3.amazonaws.com",
                 configuration.getOrigin(new Path("/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD));
     }
@@ -64,17 +65,19 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session);
+        final DistributionConfiguration configuration
+                = new CloudFrontDistributionConfiguration(session, new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD);
         assertEquals("E2N9XG26504TZI", distribution.getId());
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test(expected = LoginCanceledException.class)
     public void testReadLoginFailure() throws Exception {
         final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
         final S3Session session = new S3Session(host);
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session);
+        final DistributionConfiguration configuration
+                = new CloudFrontDistributionConfiguration(session, new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         configuration.read(container, Distribution.DOWNLOAD);
     }
@@ -89,7 +92,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
+        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledLoginController()) {
             @Override
             protected void updateDistribution(final CloudFrontService client, final boolean enabled, final Distribution.Method method, final String origin, final String distributionId, final String etag, final String reference, final String[] cnames, final LoggingStatus logging, final String defaultRootObject) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
                 set.set(true);
@@ -116,7 +119,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
+        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledLoginController()) {
             @Override
             protected void updateDistribution(final CloudFrontService client, final boolean enabled, final Distribution.Method method, final String origin, final String distributionId, final String etag, final String reference, final String[] cnames, final LoggingStatus logging, final String defaultRootObject) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
                 fail();

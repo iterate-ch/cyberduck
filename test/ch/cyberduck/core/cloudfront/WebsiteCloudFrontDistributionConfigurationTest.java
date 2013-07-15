@@ -3,6 +3,7 @@ package ch.cyberduck.core.cloudfront;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -21,18 +22,18 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
     @Test
     public void testGetMethods() throws Exception {
         final S3Session s3 = new S3Session(new Host("s3"));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.DOWNLOAD));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.STREAMING));
-        assertFalse(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.CUSTOM));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE_CDN));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
-        assertFalse(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb_b", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3, new DisabledLoginController()).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.DOWNLOAD));
+        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3, new DisabledLoginController()).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.STREAMING));
+        assertFalse(new WebsiteCloudFrontDistributionConfiguration(s3, new DisabledLoginController()).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.CUSTOM));
+        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3, new DisabledLoginController()).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE_CDN));
+        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3, new DisabledLoginController()).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+        assertFalse(new WebsiteCloudFrontDistributionConfiguration(s3, new DisabledLoginController()).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb_b", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
     }
 
     @Test
     public void testGetProtocol() throws Exception {
         final WebsiteCloudFrontDistributionConfiguration configuration
-                = new WebsiteCloudFrontDistributionConfiguration(new S3Session(new Host(Protocol.S3_SSL, "g")));
+                = new WebsiteCloudFrontDistributionConfiguration(new S3Session(new Host(Protocol.S3_SSL, "g")), new DisabledLoginController());
         assertEquals(Protocol.S3_SSL, configuration.getProtocol());
     }
 
@@ -40,7 +41,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
     public void testGetName() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(
-                session
+                session, new DisabledLoginController()
         );
         assertEquals("Amazon CloudFront", configuration.getName());
         assertEquals("Amazon CloudFront", configuration.getName(Distribution.DOWNLOAD));
@@ -53,7 +54,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
     public void testGetOrigin() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(
-                session
+                session, new DisabledLoginController()
         );
         assertEquals("bbb.s3.amazonaws.com",
                 configuration.getOrigin(new Path(new Path(null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD));
@@ -76,7 +77,8 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
         ));
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
-        final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session);
+        final WebsiteCloudFrontDistributionConfiguration configuration
+                = new WebsiteCloudFrontDistributionConfiguration(session, new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.WEBSITE);
         assertEquals("The specified bucket does not have a website configuration", distribution.getStatus());

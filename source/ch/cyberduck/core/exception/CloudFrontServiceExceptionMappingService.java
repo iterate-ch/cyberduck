@@ -28,6 +28,9 @@ public class CloudFrontServiceExceptionMappingService extends AbstractIOExceptio
 
     @Override
     public BackgroundException map(final CloudFrontServiceException e) {
+        if(e.getCause() instanceof BackgroundException) {
+            return (BackgroundException) e.getCause();
+        }
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getErrorMessage());
         this.append(buffer, e.getErrorDetail());

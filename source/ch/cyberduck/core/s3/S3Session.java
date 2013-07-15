@@ -1198,7 +1198,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
         if(type == DistributionConfiguration.class) {
             if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
-                return (T) new WebsiteCloudFrontDistributionConfiguration(this);
+                return (T) new WebsiteCloudFrontDistributionConfiguration(this, prompt);
             }
             else {
                 // Amazon CloudFront custom origin

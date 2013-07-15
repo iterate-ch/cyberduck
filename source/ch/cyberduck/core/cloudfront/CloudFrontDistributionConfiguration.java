@@ -18,6 +18,10 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.KeychainLoginService;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
@@ -34,12 +38,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.CloudFrontServiceExceptionMappingService;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
@@ -73,10 +81,14 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     private S3Session session;
 
-    final CloudFrontService client;
+    private LoginController prompt;
 
-    public CloudFrontDistributionConfiguration(final S3Session session) {
+    private CloudFrontService client;
+
+    public CloudFrontDistributionConfiguration(final S3Session session,
+                                               final LoginController prompt) {
         this.session = session;
+        this.prompt = prompt;
         this.client = new CloudFrontService(
                 new AWSCredentials(session.getHost().getCredentials().getUsername(),
                         session.getHost().getCredentials().getPassword())
@@ -90,6 +102,39 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             @Override
             protected HttpClient initHttpConnection() {
                 return session.connect();
+            }
+
+            @Override
+            protected HttpResponse performRestRequest(final HttpRequestBase httpMethod, final int expectedResponseCode)
+                    throws CloudFrontServiceException {
+                final LoginOptions options = new LoginOptions();
+                options.anonymous = false;
+                options.publickey = false;
+                try {
+                    final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
+                    try {
+                        login.validate(session.getHost(), getName(), options);
+                    }
+                    catch(LoginCanceledException e) {
+                        throw new CloudFrontServiceException(e);
+                    }
+                    return super.performRestRequest(httpMethod, expectedResponseCode);
+                }
+                catch(CloudFrontServiceException failure) {
+                    if(new CloudFrontServiceExceptionMappingService().map(failure) instanceof LoginFailureException) {
+                        try {
+                            prompt.prompt(session.getHost().getProtocol(), session.getHost().getCredentials(),
+                                    Locale.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
+                        }
+                        catch(LoginCanceledException e) {
+                            throw new CloudFrontServiceException(e);
+                        }
+                        return this.performRestRequest(httpMethod, expectedResponseCode);
+                    }
+                    else {
+                        throw failure;
+                    }
+                }
             }
         };
     }

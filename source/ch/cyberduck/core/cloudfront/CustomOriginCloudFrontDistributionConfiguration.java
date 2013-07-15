@@ -19,15 +19,9 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.log4j.Logger;
@@ -36,7 +30,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * @version $Id$
@@ -45,15 +38,14 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     private static Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
 
     private Host origin;
-    private LoginController prompt;
     private S3Session session;
 
-    public CustomOriginCloudFrontDistributionConfiguration(final Host origin, final S3Session session,
+    public CustomOriginCloudFrontDistributionConfiguration(final Host origin,
+                                                           final S3Session session,
                                                            final LoginController prompt) {
-        super(session);
+        super(session, prompt);
         this.origin = origin;
         this.session = session;
-        this.prompt = prompt;
     }
 
     @Override
@@ -70,60 +62,5 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
             log.error(String.format("Failure parsing URI %s", origin.getWebURL()), e);
         }
         return origin.getHostname(true);
-    }
-
-    private <T> T authenticated(final Callable<T> run) throws BackgroundException {
-        final LoginOptions options = new LoginOptions();
-        options.anonymous = false;
-        options.publickey = false;
-        try {
-            final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
-            login.validate(session.getHost(), this.getName(), options);
-            return run.call();
-        }
-        catch(LoginFailureException failure) {
-            prompt.prompt(session.getHost().getProtocol(), session.getHost().getCredentials(),
-                    Locale.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
-            return this.authenticated(run);
-        }
-        catch(BackgroundException e) {
-            throw e;
-        }
-        catch(Exception e) {
-            throw new BackgroundException(e);
-        }
-    }
-
-    @Override
-    public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
-        return this.authenticated(new Callable<Distribution>() {
-            @Override
-            public Distribution call() throws BackgroundException {
-                return CustomOriginCloudFrontDistributionConfiguration.super.read(container, method);
-            }
-        });
-    }
-
-    @Override
-    public void write(final Path container, final Distribution distribution) throws BackgroundException {
-        this.authenticated(new Callable<Void>() {
-            @Override
-            public Void call() throws BackgroundException {
-                CustomOriginCloudFrontDistributionConfiguration.super.write(container, distribution);
-                return null;
-            }
-        });
-    }
-
-    @Override
-    public void invalidate(final Path container, final Distribution.Method method,
-                           final List<Path> files, final boolean recursive) throws BackgroundException {
-        this.authenticated(new Callable<Void>() {
-            @Override
-            public Void call() throws BackgroundException {
-                CustomOriginCloudFrontDistributionConfiguration.super.invalidate(container, method, files, recursive);
-                return null;
-            }
-        });
     }
 }
