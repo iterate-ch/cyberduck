@@ -8,11 +8,9 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -21,11 +19,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class ResumeFilterTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        WorkspaceApplicationLauncher.register();
-    }
 
     @Test
     public void testAcceptExistsTrue() throws Exception {
