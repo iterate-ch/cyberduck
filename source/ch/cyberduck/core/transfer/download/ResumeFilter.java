@@ -34,15 +34,12 @@ public class ResumeFilter extends AbstractDownloadFilter {
 
     @Override
     public boolean accept(final Session session, final Path file) throws BackgroundException {
-        if(file.attributes().isDirectory()) {
+        if(file.attributes().isFile()) {
             if(file.getLocal().exists()) {
-                return false;
-            }
-        }
-        if(file.getLocal().exists()) {
-            if(file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
-                // No need to resume completed transfers
-                return false;
+                if(file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
+                    // No need to resume completed transfers
+                    return false;
+                }
             }
         }
         return super.accept(session, file);

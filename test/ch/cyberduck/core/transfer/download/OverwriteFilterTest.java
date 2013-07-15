@@ -13,7 +13,8 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id$
@@ -48,7 +49,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 };
             }
         }));
-        assertFalse(f.accept(new NullSession(new Host("h")), new Path("a", Path.DIRECTORY_TYPE) {
+        assertTrue(f.accept(new NullSession(new Host("h")), new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal("/", "a") {

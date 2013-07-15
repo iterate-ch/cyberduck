@@ -173,7 +173,8 @@ public class UploadTransfer extends Transfer {
 
 
     @Override
-    public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void transfer(final Path file, final TransferOptions options, final TransferStatus status,
+                         final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -217,7 +218,9 @@ public class UploadTransfer extends Transfer {
         else if(file.attributes().isDirectory()) {
             listener.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
-            session.mkdir(file);
+            if(!status.isResume()) {
+                session.mkdir(file);
+            }
         }
     }
 

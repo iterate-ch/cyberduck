@@ -60,12 +60,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     @Override
     public boolean accept(final Session session, final Path file) throws BackgroundException {
-        if(file.attributes().isDirectory()) {
-            if(file.getLocal().exists()) {
-                // Do not attempt to create existing folders
-                return false;
-            }
-        }
         if(file.attributes().isSymbolicLink()) {
             if(!symlinkResolver.resolve(file)) {
                 return symlinkResolver.include(file);
@@ -97,9 +91,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 status.setLength(file.attributes().getSize());
             }
         }
-        if(!file.getLocal().getParent().exists()) {
-            // Create download folder if missing
-            file.getLocal().getParent().mkdir();
+        if(file.attributes().isDirectory()) {
+            // Do not attempt to create a directory that already exists
+            if(file.getLocal().exists()) {
+                status.setResume(true);
+            }
         }
         // No icon update if disabled
         if(Preferences.instance().getBoolean("queue.download.icon.update")) {

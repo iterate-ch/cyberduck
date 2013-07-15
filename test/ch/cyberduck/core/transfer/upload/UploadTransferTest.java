@@ -1,14 +1,9 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
@@ -17,10 +12,14 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.OutputStream;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
@@ -63,13 +62,7 @@ public class UploadTransferTest extends AbstractTestCase {
     @Test
     public void testPrepareOverrideRootExists() throws Exception {
         final Path child = new Path("/t/c", Path.FILE_TYPE);
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
-            @Override
-            public Path getParent() {
-                return new Path("/", Path.DIRECTORY_TYPE) {
-                };
-            }
-        };
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE);
         root.setLocal(new NullLocal(null, "l") {
             @Override
             public AttributedList<Local> list() {
@@ -97,7 +90,10 @@ public class UploadTransferTest extends AbstractTestCase {
             @Override
             public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
                 if(file.equals(root)) {
-                    fail();
+                    assertTrue(status.isResume());
+                }
+                else {
+                    assertFalse(status.isResume());
                 }
             }
         };
@@ -244,7 +240,8 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, root) {
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status,
+                                 final ProgressListener listener) throws BackgroundException {
                 //
             }
         };
@@ -254,5 +251,70 @@ public class UploadTransferTest extends AbstractTestCase {
                 return TransferAction.ACTION_RENAME;
             }
         }, new TransferOptions());
+    }
+
+    @Test
+    public void testPrepareUploadOverrideFilter() throws Exception {
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
+        test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), "transfer"));
+        final String name = UUID.randomUUID().toString();
+        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/" + name);
+        local.touch();
+        final Transfer transfer = new UploadTransfer(session, test);
+        transfer.prepareRoot(test, new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())),
+                new ProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        //
+                    }
+                });
+        final TransferStatus directory = new TransferStatus();
+        directory.setResume(true);
+        assertEquals(directory, transfer.status(test));
+        final TransferStatus expected = new TransferStatus();
+        assertEquals(expected, transfer.status(new Path("/transfer/" + name, Path.FILE_TYPE)));
+    }
+
+    @Test
+    public void testPrepareUploadResumeFilter() throws Exception {
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
+        test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), "transfer"));
+        final String name = "test";
+        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/" + name);
+        local.touch();
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write("te", out);
+        IOUtils.closeQuietly(out);
+        final Transfer transfer = new UploadTransfer(session, test);
+        transfer.prepareRoot(test, new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())),
+                new ProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        //
+                    }
+                });
+        final TransferStatus directorystatus = new TransferStatus();
+        directorystatus.setResume(true);
+        assertEquals(directorystatus, transfer.status(test));
+        final TransferStatus expected = new TransferStatus();
+        expected.setResume(true);
+        // Remote size
+        expected.setCurrent(1L);
+        // Local size
+        expected.setLength(2L);
+        assertEquals(expected, transfer.status(new Path("/transfer/" + name, Path.FILE_TYPE)));
+        local.delete();
     }
 }

@@ -1,14 +1,9 @@
 package ch.cyberduck.core.transfer.download;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
@@ -17,12 +12,16 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -133,7 +132,10 @@ public class DownloadTransferTest extends AbstractTestCase {
             @Override
             public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
                 if(file.equals(root)) {
-                    fail();
+                    assertTrue(status.isResume());
+                }
+                else {
+                    assertFalse(status.isResume());
                 }
             }
         };
@@ -172,5 +174,75 @@ public class DownloadTransferTest extends AbstractTestCase {
         final Path parent = new Path("t", Path.FILE_TYPE);
         Transfer t = new DownloadTransfer(new NullSession(new Host("t")), parent);
         t.setSelected(null, false);
+    }
+
+    @Test
+    public void testCancel() throws Exception {
+        final Path parent = new Path("t", Path.FILE_TYPE);
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), parent);
+        // test cancel while in progress
+    }
+
+    @Test
+    public void testPrepareDownloadOverrideFilter() throws Exception {
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
+        test.setLocal(new NullLocal(UUID.randomUUID().toString(), "transfer"));
+        final Transfer transfer = new DownloadTransfer(session, test);
+        transfer.prepareRoot(test, new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(test))),
+                new ProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        //
+                    }
+                });
+        final TransferStatus status = new TransferStatus();
+        status.setResume(true);
+        assertEquals(status, transfer.status(test));
+        final TransferStatus expected = new TransferStatus();
+        expected.setResume(false);
+        expected.setLength(1L);
+        expected.setCurrent(0L);
+        assertEquals(expected, transfer.status(new Path("/transfer/test", Path.FILE_TYPE)));
+    }
+
+    @Test
+    public void testPrepareDownloadResumeFilter() throws Exception {
+        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
+        test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), "transfer"));
+        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/test");
+        local.touch();
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write("test", out);
+        IOUtils.closeQuietly(out);
+        final Transfer transfer = new DownloadTransfer(session, test);
+        transfer.prepareRoot(test, new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(test))),
+                new ProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        //
+                    }
+                });
+        final TransferStatus status = new TransferStatus();
+        status.setResume(true);
+        assertEquals(status, transfer.status(test));
+        final TransferStatus expected = new TransferStatus();
+        expected.setResume(true);
+        expected.setCurrent("test".getBytes().length);
+        // Remote size
+        expected.setLength(1L);
+        assertEquals(expected, transfer.status(new Path("/transfer/test", Path.FILE_TYPE)));
+        local.delete();
     }
 }

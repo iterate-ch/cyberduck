@@ -36,7 +36,7 @@ public class SkipFilter extends AbstractUploadFilter {
      */
     @Override
     public boolean accept(final Session session, final Path file) throws BackgroundException {
-        if(this.exists(session, file)) {
+        if(session.exists(file)) {
             return false;
         }
         return super.accept(session, file);

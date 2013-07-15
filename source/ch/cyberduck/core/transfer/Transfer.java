@@ -282,8 +282,7 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return The cache of the underlying session
-     * @see Session#cache()
+     * @return All child elements of root path items to transfer
      */
     public Cache cache() {
         return cache;
@@ -296,7 +295,7 @@ public abstract class Transfer implements Serializable {
      */
     public TransferPathFilter filter(TransferPrompt prompt, final TransferAction action) throws BackgroundException {
         if(action.equals(TransferAction.ACTION_CANCEL)) {
-            return null;
+            throw new ConnectionCanceledException();
         }
         throw new ConnectionCanceledException(String.format("Unknown transfer action %s", action));
     }
@@ -332,11 +331,19 @@ public abstract class Transfer implements Serializable {
      */
     public abstract AttributedList<Path> children(final Path parent) throws BackgroundException;
 
+    /**
+     * @param item File
+     * @return False if unchecked in prompt to exclude from transfer
+     */
     public boolean isSelected(final Path item) {
         if(status.containsKey(item)) {
             return status.get(item).isSelected();
         }
         return true;
+    }
+
+    public TransferStatus status(final Path item) {
+        return status.get(item);
     }
 
     /**
@@ -376,7 +383,7 @@ public abstract class Transfer implements Serializable {
             status.setComplete();
             return;
         }
-        this.check();
+        //todo
         if(filter.accept(session, file)) {
             // Transfer
             this.transfer(file, options, status, listener);
@@ -426,7 +433,8 @@ public abstract class Transfer implements Serializable {
      * @param status   Transfer status
      * @param listener Progress information callback
      */
-    public abstract void transfer(Path file, TransferOptions options, TransferStatus status, final ProgressListener listener) throws BackgroundException;
+    public abstract void transfer(Path file, TransferOptions options, TransferStatus status,
+                                  ProgressListener listener) throws BackgroundException;
 
     /**
      * To be called before any file is actually transferred
@@ -434,42 +442,31 @@ public abstract class Transfer implements Serializable {
      * @param p      File
      * @param filter Filter to apply to exclude files from transfer
      */
-    protected void prepare(final Path p, final TransferPathFilter filter, final ProgressListener listener) throws BackgroundException {
+    public void prepareRoot(final Path p, final TransferPathFilter filter,
+                            final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer status of %s for transfer %s", p, this));
         }
-        this.check();
         if(this.isSelected(p)) {
-            final TransferStatus s;
             // Only prepare the path it will be actually transferred
             if(filter.accept(session, p)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Accepted in %s transfer", p));
                 }
                 listener.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
-                s = filter.prepare(session, p);
+                final TransferStatus s = filter.prepare(session, p);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Determined transfer status %s of %s for transfer %s", status, p, this));
+                }
                 // Add transfer length to total bytes
                 this.addSize(s.getLength());
                 // Add skipped bytes
                 this.addTransferred(s.getCurrent());
-            }
-            else {
-                // Empty transfer status for files not accepted by filter
-                s = new TransferStatus();
-            }
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Determined transfer status %s of %s for transfer %s", status, p, this));
-            }
-            this.status.put(p, s);
-            if(p.attributes().isDirectory()) {
-                // Call recursively for all children
-                final AttributedList<Path> children = this.children(p);
-                // Put into cache for later reference when transferring
-                this.cache().put(p.getReference(), children);
-                // Call recursively
-                for(Path child : children) {
-                    this.prepare(child, filter, listener);
+                if(p.attributes().isDirectory()) {
+                    this.prepareDirectory(p, filter, listener);
+
                 }
+                status.put(p, s);
             }
         }
         else {
@@ -477,10 +474,39 @@ public abstract class Transfer implements Serializable {
         }
     }
 
-    private void check() throws ConnectionCanceledException {
-        if(this.isCanceled()) {
-            // Bail out if canceled
-            throw new ConnectionCanceledException(String.format("Canceled transfer %s in progress", this.getName()));
+    private void prepareDirectory(final Path p, final TransferPathFilter filter, final ProgressListener listener) throws BackgroundException {
+        // Call recursively for all children
+        final AttributedList<Path> children = this.children(p);
+        // Put into cache for later reference when transferring
+        this.cache().put(p.getReference(), children);
+        // Call recursively
+        for(Path child : children) {
+            this.prepareChild(child, filter, listener);
+        }
+    }
+
+    private void prepareChild(final Path p, final TransferPathFilter filter,
+                              final ProgressListener listener) throws BackgroundException {
+
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Find transfer status of %s for transfer %s", p, this));
+        }
+
+        if(this.isSelected(p)) {
+            listener.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
+            final TransferStatus s = filter.prepare(session, p);
+            // Add transfer length to total bytes
+            this.addSize(s.getLength());
+            // Add skipped bytes
+            this.addTransferred(s.getCurrent());
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Determined transfer status %s of %s for transfer %s", status, p, this));
+            }
+            if(p.attributes().isDirectory()) {
+                // Call recursively for all children
+                this.prepareDirectory(p, filter, listener);
+            }
+            status.put(p, s);
         }
     }
 
@@ -518,17 +544,13 @@ public abstract class Transfer implements Serializable {
                 throw new ConnectionCanceledException();
             }
             this.clear(options);
-            // Get the transfer filter from the concrete transfer class
+            // Get the transfer filter from the concrete transfer class. Will throw connection canceled failure if prompt is dismissed.
             final TransferPathFilter filter = this.filter(prompt, action);
-            if(null == filter) {
-                // The user has canceled choosing a transfer filter
-                throw new ConnectionCanceledException();
-            }
             // Reset the cached size of the transfer and progress value
             this.reset();
             // Calculate information about the files in advance to give progress information
             for(Path next : roots) {
-                this.prepare(next, filter, session);
+                this.prepareRoot(next, filter, session);
             }
             // Transfer all files sequentially
             for(Path next : roots) {

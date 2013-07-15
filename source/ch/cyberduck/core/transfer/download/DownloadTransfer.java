@@ -175,7 +175,8 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void transfer(final Path file, final TransferOptions options, final TransferStatus status,
+                         final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -219,7 +220,9 @@ public class DownloadTransfer extends Transfer {
             }, status);
         }
         else if(file.attributes().isDirectory()) {
-            local.mkdir();
+            if(!status.isResume()) {
+                local.mkdir();
+            }
         }
     }
 

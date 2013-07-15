@@ -50,30 +50,20 @@ public class OverwriteFilterTest extends AbstractTestCase {
         assertTrue(f.accept(new NullSession(new Host("h")), new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
-                };
+                return new NullLocal(null, "t");
             }
         }));
-        assertFalse(f.accept(new NullSession(new Host("h")) {
-                                 @Override
-                                 public AttributedList<Path> list(final Path file) {
-                                     return new AttributedList<Path>(Collections.<Path>singletonList(new Path("a", Path.DIRECTORY_TYPE)));
-                                 }
-                             }, new Path("a", Path.DIRECTORY_TYPE) {
-                                 @Override
-                                 public Local getLocal() {
-                                     return new NullLocal(null, "t") {
-                                         @Override
-                                         public boolean exists() {
-                                             return true;
-                                         }
-                                     };
-                                 }
-                             }
+        assertTrue(f.accept(new NullSession(new Host("h")) {
+                                @Override
+                                public AttributedList<Path> list(final Path file) {
+                                    return new AttributedList<Path>(Collections.<Path>singletonList(new Path("a", Path.DIRECTORY_TYPE)));
+                                }
+                            }, new Path("a", Path.DIRECTORY_TYPE) {
+                                @Override
+                                public Local getLocal() {
+                                    return new NullLocal(null, "t");
+                                }
+                            }
         ));
     }
 
@@ -86,7 +76,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 return new NullLocal(null, "/t") {
                     @Override
                     public Attributes attributes() {
-                        return new NullAttributes() {
+                        return new PathAttributes(Path.FILE_TYPE) {
                             @Override
                             public long getSize() {
                                 return 1L;

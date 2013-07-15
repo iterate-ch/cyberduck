@@ -21,16 +21,15 @@ import static org.junit.Assert.*;
 public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
-    public void testAcceptExistsTrue() throws Exception {
+    public void testAcceptDirectory() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
         Path p = new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
-                return new NullLocal(null, "a");
+                return new NullLocal("d", "a");
             }
         };
-        p.attributes().setSize(2L);
-        assertFalse(f.accept(new NullSession(new Host("h")), p));
+        assertTrue(f.accept(new NullSession(new Host("h")), p));
     }
 
     @Test
@@ -77,10 +76,24 @@ public class ResumeFilterTest extends AbstractTestCase {
     }
 
     @Test
-    public void testPrepareDirectory() throws Exception {
+    public void testPrepareDirectoryExists() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
         Path p = new Path("a", Path.DIRECTORY_TYPE);
         p.setLocal(new NullLocal(null, "a"));
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), p);
+        assertTrue(status.isResume());
+    }
+
+    @Test
+    public void testPrepareDirectoryExistsFalse() throws Exception {
+        ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
+        Path p = new Path("a", Path.DIRECTORY_TYPE);
+        p.setLocal(new NullLocal(null, "a") {
+            @Override
+            public boolean exists() {
+                return false;
+            }
+        });
         final TransferStatus status = f.prepare(new NullSession(new Host("h")), p);
         assertFalse(status.isResume());
     }

@@ -49,19 +49,17 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      */
     @Override
     public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
-        if(this.exists(session, file)) {
-            Path renamed = file;
-            while(this.exists(session, renamed)) {
-                String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
-                        FilenameUtils.getBaseName(file.getName()),
-                        UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
-                        StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-                renamed = new Path(renamed.getParent(),
-                        proposal, file.attributes().getType());
-            }
-            if(!renamed.equals(file)) {
-                session.rename(file, renamed);
-            }
+        Path renamed = file;
+        while(session.exists(renamed)) {
+            String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
+                    FilenameUtils.getBaseName(file.getName()),
+                    UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                    StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
+            renamed = new Path(renamed.getParent(),
+                    proposal, file.attributes().getType());
+        }
+        if(!renamed.equals(file)) {
+            session.rename(file, renamed);
         }
         return super.prepare(session, file);
     }

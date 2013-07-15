@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -39,14 +38,11 @@ public class ResumeFilter extends AbstractUploadFilter {
     @Override
     public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
         final TransferStatus status = super.prepare(session, file);
-        if(session.isUploadResumable()) {
-            final PathAttributes attributes = file.attributes();
-            if(attributes.isFile()) {
-                if(this.exists(session, file)) {
+        if(file.attributes().isFile()) {
+            if(session.isUploadResumable()) {
+                if(session.exists(file)) {
                     status.setResume(true);
-                    status.setCurrent(
-                            session.cache().get(file.getParent().getReference()).get(file.getReference()).attributes().getSize()
-                    );
+                    status.setCurrent(session.list(file.getParent()).get(file.getReference()).attributes().getSize());
                 }
             }
         }
