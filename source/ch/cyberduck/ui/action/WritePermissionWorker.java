@@ -74,7 +74,7 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
         if(recursive && file.attributes().isFile()) {
             // Do not write executable bit for files if not already set when recursively updating directory.
             // See #1787
-            Permission modified = new Permission(permission);
+            final Permission modified = new Permission(permission);
             if(!file.attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
                 modified.getOwnerPermissions()[Permission.EXECUTE] = false;
             }
