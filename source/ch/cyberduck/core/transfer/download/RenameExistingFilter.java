@@ -41,11 +41,6 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
         super(symlinkResolver);
     }
 
-    @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
-        return true;
-    }
-
     /**
      * Rename existing file on disk if there is a conflict.
      */

@@ -38,11 +38,6 @@ public class RenameFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
-        return true;
-    }
-
-    @Override
     public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
         final TransferStatus status = super.prepare(session, file);
         final Path parent = file.getParent();

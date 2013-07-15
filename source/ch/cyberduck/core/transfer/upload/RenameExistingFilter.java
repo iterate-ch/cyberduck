@@ -39,11 +39,6 @@ public class RenameExistingFilter extends AbstractUploadFilter {
         super(symlinkResolver);
     }
 
-    @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
-        return session.isRenameSupported(file);
-    }
-
     /**
      * Rename existing file on server if there is a conflict.
      */
