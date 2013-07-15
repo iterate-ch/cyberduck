@@ -20,8 +20,8 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.threading.BackgroundAction;
@@ -66,7 +66,7 @@ public class WatchEditorTest extends AbstractTestCase {
             public ScheduledFuture schedule(final Runnable runnable, final Long period, final TimeUnit unit) {
                 return null;
             }
-        }, new NullSession(new Host("h")), new Application("com.apple.TextEdit", null), path);
+        }, new FTPSession(new Host("h")), new Application("com.apple.TextEdit", null), path);
         assertEquals(new Application("com.apple.TextEdit", null), editor.getApplication());
         assertEquals("t", editor.edited.getName());
         final Local local = editor.edited.getLocal();
