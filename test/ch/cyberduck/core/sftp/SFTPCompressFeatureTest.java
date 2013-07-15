@@ -19,7 +19,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPCompressFeatureTest extends AbstractTestCase {
 
@@ -43,6 +43,7 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
             assertFalse(session.exists(test));
             feature.unarchive(archive, archive.getArchive(Collections.<Path>singletonList(test)));
             assertTrue(session.exists(test));
+            session.delete(test, new DisabledLoginController());
         }
         session.close();
     }
