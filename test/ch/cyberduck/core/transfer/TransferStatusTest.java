@@ -41,4 +41,9 @@ public class TransferStatusTest {
         status.setComplete();
         assertTrue(status.isComplete());
     }
+
+    @Test
+    public void testEquals() throws Exception {
+        assertEquals(new TransferStatus(), new TransferStatus());
+    }
 }

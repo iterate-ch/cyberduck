@@ -35,7 +35,7 @@ public class TransferStatus {
     public static final long GIGA = 1073741824; // 2^30
 
     /**
-     * Transfer is resumable
+     * Append to file
      */
     private boolean resume = false;
 
@@ -147,6 +147,48 @@ public class TransferStatus {
 
     public boolean isResume() {
         return resume;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final TransferStatus that = (TransferStatus) o;
+        if(canceled != that.canceled) {
+            return false;
+        }
+        if(complete != that.complete) {
+            return false;
+        }
+        if(current != that.current) {
+            return false;
+        }
+        if(length != that.length) {
+            return false;
+        }
+        if(resume != that.resume) {
+            return false;
+        }
+        if(selected != that.selected) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (resume ? 1 : 0);
+        result = 31 * result + (int) (current ^ (current >>> 32));
+        result = 31 * result + (int) (length ^ (length >>> 32));
+        result = 31 * result + (canceled ? 1 : 0);
+        result = 31 * result + (complete ? 1 : 0);
+        result = 31 * result + (selected ? 1 : 0);
+        return result;
     }
 
     @Override
