@@ -69,7 +69,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
             }
         }
         catch(DNSSDException e) {
-            log.error(e.getMessage(), e);
+            log.error(String.format("Failure initializing Bonjour discovery: %s", e.getMessage()), e);
             this.quit();
         }
     }
@@ -80,7 +80,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
             if(log.isInfoEnabled()) {
                 log.info(String.format("Removing service listener for %s", protocol));
             }
-            DNSSDService service = this.browsers.get(protocol);
+            final DNSSDService service = this.browsers.get(protocol);
             if(null == service) {
                 continue;
             }
@@ -89,16 +89,16 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
     }
 
     @Override
-    public void serviceFound(DNSSDService browser, int flags, int ifIndex, String servicename,
+    public void serviceFound(DNSSDService browser, int flags, int ifIndex, String serviceName,
                              String regType, String domain) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Browser found service at %s not yet resolved", servicename));
+            log.debug(String.format("Browser found service at %s not yet resolved", serviceName));
         }
         try {
-            DNSSD.resolve(flags, ifIndex, servicename, regType, domain, this);
+            DNSSD.resolve(flags, ifIndex, serviceName, regType, domain, this);
         }
         catch(DNSSDException e) {
-            log.error(e.getMessage(), e);
+            log.error(String.format("Failure resolving service %s: %s", serviceName, e.getMessage()), e);
         }
     }
 
@@ -110,11 +110,11 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
         }
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
-            String identifier = DNSSD.constructFullName(serviceName, regType, domain);
+            final String identifier = DNSSD.constructFullName(serviceName, regType, domain);
             this.remove(identifier);
         }
         catch(DNSSDException e) {
-            log.error(e.getMessage(), e);
+            log.error(String.format("Failure removing service %s: %s", serviceName, e.getMessage()), e);
         }
         finally {
             pool.drain();
