@@ -180,7 +180,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
 
     @Override
     public Protocol getProtocol() {
-        return Protocol.CLOUDFILES;
+        return Protocol.SWIFT;
     }
 
     @Override
