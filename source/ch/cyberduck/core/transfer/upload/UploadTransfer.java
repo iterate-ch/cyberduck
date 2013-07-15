@@ -194,8 +194,7 @@ public class UploadTransfer extends Transfer {
             listener.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                     this.getName()));
             String original = file.getName();
-            final boolean temporary = Preferences.instance().getBoolean("queue.upload.file.temporary")
-                    && session.isRenameSupported(file);
+            final boolean temporary = Preferences.instance().getBoolean("queue.upload.file.temporary");
             if(temporary) {
                 file.setPath(file.getParent(), MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
                         file.getName(), UUID.randomUUID().toString()));
