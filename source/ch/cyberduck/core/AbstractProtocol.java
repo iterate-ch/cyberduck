@@ -23,6 +23,7 @@ import ch.cyberduck.core.i18n.Locale;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -33,6 +34,11 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public String getProvider() {
         return this.getIdentifier();
+    }
+
+    @Override
+    public Set<String> getProviders() {
+        return new HashSet<String>(Collections.singletonList(this.getProvider()));
     }
 
     @Override
