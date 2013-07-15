@@ -22,6 +22,10 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cdn.features.Analytics;
+import ch.cyberduck.core.cdn.features.Index;
+import ch.cyberduck.core.cdn.features.Logging;
+import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FilesExceptionMappingService;
@@ -43,7 +47,7 @@ import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
 /**
  * @version $Id$
  */
-public class SwiftDistributionConfiguration implements DistributionConfiguration {
+public class SwiftDistributionConfiguration implements DistributionConfiguration, Purge {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
     private CFSession session;
@@ -53,12 +57,11 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public void write(final Path container, final boolean enabled, final Distribution.Method method,
-                      final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
+    public void write(final Path container, final Distribution configuration) throws BackgroundException {
         try {
-            if(StringUtils.isNotBlank(defaultRootObject)) {
+            if(StringUtils.isNotBlank(configuration.getIndexDocument())) {
                 session.getClient().updateContainerMetadata(session.getRegion(container),
-                        container.getName(), Collections.singletonMap("X-Container-Meta-Web-Index", defaultRootObject));
+                        container.getName(), Collections.singletonMap("X-Container-Meta-Web-Index", configuration.getIndexDocument()));
             }
             try {
                 final FilesCDNContainer info
@@ -79,7 +82,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 log.debug(String.format("Update CDN configuration for %s", container));
             }
             session.getClient().cdnUpdateContainer(session.getRegion(container),
-                    container.getName(), -1, enabled, logging);
+                    container.getName(), -1, configuration.isEnabled(), configuration.isLogging());
         }
         catch(FilesException e) {
             throw new FilesExceptionMappingService().map("Cannot write CDN configuration", e);
@@ -97,18 +100,18 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                         container.getName());
                 final Distribution distribution = new Distribution(info.getName(),
                         session.getRegion(container).getStorageUrl().getHost(),
-                        method, info.isEnabled(), info.getCdnURL(), info.getSslURL(), info.getStreamingURL(),
-                        info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
-                        info.getRetainLogs()) {
-                    @Override
-                    public String getLoggingTarget() {
-                        return ".CDN_ACCESS_LOGS";
-                    }
-                };
+                        method, info.isEnabled()
+                );
+                distribution.setStatus(info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"));
+                distribution.setUrl(info.getCdnURL());
+                distribution.setSslUrl(info.getSslURL());
+                distribution.setStreamingUrl(info.getStreamingURL());
+                distribution.setLogging(info.getRetainLogs());
+                distribution.setLoggingContainer(".CDN_ACCESS_LOGS");
                 final FilesContainerMetaData metadata = session.getClient().getContainerMetaData(session.getRegion(container),
                         container.getName());
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
-                    distribution.setDefaultRootObject(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
+                    distribution.setIndexDocument(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
                 distribution.setContainers(Collections.<Path>singletonList(new Path(".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
                 return distribution;
@@ -118,8 +121,10 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No CDN configuration for %s", container));
                 }
-                return new Distribution(null, session.getRegion(container).getStorageUrl().getHost(),
-                        method, false, null, Locale.localizedString("CDN Disabled", "Mosso"));
+                final Distribution distribution = new Distribution(null, session.getRegion(container).getStorageUrl().getHost(),
+                        method, false);
+                distribution.setStatus(Locale.localizedString("CDN Disabled", "Mosso"));
+                return distribution;
             }
         }
         catch(FilesException e) {
@@ -154,28 +159,20 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public boolean isInvalidationSupported(final Distribution.Method method) {
-        return true;
-    }
-
-    @Override
-    public boolean isDefaultRootSupported(final Distribution.Method method) {
-        return true;
-    }
-
-    @Override
-    public boolean isLoggingSupported(final Distribution.Method method) {
-        return method.equals(Distribution.DOWNLOAD);
-    }
-
-    @Override
-    public boolean isAnalyticsSupported(final Distribution.Method method) {
-        return this.isLoggingSupported(method);
-    }
-
-    @Override
-    public boolean isCnameSupported(final Distribution.Method method) {
-        return false;
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
+        if(type == Purge.class) {
+            return (T) this;
+        }
+        if(type == Index.class) {
+            return (T) this;
+        }
+        if(type == Logging.class) {
+            return (T) this;
+        }
+        if(type == Analytics.class) {
+            return (T) this;
+        }
+        return null;
     }
 
     @Override

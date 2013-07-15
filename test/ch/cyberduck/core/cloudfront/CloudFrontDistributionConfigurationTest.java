@@ -10,14 +10,20 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.s3.S3Session;
 
+import org.jets3t.service.CloudFrontService;
+import org.jets3t.service.CloudFrontServiceException;
+import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -71,5 +77,59 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         configuration.read(container, Distribution.DOWNLOAD);
+    }
+
+    @Test
+    public void testWriteExists() throws Exception {
+        final AtomicBoolean set = new AtomicBoolean();
+        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
+        host.setCredentials(new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
+            @Override
+            protected void updateDistribution(final CloudFrontService client, final boolean enabled, final Distribution.Method method, final String origin, final String distributionId, final String etag, final String reference, final String[] cnames, final LoggingStatus logging, final String defaultRootObject) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
+                set.set(true);
+            }
+
+            @Override
+            protected org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client, final boolean enabled, final Distribution.Method method, final String origin, final String[] cnames, final LoggingStatus logging, final String defaultRootObject) throws ConnectionCanceledException, CloudFrontServiceException {
+                fail();
+                return null;
+            }
+        };
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        configuration.write(container, new Distribution("test.cyberduck.ch.s3.amazonaws.com", Distribution.DOWNLOAD));
+        assertTrue(set.get());
+    }
+
+    @Test
+    public void testWriteNew() throws Exception {
+        final AtomicBoolean set = new AtomicBoolean();
+        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
+        host.setCredentials(new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
+            @Override
+            protected void updateDistribution(final CloudFrontService client, final boolean enabled, final Distribution.Method method, final String origin, final String distributionId, final String etag, final String reference, final String[] cnames, final LoggingStatus logging, final String defaultRootObject) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
+                fail();
+            }
+
+            @Override
+            protected org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client, final boolean enabled, final Distribution.Method method, final String origin, final String[] cnames, final LoggingStatus logging, final String defaultRootObject) throws ConnectionCanceledException, CloudFrontServiceException {
+                set.set(true);
+                return null;
+            }
+        };
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        configuration.write(container, new Distribution("test.cyberduck.ch.s3.amazonaws.com", Distribution.STREAMING));
+        assertTrue(set.get());
     }
 }

@@ -105,12 +105,11 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     }
 
     @Override
-    public void write(final Path container, final boolean enabled, final Distribution.Method method, final String[] cnames,
-                      final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
+    public void write(final Path container, final Distribution distribution) throws BackgroundException {
         this.authenticated(new Callable<Void>() {
             @Override
             public Void call() throws BackgroundException {
-                CustomOriginCloudFrontDistributionConfiguration.super.write(container, enabled, method, cnames, logging, loggingBucket, defaultRootObject);
+                CustomOriginCloudFrontDistributionConfiguration.super.write(container, distribution);
                 return null;
             }
         });

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class GSWebsiteDistributionConfigurationTest extends AbstractTestCase {
+public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testGetOrigin() throws Exception {

@@ -35,16 +35,9 @@ public interface DistributionConfiguration {
     /**
      * Write distribution configuration for origin.
      *
-     * @param container         Container
-     * @param enabled           True if distribution should be activated if not yet.
-     * @param method            Distribution method
-     * @param cnames            CNAME entires in the DNS pointing to the same origin.
-     * @param logging           True if logging should be enabled for access to CDN.
-     * @param loggingBucket     The logging target
-     * @param defaultRootObject Index file for root of container
+     * @param configuration Configuration
      */
-    void write(final Path container, boolean enabled, Distribution.Method method,
-               String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) throws BackgroundException;
+    void write(Path container, Distribution configuration) throws BackgroundException;
 
     /**
      * Read distribution configuration of origin
@@ -53,49 +46,7 @@ public interface DistributionConfiguration {
      * @param method    Distribution protocol
      * @return Distribution Configuration
      */
-    Distribution read(final Path container, Distribution.Method method) throws BackgroundException;
-
-    /**
-     * Purge objects from edge locations
-     *
-     * @param container Container
-     * @param method    Distribution method
-     * @param files     Selected files or containers to purge
-     * @param recursive Apply recursively to selected container or placeholder
-     */
-    void invalidate(final Path container, Distribution.Method method, List<Path> files, boolean recursive) throws BackgroundException;
-
-    /**
-     * @param method Distribution method
-     * @return True if objects in the edge location can be deleted from the CDN
-     */
-    boolean isInvalidationSupported(Distribution.Method method);
-
-    /**
-     * Index file for root of container
-     *
-     * @param method Distribution method
-     * @return True if index file can be specified
-     */
-    boolean isDefaultRootSupported(Distribution.Method method);
-
-    /**
-     * @param method Distribution method
-     * @return True if CDN is is configured logging requests to storage
-     */
-    boolean isLoggingSupported(Distribution.Method method);
-
-    /**
-     * @param method Distribution method
-     * @return If there is an analytics provider
-     */
-    boolean isAnalyticsSupported(Distribution.Method method);
-
-    /**
-     * @param method Distribution method
-     * @return True if CNAME for for the CDN URI can be configured
-     */
-    boolean isCnameSupported(Distribution.Method method);
+    Distribution read(Path container, Distribution.Method method) throws BackgroundException;
 
     /**
      * List available distribution methods for this CDN.
@@ -103,7 +54,7 @@ public interface DistributionConfiguration {
      * @param container Container
      * @return The supported protocols
      */
-    List<Distribution.Method> getMethods(final Path container);
+    List<Distribution.Method> getMethods(Path container);
 
     /**
      * @return Hostname and port
@@ -122,4 +73,6 @@ public interface DistributionConfiguration {
      * @return CDN name
      */
     String getName(Distribution.Method method);
+
+    <T> T getFeature(Class<T> type, Distribution.Method method);
 }

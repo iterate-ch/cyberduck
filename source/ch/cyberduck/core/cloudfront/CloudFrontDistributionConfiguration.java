@@ -24,6 +24,11 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cdn.features.Analytics;
+import ch.cyberduck.core.cdn.features.Cname;
+import ch.cyberduck.core.cdn.features.Index;
+import ch.cyberduck.core.cdn.features.Logging;
+import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.CloudFrontServiceExceptionMappingService;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -62,7 +67,7 @@ import java.util.UUID;
  *
  * @version $Id$
  */
-public class CloudFrontDistributionConfiguration implements DistributionConfiguration {
+public class CloudFrontDistributionConfiguration implements DistributionConfiguration, Purge {
     private static Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
     private S3Session session;
@@ -157,6 +162,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     }
                 }
             }
+            // Return disabled configuration
             return new Distribution(this.getOrigin(container, method), method);
         }
         catch(CloudFrontServiceException e) {
@@ -165,52 +171,42 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     @Override
-    public void write(final Path container, final boolean enabled, final Distribution.Method method,
-                      final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
+    public void write(final Path container, final Distribution distribution) throws BackgroundException {
         try {
             // Configure CDN
             LoggingStatus loggingStatus = null;
-            if(logging) {
-                if(this.isLoggingSupported(method)) {
-                    final String loggingDestination = StringUtils.isNotBlank(loggingBucket) ?
-                            ServiceUtils.generateS3HostnameForBucket(loggingBucket, false, Protocol.S3_SSL.getDefaultHostname()) :
-                            this.getOrigin(container, method);
+            if(distribution.isLogging()) {
+                if(this.getFeature(Logging.class, distribution.getMethod()) != null) {
+                    final String loggingDestination = StringUtils.isNotBlank(distribution.getLoggingTarget()) ?
+                            ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingTarget(), false, Protocol.S3_SSL.getDefaultHostname()) :
+                            this.getOrigin(container, distribution.getMethod());
                     loggingStatus = new LoggingStatus(loggingDestination,
                             Preferences.instance().getProperty("cloudfront.logging.prefix"));
                 }
             }
-            final Distribution d = this.read(container, method);
-            if(null == d) {
+            final Distribution current = this.read(container, distribution.getMethod());
+            if(null == current.getId()) {
+                // No existing configuration
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("No existing distribution found for method %s", method));
+                    log.debug(String.format("No existing distribution found for method %s", distribution.getMethod()));
                 }
-                this.createDistribution(client, enabled, method, this.getOrigin(container, method), cnames, loggingStatus, defaultRootObject);
+                this.createDistribution(client, distribution.isEnabled(),
+                        distribution.getMethod(),
+                        this.getOrigin(container, distribution.getMethod()),
+                        distribution.getCNAMEs(), loggingStatus, distribution.getIndexDocument());
             }
             else {
-                boolean modified = false;
-                if(d.isEnabled() != enabled) {
-                    modified = true;
-                }
-                if(!Arrays.equals(d.getCNAMEs(), cnames)) {
-                    modified = true;
-                }
-                if(d.isLogging() != logging) {
-                    modified = true;
-                }
-                // Compare default root object for possible change
-                if(!StringUtils.equals(d.getDefaultRootObject(), defaultRootObject)) {
-                    modified = true;
-                }
-                // Compare logging target for possible change
-                if(!StringUtils.equals(d.getLoggingTarget(), loggingBucket)) {
-                    modified = true;
-                }
-                if(modified) {
-                    this.updateDistribution(client, enabled, method, this.getOrigin(container, method), d.getId(), d.getEtag(), d.getReference(),
-                            cnames, loggingStatus, defaultRootObject);
+                if(current.equals(distribution)) {
+                    log.info("Skip updating distribution not modified.");
                 }
                 else {
-                    log.info("Skip updating distribution not modified.");
+                    this.updateDistribution(client, distribution.isEnabled(),
+                            distribution.getMethod(),
+                            this.getOrigin(container, distribution.getMethod()),
+                            current.getId(), current.getEtag(), current.getReference(),
+                            distribution.getCNAMEs(),
+                            loggingStatus,
+                            distribution.getIndexDocument());
                 }
             }
         }
@@ -223,34 +219,25 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     @Override
-    public boolean isDefaultRootSupported(final Distribution.Method method) {
-        return method.equals(Distribution.DOWNLOAD)
-                || method.equals(Distribution.WEBSITE_CDN)
-                || method.equals(Distribution.CUSTOM);
-    }
-
-    @Override
-    public boolean isInvalidationSupported(final Distribution.Method method) {
-        return method.equals(Distribution.DOWNLOAD)
-                || method.equals(Distribution.WEBSITE_CDN)
-                || method.equals(Distribution.CUSTOM);
-    }
-
-    @Override
-    public boolean isLoggingSupported(final Distribution.Method method) {
-        return method.equals(Distribution.DOWNLOAD)
-                || method.equals(Distribution.STREAMING)
-                || method.equals(Distribution.CUSTOM);
-    }
-
-    @Override
-    public boolean isAnalyticsSupported(final Distribution.Method method) {
-        return this.isLoggingSupported(method);
-    }
-
-    @Override
-    public boolean isCnameSupported(final Distribution.Method method) {
-        return true;
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
+        if(type == Purge.class || type == Index.class) {
+            if(method.equals(Distribution.DOWNLOAD)
+                    || method.equals(Distribution.WEBSITE_CDN)
+                    || method.equals(Distribution.CUSTOM)) {
+                return (T) this;
+            }
+        }
+        if(type == Logging.class || type == Analytics.class) {
+            if(method.equals(Distribution.DOWNLOAD)
+                    || method.equals(Distribution.STREAMING)
+                    || method.equals(Distribution.CUSTOM)) {
+                return (T) this;
+            }
+        }
+        if(type == Cname.class) {
+            return (T) this;
+        }
+        return null;
     }
 
     /**
@@ -356,13 +343,13 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @throws CloudFrontServiceException  CloudFront failure details
      * @throws ConnectionCanceledException Authentication canceled
      */
-    private org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client,
-                                                                                final boolean enabled,
-                                                                                final Distribution.Method method,
-                                                                                final String origin,
-                                                                                final String[] cnames,
-                                                                                final LoggingStatus logging,
-                                                                                final String defaultRootObject)
+    protected org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client,
+                                                                                  final boolean enabled,
+                                                                                  final Distribution.Method method,
+                                                                                  final String origin,
+                                                                                  final String[] cnames,
+                                                                                  final LoggingStatus logging,
+                                                                                  final String defaultRootObject)
             throws ConnectionCanceledException, CloudFrontServiceException {
 
         final String reference = String.valueOf(System.currentTimeMillis());
@@ -413,10 +400,10 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @throws CloudFrontServiceException CloudFront failure details
      * @throws IOException                I/O error
      */
-    private void updateDistribution(final CloudFrontService client,
-                                    boolean enabled, Distribution.Method method, final String origin,
-                                    final String distributionId, final String etag, final String reference,
-                                    final String[] cnames, final LoggingStatus logging, final String defaultRootObject)
+    protected void updateDistribution(final CloudFrontService client,
+                                      boolean enabled, Distribution.Method method, final String origin,
+                                      final String distributionId, final String etag, final String reference,
+                                      final String[] cnames, final LoggingStatus logging, final String defaultRootObject)
             throws CloudFrontServiceException, IOException, ConnectionCanceledException {
 
         if(log.isDebugEnabled()) {
@@ -479,28 +466,26 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             loggingTarget = ServiceUtils.findBucketNameInHostname(distributionConfig.getLoggingStatus().getBucket(),
                     Protocol.S3_SSL.getDefaultHostname());
         }
-        final Distribution distribution = new Distribution(
-                d.getId(),
-                distributionConfig.getEtag(),
-                distributionConfig.getCallerReference(),
+        final Distribution distribution = new Distribution(d.getId(),
                 d.getConfig().getOrigin().getDomainName(),
                 method,
-                d.getConfig().isEnabled(),
-                d.isDeployed(),
-                // CloudFront URL
-                String.format("%s://%s%s", method.getScheme(), d.getDomainName(), method.getContext()),
-                method.equals(Distribution.DOWNLOAD) || method.equals(Distribution.CUSTOM)
-                        ? String.format("https://%s%s", d.getDomainName(), method.getContext()) : null, // No SSL
-                null,
-                Locale.localizedString(d.getStatus(), "S3"),
-                distributionConfig.getCNAMEs(),
-                distributionConfig.getLoggingStatus().isEnabled(),
-                loggingTarget,
-                distributionConfig.getDefaultRootObject());
-        if(this.isInvalidationSupported(method)) {
+                d.getConfig().isEnabled()
+        );
+        distribution.setDeployed(d.isDeployed());
+        distribution.setUrl(String.format("%s://%s%s", method.getScheme(), d.getDomainName(), method.getContext()));
+        distribution.setSslUrl(method.equals(Distribution.DOWNLOAD) || method.equals(Distribution.CUSTOM)
+                ? String.format("https://%s%s", d.getDomainName(), method.getContext()) : null);
+        distribution.setReference(distributionConfig.getCallerReference());
+        distribution.setEtag(distributionConfig.getEtag());
+        distribution.setStatus(Locale.localizedString(d.getStatus(), "S3"));
+        distribution.setCNAMEs(distributionConfig.getCNAMEs());
+        distribution.setLogging(distributionConfig.getLoggingStatus().isEnabled());
+        distribution.setLoggingContainer(loggingTarget);
+        distribution.setIndexDocument(distributionConfig.getDefaultRootObject());
+        if(this.getFeature(Purge.class, method) != null) {
             distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
         }
-        if(this.isLoggingSupported(method)) {
+        if(this.getFeature(Logging.class, method) != null) {
             distribution.setContainers(new S3BucketListService().list(session));
         }
         return distribution;

@@ -33,6 +33,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -120,7 +121,7 @@ public class Distribution {
     /**
      * Key of the default root object or index document
      */
-    private String defaultRootObject;
+    private String indexDocument;
 
     /**
      * Custom Error Document Support. Amazon S3 returns your custom error document
@@ -257,8 +258,8 @@ public class Distribution {
      * @param origin Server to fetch original content
      * @param method Protocol
      */
-    public Distribution(String origin, Method method) {
-        this(null, origin, method, false, false, null, null, new String[]{}, false);
+    public Distribution(final String origin, final Method method) {
+        this(null, origin, method, false);
     }
 
     /**
@@ -266,142 +267,12 @@ public class Distribution {
      * @param origin  Server
      * @param method  Kind of distribution
      * @param enabled Deployment Enabled
-     * @param url     Where to find this distribution
-     * @param status  Status Message about Deployment Status
      */
-    public Distribution(String id, String origin, Method method, boolean enabled,
-                        String url, String status) {
-        this(id, origin, method, enabled, url, status, new String[]{});
-    }
-
-    /**
-     * @param id      Identifier of this distribution
-     * @param origin  Server to fetch original content
-     * @param method  Kind of distribution
-     * @param enabled Deployment Enabled
-     * @param url     Where to find this distribution
-     * @param status  Status Message about Deployment Status
-     * @param logging Logging status
-     */
-    public Distribution(String id, String origin, Method method, boolean enabled,
-                        String url, String status, boolean logging) {
-        this(id, origin, method, enabled, enabled, url, status, new String[]{}, logging);
-    }
-
-    /**
-     * @param id           Identifier of this distribution
-     * @param origin       Server to fetch original content
-     * @param method       Kind of distribution
-     * @param enabled      Deployment Enabled
-     * @param url          Where to find this distribution
-     * @param sslUrl       Where to find this distribution using HTTPS
-     * @param streamingUrl RTMP URL
-     * @param status       Status Message about Deployment Status
-     * @param logging      Logging status
-     */
-    public Distribution(String id, String origin, Method method, boolean enabled,
-                        String url, String sslUrl, String streamingUrl, String status, boolean logging) {
-        this(id, null, null, origin, method, enabled, enabled, url, sslUrl, streamingUrl, status, new String[]{},
-                logging, null, null);
-    }
-
-
-    /**
-     * @param id      Identifier of this distribution
-     * @param origin  Server to fetch original content
-     * @param method  Kind of distribution
-     * @param enabled Deployment Enabled
-     * @param url     Where to find this distribution
-     * @param status  Status Message about Deployment Status
-     * @param cnames  Multiple CNAME aliases of this distribution
-     */
-    public Distribution(String id, String origin, Method method, boolean enabled,
-                        String url, String status, String[] cnames) {
-        this(id, origin, method, enabled, enabled, url, status, cnames);
-    }
-
-    /**
-     * @param id       Identifier of this distribution
-     * @param origin   Server to fetch original content
-     * @param method   Kind of distribution
-     * @param enabled  Deployment Enabled
-     * @param deployed Deployment Status is about to be changed
-     * @param url      Where to find this distribution
-     * @param status   Status Message about Deployment Status
-     * @param cnames   Multiple CNAME aliases of this distribution
-     */
-    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed,
-                        String url, String status, String[] cnames) {
-        this(id, origin, method, enabled, deployed, url, status, cnames, false);
-    }
-
-    /**
-     * @param id       Identifier of this distribution
-     * @param origin   Server to fetch original content
-     * @param method   Kind of distribution
-     * @param enabled  Deployment Enabled
-     * @param deployed Deployment Status is about to be changed
-     * @param url      Where to find this distribution
-     * @param status   Status Message about Deployment Status
-     * @param cnames   Multiple CNAME aliases of this distribution
-     * @param logging  Logging status
-     */
-    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url,
-                        String status, String[] cnames, boolean logging) {
-        this(id, origin, method, enabled, deployed, url, status, cnames, logging, null);
-    }
-
-    /**
-     * @param id                Identifier of this distribution
-     * @param origin            Server to fetch original content
-     * @param method            Kind of distribution
-     * @param enabled           Deployment Enabled
-     * @param deployed          Deployment Status is about to be changed
-     * @param url               Where to find this distribution
-     * @param status            Status Message about Deployment Status
-     * @param cnames            Multiple CNAME aliases of this distribution
-     * @param logging           Logging status
-     * @param defaultRootObject Index file
-     */
-    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url,
-                        String status, String[] cnames, boolean logging, String defaultRootObject) {
-        this(id, null, null, origin, method, enabled, deployed, url, null, null, status, cnames, logging, null, defaultRootObject);
-    }
-
-    /**
-     * @param id                Identifier of this distribution
-     * @param etag              ETag header
-     * @param origin            Server to fetch original content
-     * @param method            Kind of distribution
-     * @param enabled           Deployment Enabled
-     * @param deployed          Deployment Status is about to be changed
-     * @param url               Where to find this distribution
-     * @param sslUrl            Where to find this distribution using HTTPS
-     * @param streamingUrl      RTMP URL
-     * @param status            Status Message about Deployment Status
-     * @param cnames            Multiple CNAME aliases of this distribution
-     * @param logging           Logging status
-     * @param loggingContainer  Logging target bucket
-     * @param defaultRootObject Index file
-     */
-    public Distribution(String id, String etag, String reference, String origin, Method method, boolean enabled, boolean deployed, String url,
-                        String sslUrl, String streamingUrl, String status, String[] cnames,
-                        boolean logging, String loggingContainer, String defaultRootObject) {
+    public Distribution(final String id, final String origin, final Method method, final boolean enabled) {
         this.id = id;
-        this.etag = etag;
-        this.reference = reference;
         this.origin = origin;
         this.enabled = enabled;
-        this.deployed = deployed;
-        this.url = url;
-        this.sslUrl = sslUrl;
-        this.streamingUrl = streamingUrl;
-        this.status = status;
-        this.cnames = cnames;
-        this.logging = logging;
-        this.loggingContainer = loggingContainer;
         this.method = method;
-        this.defaultRootObject = defaultRootObject;
     }
 
     public String getId() {
@@ -452,6 +323,10 @@ public class Distribution {
         return enabled;
     }
 
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
+    }
+
     /**
      * Deployment status
      *
@@ -459,6 +334,10 @@ public class Distribution {
      */
     public boolean isDeployed() {
         return deployed;
+    }
+
+    public void setDeployed(final boolean deployed) {
+        this.deployed = deployed;
     }
 
     /**
@@ -472,6 +351,14 @@ public class Distribution {
         this.logging = logging;
     }
 
+    public String getLoggingContainer() {
+        return loggingContainer;
+    }
+
+    public void setLoggingContainer(final String loggingContainer) {
+        this.loggingContainer = loggingContainer;
+    }
+
     /**
      * @return The container where log files are stored
      */
@@ -479,12 +366,16 @@ public class Distribution {
         return loggingContainer;
     }
 
+    public void setUrl(final String url) {
+        this.url = url;
+    }
+
     /**
      * Distribution URL from CDN provider.
      *
      * @return Null if not available
      */
-    public String getURL() {
+    public String getUrl() {
         return url;
     }
 
@@ -493,7 +384,7 @@ public class Distribution {
      * @return URL to file in distribution
      */
     public String getURL(final Path file) {
-        return this.getURL(file, this.getURL());
+        return this.getURL(file, this.getUrl());
     }
 
     /**
@@ -518,6 +409,10 @@ public class Distribution {
         return b.toString();
     }
 
+    public void setSslUrl(final String sslUrl) {
+        this.sslUrl = sslUrl;
+    }
+
     /**
      * Distribution HTTPS URL from CDN provider.
      *
@@ -529,6 +424,10 @@ public class Distribution {
 
     public String getSslUrl(final Path file) {
         return this.getURL(file, this.getSslUrl());
+    }
+
+    public void setStreamingUrl(final String streamingUrl) {
+        this.streamingUrl = streamingUrl;
     }
 
     public String getStreamingUrl() {
@@ -597,6 +496,10 @@ public class Distribution {
         return status;
     }
 
+    public void setStatus(final String status) {
+        this.status = status;
+    }
+
     public String getInvalidationStatus() {
         if(null == invalidationStatus) {
             return Locale.localizedString("None");
@@ -606,16 +509,6 @@ public class Distribution {
 
     public void setInvalidationStatus(final String invalidationStatus) {
         this.invalidationStatus = invalidationStatus;
-    }
-
-    /**
-     * @return Empty array if no CNAMEs configured for this distribution
-     */
-    public String[] getCNAMEs() {
-        if(null == cnames) {
-            return new String[]{};
-        }
-        return cnames;
     }
 
     public List<Path> getContainers() {
@@ -631,12 +524,12 @@ public class Distribution {
      *
      * @return Null if not supported or not set
      */
-    public String getDefaultRootObject() {
-        return defaultRootObject;
+    public String getIndexDocument() {
+        return indexDocument;
     }
 
-    public void setDefaultRootObject(final String defaultRootObject) {
-        this.defaultRootObject = defaultRootObject;
+    public void setIndexDocument(final String indexDocument) {
+        this.indexDocument = indexDocument;
     }
 
     public String getErrorDocument() {
@@ -661,6 +554,25 @@ public class Distribution {
         this.method = method;
     }
 
+    public String[] getCNAMEs() {
+        if(null == cnames) {
+            return new String[]{};
+        }
+        return cnames;
+    }
+
+    public void setCNAMEs(final String[] cnames) {
+        this.cnames = cnames;
+    }
+
+    public void setEtag(final String etag) {
+        this.etag = etag;
+    }
+
+    public void setReference(final String reference) {
+        this.reference = reference;
+    }
+
     @Override
     public String toString() {
         return this.getId();
@@ -671,17 +583,32 @@ public class Distribution {
         if(this == o) {
             return true;
         }
-        if(!(o instanceof Distribution)) {
+        if(o == null || getClass() != o.getClass()) {
             return false;
         }
         final Distribution that = (Distribution) o;
-        if(id != null ? !id.equals(that.id) : that.id != null) {
+        if(deployed != that.deployed) {
+            return false;
+        }
+        if(enabled != that.enabled) {
+            return false;
+        }
+        if(logging != that.logging) {
+            return false;
+        }
+        if(!Arrays.equals(cnames, that.cnames)) {
+            return false;
+        }
+        if(errorDocument != null ? !errorDocument.equals(that.errorDocument) : that.errorDocument != null) {
+            return false;
+        }
+        if(indexDocument != null ? !indexDocument.equals(that.indexDocument) : that.indexDocument != null) {
+            return false;
+        }
+        if(loggingContainer != null ? !loggingContainer.equals(that.loggingContainer) : that.loggingContainer != null) {
             return false;
         }
         if(method != null ? !method.equals(that.method) : that.method != null) {
-            return false;
-        }
-        if(origin != null ? !origin.equals(that.origin) : that.origin != null) {
             return false;
         }
         return true;
@@ -689,9 +616,14 @@ public class Distribution {
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (origin != null ? origin.hashCode() : 0);
+        int result = (deployed ? 1 : 0);
+        result = 31 * result + (enabled ? 1 : 0);
+        result = 31 * result + (logging ? 1 : 0);
+        result = 31 * result + (loggingContainer != null ? loggingContainer.hashCode() : 0);
+        result = 31 * result + (cnames != null ? Arrays.hashCode(cnames) : 0);
         result = 31 * result + (method != null ? method.hashCode() : 0);
+        result = 31 * result + (indexDocument != null ? indexDocument.hashCode() : 0);
+        result = 31 * result + (errorDocument != null ? errorDocument.hashCode() : 0);
         return result;
     }
 }

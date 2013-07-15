@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
@@ -65,39 +66,29 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
         try {
             final WebsiteConfig configuration = session.getClient().getWebsiteConfigImpl(container.getName());
-            return new Distribution(
+            final Distribution distribution = new Distribution(
                     null,
                     container.getName(),
                     method,
-                    configuration.isWebsiteConfigActive(),
-                    configuration.isWebsiteConfigActive(),
-                    // http://example-bucket.s3-website-us-east-1.amazonaws.com/
-                    String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()),
-                    Locale.localizedString("Deployed", "S3"),
-                    new String[]{},
-                    false,
-                    configuration.getIndexDocumentSuffix());
+                    configuration.isWebsiteConfigActive());
+            // http://example-bucket.s3-website-us-east-1.amazonaws.com/
+            distribution.setUrl(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()));
+            distribution.setStatus(Locale.localizedString("Deployed", "S3"));
+            distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
+            return distribution;
         }
         catch(ServiceException e) {
             // Not found. Website configuration not enbabled.
-            return new Distribution(
+            final Distribution distribution = new Distribution(
                     null,
                     container.getName(),
                     method,
-                    false, //Disabled
-                    String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()),
-                    e.getErrorMessage());
+                    //Disabled
+                    false);
+            distribution.setStatus(e.getErrorMessage());
+            distribution.setUrl(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()));
+            return distribution;
         }
-    }
-
-    @Override
-    public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final boolean recursive) throws BackgroundException {
-        //
-    }
-
-    @Override
-    public boolean isInvalidationSupported(final Distribution.Method method) {
-        return false;
     }
 
     @Override
@@ -106,13 +97,12 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public void write(final Path container, final boolean enabled, final Distribution.Method method,
-                      final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
+    public void write(final Path container, final Distribution distribution) throws BackgroundException {
         try {
-            if(enabled) {
+            if(distribution.isEnabled()) {
                 String suffix = "index.html";
-                if(StringUtils.isNotBlank(defaultRootObject)) {
-                    suffix = FilenameUtils.getName(defaultRootObject);
+                if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
+                    suffix = FilenameUtils.getName(distribution.getIndexDocument());
                 }
                 // Enable website endpoint
                 session.getClient().setWebsiteConfigImpl(container.getName(), new GSWebsiteConfig(suffix));
@@ -128,23 +118,11 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public boolean isDefaultRootSupported(final Distribution.Method method) {
-        return true;
-    }
-
-    @Override
-    public boolean isLoggingSupported(final Distribution.Method method) {
-        return false;
-    }
-
-    @Override
-    public boolean isCnameSupported(final Distribution.Method method) {
-        return false;
-    }
-
-    @Override
-    public boolean isAnalyticsSupported(final Distribution.Method method) {
-        return false;
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
+        if(type == Index.class) {
+            return (T) this;
+        }
+        return null;
     }
 
     @Override

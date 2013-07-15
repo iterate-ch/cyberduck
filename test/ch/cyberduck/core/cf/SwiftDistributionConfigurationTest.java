@@ -23,7 +23,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testGetName() throws Exception {
-        final CFSession session = new CFSession(new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname()));
+        final CFSession session = new CFSession(new Host(Protocol.SWIFT, "h"));
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         assertEquals("Akamai", configuration.getName());
         assertEquals("Akamai", configuration.getName(Distribution.DOWNLOAD));
@@ -31,7 +31,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testReadRackspace() throws Exception {
-        final CFSession session = new CFSession(new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
+        final CFSession session = new CFSession(new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
         session.open(new DefaultHostKeyController());
@@ -43,7 +43,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertNotNull(test);
         assertEquals(Distribution.DOWNLOAD, test.getMethod());
         assertArrayEquals(new String[]{}, test.getCNAMEs());
-        assertEquals("index.html", test.getDefaultRootObject());
+        assertEquals("index.html", test.getIndexDocument());
         assertNull(test.getErrorDocument());
         assertEquals("None", test.getInvalidationStatus());
         assertTrue(test.isEnabled());
@@ -72,14 +72,14 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertNotNull(test);
         assertEquals(Distribution.DOWNLOAD, test.getMethod());
         assertArrayEquals(new String[]{}, test.getCNAMEs());
-        assertEquals("index.html", test.getDefaultRootObject());
+        assertEquals("index.html", test.getIndexDocument());
         assertNull(test.getErrorDocument());
         assertEquals("None", test.getInvalidationStatus());
         assertTrue(test.isEnabled());
         assertTrue(test.isDeployed());
         assertFalse(test.isLogging());
         assertEquals("test.cyberduck.ch", test.getId());
-        assertEquals("http://h2c0a3c89b6b2779528b78c25aeab0958.cdn.hpcloudsvc.com", test.getURL());
+        assertEquals("http://h2c0a3c89b6b2779528b78c25aeab0958.cdn.hpcloudsvc.com", test.getUrl());
         assertEquals("https://a248.e.akamai.net/cdn.hpcloudsvc.com/h2c0a3c89b6b2779528b78c25aeab0958/prodaw2", test.getSslUrl());
         assertEquals(1, test.getContainers().size());
         assertEquals("region-a.geo-1.objects.hpcloudsvc.com", test.getOrigin());

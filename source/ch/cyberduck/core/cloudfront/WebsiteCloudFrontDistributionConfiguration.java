@@ -20,6 +20,10 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.features.Analytics;
+import ch.cyberduck.core.cdn.features.Cname;
+import ch.cyberduck.core.cdn.features.Index;
+import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
@@ -93,26 +97,20 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                         null,
                         this.getOrigin(container, method),
                         method,
-                        configuration.isWebsiteConfigActive(),
-                        configuration.isWebsiteConfigActive(),
-                        // http://example-bucket.s3-website-us-east-1.amazonaws.com/
-                        String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)),
-                        Locale.localizedString("Deployed", "S3"),
-                        new String[]{},
-                        false,
-                        configuration.getIndexDocumentSuffix());
+                        configuration.isWebsiteConfigActive());
+                distribution.setStatus(Locale.localizedString("Deployed", "S3"));
+                // http://example-bucket.s3-website-us-east-1.amazonaws.com/
+                distribution.setUrl(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)));
+                distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
                 distribution.setContainers(new S3BucketListService().list(session));
                 return distribution;
             }
             catch(ServiceException e) {
-                // Not found. Website configuration not enbabled.
-                String status = Locale.localizedString(e.getErrorCode());
-                if(status.equals(e.getErrorCode())) {
-                    // No localization found. Use english text
-                    status = e.getErrorMessage();
-                }
-                return new Distribution(null, this.getOrigin(container, method), method, false,
-                        String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)), status);
+                // Not found. Website configuration not enabled.
+                final Distribution distribution = new Distribution(null, this.getOrigin(container, method), method, false);
+                distribution.setStatus(e.getErrorMessage());
+                distribution.setUrl(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)));
+                return distribution;
             }
         }
         else {
@@ -121,14 +119,13 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    public void write(final Path container, final boolean enabled, final Distribution.Method method,
-                      final String[] cnames, final boolean logging, final String loggingBucket, final String defaultRootObject) throws BackgroundException {
-        if(method.equals(Distribution.WEBSITE)) {
+    public void write(final Path container, final Distribution distribution) throws BackgroundException {
+        if(distribution.getMethod().equals(Distribution.WEBSITE)) {
             try {
-                if(enabled) {
+                if(distribution.isEnabled()) {
                     String suffix = "index.html";
-                    if(StringUtils.isNotBlank(defaultRootObject)) {
-                        suffix = FilenameUtils.getName(defaultRootObject);
+                    if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
+                        suffix = FilenameUtils.getName(distribution.getIndexDocument());
                     }
                     // Enable website endpoint
                     session.getClient().setWebsiteConfig(container.getName(), new S3WebsiteConfig(suffix));
@@ -143,7 +140,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             }
         }
         else {
-            super.write(container, enabled, method, cnames, logging, loggingBucket, defaultRootObject);
+            super.write(container, distribution);
         }
     }
 
@@ -156,19 +153,21 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    public boolean isDefaultRootSupported(final Distribution.Method method) {
-        if(method.equals(Distribution.WEBSITE)) {
-            return true;
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
+        if(type == Index.class) {
+            if(method.equals(Distribution.WEBSITE)) {
+                return (T) this;
+            }
         }
-        return super.isDefaultRootSupported(method);
-    }
-
-    @Override
-    public boolean isLoggingSupported(final Distribution.Method method) {
-        if(method.equals(Distribution.WEBSITE)) {
-            return false;
+        if(type == Logging.class || type == Analytics.class) {
+            if(method.equals(Distribution.WEBSITE)) {
+                return null;
+            }
         }
-        return super.isLoggingSupported(method);
+        if(type == Cname.class) {
+            return (T) this;
+        }
+        return super.getFeature(type, method);
     }
 
     /**

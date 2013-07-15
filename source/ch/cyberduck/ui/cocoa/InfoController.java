@@ -23,6 +23,10 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cdn.features.Analytics;
+import ch.cyberduck.core.cdn.features.Cname;
+import ch.cyberduck.core.cdn.features.Index;
+import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -2418,7 +2422,7 @@ public class InfoController extends ToolbarWindowController {
         Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
         distributionEnableButton.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
-        distributionLoggingButton.setEnabled(stop && enable && cdn.isLoggingSupported(method));
+        distributionLoggingButton.setEnabled(stop && enable && cdn.getFeature(Logging.class, method) != null);
         final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class, prompt);
         if(ObjectUtils.equals(iam.getUserCredentials(
                 session.getFeature(AnalyticsProvider.class, prompt).getName()), credentials)) {
@@ -2426,12 +2430,12 @@ public class InfoController extends ToolbarWindowController {
             distributionAnalyticsButton.setEnabled(false);
         }
         else {
-            distributionAnalyticsButton.setEnabled(stop && enable && cdn.isAnalyticsSupported(method));
+            distributionAnalyticsButton.setEnabled(stop && enable && cdn.getFeature(Analytics.class, method) != null);
         }
-        distributionLoggingPopup.setEnabled(stop && enable && cdn.isLoggingSupported(method));
-        distributionCnameField.setEnabled(stop && enable && cdn.isCnameSupported(method));
-        distributionInvalidateObjectsButton.setEnabled(stop && enable && cdn.isInvalidationSupported(method));
-        distributionDefaultRootPopup.setEnabled(stop && enable && cdn.isDefaultRootSupported(method));
+        distributionLoggingPopup.setEnabled(stop && enable && cdn.getFeature(Logging.class, method) != null);
+        distributionCnameField.setEnabled(stop && enable && cdn.getFeature(Cname.class, method) != null);
+        distributionInvalidateObjectsButton.setEnabled(stop && enable && cdn.getFeature(Purge.class, method) != null);
+        distributionDefaultRootPopup.setEnabled(stop && enable && cdn.getFeature(Index.class, method) != null);
         if(stop) {
             distributionProgress.stopAnimation(null);
         }
@@ -2451,7 +2455,8 @@ public class InfoController extends ToolbarWindowController {
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = containerService.getContainer(getSelected());
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
-                    cdn.invalidate(container, method, files, false);
+                    final Purge feature = cdn.getFeature(Purge.class, method);
+                    feature.invalidate(container, method, files, false);
                 }
 
                 @Override
@@ -2488,23 +2493,12 @@ public class InfoController extends ToolbarWindowController {
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = containerService.getContainer(getSelected());
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
-                    if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
-                        cdn.write(container,
-                                distributionEnableButton.state() == NSCell.NSOnState,
-                                method,
-                                StringUtils.split(distributionCnameField.stringValue()),
-                                distributionLoggingButton.state() == NSCell.NSOnState,
-                                distributionLoggingPopup.selectedItem().representedObject(),
-                                distributionDefaultRootPopup.selectedItem().representedObject());
-                    }
-                    else {
-                        cdn.write(container,
-                                distributionEnableButton.state() == NSCell.NSOnState,
-                                method, new String[]{},
-                                distributionLoggingButton.state() == NSCell.NSOnState,
-                                null == distributionLoggingPopup.selectedItem() ? getSelected().getName() : distributionLoggingPopup.selectedItem().representedObject(),
-                                distributionDefaultRootPopup.selectedItem().representedObject());
-                    }
+                    final Distribution configuration = new Distribution(null, null, method, distributionEnableButton.state() == NSCell.NSOnState);
+                    configuration.setIndexDocument(distributionDefaultRootPopup.selectedItem().representedObject());
+                    configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
+                    configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
+                    configuration.setCNAMEs(StringUtils.split(distributionCnameField.stringValue()));
+                    cdn.write(container, configuration);
                 }
 
                 @Override
@@ -2539,7 +2533,7 @@ public class InfoController extends ToolbarWindowController {
                     final Session<?> session = controller.getSession();
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
                     distribution = cdn.read(container, method);
-                    if(cdn.isDefaultRootSupported(distribution.getMethod())) {
+                    if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                         // Make sure container items are cached for default root object.
                         rootDocuments.addAll(session.list(container));
                     }
@@ -2576,7 +2570,7 @@ public class InfoController extends ToolbarWindowController {
                         if(null == distributionLoggingPopup.selectedItem()) {
                             distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
                         }
-                        if(cdn.isAnalyticsSupported(distribution.getMethod())) {
+                        if(cdn.getFeature(Analytics.class, distribution.getMethod()) != null) {
                             final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class, prompt);
                             final Credentials credentials = iam.getUserCredentials(controller.getSession().getFeature(AnalyticsProvider.class, prompt).getName());
                             distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
@@ -2625,7 +2619,7 @@ public class InfoController extends ToolbarWindowController {
                                 break;
                             }
                         }
-                        if(cdn.isDefaultRootSupported(distribution.getMethod())) {
+                        if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                             for(Path next : rootDocuments) {
                                 if(next.attributes().isFile()) {
                                     distributionDefaultRootPopup.addItemWithTitle(next.getName());
@@ -2633,11 +2627,11 @@ public class InfoController extends ToolbarWindowController {
                                 }
                             }
                         }
-                        if(StringUtils.isNotBlank(distribution.getDefaultRootObject())) {
-                            if(null == distributionDefaultRootPopup.itemWithTitle(distribution.getDefaultRootObject())) {
-                                distributionDefaultRootPopup.addItemWithTitle(distribution.getDefaultRootObject());
+                        if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
+                            if(null == distributionDefaultRootPopup.itemWithTitle(distribution.getIndexDocument())) {
+                                distributionDefaultRootPopup.addItemWithTitle(distribution.getIndexDocument());
                             }
-                            distributionDefaultRootPopup.selectItemWithTitle(distribution.getDefaultRootObject());
+                            distributionDefaultRootPopup.selectItemWithTitle(distribution.getIndexDocument());
                         }
                         else {
                             distributionDefaultRootPopup.selectItemWithTitle(Locale.localizedString("None"));
