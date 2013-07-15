@@ -91,8 +91,7 @@ public class UploadTransfer extends Transfer {
         else {
             AttributedList<Path> list = new AttributedList<Path>();
             for(Local local : parent.getLocal().list().filter(filter)) {
-                final Path child = new Path(parent, local);
-                list.add(child);
+                list.add(new Path(parent, local));
             }
             return list;
         }
