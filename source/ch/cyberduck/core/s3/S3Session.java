@@ -1046,9 +1046,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             else if(file.attributes().isDirectory()) {
                 final List<ObjectKeyAndVersion> files = new ArrayList<ObjectKeyAndVersion>();
                 for(Path child : this.list(file)) {
-                    if(!this.isConnected()) {
-                        throw new ConnectionCanceledException();
-                    }
                     if(child.attributes().isDirectory()) {
                         this.delete(child, prompt);
                     }
@@ -1132,9 +1129,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             }
             else if(file.attributes().isDirectory()) {
                 for(Path i : this.list(file)) {
-                    if(!this.isConnected()) {
-                        throw new ConnectionCanceledException();
-                    }
                     this.rename(i, new Path(renamed, i.getName(), i.attributes().getType()));
                 }
             }

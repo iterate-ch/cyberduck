@@ -27,7 +27,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -406,9 +405,6 @@ public class FTPSession extends SSLSession<FTPClient> {
             }
             else if(file.attributes().isDirectory()) {
                 for(Path child : this.list(file)) {
-                    if(!this.isConnected()) {
-                        throw new ConnectionCanceledException();
-                    }
                     this.delete(child, prompt);
                 }
                 this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),

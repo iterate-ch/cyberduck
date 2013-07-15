@@ -388,9 +388,6 @@ public class CFSession extends HttpSession<FilesClient> {
             }
             else if(file.attributes().isDirectory()) {
                 for(Path i : this.list(file)) {
-                    if(!this.isConnected()) {
-                        throw new ConnectionCanceledException();
-                    }
                     this.delete(i, prompt);
                 }
                 if(containerService.isContainer(file)) {
@@ -429,9 +426,6 @@ public class CFSession extends HttpSession<FilesClient> {
             }
             else if(file.attributes().isDirectory()) {
                 for(Path i : this.list(file)) {
-                    if(!this.isConnected()) {
-                        throw new ConnectionCanceledException();
-                    }
                     this.rename(i, new Path(renamed, i.getName(), i.attributes().getType()));
                 }
                 try {

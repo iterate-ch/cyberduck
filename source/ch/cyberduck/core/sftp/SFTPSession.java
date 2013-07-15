@@ -442,9 +442,6 @@ public class SFTPSession extends Session<Connection> {
             }
             else if(file.attributes().isDirectory()) {
                 for(Path child : this.list(file)) {
-                    if(!this.isConnected()) {
-                        throw new ConnectionCanceledException();
-                    }
                     this.delete(child, prompt);
                 }
                 this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),

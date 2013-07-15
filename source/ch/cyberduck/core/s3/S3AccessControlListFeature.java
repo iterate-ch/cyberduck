@@ -22,7 +22,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.AccessControlList;
 
@@ -99,9 +98,6 @@ public class S3AccessControlListFeature implements AccessControlList {
                 if(file.attributes().isDirectory()) {
                     if(recursive) {
                         for(Path child : session.list(file)) {
-                            if(!session.isConnected()) {
-                                throw new ConnectionCanceledException();
-                            }
                             this.write(child, acl, recursive);
                         }
                     }
