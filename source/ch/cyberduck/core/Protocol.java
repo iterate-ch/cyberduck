@@ -136,6 +136,11 @@ public interface Protocol {
     String getProvider();
 
     /**
+     * @return Include legacy names
+     */
+    Set<String> getProviders();
+
+    /**
      * @return Protocol family
      */
     Type getType();
@@ -617,6 +622,12 @@ public interface Protocol {
         }
 
         @Override
+        public Set<String> getProviders() {
+            // Include legacy Rackspace identifier
+            return new HashSet<String>(Arrays.asList(this.getIdentifier(), "cf"));
+        }
+
+        @Override
         public Scheme getScheme() {
             return Scheme.https;
         }
@@ -629,11 +640,6 @@ public interface Protocol {
         @Override
         public boolean isHostnameConfigurable() {
             return true;
-        }
-
-        @Override
-        public String getContext() {
-            return Preferences.instance().getProperty("cf.authentication.context");
         }
 
         @Override
