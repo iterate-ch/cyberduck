@@ -33,14 +33,14 @@ import java.util.UUID;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftCopyFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCopy() throws Exception {
-        final CFSession session = new CFSession(
-                new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(),
+        final SwiftSession session = new SwiftSession(
+                new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com",
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));

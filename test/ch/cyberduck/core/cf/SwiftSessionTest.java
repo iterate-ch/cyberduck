@@ -22,11 +22,11 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class CFSessionTest extends AbstractTestCase {
+public class SwiftSessionTest extends AbstractTestCase {
 
     @Test
     public void testFeatures() throws Exception {
-        final CFSession session = new CFSession(new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname()));
+        final SwiftSession session = new SwiftSession(new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com"));
         assertNull(session.getFeature(Versioning.class, null));
         assertNotNull(session.getFeature(AnalyticsProvider.class, null));
         assertNull(session.getFeature(Lifecycle.class, null));
@@ -40,10 +40,10 @@ public class CFSessionTest extends AbstractTestCase {
 
     @Test
     public void testConnectRackspace() throws Exception {
-        final Host host = new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
+        final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
-        final CFSession session = new CFSession(host);
+        final SwiftSession session = new SwiftSession(host);
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -67,7 +67,7 @@ public class CFSessionTest extends AbstractTestCase {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
-        final CFSession session = new CFSession(host);
+        final SwiftSession session = new SwiftSession(host);
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -82,10 +82,10 @@ public class CFSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
-        final Host host = new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
+        final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
                 "a", "s"
         ));
-        final CFSession session = new CFSession(host);
+        final SwiftSession session = new SwiftSession(host);
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -103,7 +103,7 @@ public class CFSessionTest extends AbstractTestCase {
         final Host host = new Host(Protocol.SWIFT, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
-        final CFSession session = new CFSession(host);
+        final SwiftSession session = new SwiftSession(host);
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -118,17 +118,17 @@ public class CFSessionTest extends AbstractTestCase {
 
     @Test
     public void testFile() {
-        final CFSession session = new CFSession(new Host(Protocol.SWIFT, "h"));
+        final SwiftSession session = new SwiftSession(new Host(Protocol.SWIFT, "h"));
         assertFalse(session.isCreateFileSupported(new Path("/", Path.VOLUME_TYPE)));
         assertTrue(session.isCreateFileSupported(new Path("/container", Path.VOLUME_TYPE)));
     }
 
     @Test
     public void testCreateContainer() throws Exception {
-        final Host host = new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
+        final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
-        final CFSession session = new CFSession(host);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path c = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
@@ -140,10 +140,10 @@ public class CFSessionTest extends AbstractTestCase {
 
     @Test
     public void testCreatePlaceholder() throws Exception {
-        final Host host = new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials(
+        final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
-        final CFSession session = new CFSession(host);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);

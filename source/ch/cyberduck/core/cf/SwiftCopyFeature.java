@@ -33,9 +33,9 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
  */
 public class SwiftCopyFeature implements Copy {
 
-    private CFSession session;
+    private SwiftSession session;
 
-    public SwiftCopyFeature(final CFSession session) {
+    public SwiftCopyFeature(final SwiftSession session) {
         this.session = session;
     }
 

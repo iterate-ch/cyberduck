@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.cf.CFSession;
+import ch.cyberduck.core.cf.SwiftSession;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.gstorage.GSSession;
@@ -97,7 +97,7 @@ public abstract class SessionFactory {
                 factories.put(p, new SessionFactory() {
                     @Override
                     protected Session create(Host h) {
-                        return new CFSession(h);
+                        return new SwiftSession(h);
                     }
                 });
                 break;

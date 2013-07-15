@@ -41,11 +41,11 @@ import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 public class SwiftMetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(SwiftMetadataFeature.class);
 
-    private CFSession session;
+    private SwiftSession session;
 
     private PathContainerService containerService = new PathContainerService();
 
-    public SwiftMetadataFeature(final CFSession session) {
+    public SwiftMetadataFeature(final SwiftSession session) {
         this.session = session;
     }
 

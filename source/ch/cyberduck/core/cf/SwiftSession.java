@@ -65,8 +65,8 @@ import com.rackspacecloud.client.cloudfiles.FilesRegion;
  *
  * @version $Id$
  */
-public class CFSession extends HttpSession<FilesClient> {
-    private static final Logger log = Logger.getLogger(CFSession.class);
+public class SwiftSession extends HttpSession<FilesClient> {
+    private static final Logger log = Logger.getLogger(SwiftSession.class);
 
     private Map<String, FilesRegion> regions
             = new HashMap<String, FilesRegion>();
@@ -76,7 +76,7 @@ public class CFSession extends HttpSession<FilesClient> {
 
     private PathContainerService containerService = new PathContainerService();
 
-    public CFSession(Host h) {
+    public SwiftSession(Host h) {
         super(h);
     }
 

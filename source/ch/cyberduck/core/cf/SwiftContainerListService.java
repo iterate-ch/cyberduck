@@ -41,11 +41,11 @@ import com.rackspacecloud.client.cloudfiles.FilesRegion;
 /**
  * @version $Id$
  */
-public class SwiftContainerListService implements RootListService<CFSession> {
+public class SwiftContainerListService implements RootListService<SwiftSession> {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
     @Override
-    public List<Path> list(final CFSession session) throws BackgroundException {
+    public List<Path> list(final SwiftSession session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List containers for %s", session));
         }

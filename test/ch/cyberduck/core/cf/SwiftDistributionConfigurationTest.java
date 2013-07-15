@@ -23,7 +23,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testGetName() throws Exception {
-        final CFSession session = new CFSession(new Host(Protocol.SWIFT, "h"));
+        final SwiftSession session = new SwiftSession(new Host(Protocol.SWIFT, "h"));
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         assertEquals("Akamai", configuration.getName());
         assertEquals("Akamai", configuration.getName(Distribution.DOWNLOAD));
@@ -31,7 +31,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testReadRackspace() throws Exception {
-        final CFSession session = new CFSession(new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
+        final SwiftSession session = new SwiftSession(new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
         session.open(new DefaultHostKeyController());
@@ -61,7 +61,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         host.setCredentials(new Credentials(
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
-        final CFSession session = new CFSession(host);
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
@@ -91,7 +91,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         host.setCredentials(new Credentials(
                 "key", "secret"
         ));
-        final CFSession session = new CFSession(host);
+        final SwiftSession session = new SwiftSession(host);
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("region-a.geo-1");

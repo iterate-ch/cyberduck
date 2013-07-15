@@ -51,9 +51,9 @@ import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
 public class SwiftDistributionConfiguration implements DistributionConfiguration, Purge {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
-    private CFSession session;
+    private SwiftSession session;
 
-    public SwiftDistributionConfiguration(final CFSession session) {
+    public SwiftDistributionConfiguration(final SwiftSession session) {
         this.session = session;
     }
 

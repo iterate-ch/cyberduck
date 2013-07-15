@@ -45,9 +45,9 @@ import com.rackspacecloud.client.cloudfiles.FilesObject;
 public class SwiftObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(SwiftObjectListService.class);
 
-    private CFSession session;
+    private SwiftSession session;
 
-    public SwiftObjectListService(final CFSession session) {
+    public SwiftObjectListService(final SwiftSession session) {
         this.session = session;
     }
 
