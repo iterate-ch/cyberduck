@@ -119,22 +119,22 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 new X509HostnameVerifier() {
                     @Override
                     public void verify(String host, SSLSocket ssl) throws IOException {
-                        log.warn(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                        log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
                     }
 
                     @Override
                     public void verify(String host, X509Certificate cert) throws SSLException {
-                        log.warn(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                        log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
                     }
 
                     @Override
                     public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
-                        log.warn(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                        log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
                     }
 
                     @Override
                     public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {
-                        log.warn(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                        log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
                         return true;
                     }
                 }
