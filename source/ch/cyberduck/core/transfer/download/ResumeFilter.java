@@ -54,7 +54,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
         if(session.isDownloadResumable()) {
             if(file.attributes().isFile()) {
                 if(file.getLocal().exists()) {
-                    if(file.attributes().getSize() > 0) {
+                    if(file.getLocal().attributes().getSize() > 0) {
                         status.setResume(true);
                         status.setCurrent(file.getLocal().attributes().getSize());
                     }
