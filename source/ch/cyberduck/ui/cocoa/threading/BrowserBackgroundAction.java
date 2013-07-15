@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.threading;
 
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.threading.ControllerRepeatableBackgroundAction;
@@ -38,7 +39,12 @@ public abstract class BrowserBackgroundAction extends ControllerRepeatableBackgr
             = BackgroundActionRegistry.global();
 
     public BrowserBackgroundAction(final BrowserController controller) {
-        super(controller, new PanelAlertCallback(controller), controller, controller);
+        this(controller, new PanelAlertCallback(controller));
+        this.controller = controller;
+    }
+
+    public BrowserBackgroundAction(final BrowserController controller, final AlertCallback alert) {
+        super(controller, alert, controller, controller);
         this.controller = controller;
     }
 
