@@ -969,6 +969,7 @@ public class BrowserController extends WindowController
      */
     public void reloadBookmarks() {
         bookmarkTable.reloadData();
+        this.setStatus();
     }
 
     private abstract class AbstractBrowserOutlineViewDelegate<E> extends AbstractBrowserTableDelegate<E>
