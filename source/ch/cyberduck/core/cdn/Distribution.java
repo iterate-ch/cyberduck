@@ -259,24 +259,27 @@ public class Distribution {
      * @param method Protocol
      */
     public Distribution(final String origin, final Method method) {
-        this(null, origin, method, false);
+        this(origin, method, false);
     }
 
     /**
-     * @param id      Identifier of this distribution
      * @param origin  Server
      * @param method  Kind of distribution
      * @param enabled Deployment Enabled
      */
-    public Distribution(final String id, final String origin, final Method method, final boolean enabled) {
-        this.id = id;
+    public Distribution(final String origin, final Method method, final boolean enabled) {
         this.origin = origin;
         this.enabled = enabled;
+        this.deployed = enabled;
         this.method = method;
     }
 
     public String getId() {
         return id;
+    }
+
+    public void setId(final String id) {
+        this.id = id;
     }
 
     public String getEtag() {
