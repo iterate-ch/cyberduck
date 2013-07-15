@@ -1110,9 +1110,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     @Override
     public void rename(final Path file, final Path renamed) throws BackgroundException {
         try {
-            this.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
-                    file.getName(), renamed));
-
             if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
                 final StorageObject destination = new StorageObject(containerService.getKey(renamed));
                 // Keep same storage class

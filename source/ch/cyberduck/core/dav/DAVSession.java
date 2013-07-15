@@ -171,9 +171,6 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public void rename(final Path file, final Path renamed) throws BackgroundException {
         try {
-            this.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
-                    file.getName(), renamed.getName()));
-
             this.getClient().move(new DAVPathEncoder().encode(file), new DAVPathEncoder().encode(renamed));
         }
         catch(SardineException e) {

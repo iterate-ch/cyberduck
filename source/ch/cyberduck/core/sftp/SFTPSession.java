@@ -418,9 +418,6 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public void rename(final Path file, final Path renamed) throws BackgroundException {
         try {
-            this.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
-                    file.getName(), renamed));
-
             if(this.exists(renamed)) {
                 this.delete(renamed, new DisabledLoginController());
             }

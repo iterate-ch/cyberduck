@@ -380,9 +380,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     @Override
     public void rename(final Path file, final Path renamed) throws BackgroundException {
         try {
-            this.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
-                    file.getName(), renamed));
-
             if(!this.getClient().rename(file.getAbsolute(), renamed.getAbsolute())) {
                 throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
             }
