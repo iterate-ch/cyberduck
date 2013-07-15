@@ -19,9 +19,12 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Index;
+import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
@@ -67,7 +70,6 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
         try {
             final WebsiteConfig configuration = session.getClient().getWebsiteConfigImpl(container.getName());
             final Distribution distribution = new Distribution(
-                    null,
                     container.getName(),
                     method,
                     configuration.isWebsiteConfigActive());
@@ -80,7 +82,6 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
         catch(ServiceException e) {
             // Not found. Website configuration not enbabled.
             final Distribution distribution = new Distribution(
-                    null,
                     container.getName(),
                     method,
                     //Disabled
@@ -121,6 +122,20 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Index.class) {
             return (T) this;
+        }
+        if(type == Logging.class) {
+            if(method.equals(Distribution.DOWNLOAD)
+                    || method.equals(Distribution.STREAMING)
+                    || method.equals(Distribution.CUSTOM)) {
+                return (T) this;
+            }
+        }
+        if(type == AnalyticsProvider.class) {
+            if(method.equals(Distribution.DOWNLOAD)
+                    || method.equals(Distribution.STREAMING)
+                    || method.equals(Distribution.CUSTOM)) {
+                return (T) new QloudstatAnalyticsProvider();
+            }
         }
         return null;
     }

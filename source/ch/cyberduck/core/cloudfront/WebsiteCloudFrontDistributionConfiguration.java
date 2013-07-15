@@ -20,10 +20,8 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
-import ch.cyberduck.core.cdn.features.Analytics;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
-import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
@@ -93,9 +91,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
         if(method.equals(Distribution.WEBSITE)) {
             try {
                 final WebsiteConfig configuration = session.getClient().getWebsiteConfig(container.getName());
-                final Distribution distribution = new Distribution(
-                        null,
-                        this.getOrigin(container, method),
+                final Distribution distribution = new Distribution(this.getOrigin(container, method),
                         method,
                         configuration.isWebsiteConfigActive());
                 distribution.setStatus(Locale.localizedString("Deployed", "S3"));
@@ -107,7 +103,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             }
             catch(ServiceException e) {
                 // Not found. Website configuration not enabled.
-                final Distribution distribution = new Distribution(null, this.getOrigin(container, method), method, false);
+                final Distribution distribution = new Distribution(this.getOrigin(container, method), method, false);
                 distribution.setStatus(e.getErrorMessage());
                 distribution.setUrl(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)));
                 return distribution;
@@ -157,11 +153,6 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
         if(type == Index.class) {
             if(method.equals(Distribution.WEBSITE)) {
                 return (T) this;
-            }
-        }
-        if(type == Logging.class || type == Analytics.class) {
-            if(method.equals(Distribution.WEBSITE)) {
-                return null;
             }
         }
         if(type == Cname.class) {

@@ -23,7 +23,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cdn.features.Analytics;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
@@ -2424,13 +2423,14 @@ public class InfoController extends ToolbarWindowController {
         distributionDeliveryPopup.setEnabled(stop && enable);
         distributionLoggingButton.setEnabled(stop && enable && cdn.getFeature(Logging.class, method) != null);
         final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class, prompt);
+        final AnalyticsProvider analytics = cdn.getFeature(AnalyticsProvider.class, method);
         if(ObjectUtils.equals(iam.getUserCredentials(
                 session.getFeature(AnalyticsProvider.class, prompt).getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             distributionAnalyticsButton.setEnabled(false);
         }
         else {
-            distributionAnalyticsButton.setEnabled(stop && enable && cdn.getFeature(Analytics.class, method) != null);
+            distributionAnalyticsButton.setEnabled(stop && enable && cdn.getFeature(AnalyticsProvider.class, method) != null);
         }
         distributionLoggingPopup.setEnabled(stop && enable && cdn.getFeature(Logging.class, method) != null);
         distributionCnameField.setEnabled(stop && enable && cdn.getFeature(Cname.class, method) != null);
@@ -2493,7 +2493,7 @@ public class InfoController extends ToolbarWindowController {
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = containerService.getContainer(getSelected());
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
-                    final Distribution configuration = new Distribution(null, null, method, distributionEnableButton.state() == NSCell.NSOnState);
+                    final Distribution configuration = new Distribution(null, method, distributionEnableButton.state() == NSCell.NSOnState);
                     configuration.setIndexDocument(distributionDefaultRootPopup.selectedItem().representedObject());
                     configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
                     configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
@@ -2570,13 +2570,14 @@ public class InfoController extends ToolbarWindowController {
                         if(null == distributionLoggingPopup.selectedItem()) {
                             distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
                         }
-                        if(cdn.getFeature(Analytics.class, distribution.getMethod()) != null) {
+                        if(cdn.getFeature(AnalyticsProvider.class, distribution.getMethod()) != null) {
                             final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class, prompt);
-                            final Credentials credentials = iam.getUserCredentials(controller.getSession().getFeature(AnalyticsProvider.class, prompt).getName());
+                            final AnalyticsProvider analytics = controller.getSession().getFeature(AnalyticsProvider.class, prompt);
+                            final Credentials credentials = iam.getUserCredentials(analytics.getName());
                             distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
                             if(credentials != null) {
                                 distributionAnalyticsSetupUrlField.setAttributedStringValue(
-                                        HyperlinkAttributedStringFactory.create(controller.getSession().getFeature(AnalyticsProvider.class, prompt).getSetup(cdn.getProtocol(),
+                                        HyperlinkAttributedStringFactory.create(analytics.getSetup(cdn.getProtocol(),
                                                 distribution.getMethod().getScheme(), container.getName(), credentials)));
                             }
                         }

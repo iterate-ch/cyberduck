@@ -20,9 +20,10 @@ package ch.cyberduck.core.cf;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cdn.features.Analytics;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.cdn.features.Purge;
@@ -98,10 +99,11 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             try {
                 final FilesCDNContainer info = session.getClient().getCDNContainerInfo(session.getRegion(container),
                         container.getName());
-                final Distribution distribution = new Distribution(info.getName(),
+                final Distribution distribution = new Distribution(
                         session.getRegion(container).getStorageUrl().getHost(),
                         method, info.isEnabled()
                 );
+                distribution.setId(info.getName());
                 distribution.setStatus(info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"));
                 distribution.setUrl(info.getCdnURL());
                 distribution.setSslUrl(info.getSslURL());
@@ -121,8 +123,8 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No CDN configuration for %s", container));
                 }
-                final Distribution distribution = new Distribution(null, session.getRegion(container).getStorageUrl().getHost(),
-                        method, false);
+                final Distribution distribution = new Distribution(
+                        session.getRegion(container).getStorageUrl().getHost(), method, false);
                 distribution.setStatus(Locale.localizedString("CDN Disabled", "Mosso"));
                 return distribution;
             }
@@ -169,8 +171,8 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
         if(type == Logging.class) {
             return (T) this;
         }
-        if(type == Analytics.class) {
-            return (T) this;
+        if(type == AnalyticsProvider.class) {
+            return (T) new QloudstatAnalyticsProvider();
         }
         return null;
     }

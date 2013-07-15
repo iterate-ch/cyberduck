@@ -22,9 +22,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cdn.features.Analytics;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Logging;
@@ -227,11 +228,18 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 return (T) this;
             }
         }
-        if(type == Logging.class || type == Analytics.class) {
+        if(type == Logging.class) {
             if(method.equals(Distribution.DOWNLOAD)
                     || method.equals(Distribution.STREAMING)
                     || method.equals(Distribution.CUSTOM)) {
                 return (T) this;
+            }
+        }
+        if(type == AnalyticsProvider.class) {
+            if(method.equals(Distribution.DOWNLOAD)
+                    || method.equals(Distribution.STREAMING)
+                    || method.equals(Distribution.CUSTOM)) {
+                return (T) new QloudstatAnalyticsProvider();
             }
         }
         if(type == Cname.class) {
@@ -466,11 +474,11 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             loggingTarget = ServiceUtils.findBucketNameInHostname(distributionConfig.getLoggingStatus().getBucket(),
                     Protocol.S3_SSL.getDefaultHostname());
         }
-        final Distribution distribution = new Distribution(d.getId(),
-                d.getConfig().getOrigin().getDomainName(),
+        final Distribution distribution = new Distribution(d.getConfig().getOrigin().getDomainName(),
                 method,
                 d.getConfig().isEnabled()
         );
+        distribution.setId(d.getId());
         distribution.setDeployed(d.isDeployed());
         distribution.setUrl(String.format("%s://%s%s", method.getScheme(), d.getDomainName(), method.getContext()));
         distribution.setSslUrl(method.equals(Distribution.DOWNLOAD) || method.equals(Distribution.CUSTOM)
