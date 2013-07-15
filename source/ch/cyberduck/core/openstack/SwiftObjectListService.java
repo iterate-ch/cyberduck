@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cf;
+package ch.cyberduck.core.openstack;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -55,7 +55,7 @@ public class SwiftObjectListService implements ListService {
     public AttributedList<Path> list(final Path file) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            final int limit = Preferences.instance().getInteger("cf.list.limit");
+            final int limit = Preferences.instance().getInteger("openstack.list.limit");
             String marker = null;
             List<FilesObject> list;
             do {

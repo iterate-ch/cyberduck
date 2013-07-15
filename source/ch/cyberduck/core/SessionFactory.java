@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.cf.SwiftSession;
+import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.gstorage.GSSession;

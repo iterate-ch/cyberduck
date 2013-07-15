@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cf;
+package ch.cyberduck.core.openstack;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -236,13 +236,13 @@ public class SwiftSession extends HttpSession<FilesClient> {
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
         try {
             String md5sum = null;
-            if(Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
+            if(Preferences.instance().getBoolean("openstack.upload.metadata.md5")) {
                 this.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         file.getName()));
                 md5sum = file.getLocal().attributes().getChecksum();
             }
             MessageDigest digest = null;
-            if(!Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
+            if(!Preferences.instance().getBoolean("openstack.upload.metadata.md5")) {
                 try {
                     digest = MessageDigest.getInstance("MD5");
                 }
@@ -305,7 +305,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
             throws BackgroundException {
         final HashMap<String, String> metadata = new HashMap<String, String>();
         // Default metadata for new files
-        for(String m : Preferences.instance().getList("cf.metadata.default")) {
+        for(String m : Preferences.instance().getList("openstack.metadata.default")) {
             if(StringUtils.isBlank(m)) {
                 continue;
             }

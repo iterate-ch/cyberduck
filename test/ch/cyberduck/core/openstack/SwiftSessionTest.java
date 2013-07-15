@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cf;
+package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;

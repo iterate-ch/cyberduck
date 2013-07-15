@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cf;
+package ch.cyberduck.core.openstack;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -58,7 +58,7 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
                     final Path container = new Path(String.format("/%s", f.getName()),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     container.attributes().setRegion(f.getRegion().getRegionId());
-                    if(Preferences.instance().getBoolean("cf.cdn.preload")) {
+                    if(Preferences.instance().getBoolean("openstack.cdn.preload")) {
                         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, new DisabledLoginController());
                         for(Distribution.Method method : cdn.getMethods(container)) {
                             cdn.read(container, method);

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cf;
+package ch.cyberduck.core.openstack;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -49,7 +49,7 @@ public class SwiftAuthenticationService {
     private String version;
 
     public SwiftAuthenticationService() {
-        this(Preferences.instance().getProperty("cf.authentication.context"));
+        this(Preferences.instance().getProperty("openstack.authentication.context"));
     }
 
     public SwiftAuthenticationService(final String version) {

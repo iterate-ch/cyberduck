@@ -2541,7 +2541,6 @@ source/ch/cyberduck/core/Utils.cs -text
 source/ch/cyberduck/core/VirtualFileDataObject.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseImpl.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseVerifier.cs -text
-source/ch/cyberduck/core/cf/SwiftSession.java -text
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
 source/ch/cyberduck/core/date/AbstractUserDateFormatter.java -text
@@ -2558,6 +2557,7 @@ source/ch/cyberduck/core/local/TaskbarApplicationBadgeLabeler.cs -text
 source/ch/cyberduck/core/local/Win32FileDescriptor.cs -text
 source/ch/cyberduck/core/local/WindowsApplicationLauncher.cs -text
 source/ch/cyberduck/core/local/WindowsTemporaryFileService.cs -text
+source/ch/cyberduck/core/openstack/SwiftSession.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/serializer/impl/HostPlistReader.cs -text
 source/ch/cyberduck/core/serializer/impl/PlistDeserializer.cs -text

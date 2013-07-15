@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cf;
+package ch.cyberduck.core.openstack;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
