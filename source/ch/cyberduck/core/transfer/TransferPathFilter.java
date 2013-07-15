@@ -18,10 +18,7 @@ public interface TransferPathFilter {
     boolean accept(Session<?> session, Path file) throws BackgroundException;
 
     /**
-     * Called before the file will actually get transferred. Should prepare for the transfer
-     * such as calculating its size.
-     * Must only be called exactly once for each file.
-     * Must only be called if #accept for the file returns true
+     * Called before the file will actually get transferred. Should prepare for the transfer such as calculating its size.
      *
      * @param session Connection
      * @param file    File
