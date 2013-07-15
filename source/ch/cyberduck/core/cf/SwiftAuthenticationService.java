@@ -23,11 +23,11 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.net.URI;
 
@@ -41,81 +41,88 @@ import com.rackspacecloud.client.cloudfiles.method.AuthenticationRequest;
  * @version $Id$
  */
 public class SwiftAuthenticationService {
+    private static final Logger log = Logger.getLogger(SwiftAuthenticationService.class);
+
+    /**
+     * Default authentication version.
+     */
+    private String version;
+
+    public SwiftAuthenticationService() {
+        this(Preferences.instance().getProperty("cf.authentication.context"));
+    }
+
+    public SwiftAuthenticationService(final String version) {
+        this.version = version;
+    }
 
     public AuthenticationRequest getRequest(final Host host, final LoginController prompt) throws LoginCanceledException {
         final Credentials credentials = host.getCredentials();
         final StringBuilder url = new StringBuilder();
         url.append(host.getProtocol().getScheme().toString()).append("://");
-        if(host.getProtocol().equals(Protocol.CLOUDFILES)) {
-            url.append(Protocol.CLOUDFILES.getDefaultHostname());
-            url.append(Protocol.CLOUDFILES.getContext());
+        url.append(host.getHostname());
+        if(!(host.getProtocol().getScheme().getPort() == host.getPort())) {
+            url.append(":").append(host.getPort());
+        }
+        if(host.getHostname(true).endsWith("identity.api.rackspacecloud.com")) {
+            // Fix access to *.identity.api.rackspacecloud.com
+            url.append("/v2.0/tokens");
             return new Authentication20RAXUsernameKeyRequest(
                     URI.create(url.toString()),
                     credentials.getUsername(), credentials.getPassword(), null
             );
         }
-        url.append(host.getHostname());
-        if(!(host.getProtocol().getScheme().getPort() == host.getPort())) {
-            url.append(":").append(host.getPort());
-        }
+        final String context;
         if(StringUtils.isBlank(host.getProtocol().getContext())) {
             // Default to 1.0
-            url.append(PathNormalizer.normalize(Preferences.instance().getProperty("cf.authentication.context")));
+            context = PathNormalizer.normalize(version);
+        }
+        else {
+            context = PathNormalizer.normalize(host.getProtocol().getContext());
+        }
+        // Custom authentication context
+        url.append(context);
+        if(context.contains("1.0")) {
             return new Authentication10UsernameKeyRequest(URI.create(url.toString()),
                     credentials.getUsername(), credentials.getPassword());
         }
-        else {
-            // Custom authentication context
-            url.append(PathNormalizer.normalize(host.getProtocol().getContext()));
-            if(host.getProtocol().getContext().contains("1.0")) {
-                return new Authentication10UsernameKeyRequest(URI.create(url.toString()),
-                        credentials.getUsername(), credentials.getPassword());
-            }
-            else if(host.getProtocol().getContext().contains("1.1")) {
-                return new Authentication11UsernameKeyRequest(URI.create(url.toString()),
-                        credentials.getUsername(), credentials.getPassword());
-            }
-            else if(host.getProtocol().getContext().contains("2.0")) {
-                if(host.getHostname(true).endsWith(Protocol.CLOUDFILES.getDefaultHostname())) {
-                    // Fix access to lon.identity.api.rackspacecloud.com
-                    return new Authentication20RAXUsernameKeyRequest(
-                            URI.create(url.toString()),
-                            credentials.getUsername(), credentials.getPassword(), null
-                    );
-                }
-                // Prompt for tenant
-                final String user;
-                final String tenant;
-                if(StringUtils.contains(credentials.getUsername(), ':')) {
-                    tenant = StringUtils.split(credentials.getUsername(), ':')[0];
-                    user = StringUtils.split(credentials.getUsername(), ':')[1];
-                }
-                else {
-                    user = credentials.getUsername();
-                    final Credentials tenantCredentials = new Credentials() {
-                        @Override
-                        public String getUsernamePlaceholder() {
-                            return Locale.localizedString("Tenant", "Mosso");
-                        }
-                    };
-                    final LoginOptions options = new LoginOptions();
-                    options.password = false;
-                    prompt.prompt(host.getProtocol(), tenantCredentials,
-                            Locale.localizedString("Provide additional login credentials", "Credentials"),
-                            Locale.localizedString("Tenant or project identifier", "Mosso"), options);
-                    tenant = tenantCredentials.getUsername();
-                }
-                return new Authentication20AccessKeySecretKeyRequest(
-                        URI.create(url.toString()),
-                        user, host.getCredentials().getPassword(), tenant
-                );
+        else if(context.contains("1.1")) {
+            return new Authentication11UsernameKeyRequest(URI.create(url.toString()),
+                    credentials.getUsername(), credentials.getPassword());
+        }
+        else if(context.contains("2.0")) {
+            // Prompt for tenant
+            final String user;
+            final String tenant;
+            if(StringUtils.contains(credentials.getUsername(), ':')) {
+                tenant = StringUtils.split(credentials.getUsername(), ':')[0];
+                user = StringUtils.split(credentials.getUsername(), ':')[1];
             }
             else {
-                // Default to 1.0
-                return new Authentication10UsernameKeyRequest(URI.create(url.toString()),
-                        credentials.getUsername(), credentials.getPassword());
+                user = credentials.getUsername();
+                final Credentials tenantCredentials = new Credentials() {
+                    @Override
+                    public String getUsernamePlaceholder() {
+                        return Locale.localizedString("Tenant", "Mosso");
+                    }
+                };
+                final LoginOptions options = new LoginOptions();
+                options.password = false;
+                prompt.prompt(host.getProtocol(), tenantCredentials,
+                        Locale.localizedString("Provide additional login credentials", "Credentials"),
+                        Locale.localizedString("Tenant or project identifier", "Mosso"), options);
+                tenant = tenantCredentials.getUsername();
             }
+            return new Authentication20AccessKeySecretKeyRequest(
+                    URI.create(url.toString()),
+                    user, host.getCredentials().getPassword(), tenant
+            );
+        }
+        else {
+            log.warn(String.format("Unknown context version in %s. Default to v1 authentication.", context));
+            // Default to 1.0
+            return new Authentication10UsernameKeyRequest(URI.create(url.toString()),
+                    credentials.getUsername(), credentials.getPassword());
         }
     }
 }
-

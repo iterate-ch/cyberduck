@@ -31,31 +31,45 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
     public void testGetRequest() throws Exception {
         final SwiftAuthenticationService s = new SwiftAuthenticationService();
         assertEquals(FilesClient.AuthVersion.v20,
-                s.getRequest(new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials("u", "P")),
+                s.getRequest(new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials("u", "P")),
                         new DisabledLoginController()).getVersion());
-        assertEquals(FilesClient.AuthVersion.v20,
-                s.getRequest(new Host(Protocol.CLOUDFILES, "region-b.geo-1.identity.hpcloudsvc.com", new Credentials("u", "P")),
-                        new DisabledLoginController()).getVersion());
-        assertEquals(FilesClient.AuthVersion.v20,
-                s.getRequest(new Host(Protocol.CLOUDFILES, "myhost", new Credentials("u", "P")),
+        assertEquals(FilesClient.AuthVersion.v10,
+                s.getRequest(new Host(Protocol.SWIFT, "region-b.geo-1.identity.hpcloudsvc.com", new Credentials("u", "P")),
                         new DisabledLoginController()).getVersion());
         assertEquals(FilesClient.AuthVersion.v10,
                 s.getRequest(new Host(Protocol.SWIFT, "myhost", new Credentials("u", "P")),
                         new DisabledLoginController()).getVersion());
-        assertEquals("POST", s.getRequest(new Host(Protocol.CLOUDFILES, "myhost", new Credentials("u", "P")),
+        assertEquals(FilesClient.AuthVersion.v10,
+                s.getRequest(new Host(Protocol.SWIFT, "myhost", new Credentials("u", "P")),
+                        new DisabledLoginController()).getVersion());
+        assertEquals("GET", s.getRequest(new Host(Protocol.SWIFT, "myhost", new Credentials("u", "P")),
                 new DisabledLoginController()).getMethod());
-        assertEquals(URI.create("https://" + Protocol.CLOUDFILES.getDefaultHostname() + "/v2.0/tokens"),
-                s.getRequest(new Host(Protocol.CLOUDFILES, "myhost", new Credentials("u", "P")),
-                        new DisabledLoginController()).getURI());
-        assertEquals(URI.create("https://" + Protocol.CLOUDFILES.getDefaultHostname() + "/v2.0/tokens"),
-
-                s.getRequest(new Host(Protocol.CLOUDFILES, Protocol.CLOUDFILES.getDefaultHostname(), new Credentials("u", "P")),
-                        new DisabledLoginController()).getURI());
+        assertEquals("POST", s.getRequest(new Host(Protocol.SWIFT, "lon.identity.api.rackspacecloud.com", new Credentials("u", "P")),
+                new DisabledLoginController()).getMethod());
         final Host host = new Host(Protocol.SWIFT, "identity.openstack.com", new Credentials("u", "P"));
         host.setPort(3451);
         assertEquals(URI.create("https://identity.openstack.com:3451/v1.0"), s.getRequest(host, new DisabledLoginController()).getURI());
         assertEquals(FilesClient.AuthVersion.v10, s.getRequest(host, new DisabledLoginController()).getVersion());
         assertEquals(Authentication10UsernameKeyRequest.class, s.getRequest(host, new DisabledLoginController()).getClass());
+    }
+
+    @Test
+    public void testGetDefault2() throws Exception {
+        final SwiftAuthenticationService s = new SwiftAuthenticationService("/v2.0/tokens");
+        assertEquals(FilesClient.AuthVersion.v20,
+                s.getRequest(new Host(Protocol.SWIFT, "region-b.geo-1.identity.hpcloudsvc.com", new Credentials("tenant:u", "P")),
+                        new DisabledLoginController()).getVersion());
+        assertEquals(FilesClient.AuthVersion.v20,
+                s.getRequest(new Host(Protocol.SWIFT, "myhost", new Credentials("tenant:u", "P")),
+                        new DisabledLoginController()).getVersion());
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testGetDefault2NoTenant() throws Exception {
+        final SwiftAuthenticationService s = new SwiftAuthenticationService("/v2.0/tokens");
+        assertEquals(FilesClient.AuthVersion.v20,
+                s.getRequest(new Host(Protocol.SWIFT, "region-b.geo-1.identity.hpcloudsvc.com", new Credentials("u", "P")),
+                        new DisabledLoginController()).getVersion());
     }
 
     @Test
