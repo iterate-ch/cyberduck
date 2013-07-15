@@ -35,13 +35,10 @@ import com.googlecode.sardine.impl.SardineImpl;
  */
 public class DAVClient extends SardineImpl {
 
-    private AbstractHttpClient http;
-
     private Host host;
 
     public DAVClient(final Host host, final AbstractHttpClient http) {
         super(http);
-        this.http = http;
         this.host = host;
     }
 
