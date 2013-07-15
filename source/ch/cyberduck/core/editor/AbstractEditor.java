@@ -193,9 +193,8 @@ public abstract class AbstractEditor implements Editor {
                 permissions.getOwnerPermissions()[Permission.READ] = true;
                 permissions.getOwnerPermissions()[Permission.WRITE] = true;
                 local.writeUnixPermission(permissions);
-                // Important, should always be run on the main thread; otherwise applescript crashes
                 try {
-                    AbstractEditor.this.edit();
+                    edit();
                 }
                 catch(IOException e) {
                     throw new BackgroundException(e.getMessage(), e);
