@@ -436,7 +436,9 @@ public class BrowserController extends WindowController
                 if(!path.attributes().isFile()) {
                     continue;
                 }
-                path.setLocal(TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), path));
+                final Local file = TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), path);
+                file.getParent().mkdir();
+                path.setLocal(file);
                 downloads.add(path);
             }
             if(downloads.size() > 0) {
@@ -2690,7 +2692,11 @@ public class BrowserController extends WindowController
      * @param downloads Paths to transfer
      */
     public void download(List<Path> downloads) {
-        this.download(downloads, session.getHost().getDownloadFolder());
+        final Local folder = session.getHost().getDownloadFolder();
+        if(!folder.exists()) {
+            folder.mkdir();
+        }
+        this.download(downloads, folder);
     }
 
     /**
