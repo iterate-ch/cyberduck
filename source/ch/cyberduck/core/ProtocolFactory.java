@@ -56,10 +56,10 @@ public final class ProtocolFactory {
         register(Protocol.SFTP);
         register(Protocol.WEBDAV);
         register(Protocol.WEBDAV_SSL);
+        register(Protocol.SWIFT);
+        register(Protocol.CLOUDFILES);
         register(Protocol.S3_SSL);
         register(Protocol.GOOGLESTORAGE_SSL);
-        register(Protocol.CLOUDFILES);
-        register(Protocol.SWIFT);
         // Order determines list in connection dropdown
         final Local bundled = LocalFactory.createLocal(Preferences.instance().getProperty("application.profiles.path"));
         if(bundled.exists()) {
@@ -187,7 +187,7 @@ public final class ProtocolFactory {
     }
 
     /**
-     * @param str Determine if URL can be handleed by a registered protocol
+     * @param str Determine if URL can be handled by a registered protocol
      * @return True if known URL
      */
     public static boolean isURL(final String str) {
