@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.features.Touch;
 
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3StorageClassFeatureTest extends AbstractTestCase {
 
@@ -55,7 +56,7 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.touch(test);
+        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         final String v = UUID.randomUUID().toString();
         new S3StorageClassFeature(session).setClass(test, "REDUCED_REDUNDANCY");
         assertEquals("REDUCED_REDUNDANCY", session.list(container).get(test.getReference()).attributes().getStorageClass());

@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.features.Touch;
 
 import org.junit.Test;
 
@@ -36,7 +37,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVHeadersFeatureTest extends AbstractTestCase {
 
@@ -82,7 +83,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.touch(test);
+        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         final String v = UUID.randomUUID().toString();
         new DAVHeadersFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
         final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(test);

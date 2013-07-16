@@ -26,6 +26,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
@@ -337,7 +338,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         log.debug("kfscreate_f:" + path);
                         final Path file = new Path(path, Path.DIRECTORY_TYPE);
                         if(session.isCreateFileSupported(file.getParent())) {
-                            session.touch(file);
+                            session.getFeature(Touch.class, new DisabledLoginController()).touch(file);
                             return true;
                         }
                         return false;

@@ -8,6 +8,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -199,7 +200,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.touch(test);
+        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         assertTrue(session.exists(test));
         session.delete(test, new DisabledLoginController());
         assertFalse(session.exists(test));

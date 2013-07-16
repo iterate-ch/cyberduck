@@ -136,7 +136,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.touch(test);
+        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         assertTrue(session.exists(test));
         session.delete(test, new DisabledLoginController());
         assertFalse(session.exists(test));

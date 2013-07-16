@@ -24,14 +24,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.TemporaryFileServiceFactory;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -525,23 +523,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     }
 
     /**
-     * Upload an empty file.
-     */
-    public void touch(final Path file) throws BackgroundException {
-        final Local temp = TemporaryFileServiceFactory.get().create(file);
-        temp.touch();
-        file.setLocal(temp);
-        final TransferStatus status = new TransferStatus();
-        try {
-            this.upload(file, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new AbstractStreamListener(), status);
-        }
-        finally {
-            temp.delete();
-        }
-    }
-
-    /**
      * Check for file existence. The default implementation does a directory listing of the parent folder.
      *
      * @return True if the path is cached.
@@ -776,16 +757,13 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     }
 
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Touch.class) {
+            // Use login context of current session
+            return (T) new DefaultTouchFeature(this);
+        }
         if(type == DistributionConfiguration.class) {
-            // Configure with the same host as S3 to get the same credentials from the keychain.
-            final S3Session session = new S3Session(
-                    new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCdnCredentials()));
-            session.addTranscriptListener(this);
-            return (T) new CustomOriginCloudFrontDistributionConfiguration(
-                    this.getHost(),
-                    session,
-                    // Use login context of current session
-                    prompt);
+            // Use login context of current session
+            return (T) new CustomOriginCloudFrontDistributionConfiguration(host, prompt);
         }
         return null;
     }

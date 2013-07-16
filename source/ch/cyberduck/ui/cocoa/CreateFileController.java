@@ -18,11 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -67,7 +69,8 @@ public class CreateFileController extends FileController {
             @Override
             public void run() throws BackgroundException {
                 final Session<?> session = c.getSession();
-                session.touch(file);
+                final Touch feature = session.getFeature(Touch.class, new DisabledLoginController());
+                feature.touch(file);
                 if(edit) {
                     Editor editor = EditorFactory.instance().create(c, session, file);
                     editor.open();

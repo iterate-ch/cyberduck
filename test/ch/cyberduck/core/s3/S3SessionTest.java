@@ -8,6 +8,7 @@ import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -200,7 +201,7 @@ public class S3SessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.touch(test);
+        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         assertTrue(session.exists(test));
         session.delete(test, new DisabledLoginController());
         assertFalse(session.exists(test));
