@@ -29,7 +29,8 @@ public class DisabledLoginController implements LoginController {
     }
 
     @Override
-    public void warn(final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+    public void warn(final Protocol protocol, final String title, final String message,
+                     final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
         throw new LoginCanceledException();
     }
 

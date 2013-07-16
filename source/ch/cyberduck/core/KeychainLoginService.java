@@ -53,7 +53,7 @@ public class KeychainLoginService implements LoginService {
         this.validate(bookmark, Locale.localizedString("Login with username and password", "Credentials"));
         if(session.alert()) {
             // Warning if credentials are sent plaintext.
-            controller.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"),
+            controller.warn(bookmark.getProtocol(), MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"),
                     bookmark.getProtocol().getName()),
                     MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"),
                             bookmark.getCredentials().getPasswordPlaceholder()),

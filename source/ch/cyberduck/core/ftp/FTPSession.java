@@ -131,7 +131,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         client.setConnectTimeout(this.timeout());
         client.setDefaultTimeout(this.timeout());
         client.setDataTimeout(this.timeout());
-        client.setDefaultPort(Protocol.FTP.getDefaultPort());
+        client.setDefaultPort(host.getProtocol().getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
         client.setRemoteVerificationEnabled(Preferences.instance().getBoolean("ftp.datachannel.verify"));
         if(host.getProtocol().isSecure()) {
@@ -227,7 +227,8 @@ public class FTPSession extends SSLSession<FTPClient> {
                     && this.isTLSSupported()) {
                 // Propose protocol change if AUTH TLS is available.
                 try {
-                    prompt.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+                    prompt.warn(host.getProtocol(),
+                            MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
                             MessageFormat.format(Locale.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"), Protocol.FTP_TLS.getName()),
                             Locale.localizedString("Continue", "Credentials"),
                             Locale.localizedString("Change", "Credentials"),

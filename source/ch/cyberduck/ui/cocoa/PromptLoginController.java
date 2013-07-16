@@ -76,7 +76,7 @@ public final class PromptLoginController implements LoginController {
     }
 
     @Override
-    public void warn(final String title, final String message,
+    public void warn(final Protocol protocol, final String title, final String message,
                      final String continueButton, final String disconnectButton, final String preference)
             throws LoginCanceledException {
         if(log.isDebugEnabled()) {
@@ -92,7 +92,7 @@ public final class PromptLoginController implements LoginController {
         alert.suppressionButton().setTitle(Locale.localizedString("Don't show again", "Credentials"));
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-        site.append("/").append(Protocol.FTP.getIdentifier());
+        site.append("/").append(protocol.getScheme().name());
         int option = this.parent.alert(alert, site.toString());
         if(alert.suppressionButton().state() == NSCell.NSOnState) {
             // Never show again.

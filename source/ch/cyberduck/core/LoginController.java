@@ -33,7 +33,7 @@ public interface LoginController {
      * @throws ch.cyberduck.core.exception.LoginCanceledException
      *          If the other option has been selected.
      */
-    void warn(String title, String message, String continueButton, String disconnectButton,
+    void warn(Protocol protocol, String title, String message, String continueButton, String disconnectButton,
               String preference) throws LoginCanceledException;
 
     /**
