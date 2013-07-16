@@ -480,6 +480,6 @@ public class SwiftSession extends HttpSession<FilesClient> {
             }
             return null;
         }
-        return null;
+        return super.getFeature(type, prompt);
     }
 }

@@ -1205,6 +1205,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 return super.getFeature(type, prompt);
             }
         }
-        return null;
+        return super.getFeature(type, prompt);
     }
 }
