@@ -80,10 +80,10 @@ import java.util.Set;
  *
  * @version $Id$
  */
-public class GSSession extends S3Session {
-    private static final Logger log = Logger.getLogger(GSSession.class);
+public class GoogleStorageSession extends S3Session {
+    private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
 
-    public GSSession(Host h) {
+    public GoogleStorageSession(Host h) {
         super(h);
     }
 

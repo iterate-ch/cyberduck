@@ -43,9 +43,9 @@ import java.util.List;
  */
 public class GoogleStorageWebsiteDistributionConfiguration implements DistributionConfiguration {
 
-    private GSSession session;
+    private GoogleStorageSession session;
 
-    public GoogleStorageWebsiteDistributionConfiguration(final GSSession session) {
+    public GoogleStorageWebsiteDistributionConfiguration(final GoogleStorageSession session) {
         this.session = session;
     }
 

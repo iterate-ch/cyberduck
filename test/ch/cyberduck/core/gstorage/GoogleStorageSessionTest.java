@@ -25,14 +25,14 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class GSSessionTest extends AbstractTestCase {
+public class GoogleStorageSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testConnectRackspace() throws Exception {
         final Host host = new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname(), new Credentials(
                 properties.getProperty("googlestorage.key"), properties.getProperty("googlestorage.secret")
         ));
-        final GSSession session = new GSSession(host);
+        final GoogleStorageSession session = new GoogleStorageSession(host);
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -50,7 +50,7 @@ public class GSSessionTest extends AbstractTestCase {
         final Host host = new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname(), new Credentials(
                 "a", "s"
         ));
-        final GSSession session = new GSSession(host);
+        final GoogleStorageSession session = new GoogleStorageSession(host);
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -65,12 +65,12 @@ public class GSSessionTest extends AbstractTestCase {
 
     @Test
     public void testFeatures() {
-        assertNotNull(new GSSession(new Host("t")).getFeature(AccessControlList.class, null));
-        assertNotNull(new GSSession(new Host("t")).getFeature(DistributionConfiguration.class, null));
-        assertNotNull(new GSSession(new Host("t")).getFeature(IdentityConfiguration.class, null));
-        assertNotNull(new GSSession(new Host("t")).getFeature(Logging.class, null));
-        assertNotNull(new GSSession(new Host("t")).getFeature(Headers.class, null));
-        assertNull(new GSSession(new Host("t")).getFeature(Lifecycle.class, null));
-        assertNull(new GSSession(new Host("t")).getFeature(Versioning.class, null));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(AccessControlList.class, null));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(DistributionConfiguration.class, null));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(IdentityConfiguration.class, null));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(Logging.class, null));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(Headers.class, null));
+        assertNull(new GoogleStorageSession(new Host("t")).getFeature(Lifecycle.class, null));
+        assertNull(new GoogleStorageSession(new Host("t")).getFeature(Versioning.class, null));
     }
 }

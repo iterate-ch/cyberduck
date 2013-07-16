@@ -18,10 +18,10 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.gstorage.GoogleStorageSession;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.gstorage.GSSession;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPSession;
 
@@ -89,7 +89,7 @@ public abstract class SessionFactory {
                 factories.put(p, new SessionFactory() {
                     @Override
                     protected Session create(Host h) {
-                        return new GSSession(h);
+                        return new GoogleStorageSession(h);
                     }
                 });
                 break;

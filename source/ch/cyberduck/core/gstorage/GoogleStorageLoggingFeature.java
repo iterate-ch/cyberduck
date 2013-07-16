@@ -32,13 +32,13 @@ import org.jets3t.service.acl.gs.GroupByEmailAddressGrantee;
 import org.jets3t.service.model.GSBucketLoggingStatus;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GoogleStorageLoggingFeature extends S3LoggingFeature {
 
-    final GSSession session;
+    final GoogleStorageSession session;
 
-    public GoogleStorageLoggingFeature(final GSSession session) {
+    public GoogleStorageLoggingFeature(final GoogleStorageSession session) {
         super(session);
         this.session = session;
     }

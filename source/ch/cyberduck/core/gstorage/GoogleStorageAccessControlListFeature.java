@@ -39,7 +39,7 @@ import org.jets3t.service.acl.gs.UserByIdGrantee;
 public class GoogleStorageAccessControlListFeature extends S3AccessControlListFeature {
     private static final Logger log = Logger.getLogger(GoogleStorageAccessControlListFeature.class);
 
-    public GoogleStorageAccessControlListFeature(final GSSession session) {
+    public GoogleStorageAccessControlListFeature(final GoogleStorageSession session) {
         super(session);
     }
 
