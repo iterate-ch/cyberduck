@@ -56,6 +56,17 @@ public enum Scheme {
             return 22;
         }
     },
+    scp {
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public int getPort() {
+            return 22;
+        }
+    },
     http {
         @Override
         public boolean isSecure() {

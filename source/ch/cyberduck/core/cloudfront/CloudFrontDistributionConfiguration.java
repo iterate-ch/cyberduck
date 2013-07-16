@@ -164,6 +164,11 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             public Scheme getScheme() {
                 return Scheme.https;
             }
+
+            @Override
+            public Session createSession(final Host host) {
+                throw new FactoryException(host.getHostname());
+            }
         };
     }
 

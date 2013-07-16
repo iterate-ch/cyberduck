@@ -18,97 +18,13 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.gstorage.GoogleStorageSession;
-import ch.cyberduck.core.openstack.SwiftSession;
-import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.sftp.SFTPSession;
+public final class SessionFactory {
 
-import org.apache.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
-
-public abstract class SessionFactory {
-    private static final Logger log = Logger.getLogger(SessionFactory.class);
-
-    private static final Map<Protocol, SessionFactory> factories
-            = new HashMap<Protocol, SessionFactory>() {
-        @Override
-        public SessionFactory get(final Object key) {
-            if(!(key instanceof Protocol)) {
-                throw new FactoryException(String.format("No factory for key %s", key));
-            }
-            final Protocol p = (Protocol) key;
-            if(!factories.containsKey(p)) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Register protocol %s", p.getIdentifier()));
-                }
-                register(p);
-            }
-            return super.get(key);
-        }
-    };
-
-    private static void register(final Protocol p) {
-        switch(p.getType()) {
-            case ftp:
-                factories.put(p, new SessionFactory() {
-                    @Override
-                    protected Session create(Host h) {
-                        return new FTPSession(h);
-                    }
-                });
-                break;
-            case ssh:
-                factories.put(p, new SessionFactory() {
-                    @Override
-                    protected Session create(Host h) {
-                        return new SFTPSession(h);
-                    }
-                });
-                break;
-            case dav:
-                factories.put(p, new SessionFactory() {
-                    @Override
-                    protected Session create(Host h) {
-                        return new DAVSession(h);
-                    }
-                });
-                break;
-            case s3:
-                factories.put(p, new SessionFactory() {
-                    @Override
-                    protected Session create(Host h) {
-                        return new S3Session(h);
-                    }
-                });
-                break;
-            case googlestorage:
-                factories.put(p, new SessionFactory() {
-                    @Override
-                    protected Session create(Host h) {
-                        return new GoogleStorageSession(h);
-                    }
-                });
-                break;
-            case swift:
-                factories.put(p, new SessionFactory() {
-                    @Override
-                    protected Session create(Host h) {
-                        return new SwiftSession(h);
-                    }
-                });
-                break;
-            default:
-                throw new FactoryException(String.format("No factory for protocol %s", p));
-        }
+    private SessionFactory() {
+        //
     }
 
-    protected abstract Session create(Host h);
-
     public static Session createSession(final Host h) {
-        return factories.get(h.getProtocol()).create(h);
+        return h.getProtocol().createSession(h);
     }
 }

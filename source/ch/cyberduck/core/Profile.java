@@ -253,4 +253,9 @@ public final class Profile extends AbstractProtocol implements Serializable {
     public boolean isUTCTimezone() {
         return parent.isUTCTimezone();
     }
+
+    @Override
+    public Session createSession(final Host host) {
+        return parent.createSession(host);
+    }
 }

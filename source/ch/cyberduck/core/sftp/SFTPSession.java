@@ -234,7 +234,7 @@ public class SFTPSession extends Session<Connection> {
      * @return True if SFTP is the selected transfer protocol for SSH sessions.
      */
     private boolean isTransferResumable() {
-        return Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier());
+        return Preferences.instance().getProperty("ssh.transfer").equals(Scheme.sftp.name());
     }
 
     @Override
@@ -307,7 +307,7 @@ public class SFTPSession extends Session<Connection> {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         InputStream in = null;
         try {
-            if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
+            if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.sftp.name())) {
                 final SFTPv3FileHandle handle = this.sftp().openFileRO(file.getAbsolute());
                 in = new SFTPInputStream(handle);
                 if(status.isResume()) {
@@ -322,7 +322,7 @@ public class SFTPSession extends Session<Connection> {
                         (int) (status.getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1
                 );
             }
-            else if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
+            else if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
                 final SCPClient client = new SCPClient(this.getClient());
                 client.setCharset(this.getEncoding());
                 in = client.get(file.getAbsolute());
@@ -338,7 +338,7 @@ public class SFTPSession extends Session<Connection> {
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final String mode = Preferences.instance().getProperty("ssh.transfer");
-            if(mode.equals(Protocol.SFTP.getIdentifier())) {
+            if(mode.equals(Scheme.sftp.name())) {
                 SFTPv3FileHandle handle;
                 if(status.isResume()) {
                     handle = this.sftp().openFile(file.getAbsolute(),
@@ -362,7 +362,7 @@ public class SFTPSession extends Session<Connection> {
                 );
                 return out;
             }
-            else if(mode.equals(Protocol.SCP.getIdentifier())) {
+            else if(mode.equals(Scheme.scp.name())) {
                 final SCPClient client = new SCPClient(this.getClient());
                 client.setCharset(this.getEncoding());
                 return client.put(file.getName(), status.getLength(),
