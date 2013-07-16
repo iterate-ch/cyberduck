@@ -81,14 +81,11 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     private S3Session session;
 
-    private LoginController prompt;
-
     private CloudFrontService client;
 
     public CloudFrontDistributionConfiguration(final S3Session session,
                                                final LoginController prompt) {
         this.session = session;
-        this.prompt = prompt;
         this.client = new CloudFrontService(
                 new AWSCredentials(session.getHost().getCredentials().getUsername(),
                         session.getHost().getCredentials().getPassword())

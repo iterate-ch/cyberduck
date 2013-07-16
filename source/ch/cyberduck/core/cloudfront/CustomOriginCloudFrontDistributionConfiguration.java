@@ -38,14 +38,12 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     private static Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
 
     private Host origin;
-    private S3Session session;
 
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin,
                                                            final S3Session session,
                                                            final LoginController prompt) {
         super(session, prompt);
         this.origin = origin;
-        this.session = session;
     }
 
     @Override
