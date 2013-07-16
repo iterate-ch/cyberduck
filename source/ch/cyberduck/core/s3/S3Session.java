@@ -484,7 +484,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     /**
      * Query string authentication. Query string authentication is useful for giving HTTP or browser access to
-     * resources that would normally require authentication. The signature in the query string secures the request
+     * resources that would normally require authentication. The signature in the query string secures the request.
      *
      * @return A signed URL with a limited validity over time.
      */
@@ -502,15 +502,17 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      */
     protected DescriptiveUrl toSignedUrl(final Path file, final int seconds) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot create signed URL");
-            return null;
+            return DescriptiveUrl.EMPTY;
         }
         if(file.attributes().isFile()) {
             // Determine expiry time for URL
             final Calendar expiry = Calendar.getInstance();
             expiry.add(Calendar.SECOND, seconds);
             // Generate URL
-            return new DescriptiveUrl(new RequestEntityRestStorageService(this.configure()).createSignedUrl("GET",
+            final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this.configure());
+            client.setProviderCredentials(
+                    new AWSCredentials(host.getCredentials().getUsername(), PasswordStoreFactory.get().find(host)));
+            return new DescriptiveUrl(client.createSignedUrl("GET",
                     containerService.getContainer(file).getName(), containerService.getKey(file), null,
                     null, expiry.getTimeInMillis() / 1000, false, this.getHost().getProtocol().isSecure(), false),
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed", "S3"))
