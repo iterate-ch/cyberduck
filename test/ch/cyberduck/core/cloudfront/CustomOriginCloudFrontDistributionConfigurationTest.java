@@ -25,9 +25,8 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
 
     @Test
     public void testGetMethods() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         assertEquals(Arrays.asList(Distribution.CUSTOM),
-                new CustomOriginCloudFrontDistributionConfiguration(new Host("o"), session, new DisabledLoginController()).getMethods(
+                new CustomOriginCloudFrontDistributionConfiguration(new Host("o"), new DisabledLoginController()).getMethods(
                         new Path("/bbb", Path.VOLUME_TYPE)));
     }
 
@@ -38,8 +37,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         h.setWebURL("http://w.example.net");
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(h,
-                session, new DisabledLoginController());
+                = new CustomOriginCloudFrontDistributionConfiguration(h, new DisabledLoginController());
         assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM));
         h.setWebURL(null);
         assertEquals("m", configuration.getOrigin(container, Distribution.CUSTOM));
@@ -48,13 +46,11 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
 
     @Test
     public void testRead() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
-        host.setCredentials(new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
-        ));
-        final S3Session session = new S3Session(host);
+        final Host origin = new Host("myhost.localdomain");
+        origin.getCdnCredentials().setUsername(properties.getProperty("s3.key"));
+        origin.getCdnCredentials().setPassword(properties.getProperty("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(new Host("myhost.localdomain"), session, new DisabledLoginController());
+                = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.CUSTOM);
         assertNull(distribution.getId());
@@ -65,15 +61,13 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
 
     @Test(expected = LoginCanceledException.class)
     public void testReadMissingCredentials() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
-        final S3Session session = new S3Session(host);
         final Host bookmark = new Host(Protocol.SFTP, "myhost.localdomain");
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(new Host("o"), session, new DisabledLoginController() {
+                = new CustomOriginCloudFrontDistributionConfiguration(bookmark, new DisabledLoginController() {
             @Override
             public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 assertEquals(Protocol.S3_SSL, protocol);
-                assertEquals(session.getHost().getCredentials(), credentials);
+                assertEquals(bookmark.getCdnCredentials(), credentials);
                 assertEquals(true, options.keychain);
                 assertEquals(false, options.anonymous);
                 assertEquals(false, options.publickey);

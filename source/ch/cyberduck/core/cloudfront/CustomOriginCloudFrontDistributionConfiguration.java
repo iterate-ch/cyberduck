@@ -21,6 +21,7 @@ package ch.cyberduck.core.cloudfront;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -39,10 +40,9 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private Host origin;
 
-    public CustomOriginCloudFrontDistributionConfiguration(final Host origin,
-                                                           final S3Session session,
-                                                           final LoginController prompt) {
-        super(session, prompt);
+    public CustomOriginCloudFrontDistributionConfiguration(final Host origin, final LoginController prompt) {
+        // Configure with the same host as S3 to get the same credentials from the keychain.
+        super(new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), origin.getCdnCredentials())), prompt);
         this.origin = origin;
     }
 
