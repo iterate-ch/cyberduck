@@ -1,7 +1,7 @@
 package ch.cyberduck.core.versioning;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class VersioningConfiguration {
 
@@ -17,7 +17,7 @@ public class VersioningConfiguration {
     }
 
     public VersioningConfiguration(final boolean enabled) {
-        this.enabled = enabled;
+        this(enabled, false);
     }
 
     public VersioningConfiguration(final boolean enabled, final boolean multifactor) {
