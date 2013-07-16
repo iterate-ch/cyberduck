@@ -41,16 +41,10 @@ public class S3BucketCreateService {
         this.session = session;
     }
 
-    public void create(final Path bucket) throws BackgroundException {
+    public void create(final Path bucket, final String location) throws BackgroundException {
         // Create bucket
         if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
             throw new BackgroundException(Locale.localizedString("Bucket name is not DNS compatible", "S3"));
-        }
-        String location = Preferences.instance().getProperty("s3.location");
-        if(!session.getHost().getProtocol().getLocations().contains(location)) {
-            log.warn("Default bucket location not supported by provider:" + location);
-            location = "US";
-            log.warn("Fallback to US");
         }
         AccessControlList acl;
         if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {

@@ -169,7 +169,7 @@ public abstract class AbstractProtocol implements Protocol {
      * @return Available regions for containers
      */
     @Override
-    public Set<String> getLocations() {
+    public Set<String> getRegions() {
         return Collections.emptySet();
     }
 

@@ -1880,7 +1880,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation = b;
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
-        for(String location : Protocol.S3_SSL.getLocations()) {
+        for(String location : Protocol.S3_SSL.getRegions()) {
             this.defaultBucketLocation.addItemWithTitle(Locale.localizedString(location, "S3"));
             this.defaultBucketLocation.lastItem().setRepresentedObject(location);
         }

@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class S3Protocol extends AbstractProtocol {
     @Override
@@ -71,7 +71,7 @@ public final class S3Protocol extends AbstractProtocol {
     }
 
     @Override
-    public Set<String> getLocations() {
+    public Set<String> getRegions() {
         return new HashSet<String>(Arrays.asList(
                 "US",
                 "EU",

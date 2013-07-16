@@ -128,7 +128,10 @@ public interface Protocol {
      */
     boolean isUTCTimezone();
 
-    Set<String> getLocations();
+    /**
+     * @return Locations for containers
+     */
+    Set<String> getRegions();
 
     /**
      * @return Human readable short name
