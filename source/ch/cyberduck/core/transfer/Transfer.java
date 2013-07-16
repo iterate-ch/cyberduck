@@ -438,74 +438,68 @@ public abstract class Transfer implements Serializable {
     /**
      * To be called before any file is actually transferred
      *
-     * @param p      File
+     * @param file   File
      * @param filter Filter to apply to exclude files from transfer
      */
-    public void prepareRoot(final Path p, final TransferPathFilter filter,
-                            final ProgressListener listener) throws BackgroundException {
+    public void prepare(final Path file, final TransferPathFilter filter,
+                        final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer status of %s for transfer %s", p, this));
+            log.debug(String.format("Find transfer status of %s for transfer %s", file, this));
         }
-        if(this.isSelected(p)) {
+        if(this.isSelected(file)) {
             // Only prepare the path it will be actually transferred
-            if(filter.accept(session, p)) {
+            if(filter.accept(session, file)) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Accepted in %s transfer", p));
+                    log.info(String.format("Accepted in %s transfer", file));
                 }
-                listener.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
-                final TransferStatus s = filter.prepare(session, p);
+                listener.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), file.getName()));
+                final TransferStatus s = filter.prepare(session, file);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Determined transfer status %s of %s for transfer %s", status, p, this));
+                    log.info(String.format("Determined transfer status %s of %s for transfer %s", status, file, this));
                 }
                 // Add transfer length to total bytes
                 this.addSize(s.getLength());
                 // Add skipped bytes
                 this.addTransferred(s.getCurrent());
-                if(p.attributes().isDirectory()) {
-                    this.prepareDirectory(p, filter, listener);
+                if(file.attributes().isDirectory()) {
+                    this.prepareDirectory(file, filter, listener);
 
                 }
-                status.put(p, s);
+                status.put(file, s);
             }
         }
         else {
-            log.info(String.format("Skip unchecked file %s for transfer %s", p, this));
+            log.info(String.format("Skip unchecked file %s for transfer %s", file, this));
         }
     }
 
-    private void prepareDirectory(final Path p, final TransferPathFilter filter, final ProgressListener listener) throws BackgroundException {
+    private void prepareDirectory(final Path directory, final TransferPathFilter filter,
+                                  final ProgressListener listener) throws BackgroundException {
         // Call recursively for all children
-        final AttributedList<Path> children = this.children(p);
+        final AttributedList<Path> children = this.children(directory);
         // Put into cache for later reference when transferring
-        this.cache().put(p.getReference(), children);
+        this.cache().put(directory.getReference(), children);
         // Call recursively
         for(Path child : children) {
-            this.prepareChild(child, filter, listener);
-        }
-    }
-
-    private void prepareChild(final Path p, final TransferPathFilter filter,
-                              final ProgressListener listener) throws BackgroundException {
-
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer status of %s for transfer %s", p, this));
-        }
-
-        if(this.isSelected(p)) {
-            listener.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
-            final TransferStatus s = filter.prepare(session, p);
-            // Add transfer length to total bytes
-            this.addSize(s.getLength());
-            // Add skipped bytes
-            this.addTransferred(s.getCurrent());
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Determined transfer status %s of %s for transfer %s", status, p, this));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Find transfer status of %s for transfer %s", child, this));
             }
-            if(p.attributes().isDirectory()) {
-                // Call recursively for all children
-                this.prepareDirectory(p, filter, listener);
+            if(this.isSelected(child)) {
+                listener.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), child.getName()));
+                final TransferStatus s = filter.prepare(session, child);
+                // Add transfer length to total bytes
+                this.addSize(s.getLength());
+                // Add skipped bytes
+                this.addTransferred(s.getCurrent());
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Determined transfer status %s of %s for transfer %s", status, child, this));
+                }
+                if(child.attributes().isDirectory()) {
+                    // Call recursively for all children
+                    this.prepareDirectory(child, filter, listener);
+                }
+                status.put(child, s);
             }
-            status.put(p, s);
         }
     }
 
@@ -519,6 +513,7 @@ public abstract class Transfer implements Serializable {
             log.debug(String.format("Clear cache with options %s", options));
         }
         cache.clear();
+        status.clear();
     }
 
     /**
@@ -549,7 +544,7 @@ public abstract class Transfer implements Serializable {
             this.reset();
             // Calculate information about the files in advance to give progress information
             for(Path next : roots) {
-                this.prepareRoot(next, filter, session);
+                this.prepare(next, filter, session);
             }
             // Transfer all files sequentially
             for(Path next : roots) {
