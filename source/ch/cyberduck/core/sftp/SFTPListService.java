@@ -44,27 +44,26 @@ public class SFTPListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
 
-            for(SFTPv3DirectoryEntry f : session.sftp().ls(file.getAbsolute())) {
+            for(SFTPv3DirectoryEntry f : session.sftp().ls(directory.getAbsolute())) {
                 if(f.filename.equals(".") || f.filename.equals("..")) {
                     continue;
                 }
                 SFTPv3FileAttributes attributes = f.attributes;
-                final Path p = new Path(file,
-                        f.filename, attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                final Path file = new Path(directory, f.filename, attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 if(null != attributes.size) {
-                    if(p.attributes().isFile()) {
-                        p.attributes().setSize(attributes.size);
+                    if(file.attributes().isFile()) {
+                        file.attributes().setSize(attributes.size);
                     }
                 }
                 String perm = attributes.getOctalPermissions();
                 if(null != perm) {
                     try {
                         final String octal = Integer.toOctalString(attributes.permissions);
-                        p.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
+                        file.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
                     }
                     catch(IndexOutOfBoundsException e) {
                         log.warn(String.format("Failure parsing mode %s", e.getMessage()));
@@ -74,28 +73,28 @@ public class SFTPListService implements ListService {
                     }
                 }
                 if(null != attributes.uid) {
-                    p.attributes().setOwner(attributes.uid.toString());
+                    file.attributes().setOwner(attributes.uid.toString());
                 }
                 if(null != attributes.gid) {
-                    p.attributes().setGroup(attributes.gid.toString());
+                    file.attributes().setGroup(attributes.gid.toString());
                 }
                 if(null != attributes.mtime) {
-                    p.attributes().setModificationDate(attributes.mtime * 1000L);
+                    file.attributes().setModificationDate(attributes.mtime * 1000L);
                 }
                 if(null != attributes.atime) {
-                    p.attributes().setAccessedDate(attributes.atime * 1000L);
+                    file.attributes().setAccessedDate(attributes.atime * 1000L);
                 }
                 if(attributes.isSymlink()) {
-                    final String target = session.sftp().readLink(p.getAbsolute());
+                    final String target = session.sftp().readLink(file.getAbsolute());
                     final int type;
                     final Path symlink;
                     if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                        symlink = new Path(target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                        symlink = new Path(target, file.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
                     }
                     else {
-                        symlink = new Path(file, target, p.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                        symlink = new Path(directory, target, file.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
                     }
-                    p.setSymlinkTarget(symlink);
+                    file.setSymlinkTarget(symlink);
                     final SFTPv3FileAttributes targetAttributes = session.sftp().stat(symlink.getAbsolute());
                     if(targetAttributes.isDirectory()) {
                         type = Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE;
@@ -103,14 +102,14 @@ public class SFTPListService implements ListService {
                     else {
                         type = Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE;
                     }
-                    p.attributes().setType(type);
+                    file.attributes().setType(type);
                 }
-                children.add(p);
+                children.add(file);
             }
             return children;
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Listing directory failed", e, file);
+            throw new SFTPExceptionMappingService().map("Listing directory failed", e, directory);
         }
     }
 }
