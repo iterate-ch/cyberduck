@@ -22,7 +22,7 @@ namespace Ch.Cyberduck.Core.Local
 {
     public sealed class ExplorerRevealService : RevealService
     {
-        public void reveal(ch.cyberduck.core.local.Local l)
+        public bool reveal(ch.cyberduck.core.local.Local l)
         {
             if (l.exists())
             {

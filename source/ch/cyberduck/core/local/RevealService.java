@@ -27,5 +27,5 @@ public interface RevealService {
      *
      * @param file File or folder
      */
-    void reveal(Local file);
+    boolean reveal(Local file);
 }
