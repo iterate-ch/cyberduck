@@ -30,6 +30,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -126,17 +127,22 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(super.exists(path)) {
             return true;
         }
-        if(path.attributes().isDirectory()) {
-            // Parent directory may not be accessible. Issue #5662
-            try {
-                return this.getClient().exists(new DAVPathEncoder().encode(path));
+        try {
+            if(path.attributes().isDirectory()) {
+                // Parent directory may not be accessible. Issue #5662
+                try {
+                    return this.getClient().exists(new DAVPathEncoder().encode(path));
+                }
+                catch(SardineException e) {
+                    throw new DAVExceptionMappingService().map("Cannot read file attributes", e, path);
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map(e, path);
+                }
             }
-            catch(SardineException e) {
-                throw new DAVExceptionMappingService().map("Cannot read file attributes", e, path);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, path);
-            }
+        }
+        catch(NotfoundException e) {
+            return false;
         }
         return false;
     }

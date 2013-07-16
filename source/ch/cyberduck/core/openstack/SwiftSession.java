@@ -25,6 +25,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -85,10 +86,14 @@ public class SwiftSession extends HttpSession<FilesClient> {
     }
 
     protected FilesRegion getRegion(final Path container) throws BackgroundException {
-        final String location = container.attributes().getRegion();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Lookup region for container %s in region %s", container, location));
+            log.debug(String.format("Lookup region for container %s", container));
         }
+        return this.getRegion(container.attributes().getRegion());
+    }
+
+    protected FilesRegion getRegion(final String location)
+            throws ConnectionCanceledException {
         if(regions.containsKey(location)) {
             return regions.get(location);
         }
@@ -168,19 +173,24 @@ public class SwiftSession extends HttpSession<FilesClient> {
 
     @Override
     public boolean exists(final Path file) throws BackgroundException {
-        if(containerService.isContainer(file)) {
-            try {
-                return this.getClient().containerExists(this.getRegion(containerService.getContainer(file)),
-                        file.getName());
+        try {
+            if(containerService.isContainer(file)) {
+                try {
+                    return this.getClient().containerExists(this.getRegion(containerService.getContainer(file)),
+                            file.getName());
+                }
+                catch(FilesException e) {
+                    throw new SwiftExceptionMappingService().map("Cannot read file attributes", e, file);
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, file);
+                }
             }
-            catch(FilesException e) {
-                throw new SwiftExceptionMappingService().map("Cannot read file attributes", e, file);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, file);
-            }
+            return super.exists(file);
         }
-        return super.exists(file);
+        catch(NotfoundException e) {
+            return false;
+        }
     }
 
     @Override

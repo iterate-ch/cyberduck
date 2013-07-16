@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Symlink;
@@ -240,13 +241,18 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public boolean exists(final Path path) throws BackgroundException {
         try {
-            return this.sftp().canonicalPath(path.getAbsolute()) != null;
+            try {
+                return this.sftp().canonicalPath(path.getAbsolute()) != null;
+            }
+            catch(SFTPException e) {
+                throw new SFTPExceptionMappingService().map(e);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
-        catch(SFTPException e) {
+        catch(NotfoundException e) {
             return false;
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
