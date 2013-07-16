@@ -33,25 +33,16 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.IOResumeException;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.kohsuke.putty.PuTTYKey;
 
-import java.io.CharArrayWriter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.text.MessageFormat;
 
 import ch.ethz.ssh2.*;
-import ch.ethz.ssh2.crypto.PEMDecoder;
-import ch.ethz.ssh2.crypto.PEMDecryptException;
 
 /**
  * @version $Id$
@@ -109,17 +100,17 @@ public class SFTPSession extends Session<Connection> {
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         try {
             if(host.getCredentials().isPublicKeyAuthentication()) {
-                if(this.loginUsingPublicKeyAuthentication(prompt, host.getCredentials())) {
+                if(new SFTPPublicKeyAuthentication(this).authenticate(host, prompt)) {
                     log.info("Login successful");
                 }
             }
-            else if(this.loginUsingChallengeResponseAuthentication(prompt, host.getCredentials())) {
+            else if(new SFTPChallengeResponseAuthentication(this).authenticate(host, prompt)) {
                 log.info("Login successful");
             }
-            else if(this.loginUsingPasswordAuthentication(host.getCredentials())) {
+            else if(new SFTPPasswordAuthentication(this).authenticate(host, prompt)) {
                 log.info("Login successful");
             }
-            else if(client.authenticateWithNone(host.getCredentials().getUsername())) {
+            else if(new SFTPNoneAuthentication(this).authenticate(host, prompt)) {
                 log.info("Login successful");
             }
             // Check if authentication is partial
@@ -138,7 +129,7 @@ public class SFTPSession extends Session<Connection> {
                 prompt.prompt(host.getProtocol(), additional,
                         Locale.localizedString("Partial authentication success", "Credentials"),
                         Locale.localizedString("Provide additional login credentials", "Credentials") + ".", new LoginOptions());
-                if(!this.loginUsingChallengeResponseAuthentication(prompt, additional)) {
+                if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
                     prompt.prompt(host.getProtocol(), host.getCredentials(),
                             Locale.localizedString("Login failed", "Credentials"),
                             Locale.localizedString("Login with username and password", "Credentials"),
@@ -181,140 +172,6 @@ public class SFTPSession extends Session<Connection> {
             throw new LoginCanceledException();
         }
         return sftp;
-    }
-
-    /**
-     * Authenticate with public key
-     *
-     * @param controller  Login prompt
-     * @param credentials Username and password for private key
-     * @return True if authentication succeeded
-     * @throws IOException Error reading private key
-     */
-    private boolean loginUsingPublicKeyAuthentication(final LoginController controller, final Credentials credentials)
-            throws IOException, LoginCanceledException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using public key authentication with credentials %s", credentials));
-        }
-        if(client.isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
-            if(credentials.isPublicKeyAuthentication()) {
-                final Local identity = credentials.getIdentity();
-                final CharArrayWriter privatekey = new CharArrayWriter();
-                if(PuTTYKey.isPuTTYKeyFile(identity.getInputStream())) {
-                    final PuTTYKey putty = new PuTTYKey(identity.getInputStream());
-                    if(putty.isEncrypted()) {
-                        if(StringUtils.isEmpty(credentials.getPassword())) {
-                            controller.prompt(host.getProtocol(), credentials,
-                                    Locale.localizedString("Private key password protected", "Credentials"),
-                                    Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
-                                            + " (" + identity + ")",
-                                    new LoginOptions(host.getProtocol()));
-                        }
-                    }
-                    try {
-                        IOUtils.copy(new StringReader(putty.toOpenSSH(credentials.getPassword())), privatekey);
-                    }
-                    catch(PEMDecryptException e) {
-                        controller.prompt(host.getProtocol(), credentials,
-                                Locale.localizedString("Invalid passphrase", "Credentials"),
-                                Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
-                                        + " (" + identity + ")", new LoginOptions(host.getProtocol()));
-                        return this.loginUsingPublicKeyAuthentication(controller, credentials);
-                    }
-                }
-                else {
-                    IOUtils.copy(new FileReader(identity.getAbsolute()), privatekey);
-                    if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
-                        if(StringUtils.isEmpty(credentials.getPassword())) {
-                            controller.prompt(host.getProtocol(), credentials,
-                                    Locale.localizedString("Private key password protected", "Credentials"),
-                                    Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
-                                            + " (" + identity + ")", new LoginOptions(host.getProtocol()));
-                        }
-                    }
-                    try {
-                        PEMDecoder.decode(privatekey.toCharArray(), credentials.getPassword());
-                    }
-                    catch(PEMDecryptException e) {
-                        controller.prompt(host.getProtocol(), credentials,
-                                Locale.localizedString("Invalid passphrase", "Credentials"),
-                                Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
-                                        + " (" + identity + ")", new LoginOptions(host.getProtocol()));
-
-                        return this.loginUsingPublicKeyAuthentication(controller, credentials);
-                    }
-                }
-                return client.authenticateWithPublicKey(credentials.getUsername(),
-                        privatekey.toCharArray(), credentials.getPassword());
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Authenticate with plain password.
-     *
-     * @param credentials Username and password
-     * @return True if authentication succeeded
-     */
-    private boolean loginUsingPasswordAuthentication(final Credentials credentials) throws IOException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using password authentication with credentials %s", credentials));
-        }
-        if(client.isAuthMethodAvailable(credentials.getUsername(), "password")) {
-            return client.authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
-        }
-        return false;
-    }
-
-    /**
-     * Authenticate using challenge and response method.
-     *
-     * @param controller  Login prompt
-     * @param credentials Username and password
-     * @return True if authentication succeeded
-     */
-    private boolean loginUsingChallengeResponseAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using challenge response authentication with credentials %s", credentials));
-        }
-        if(client.isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
-            return client.authenticateWithKeyboardInteractive(credentials.getUsername(),
-                    /**
-                     * The logic that one has to implement if "keyboard-interactive" authentication shall be
-                     * supported.
-                     */
-                    new InteractiveCallback() {
-                        private int promptCount = 0;
-
-                        /**
-                         * The callback may be invoked several times, depending on how
-                         * many questions-sets the server sends
-                         */
-                        @Override
-                        public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
-                                                         boolean[] echo) throws LoginCanceledException {
-                            log.debug("replyToChallenge:" + name);
-                            // In its first callback the server prompts for the password
-                            if(0 == promptCount) {
-                                if(log.isDebugEnabled()) {
-                                    log.debug("First callback returning provided credentials");
-                                }
-                                promptCount++;
-                                return new String[]{credentials.getPassword()};
-                            }
-                            String[] response = new String[numPrompts];
-                            for(int i = 0; i < numPrompts; i++) {
-                                controller.prompt(host.getProtocol(), credentials,
-                                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i], new LoginOptions());
-                                response[i] = credentials.getPassword();
-                                promptCount++;
-                            }
-                            return response;
-                        }
-                    });
-        }
-        return false;
     }
 
     @Override
