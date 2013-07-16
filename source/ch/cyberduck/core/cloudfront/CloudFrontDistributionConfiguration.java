@@ -220,11 +220,18 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             LoggingStatus loggingStatus = null;
             if(distribution.isLogging()) {
                 if(this.getFeature(Logging.class, distribution.getMethod()) != null) {
-                    final String loggingDestination = StringUtils.isNotBlank(distribution.getLoggingTarget()) ?
-                            ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingTarget(), false, Protocol.S3_SSL.getDefaultHostname()) :
-                            this.getOrigin(container, distribution.getMethod());
-                    loggingStatus = new LoggingStatus(loggingDestination,
-                            Preferences.instance().getProperty("cloudfront.logging.prefix"));
+                    final String loggingTarget;
+                    if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
+                        loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingTarget(),
+                                false, Protocol.S3_SSL.getDefaultHostname());
+                    }
+                    else {
+                        loggingTarget = this.getOrigin(container, distribution.getMethod());
+                    }
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
+                    }
+                    loggingStatus = new LoggingStatus(loggingTarget, Preferences.instance().getProperty("cloudfront.logging.prefix"));
                 }
             }
             final Distribution current = this.read(container, distribution.getMethod());
@@ -233,23 +240,16 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No existing distribution found for method %s", distribution.getMethod()));
                 }
-                this.createDistribution(client, distribution.isEnabled(),
-                        distribution.getMethod(),
-                        this.getOrigin(container, distribution.getMethod()),
-                        distribution.getCNAMEs(), loggingStatus, distribution.getIndexDocument());
+                this.createDistribution(client, container, distribution, loggingStatus);
             }
             else {
                 if(current.equals(distribution)) {
-                    log.info("Skip updating distribution not modified.");
+                    if(log.isInfoEnabled()) {
+                        log.info("Skip updating distribution not modified.");
+                    }
                 }
                 else {
-                    this.updateDistribution(client, distribution.isEnabled(),
-                            distribution.getMethod(),
-                            this.getOrigin(container, distribution.getMethod()),
-                            current.getId(), current.getEtag(), current.getReference(),
-                            distribution.getCNAMEs(),
-                            loggingStatus,
-                            distribution.getIndexDocument());
+                    this.updateDistribution(current, client, container, distribution, loggingStatus);
                 }
             }
         }
@@ -383,113 +383,99 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * Amazon CloudFront Extension to create a new distribution configuration
      * *
      *
-     * @param enabled           Distribution status
-     * @param method            Distribution method
-     * @param origin            Name of the container
-     * @param cnames            DNS CNAME aliases for distribution
-     * @param logging           Access log configuration
-     * @param defaultRootObject Index file for distribution. Only supported for download and custom origins.
+     * @param logging Access log configuration
      * @return Distribution configuration
      * @throws CloudFrontServiceException  CloudFront failure details
      * @throws ConnectionCanceledException Authentication canceled
      */
     protected org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client,
-                                                                                  final boolean enabled,
-                                                                                  final Distribution.Method method,
-                                                                                  final String origin,
-                                                                                  final String[] cnames,
-                                                                                  final LoggingStatus logging,
-                                                                                  final String defaultRootObject)
+                                                                                  final Path container,
+                                                                                  final Distribution distribution,
+                                                                                  final LoggingStatus logging)
             throws ConnectionCanceledException, CloudFrontServiceException {
 
         final String reference = String.valueOf(System.currentTimeMillis());
 
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Create new %s distribution", method.toString()));
+            log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
         }
         final String originId = UUID.randomUUID().toString();
         final CacheBehavior cacheBehavior = new CacheBehavior(
                 originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
         );
-
-        if(method.equals(Distribution.STREAMING)) {
+        final String origin = this.getOrigin(container, distribution.getMethod());
+        if(distribution.getMethod().equals(Distribution.STREAMING)) {
             final StreamingDistributionConfig config = new StreamingDistributionConfig(
                     new S3Origin[]{new S3Origin(originId, origin, null)},
-                    reference, cnames, null, enabled, logging, null);
+                    reference, distribution.getCNAMEs(), null, distribution.isEnabled(), logging, null);
             return client.createDistribution(config
             );
         }
-        if(method.equals(Distribution.DOWNLOAD)) {
+        if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
             DistributionConfig config = new DistributionConfig(
                     new Origin[]{new S3Origin(originId, origin, null)},
-                    reference, cnames, null, enabled, logging,
-                    defaultRootObject, cacheBehavior, new CacheBehavior[]{});
+                    reference, distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
+                    distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
             return client.createDistribution(config);
         }
-        if(method.equals(Distribution.CUSTOM)
-                || method.equals(Distribution.WEBSITE_CDN)) {
+        if(distribution.getMethod().equals(Distribution.CUSTOM)
+                || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
             DistributionConfig config = new DistributionConfig(
                     new Origin[]{new CustomOrigin(originId, origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER)},
-                    reference, cnames, null, enabled, logging,
-                    defaultRootObject, cacheBehavior, new CacheBehavior[]{});
+                    reference, distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
+                    distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
             return client.createDistribution(config);
         }
-        throw new ConnectionCanceledException(String.format("Invalid distribution method %s", method));
+        throw new ConnectionCanceledException(String.format("Invalid distribution method %s", distribution.getMethod()));
     }
 
     /**
      * Amazon CloudFront Extension used to enable or disable a distribution configuration and its CNAMESs
      *
-     * @param enabled           Distribution status
-     * @param method            Distribution method
-     * @param origin            Name of the container
-     * @param distributionId    Distribution reference
-     * @param cnames            DNS CNAME aliases for distribution
-     * @param logging           Access log configuration
-     * @param defaultRootObject Index file for distribution. Only supported for download and custom origins.
+     * @param logging Access log configuration
      * @throws CloudFrontServiceException CloudFront failure details
      * @throws IOException                I/O error
      */
-    protected void updateDistribution(final CloudFrontService client,
-                                      boolean enabled, Distribution.Method method, final String origin,
-                                      final String distributionId, final String etag, final String reference,
-                                      final String[] cnames, final LoggingStatus logging, final String defaultRootObject)
+    protected void updateDistribution(final Distribution current,
+                                      final CloudFrontService client,
+                                      final Path container,
+                                      final Distribution distribution,
+                                      final LoggingStatus logging)
             throws CloudFrontServiceException, IOException, ConnectionCanceledException {
-
+        final String origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Update %s distribution with origin %s", method.toString(), origin));
+            log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-
         final String originId = UUID.randomUUID().toString();
         final CacheBehavior cacheBehavior = new CacheBehavior(
                 originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
         );
-
-        if(method.equals(Distribution.STREAMING)) {
+        if(distribution.getMethod().equals(Distribution.STREAMING)) {
             StreamingDistributionConfig config = new StreamingDistributionConfig(
-                    new Origin[]{new S3Origin(originId, origin, null)}, reference, cnames, null, enabled, logging, null);
-            config.setEtag(etag);
-            client.updateDistributionConfig(distributionId, config);
+                    new Origin[]{new S3Origin(originId, origin, null)}, current.getReference(),
+                    distribution.getCNAMEs(), null, distribution.isEnabled(), logging, null);
+            config.setEtag(current.getEtag());
+            client.updateDistributionConfig(current.getId(), config);
         }
-        else if(method.equals(Distribution.DOWNLOAD)) {
+        else if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
             DistributionConfig config = new DistributionConfig(
                     new Origin[]{new S3Origin(originId, origin, null)},
-                    reference, cnames, null, enabled, logging,
-                    defaultRootObject, cacheBehavior, new CacheBehavior[]{});
-            config.setEtag(etag);
-            client.updateDistributionConfig(distributionId, config);
+                    current.getReference(), distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
+                    distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
+            config.setEtag(current.getEtag());
+            client.updateDistributionConfig(current.getId(), config);
         }
-        else if(method.equals(Distribution.CUSTOM)
-                || method.equals(Distribution.WEBSITE_CDN)) {
+        else if(distribution.getMethod().equals(Distribution.CUSTOM)
+                || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
             DistributionConfig config = new DistributionConfig(
-                    new Origin[]{new CustomOrigin(originId, origin, this.getPolicy(method))},
-                    reference, cnames, null, enabled, logging,
-                    defaultRootObject, cacheBehavior, new CacheBehavior[]{});
-            config.setEtag(etag);
-            client.updateDistributionConfig(distributionId, config);
+                    new Origin[]{new CustomOrigin(originId, origin, this.getPolicy(distribution.getMethod()))},
+                    current.getReference(), distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
+                    distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
+            config.setEtag(current.getEtag());
+            client.updateDistributionConfig(current.getId(), config);
         }
         else {
-            throw new ConnectionCanceledException(String.format("Invalid distribution method %s", method));
+            throw new ConnectionCanceledException(String.format("Invalid distribution method %s", distribution.getMethod()));
         }
     }
 
