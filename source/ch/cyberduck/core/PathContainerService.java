@@ -33,6 +33,9 @@ public class PathContainerService {
      * @return Default path or root with volume attributes set
      */
     public Path getContainer(final Path file) {
+        if(file.isRoot()) {
+            return null;
+        }
         Path container = file;
         while(!this.isContainer(container)) {
             container = container.getParent();
@@ -45,6 +48,9 @@ public class PathContainerService {
      * @return Absolute path without the container name
      */
     public String getKey(final Path file) {
+        if(file.isRoot()) {
+            return null;
+        }
         if(this.isContainer(file)) {
             return null;
         }

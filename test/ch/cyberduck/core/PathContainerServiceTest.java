@@ -22,7 +22,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PathContainerServiceTest extends AbstractTestCase {
 
@@ -38,18 +38,20 @@ public class PathContainerServiceTest extends AbstractTestCase {
     @Test
     public void testGetContainerName() throws Exception {
         final PathContainerService s = new PathContainerService();
-        assertEquals("t", s.getContainer(new Path("/t", Path.FILE_TYPE)).getName());
+        assertEquals("t", s.getContainer(new Path("/t", Path.DIRECTORY_TYPE)).getName());
         assertEquals("t", s.getContainer(new Path("/t/a", Path.FILE_TYPE)).getName());
     }
 
     @Test
     public void testGetContainer() throws Exception {
         final PathContainerService s = new PathContainerService();
-        assertEquals("/t", s.getContainer(new Path("/t", Path.FILE_TYPE)).getAbsolute());
+        assertEquals("/t", s.getContainer(new Path("/t", Path.DIRECTORY_TYPE)).getAbsolute());
+        assertNull(s.getContainer(new Path("/", Path.DIRECTORY_TYPE)));
     }
 
     @Test
     public void testGetKey() throws Exception {
         assertEquals("d/f", new PathContainerService().getKey(new Path("/c/d/f", Path.DIRECTORY_TYPE)));
+        assertNull(new PathContainerService().getKey(new Path("/", Path.DIRECTORY_TYPE)));
     }
 }
