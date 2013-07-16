@@ -1210,7 +1210,6 @@ public class InfoController extends ToolbarWindowController {
      * @param selectValue Select the value field or the name header field
      */
     private void addMetadataItem(String name, String value, boolean selectValue) {
-        log.debug("addMetadataItem:" + name);
         int row = metadata.size();
         List<Header> updated = new ArrayList<Header>(metadata);
         updated.add(row, new Header(name, value));

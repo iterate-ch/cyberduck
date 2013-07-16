@@ -83,8 +83,10 @@ public class BookmarkController extends WindowController {
 
     @Action
     public void protocolSelectionChanged(final NSPopUpButton sender) {
-        log.debug("protocolSelectionChanged:" + sender);
         final Protocol selected = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Protocol selection changed to %s", selected));
+        }
         host.setPort(selected.getDefaultPort());
         if(!host.getProtocol().isHostnameConfigurable()) {
             // Previously selected protocol had a default hostname. Change to default
@@ -131,7 +133,6 @@ public class BookmarkController extends WindowController {
 
     @Action
     public void encodingSelectionChanged(final NSPopUpButton sender) {
-        log.debug("encodingSelectionChanged:" + sender);
         if(sender.selectedItem().title().equals(DEFAULT)) {
             host.setEncoding(null);
         }
@@ -595,7 +596,6 @@ public class BookmarkController extends WindowController {
 
     @Action
     public void pkCheckboxSelectionChanged(final NSButton sender) {
-        log.debug("pkCheckboxSelectionChanged");
         if(sender.state() == NSCell.NSOnState) {
             publicKeyPanel = NSOpenPanel.openPanel();
             publicKeyPanel.setCanChooseDirectories(false);
@@ -612,7 +612,6 @@ public class BookmarkController extends WindowController {
     }
 
     public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
-        log.debug("pkSelectionPanelDidEnd");
         if(returncode == NSPanel.NSOKButton) {
             NSArray selected = sheet.filenames();
             NSEnumerator enumerator = selected.objectEnumerator();
