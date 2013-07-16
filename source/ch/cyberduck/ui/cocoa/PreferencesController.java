@@ -27,6 +27,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
@@ -1659,14 +1660,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.sshTransfersCombobox.setTarget(this.id());
         this.sshTransfersCombobox.setAction(Foundation.selector("sshTransfersComboboxClicked:"));
         this.sshTransfersCombobox.removeAllItems();
-        this.sshTransfersCombobox.addItemsWithTitles(NSArray.arrayWithObjects(Protocol.SFTP.getDescription(), Protocol.SCP.getDescription()));
-        this.sshTransfersCombobox.itemWithTitle(Protocol.SFTP.getDescription()).setRepresentedObject(Protocol.SFTP.getIdentifier());
-        this.sshTransfersCombobox.itemWithTitle(Protocol.SCP.getDescription()).setRepresentedObject(Protocol.SCP.getIdentifier());
-        if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.toString())) {
+        this.sshTransfersCombobox.addItemsWithTitles(NSArray.arrayWithObjects(Protocol.SFTP.getDescription(), Locale.localizedString("SCP (Secure Copy)")));
+        this.sshTransfersCombobox.itemWithTitle(Protocol.SFTP.getDescription()).setRepresentedObject(Scheme.sftp.name());
+        this.sshTransfersCombobox.itemWithTitle(Locale.localizedString("SCP (Secure Copy)")).setRepresentedObject(Scheme.scp.name());
+        if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.sftp.name())) {
             this.sshTransfersCombobox.selectItemWithTitle(Protocol.SFTP.getDescription());
         }
-        else if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.toString())) {
-            this.sshTransfersCombobox.selectItemWithTitle(Protocol.SCP.getDescription());
+        else if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
+            this.sshTransfersCombobox.selectItemWithTitle(Locale.localizedString("SCP (Secure Copy)"));
         }
     }
 
@@ -1675,8 +1676,8 @@ public class PreferencesController extends ToolbarWindowController {
         Preferences.instance().setProperty("ssh.transfer", sender.selectedItem().representedObject());
     }
 
-    private void configureDefaultProtocolHandlerCombobox(NSPopUpButton defaultProtocolHandlerCombobox, Protocol protocol) {
-        final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol.getScheme());
+    private void configureDefaultProtocolHandlerCombobox(NSPopUpButton defaultProtocolHandlerCombobox, Scheme protocol) {
+        final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol);
         if(null == defaultHandler) {
             defaultProtocolHandlerCombobox.addItemWithTitle(Locale.localizedString("Unknown"));
             defaultProtocolHandlerCombobox.setEnabled(false);
@@ -1685,7 +1686,7 @@ public class PreferencesController extends ToolbarWindowController {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Default Protocol Handler for %s:%s", protocol, defaultHandler));
         }
-        for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol.getScheme())) {
+        for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol)) {
             defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
             final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
             item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(handler, 16));
@@ -1704,14 +1705,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultFTPHandlerCombobox.setTarget(this.id());
         this.defaultFTPHandlerCombobox.setAction(Foundation.selector("defaultFTPHandlerComboboxClicked:"));
         this.defaultFTPHandlerCombobox.removeAllItems();
-        this.configureDefaultProtocolHandlerCombobox(this.defaultFTPHandlerCombobox, Protocol.FTP);
+        this.configureDefaultProtocolHandlerCombobox(this.defaultFTPHandlerCombobox, Scheme.ftp);
     }
 
     @Action
     public void defaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-                Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme()),
+                Arrays.asList(Scheme.ftp, Scheme.ftps),
                 new Application(bundle)
         );
     }
@@ -1724,14 +1725,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultSFTPHandlerCombobox.setTarget(this.id());
         this.defaultSFTPHandlerCombobox.setAction(Foundation.selector("defaultSFTPHandlerComboboxClicked:"));
         this.defaultSFTPHandlerCombobox.removeAllItems();
-        this.configureDefaultProtocolHandlerCombobox(this.defaultSFTPHandlerCombobox, Protocol.SFTP);
+        this.configureDefaultProtocolHandlerCombobox(this.defaultSFTPHandlerCombobox, Scheme.sftp);
     }
 
     @Action
     public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-                Arrays.asList(Protocol.SFTP.getScheme()), new Application(bundle)
+                Arrays.asList(Scheme.sftp), new Application(bundle)
         );
     }
 

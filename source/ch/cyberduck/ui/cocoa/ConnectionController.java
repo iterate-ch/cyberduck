@@ -594,7 +594,7 @@ public class ConnectionController extends SheetController {
             credentials.setUsername(usernameField.stringValue());
             credentials.setPassword(passField.stringValue());
             credentials.setSaved(keychainCheckbox.state() == NSCell.NSOnState);
-            if(protocol.equals(Protocol.SFTP)) {
+            if(protocol.getScheme().equals(Scheme.sftp)) {
                 if(pkCheckbox.state() == NSCell.NSOnState) {
                     credentials.setIdentity(LocalFactory.createLocal(pkLabel.stringValue()));
                 }
