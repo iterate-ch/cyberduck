@@ -82,8 +82,10 @@ public class DAVSession extends HttpSession<DAVClient> {
                 Preferences.instance().getProperty("webdav.ntlm.workstation"),
                 Preferences.instance().getProperty("webdav.ntlm.domain"));
         if(host.getCredentials().validate(host.getProtocol(), new LoginOptions())) {
-            // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-            client.enablePreemptiveAuthentication(this.getHost().getHostname());
+            if(Preferences.instance().getBoolean("webdav.basic.preemptive")) {
+                // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
+                client.enablePreemptiveAuthentication(this.getHost().getHostname());
+            }
         }
         try {
             try {
@@ -108,6 +110,11 @@ public class DAVSession extends HttpSession<DAVClient> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public boolean alert() throws BackgroundException {
+        return Preferences.instance().getBoolean("webdav.basic.preemptive");
     }
 
     @Override

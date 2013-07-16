@@ -652,6 +652,11 @@ public abstract class Preferences {
         defaults.put("webdav.ntlm.workstation", StringUtils.EMPTY);
 
         /**
+         * Enable preemptive authentication if valid credentials are found
+         */
+        defaults.put("webdav.basic.preemptive", String.valueOf(true));
+
+        /**
          * Enable Expect-Continue handshake
          */
         defaults.put("webdav.expect-continue", String.valueOf(true));
@@ -756,7 +761,7 @@ public abstract class Preferences {
          * Warning when opening connections sending credentials in plaintext
          */
         defaults.put(String.format("connection.unsecure.warning.%s", Scheme.ftp), String.valueOf(true));
-        defaults.put(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(false));
+        defaults.put(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
 
         defaults.put("connection.ssl.protocols", "SSLv3, TLSv1");
 
