@@ -288,8 +288,8 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    protected DescriptiveUrl toSignedUrl(final Path path, int seconds) {
-        return new DescriptiveUrl(null, null);
+    protected DescriptiveUrl toSignedUrl(final Path file, int seconds) {
+        return DescriptiveUrl.EMPTY;
     }
 
     /**
@@ -299,7 +299,7 @@ public class GoogleStorageSession extends S3Session {
      */
     @Override
     public DescriptiveUrl toTorrentUrl(final Path path) {
-        return new DescriptiveUrl(null, null);
+        return DescriptiveUrl.EMPTY;
     }
 
 
@@ -319,7 +319,7 @@ public class GoogleStorageSession extends S3Session {
             // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
             return new DescriptiveUrl(String.format("https://sandbox.google.com/storage%s", path.getAbsolute()));
         }
-        return new DescriptiveUrl(null, null);
+        return DescriptiveUrl.EMPTY;
     }
 
     @Override

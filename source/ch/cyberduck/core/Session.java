@@ -519,7 +519,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @return Empty.
      */
     public DescriptiveUrl toAuthenticatedUrl(final Path path) {
-        return new DescriptiveUrl(null, null);
+        return DescriptiveUrl.EMPTY;
     }
 
     /**

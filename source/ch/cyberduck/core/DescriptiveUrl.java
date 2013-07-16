@@ -26,6 +26,9 @@ import org.apache.commons.lang.StringUtils;
  * @version $Id$
  */
 public class DescriptiveUrl {
+
+    public static DescriptiveUrl EMPTY = new DescriptiveUrl(null, null);
+
     private String url = StringUtils.EMPTY;
 
     private String help = StringUtils.EMPTY;

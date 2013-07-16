@@ -493,41 +493,32 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     /**
-     * @param seconds Expire after seconds elapsed
-     * @return Temporary URL to be displayed in browser
-     */
-    protected DescriptiveUrl toSignedUrl(final Path path, final int seconds) {
-        Calendar expiry = Calendar.getInstance();
-        expiry.add(Calendar.SECOND, seconds);
-        return new DescriptiveUrl(this.createSignedUrl(path, seconds),
-                MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed", "S3"))
-                        + " (" + MessageFormat.format(Locale.localizedString("Expires on {0}", "S3") + ")",
-                        UserDateFormatterFactory.get().getShortFormat(expiry.getTimeInMillis()))
-        );
-    }
-
-    /**
      * Query String Authentication generates a signed URL string that will grant
      * access to an S3 resource (bucket or object)
      * to whoever uses the URL up until the time specified.
      *
-     * @param expiry Validity of URL
+     * @param seconds Expire after seconds elapsed
      * @return Temporary URL to be displayed in browser
      */
-    private String createSignedUrl(final Path file, final int expiry) {
+    protected DescriptiveUrl toSignedUrl(final Path file, final int seconds) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
             log.info("Anonymous cannot create signed URL");
             return null;
         }
-        // Determine expiry time for URL
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, expiry);
-        long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
-
-        // Generate URL
-        return new RequestEntityRestStorageService(this.configure()).createSignedUrl("GET",
-                containerService.getContainer(file).getName(), containerService.getKey(file), null,
-                null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
+        if(file.attributes().isFile()) {
+            // Determine expiry time for URL
+            final Calendar expiry = Calendar.getInstance();
+            expiry.add(Calendar.SECOND, seconds);
+            // Generate URL
+            return new DescriptiveUrl(new RequestEntityRestStorageService(this.configure()).createSignedUrl("GET",
+                    containerService.getContainer(file).getName(), containerService.getKey(file), null,
+                    null, expiry.getTimeInMillis() / 1000, false, this.getHost().getProtocol().isSecure(), false),
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed", "S3"))
+                            + " (" + MessageFormat.format(Locale.localizedString("Expires on {0}", "S3") + ")",
+                            UserDateFormatterFactory.get().getShortFormat(expiry.getTimeInMillis()))
+            );
+        }
+        return DescriptiveUrl.EMPTY;
     }
 
     /**
@@ -542,7 +533,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                     containerService.getContainer(path).getName(),
                     containerService.getKey(path)));
         }
-        return new DescriptiveUrl(null, null);
+        return DescriptiveUrl.EMPTY;
     }
 
     @Override
