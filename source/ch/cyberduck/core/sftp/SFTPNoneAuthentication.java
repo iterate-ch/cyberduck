@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPNoneAuthentication {
     private static final Logger log = Logger.getLogger(SFTPNoneAuthentication.class);
@@ -39,6 +39,9 @@ public class SFTPNoneAuthentication {
 
     public boolean authenticate(final Host host, final LoginController controller)
             throws IOException, LoginCanceledException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Login using none authentication with credentials %s", host.getCredentials()));
+        }
         return session.getClient().authenticateWithNone(host.getCredentials().getUsername());
     }
 }
