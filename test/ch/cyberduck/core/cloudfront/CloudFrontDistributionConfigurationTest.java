@@ -94,12 +94,12 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledLoginController()) {
             @Override
-            protected void updateDistribution(final CloudFrontService client, final boolean enabled, final Distribution.Method method, final String origin, final String distributionId, final String etag, final String reference, final String[] cnames, final LoggingStatus logging, final String defaultRootObject) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
+            protected void updateDistribution(final Distribution current, final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
                 set.set(true);
             }
 
             @Override
-            protected org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client, final boolean enabled, final Distribution.Method method, final String origin, final String[] cnames, final LoggingStatus logging, final String defaultRootObject) throws ConnectionCanceledException, CloudFrontServiceException {
+            protected org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws ConnectionCanceledException, CloudFrontServiceException {
                 fail();
                 return null;
             }
@@ -121,12 +121,12 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledLoginController()) {
             @Override
-            protected void updateDistribution(final CloudFrontService client, final boolean enabled, final Distribution.Method method, final String origin, final String distributionId, final String etag, final String reference, final String[] cnames, final LoggingStatus logging, final String defaultRootObject) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
+            protected void updateDistribution(final Distribution current, final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
                 fail();
             }
 
             @Override
-            protected org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client, final boolean enabled, final Distribution.Method method, final String origin, final String[] cnames, final LoggingStatus logging, final String defaultRootObject) throws ConnectionCanceledException, CloudFrontServiceException {
+            protected org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws ConnectionCanceledException, CloudFrontServiceException {
                 set.set(true);
                 return null;
             }
