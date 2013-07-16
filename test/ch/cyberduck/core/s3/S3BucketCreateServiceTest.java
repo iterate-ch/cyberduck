@@ -45,7 +45,7 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
                         )));
         assertNotNull(session.open(new DefaultHostKeyController()));
         final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        new S3BucketCreateService(session).create(bucket);
+        new S3BucketCreateService(session).create(bucket, "US");
         assertTrue(session.exists(bucket));
         session.delete(bucket, new DisabledLoginController());
         assertFalse(session.exists(bucket));
