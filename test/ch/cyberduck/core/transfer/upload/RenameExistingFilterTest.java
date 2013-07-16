@@ -10,7 +10,8 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id$
@@ -20,22 +21,9 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testAccept() throws Exception {
         final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
-        assertTrue(f.accept(new NullSession(new Host("h")) {
-            @Override
-            public boolean isRenameSupported(final Path file) {
-                return true;
-            }
-
-        }, new Path("t", Path.FILE_TYPE)
-        )
-        );
-        assertFalse(f.accept(new NullSession(new Host("h")) {
-            @Override
-            public boolean isRenameSupported(final Path file) {
-                return false;
-            }
-        }, new Path("t", Path.FILE_TYPE))
-        );
+        final Path t = new Path("t", Path.FILE_TYPE);
+        t.setLocal(new NullLocal("/Downloads", "n"));
+        assertTrue(f.accept(new NullSession(new Host("h")), t));
     }
 
     @Test
@@ -45,8 +33,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
             @Override
             public Path getParent() {
-                return new Path("p", Path.DIRECTORY_TYPE) {
-                };
+                return new Path("p", Path.DIRECTORY_TYPE);
             }
         };
         p.setLocal(new NullLocal("/Downloads", "n"));
