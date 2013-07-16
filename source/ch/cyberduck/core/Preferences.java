@@ -728,7 +728,7 @@ public abstract class Preferences {
         defaults.put("connection.login.addKeychain", String.valueOf(true));
 
         defaults.put("connection.port.default", String.valueOf(21));
-        defaults.put("connection.protocol.default", Protocol.FTP.getIdentifier());
+        defaults.put("connection.protocol.default", Scheme.ftp.name());
         /**
          * Socket timeout
          */
@@ -787,7 +787,7 @@ public abstract class Preferences {
         /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
-        defaults.put("ssh.transfer", Protocol.SFTP.getIdentifier()); // Session.SCP
+        defaults.put("ssh.transfer", Scheme.sftp.name()); //
 
         defaults.put("ssh.authentication.publickey.default.enable", String.valueOf(false));
         defaults.put("ssh.authentication.publickey.default.rsa", "~/.ssh/id_rsa");
