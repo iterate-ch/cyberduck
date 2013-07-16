@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DescriptiveUrl {
 
-    public static DescriptiveUrl EMPTY = new DescriptiveUrl(null, null);
+    public static final DescriptiveUrl EMPTY = new DescriptiveUrl(null, null);
 
     private String url = StringUtils.EMPTY;
 
