@@ -36,7 +36,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3VersioningFeatureTest extends AbstractTestCase {
 
@@ -50,7 +50,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final VersioningConfiguration configuration
-                = new S3VersioningFeature(session).getConfiguration(new Path("versioning.test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE));
+                = new S3VersioningFeature(session).getConfiguration(new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE));
         assertNotNull(configuration);
         assertFalse(configuration.isEnabled());
         assertFalse(configuration.isMultifactor());
