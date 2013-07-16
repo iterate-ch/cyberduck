@@ -12,7 +12,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.Controller;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.OutputStream;
@@ -63,52 +62,9 @@ public class DAVSessionTest extends AbstractTestCase {
         }
     }
 
-    @Test
-    @Ignore
-    public void test404ErrorHeadWebdavOrg() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.webdav.org", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
-        ));
-        host.setDefaultPath("/dav");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
-        session.close();
-    }
-
-    @Test
-    @Ignore
-    public void testBasicWebdavOrg() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.webdav.org", new Credentials(
-                "user1", "user1"
-        ));
-        host.setDefaultPath("/auth-basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
-        session.close();
-    }
-
-    @Test
-    @Ignore
-    public void testDigestWebdavOrg() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.webdav.org", new Credentials(
-                "user1", "user1"
-        ));
-        host.setDefaultPath("/auth-digest");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
-        session.close();
-    }
-
-    @Test
-    @Ignore
+    @Test(expected = LoginFailureException.class)
     public void testRedirect301() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.webdav.org", new Credentials(
+        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-perm");
@@ -118,10 +74,9 @@ public class DAVSessionTest extends AbstractTestCase {
         session.close();
     }
 
-    @Test
-    @Ignore
+    @Test(expected = LoginFailureException.class)
     public void testRedirect302() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.webdav.org", new Credentials(
+        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-tmp");
@@ -130,10 +85,9 @@ public class DAVSessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
-    @Test
-    @Ignore
+    @Test(expected = LoginFailureException.class)
     public void testRedirect303() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.webdav.org", new Credentials(
+        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-other");
@@ -145,16 +99,14 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test(expected = BackgroundException.class)
-    @Ignore
     public void testRedirectGone() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.webdav.org", new Credentials(
+        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-gone");
         final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNull(session.mount());
-        session.close();
     }
 
     @Test
