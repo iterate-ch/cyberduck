@@ -135,4 +135,11 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         configuration.write(container, new Distribution("test.cyberduck.ch.s3.amazonaws.com", Distribution.STREAMING));
         assertTrue(set.get());
     }
+
+    @Test
+    public void testProtocol() {
+        assertEquals("cloudfront.amazonaws.com", new CloudFrontDistributionConfiguration(
+                new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname())), new DisabledLoginController()
+        ).getProtocol().getDefaultHostname());
+    }
 }

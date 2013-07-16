@@ -18,14 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.KeychainLoginService;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -146,7 +139,27 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     @Override
     public Protocol getProtocol() {
-        return Protocol.S3_SSL;
+        return new AbstractProtocol() {
+            @Override
+            public String getDefaultHostname() {
+                return "cloudfront.amazonaws.com";
+            }
+
+            @Override
+            public String getIdentifier() {
+                return "cloudfront";
+            }
+
+            @Override
+            public String getDescription() {
+                return Locale.localizedString("Amazon CloudFront", "S3");
+            }
+
+            @Override
+            public Scheme getScheme() {
+                return Scheme.https;
+            }
+        };
     }
 
     /**
