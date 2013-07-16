@@ -608,6 +608,9 @@ public abstract class Transfer implements Serializable {
      * @return True if the bytes transferred equal the size of the queue
      */
     public boolean isComplete() {
+        if(this.isRunning()) {
+            return false;
+        }
         return this.getSize() == this.getTransferred();
     }
 
