@@ -151,6 +151,11 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             }
 
             @Override
+            public Type getType() {
+                return Type.s3;
+            }
+
+            @Override
             public String getDescription() {
                 return Locale.localizedString("Amazon CloudFront", "S3");
             }
