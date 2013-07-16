@@ -93,76 +93,42 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         if(null != route) {
             return route;
         }
-        final HttpParams params = new BasicHttpParams();
-        HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
-        HttpProtocolParams.setContentCharset(params, getEncoding());
-        HttpProtocolParams.setUserAgent(params, new PreferencesUseragentProvider().get());
-
-        AuthParams.setCredentialCharset(params, Preferences.instance().getProperty("http.credentials.charset"));
-
-        HttpConnectionParams.setTcpNoDelay(params, true);
-        HttpConnectionParams.setSoTimeout(params, timeout());
-        HttpConnectionParams.setConnectionTimeout(params, timeout());
-        HttpConnectionParams.setSocketBufferSize(params,
-                Preferences.instance().getInteger("http.socket.buffer"));
-        HttpConnectionParams.setStaleCheckingEnabled(params, true);
-
-        HttpClientParams.setRedirecting(params, true);
-        HttpClientParams.setAuthenticating(params, true);
-        HttpClientParams.setCookiePolicy(params, CookiePolicy.BEST_MATCH);
-
-        // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
-        HttpClientParams.setConnectionManagerTimeout(params, Preferences.instance().getLong("http.manager.timeout"));
-
-        final SSLSocketFactory sslSocketFactory = new SSLSocketFactory(
-                new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
-                new X509HostnameVerifier() {
-                    @Override
-                    public void verify(String host, SSLSocket ssl) throws IOException {
-                        log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
-                    }
-
-                    @Override
-                    public void verify(String host, X509Certificate cert) throws SSLException {
-                        log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
-                    }
-
-                    @Override
-                    public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
-                        log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
-                    }
-
-                    @Override
-                    public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {
-                        log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
-                        return true;
-                    }
-                }
-        );
-
+        final HttpParams params = this.parameters();
         final SchemeRegistry registry = new SchemeRegistry();
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the default port and the socket
         // factory to be used to create the java.net.Socket instances for the given protocol
         registry.register(new Scheme(ch.cyberduck.core.Scheme.http.toString(), ch.cyberduck.core.Scheme.http.getPort(),
                 PlainSocketFactory.getSocketFactory()));
         registry.register(new Scheme(ch.cyberduck.core.Scheme.https.toString(), ch.cyberduck.core.Scheme.https.getPort(),
-                sslSocketFactory));
+                new SSLSocketFactory(
+                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
+                        new X509HostnameVerifier() {
+                            @Override
+                            public void verify(String host, SSLSocket ssl) throws IOException {
+                                log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                            }
+
+                            @Override
+                            public void verify(String host, X509Certificate cert) throws SSLException {
+                                log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                            }
+
+                            @Override
+                            public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
+                                log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                            }
+
+                            @Override
+                            public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {
+                                log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                                return true;
+                            }
+                        }
+                )));
         if(Preferences.instance().getBoolean("connection.proxy.enable")) {
-            final Proxy proxy = ProxyFactory.get();
-            if(ch.cyberduck.core.Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
-                if(proxy.isHTTPSProxyEnabled(host)) {
-                    ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host)));
-                }
-            }
-            if(ch.cyberduck.core.Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
-                if(proxy.isHTTPProxyEnabled(host)) {
-                    ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host)));
-                }
-            }
+            this.proxy(params);
         }
-        final PoolingClientConnectionManager manager = new PoolingClientConnectionManager(registry);
-        manager.setMaxTotal(Preferences.instance().getInteger("http.connections.total"));
-        manager.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
+        final PoolingClientConnectionManager manager = this.pool(registry);
         route = new DefaultHttpClient(manager, params);
         route.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
@@ -193,6 +159,51 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             route.addResponseInterceptor(new ResponseContentEncoding());
         }
         return route;
+    }
+
+    protected PoolingClientConnectionManager pool(final SchemeRegistry registry) {
+        final PoolingClientConnectionManager manager = new PoolingClientConnectionManager(registry);
+        manager.setMaxTotal(Preferences.instance().getInteger("http.connections.total"));
+        manager.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
+        return manager;
+    }
+
+    protected void proxy(final HttpParams params) {
+        final Proxy proxy = ProxyFactory.get();
+        if(ch.cyberduck.core.Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
+            if(proxy.isHTTPSProxyEnabled(host)) {
+                ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host)));
+            }
+        }
+        if(ch.cyberduck.core.Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
+            if(proxy.isHTTPProxyEnabled(host)) {
+                ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host)));
+            }
+        }
+    }
+
+    protected HttpParams parameters() {
+        final HttpParams params = new BasicHttpParams();
+        HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
+        HttpProtocolParams.setContentCharset(params, getEncoding());
+        HttpProtocolParams.setUserAgent(params, new PreferencesUseragentProvider().get());
+
+        AuthParams.setCredentialCharset(params, Preferences.instance().getProperty("http.credentials.charset"));
+
+        HttpConnectionParams.setTcpNoDelay(params, true);
+        HttpConnectionParams.setSoTimeout(params, timeout());
+        HttpConnectionParams.setConnectionTimeout(params, timeout());
+        HttpConnectionParams.setSocketBufferSize(params,
+                Preferences.instance().getInteger("http.socket.buffer"));
+        HttpConnectionParams.setStaleCheckingEnabled(params, true);
+
+        HttpClientParams.setRedirecting(params, true);
+        HttpClientParams.setAuthenticating(params, true);
+        HttpClientParams.setCookiePolicy(params, CookiePolicy.BEST_MATCH);
+
+        // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
+        HttpClientParams.setConnectionManagerTimeout(params, Preferences.instance().getLong("http.manager.timeout"));
+        return params;
     }
 
     @Override
