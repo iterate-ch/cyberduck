@@ -20,12 +20,12 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class DisabledPasswordStore implements PasswordStore {
+public class DisabledPasswordStore extends HostPasswordStore {
 
     public static void register() {
         PasswordStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new PasswordStoreFactory() {
             @Override
-            protected PasswordStore create() {
+            protected HostPasswordStore create() {
                 return new DisabledPasswordStore();
             }
         });

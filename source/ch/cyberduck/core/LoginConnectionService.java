@@ -37,11 +37,11 @@ public class LoginConnectionService implements ConnectionService {
 
     private LoginController prompt;
     private HostKeyController key;
-    private PasswordStore keychain;
+    private HostPasswordStore keychain;
     private ProgressListener listener;
 
     public LoginConnectionService(final LoginController prompt, final HostKeyController key,
-                                  final PasswordStore keychain,
+                                  final HostPasswordStore keychain,
                                   final ProgressListener listener) {
         this.prompt = prompt;
         this.key = key;

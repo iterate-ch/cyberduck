@@ -34,9 +34,9 @@ public class KeychainLoginService implements LoginService {
     private static final Logger log = Logger.getLogger(KeychainLoginService.class);
 
     private LoginController controller;
-    private PasswordStore keychain;
+    private HostPasswordStore keychain;
 
-    public KeychainLoginService(final LoginController prompt, final PasswordStore keychain) {
+    public KeychainLoginService(final LoginController prompt, final HostPasswordStore keychain) {
         this.controller = prompt;
         this.keychain = keychain;
     }
@@ -73,7 +73,7 @@ public class KeychainLoginService implements LoginService {
             }
             listener.message(Locale.localizedString("Login successful", "Credentials"));
             // Write credentials to keychain
-            this.save(bookmark);
+            keychain.save(bookmark);
             // Reset password in memory
             bookmark.getCredentials().setPassword(null);
         }
@@ -106,7 +106,7 @@ public class KeychainLoginService implements LoginService {
             // Lookup password if missing. Always lookup password for public key authentication. See #5754.
             if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
-                    final String password = this.find(bookmark);
+                    final String password = keychain.find(bookmark);
                     if(StringUtils.isBlank(password)) {
                         if(!bookmark.getCredentials().isPublicKeyAuthentication()) {
                             controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
@@ -135,92 +135,6 @@ public class KeychainLoginService implements LoginService {
                         title,
                         Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"), options);
             }
-        }
-    }
-
-    /**
-     * @param host Hostname
-     * @return the password fetched from the keychain or null if it was not found
-     */
-    protected String find(final Host host) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Fetching password from keychain for %s", host));
-        }
-        if(StringUtils.isEmpty(host.getHostname())) {
-            log.warn("No hostname given");
-            return null;
-        }
-        Credentials credentials = host.getCredentials();
-        if(StringUtils.isEmpty(credentials.getUsername())) {
-            log.warn("No username given");
-            return null;
-        }
-        String p;
-        if(credentials.isPublicKeyAuthentication()) {
-            p = keychain.getPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath());
-            if(null == p) {
-                // Interoperability with OpenSSH (ssh, ssh-agent, ssh-add)
-                p = keychain.getPassword("SSH", credentials.getIdentity().getAbsolute());
-            }
-            if(null == p) {
-                // Backward compatibility
-                p = keychain.getPassword("SSHKeychain", credentials.getIdentity().getAbbreviatedPath());
-            }
-        }
-        else {
-            p = keychain.getPassword(host.getProtocol().getScheme(), host.getPort(),
-                    host.getHostname(), credentials.getUsername());
-        }
-        if(null == p) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Password not found in keychain for %s", host));
-            }
-        }
-        return p;
-    }
-
-    /**
-     * Adds the password to the login keychain
-     *
-     * @param host Hostname
-     * @see ch.cyberduck.core.Host#getCredentials()
-     */
-    protected void save(final Host host) {
-        if(StringUtils.isEmpty(host.getHostname())) {
-            log.warn("No hostname given");
-            return;
-        }
-        final Credentials credentials = host.getCredentials();
-        if(!credentials.isSaved()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skip writing credentials for host %s", host.getHostname()));
-            }
-            return;
-        }
-        if(StringUtils.isEmpty(credentials.getUsername())) {
-            log.warn(String.format("No username in credentials for host %s", host.getHostname()));
-            return;
-        }
-        if(StringUtils.isEmpty(credentials.getPassword())) {
-            log.warn(String.format("No password in credentials for host %s", host.getHostname()));
-            return;
-        }
-        if(credentials.isAnonymousLogin()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Do not write anonymous credentials for host %s", host.getHostname()));
-            }
-            return;
-        }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Add password for host %s", host));
-        }
-        if(credentials.isPublicKeyAuthentication()) {
-            keychain.addPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
-                    credentials.getPassword());
-        }
-        else {
-            keychain.addPassword(host.getProtocol().getScheme(), host.getPort(),
-                    host.getHostname(), credentials.getUsername(), credentials.getPassword());
         }
     }
 }

@@ -32,13 +32,13 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public final class Keychain implements PasswordStore, CertificateStore {
+public final class Keychain extends HostPasswordStore implements PasswordStore, CertificateStore {
     private static Logger log = Logger.getLogger(Keychain.class);
 
     public static void register() {
         PasswordStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new PasswordStoreFactory() {
             @Override
-            protected PasswordStore create() {
+            protected HostPasswordStore create() {
                 return new Keychain();
             }
         });

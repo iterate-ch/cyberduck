@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class PasswordStoreFactory extends Factory<PasswordStore> {
+public abstract class PasswordStoreFactory extends Factory<HostPasswordStore> {
 
     /**
      * Registered factories
@@ -37,7 +37,7 @@ public abstract class PasswordStoreFactory extends Factory<PasswordStore> {
         factories.put(platform, f);
     }
 
-    public static PasswordStore get() {
+    public static HostPasswordStore get() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
