@@ -545,8 +545,8 @@ public class InfoController extends ToolbarWindowController {
                 public void run() throws BackgroundException {
                     controller.getSession().getFeature(Versioning.class, prompt).setConfiguration(containerService.getContainer(getSelected()), prompt,
                             new VersioningConfiguration(
-                                    bucketMfaButton.state() == NSCell.NSOnState,
-                                    bucketVersioningButton.state() == NSCell.NSOnState)
+                                    bucketVersioningButton.state() == NSCell.NSOnState,
+                                    bucketMfaButton.state() == NSCell.NSOnState)
                     );
                 }
 
@@ -577,8 +577,8 @@ public class InfoController extends ToolbarWindowController {
                     controller.getSession().getFeature(Versioning.class, prompt).setConfiguration(containerService.getContainer(getSelected()),
                             prompt,
                             new VersioningConfiguration(
-                                    bucketMfaButton.state() == NSCell.NSOnState,
-                                    bucketVersioningButton.state() == NSCell.NSOnState)
+                                    bucketVersioningButton.state() == NSCell.NSOnState,
+                                    bucketMfaButton.state() == NSCell.NSOnState)
                     );
                 }
 
