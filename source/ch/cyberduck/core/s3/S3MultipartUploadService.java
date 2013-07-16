@@ -55,7 +55,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3MultipartUploadService extends S3SingleUploadService {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
@@ -169,7 +169,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
 
                     if(!skip) {
                         // Submit to queue
-                        parts.add(this.submitPart(file, throttle, listener, status, multipart, pool, partNumber, marker, length));
+                        parts.add(this.submitPart(file, throttle, listener, status, multipart, partNumber, marker, length));
                     }
 
                     remaining -= length;
@@ -219,7 +219,6 @@ public class S3MultipartUploadService extends S3SingleUploadService {
     private Future<MultipartPart> submitPart(final Path file,
                                              final BandwidthThrottle throttle, final StreamListener listener,
                                              final TransferStatus status, final MultipartUpload multipart,
-                                             final ExecutorService pool,
                                              final int partNumber,
                                              final long offset, final long length) throws BackgroundException {
         if(pool.isShutdown()) {
