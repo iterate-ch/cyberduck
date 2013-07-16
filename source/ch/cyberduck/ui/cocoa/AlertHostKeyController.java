@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.HostKeyControllerFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
@@ -116,7 +116,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
             @Override
             protected void help() {
                 StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-                site.append("/").append(Protocol.SFTP.getIdentifier());
+                site.append("/").append(Scheme.sftp.name());
                 openUrl(site.toString());
             }
         };
@@ -158,7 +158,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
             @Override
             protected void help() {
                 StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-                site.append("/").append(Protocol.SFTP.getIdentifier());
+                site.append("/").append(Scheme.sftp.name());
                 openUrl(site.toString());
             }
         };
