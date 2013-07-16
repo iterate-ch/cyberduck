@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core.sftp;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -17,6 +17,11 @@ package ch.cyberduck.core.exception;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
+
+import ch.cyberduck.core.exception.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.QuotaException;
 
 import java.io.IOException;
 import java.net.SocketException;

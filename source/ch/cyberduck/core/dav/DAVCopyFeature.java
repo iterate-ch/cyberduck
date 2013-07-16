@@ -20,7 +20,6 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.features.Copy;
 
 import java.io.IOException;
@@ -46,7 +45,7 @@ public class DAVCopyFeature implements Copy {
             }
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new DAVExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, source);

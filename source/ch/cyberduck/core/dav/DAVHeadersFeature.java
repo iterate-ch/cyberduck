@@ -20,7 +20,6 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
 
 import org.apache.log4j.Logger;
@@ -55,7 +54,7 @@ public class DAVHeadersFeature implements Headers {
             return Collections.emptyMap();
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map("Cannot read file attributes", e, file);
+            throw new DAVExceptionMappingService().map("Cannot read file attributes", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
@@ -72,7 +71,7 @@ public class DAVHeadersFeature implements Headers {
                     metadata, Collections.<java.lang.String>emptyList());
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map("Cannot write file attributes", e, file);
+            throw new DAVExceptionMappingService().map("Cannot write file attributes", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);

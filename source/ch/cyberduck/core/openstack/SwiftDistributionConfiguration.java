@@ -29,7 +29,6 @@ import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -86,7 +85,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                     container.getName(), -1, configuration.isEnabled(), configuration.isLogging());
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot write CDN configuration", e);
+            throw new SwiftExceptionMappingService().map("Cannot write CDN configuration", e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e);
@@ -130,7 +129,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             }
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot read CDN configuration", e);
+            throw new SwiftExceptionMappingService().map("Cannot read CDN configuration", e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot read CDN configuration", e);
@@ -153,7 +152,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             }
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot write CDN configuration", e);
+            throw new SwiftExceptionMappingService().map("Cannot write CDN configuration", e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e);

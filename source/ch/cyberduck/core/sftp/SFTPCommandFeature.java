@@ -19,7 +19,6 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.SFTPExceptionMappingService;
 import ch.cyberduck.core.features.Command;
 
 import org.apache.commons.io.IOUtils;

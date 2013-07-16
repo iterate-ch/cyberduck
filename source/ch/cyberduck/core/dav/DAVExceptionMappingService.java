@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core.dav;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -18,31 +18,32 @@ package ch.cyberduck.core.exception;
  * dkocher@cyberduck.ch
  */
 
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
+import ch.cyberduck.core.exception.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 
-import com.rackspacecloud.client.cloudfiles.FilesException;
+import org.apache.http.HttpStatus;
+
+import com.googlecode.sardine.impl.SardineException;
 
 /**
  * @version $Id$
  */
-public class FilesExceptionMappingService extends AbstractIOExceptionMappingService<FilesException> {
+public class DAVExceptionMappingService extends AbstractIOExceptionMappingService<SardineException> {
 
     @Override
-    public BackgroundException map(final FilesException e) {
+    public BackgroundException map(final SardineException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, e.getMessage());
-        final StatusLine status = e.getHttpStatusLine();
-        if(null != status) {
-            this.append(buffer, String.format("%d %s", status.getStatusCode(), status.getReasonPhrase()));
-        }
-        if(e.getHttpStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+        // HTTP method status
+        this.append(buffer, e.getResponsePhrase());
+        if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             return new LoginFailureException(buffer.toString(), e);
         }
-        if(e.getHttpStatusCode() == HttpStatus.SC_FORBIDDEN) {
+        if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
             return new LoginFailureException(buffer.toString(), e);
         }
-        if(e.getHttpStatusCode() == HttpStatus.SC_NOT_FOUND) {
+        if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             return new NotfoundException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);

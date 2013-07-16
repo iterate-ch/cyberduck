@@ -19,13 +19,12 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.SFTPExceptionMappingService;
 import ch.cyberduck.core.features.Symlink;
 
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPSymlinkFeature implements Symlink {
 

@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
 
 import org.apache.commons.lang.StringUtils;
@@ -67,7 +66,7 @@ public class SwiftMetadataFeature implements Headers {
             return Collections.emptyMap();
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot read file attributes", e, file);
+            throw new SwiftExceptionMappingService().map("Cannot read file attributes", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, file);
@@ -101,7 +100,7 @@ public class SwiftMetadataFeature implements Headers {
             }
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot write file attributes", e, file);
+            throw new SwiftExceptionMappingService().map("Cannot write file attributes", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot write file attributes", e, file);

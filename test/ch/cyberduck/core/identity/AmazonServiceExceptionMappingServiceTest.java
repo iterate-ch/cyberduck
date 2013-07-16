@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core.identity;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -19,6 +19,8 @@ package ch.cyberduck.core.exception;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.identity.AmazonServiceExceptionMappingService;
 
 import org.junit.Test;
 

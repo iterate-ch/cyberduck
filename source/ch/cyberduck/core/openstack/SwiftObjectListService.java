@@ -25,7 +25,6 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.FilesExceptionMappingService;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -99,7 +98,7 @@ public class SwiftObjectListService implements ListService {
 
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Listing directory failed", e, file);
+            throw new SwiftExceptionMappingService().map("Listing directory failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);

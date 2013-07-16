@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core.openstack;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -18,25 +18,37 @@ package ch.cyberduck.core.exception;
  * dkocher@cyberduck.ch
  */
 
-import org.apache.http.HttpStatus;
+import ch.cyberduck.core.exception.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 
-import com.amazonaws.AmazonServiceException;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+
+import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
  * @version $Id$
  */
-public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMappingService<AmazonServiceException> {
+public class SwiftExceptionMappingService extends AbstractIOExceptionMappingService<FilesException> {
 
     @Override
-    public BackgroundException map(final AmazonServiceException e) {
+    public BackgroundException map(final FilesException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
-        this.append(buffer, e.getErrorCode());
-        if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
+        final StatusLine status = e.getHttpStatusLine();
+        if(null != status) {
+            this.append(buffer, String.format("%d %s", status.getStatusCode(), status.getReasonPhrase()));
+        }
+        if(e.getHttpStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             return new LoginFailureException(buffer.toString(), e);
         }
-        if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+        if(e.getHttpStatusCode() == HttpStatus.SC_FORBIDDEN) {
             return new LoginFailureException(buffer.toString(), e);
+        }
+        if(e.getHttpStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            return new NotfoundException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }

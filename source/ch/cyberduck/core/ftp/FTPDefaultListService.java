@@ -21,7 +21,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import java.io.IOException;

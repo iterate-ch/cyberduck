@@ -18,7 +18,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.features.Command;
 
 import org.apache.log4j.Logger;

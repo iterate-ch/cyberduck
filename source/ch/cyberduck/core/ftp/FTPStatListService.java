@@ -21,7 +21,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPStatListService implements ListService {
     private static final Logger log = Logger.getLogger(FTPListService.class);

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core.identity;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -18,32 +18,29 @@ package ch.cyberduck.core.exception;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
+
 import org.apache.http.HttpStatus;
-import org.jets3t.service.CloudFrontServiceException;
+
+import com.amazonaws.AmazonServiceException;
 
 /**
  * @version $Id$
  */
-public class CloudFrontServiceExceptionMappingService extends AbstractIOExceptionMappingService<CloudFrontServiceException> {
+public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMappingService<AmazonServiceException> {
 
     @Override
-    public BackgroundException map(final CloudFrontServiceException e) {
-        if(e.getCause() instanceof BackgroundException) {
-            return (BackgroundException) e.getCause();
-        }
+    public BackgroundException map(final AmazonServiceException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, e.getErrorMessage());
-        this.append(buffer, e.getErrorDetail());
-        if(e.getResponseCode() == HttpStatus.SC_FORBIDDEN) {
+        this.append(buffer, e.getMessage());
+        this.append(buffer, e.getErrorCode());
+        if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
             return new LoginFailureException(buffer.toString(), e);
         }
-        if(e.getResponseCode() == HttpStatus.SC_NOT_FOUND) {
-            return new NotfoundException(buffer.toString(), e);
-        }
-        if(e.getResponseCode() == HttpStatus.SC_BAD_REQUEST) {
-            if(e.getErrorCode().equals("InvalidHttpAuthHeader")) {
-                return new LoginFailureException(buffer.toString(), e);
-            }
+        if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            return new LoginFailureException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }

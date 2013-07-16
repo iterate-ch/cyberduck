@@ -20,7 +20,6 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.FTPExceptionMappingService;
 import ch.cyberduck.core.features.UnixPermission;
 
 import org.apache.log4j.Logger;

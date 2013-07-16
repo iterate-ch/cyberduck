@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.features.Copy;
 
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class SwiftCopyFeature implements Copy {
             }
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new SwiftExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);

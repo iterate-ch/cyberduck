@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core.dav;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -18,7 +18,10 @@ package ch.cyberduck.core.exception;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.googlecode.sardine.impl.SardineException;
@@ -26,17 +29,17 @@ import com.googlecode.sardine.impl.SardineException;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class SardineExceptionMappingServiceTest extends AbstractTestCase {
+public class DAVExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testMap() throws Exception {
+        Assert.assertEquals(LoginFailureException.class,
+                new DAVExceptionMappingService().map(new SardineException("m", 401, "r")).getClass());
         assertEquals(LoginFailureException.class,
-                new SardineExceptionMappingService().map(new SardineException("m", 401, "r")).getClass());
-        assertEquals(LoginFailureException.class,
-                new SardineExceptionMappingService().map(new SardineException("m", 403, "r")).getClass());
+                new DAVExceptionMappingService().map(new SardineException("m", 403, "r")).getClass());
         assertEquals(NotfoundException.class,
-                new SardineExceptionMappingService().map(new SardineException("m", 404, "r")).getClass());
+                new DAVExceptionMappingService().map(new SardineException("m", 404, "r")).getClass());
     }
 }

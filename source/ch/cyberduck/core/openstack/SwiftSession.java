@@ -25,7 +25,6 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.FilesExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -117,7 +116,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
             }
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map(e);
+            throw new SwiftExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -175,7 +174,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
                         file.getName());
             }
             catch(FilesException e) {
-                throw new FilesExceptionMappingService().map("Cannot read file attributes", e, file);
+                throw new SwiftExceptionMappingService().map("Cannot read file attributes", e, file);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, file);
@@ -206,7 +205,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
                     containerService.getContainer(file).getName(), containerService.getKey(file));
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Download failed", e, file);
+            throw new SwiftExceptionMappingService().map("Download failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
@@ -289,7 +288,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
             }
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Upload failed", e, file);
+            throw new SwiftExceptionMappingService().map("Upload failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
@@ -341,7 +340,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
                             metadata, md5sum);
                 }
                 catch(FilesException e) {
-                    throw new FilesExceptionMappingService().map("Upload failed", e, file);
+                    throw new SwiftExceptionMappingService().map("Upload failed", e, file);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
@@ -370,7 +369,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
             }
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot create folder {0}", e, file);
+            throw new SwiftExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
@@ -407,7 +406,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
             }
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot delete {0}", e, file);
+            throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -439,7 +438,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
             }
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Cannot rename {0}", e, file);
+            throw new SwiftExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);

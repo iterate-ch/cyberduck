@@ -30,7 +30,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.SardineExceptionMappingService;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -100,12 +99,12 @@ public class DAVSession extends HttpSession<DAVClient> {
                     client.execute(new HttpPropFind(new DAVPathEncoder().encode(this.home())), new VoidResponseHandler());
                 }
                 else {
-                    throw new SardineExceptionMappingService().map(e);
+                    throw new DAVExceptionMappingService().map(e);
                 }
             }
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map(e);
+            throw new DAVExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -133,7 +132,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 return this.getClient().exists(new DAVPathEncoder().encode(path));
             }
             catch(SardineException e) {
-                throw new SardineExceptionMappingService().map("Cannot read file attributes", e, path);
+                throw new DAVExceptionMappingService().map("Cannot read file attributes", e, path);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e, path);
@@ -150,7 +149,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             this.getClient().delete(new DAVPathEncoder().encode(file));
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map("Cannot delete {0}", e, file);
+            throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
@@ -168,7 +167,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             this.getClient().createDirectory(new DAVPathEncoder().encode(file));
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map("Cannot create folder {0}", e, file);
+            throw new DAVExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
@@ -181,7 +180,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             this.getClient().move(new DAVPathEncoder().encode(file), new DAVPathEncoder().encode(renamed));
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map("Cannot rename {0}", e, file);
+            throw new DAVExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
@@ -198,7 +197,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return this.getClient().get(new DAVPathEncoder().encode(file), headers);
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map("Download failed", e, file);
+            throw new DAVExceptionMappingService().map("Download failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
@@ -216,7 +215,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             this.download(file, in, out, throttle, listener, status);
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map("Download failed", e, file);
+            throw new DAVExceptionMappingService().map("Download failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
@@ -253,7 +252,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             }
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map("Upload failed", e, file);
+            throw new DAVExceptionMappingService().map("Upload failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
@@ -295,7 +294,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                         return this.call(entity);
                     }
                     else {
-                        throw new SardineExceptionMappingService().map("Upload failed", e, file);
+                        throw new DAVExceptionMappingService().map("Upload failed", e, file);
                     }
                 }
                 catch(IOException e) {

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core.s3;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -19,6 +19,9 @@ package ch.cyberduck.core.exception;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 
 import org.jets3t.service.ServiceException;
 import org.junit.Test;

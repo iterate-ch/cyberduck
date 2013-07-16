@@ -22,7 +22,6 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.SFTPExceptionMappingService;
 
 import org.apache.log4j.Logger;
 

@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.SardineExceptionMappingService;
 
 import java.io.IOException;
 import java.util.List;
@@ -72,7 +71,7 @@ public class DAVListService implements ListService {
             return children;
         }
         catch(SardineException e) {
-            throw new SardineExceptionMappingService().map("Listing directory failed", e, file);
+            throw new DAVExceptionMappingService().map("Listing directory failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);

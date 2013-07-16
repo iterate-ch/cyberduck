@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core.cloudfront;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -19,6 +19,8 @@ package ch.cyberduck.core.exception;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.cloudfront.CloudFrontServiceExceptionMappingService;
+import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.jets3t.service.CloudFrontServiceException;
 import org.junit.Test;

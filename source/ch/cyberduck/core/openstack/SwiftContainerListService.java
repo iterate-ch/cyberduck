@@ -25,7 +25,6 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.FilesExceptionMappingService;
 
 import org.apache.log4j.Logger;
 
@@ -70,7 +69,7 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
             return containers;
         }
         catch(FilesException e) {
-            throw new FilesExceptionMappingService().map("Listing directory failed", e);
+            throw new SwiftExceptionMappingService().map("Listing directory failed", e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
