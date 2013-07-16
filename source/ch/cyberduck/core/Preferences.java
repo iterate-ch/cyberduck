@@ -168,20 +168,7 @@ public abstract class Preferences {
         defaults.put("tmp.dir", System.getProperty("java.io.tmpdir"));
         defaults.put("logging", "error");
 
-        java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
-        Handler[] handlers = rootLogger.getHandlers();
-        for(Handler handler : handlers) {
-            rootLogger.removeHandler(handler);
-        }
-        // call only once during initialization time of your application
-        SLF4JBridgeHandler.install();
-
-        final URL configuration = Preferences.class.getClassLoader().getResource(defaults.get("logging.config"));
-        if(null != configuration) {
-            DOMConfigurator.configure(configuration);
-        }
-        final Logger root = Logger.getRootLogger();
-        root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+        this.setLogging();
 
         /**
          * How many times the application was launched
@@ -822,6 +809,23 @@ public abstract class Preferences {
         defaults.put("terminal.bundle.identifier", "com.apple.Terminal");
         defaults.put("terminal.command", "do script \"{0}\"");
         defaults.put("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL\"");
+    }
+
+    protected void setLogging() {
+        java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+        Handler[] handlers = rootLogger.getHandlers();
+        for(Handler handler : handlers) {
+            rootLogger.removeHandler(handler);
+        }
+        // call only once during initialization time of your application
+        SLF4JBridgeHandler.install();
+
+        final URL configuration = Preferences.class.getClassLoader().getResource(defaults.get("logging.config"));
+        if(null != configuration) {
+            DOMConfigurator.configure(configuration);
+        }
+        final Logger root = Logger.getRootLogger();
+        root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
     }
 
     /**
