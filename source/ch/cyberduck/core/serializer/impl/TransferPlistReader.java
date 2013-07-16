@@ -76,9 +76,8 @@ public class TransferPlistReader extends PlistReader<Transfer> {
     public Transfer deserialize(NSDictionary dict) {
         NSObject hostObj = dict.objectForKey("Host");
         if(hostObj != null) {
-            Host host = new Host(Rococoa.cast(hostObj, NSDictionary.class));
-            Session s = SessionFactory.createSession(host);
-            return this.deserialize(dict, s);
+            final Host host = new Host(Rococoa.cast(hostObj, NSDictionary.class));
+            return this.deserialize(dict, SessionFactory.createSession(host));
         }
         throw new IllegalArgumentException("Unknown transfer");
     }
