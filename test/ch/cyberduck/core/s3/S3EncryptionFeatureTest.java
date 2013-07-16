@@ -34,7 +34,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3EncryptionFeatureTest extends AbstractTestCase {
 
@@ -59,6 +59,7 @@ public class S3EncryptionFeatureTest extends AbstractTestCase {
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
         feature.setEncryption(test, "AES256");
         assertEquals("AES256", feature.getEncryption(test));
+        session.delete(test, new DisabledLoginController());
         session.close();
     }
 }

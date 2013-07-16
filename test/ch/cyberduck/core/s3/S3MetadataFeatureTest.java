@@ -35,7 +35,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3MetadataFeatureTest extends AbstractTestCase {
 
@@ -91,6 +91,7 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("test"));
         assertEquals(v, metadata.get("test"));
+        session.delete(test, new DisabledLoginController());
         session.close();
     }
 }
