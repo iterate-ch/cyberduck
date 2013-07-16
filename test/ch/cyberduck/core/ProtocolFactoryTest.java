@@ -38,4 +38,10 @@ public class ProtocolFactoryTest extends AbstractTestCase {
         assertTrue(ProtocolFactory.isURL("http://h.name"));
         assertFalse(ProtocolFactory.isURL("h.name"));
     }
+
+    @Test
+    public void testDeprecated() throws Exception {
+        assertEquals(Protocol.CLOUDFILES, ProtocolFactory.forName("cf"));
+    }
+
 }
