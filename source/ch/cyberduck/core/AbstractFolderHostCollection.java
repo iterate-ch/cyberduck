@@ -20,7 +20,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.HostReaderFactory;
@@ -59,16 +58,16 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         return Locale.localizedString(folder.getName());
     }
 
-    public void open() {
-        ApplicationLauncherFactory.get().open(folder);
-    }
-
     /**
      * @param bookmark Bookmark
      * @return File for bookmark
      */
     public Local getFile(final Host bookmark) {
         return LocalFactory.createLocal(folder, String.format("%s.duck", bookmark.getUuid()));
+    }
+
+    public Local getFolder() {
+        return folder;
     }
 
     @Override

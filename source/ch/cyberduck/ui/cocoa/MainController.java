@@ -439,7 +439,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void historyMenuClicked(NSMenuItem sender) {
-        HistoryCollection.defaultCollection().open();
+        ApplicationLauncherFactory.get().open(HistoryCollection.defaultCollection().getFolder());
     }
 
     @Action

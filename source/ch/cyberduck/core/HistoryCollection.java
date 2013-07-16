@@ -36,7 +36,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "History")
     );
 
-    public HistoryCollection(Local f) {
+    public HistoryCollection(final Local f) {
         super(f);
     }
 
@@ -48,12 +48,12 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     }
 
     @Override
-    public Local getFile(Host bookmark) {
+    public Local getFile(final Host bookmark) {
         return LocalFactory.createLocal(folder, String.format("%s.duck", bookmark.getNickname(true)));
     }
 
     @Override
-    public String getComment(Host host) {
+    public String getComment(final Host host) {
         Date timestamp = host.getTimestamp();
         if(null != timestamp) {
             // Set comment to timestamp when server was last accessed
@@ -70,7 +70,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
      * @param bookmark Bookmark
      */
     @Override
-    public void add(int row, Host bookmark) {
+    public void add(final int row, final Host bookmark) {
         if(this.contains(bookmark)) {
             this.remove(bookmark);
         }
@@ -84,7 +84,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
      * @return Always true
      */
     @Override
-    public boolean add(Host bookmark) {
+    public boolean add(final Host bookmark) {
         if(this.contains(bookmark)) {
             this.remove(bookmark);
         }
