@@ -27,7 +27,6 @@ import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
@@ -36,22 +35,17 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
@@ -63,8 +57,6 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.MultipartPart;
-import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
@@ -77,28 +69,17 @@ import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * @version $Id$
@@ -107,6 +88,12 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     private static final Logger log = Logger.getLogger(S3Session.class);
 
     private PathContainerService containerService = new PathContainerService();
+
+    /**
+     * Default size threshold for when to use multipart uploads.
+     */
+    private static final long DEFAULT_MULTIPART_UPLOAD_THRESHOLD =
+            Preferences.instance().getLong("s3.upload.multipart.threshold");
 
     public S3Session(Host h) {
         super(h);
@@ -609,50 +596,24 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
     }
 
-    /**
-     * Default size threshold for when to use multipart uploads.
-     */
-    private static final long DEFAULT_MULTIPART_UPLOAD_THRESHOLD =
-            Preferences.instance().getLong("s3.upload.multipart.threshold");
-
-    /**
-     * Default minimum part size for upload parts.
-     */
-    private static final int DEFAULT_MINIMUM_UPLOAD_PART_SIZE =
-            Preferences.instance().getInteger("s3.upload.multipart.size");
-
-    /**
-     * The maximum allowed parts in a multipart upload.
-     */
-    public static final int MAXIMUM_UPLOAD_PARTS = 10000;
-
     @Override
     public void upload(final Path file, final BandwidthThrottle throttle,
                        final StreamListener listener, final TransferStatus status) throws BackgroundException {
-        try {
-            if(file.attributes().isFile()) {
-                final StorageObject object = this.createObjectDetails(file);
-
-                // Only for AWS
-                if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)
-                        && Preferences.instance().getBoolean("s3.upload.multipart")
-                        && status.getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
-                    this.uploadMultipart(file, throttle, listener, status, object);
-                }
-                else {
-                    this.uploadSingle(file, throttle, listener, status, object);
-                }
+        if(file.attributes().isFile()) {
+            final StorageObject object = this.createObjectDetails(file);
+            // Only for AWS
+            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)
+                    && Preferences.instance().getBoolean("s3.upload.multipart")
+                    && status.getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
+                new S3MultipartUploadService(this).upload(file, throttle, listener, status, object);
             }
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Upload failed", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+            else {
+                new S3SingleUploadService(this).upload(file, throttle, listener, status, object);
+            }
         }
     }
 
-    private StorageObject createObjectDetails(final Path file) throws BackgroundException {
+    protected StorageObject createObjectDetails(final Path file) throws BackgroundException {
         final StorageObject object = new StorageObject(containerService.getKey(file));
         final String type = new MappingMimeTypeService().getMime(file.getName());
         object.setContentType(type);
@@ -706,298 +667,10 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         return object;
     }
 
-    /**
-     * @param throttle Bandwidth throttle
-     * @param listener Callback for bytes sent
-     * @param status   Transfer status
-     * @param object   File location
-     */
-    protected void uploadSingle(final Path file,
-                                final BandwidthThrottle throttle, final StreamListener listener,
-                                final TransferStatus status, final StorageObject object) throws BackgroundException {
-
-        InputStream in = null;
-        ResponseOutputStream<StorageObject> out = null;
-        MessageDigest digest = null;
-        if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-            // Content-MD5 not set. Need to verify ourselves instad of S3
-            try {
-                digest = MessageDigest.getInstance("MD5");
-            }
-            catch(NoSuchAlgorithmException e) {
-                log.error(e.getMessage());
-            }
-        }
-        try {
-            if(null == digest) {
-                log.warn("MD5 calculation disabled");
-                in = file.getLocal().getInputStream();
-            }
-            else {
-                in = new DigestInputStream(file.getLocal().getInputStream(), digest);
-            }
-            out = this.write(file, object, status.getLength() - status.getCurrent(),
-                    Collections.<String, String>emptyMap());
-            try {
-                this.upload(file, out, in, throttle, listener, status);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
-            }
-        }
-        catch(FileNotFoundException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
-        }
-        if(null != digest) {
-            final StorageObject part = out.getResponse();
-            this.message(MessageFormat.format(
-                    Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
-            // Obtain locally-calculated MD5 hash.
-            String hexMD5 = ServiceUtils.toHex(digest.digest());
-            try {
-                this.getClient().verifyExpectedAndActualETagValues(hexMD5, part);
-            }
-            catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Upload failed", e, file);
-            }
-        }
-    }
-
-    /**
-     * @param throttle Bandwidth throttle
-     * @param listener Callback for bytes sent
-     * @param status   Transfer status
-     * @param object   File location
-     * @throws IOException      I/O error
-     * @throws ServiceException Service error
-     */
-    protected void uploadMultipart(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
-                                   final TransferStatus status, final StorageObject object)
-            throws IOException, ServiceException, BackgroundException {
-
-        final ThreadFactory threadFactory = new NamedThreadFactory("multipart");
-
-        MultipartUpload multipart = null;
-        if(status.isResume()) {
-            // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
-            // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
-            // not yet been completed or aborted.
-            final List<MultipartUpload> uploads = this.getClient().multipartListUploads(
-                    containerService.getContainer(file).getName());
-            for(MultipartUpload upload : uploads) {
-                if(!upload.getBucketName().equals(containerService.getContainer(file).getName())) {
-                    continue;
-                }
-                if(!upload.getObjectKey().equals(containerService.getKey(file))) {
-                    continue;
-                }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Resume multipart upload %s", upload.getUploadId()));
-                }
-                multipart = upload;
-                break;
-            }
-        }
-        if(null == multipart) {
-            log.info("No pending multipart upload found");
-
-            // Initiate multipart upload with metadata
-            Map<String, Object> metadata = object.getModifiableMetadata();
-            if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
-                metadata.put(this.getClient().getRestHeaderPrefix() + "storage-class",
-                        Preferences.instance().getProperty("s3.storage.class"));
-            }
-            if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
-                metadata.put(this.getClient().getRestHeaderPrefix() + "server-side-encryption",
-                        Preferences.instance().getProperty("s3.encryption.algorithm"));
-            }
-
-            multipart = this.getClient().multipartStartUpload(
-                    containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
-        }
-
-        final List<MultipartPart> completed;
-        if(status.isResume()) {
-            log.info(String.format("List completed parts of %s", multipart.getUploadId()));
-            // This operation lists the parts that have been uploaded for a specific multipart upload.
-            completed = this.getClient().multipartListParts(multipart);
-        }
-        else {
-            completed = new ArrayList<MultipartPart>();
-        }
-
-        /**
-         * At any point, at most
-         * <tt>nThreads</tt> threads will be active processing tasks.
-         */
-        final ExecutorService pool = Executors.newFixedThreadPool(
-                Preferences.instance().getInteger("s3.upload.multipart.concurency"), threadFactory);
-
-        try {
-            final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
-
-            final long defaultPartSize = Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS),
-                    DEFAULT_MINIMUM_UPLOAD_PART_SIZE);
-
-            long remaining = status.getLength();
-            long marker = 0;
-
-            for(int partNumber = 1; remaining > 0; partNumber++) {
-                boolean skip = false;
-                if(status.isResume()) {
-                    log.info(String.format("Determine if part %d can be skipped", partNumber));
-                    for(MultipartPart c : completed) {
-                        if(c.getPartNumber().equals(partNumber)) {
-                            log.info("Skip completed part number " + partNumber);
-                            listener.bytesSent(c.getSize());
-                            skip = true;
-                            break;
-                        }
-                    }
-                }
-
-                // Last part can be less than 5 MB. Adjust part size.
-                final long length = Math.min(defaultPartSize, remaining);
-
-                if(!skip) {
-                    // Submit to queue
-                    parts.add(this.submitPart(file, throttle, listener, status, multipart, pool, partNumber, marker, length));
-                }
-
-                remaining -= length;
-                marker += length;
-            }
-            for(Future<MultipartPart> future : parts) {
-                try {
-                    completed.add(future.get());
-                }
-                catch(InterruptedException e) {
-                    log.error("Part upload failed:" + e.getMessage());
-                    throw new ConnectionCanceledException(e);
-                }
-                catch(ExecutionException e) {
-                    log.warn("Part upload failed:" + e.getMessage());
-                    if(e.getCause() instanceof ServiceException) {
-                        throw (ServiceException) e.getCause();
-                    }
-                    if(e.getCause() instanceof IOException) {
-                        throw (IOException) e.getCause();
-                    }
-                    throw new ConnectionCanceledException(e);
-                }
-            }
-            if(status.isComplete()) {
-                this.getClient().multipartCompleteUpload(multipart, completed);
-            }
-        }
-        finally {
-            if(!status.isComplete()) {
-                // Cancel all previous parts
-                log.info(String.format("Cancel multipart upload %s", multipart.getUploadId()));
-                this.getClient().multipartAbortUpload(multipart);
-            }
-            // Cancel future tasks
-            pool.shutdown();
-        }
-    }
-
-    private Future<MultipartPart> submitPart(final Path file,
-                                             final BandwidthThrottle throttle, final StreamListener listener,
-                                             final TransferStatus status, final MultipartUpload multipart,
-                                             final ExecutorService pool,
-                                             final int partNumber,
-                                             final long offset, final long length) throws BackgroundException {
-        if(pool.isShutdown()) {
-            throw new ConnectionCanceledException();
-        }
-        log.info(String.format("Submit part %d to queue", partNumber));
-        return pool.submit(new Callable<MultipartPart>() {
-            @Override
-            public MultipartPart call() throws BackgroundException {
-                final Map<String, String> requestParameters = new HashMap<String, String>();
-                requestParameters.put("uploadId", multipart.getUploadId());
-                requestParameters.put("partNumber", String.valueOf(partNumber));
-
-                InputStream in = null;
-                ResponseOutputStream<StorageObject> out = null;
-                MessageDigest digest = null;
-                try {
-                    if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-                        // Content-MD5 not set. Need to verify ourselves instad of S3
-                        try {
-                            digest = MessageDigest.getInstance("MD5");
-                        }
-                        catch(NoSuchAlgorithmException e) {
-                            log.error(e.getMessage());
-                        }
-                    }
-                    if(null == digest) {
-                        log.warn("MD5 calculation disabled");
-                        in = file.getLocal().getInputStream();
-                    }
-                    else {
-                        in = new DigestInputStream(file.getLocal().getInputStream(), digest);
-                    }
-                    out = write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
-                    upload(file, out, in, throttle, listener, offset, length, status);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
-                }
-                final StorageObject part = out.getResponse();
-                if(null != digest) {
-                    // Obtain locally-calculated MD5 hash
-                    String hexMD5 = ServiceUtils.toHex(digest.digest());
-                    try {
-                        getClient().verifyExpectedAndActualETagValues(hexMD5, part);
-                    }
-                    catch(ServiceException e) {
-                        throw new ServiceExceptionMappingService().map("Upload failed", e, file);
-                    }
-                }
-                // Populate part with response data that is accessible via the object's metadata
-                return new MultipartPart(partNumber, part.getLastModifiedDate(),
-                        part.getETag(), part.getContentLength());
-            }
-        });
-    }
-
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        return this.write(file, this.createObjectDetails(file), status.getLength() - status.getCurrent(),
+        return new S3SingleUploadService(this).write(file, this.createObjectDetails(file), status.getLength() - status.getCurrent(),
                 Collections.<String, String>emptyMap());
-    }
-
-    private ResponseOutputStream<StorageObject> write(final Path file,
-                                                      final StorageObject part, final Long contentLength,
-                                                      final Map<String, String> requestParams) throws BackgroundException {
-        DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
-            @Override
-            public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
-                try {
-                    getClient().putObjectWithRequestEntityImpl(
-                            containerService.getContainer(file).getName(), part, entity, requestParams);
-                }
-                catch(ServiceException e) {
-                    throw new ServiceExceptionMappingService().map("Upload failed", e, file);
-                }
-                return part;
-            }
-
-            @Override
-            public long getContentLength() {
-                return contentLength;
-            }
-        };
-        return this.write(file, command);
     }
 
     @Override

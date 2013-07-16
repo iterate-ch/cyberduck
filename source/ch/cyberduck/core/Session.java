@@ -610,9 +610,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @param status   Transfer status
      * @throws java.io.IOException Write not completed due to a I/O problem
      */
-    protected void upload(final Path file, final OutputStream out, final InputStream in,
-                          final BandwidthThrottle throttle,
-                          final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
+    public void upload(final Path file, final OutputStream out, final InputStream in,
+                       final BandwidthThrottle throttle,
+                       final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
         this.upload(file, out, in, throttle, l, status.getCurrent(), -1, status);
     }
 
@@ -634,8 +634,8 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      *                     number of bytes
      * @throws IOException Write not completed due to a I/O problem
      */
-    protected void upload(final Path file, final OutputStream out, final InputStream in, final BandwidthThrottle throttle,
-                          final StreamListener l, long offset, final long limit, final TransferStatus status) throws IOException, ConnectionCanceledException {
+    public void upload(final Path file, final OutputStream out, final InputStream in, final BandwidthThrottle throttle,
+                       final StreamListener l, long offset, final long limit, final TransferStatus status) throws IOException, ConnectionCanceledException {
         if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
@@ -662,8 +662,8 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @param status   Transfer status
      * @throws IOException Write not completed due to a I/O problem
      */
-    protected void download(final Path file, final InputStream in, final OutputStream out, final BandwidthThrottle throttle,
-                            final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
+    public void download(final Path file, final InputStream in, final OutputStream out, final BandwidthThrottle throttle,
+                         final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }

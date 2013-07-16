@@ -41,6 +41,7 @@ import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang.StringUtils;
@@ -169,9 +170,9 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    protected void uploadMultipart(final Path file, final BandwidthThrottle throttle,
-                                   final StreamListener listener, final TransferStatus status, final StorageObject object) throws IOException, ServiceException, BackgroundException {
-        this.uploadSingle(file, throttle, listener, status, object);
+    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
+        final StorageObject object = this.createObjectDetails(file);
+        new S3SingleUploadService(this).upload(file, throttle, listener, status, object);
     }
 
     @Override

@@ -243,7 +243,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
      * @param <T>     Type of returned checksum
      * @return Outputstream to write entity into.
      */
-    protected <T> ResponseOutputStream<T> write(final Path file, final DelayedHttpEntityCallable<T> command)
+    public <T> ResponseOutputStream<T> write(final Path file, final DelayedHttpEntityCallable<T> command)
             throws BackgroundException {
         /**
          * Signal on enter streaming
