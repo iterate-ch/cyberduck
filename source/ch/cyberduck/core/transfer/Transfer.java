@@ -383,7 +383,6 @@ public abstract class Transfer implements Serializable {
             status.setComplete();
             return;
         }
-        //todo
         if(filter.accept(session, file)) {
             // Transfer
             this.transfer(file, options, status, listener);
