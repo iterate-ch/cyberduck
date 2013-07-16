@@ -194,7 +194,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
         test.setLocal(new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final Transfer transfer = new DownloadTransfer(session, test);
-        transfer.prepareRoot(test, new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(test))),
+        transfer.prepare(test, new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(test))),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -227,7 +227,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         IOUtils.write("test", out);
         IOUtils.closeQuietly(out);
         final Transfer transfer = new DownloadTransfer(session, test);
-        transfer.prepareRoot(test, new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(test))),
+        transfer.prepare(test, new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(test))),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {

@@ -267,7 +267,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/" + name);
         local.touch();
         final Transfer transfer = new UploadTransfer(session, test);
-        transfer.prepareRoot(test, new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())),
+        transfer.prepare(test, new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -298,7 +298,7 @@ public class UploadTransferTest extends AbstractTestCase {
         IOUtils.write("te", out);
         IOUtils.closeQuietly(out);
         final Transfer transfer = new UploadTransfer(session, test);
-        transfer.prepareRoot(test, new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())),
+        transfer.prepare(test, new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
