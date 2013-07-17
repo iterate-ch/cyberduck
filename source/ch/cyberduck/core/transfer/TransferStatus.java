@@ -194,7 +194,9 @@ public class TransferStatus {
         if(selected != that.selected) {
             return false;
         }
-
+        if(exists != that.exists) {
+            return false;
+        }
         return true;
     }
 
@@ -206,6 +208,7 @@ public class TransferStatus {
         result = 31 * result + (canceled ? 1 : 0);
         result = 31 * result + (complete ? 1 : 0);
         result = 31 * result + (selected ? 1 : 0);
+        result = 31 * result + (exists ? 1 : 0);
         return result;
     }
 
@@ -219,6 +222,7 @@ public class TransferStatus {
         sb.append(", canceled=").append(canceled);
         sb.append(", complete=").append(complete);
         sb.append(", selected=").append(selected);
+        sb.append(", exists=").append(exists);
         sb.append('}');
         return sb.toString();
     }

@@ -311,7 +311,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final TransferStatus expected = new TransferStatus();
         expected.setResume(true);
         // Remote size
-        expected.setCurrent(1L);
+        expected.setCurrent(5L);
         // Local size
         expected.setLength(2L);
         assertEquals(expected, transfer.status(new Path("/transfer/" + name, Path.FILE_TYPE)));
