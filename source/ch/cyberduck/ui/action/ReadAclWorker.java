@@ -45,7 +45,7 @@ public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
     @Override
     public List<Acl.UserAndRole> run() throws BackgroundException {
-        List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
+        final List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
         for(Path next : files) {
             if(Acl.EMPTY.equals(next.attributes().getAcl())) {
                 next.attributes().setAcl(feature.read(next));
