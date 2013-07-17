@@ -17,10 +17,11 @@ package ch.cyberduck.core.features;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Command {
 
@@ -29,5 +30,5 @@ public interface Command {
      *
      * @param command Command to send
      */
-    void send(String command) throws BackgroundException;
+    void send(String command, ProgressListener listener) throws BackgroundException;
 }

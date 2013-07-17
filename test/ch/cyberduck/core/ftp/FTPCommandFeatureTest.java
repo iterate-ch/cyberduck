@@ -23,6 +23,7 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.TranscriptListener;
 
@@ -31,7 +32,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPCommandFeatureTest extends AbstractTestCase {
 
@@ -54,7 +55,12 @@ public class FTPCommandFeatureTest extends AbstractTestCase {
                 }
             }
         });
-        new FTPCommandFeature(session).send("HELP");
+        new FTPCommandFeature(session).send("HELP", new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                assertEquals("HELP", message);
+            }
+        });
         assertEquals("214 CHMOD UMASK HELP", t.toString());
         session.close();
     }

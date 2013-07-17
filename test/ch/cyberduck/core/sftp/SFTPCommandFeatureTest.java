@@ -23,13 +23,13 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.TranscriptListener;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -55,7 +55,12 @@ public class SFTPCommandFeatureTest extends AbstractTestCase {
                 }
             }
         });
-        new SFTPCommandFeature(session).send("ps");
+        new SFTPCommandFeature(session).send("ps", new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                assertEquals("ps", message);
+            }
+        });
         assertTrue("PID TTY          TIME CMD22417 ?        00:00:00 sshd22418 ?        00:00:00 sftp-server22427 ?        00:00:00 ps", t.toString().startsWith(
                 "  PID TTY          TIME"));
         session.close();

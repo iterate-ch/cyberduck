@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.features.Command;
@@ -45,7 +46,7 @@ public class SFTPCommandFeature implements Command {
     }
 
     @Override
-    public void send(final String command) throws BackgroundException {
+    public void send(final String command, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Send command %s", command));
         }
@@ -59,7 +60,7 @@ public class SFTPCommandFeature implements Command {
         final BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
         final BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStderr())));
         try {
-            session.message(command);
+            listener.message(command);
             sess.execCommand(command, session.getEncoding());
 
             // Here is the output from stdout

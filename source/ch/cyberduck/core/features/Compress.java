@@ -19,16 +19,17 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.Archive;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Compress {
 
-    void archive(Archive archive, List<Path> files) throws BackgroundException;
+    void archive(Archive archive, List<Path> files, ProgressListener listener) throws BackgroundException;
 
-    void unarchive(Archive archive, Path file) throws BackgroundException;
+    void unarchive(Archive archive, Path file, ProgressListener listener) throws BackgroundException;
 }

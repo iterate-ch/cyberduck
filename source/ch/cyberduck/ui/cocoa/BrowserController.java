@@ -3184,7 +3184,7 @@ public class BrowserController extends WindowController
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     @Override
                     public void run() throws BackgroundException {
-                        session.getFeature(Compress.class, null).archive(archive, changed);
+                        session.getFeature(Compress.class, null).archive(archive, changed, this);
                     }
 
                     @Override
@@ -3217,7 +3217,7 @@ public class BrowserController extends WindowController
                     background(new BrowserBackgroundAction(BrowserController.this) {
                         @Override
                         public void run() throws BackgroundException {
-                            session.getFeature(Compress.class, null).unarchive(archive, s);
+                            session.getFeature(Compress.class, null).unarchive(archive, s, this);
                         }
 
                         @Override

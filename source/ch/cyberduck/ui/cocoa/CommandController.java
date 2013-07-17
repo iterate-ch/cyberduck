@@ -113,7 +113,8 @@ public class CommandController extends SheetController implements TranscriptList
 
                 @Override
                 public void run() throws BackgroundException {
-                    session.getFeature(Command.class, LoginControllerFactory.get(parent)).send(command);
+                    final Command feature = session.getFeature(Command.class, LoginControllerFactory.get(parent));
+                    feature.send(command, this);
                 }
 
                 @Override

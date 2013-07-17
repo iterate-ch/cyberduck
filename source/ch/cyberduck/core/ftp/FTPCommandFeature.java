@@ -17,6 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Command;
 
@@ -37,11 +38,11 @@ public class FTPCommandFeature implements Command {
     }
 
     @Override
-    public void send(final String command) throws BackgroundException {
+    public void send(final String command, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Send command %s", command));
         }
-        session.message(command);
+        listener.message(command);
         try {
             session.getClient().sendSiteCommand(command);
         }
