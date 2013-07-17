@@ -83,7 +83,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
-        session.mkdir(container);
+        session.mkdir(container, null);
         final Versioning feature = new S3VersioningFeature(session);
         feature.setConfiguration(container, new DisabledLoginController(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());

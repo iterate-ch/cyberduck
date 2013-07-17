@@ -262,7 +262,7 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
+    public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
             this.sftp().mkdir(file.getAbsolute(),
                     Integer.parseInt(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getOctalString(), 8));

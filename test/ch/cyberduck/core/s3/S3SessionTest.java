@@ -148,7 +148,7 @@ public class S3SessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void createTorrentUrl() throws Exception {
+    public void testToTorrentUrl() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
                 new Credentials("anonymous", null)));
         assertEquals(new DescriptiveUrl("http://test.cyberduck.ch.s3.amazonaws.com/test?torrent"),
@@ -186,7 +186,7 @@ public class S3SessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(test);
+        session.mkdir(test, null);
         assertTrue(session.exists(test));
         session.delete(test, new DisabledLoginController());
         session.close();

@@ -366,7 +366,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean call() throws BackgroundException {
                     final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                    session.mkdir(directory);
+                    session.mkdir(directory, null);
                     return true;
                 }
             });

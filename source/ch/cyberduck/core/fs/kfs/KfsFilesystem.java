@@ -463,7 +463,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean call() throws BackgroundException {
                         log.debug("kfsmkdir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                        session.mkdir(directory);
+                        session.mkdir(directory, null);
                         return true;
                     }
                 });

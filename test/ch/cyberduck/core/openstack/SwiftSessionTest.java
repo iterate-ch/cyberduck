@@ -132,7 +132,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path c = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(c);
+        session.mkdir(c, null);
         assertTrue(session.exists(c));
         session.delete(c, new DisabledLoginController());
         assertFalse(session.exists(c));
@@ -148,7 +148,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(placeholder);
+        session.mkdir(placeholder, null);
         assertTrue(session.exists(placeholder));
         session.delete(placeholder, new DisabledLoginController());
         assertFalse(session.exists(placeholder));

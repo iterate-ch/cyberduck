@@ -535,12 +535,11 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
             return this.list(path.getParent()).contains(path.getReference());
         }
         catch(NotfoundException e) {
-            log.warn(e.getMessage());
             return false;
         }
     }
 
-    public abstract void mkdir(Path file) throws BackgroundException;
+    public abstract void mkdir(Path file, String region) throws BackgroundException;
 
     public abstract AttributedList<Path> list(Path file) throws BackgroundException;
 

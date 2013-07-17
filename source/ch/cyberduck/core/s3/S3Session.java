@@ -678,11 +678,16 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
+    public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 final S3BucketCreateService service = new S3BucketCreateService(this);
-                service.create(file, Preferences.instance().getProperty("s3.location"));
+                if(StringUtils.isBlank(region)) {
+                    service.create(file, Preferences.instance().getProperty("s3.location"));
+                }
+                else {
+                    service.create(file, region);
+                }
             }
             else {
                 // Add placeholder object

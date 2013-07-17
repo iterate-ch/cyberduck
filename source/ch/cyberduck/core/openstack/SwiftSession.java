@@ -366,14 +366,14 @@ public class SwiftSession extends HttpSession<FilesClient> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
+    public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 // Create container at top level
-                this.getClient().createContainer(this.getRegion(containerService.getContainer(file)), file.getName());
+                this.getClient().createContainer(this.getRegion(region), file.getName());
             }
             else {
-                // Create virtual directory
+                // Create virtual directory. Use region of parent container.
                 this.getClient().createPath(this.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }

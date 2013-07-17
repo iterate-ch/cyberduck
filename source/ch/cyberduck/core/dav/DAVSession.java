@@ -168,7 +168,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
+    public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
             this.getClient().createDirectory(new DAVPathEncoder().encode(file));
         }

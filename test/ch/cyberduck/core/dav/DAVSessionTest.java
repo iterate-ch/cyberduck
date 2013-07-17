@@ -133,7 +133,7 @@ public class DAVSessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(test);
+        session.mkdir(test, null);
         assertTrue(session.exists(test));
         session.delete(test, new DisabledLoginController());
         session.close();
