@@ -37,7 +37,7 @@ public abstract class Worker<T> {
         final StringBuilder name = new StringBuilder();
         name.append(files.get(0).getName());
         if(files.size() > 1) {
-            name.append("…");
+            name.append("… (").append(files.size()).append(")");
         }
         return name.toString();
     }
