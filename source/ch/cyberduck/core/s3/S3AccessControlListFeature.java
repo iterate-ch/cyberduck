@@ -23,7 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
-import ch.cyberduck.core.features.AccessControlList;
+import ch.cyberduck.core.features.AclPermission;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -36,7 +36,7 @@ import org.jets3t.service.model.S3Owner;
 /**
  * @version $Id$
  */
-public class S3AccessControlListFeature implements AccessControlList {
+public class S3AccessControlListFeature implements AclPermission {
     private static final Logger log = Logger.getLogger(S3AccessControlListFeature.class);
 
     private S3Session session;

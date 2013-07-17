@@ -31,6 +31,7 @@ import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
@@ -343,7 +344,7 @@ public class GoogleStorageSession extends S3Session {
         if(type == Delete.class) {
             return (T) new S3DefaultDeleteFeature(this, prompt);
         }
-        if(type == ch.cyberduck.core.features.AccessControlList.class) {
+        if(type == AclPermission.class) {
             return (T) new GoogleStorageAccessControlListFeature(this);
         }
         if(type == DistributionConfiguration.class) {

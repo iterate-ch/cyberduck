@@ -22,9 +22,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public interface AccessControlList {
+public interface AclPermission {
 
     public Acl read(Path file) throws BackgroundException;
 

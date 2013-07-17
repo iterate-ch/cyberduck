@@ -22,7 +22,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AccessControlList;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
@@ -36,7 +36,7 @@ import java.util.List;
 public abstract class WriteAclWorker extends Worker<Acl> {
     private static Logger log = Logger.getLogger(WriteAclWorker.class);
 
-    private AccessControlList feature;
+    private AclPermission feature;
 
     /**
      * Selected files.
@@ -53,7 +53,7 @@ public abstract class WriteAclWorker extends Worker<Acl> {
      */
     private boolean recursive;
 
-    public WriteAclWorker(final AccessControlList feature, final List<Path> files,
+    public WriteAclWorker(final AclPermission feature, final List<Path> files,
                           final Acl acl, final boolean recursive) {
         this.feature = feature;
         this.files = files;

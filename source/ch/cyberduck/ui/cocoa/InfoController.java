@@ -29,7 +29,7 @@ import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AccessControlList;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
@@ -964,7 +964,7 @@ public class InfoController extends ToolbarWindowController {
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
             this.background(new WorkerBackgroundAction<Acl>(controller,
-                    new WriteAclWorker(controller.getSession().getFeature(AccessControlList.class, prompt), files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
+                    new WriteAclWorker(controller.getSession().getFeature(AclPermission.class, prompt), files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
                         @Override
                         public void cleanup(final Acl permission) {
                             toggleAclSettings(true);
@@ -1458,7 +1458,7 @@ public class InfoController extends ToolbarWindowController {
                 // Anonymous never has the right to updated permissions
                 return false;
             }
-            return session.getFeature(AccessControlList.class, prompt) != null;
+            return session.getFeature(AclPermission.class, prompt) != null;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             if(anonymous) {
@@ -1606,7 +1606,7 @@ public class InfoController extends ToolbarWindowController {
         if(controller.getSession().getFeature(UnixPermission.class, prompt) != null) {
             views.add(panelPermissions);
         }
-        if(controller.getSession().getFeature(AccessControlList.class, prompt) != null) {
+        if(controller.getSession().getFeature(AclPermission.class, prompt) != null) {
             views.add(panelAcl);
         }
         views.add(panelMetadata);
@@ -1622,7 +1622,7 @@ public class InfoController extends ToolbarWindowController {
         if(controller.getSession().getFeature(UnixPermission.class, prompt) != null) {
             identifiers.add(TOOLBAR_ITEM_PERMISSIONS);
         }
-        if(controller.getSession().getFeature(AccessControlList.class, prompt) != null) {
+        if(controller.getSession().getFeature(AclPermission.class, prompt) != null) {
             identifiers.add(TOOLBAR_ITEM_ACL);
         }
         identifiers.add(TOOLBAR_ITEM_METADATA);
@@ -2123,7 +2123,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(AccessControlList.class, prompt) != null;
+        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(AclPermission.class, prompt) != null;
         aclTable.setEnabled(stop && enable);
         aclAddButton.setEnabled(stop && enable);
         boolean selection = aclTable.selectedRowIndexes().count().intValue() > 0;
@@ -2215,7 +2215,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             this.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new ReadAclWorker(
-                    controller.getSession().getFeature(AccessControlList.class, prompt), files) {
+                    controller.getSession().getFeature(AclPermission.class, prompt), files) {
                 @Override
                 public void cleanup(final List<Acl.UserAndRole> updated) {
                     setAcl(updated);

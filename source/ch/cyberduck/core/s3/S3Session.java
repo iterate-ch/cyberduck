@@ -27,6 +27,7 @@ import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
@@ -718,7 +719,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             }
             return (T) new S3DefaultDeleteFeature(this, prompt);
         }
-        if(type == ch.cyberduck.core.features.AccessControlList.class) {
+        if(type == AclPermission.class) {
             return (T) new S3AccessControlListFeature(this);
         }
         if(type == Headers.class) {

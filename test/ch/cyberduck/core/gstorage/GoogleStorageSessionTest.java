@@ -11,7 +11,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.AccessControlList;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
@@ -65,7 +65,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
 
     @Test
     public void testFeatures() {
-        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(AccessControlList.class, null));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(AclPermission.class, null));
         assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(DistributionConfiguration.class, null));
         assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(IdentityConfiguration.class, null));
         assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(Logging.class, null));

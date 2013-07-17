@@ -22,7 +22,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AccessControlList;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.i18n.Locale;
 
 import java.text.MessageFormat;
@@ -34,11 +34,11 @@ import java.util.List;
  */
 public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
-    private AccessControlList feature;
+    private AclPermission feature;
 
     private List<Path> files;
 
-    public ReadAclWorker(final AccessControlList feature, final List<Path> files) {
+    public ReadAclWorker(final AclPermission feature, final List<Path> files) {
         this.feature = feature;
         this.files = files;
     }
