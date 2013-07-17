@@ -39,9 +39,9 @@ public class RenameFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.getLocal().exists()) {
-            final String parent = file.getLocal().getParent().getAbsolute();
+            final String parentPath = file.getLocal().getParent().getAbsolute();
             final String filename = file.getName();
             int no = 0;
             while(file.getLocal().exists()) {
@@ -50,12 +50,12 @@ public class RenameFilter extends AbstractDownloadFilter {
                 if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                     proposal += "." + FilenameUtils.getExtension(filename);
                 }
-                file.setLocal(LocalFactory.createLocal(parent, proposal));
+                file.setLocal(LocalFactory.createLocal(parentPath, proposal));
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Changed local name from %s to %s", filename, file.getLocal().getName()));
             }
         }
-        return super.prepare(session, file);
+        return super.prepare(session, file, parent);
     }
 }

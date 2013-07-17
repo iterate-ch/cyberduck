@@ -34,6 +34,8 @@ public class TransferStatus {
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
 
+    private boolean exists = false;
+
     /**
      * Append to file
      */
@@ -130,6 +132,14 @@ public class TransferStatus {
      */
     public void setSelected(final boolean selected) {
         this.selected = selected;
+    }
+
+    public boolean isExists() {
+        return exists;
+    }
+
+    public void setExists(final boolean exists) {
+        this.exists = exists;
     }
 
     /**

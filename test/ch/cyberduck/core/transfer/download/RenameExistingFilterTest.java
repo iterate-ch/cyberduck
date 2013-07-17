@@ -47,7 +47,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 };
             }
         };
-        f.prepare(new NullSession(new Host("h")), p);
+        f.prepare(new NullSession(new Host("h")), p, new ch.cyberduck.core.transfer.TransferStatus());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 return local;
             }
         };
-        f.prepare(new NullSession(new Host("h")), p);
+        f.prepare(new NullSession(new Host("h")), p, new ch.cyberduck.core.transfer.TransferStatus());
         assertEquals("t", p.getLocal().getName());
     }
 }

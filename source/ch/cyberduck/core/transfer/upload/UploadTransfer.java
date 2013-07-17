@@ -217,7 +217,7 @@ public class UploadTransfer extends Transfer {
         else if(file.attributes().isDirectory()) {
             listener.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
-            if(!status.isResume()) {
+            if(!status.isExists()) {
                 session.mkdir(file, null);
             }
         }

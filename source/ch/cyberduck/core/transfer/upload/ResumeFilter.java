@@ -36,8 +36,8 @@ public class ResumeFilter extends AbstractUploadFilter {
      * Append to existing file.
      */
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
-        final TransferStatus status = super.prepare(session, file);
+    public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+        final TransferStatus status = super.prepare(session, file, parent);
         if(file.attributes().isFile()) {
             if(session.isUploadResumable()) {
                 if(session.exists(file)) {

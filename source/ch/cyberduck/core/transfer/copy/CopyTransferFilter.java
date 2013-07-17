@@ -64,7 +64,7 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path source) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path source, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(source.attributes().isFile()) {
             status.setLength(source.attributes().getSize());

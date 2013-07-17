@@ -73,7 +73,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(file.attributes().isFile()) {
             if(file.attributes().isSymbolicLink()) {
@@ -94,7 +94,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(file.attributes().isDirectory()) {
             // Do not attempt to create a directory that already exists
             if(file.getLocal().exists()) {
-                status.setResume(true);
+                status.setExists(true);
             }
         }
         // No icon update if disabled

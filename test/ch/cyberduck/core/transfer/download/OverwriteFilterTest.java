@@ -68,7 +68,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final Path p = new Path("a", Path.FILE_TYPE);
         p.setLocal(new NullLocal(null, "a"));
         p.attributes().setSize(8L);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), p);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), p, new TransferStatus());
         assertEquals(8L, status.getLength(), 0L);
     }
 }

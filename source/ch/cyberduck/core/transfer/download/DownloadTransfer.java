@@ -220,7 +220,7 @@ public class DownloadTransfer extends Transfer {
             }, status);
         }
         else if(file.attributes().isDirectory()) {
-            if(!status.isResume()) {
+            if(!status.isExists()) {
                 local.mkdir();
             }
         }

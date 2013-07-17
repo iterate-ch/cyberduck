@@ -85,7 +85,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }).getLength(), 0L);
+        }, new ch.cyberduck.core.transfer.TransferStatus()).getLength(), 0L);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         final Path file = new Path("/t", Path.FILE_TYPE);
         file.setLocal(new NullLocal(null, "a"));
-        assertFalse(f.prepare(new NullSession(new Host("h")), file).isComplete());
+        assertFalse(f.prepare(new NullSession(new Host("h")), file, new ch.cyberduck.core.transfer.TransferStatus()).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }
@@ -108,7 +108,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
             public boolean exists(final Path path) throws BackgroundException {
                 return true;
             }
-        }, file).isComplete());
+        }, file, new ch.cyberduck.core.transfer.TransferStatus()).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }

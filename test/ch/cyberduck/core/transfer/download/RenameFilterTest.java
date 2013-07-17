@@ -38,7 +38,7 @@ public class RenameFilterTest extends AbstractTestCase {
                 };
             }
         };
-        f.prepare(new NullSession(new Host("h")), t);
+        f.prepare(new NullSession(new Host("h")), t, new ch.cyberduck.core.transfer.TransferStatus());
         assertNotSame("/t", t.getName());
     }
 }

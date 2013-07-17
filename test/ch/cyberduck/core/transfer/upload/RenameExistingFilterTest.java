@@ -49,6 +49,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 l.add(new Path("t", Path.FILE_TYPE));
                 return l;
             }
-        }, p);
+        }, p, new ch.cyberduck.core.transfer.TransferStatus());
     }
 }

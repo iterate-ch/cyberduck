@@ -27,7 +27,7 @@ public class RenameFilterTest extends AbstractTestCase {
             public boolean exists(final Path path) throws BackgroundException {
                 return path.getName().equals("t");
             }
-        }, t);
+        }, t, new ch.cyberduck.core.transfer.TransferStatus());
         assertNotSame("t", t.getName());
     }
 }

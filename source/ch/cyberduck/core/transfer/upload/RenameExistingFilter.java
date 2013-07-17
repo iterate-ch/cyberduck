@@ -43,7 +43,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      * Rename existing file on server if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
+    public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
         Path renamed = file;
         while(session.exists(renamed)) {
             String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
@@ -56,6 +56,6 @@ public class RenameExistingFilter extends AbstractUploadFilter {
         if(!renamed.equals(file)) {
             session.rename(file, renamed);
         }
-        return super.prepare(session, file);
+        return super.prepare(session, file, parent);
     }
 }

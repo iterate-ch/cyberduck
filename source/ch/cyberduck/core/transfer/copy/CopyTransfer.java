@@ -175,7 +175,8 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path source, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void transfer(final Path source, final TransferOptions options, final TransferStatus status,
+                         final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }

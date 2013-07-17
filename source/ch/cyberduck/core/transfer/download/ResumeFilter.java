@@ -46,8 +46,8 @@ public class ResumeFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path file) throws BackgroundException {
-        final TransferStatus status = super.prepare(session, file);
+    public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+        final TransferStatus status = super.prepare(session, file, parent);
         if(session.isDownloadResumable()) {
             if(file.attributes().isFile()) {
                 if(file.getLocal().exists()) {

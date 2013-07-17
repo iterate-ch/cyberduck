@@ -453,7 +453,10 @@ public abstract class Transfer implements Serializable {
                     log.info(String.format("Accepted in %s transfer", file));
                 }
                 listener.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), file.getName()));
-                final TransferStatus s = filter.prepare(session, file);
+                final TransferStatus parent = new TransferStatus();
+                // Parent exists
+                parent.setExists(true);
+                final TransferStatus s = filter.prepare(session, file, parent);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Determined transfer status %s of %s for transfer %s", status, file, this));
                 }
@@ -462,7 +465,7 @@ public abstract class Transfer implements Serializable {
                 // Add skipped bytes
                 this.addTransferred(s.getCurrent());
                 if(file.attributes().isDirectory()) {
-                    this.prepareDirectory(file, filter, listener);
+                    this.prepareDirectory(file, s, filter, listener);
 
                 }
                 status.put(file, s);
@@ -473,7 +476,7 @@ public abstract class Transfer implements Serializable {
         }
     }
 
-    private void prepareDirectory(final Path directory, final TransferPathFilter filter,
+    private void prepareDirectory(final Path directory, final TransferStatus parent, final TransferPathFilter filter,
                                   final ProgressListener listener) throws BackgroundException {
         // Call recursively for all children
         final AttributedList<Path> children = this.children(directory);
@@ -486,7 +489,7 @@ public abstract class Transfer implements Serializable {
             }
             if(this.isSelected(child)) {
                 listener.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), child.getName()));
-                final TransferStatus s = filter.prepare(session, child);
+                final TransferStatus s = filter.prepare(session, child, parent);
                 // Add transfer length to total bytes
                 this.addSize(s.getLength());
                 // Add skipped bytes
@@ -496,7 +499,7 @@ public abstract class Transfer implements Serializable {
                 }
                 if(child.attributes().isDirectory()) {
                     // Call recursively for all children
-                    this.prepareDirectory(child, filter, listener);
+                    this.prepareDirectory(child, s, filter, listener);
                 }
                 status.put(child, s);
             }

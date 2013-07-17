@@ -362,13 +362,13 @@ public class SyncTransfer extends Transfer {
         }
 
         @Override
-        public TransferStatus prepare(final Session session, final Path p) throws BackgroundException {
+        public TransferStatus prepare(final Session session, final Path p, final TransferStatus parent) throws BackgroundException {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(Comparison.REMOTE_NEWER)) {
-                return _delegateFilterDownload.prepare(session, p);
+                return _delegateFilterDownload.prepare(session, p, new TransferStatus());
             }
             if(compare.equals(Comparison.LOCAL_NEWER)) {
-                return _delegateFilterUpload.prepare(session, p);
+                return _delegateFilterUpload.prepare(session, p, new TransferStatus());
             }
             return new TransferStatus();
         }

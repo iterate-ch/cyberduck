@@ -22,9 +22,10 @@ public interface TransferPathFilter {
      *
      * @param session Connection
      * @param file    File
+     * @param parent  Parent transfer status
      * @return Transfer status
      */
-    TransferStatus prepare(Session<?> session, Path file) throws BackgroundException;
+    TransferStatus prepare(Session<?> session, Path file, final TransferStatus parent) throws BackgroundException;
 
     /**
      * Post processing of completed transfer.

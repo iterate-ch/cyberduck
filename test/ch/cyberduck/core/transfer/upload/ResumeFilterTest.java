@@ -43,7 +43,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         final Path t = new Path("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal(null, "t"));
         t.attributes().setSize(7L);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), t);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), t, new TransferStatus());
         assertFalse(status.isResume());
     }
 
@@ -60,7 +60,7 @@ public class ResumeFilterTest extends AbstractTestCase {
                 f.attributes().setSize(7L);
                 return new AttributedList<Path>(Collections.<Path>singletonList(f));
             }
-        }, t);
+        }, t, new TransferStatus());
         assertTrue(status.isResume());
         assertEquals(7L, status.getCurrent());
     }
@@ -71,7 +71,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         final Path t = new Path("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal(null, "t"));
         t.attributes().setSize(0L);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), t);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), t, new TransferStatus());
         assertFalse(status.isResume());
         assertEquals(0L, status.getCurrent());
     }

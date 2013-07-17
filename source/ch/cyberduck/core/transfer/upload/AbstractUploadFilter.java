@@ -66,7 +66,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session<?> session, final Path file) throws BackgroundException {
+    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(file.attributes().isFile()) {
             if(file.getLocal().attributes().isSymbolicLink()) {
@@ -84,10 +84,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setLength(file.getLocal().attributes().getSize());
             }
         }
-        if(file.attributes().isDirectory()) {
-            // Do not attempt to create a directory that already exists
-            if(session.exists(file)) {
-                status.setResume(true);
+        if(parent.isExists()) {
+            // Parent directory exists. Check child.
+            if(file.attributes().isDirectory()) {
+                // Do not attempt to create a directory that already exists
+                if(session.exists(file)) {
+                    status.setExists(true);
+                }
             }
         }
         return status;

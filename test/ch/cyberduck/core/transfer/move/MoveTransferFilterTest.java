@@ -48,7 +48,7 @@ public class MoveTransferFilterTest extends AbstractTestCase {
         source.attributes().setSize(1L);
         files.put(source, new Path("a", Path.FILE_TYPE));
         MoveTransferFilter f = new MoveTransferFilter(files);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source, new TransferStatus());
         assertEquals(1L, status.getLength());
     }
 
@@ -60,7 +60,7 @@ public class MoveTransferFilterTest extends AbstractTestCase {
         final Path target = new Path("a", Path.DIRECTORY_TYPE);
         files.put(source, target);
         MoveTransferFilter f = new MoveTransferFilter(files);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source);
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source, new TransferStatus());
         assertEquals(0L, status.getLength());
     }
 }
