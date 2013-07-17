@@ -279,8 +279,7 @@ public class SwiftSession extends HttpSession<Client> {
                 IOUtils.closeQuietly(out);
             }
             if(null != digest && null != out) {
-                this.message(MessageFormat.format(
-                        Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
+                this.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
                 // Obtain locally-calculated MD5 hash.
                 String expectedETag = ServiceUtils.toHex(digest.digest());
                 // Compare our locally-calculated hash with the ETag returned.
