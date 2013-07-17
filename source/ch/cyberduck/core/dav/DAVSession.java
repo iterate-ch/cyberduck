@@ -51,7 +51,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -191,28 +190,6 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
-        }
-    }
-
-    @Override
-    public void download(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status) throws BackgroundException {
-        OutputStream out = null;
-        InputStream in = null;
-        try {
-            in = this.read(file, status);
-            out = file.getLocal().getOutputStream(status.isResume());
-            this.download(file, in, out, throttle, listener, status);
-        }
-        catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Download failed", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
         }
     }
 

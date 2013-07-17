@@ -224,25 +224,6 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public void download(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status) throws BackgroundException {
-        OutputStream out = null;
-        InputStream in = null;
-        try {
-            in = this.read(file, status);
-            out = file.getLocal().getOutputStream(status.isResume());
-            this.download(file, in, out, throttle, listener, status);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
-        }
-    }
-
-    @Override
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
         try {
             String md5sum = null;
