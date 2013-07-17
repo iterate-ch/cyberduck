@@ -56,22 +56,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.rackspacecloud.client.cloudfiles.FilesAuthenticationResponse;
-import com.rackspacecloud.client.cloudfiles.FilesClient;
-import com.rackspacecloud.client.cloudfiles.FilesException;
-import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
-import com.rackspacecloud.client.cloudfiles.FilesRegion;
+import ch.iterate.openstack.swift.AuthenticationResponse;
+import ch.iterate.openstack.swift.Client;
+import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.exception.NotFoundException;
+import ch.iterate.openstack.swift.model.Region;
 
 /**
  * Rackspace Cloud Files Implementation
  *
  * @version $Id$
  */
-public class SwiftSession extends HttpSession<FilesClient> {
+public class SwiftSession extends HttpSession<Client> {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
-    private Map<String, FilesRegion> regions
-            = new HashMap<String, FilesRegion>();
+    private Map<String, Region> regions
+            = new HashMap<String, Region>();
 
     private Map<Path, Distribution> distributions
             = new HashMap<Path, Distribution>();
@@ -83,32 +83,32 @@ public class SwiftSession extends HttpSession<FilesClient> {
     }
 
     @Override
-    public FilesClient connect(final HostKeyController key) throws BackgroundException {
-        return new FilesClient(super.connect());
+    public Client connect(final HostKeyController key) throws BackgroundException {
+        return new Client(super.connect());
     }
 
-    protected FilesRegion getRegion(final Path container) throws BackgroundException {
+    protected Region getRegion(final Path container) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Lookup region for container %s", container));
         }
         return this.getRegion(container.attributes().getRegion());
     }
 
-    protected FilesRegion getRegion(final String location)
+    protected Region getRegion(final String location)
             throws ConnectionCanceledException {
         if(regions.containsKey(location)) {
             return regions.get(location);
         }
         log.warn(String.format("Unknown region %s in authentication context", location));
         if(regions.containsKey(null)) {
-            final FilesRegion region = regions.get(null);
+            final Region region = regions.get(null);
             log.info(String.format("Use default region %s", region));
             return region;
         }
         if(regions.isEmpty()) {
             throw new ConnectionCanceledException("No default region in authentication context");
         }
-        final FilesRegion region = regions.values().iterator().next();
+        final Region region = regions.values().iterator().next();
         log.warn(String.format("Fallback to first region found %s", region));
         return region;
     }
@@ -116,13 +116,13 @@ public class SwiftSession extends HttpSession<FilesClient> {
     @Override
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         try {
-            final FilesAuthenticationResponse authentication = client.authenticate(
+            final AuthenticationResponse authentication = client.authenticate(
                     new SwiftAuthenticationService().getRequest(host, prompt));
-            for(FilesRegion region : authentication.getRegions()) {
+            for(Region region : authentication.getRegions()) {
                 regions.put(region.getRegionId(), region);
             }
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
         }
         catch(IOException e) {
@@ -181,7 +181,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
                     return this.getClient().containerExists(this.getRegion(containerService.getContainer(file)),
                             file.getName());
                 }
-                catch(FilesException e) {
+                catch(GenericException e) {
                     throw new SwiftExceptionMappingService().map("Cannot read file attributes", e, file);
                 }
                 catch(IOException e) {
@@ -216,7 +216,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
             return this.getClient().getObject(this.getRegion(containerService.getContainer(file)),
                     containerService.getContainer(file).getName(), containerService.getKey(file));
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Download failed", e, file);
         }
         catch(IOException e) {
@@ -299,7 +299,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
                 }
             }
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Upload failed", e, file);
         }
         catch(IOException e) {
@@ -351,7 +351,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
                             containerService.getKey(file), entity,
                             metadata, md5sum);
                 }
-                catch(FilesException e) {
+                catch(GenericException e) {
                     throw new SwiftExceptionMappingService().map("Upload failed", e, file);
                 }
                 catch(IOException e) {
@@ -380,7 +380,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
         catch(IOException e) {
@@ -411,13 +411,13 @@ public class SwiftSession extends HttpSession<FilesClient> {
                     this.getClient().deleteObject(this.getRegion(containerService.getContainer(file)),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
-                catch(FilesNotFoundException e) {
+                catch(NotFoundException e) {
                     // No real placeholder but just a delimiter returned in the object listing.
                     log.warn(e.getMessage());
                 }
             }
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         catch(IOException e) {
@@ -448,7 +448,7 @@ public class SwiftSession extends HttpSession<FilesClient> {
             return (T) new DefaultCredentialsIdentityConfiguration(host);
         }
         if(type == DistributionConfiguration.class) {
-            for(FilesRegion region : client.getRegions()) {
+            for(Region region : client.getRegions()) {
                 if(null != region.getCDNManagementUrl()) {
                     return (T) new SwiftDistributionConfiguration(this) {
                         @Override

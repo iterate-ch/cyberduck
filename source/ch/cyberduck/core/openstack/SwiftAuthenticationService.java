@@ -31,11 +31,11 @@ import org.apache.log4j.Logger;
 
 import java.net.URI;
 
-import com.rackspacecloud.client.cloudfiles.method.Authentication10UsernameKeyRequest;
-import com.rackspacecloud.client.cloudfiles.method.Authentication11UsernameKeyRequest;
-import com.rackspacecloud.client.cloudfiles.method.Authentication20AccessKeySecretKeyRequest;
-import com.rackspacecloud.client.cloudfiles.method.Authentication20RAXUsernameKeyRequest;
-import com.rackspacecloud.client.cloudfiles.method.AuthenticationRequest;
+import ch.iterate.openstack.swift.method.Authentication10UsernameKeyRequest;
+import ch.iterate.openstack.swift.method.Authentication11UsernameKeyRequest;
+import ch.iterate.openstack.swift.method.Authentication20AccessKeySecretKeyRequest;
+import ch.iterate.openstack.swift.method.Authentication20RAXUsernameKeyRequest;
+import ch.iterate.openstack.swift.method.AuthenticationRequest;
 
 /**
  * @version $Id$

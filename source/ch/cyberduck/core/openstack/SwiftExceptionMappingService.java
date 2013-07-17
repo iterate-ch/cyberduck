@@ -26,15 +26,15 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 
-import com.rackspacecloud.client.cloudfiles.FilesException;
+import ch.iterate.openstack.swift.exception.GenericException;
 
 /**
  * @version $Id$
  */
-public class SwiftExceptionMappingService extends AbstractIOExceptionMappingService<FilesException> {
+public class SwiftExceptionMappingService extends AbstractIOExceptionMappingService<GenericException> {
 
     @Override
-    public BackgroundException map(final FilesException e) {
+    public BackgroundException map(final GenericException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         final StatusLine status = e.getHttpStatusLine();

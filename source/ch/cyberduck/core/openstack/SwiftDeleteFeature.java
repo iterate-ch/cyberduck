@@ -31,10 +31,10 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
-import com.rackspacecloud.client.cloudfiles.FilesException;
+import ch.iterate.openstack.swift.exception.GenericException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(SwiftDeleteFeature.class);
@@ -70,7 +70,7 @@ public class SwiftDeleteFeature implements Delete {
                         }
                     }
                 }
-                catch(FilesException e) {
+                catch(GenericException e) {
                     throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
                 catch(IOException e) {

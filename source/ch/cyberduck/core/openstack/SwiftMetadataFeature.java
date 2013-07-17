@@ -30,9 +30,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
-import com.rackspacecloud.client.cloudfiles.FilesException;
-import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
+import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.model.ContainerMetadata;
+import ch.iterate.openstack.swift.model.ObjectMetadata;
 
 /**
  * @version $Id$
@@ -52,20 +52,20 @@ public class SwiftMetadataFeature implements Headers {
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
             if(file.attributes().isFile()) {
-                final FilesObjectMetaData meta
+                final ObjectMetadata meta
                         = session.getClient().getObjectMetaData(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
                 return meta.getMetaData();
             }
             else if(containerService.isContainer(file)) {
-                final FilesContainerMetaData meta
+                final ContainerMetadata meta
                         = session.getClient().getContainerMetaData(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName());
                 return meta.getMetaData();
             }
             return Collections.emptyMap();
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot read file attributes", e, file);
         }
         catch(IOException e) {
@@ -99,7 +99,7 @@ public class SwiftMetadataFeature implements Headers {
                         containerService.getContainer(file).getName(), metadata);
             }
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot write file attributes", e, file);
         }
         catch(IOException e) {

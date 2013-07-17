@@ -35,8 +35,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import com.rackspacecloud.client.cloudfiles.FilesException;
-import com.rackspacecloud.client.cloudfiles.FilesObject;
+import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.model.StorageObject;
 
 /**
  * @version $Id$
@@ -56,13 +56,13 @@ public class SwiftObjectListService implements ListService {
             final AttributedList<Path> children = new AttributedList<Path>();
             final int limit = Preferences.instance().getInteger("openstack.list.limit");
             String marker = null;
-            List<FilesObject> list;
+            List<StorageObject> list;
             do {
                 final PathContainerService containerService = new PathContainerService();
                 final Path container = containerService.getContainer(file);
                 list = session.getClient().listObjectsStartingWith(session.getRegion(container), container.getName(),
                         containerService.isContainer(file) ? StringUtils.EMPTY : containerService.getKey(file) + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
-                for(FilesObject object : list) {
+                for(StorageObject object : list) {
                     final Path child = new Path(file,
                             Path.getName(PathNormalizer.normalize(object.getName())),
                             "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
@@ -97,7 +97,7 @@ public class SwiftObjectListService implements ListService {
             return children;
 
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Listing directory failed", e, file);
         }
         catch(IOException e) {

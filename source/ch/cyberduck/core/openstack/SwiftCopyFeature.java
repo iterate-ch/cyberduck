@@ -25,7 +25,7 @@ import ch.cyberduck.core.features.Copy;
 
 import java.io.IOException;
 
-import com.rackspacecloud.client.cloudfiles.FilesException;
+import ch.iterate.openstack.swift.exception.GenericException;
 
 /**
  * @version $Id$
@@ -48,7 +48,7 @@ public class SwiftCopyFeature implements Copy {
                         containerService.getContainer(copy).getName(), containerService.getKey(copy));
             }
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {

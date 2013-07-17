@@ -20,7 +20,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
 
 import org.apache.http.Header;
 import org.apache.http.ProtocolVersion;
@@ -28,7 +27,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Test;
 
-import com.rackspacecloud.client.cloudfiles.FilesException;
+import ch.iterate.openstack.swift.exception.GenericException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -40,7 +39,7 @@ public class SwiftExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testLoginFailure() throws Exception {
-        final FilesException f = new FilesException(
+        final GenericException f = new GenericException(
                 "message", new Header[]{}, new BasicStatusLine(new ProtocolVersion("http", 1, 1), 403, "Forbidden"));
         assertTrue(new SwiftExceptionMappingService().map(f) instanceof LoginFailureException);
         assertEquals("Login failed", new SwiftExceptionMappingService().map(f).getMessage());
@@ -50,7 +49,7 @@ public class SwiftExceptionMappingServiceTest extends AbstractTestCase {
     @Test
     public void testMap() throws Exception {
         assertEquals("message. 500 reason.", new SwiftExceptionMappingService().map(
-                new FilesException("message", null, new StatusLine() {
+                new GenericException("message", null, new StatusLine() {
                     @Override
                     public ProtocolVersion getProtocolVersion() {
                         throw new UnsupportedOperationException();

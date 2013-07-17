@@ -39,10 +39,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
-import com.rackspacecloud.client.cloudfiles.FilesContainerMetaData;
-import com.rackspacecloud.client.cloudfiles.FilesException;
-import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
+import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.exception.NotFoundException;
+import ch.iterate.openstack.swift.model.CDNContainer;
+import ch.iterate.openstack.swift.model.ContainerMetadata;
 
 /**
  * @version $Id$
@@ -64,13 +64,13 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                         container.getName(), Collections.singletonMap("X-Container-Meta-Web-Index", configuration.getIndexDocument()));
             }
             try {
-                final FilesCDNContainer info
+                final CDNContainer info
                         = session.getClient().getCDNContainerInfo(session.getRegion(container), container.getName());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Found existing CDN configuration %s", info));
                 }
             }
-            catch(FilesNotFoundException e) {
+            catch(NotFoundException e) {
                 // Not found.
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Enable CDN configuration for %s", container));
@@ -84,7 +84,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             session.getClient().cdnUpdateContainer(session.getRegion(container),
                     container.getName(), -1, configuration.isEnabled(), configuration.isLogging());
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot write CDN configuration", e);
         }
         catch(IOException e) {
@@ -96,7 +96,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
         try {
             try {
-                final FilesCDNContainer info = session.getClient().getCDNContainerInfo(session.getRegion(container),
+                final CDNContainer info = session.getClient().getCDNContainerInfo(session.getRegion(container),
                         container.getName());
                 final Distribution distribution = new Distribution(
                         session.getRegion(container).getStorageUrl().getHost(),
@@ -109,7 +109,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 distribution.setStreamingUrl(info.getStreamingURL());
                 distribution.setLogging(info.getRetainLogs());
                 distribution.setLoggingContainer(".CDN_ACCESS_LOGS");
-                final FilesContainerMetaData metadata = session.getClient().getContainerMetaData(session.getRegion(container),
+                final ContainerMetadata metadata = session.getClient().getContainerMetaData(session.getRegion(container),
                         container.getName());
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
                     distribution.setIndexDocument(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
@@ -117,7 +117,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 distribution.setContainers(Collections.<Path>singletonList(new Path(".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
                 return distribution;
             }
-            catch(FilesNotFoundException e) {
+            catch(NotFoundException e) {
                 // Not found.
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No CDN configuration for %s", container));
@@ -128,7 +128,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 return distribution;
             }
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot read CDN configuration", e);
         }
         catch(IOException e) {
@@ -151,7 +151,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 }
             }
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot write CDN configuration", e);
         }
         catch(IOException e) {

@@ -32,10 +32,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rackspacecloud.client.cloudfiles.FilesClient;
-import com.rackspacecloud.client.cloudfiles.FilesContainer;
-import com.rackspacecloud.client.cloudfiles.FilesException;
-import com.rackspacecloud.client.cloudfiles.FilesRegion;
+import ch.iterate.openstack.swift.Client;
+import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.model.Container;
+import ch.iterate.openstack.swift.model.Region;
 
 /**
  * @version $Id$
@@ -50,10 +50,10 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
         }
         try {
             final List<Path> containers = new ArrayList<Path>();
-            final FilesClient client = session.getClient();
-            for(FilesRegion region : client.getRegions()) {
+            final Client client = session.getClient();
+            for(Region region : client.getRegions()) {
                 // List all containers
-                for(FilesContainer f : client.listContainers(region)) {
+                for(Container f : client.listContainers(region)) {
                     final Path container = new Path(String.format("/%s", f.getName()),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     container.attributes().setRegion(f.getRegion().getRegionId());
@@ -68,7 +68,7 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
             }
             return containers;
         }
-        catch(FilesException e) {
+        catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Listing directory failed", e);
         }
         catch(IOException e) {
