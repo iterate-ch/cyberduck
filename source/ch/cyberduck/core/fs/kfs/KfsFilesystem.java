@@ -49,7 +49,6 @@ import java.util.concurrent.Future;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @version $Id$
@@ -365,7 +364,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean call() throws BackgroundException {
                         log.debug("kfsremove_f:" + path);
                         final Path file = new Path(path, Path.FILE_TYPE);
-                        session.delete(Collections.singletonList(file), new DisabledLoginController());
+                        session.delete(file, new DisabledLoginController());
                         return true;
                     }
                 });
@@ -416,7 +415,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean call() throws BackgroundException {
                         log.debug("kfsremove_f:" + path);
                         final Path file = new Path(path, Path.FILE_TYPE);
-                        session.delete(Collections.singletonList(file), new DisabledLoginController());
+                        session.delete(file, new DisabledLoginController());
                         return true;
                     }
                 });
@@ -488,7 +487,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean call() throws BackgroundException {
                         log.debug("kfsrmdir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                        session.delete(Collections.singletonList(directory), new DisabledLoginController());
+                        session.delete(directory, new DisabledLoginController());
                         return true;
                     }
                 });
