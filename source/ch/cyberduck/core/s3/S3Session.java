@@ -469,7 +469,11 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      * @param seconds Expire after seconds elapsed
      * @return Temporary URL to be displayed in browser
      */
-    protected DescriptiveUrl toSignedUrl(final Path file, final int seconds) {
+    public DescriptiveUrl toSignedUrl(final Path file, final int seconds) {
+        return this.toSignedUrl(file, seconds, PasswordStoreFactory.get());
+    }
+
+    protected DescriptiveUrl toSignedUrl(final Path file, final int seconds, final HostPasswordStore store) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
             return DescriptiveUrl.EMPTY;
         }
@@ -479,8 +483,12 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             expiry.add(Calendar.SECOND, seconds);
             // Generate URL
             final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this.configure());
+            final String secret = store.find(host);
+            if(StringUtils.isBlank(secret)) {
+                return DescriptiveUrl.EMPTY;
+            }
             client.setProviderCredentials(
-                    new AWSCredentials(host.getCredentials().getUsername(), PasswordStoreFactory.get().find(host)));
+                    new AWSCredentials(host.getCredentials().getUsername(), secret));
             return new DescriptiveUrl(client.createSignedUrl("GET",
                     containerService.getContainer(file).getName(), containerService.getKey(file), null,
                     null, expiry.getTimeInMillis() / 1000, false, this.getHost().getProtocol().isSecure(), false),

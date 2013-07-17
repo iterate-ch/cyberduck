@@ -294,7 +294,7 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    protected DescriptiveUrl toSignedUrl(final Path file, int seconds) {
+    public DescriptiveUrl toSignedUrl(final Path file, int seconds) {
         return DescriptiveUrl.EMPTY;
     }
 
