@@ -150,9 +150,11 @@ public class GoogleStorageSession extends S3Session {
                     final OAuth2Tokens tokens = oauth.getOAuth2Tokens();
                     // Save for future use
                     keychain.addPassword(host.getProtocol().getScheme(),
-                            host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token", tokens.getAccessToken());
+                            host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(),
+                            "Google OAuth2 Access Token", tokens.getAccessToken());
                     keychain.addPassword(host.getProtocol().getScheme(),
-                            host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token", tokens.getRefreshToken());
+                            host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(),
+                            "Google OAuth2 Refresh Token", tokens.getRefreshToken());
 
                     // Save expiry
                     Preferences.instance().setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
@@ -172,7 +174,8 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
+    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+                       final TransferStatus status) throws BackgroundException {
         final StorageObject object = this.createObjectDetails(file);
         new S3SingleUploadService(this).upload(file, throttle, listener, status, object);
     }
