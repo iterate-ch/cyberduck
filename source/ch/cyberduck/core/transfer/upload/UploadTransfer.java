@@ -218,7 +218,7 @@ public class UploadTransfer extends Transfer {
             listener.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
             if(!status.isResume()) {
-                session.mkdir(file);
+                session.mkdir(file, null);
             }
         }
     }

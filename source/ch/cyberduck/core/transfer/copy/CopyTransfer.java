@@ -199,7 +199,7 @@ public class CopyTransfer extends Transfer {
             }
         }
         else {
-            session.mkdir(copy);
+            session.mkdir(copy, null);
         }
     }
 
