@@ -12,13 +12,13 @@ public class ResolverTest {
 
     @Test
     public void testResolve() throws Exception {
-        Resolver resolver = new Resolver("cyberduck.ch");
-        Assert.assertEquals("54.228.253.92", resolver.resolve().getHostAddress());
+        Resolver resolver = new Resolver();
+        Assert.assertEquals("54.228.253.92", resolver.resolve("cyberduck.ch").getHostAddress());
     }
 
     @Test(expected = UnknownHostException.class)
     public void testFailure() throws Exception {
-        Resolver resolver = new Resolver("non.cyberduck.ch");
-        Assert.assertNull(resolver.resolve().getHostAddress());
+        Resolver resolver = new Resolver();
+        Assert.assertNull(resolver.resolve("non.cyberduck.ch").getHostAddress());
     }
 }
