@@ -32,11 +32,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.ResponseOutputStream;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -52,8 +52,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,31 +149,7 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
-        final List<Path> deleted = new ArrayList<Path>();
-        for(Path file : files) {
-            boolean skip = false;
-            for(Path d : deleted) {
-                if(file.isChild(d)) {
-                    skip = true;
-                    break;
-                }
-            }
-            if(skip) {
-                continue;
-            }
-            this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
-            try {
-                this.getClient().delete(new DAVPathEncoder().encode(file));
-            }
-            catch(SardineException e) {
-                throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e, file);
-            }
-            deleted.add(file);
-        }
+        new DAVDeleteFeature(this).delete(files);
     }
 
     @Override
@@ -335,6 +309,9 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Delete.class) {
+            return (T) new DAVDeleteFeature(this);
+        }
         if(type == Headers.class) {
             return (T) new DAVHeadersFeature(this);
         }
