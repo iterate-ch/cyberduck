@@ -390,31 +390,26 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void delete(final Path file, final LoginController prompt) throws BackgroundException {
-        try {
+    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+        for(Path file : files) {
             this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     file.getName()));
-
-            if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
-                if(!this.getClient().deleteFile(file.getAbsolute())) {
-                    throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
+            try {
+                if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
+                    if(!this.getClient().deleteFile(file.getAbsolute())) {
+                        throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
+                    }
+                }
+                else if(file.attributes().isDirectory()) {
+                    if(!this.getClient().removeDirectory(file.getAbsolute())) {
+                        throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
+                    }
                 }
             }
-            else if(file.attributes().isDirectory()) {
-                for(Path child : this.list(file)) {
-                    this.delete(child, prompt);
-                }
-                this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                        file.getName()));
+            catch(IOException e) {
+                throw new FTPExceptionMappingService().map("Cannot delete {0}", e, file);
 
-                if(!this.getClient().removeDirectory(file.getAbsolute())) {
-                    throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
-                }
             }
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Cannot delete {0}", e, file);
-
         }
     }
 

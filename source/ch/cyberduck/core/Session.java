@@ -553,13 +553,23 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      *
      * @param prompt Login prompt for multi factor authentication
      */
-    public abstract void delete(Path file, final LoginController prompt) throws BackgroundException;
+    public void delete(Path file, final LoginController prompt) throws BackgroundException {
+        this.delete(Collections.singletonList(file), prompt);
+    }
+
+    /**
+     * Remove this file from the remote host. Does not affect any corresponding local file
+     *
+     * @param files  Recursive list
+     * @param prompt Login prompt for multi factor authentication
+     */
+    public abstract void delete(List<Path> files, LoginController prompt) throws BackgroundException;
 
     /**
      * @param status Transfer status
      * @return Stream to read from to download file
      */
-    public abstract InputStream read(Path file, final TransferStatus status) throws BackgroundException;
+    public abstract InputStream read(Path file, TransferStatus status) throws BackgroundException;
 
     public void download(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status) throws BackgroundException {

@@ -26,8 +26,8 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
@@ -61,7 +61,6 @@ import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
-import org.jets3t.service.model.container.ObjectKeyAndVersion;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
@@ -344,36 +343,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 log.debug(String.format("Found bucket %s", bucket));
             }
         }
-    }
-
-    /**
-     * Prompt for MFA credentials
-     *
-     * @param controller Prompt controller
-     * @return MFA one time authentication password.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
-     *          Prompt dismissed
-     */
-    protected Credentials mfa(final LoginController controller) throws ConnectionCanceledException {
-        final Credentials credentials = new Credentials(
-                Preferences.instance().getProperty("s3.mfa.serialnumber"), null, false) {
-            @Override
-            public String getUsernamePlaceholder() {
-                return Locale.localizedString("MFA Serial Number", "S3");
-            }
-
-            @Override
-            public String getPasswordPlaceholder() {
-                return Locale.localizedString("MFA Authentication Code", "S3");
-            }
-        };
-        // Prompt for MFA credentials.
-        controller.prompt(host.getProtocol(), credentials,
-                Locale.localizedString("Provide additional login credentials", "Credentials"),
-                Locale.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions());
-
-        Preferences.instance().setProperty("s3.mfa.serialnumber", credentials.getUsername());
-        return credentials;
     }
 
     /**
@@ -706,77 +675,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public void delete(final Path file, final LoginController prompt) throws BackgroundException {
-        try {
-            this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
-
-            if(file.attributes().isFile()) {
-                this.delete(prompt, containerService.getContainer(file), Collections.singletonList(
-                        new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId())));
-            }
-            else if(file.attributes().isDirectory()) {
-                final List<ObjectKeyAndVersion> files = new ArrayList<ObjectKeyAndVersion>();
-                for(Path child : this.list(file)) {
-                    if(child.attributes().isDirectory()) {
-                        this.delete(child, prompt);
-                    }
-                    else {
-                        files.add(new ObjectKeyAndVersion(containerService.getKey(child), child.attributes().getVersionId()));
-                    }
-                }
-                if(!containerService.isContainer(file)) {
-                    // Because we normalize paths and remove a trailing delimiter we add it here again as the
-                    // default directory placeholder formats has the format `/placeholder/' as a key.
-                    files.add(new ObjectKeyAndVersion(containerService.getKey(file) + Path.DELIMITER,
-                            file.attributes().getVersionId()));
-                    // Always returning 204 even if the key does not exist.
-                    // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
-                    files.add(new ObjectKeyAndVersion(containerService.getKey(file),
-                            file.attributes().getVersionId()));
-                    // AWS does not return 404 for non-existing keys
-                }
-                if(!files.isEmpty()) {
-                    this.delete(prompt, containerService.getContainer(file), files);
-                }
-                if(containerService.isContainer(file)) {
-                    // Finally delete bucket itself
-                    this.getClient().deleteBucket(containerService.getContainer(file).getName());
-                }
-            }
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
-        }
-    }
-
-    /**
-     * @param container Bucket
-     * @param keys      Key and version ID for versioned object or null
-     * @throws ConnectionCanceledException Authentication canceled for MFA delete
-     * @throws ServiceException            Service error
-     */
-    protected void delete(final LoginController prompt, final Path container, final List<ObjectKeyAndVersion> keys) throws ServiceException, BackgroundException {
-        if(new S3VersioningFeature(this).getConfiguration(container).isMultifactor()) {
-            final Credentials factor = this.mfa(prompt);
-            this.getClient().deleteMultipleObjectsWithMFA(container.getName(),
-                    keys.toArray(new ObjectKeyAndVersion[keys.size()]),
-                    factor.getUsername(),
-                    factor.getPassword(),
-                    true);
-        }
-        else {
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
-                this.getClient().deleteMultipleObjects(container.getName(),
-                        keys.toArray(new ObjectKeyAndVersion[keys.size()]),
-                        true);
-            }
-            else {
-                for(ObjectKeyAndVersion k : keys) {
-                    this.getClient().deleteObject(container.getName(), k.getKey());
-                }
-            }
-        }
+    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+        this.getFeature(Delete.class, prompt).delete(files);
     }
 
     @Override
@@ -809,7 +709,13 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
-        if(type == ch.cyberduck.core.features.AccessControlList.class) {
+        if(type == Delete.class) {
+            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+                new S3MultipleDeleteFeature(this, prompt);
+            }
+            return (T) new S3DefaultDeleteFeature(this, prompt);
+        }
+        if(type == AccessControlList.class) {
             return (T) new S3AccessControlListFeature(this);
         }
         if(type == Headers.class) {

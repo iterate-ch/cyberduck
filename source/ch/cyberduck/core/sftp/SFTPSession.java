@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
 
 import ch.ethz.ssh2.*;
 
@@ -276,7 +278,7 @@ public class SFTPSession extends Session<Connection> {
     public void rename(final Path file, final Path renamed) throws BackgroundException {
         try {
             if(this.exists(renamed)) {
-                this.delete(renamed, new DisabledLoginController());
+                this.delete(Collections.singletonList(file), new DisabledLoginController());
             }
             this.sftp().mv(file.getAbsolute(), renamed.getAbsolute());
         }
@@ -286,26 +288,21 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void delete(final Path file, final LoginController prompt) throws BackgroundException {
-        try {
+    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+        for(Path file : files) {
             this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     file.getName()));
-
-            if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
-                this.sftp().rm(file.getAbsolute());
-            }
-            else if(file.attributes().isDirectory()) {
-                for(Path child : this.list(file)) {
-                    this.delete(child, prompt);
+            try {
+                if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
+                    this.sftp().rm(file.getAbsolute());
                 }
-                this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                        file.getName()));
-
-                this.sftp().rmdir(file.getAbsolute());
+                else if(file.attributes().isDirectory()) {
+                    this.sftp().rmdir(file.getAbsolute());
+                }
             }
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot delete {0}", e, file);
+            catch(IOException e) {
+                throw new SFTPExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
         }
     }
 

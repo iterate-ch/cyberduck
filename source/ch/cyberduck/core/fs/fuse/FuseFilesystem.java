@@ -53,6 +53,7 @@ import java.util.concurrent.Future;
 
 import com.sun.jna.IntegerType;
 import com.sun.jna.Pointer;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @version $Id$
@@ -412,8 +413,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
                 public Boolean call() throws BackgroundException {
-                    final Path file = new Path(path, Path.DIRECTORY_TYPE);
-                    session.delete(file, new DisabledLoginController());
+                    final Path directory = new Path(path, Path.DIRECTORY_TYPE);
+                    session.delete(Collections.singletonList(directory), new DisabledLoginController());
                     return true;
                 }
             });
@@ -435,7 +436,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean call() throws BackgroundException {
                     final Path file = new Path(path, Path.FILE_TYPE);
-                    session.delete(file, new DisabledLoginController());
+                    session.delete(Collections.singletonList(file), new DisabledLoginController());
                     return true;
                 }
             });

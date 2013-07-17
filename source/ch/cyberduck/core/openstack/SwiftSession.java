@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -51,6 +52,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -387,40 +389,8 @@ public class SwiftSession extends HttpSession<FilesClient> {
     }
 
     @Override
-    public void delete(final Path file, final LoginController prompt) throws BackgroundException {
-        try {
-            this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
-            if(file.attributes().isFile()) {
-                this.getClient().deleteObject(this.getRegion(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
-            }
-            else if(file.attributes().isDirectory()) {
-                for(Path i : this.list(file)) {
-                    this.delete(i, prompt);
-                }
-                if(containerService.isContainer(file)) {
-                    this.getClient().deleteContainer(this.getRegion(containerService.getContainer(file)),
-                            containerService.getContainer(file).getName());
-                }
-                else {
-                    try {
-                        this.getClient().deleteObject(this.getRegion(containerService.getContainer(file)),
-                                containerService.getContainer(file).getName(), containerService.getKey(file));
-                    }
-                    catch(FilesNotFoundException e) {
-                        // No real placeholder but just a delimiter returned in the object listing.
-                        log.warn(e.getMessage());
-                    }
-                }
-            }
-        }
-        catch(FilesException e) {
-            throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
-        }
+    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+        this.getFeature(Delete.class, prompt).delete(files);
     }
 
     @Override
@@ -457,6 +427,9 @@ public class SwiftSession extends HttpSession<FilesClient> {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Delete.class) {
+            return (T) new SwiftDeleteFeature(this);
+        }
         if(type == Headers.class) {
             return (T) new SwiftMetadataFeature(this);
         }

@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,10 +50,25 @@ public abstract class DeleteWorker extends Worker<Boolean> {
 
     @Override
     public Boolean run() throws BackgroundException {
+        final List<Path> recursive = new ArrayList<Path>();
         for(Path file : files) {
-            session.delete(file, prompt);
+            recursive.addAll(this.compile(file));
         }
+        session.delete(recursive, prompt);
         return true;
+    }
+
+    protected List<Path> compile(final Path file) throws BackgroundException {
+        // Compile recursive list
+        final List<Path> recursive = new ArrayList<Path>();
+        if(file.attributes().isDirectory()) {
+            for(Path child : session.list(file)) {
+                recursive.addAll(this.compile(child));
+            }
+        }
+        // Add parent after children
+        recursive.add(file);
+        return recursive;
     }
 
     @Override

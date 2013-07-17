@@ -19,11 +19,15 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import org.apache.log4j.Logger;
@@ -49,7 +53,7 @@ public class S3VersioningFeature implements Versioning {
             final VersioningConfiguration current = this.getConfiguration(container);
             if(current.isMultifactor()) {
                 // The bucket is already MFA protected.
-                final Credentials factor = session.mfa(prompt);
+                final Credentials factor = this.getToken(prompt);
                 if(configuration.isEnabled()) {
                     if(current.isEnabled()) {
                         log.debug("Versioning already enabled for bucket " + container);
@@ -69,7 +73,7 @@ public class S3VersioningFeature implements Versioning {
                 if(configuration.isEnabled() && !configuration.isMultifactor()) {
                     log.debug(String.format("Disable MFA %s for %s", factor.getUsername(), container));
                     // User has choosen to disable MFA
-                    final Credentials factor2 = session.mfa(prompt);
+                    final Credentials factor2 = this.getToken(prompt);
                     session.getClient().disableMFAForVersionedBucket(container.getName(),
                             factor2.getUsername(), factor2.getPassword());
                 }
@@ -77,7 +81,7 @@ public class S3VersioningFeature implements Versioning {
             else {
                 if(configuration.isEnabled()) {
                     if(configuration.isMultifactor()) {
-                        final Credentials factor = session.mfa(prompt);
+                        final Credentials factor = this.getToken(prompt);
                         log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), container));
                         session.getClient().enableBucketVersioningWithMFA(container.getName(),
                                 factor.getUsername(), factor.getPassword());
@@ -142,4 +146,35 @@ public class S3VersioningFeature implements Versioning {
             }
         }
     }
+
+    /**
+     * Prompt for MFA credentials
+     *
+     * @param controller Prompt controller
+     * @return MFA one time authentication password.
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
+     *          Prompt dismissed
+     */
+    protected Credentials getToken(final LoginController controller) throws ConnectionCanceledException {
+        final Credentials credentials = new Credentials(
+                Preferences.instance().getProperty("s3.mfa.serialnumber"), null, false) {
+            @Override
+            public String getUsernamePlaceholder() {
+                return Locale.localizedString("MFA Serial Number", "S3");
+            }
+
+            @Override
+            public String getPasswordPlaceholder() {
+                return Locale.localizedString("MFA Authentication Code", "S3");
+            }
+        };
+        // Prompt for MFA credentials.
+        controller.prompt(session.getHost().getProtocol(), credentials,
+                Locale.localizedString("Provide additional login credentials", "Credentials"),
+                Locale.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions());
+
+        Preferences.instance().setProperty("s3.mfa.serialnumber", credentials.getUsername());
+        return credentials;
+    }
+
 }

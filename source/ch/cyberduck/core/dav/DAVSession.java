@@ -53,7 +53,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.googlecode.sardine.impl.SardineException;
@@ -148,17 +150,31 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void delete(final Path file, final LoginController prompt) throws BackgroundException {
-        try {
+    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+        final List<Path> deleted = new ArrayList<Path>();
+        for(Path file : files) {
+            boolean skip = false;
+            for(Path d : deleted) {
+                if(file.isChild(d)) {
+                    skip = true;
+                    break;
+                }
+            }
+            if(skip) {
+                continue;
+            }
             this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     file.getName()));
-            this.getClient().delete(new DAVPathEncoder().encode(file));
-        }
-        catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
+            try {
+                this.getClient().delete(new DAVPathEncoder().encode(file));
+            }
+            catch(SardineException e) {
+                throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e, file);
+            }
+            deleted.add(file);
         }
     }
 
