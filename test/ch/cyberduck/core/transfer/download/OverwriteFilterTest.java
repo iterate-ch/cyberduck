@@ -32,7 +32,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final Path p = new Path("a", Path.FILE_TYPE);
         p.setLocal(new NullLocal(null, "a"));
         p.attributes().setSize(8L);
-        assertTrue(f.accept(new NullSession(new Host("h")), p));
+        assertTrue(f.accept(new NullSession(new Host("h")), p, new TransferStatus()));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }));
+        }, new TransferStatus()));
         assertTrue(f.accept(new NullSession(new Host("h")), new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
@@ -59,7 +59,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }));
+        }, new TransferStatus()));
     }
 
     @Test

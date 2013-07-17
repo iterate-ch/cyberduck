@@ -6,6 +6,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
         final Path t = new Path("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal("/Downloads", "n"));
-        assertTrue(f.accept(new NullSession(new Host("h")), t));
+        assertTrue(f.accept(new NullSession(new Host("h")), t, new TransferStatus()));
     }
 
     @Test

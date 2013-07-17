@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }));
+        }, new TransferStatus()));
         assertFalse(f.accept(new NullSession(new Host("h")), new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
@@ -41,7 +42,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }));
+        }, new TransferStatus()));
     }
 
     @Test
@@ -52,7 +53,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
             public Local getLocal() {
                 return new NullLocal(null, "t");
             }
-        }));
+        }, new TransferStatus()));
         assertTrue(f.accept(new NullSession(new Host("h")) {
                                 @Override
                                 public AttributedList<Path> list(final Path file) {
@@ -63,7 +64,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                                 public Local getLocal() {
                                     return new NullLocal(null, "t");
                                 }
-                            }
+                            }, new TransferStatus()
         ));
     }
 

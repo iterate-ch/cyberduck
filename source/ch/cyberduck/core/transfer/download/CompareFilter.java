@@ -22,6 +22,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.log4j.Logger;
@@ -37,15 +38,15 @@ public class CompareFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
-        if(super.accept(session, file)) {
+    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+        if(super.accept(session, file, parent)) {
             final Comparison comparison = new CombinedComparisionService(session).compare(file);
             switch(comparison) {
                 case LOCAL_NEWER:
                 case EQUAL:
                     return false;
                 case REMOTE_NEWER:
-                    return super.accept(session, file);
+                    return super.accept(session, file, parent);
             }
             log.warn(String.format("Invalid comparison result %s", comparison));
         }

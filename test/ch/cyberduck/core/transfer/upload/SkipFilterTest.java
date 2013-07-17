@@ -7,6 +7,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class SkipFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }));
+        }, new TransferStatus()));
         assertFalse(f.accept(new NullSession(new Host("h")) {
                                  @Override
                                  public boolean exists(final Path path) throws BackgroundException {
@@ -48,7 +49,7 @@ public class SkipFilterTest extends AbstractTestCase {
                                          }
                                      };
                                  }
-                             }
+                             }, new TransferStatus()
         ));
     }
 }

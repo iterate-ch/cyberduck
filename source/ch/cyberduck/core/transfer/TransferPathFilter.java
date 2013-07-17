@@ -13,9 +13,10 @@ public interface TransferPathFilter {
     /**
      * @param session Connection
      * @param file    File
+     * @param parent  Parent transfer status
      * @return True if file should be transferred
      */
-    boolean accept(Session<?> session, Path file) throws BackgroundException;
+    boolean accept(Session<?> session, Path file, final TransferStatus parent) throws BackgroundException;
 
     /**
      * Called before the file will actually get transferred. Should prepare for the transfer such as calculating its size.

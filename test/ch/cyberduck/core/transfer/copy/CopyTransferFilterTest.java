@@ -30,7 +30,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         final Path source = new Path("a", Path.DIRECTORY_TYPE);
         files.put(source, new Path("a", Path.DIRECTORY_TYPE));
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
-        assertTrue(f.accept(new NullSession(new Host("h")), source));
+        assertTrue(f.accept(new NullSession(new Host("h")), source, new TransferStatus()));
     }
 
     @Test
@@ -44,7 +44,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
             public boolean exists(final Path path) throws BackgroundException {
                 return true;
             }
-        }, source));
+        }, source, new TransferStatus().exists(true)));
     }
 
     @Test

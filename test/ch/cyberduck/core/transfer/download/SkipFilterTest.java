@@ -7,6 +7,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.BeforeClass;
@@ -38,7 +39,7 @@ public class SkipFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }));
+        }, new TransferStatus()));
         assertFalse(f.accept(new NullSession(new Host("h")), new Path("a", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
@@ -49,6 +50,6 @@ public class SkipFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }));
+        }, new TransferStatus()));
     }
 }

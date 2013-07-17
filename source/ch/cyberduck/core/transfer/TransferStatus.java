@@ -34,6 +34,9 @@ public class TransferStatus {
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
 
+    /**
+     * Target file or directory already exists
+     */
     private boolean exists = false;
 
     /**
@@ -140,6 +143,11 @@ public class TransferStatus {
 
     public void setExists(final boolean exists) {
         this.exists = exists;
+    }
+
+    public TransferStatus exists(boolean exists) {
+        this.exists = exists;
+        return this;
     }
 
     /**

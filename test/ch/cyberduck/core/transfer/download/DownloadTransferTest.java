@@ -132,10 +132,10 @@ public class DownloadTransferTest extends AbstractTestCase {
             @Override
             public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
                 if(file.equals(root)) {
-                    assertTrue(status.isResume());
+                    assertTrue(status.isExists());
                 }
                 else {
-                    assertFalse(status.isResume());
+                    assertFalse(status.isExists());
                 }
             }
         };
@@ -194,7 +194,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
         test.setLocal(new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final Transfer transfer = new DownloadTransfer(session, test);
-        transfer.prepare(test, new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(test))),
+        transfer.prepare(test, new TransferStatus().exists(true), new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(test))),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -202,11 +202,11 @@ public class DownloadTransferTest extends AbstractTestCase {
                     }
                 });
         final TransferStatus status = new TransferStatus();
-        status.setResume(true);
+        status.setExists(true);
         assertEquals(status, transfer.status(test));
         final TransferStatus expected = new TransferStatus();
         expected.setResume(false);
-        expected.setLength(1L);
+        expected.setLength(5L);
         expected.setCurrent(0L);
         assertEquals(expected, transfer.status(new Path("/transfer/test", Path.FILE_TYPE)));
     }
@@ -227,7 +227,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         IOUtils.write("test", out);
         IOUtils.closeQuietly(out);
         final Transfer transfer = new DownloadTransfer(session, test);
-        transfer.prepare(test, new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(test))),
+        transfer.prepare(test, new TransferStatus().exists(true), new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(test))),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -235,13 +235,13 @@ public class DownloadTransferTest extends AbstractTestCase {
                     }
                 });
         final TransferStatus status = new TransferStatus();
-        status.setResume(true);
+        status.setExists(true);
         assertEquals(status, transfer.status(test));
         final TransferStatus expected = new TransferStatus();
         expected.setResume(true);
         expected.setCurrent("test".getBytes().length);
         // Remote size
-        expected.setLength(1L);
+        expected.setLength(5L);
         assertEquals(expected, transfer.status(new Path("/transfer/test", Path.FILE_TYPE)));
         local.delete();
     }

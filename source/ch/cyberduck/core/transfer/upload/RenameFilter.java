@@ -40,19 +40,21 @@ public class RenameFilter extends AbstractUploadFilter {
     @Override
     public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(session, file, parent);
-        final Path parentPath = file.getParent();
-        final String filename = file.getName();
-        int no = 0;
-        while(session.exists(file)) {
-            no++;
-            String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
-            if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                proposal += "." + FilenameUtils.getExtension(filename);
+        if(parent.isExists()) {
+            final Path parentPath = file.getParent();
+            final String filename = file.getName();
+            int no = 0;
+            while(session.exists(file)) {
+                no++;
+                String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
+                if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                    proposal += "." + FilenameUtils.getExtension(filename);
+                }
+                file.setPath(parentPath, proposal);
             }
-            file.setPath(parentPath, proposal);
-        }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Changed local name from %s to %s", filename, file.getName()));
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Changed local name from %s to %s", filename, file.getName()));
+            }
         }
         return status;
     }

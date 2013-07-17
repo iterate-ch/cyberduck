@@ -374,7 +374,7 @@ public class SyncTransfer extends Transfer {
         }
 
         @Override
-        public boolean accept(final Session session, final Path p) throws BackgroundException {
+        public boolean accept(final Session session, final Path p, final TransferStatus parent) throws BackgroundException {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(Comparison.EQUAL)) {
                 return false;
@@ -384,14 +384,14 @@ public class SyncTransfer extends Transfer {
                     return false;
                 }
                 // Ask the download delegate for inclusion
-                return _delegateFilterDownload.accept(session, p);
+                return _delegateFilterDownload.accept(session, p, parent);
             }
             else if(compare.equals(Comparison.LOCAL_NEWER)) {
                 if(getTransferAction().equals(ACTION_DOWNLOAD)) {
                     return false;
                 }
                 // Ask the upload delegate for inclusion
-                return _delegateFilterUpload.accept(session, p);
+                return _delegateFilterUpload.accept(session, p, parent);
             }
             return false;
         }

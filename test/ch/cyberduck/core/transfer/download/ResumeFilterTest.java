@@ -29,7 +29,7 @@ public class ResumeFilterTest extends AbstractTestCase {
                 return new NullLocal("d", "a");
             }
         };
-        assertTrue(f.accept(new NullSession(new Host("h")), p));
+        assertTrue(f.accept(new NullSession(new Host("h")), p, new TransferStatus()));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         };
         p.attributes().setSize(2L);
-        assertTrue(f.accept(new NullSession(new Host("h")), p));
+        assertTrue(f.accept(new NullSession(new Host("h")), p, new TransferStatus()));
     }
 
     @Test
@@ -80,8 +80,8 @@ public class ResumeFilterTest extends AbstractTestCase {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
         Path p = new Path("a", Path.DIRECTORY_TYPE);
         p.setLocal(new NullLocal(null, "a"));
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), p, new TransferStatus());
-        assertTrue(status.isResume());
+        final TransferStatus status = f.prepare(new NullSession(new Host("h")), p, new TransferStatus().exists(true));
+        assertTrue(status.isExists());
     }
 
     @Test

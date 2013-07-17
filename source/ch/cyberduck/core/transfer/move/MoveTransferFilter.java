@@ -42,12 +42,14 @@ public class MoveTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path source) throws BackgroundException {
+    public boolean accept(final Session session, final Path source, final TransferStatus parent) throws BackgroundException {
         if(source.attributes().isDirectory()) {
-            final Path destination = files.get(source);
-            // Do not attempt to create a directory that already exists
-            if(session.exists(destination)) {
-                return false;
+            if(parent.isExists()) {
+                final Path destination = files.get(source);
+                // Do not attempt to create a directory that already exists
+                if(session.exists(destination)) {
+                    return false;
+                }
             }
         }
         return true;

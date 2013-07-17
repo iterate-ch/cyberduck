@@ -59,7 +59,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isSymbolicLink()) {
             if(!symlinkResolver.resolve(file)) {
                 return symlinkResolver.include(file);

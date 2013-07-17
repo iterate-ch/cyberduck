@@ -34,7 +34,7 @@ public class ResumeFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }));
+        }, new TransferStatus()));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class ResumeFilterTest extends AbstractTestCase {
                 f.attributes().setSize(7L);
                 return new AttributedList<Path>(Collections.<Path>singletonList(f));
             }
-        }, t, new TransferStatus());
+        }, t, new TransferStatus().exists(true));
         assertTrue(status.isResume());
         assertEquals(7L, status.getCurrent());
     }

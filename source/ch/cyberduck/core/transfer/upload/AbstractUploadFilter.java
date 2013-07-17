@@ -50,7 +50,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
         if(!file.getLocal().exists()) {
             // Local file is no more here
             return false;

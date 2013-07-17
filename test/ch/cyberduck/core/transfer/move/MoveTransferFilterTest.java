@@ -24,7 +24,7 @@ public class MoveTransferFilterTest extends AbstractTestCase {
         final Path source = new Path("a", Path.DIRECTORY_TYPE);
         files.put(source, new Path("a", Path.DIRECTORY_TYPE));
         MoveTransferFilter f = new MoveTransferFilter(files);
-        assertTrue(f.accept(new NullSession(new Host("h")), source));
+        assertTrue(f.accept(new NullSession(new Host("h")), source, new TransferStatus()));
     }
 
     @Test
@@ -38,7 +38,7 @@ public class MoveTransferFilterTest extends AbstractTestCase {
             public boolean exists(final Path path) throws BackgroundException {
                 return true;
             }
-        }, source));
+        }, source, new TransferStatus().exists(true)));
     }
 
     @Test

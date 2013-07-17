@@ -33,7 +33,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file) throws BackgroundException {
+    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isFile()) {
             if(file.getLocal().exists()) {
                 if(file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
@@ -42,7 +42,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                 }
             }
         }
-        return super.accept(session, file);
+        return super.accept(session, file, parent);
     }
 
     @Override

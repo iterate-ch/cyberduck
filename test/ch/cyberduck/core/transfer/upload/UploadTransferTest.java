@@ -90,10 +90,10 @@ public class UploadTransferTest extends AbstractTestCase {
             @Override
             public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
                 if(file.equals(root)) {
-                    assertTrue(status.isResume());
+                    assertTrue(status.isExists());
                 }
                 else {
-                    assertFalse(status.isResume());
+                    assertFalse(status.isExists());
                 }
             }
         };
@@ -267,7 +267,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/" + name);
         local.touch();
         final Transfer transfer = new UploadTransfer(session, test);
-        transfer.prepare(test, new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())),
+        transfer.prepare(test, new TransferStatus(), new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -275,7 +275,7 @@ public class UploadTransferTest extends AbstractTestCase {
                     }
                 });
         final TransferStatus directory = new TransferStatus();
-        directory.setResume(true);
+        directory.setExists(true);
         assertEquals(directory, transfer.status(test));
         final TransferStatus expected = new TransferStatus();
         assertEquals(expected, transfer.status(new Path("/transfer/" + name, Path.FILE_TYPE)));
@@ -298,7 +298,7 @@ public class UploadTransferTest extends AbstractTestCase {
         IOUtils.write("te", out);
         IOUtils.closeQuietly(out);
         final Transfer transfer = new UploadTransfer(session, test);
-        transfer.prepare(test, new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())),
+        transfer.prepare(test, new TransferStatus().exists(true), new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())),
                 new ProgressListener() {
                     @Override
                     public void message(final String message) {
@@ -306,7 +306,7 @@ public class UploadTransferTest extends AbstractTestCase {
                     }
                 });
         final TransferStatus directorystatus = new TransferStatus();
-        directorystatus.setResume(true);
+        directorystatus.setExists(true);
         assertEquals(directorystatus, transfer.status(test));
         final TransferStatus expected = new TransferStatus();
         expected.setResume(true);

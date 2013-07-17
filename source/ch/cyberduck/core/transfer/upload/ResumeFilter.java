@@ -39,10 +39,12 @@ public class ResumeFilter extends AbstractUploadFilter {
     public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(session, file, parent);
         if(file.attributes().isFile()) {
-            if(session.isUploadResumable()) {
-                if(session.exists(file)) {
-                    status.setResume(true);
-                    status.setCurrent(session.list(file.getParent()).get(file.getReference()).attributes().getSize());
+            if(parent.isExists()) {
+                if(session.isUploadResumable()) {
+                    if(session.exists(file)) {
+                        status.setResume(true);
+                        status.setCurrent(session.list(file.getParent()).get(file.getReference()).attributes().getSize());
+                    }
                 }
             }
         }
