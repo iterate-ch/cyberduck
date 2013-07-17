@@ -105,7 +105,7 @@ public abstract class TransferPromptController extends SheetController
 
     @Override
     public void message(final String message) {
-        invoke(new WindowMainAction(TransferPromptController.this) {
+        invoke(new WindowMainAction(this) {
             @Override
             public void run() {
                 // Update the status label at the bottom of the browser window
