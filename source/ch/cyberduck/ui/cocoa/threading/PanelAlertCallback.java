@@ -23,7 +23,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AlertCallback;
-import ch.cyberduck.core.threading.RepeatableBackgroundAction;
+import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.cocoa.AlertController;
 import ch.cyberduck.ui.cocoa.SheetCallback;
 import ch.cyberduck.ui.cocoa.TranscriptController;
@@ -45,7 +45,7 @@ public class PanelAlertCallback implements AlertCallback {
     }
 
     @Override
-    public void alert(final RepeatableBackgroundAction action,
+    public void alert(final SessionBackgroundAction action,
                       final BackgroundException failure, final StringBuilder log) {
         if(controller.isVisible()) {
             final NSAlert alert = NSAlert.alert(

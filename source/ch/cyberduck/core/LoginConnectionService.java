@@ -40,13 +40,17 @@ public class LoginConnectionService implements ConnectionService {
     private HostPasswordStore keychain;
     private ProgressListener listener;
 
-    public LoginConnectionService(final LoginController prompt, final HostKeyController key,
+    private Resolver resolver;
+
+    public LoginConnectionService(final LoginController prompt,
+                                  final HostKeyController key,
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener) {
         this.prompt = prompt;
         this.key = key;
         this.keychain = keychain;
         this.listener = listener;
+        this.resolver = new Resolver();
     }
 
     /**
@@ -98,15 +102,12 @@ public class LoginConnectionService implements ConnectionService {
         // Configuring proxy if any
         ProxyFactory.get().configure(bookmark);
 
-        final Resolver resolver = new Resolver(
-                HostnameConfiguratorFactory.get(bookmark.getProtocol()).lookup(bookmark.getHostname()));
-
         listener.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
                 bookmark.getHostname()));
 
         // Try to resolve the hostname first
         try {
-            resolver.resolve();
+            resolver.resolve(HostnameConfiguratorFactory.get(bookmark.getProtocol()).lookup(bookmark.getHostname()));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -139,6 +140,11 @@ public class LoginConnectionService implements ConnectionService {
             session.interrupt();
             throw e;
         }
+    }
+
+    @Override
+    public void cancel() {
+        resolver.cancel();
     }
 
     protected void login(final Session session) throws BackgroundException {

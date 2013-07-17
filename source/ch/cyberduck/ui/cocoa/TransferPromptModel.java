@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.threading.RepeatableBackgroundAction;
+import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.cocoa.application.NSCell;
@@ -127,7 +127,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
-                controller.background(new RepeatableBackgroundAction(new PanelAlertCallback(controller),
+                controller.background(new SessionBackgroundAction(new PanelAlertCallback(controller),
                         controller, controller, new DisabledLoginController(), new DefaultHostKeyController()) {
                     @Override
                     public void run() throws BackgroundException {

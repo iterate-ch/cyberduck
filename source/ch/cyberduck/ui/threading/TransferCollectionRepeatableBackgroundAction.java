@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class TransferCollectionRepeatableBackgroundAction extends TransferRepeatableBackgroundAction {
+public class TransferCollectionRepeatableBackgroundAction extends TransferBackgroundAction {
     private static final Logger log = Logger.getLogger(TransferCollectionRepeatableBackgroundAction.class);
 
     public TransferCollectionRepeatableBackgroundAction(final Controller controller, final AlertCallback alert,

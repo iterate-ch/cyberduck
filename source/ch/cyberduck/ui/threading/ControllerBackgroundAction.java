@@ -22,18 +22,18 @@ import ch.cyberduck.core.LoginControllerFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.AlertCallback;
-import ch.cyberduck.core.threading.RepeatableBackgroundAction;
+import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.Controller;
 
 /**
  * @version $Id$
  */
-public abstract class ControllerRepeatableBackgroundAction extends RepeatableBackgroundAction {
+public abstract class ControllerBackgroundAction extends SessionBackgroundAction {
 
-    public ControllerRepeatableBackgroundAction(final Controller controller,
-                                                final AlertCallback alert,
-                                                final ProgressListener progressListener,
-                                                final TranscriptListener transcriptListener) {
+    public ControllerBackgroundAction(final Controller controller,
+                                      final AlertCallback alert,
+                                      final ProgressListener progressListener,
+                                      final TranscriptListener transcriptListener) {
         super(alert, progressListener, transcriptListener,
                 LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
     }

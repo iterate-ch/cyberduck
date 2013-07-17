@@ -39,14 +39,14 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class RepeatableBackgroundActionTest extends AbstractTestCase {
+public class SessionBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testGetExceptionCanceled() throws Exception {
         final BackgroundException failure = new BackgroundException(null, null, null);
-        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new AlertCallback() {
+        SessionBackgroundAction a = new SessionBackgroundAction(new AlertCallback() {
             @Override
-            public void alert(final RepeatableBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+            public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
             }
         }, new ProgressListener() {
@@ -80,9 +80,9 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
     @Test
     public void testGetExceptionFailure() throws Exception {
         final BackgroundException failure = new BackgroundException(null, null, null);
-        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new AlertCallback() {
+        SessionBackgroundAction a = new SessionBackgroundAction(new AlertCallback() {
             @Override
-            public void alert(final RepeatableBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+            public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
             }
         }, new ProgressListener() {
@@ -116,9 +116,9 @@ public class RepeatableBackgroundActionTest extends AbstractTestCase {
     @Test
     public void testRetrySocket() throws Exception {
         final BackgroundException failure = new BackgroundException(null, null, new SocketTimeoutException(""));
-        RepeatableBackgroundAction a = new RepeatableBackgroundAction(new AlertCallback() {
+        SessionBackgroundAction a = new SessionBackgroundAction(new AlertCallback() {
             @Override
-            public void alert(final RepeatableBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+            public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
             }
         }, new ProgressListener() {

@@ -72,7 +72,7 @@ import ch.cyberduck.ui.cocoa.view.OutlineCell;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
-import ch.cyberduck.ui.threading.TransferRepeatableBackgroundAction;
+import ch.cyberduck.ui.threading.TransferBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -444,7 +444,7 @@ public class BrowserController extends WindowController
             if(downloads.size() > 0) {
                 final Transfer download = new DownloadTransfer(session, downloads);
                 TransferOptions options = new TransferOptions();
-                background(new TransferRepeatableBackgroundAction(this, new PanelAlertCallback(this), new TransferAdapter() {
+                background(new TransferBackgroundAction(this, new PanelAlertCallback(this), new TransferAdapter() {
                     @Override
                     public void progress(final TransferProgress status) {
                         message(status.getProgress());
@@ -2832,7 +2832,7 @@ public class BrowserController extends WindowController
             }
         };
         if(browser) {
-            this.background(new TransferRepeatableBackgroundAction(this, new PanelAlertCallback(this), new TransferAdapter() {
+            this.background(new TransferBackgroundAction(this, new PanelAlertCallback(this), new TransferAdapter() {
                 @Override
                 public void progress(final TransferProgress status) {
                     message(status.getProgress());

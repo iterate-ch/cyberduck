@@ -18,7 +18,7 @@ import java.util.concurrent.CyclicBarrier;
 public class BackgroundActionPauser {
     private static final Logger log = Logger.getLogger(BackgroundActionPauser.class);
 
-    private RepeatableBackgroundAction action;
+    private SessionBackgroundAction action;
 
     /**
      * The delay to wait before execution of the action in seconds
@@ -29,7 +29,7 @@ public class BackgroundActionPauser {
     private final String pattern
             = Locale.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status");
 
-    public BackgroundActionPauser(final RepeatableBackgroundAction action) {
+    public BackgroundActionPauser(final SessionBackgroundAction action) {
         this.action = action;
     }
 

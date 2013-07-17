@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.BrowserController;
-import ch.cyberduck.ui.threading.ControllerRepeatableBackgroundAction;
+import ch.cyberduck.ui.threading.ControllerBackgroundAction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class BrowserBackgroundAction extends ControllerRepeatableBackgroundAction {
+public abstract class BrowserBackgroundAction extends ControllerBackgroundAction {
 
     private BrowserController controller;
 

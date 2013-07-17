@@ -19,25 +19,25 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.ResolveCanceledException;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @version $Id$
  */
-public class Resolver implements Runnable {
+public class Resolver {
     private static final Logger log = Logger.getLogger(Resolver.class);
 
-    private CountDownLatch signal;
+    private ThreadFactory threadFactory
+            = new NamedThreadFactory("resolver");
 
-    /**
-     * The hostname to lookup
-     */
-    private String hostname;
+    private CountDownLatch signal = new CountDownLatch(1);
 
     /**
      * The IP address resolved for this hostname
@@ -61,13 +61,6 @@ public class Resolver implements Runnable {
     }
 
     /**
-     * @param hostname The hostname to lookup
-     */
-    public Resolver(String hostname) {
-        this.hostname = hostname;
-    }
-
-    /**
      * This method is blocking until the hostname has been resolved or the lookup
      * has been canceled using #cancel
      *
@@ -77,24 +70,32 @@ public class Resolver implements Runnable {
      *                              If the lookup has been interrupted
      * @see #cancel
      */
-    public InetAddress resolve() throws UnknownHostException, ResolveCanceledException {
-        if(this.isResolved()) {
-            // Return immediatly if successful before
-            return this.resolved;
-        }
-        this.resolved = null;
-        this.exception = null;
-        this.signal = new CountDownLatch(1);
-
-        Thread t = new Thread(this, this.toString());
+    public InetAddress resolve(final String hostname) throws UnknownHostException, ResolveCanceledException {
+        Thread t = threadFactory.newThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    resolved = InetAddress.getByName(hostname);
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Resolved %s to %s", hostname, resolved.getHostAddress()));
+                    }
+                }
+                catch(UnknownHostException e) {
+                    log.warn(String.format("Failed resolving %s", hostname));
+                    exception = e;
+                }
+                finally {
+                    signal.countDown();
+                }
+            }
+        });
         t.start();
-
         if(!this.isResolved() && !this.hasFailed()) {
             // The lookup has not finished yet
             try {
-                log.debug("Waiting for resolving of " + this.hostname);
+                log.debug(String.format("Waiting for resolving of %s", hostname));
                 // Wait for #run to finish
-                this.signal.await();
+                signal.await();
             }
             catch(InterruptedException e) {
                 log.error(String.format("Error awaiting lock for resolver: %s", e.getMessage()), e);
@@ -102,12 +103,12 @@ public class Resolver implements Runnable {
         }
         if(!this.isResolved()) {
             if(this.hasFailed()) {
-                throw this.exception;
+                throw exception;
             }
-            log.warn(String.format("Canceled resolving %s", this.hostname));
+            log.warn(String.format("Canceled resolving %s", hostname));
             throw new ResolveCanceledException();
         }
-        return this.resolved;
+        return resolved;
     }
 
     /**
@@ -118,31 +119,6 @@ public class Resolver implements Runnable {
      * @see ResolveCanceledException
      */
     public void cancel() {
-        this.signal.countDown();
-    }
-
-    /**
-     * Runs the hostname resolution in the background
-     */
-    @Override
-    public void run() {
-        try {
-            this.resolved = InetAddress.getByName(this.hostname);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Resolved %s to %s", this.hostname, this.resolved.getHostAddress()));
-            }
-        }
-        catch(UnknownHostException e) {
-            log.warn(String.format("Failed resolving %s", this.hostname));
-            this.exception = e;
-        }
-        finally {
-            this.signal.countDown();
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Resolver for " + this.hostname;
+        signal.countDown();
     }
 }

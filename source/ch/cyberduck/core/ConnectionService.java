@@ -27,4 +27,6 @@ public interface ConnectionService {
     boolean check(Session session) throws BackgroundException;
 
     void connect(Session session) throws BackgroundException;
+
+    void cancel();
 }

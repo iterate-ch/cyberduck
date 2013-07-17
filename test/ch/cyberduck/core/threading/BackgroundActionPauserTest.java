@@ -41,9 +41,9 @@ public class BackgroundActionPauserTest extends AbstractTestCase {
 
     @Test
     public void testAwait() throws Exception {
-        final RepeatableBackgroundAction action = new RepeatableBackgroundAction(new AlertCallback() {
+        final SessionBackgroundAction action = new SessionBackgroundAction(new AlertCallback() {
             @Override
-            public void alert(final RepeatableBackgroundAction action, final BackgroundException failure, final StringBuilder transcript) {
+            public void alert(final SessionBackgroundAction action, final BackgroundException failure, final StringBuilder transcript) {
                 //
             }
 

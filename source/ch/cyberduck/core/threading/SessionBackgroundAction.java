@@ -39,8 +39,8 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean> implements TranscriptListener {
-    private static final Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
+public abstract class SessionBackgroundAction extends AbstractBackgroundAction<Boolean> implements TranscriptListener {
+    private static final Logger log = Logger.getLogger(SessionBackgroundAction.class);
 
     /**
      * Contains all exceptions thrown while this action was running
@@ -71,28 +71,26 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     private static final String LINE_SEPARATOR
             = System.getProperty("line.separator");
 
-    private LoginController prompt;
-
-    private HostKeyController key;
-
     private AlertCallback alert;
 
     protected ProgressListener progressListener;
 
     private TranscriptListener transcriptListener;
 
+    private LoginConnectionService connection;
+
     private Growl growl = GrowlFactory.get();
 
-    public RepeatableBackgroundAction(final AlertCallback alert,
-                                      final ProgressListener progressListener,
-                                      final TranscriptListener transcriptListener,
-                                      final LoginController prompt,
-                                      final HostKeyController key) {
+    public SessionBackgroundAction(final AlertCallback alert,
+                                   final ProgressListener progressListener,
+                                   final TranscriptListener transcriptListener,
+                                   final LoginController prompt,
+                                   final HostKeyController key) {
         this.alert = alert;
         this.progressListener = progressListener;
         this.transcriptListener = transcriptListener;
-        this.prompt = prompt;
-        this.key = key;
+        this.connection = new LoginConnectionService(prompt, key,
+                PasswordStoreFactory.get(), progressListener);
     }
 
     public BackgroundException getException() {
@@ -128,6 +126,12 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             s.addProgressListener(progressListener);
             s.addTranscriptListener(this);
         }
+    }
+
+    @Override
+    public void cancel() {
+        connection.cancel();
+        super.cancel();
     }
 
     /**
@@ -173,8 +177,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     @Override
     public Boolean call() {
         try {
-            final LoginConnectionService connection = new LoginConnectionService(prompt, key,
-                    PasswordStoreFactory.get(), progressListener);
             for(Session session : this.getSessions()) {
                 if(connection.check(session)) {
                     // New connection opened

@@ -45,8 +45,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * @version $Id$
  */
-public class TransferRepeatableBackgroundAction extends ControllerRepeatableBackgroundAction {
-    private static final Logger log = Logger.getLogger(TransferRepeatableBackgroundAction.class);
+public class TransferBackgroundAction extends ControllerBackgroundAction {
+    private static final Logger log = Logger.getLogger(TransferBackgroundAction.class);
 
     protected Transfer transfer;
     protected TransferPrompt prompt;
@@ -72,14 +72,14 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
 
     private TransferListener transferListener;
 
-    public TransferRepeatableBackgroundAction(final Controller controller,
-                                              final AlertCallback alert,
-                                              final TransferListener transferListener,
-                                              final ProgressListener progressListener,
-                                              final TranscriptListener transcriptListener,
-                                              final Transfer transfer,
-                                              final TransferPrompt prompt,
-                                              final TransferOptions options) {
+    public TransferBackgroundAction(final Controller controller,
+                                    final AlertCallback alert,
+                                    final TransferListener transferListener,
+                                    final ProgressListener progressListener,
+                                    final TranscriptListener transcriptListener,
+                                    final Transfer transfer,
+                                    final TransferPrompt prompt,
+                                    final TransferOptions options) {
         super(controller, alert, progressListener, transcriptListener);
         this.controller = controller;
         this.prompt = prompt;
@@ -100,7 +100,7 @@ public class TransferRepeatableBackgroundAction extends ControllerRepeatableBack
                     final TransferProgress status = meter.getStatus();
                     transferListener.progress(status);
                 }
-            }, 500L, TimeUnit.MILLISECONDS);
+            }, 100L, TimeUnit.MILLISECONDS);
             transferListener.start(transfer);
             transfer.start(prompt, options);
         }
