@@ -711,7 +711,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Delete.class) {
             if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
-                new S3MultipleDeleteFeature(this, prompt);
+                return (T) new S3MultipleDeleteFeature(this, prompt);
             }
             return (T) new S3DefaultDeleteFeature(this, prompt);
         }

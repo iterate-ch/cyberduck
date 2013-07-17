@@ -3,6 +3,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
@@ -104,6 +105,8 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(aws.getFeature(Logging.class, null));
         assertNotNull(aws.getFeature(DistributionConfiguration.class, null));
         assertNotNull(aws.getFeature(IdentityConfiguration.class, null));
+        assertNotNull(aws.getFeature(IdentityConfiguration.class, null));
+        assertEquals(S3MultipleDeleteFeature.class, aws.getFeature(Delete.class, null).getClass());
         final S3Session o = new S3Session(new Host(Protocol.S3_SSL, "o"));
         assertNull(o.getFeature(Versioning.class, null));
         assertNull(o.getFeature(AnalyticsProvider.class, null));
@@ -114,6 +117,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertNull(o.getFeature(Logging.class, null));
         assertNotNull(o.getFeature(DistributionConfiguration.class, null));
         assertNull(o.getFeature(IdentityConfiguration.class, null));
+        assertEquals(S3DefaultDeleteFeature.class, o.getFeature(Delete.class, null).getClass());
     }
 
     @Test
