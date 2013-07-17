@@ -139,12 +139,10 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testToSignedUrl() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                properties.getProperty("s3.key"), null
         )));
-        assertTrue(
-                session.toSignedUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE)).getUrl().startsWith(
-                        "https://test.cyberduck.ch.s3.amazonaws.com/test?AWSAccessKeyId=AKIAIUTN5UDAA36D3RLQ&Expires="
-                ));
+        assertTrue(session.toSignedUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE)).getUrl().startsWith(
+                "https://test.cyberduck.ch.s3.amazonaws.com/test?AWSAccessKeyId=AKIAIUTN5UDAA36D3RLQ&Expires="));
     }
 
     @Test
