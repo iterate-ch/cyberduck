@@ -60,7 +60,7 @@ public class FolderController extends FileController {
 
             @Override
             public void run() throws BackgroundException {
-                c.getSession().mkdir(folder);
+                c.getSession().mkdir(folder, null);
             }
 
             @Override
