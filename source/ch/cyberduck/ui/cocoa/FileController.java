@@ -35,25 +35,13 @@ import org.rococoa.cocoa.foundation.NSUInteger;
  */
 public abstract class FileController extends AlertController {
 
-    /**
-     *
-     */
     protected NSTextField filenameField
             = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
     public FileController(final WindowController parent, NSAlert alert) {
         super(parent, alert);
-    }
-
-    @Override
-    public void beginSheet() {
         this.setAccessoryView(filenameField);
         alert.setShowsHelp(true);
-        super.beginSheet();
-        filenameField.selectText(null);
-        filenameField.currentEditor().setSelectedRange(NSRange.NSMakeRange(
-                new NSUInteger(0), new NSUInteger(FilenameUtils.getBaseName(filenameField.stringValue()).length())
-        ));
     }
 
     @Override
@@ -61,6 +49,9 @@ public abstract class FileController extends AlertController {
         // Focus accessory view.
         filenameField.selectText(null);
         this.window().makeFirstResponder(filenameField);
+        filenameField.currentEditor().setSelectedRange(NSRange.NSMakeRange(
+                new NSUInteger(0), new NSUInteger(FilenameUtils.getBaseName(filenameField.stringValue()).length())
+        ));
     }
 
     /**
