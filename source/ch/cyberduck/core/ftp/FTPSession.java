@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.i18n.Locale;
@@ -60,7 +61,7 @@ import java.util.TimeZone;
  *
  * @version $Id$
  */
-public class FTPSession extends SSLSession<FTPClient> {
+public class FTPSession extends SSLSession<FTPClient> implements Delete {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
     private Timestamp timestamp;
@@ -390,7 +391,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+    public void delete(final List<Path> files) throws BackgroundException {
         for(Path file : files) {
             this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     file.getName()));
@@ -509,6 +510,9 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Delete.class) {
+            return (T) this;
+        }
         if(type == UnixPermission.class) {
             return (T) permission;
         }

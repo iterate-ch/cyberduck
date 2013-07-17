@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
@@ -49,7 +50,7 @@ import ch.ethz.ssh2.*;
 /**
  * @version $Id$
  */
-public class SFTPSession extends Session<Connection> {
+public class SFTPSession extends Session<Connection> implements Delete {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
     private SFTPv3Client sftp;
@@ -278,7 +279,7 @@ public class SFTPSession extends Session<Connection> {
     public void rename(final Path file, final Path renamed) throws BackgroundException {
         try {
             if(this.exists(renamed)) {
-                this.delete(Collections.singletonList(file), new DisabledLoginController());
+                this.delete(Collections.singletonList(file));
             }
             this.sftp().mv(file.getAbsolute(), renamed.getAbsolute());
         }
@@ -288,7 +289,7 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+    public void delete(final List<Path> files) throws BackgroundException {
         for(Path file : files) {
             this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     file.getName()));
@@ -381,6 +382,9 @@ public class SFTPSession extends Session<Connection> {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Delete.class) {
+            return (T) this;
+        }
         if(type == UnixPermission.class) {
             return (T) new SFTPUnixPermissionFeature(this);
         }

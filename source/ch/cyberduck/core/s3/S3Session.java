@@ -683,11 +683,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
-        this.getFeature(Delete.class, prompt).delete(files);
-    }
-
-    @Override
     public void rename(final Path file, final Path renamed) throws BackgroundException {
         try {
             if(file.attributes().isFile() || file.attributes().isPlaceholder()) {

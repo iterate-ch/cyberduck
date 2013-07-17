@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -554,16 +555,8 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @param prompt Login prompt for multi factor authentication
      */
     public void delete(Path file, final LoginController prompt) throws BackgroundException {
-        this.delete(Collections.singletonList(file), prompt);
+        this.getFeature(Delete.class, prompt).delete(Collections.singletonList(file));
     }
-
-    /**
-     * Remove this file from the remote host. Does not affect any corresponding local file
-     *
-     * @param files  Recursive list
-     * @param prompt Login prompt for multi factor authentication
-     */
-    public abstract void delete(List<Path> files, LoginController prompt) throws BackgroundException;
 
     /**
      * @param status Transfer status

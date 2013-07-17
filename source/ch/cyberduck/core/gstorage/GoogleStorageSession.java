@@ -31,6 +31,7 @@ import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
@@ -174,11 +175,6 @@ public class GoogleStorageSession extends S3Session {
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
         final StorageObject object = this.createObjectDetails(file);
         new S3SingleUploadService(this).upload(file, throttle, listener, status, object);
-    }
-
-    @Override
-    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
-        new S3DefaultDeleteFeature(this, prompt).delete(files);
     }
 
     @Override
@@ -341,7 +337,10 @@ public class GoogleStorageSession extends S3Session {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
-        if(type == ch.cyberduck.core.features.AccessControlList.class) {
+        if(type == Delete.class) {
+            return (T) new S3DefaultDeleteFeature(this, prompt);
+        }
+        if(type == AccessControlList.class) {
             return (T) new GoogleStorageAccessControlListFeature(this);
         }
         if(type == DistributionConfiguration.class) {

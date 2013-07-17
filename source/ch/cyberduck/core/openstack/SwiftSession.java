@@ -52,7 +52,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -385,11 +384,6 @@ public class SwiftSession extends HttpSession<Client> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
-    }
-
-    @Override
-    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
-        this.getFeature(Delete.class, prompt).delete(files);
     }
 
     @Override

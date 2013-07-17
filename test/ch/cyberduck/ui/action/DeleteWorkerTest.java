@@ -4,7 +4,6 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPSession;
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DeleteWorkerTest extends AbstractTestCase {
 
@@ -27,7 +26,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
     public void testCompile() throws Exception {
         final FTPSession session = new FTPSession(new Host("t")) {
             @Override
-            public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+            public void delete(final List<Path> files) throws BackgroundException {
                 assertEquals(new Path("/t/a", Path.FILE_TYPE), files.get(0));
                 assertEquals(new Path("/t/d/b", Path.FILE_TYPE), files.get(1));
                 assertEquals(new Path("/t/d", Path.FILE_TYPE), files.get(2));

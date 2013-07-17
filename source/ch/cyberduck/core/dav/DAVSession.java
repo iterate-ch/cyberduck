@@ -53,7 +53,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.googlecode.sardine.impl.SardineException;
@@ -145,11 +144,6 @@ public class DAVSession extends HttpSession<DAVClient> {
             return false;
         }
         return false;
-    }
-
-    @Override
-    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
-        new DAVDeleteFeature(this).delete(files);
     }
 
     @Override

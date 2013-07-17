@@ -22,6 +22,7 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.i18n.Locale;
 
 import java.text.MessageFormat;
@@ -54,7 +55,8 @@ public abstract class DeleteWorker extends Worker<Boolean> {
         for(Path file : files) {
             recursive.addAll(this.compile(file));
         }
-        session.delete(recursive, prompt);
+        final Delete feature = session.getFeature(Delete.class, prompt);
+        feature.delete(recursive);
         return true;
     }
 
