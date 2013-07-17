@@ -20,14 +20,21 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
     @Test
     public void testGetOrigin() throws Exception {
         final DistributionConfiguration configuration
-                = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname())));
+                = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
+                new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname())));
         assertEquals(Arrays.asList(Distribution.WEBSITE), configuration.getMethods(null));
     }
 
     @Test
     public void testGetProtocol() throws Exception {
         final DistributionConfiguration configuration
-                = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname())));
+                = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
+                new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname())));
         assertEquals(Protocol.GOOGLESTORAGE_SSL, configuration.getProtocol());
+    }
+
+    @Test
+    public void testRead() throws Exception {
+
     }
 }

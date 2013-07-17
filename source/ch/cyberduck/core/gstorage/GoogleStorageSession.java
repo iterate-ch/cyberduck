@@ -31,6 +31,7 @@ import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
@@ -42,6 +43,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
@@ -170,8 +172,16 @@ public class GoogleStorageSession extends S3Session {
                         new Date(Preferences.instance().getLong("google.storage.oauth.expiry"))));
             }
             client.setProviderCredentials(oauth);
+            try {
+                new S3BucketListService().list(this);
+            }
+            catch(BackgroundException e) {
+                throw new LoginFailureException(e.getMessage(), e);
+            }
         }
-        super.login(keychain, controller);
+        else {
+            super.login(keychain, controller);
+        }
     }
 
     @Override

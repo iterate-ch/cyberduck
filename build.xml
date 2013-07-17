@@ -241,6 +241,9 @@
                 <sysproperty key="ftp.password" value="${ftp.password}"/>
                 <sysproperty key="sftp.user" value="${sftp.user}"/>
                 <sysproperty key="sftp.password" value="${sftp.password}"/>
+                <sysproperty key="google.projectid" value="${google.projectid}"/>
+                <sysproperty key="google.accesstoken" value="${google.accesstoken}"/>
+                <sysproperty key="google.refreshtoken" value="${google.refreshtoken}"/>
             </junit>
         </jacoco:coverage>
         <junitreport todir="${build.unittests.reports}/html">
