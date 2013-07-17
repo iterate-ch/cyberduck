@@ -718,7 +718,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             }
             return (T) new S3DefaultDeleteFeature(this, prompt);
         }
-        if(type == AccessControlList.class) {
+        if(type == ch.cyberduck.core.features.AccessControlList.class) {
             return (T) new S3AccessControlListFeature(this);
         }
         if(type == Headers.class) {

@@ -343,7 +343,7 @@ public class GoogleStorageSession extends S3Session {
         if(type == Delete.class) {
             return (T) new S3DefaultDeleteFeature(this, prompt);
         }
-        if(type == AccessControlList.class) {
+        if(type == ch.cyberduck.core.features.AccessControlList.class) {
             return (T) new GoogleStorageAccessControlListFeature(this);
         }
         if(type == DistributionConfiguration.class) {
