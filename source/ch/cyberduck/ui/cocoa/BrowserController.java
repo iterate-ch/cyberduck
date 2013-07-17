@@ -542,6 +542,7 @@ public class BrowserController extends WindowController
 
     public void drawerDidClose(NSNotification notification) {
         Preferences.instance().setProperty("browser.transcript.open", false);
+        transcript.clear();
     }
 
     public void setLogDrawer(NSDrawer drawer) {
