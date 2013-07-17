@@ -39,7 +39,8 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class SessionBackgroundAction extends AbstractBackgroundAction<Boolean> implements TranscriptListener {
+public abstract class SessionBackgroundAction extends AbstractBackgroundAction<Boolean>
+        implements ProgressListener, TranscriptListener {
     private static final Logger log = Logger.getLogger(SessionBackgroundAction.class);
 
     /**
@@ -97,6 +98,11 @@ public abstract class SessionBackgroundAction extends AbstractBackgroundAction<B
         return exception;
     }
 
+    @Override
+    public void message(final String message) {
+        progressListener.message(message);
+    }
+
     /**
      * Apppend to the transcript. Reset if maximum length has been reached.
      *
@@ -121,9 +127,9 @@ public abstract class SessionBackgroundAction extends AbstractBackgroundAction<B
     @Override
     public void prepare() throws ConnectionCanceledException {
         super.prepare();
-        progressListener.message(this.getActivity());
+        this.message(this.getActivity());
         for(Session s : this.getSessions()) {
-            s.addProgressListener(progressListener);
+            s.addProgressListener(this);
             s.addTranscriptListener(this);
         }
     }
@@ -217,7 +223,7 @@ public abstract class SessionBackgroundAction extends AbstractBackgroundAction<B
             }
         }
         for(Session session : this.getSessions()) {
-            session.removeProgressListener(progressListener);
+            session.removeProgressListener(this);
             // It is important _not_ to do this in #cleanup as otherwise
             // the listeners are still registered when the next BackgroundAction
             // is already running
@@ -234,7 +240,7 @@ public abstract class SessionBackgroundAction extends AbstractBackgroundAction<B
 
     @Override
     public void cleanup() {
-        progressListener.message(null);
+        this.message(null);
     }
 
     /**
@@ -246,7 +252,7 @@ public abstract class SessionBackgroundAction extends AbstractBackgroundAction<B
             return;
         }
         final BackgroundActionPauser pauser = new BackgroundActionPauser(this);
-        pauser.await(progressListener);
+        pauser.await(this);
     }
 
     /**
