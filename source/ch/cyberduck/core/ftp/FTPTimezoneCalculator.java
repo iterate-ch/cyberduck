@@ -1,6 +1,7 @@
 package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -21,6 +22,12 @@ import java.util.TimeZone;
 public class FTPTimezoneCalculator {
     private static final Logger log = Logger.getLogger(FTPTimezoneCalculator.class);
 
+    private FTPSession session;
+
+    public FTPTimezoneCalculator(final FTPSession session) {
+        this.session = session;
+    }
+
     /**
      * Best guess of available timezones given the offset of the modification
      * date in the directory listing from the UTC timestamp returned from <code>MDTM</code>
@@ -29,9 +36,9 @@ public class FTPTimezoneCalculator {
      * @param workdir Directory listing
      * @return Matching timezones
      */
-    public List<TimeZone> get(final FTPSession session, final Path workdir) throws BackgroundException {
+    public List<TimeZone> get(final Path workdir) throws BackgroundException {
         // Determine the server offset from UTC
-        final AttributedList<Path> list = session.list(workdir);
+        final AttributedList<Path> list = session.list(workdir, new DisabledListProgressListener());
         if(list.isEmpty()) {
             log.warn("Cannot determine timezone with empty directory listing");
             return Collections.emptyList();
@@ -41,7 +48,7 @@ public class FTPTimezoneCalculator {
                 long local = test.attributes().getModificationDate();
                 if(-1 == local) {
                     log.warn("No modification date in directory listing to calculate timezone");
-                    continue;
+                    return Collections.emptyList();
                 }
                 // Subtract seconds
                 local -= local % 60000;
@@ -49,30 +56,40 @@ public class FTPTimezoneCalculator {
                 try {
                     if(session.getClient().hasFeature(FTPCmd.MDTM.getCommand())) {
                         try {
-                            final String timestamp = session.getClient().getModificationTime(test.getAbsolute());
-                            Long utc = new FTPMlsdListResponseReader().parseTimestamp(timestamp);
+                            // In UTC
+                            Long utc = new FTPMlsdListResponseReader().parseTimestamp(
+                                    session.getClient().getModificationTime(test.getAbsolute()));
                             if(-1 == utc) {
                                 log.warn("No UTC support on server");
                                 return Collections.emptyList();
                             }
                             // Subtract seconds
                             utc -= utc % 60000;
+                            // Offset for timestamps in file listing compared to UTC
                             long offset = local - utc;
-                            log.info(String.format("Calculated UTC offset is %dms", offset));
-                            final List<TimeZone> zones = new ArrayList<TimeZone>();
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Calculated UTC offset is %dms", offset));
+                            }
                             if(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getOffset(utc) == offset) {
-                                log.info("Offset equals local timezone offset.");
-                                zones.add(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")));
-                                return zones;
+                                if(log.isInfoEnabled()) {
+                                    log.info("Offset equals local timezone offset.");
+                                }
+                                return Collections.singletonList(TimeZone.getTimeZone(
+                                        Preferences.instance().getProperty("ftp.timezone.default")));
                             }
                             // The offset should be the raw GMT offset without the daylight saving offset.
-                            // However the determied offset *does* include daylight saving time and therefore
-                            // the call to TimeZone#getAvailableIDs leads to errorneous results.
+                            // However the determined offset *does* include daylight saving time and therefore
+                            // the call to TimeZone#getAvailableIDs leads to erroneous results.
                             final String[] timezones = TimeZone.getAvailableIDs((int) offset);
+                            final List<TimeZone> zones = new ArrayList<TimeZone>();
                             for(String timezone : timezones) {
-                                log.info(String.format("Matching timezone identifier %s", timezone));
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Matching timezone identifier %s", timezone));
+                                }
                                 final TimeZone match = TimeZone.getTimeZone(timezone);
-                                log.info(String.format("Determined timezone %s", match));
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Determined timezone %s", match));
+                                }
                                 zones.add(match);
                             }
                             if(zones.isEmpty()) {
