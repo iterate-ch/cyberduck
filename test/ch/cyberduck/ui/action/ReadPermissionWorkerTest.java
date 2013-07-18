@@ -29,14 +29,15 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ReadPermissionWorkerTest extends AbstractTestCase {
 
 
     @Test
     public void testRun() throws Exception {
-        final ReadPermissionWorker worker = new ReadPermissionWorker(Arrays.<Path>asList(new Path("/a", Path.FILE_TYPE), new Path("/b", Path.FILE_TYPE))) {
+        final ReadPermissionWorker worker = new ReadPermissionWorker(
+                Arrays.<Path>asList(new Path("/a", Path.FILE_TYPE), new Path("/b", Path.FILE_TYPE))) {
             @Override
             public void cleanup(final List<Permission> result) {
                 //
