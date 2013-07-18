@@ -367,15 +367,13 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param file     File
-     * @param filter   Filter to apply to exclude files from transfer
-     * @param options  Quarantine option
-     * @param status   Transfer status
-     * @param listener Progress information callback
+     * @param file    File
+     * @param filter  Filter to apply to exclude files from transfer
+     * @param options Quarantine option
+     * @param status  Transfer status
      */
     protected void transfer(final Path file, final TransferPathFilter filter,
-                            final TransferOptions options, final TransferStatus status,
-                            final ProgressListener listener) throws BackgroundException {
+                            final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(!status.isSelected()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skip %s not selected in prompt", file.getAbsolute()));
@@ -385,11 +383,11 @@ public abstract class Transfer implements Serializable {
         }
         if(filter.accept(session, file, status)) {
             // Transfer
-            this.transfer(file, options, status, listener);
+            this.transfer(file, options, status, session);
             if(file.attributes().isFile()) {
                 // Post process of file.
                 try {
-                    filter.complete(session, file, options, status, listener);
+                    filter.complete(session, file, options, status, session);
                 }
                 catch(BackgroundException e) {
                     log.warn(String.format("Ignore failure in completion filter for %s", file));
@@ -403,7 +401,7 @@ public abstract class Transfer implements Serializable {
             boolean failure = false;
             for(Path child : this.cache().get(file.getReference())) {
                 // Recursive
-                this.transfer(child, filter, options, this.status.get(child), listener);
+                this.transfer(child, filter, options, this.status.get(child));
                 if(!this.status.get(child).isComplete()) {
                     failure = true;
                 }
@@ -415,7 +413,7 @@ public abstract class Transfer implements Serializable {
             }
             // Post process of directory.
             try {
-                filter.complete(session, file, options, status, listener);
+                filter.complete(session, file, options, status, session);
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Ignore failure in completion filter for %s", file));
@@ -527,7 +525,7 @@ public abstract class Transfer implements Serializable {
             }
             // Transfer all files sequentially
             for(Path next : roots) {
-                this.transfer(next, filter, options, status.get(next), session);
+                this.transfer(next, filter, options, status.get(next));
             }
             this.clear(options);
         }
