@@ -4,6 +4,7 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 4.4 [http://trac.cyberduck.ch/milestone/4.3.2]
+- [Feature] Performance improvements
 - [Feature] No Java installation requirement (Mac)
 - [Feature] Bucket lifecycle configuration to archive objects in Glacier (S3) (#6830)
 - [Feature] Keystone (2.0) authentication support (OpenStack) (#6330)
@@ -11,6 +12,7 @@ Changelog. Last modified: $Date$
 - [Feature] Set container metadata (OpenStack)
 - [Feature] Edit non prefixed headers (OpenStack) (#7209)
 - [Feature] Support ECHDE cipher suites (WebDAV) (#7344)
+- [Feature] Select region when creating new container (S3, OpenStack)
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)
