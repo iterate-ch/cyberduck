@@ -23,6 +23,8 @@ import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
+import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.serializer.SerializerFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -37,7 +39,7 @@ import java.util.UUID;
 /**
  * @version $Id$
  */
-public final class Profile implements Protocol {
+public final class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
     private Deserializer dict;
@@ -60,6 +62,20 @@ public final class Profile implements Protocol {
             parent = ProtocolFactory.forName(protocol);
         }
         disk = this.write(this.getValue("Disk"));
+    }
+
+    @Override
+    public <T> T getAsDictionary() {
+        final Serializer serializer = SerializerFactory.createSerializer();
+        serializer.setStringForKey("Protocol", parent.getIdentifier());
+        serializer.setStringForKey("Scheme", this.getScheme().toString());
+        serializer.setStringForKey("Vendor", this.getProvider());
+        serializer.setStringForKey("Description", this.getDescription());
+        serializer.setStringForKey("Default Hostname", this.getDefaultHostname());
+        serializer.setStringForKey("Default Port", String.valueOf(this.getDefaultPort()));
+        serializer.setStringForKey("Username Placeholder", this.getUsernamePlaceholder());
+        serializer.setStringForKey("Password Placeholder", this.getPasswordPlaceholder());
+        return serializer.getSerialized();
     }
 
     public Protocol getProtocol() {
