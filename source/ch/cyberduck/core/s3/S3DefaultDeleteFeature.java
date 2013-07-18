@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -39,14 +38,12 @@ public class S3DefaultDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(S3DefaultDeleteFeature.class);
 
     private S3Session session;
-    private LoginController prompt;
 
     private PathContainerService containerService
             = new PathContainerService();
 
-    public S3DefaultDeleteFeature(final S3Session session, final LoginController prompt) {
+    public S3DefaultDeleteFeature(final S3Session session) {
         this.session = session;
-        this.prompt = prompt;
     }
 
     public void delete(final List<Path> files) throws BackgroundException {

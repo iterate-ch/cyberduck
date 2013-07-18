@@ -352,7 +352,7 @@ public class GoogleStorageSession extends S3Session {
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Delete.class) {
-            return (T) new S3DefaultDeleteFeature(this, prompt);
+            return (T) new S3DefaultDeleteFeature(this);
         }
         if(type == AclPermission.class) {
             return (T) new GoogleStorageAccessControlListFeature(this);
