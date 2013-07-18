@@ -238,7 +238,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        session.list(new Path("/notfound", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
+        session.list(new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE), new DisabledListProgressListener());
     }
 
 
@@ -247,7 +247,7 @@ public class FTPSessionTest extends AbstractTestCase {
         final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
-        host.setDefaultPath("/notfound");
+        host.setDefaultPath(UUID.randomUUID().toString());
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
