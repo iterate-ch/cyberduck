@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -45,7 +46,7 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
         final Path path = new Path("a", Path.DIRECTORY_TYPE);
         final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
             @Override
-            public AttributedList<Path> list(final Path file) {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> children = new AttributedList<Path>();
                 children.add(new Path("b", Path.FILE_TYPE));
                 return children;

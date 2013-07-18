@@ -18,6 +18,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -47,7 +48,7 @@ public class FTPStatListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file) throws BackgroundException {
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             final int response = session.getClient().stat(file.getAbsolute());
             if(FTPReply.isPositiveCompletion(response)) {

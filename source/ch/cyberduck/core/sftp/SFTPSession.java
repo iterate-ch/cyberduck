@@ -260,8 +260,8 @@ public class SFTPSession extends Session<Connection> implements Delete {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file) throws BackgroundException {
-        return new SFTPListService(this).list(file);
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return new SFTPListService(this).list(file, listener);
     }
 
     @Override

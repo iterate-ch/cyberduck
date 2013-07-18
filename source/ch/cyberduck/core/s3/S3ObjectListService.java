@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -59,7 +60,7 @@ public class S3ObjectListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file) throws BackgroundException {
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             // Keys can be listed by prefix. By choosing a common prefix
             // for the names of related keys and marking these keys with
@@ -82,8 +83,8 @@ public class S3ObjectListService implements ListService {
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
             final AttributedList<Path> children = new AttributedList<Path>();
-            children.addAll(this.listObjects(
-                    containerService.getContainer(file), file, prefix, String.valueOf(Path.DELIMITER)));
+            children.addAll(this.listObjects(containerService.getContainer(file),
+                    file, prefix, String.valueOf(Path.DELIMITER), listener));
             if(Preferences.instance().getBoolean("s3.revisions.enable")) {
                 if(new S3VersioningFeature(session).getConfiguration(containerService.getContainer(file)).isEnabled()) {
                     String priorLastKey = null;
@@ -94,7 +95,7 @@ public class S3ObjectListService implements ListService {
                                 Preferences.instance().getInteger("s3.listing.chunksize"),
                                 priorLastKey, priorLastVersionId, true);
                         children.addAll(this.listVersions(containerService.getContainer(file), file,
-                                Arrays.asList(chunk.getItems())));
+                                Arrays.asList(chunk.getItems()), listener));
                         priorLastKey = chunk.getNextKeyMarker();
                         priorLastVersionId = chunk.getNextVersionIdMarker();
                     }
@@ -111,7 +112,8 @@ public class S3ObjectListService implements ListService {
         }
     }
 
-    private AttributedList<Path> listObjects(final Path bucket, final Path parent, final String prefix, final String delimiter)
+    private AttributedList<Path> listObjects(final Path bucket, final Path parent, final String prefix, final String delimiter,
+                                             final ListProgressListener listener)
             throws IOException, ServiceException, BackgroundException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // Null if listing is complete
@@ -181,12 +183,14 @@ public class S3ObjectListService implements ListService {
                 children.add(p);
             }
             priorLastKey = chunk.getPriorLastKey();
+            listener.chunk(children);
         }
         while(priorLastKey != null);
         return children;
     }
 
-    private List<Path> listVersions(final Path bucket, final Path parent, final List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
+    private List<Path> listVersions(final Path bucket, final Path parent, final List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers,
+                                    final ListProgressListener listener)
             throws IOException, ServiceException {
         // Amazon S3 returns object versions in the order in which they were
         // stored, with the most recently stored returned first.
@@ -199,8 +203,7 @@ public class S3ObjectListService implements ListService {
         final List<Path> versions = new ArrayList<Path>();
         int i = 0;
         for(BaseVersionOrDeleteMarker marker : versionOrDeleteMarkers) {
-            if((marker.isDeleteMarker() && marker.isLatest())
-                    || !marker.isLatest()) {
+            if((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest()) {
                 // Latest version already in default listing
                 final String key = PathNormalizer.normalize(marker.getKey());
                 if(new Path(bucket, key, Path.DIRECTORY_TYPE).equals(parent)) {

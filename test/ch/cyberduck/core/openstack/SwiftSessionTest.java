@@ -2,6 +2,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
@@ -9,7 +10,6 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.ProfileReaderFactory;
 
@@ -34,7 +34,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertNull(session.getFeature(Encryption.class, null));
         assertNull(session.getFeature(Redundancy.class, null));
         assertNull(session.getFeature(Logging.class, null));
-//        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
+        assertNull(session.getFeature(DistributionConfiguration.class, null));
     }
 
     @Test
@@ -47,11 +47,12 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         assertTrue(session.isConnected());
         assertFalse(session.cache().isEmpty());
         final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         assertNull(session.toHttpURL(new Path(container, "d/f", Path.FILE_TYPE)));
+        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
         container.attributes().setRegion("DFW");
         assertEquals("http://2b72124779a6075376a9-dc3ef5db7541ebd1f458742f9170bbe4.r64.cf1.rackcdn.com/d/f", session.toHttpURL(new Path(container, "d/f", Path.FILE_TYPE)));
         session.close();
@@ -71,7 +72,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();
@@ -107,7 +108,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();
@@ -130,11 +131,11 @@ public class SwiftSessionTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path c = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(c, null);
-        assertTrue(session.exists(c));
-        session.delete(c, new DisabledLoginController());
-        assertFalse(session.exists(c));
+        final Path container = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        session.mkdir(container, null);
+        assertTrue(session.exists(container));
+        session.delete(container, new DisabledLoginController());
+        assertFalse(session.exists(container));
     }
 
     @Test

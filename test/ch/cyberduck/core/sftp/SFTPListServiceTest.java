@@ -17,15 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.*;
 
 import org.junit.Test;
 
@@ -47,7 +39,7 @@ public class SFTPListServiceTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path home = session.home();
-        final AttributedList<Path> list = new SFTPListService(session).list(home);
+        final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(new Path(home, "test", Path.FILE_TYPE).getReference()));
         assertTrue(list.contains(new Path(home, "test.directory", Path.FILE_TYPE).getReference()));
         assertTrue(list.contains(new Path(home, "test.symlink", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE).getReference()));

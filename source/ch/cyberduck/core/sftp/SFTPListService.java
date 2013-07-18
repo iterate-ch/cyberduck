@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -45,7 +46,7 @@ public class SFTPListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
             for(SFTPv3DirectoryEntry f : session.sftp().ls(directory.getAbsolute())) {

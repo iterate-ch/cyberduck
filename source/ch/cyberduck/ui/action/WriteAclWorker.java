@@ -86,6 +86,11 @@ public abstract class WriteAclWorker extends Worker<Acl> {
                     feature.write(file, acl, recursive);
                 }
             }
+            if(recursive) {
+                if(file.attributes().isDirectory()) {
+
+                }
+            }
         }
         return acl;
     }

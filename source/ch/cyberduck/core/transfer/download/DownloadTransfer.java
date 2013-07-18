@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractStreamListener;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
@@ -94,7 +95,7 @@ public class DownloadTransfer extends Transfer {
             return AttributedList.emptyList();
         }
         else {
-            AttributedList<Path> list = session.list(parent).filter(filter);
+            AttributedList<Path> list = session.list(parent, new DisabledListProgressListener()).filter(filter);
             for(Path download : list) {
                 // Change download path relative to parent local folder
                 download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));

@@ -135,12 +135,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     @Override
                     public Boolean run() throws BackgroundException {
                         try {
-                            final AttributedList<Path> children = controller.getSession().list(path);
+                            final AttributedList<Path> children = controller.getSession().list(path, new DisabledListProgressListener());
                             cache.put(path.getReference(), children);
                         }
                         catch(BackgroundException e) {
-                            if(path.attributes().getPermission().isReadable()
-                                    && path.attributes().getPermission().isExecutable()) {
+                            if(path.attributes().getPermission().isReadable() && path.attributes().getPermission().isExecutable()) {
                                 throw e;
                             }
                             else {

@@ -643,13 +643,13 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public AttributedList<Path> list(final Path file) throws BackgroundException {
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             // List all buckets
             return new AttributedList<Path>(new S3BucketListService().list(this));
         }
         else {
-            return new S3ObjectListService(this).list(file);
+            return new S3ObjectListService(this).list(file, listener);
         }
     }
 
@@ -699,7 +699,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                         destination, false);
             }
             else if(file.attributes().isDirectory()) {
-                for(Path i : this.list(file)) {
+                for(Path i : this.list(file, new DisabledListProgressListener())) {
                     this.rename(i, new Path(renamed, i.getName(), i.attributes().getType()));
                 }
             }
@@ -715,7 +715,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3MultipleDeleteFeature(this, prompt);
             }
-            return (T) new S3DefaultDeleteFeature(this, prompt);
+            return (T) new S3DefaultDeleteFeature(this);
         }
         if(type == AclPermission.class) {
             return (T) new S3AccessControlListFeature(this);

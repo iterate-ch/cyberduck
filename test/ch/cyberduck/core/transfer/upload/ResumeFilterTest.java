@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -55,7 +56,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         t.setLocal(new NullLocal(null, "t"));
         final TransferStatus status = f.prepare(new NullSession(new Host("h")) {
             @Override
-            public AttributedList<Path> list(final Path file) {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final Path f = new Path("t", Path.FILE_TYPE);
                 f.attributes().setSize(7L);
                 return new AttributedList<Path>(Collections.<Path>singletonList(f));

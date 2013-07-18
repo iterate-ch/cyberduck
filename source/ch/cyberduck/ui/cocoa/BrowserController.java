@@ -3393,7 +3393,7 @@ public class BrowserController extends WindowController
                     @Override
                     public Boolean run() throws BackgroundException {
                         // Mount this session
-                        workdir = session.mount();
+                        workdir = session.mount(new DisabledListProgressListener());
                         return true;
                     }
 

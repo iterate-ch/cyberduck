@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -43,7 +44,7 @@ public class ResumeFilter extends AbstractUploadFilter {
                 if(session.isUploadResumable()) {
                     if(session.exists(file)) {
                         status.setResume(true);
-                        status.setCurrent(session.list(file.getParent()).get(file.getReference()).attributes().getSize());
+                        status.setCurrent(session.list(file.getParent(), new DisabledListProgressListener()).get(file.getReference()).attributes().getSize());
                     }
                 }
             }

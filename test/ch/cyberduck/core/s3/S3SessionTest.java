@@ -45,7 +45,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         assertFalse(session.cache().isEmpty());
         assertTrue(session.cache().containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertNotNull(session.cache().lookup(new Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
@@ -55,7 +55,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertEquals(Session.State.closed, session.getState());
         session.open(new DefaultHostKeyController());
         assertTrue(session.isConnected());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         session.close();
         assertFalse(session.isConnected());
     }
@@ -70,7 +70,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -87,7 +87,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -191,7 +191,7 @@ public class S3SessionTest extends AbstractTestCase {
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
         assertTrue(session.exists(test));
-        assertEquals(content.length, session.list(test.getParent()).get(test.getReference()).attributes().getSize());
+        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         session.delete(test, new DisabledLoginController());
     }
 

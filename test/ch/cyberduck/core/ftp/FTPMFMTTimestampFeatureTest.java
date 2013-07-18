@@ -20,6 +20,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -32,7 +33,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPMFMTTimestampFeatureTest extends AbstractTestCase {
 
@@ -50,6 +51,6 @@ public class FTPMFMTTimestampFeatureTest extends AbstractTestCase {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         new FTPMFMTTimestampFeature(session).setTimestamp(test, -1L, modified, -1L);
-        assertEquals(modified, session.list(home).get(test.getReference()).attributes().getModificationDate());
+        assertEquals(modified, session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getModificationDate());
     }
 }

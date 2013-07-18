@@ -73,7 +73,7 @@ public class UploadTransferTest extends AbstractTestCase {
         });
         final Transfer t = new UploadTransfer(new NullSession(new Host("t")) {
             @Override
-            public AttributedList<Path> list(final Path file) {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return new AttributedList<Path>(Collections.<Path>singletonList(new Path("/t", Path.DIRECTORY_TYPE)));
             }
         }, root) {
@@ -189,7 +189,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         Transfer t = new UploadTransfer(new NullSession(new Host("t")) {
             @Override
-            public AttributedList<Path> list(final Path file) {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 if(file.equals(root.getParent())) {
                     c.incrementAndGet();
                 }
@@ -234,7 +234,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         Transfer t = new UploadTransfer(new NullSession(new Host("t")) {
             @Override
-            public AttributedList<Path> list(final Path file) {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 c.incrementAndGet();
                 return AttributedList.emptyList();
             }

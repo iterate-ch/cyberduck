@@ -35,7 +35,7 @@ public class DAVSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         assertFalse(session.cache().isEmpty());
         assertTrue(session.cache().containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertNotNull(session.cache().lookup(new Path("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
@@ -95,7 +95,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         session.close();
     }
 
@@ -119,7 +119,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         session.close();
     }
 
@@ -164,7 +164,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/dav/anon");
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
-        assertNotNull(session.list(session.home()));
+        assertNotNull(session.list(session.home(), new DisabledListProgressListener()));
     }
 
     @Test(expected = LoginFailureException.class)
@@ -244,13 +244,13 @@ public class DAVSessionTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        final Path test = new Path(session.mount(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(session.mount(new DisabledListProgressListener()), UUID.randomUUID().toString(), Path.FILE_TYPE);
         final OutputStream out = session.write(test, status);
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
         assertTrue(session.exists(test));
-        assertEquals(content.length, session.list(test.getParent()).get(test.getReference()).attributes().getSize());
+        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         session.delete(test, new DisabledLoginController());
     }
 }

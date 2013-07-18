@@ -56,7 +56,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
         }, new TransferStatus()));
         assertTrue(f.accept(new NullSession(new Host("h")) {
                                 @Override
-                                public AttributedList<Path> list(final Path file) {
+                                public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                                     return new AttributedList<Path>(Collections.<Path>singletonList(new Path("a", Path.DIRECTORY_TYPE)));
                                 }
                             }, new Path("a", Path.DIRECTORY_TYPE) {

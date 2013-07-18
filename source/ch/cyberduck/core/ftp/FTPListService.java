@@ -21,11 +21,11 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
@@ -120,11 +120,11 @@ public class FTPListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file) throws BackgroundException {
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             if(implementations.containsKey(Command.stat)) {
                 try {
-                    return this.post(file, implementations.get(Command.stat).list(file));
+                    return this.post(file, implementations.get(Command.stat).list(file, listener));
                 }
                 catch(FTPInvalidListException e) {
                     this.remove(Command.stat);
@@ -136,12 +136,7 @@ public class FTPListService implements ListService {
                     else {
                         log.warn(String.format("Command STAT failed with I/O error %s", e.getMessage()));
                         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
-                                new DisabledPasswordStore(), new ProgressListener() {
-                            @Override
-                            public void message(final String message) {
-                                session.message(message);
-                            }
-                        }).connect(session);
+                                new DisabledPasswordStore(), session).connect(session);
                     }
                     this.remove(Command.stat);
                 }
@@ -151,7 +146,7 @@ public class FTPListService implements ListService {
                 // The presence of the MLST feature indicates that both MLST and MLSD are supported.
                 if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
                     try {
-                        return this.post(file, implementations.get(Command.mlsd).list(file));
+                        return this.post(file, implementations.get(Command.mlsd).list(file, listener));
                     }
                     catch(FTPInvalidListException e) {
                         this.remove(Command.mlsd);
@@ -163,14 +158,14 @@ public class FTPListService implements ListService {
             }
             if(implementations.containsKey(Command.lista)) {
                 try {
-                    return this.post(file, implementations.get(Command.lista).list(file));
+                    return this.post(file, implementations.get(Command.lista).list(file, listener));
                 }
                 catch(FTPInvalidListException e) {
                     this.remove(Command.lista);
                 }
             }
             if(implementations.containsKey(Command.list)) {
-                return this.post(file, implementations.get(Command.list).list(file));
+                return this.post(file, implementations.get(Command.list).list(file, listener));
             }
             throw new BackgroundException("No compatible file listing method found");
         }

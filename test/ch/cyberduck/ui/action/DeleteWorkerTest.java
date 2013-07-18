@@ -4,6 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPSession;
@@ -34,7 +35,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
             }
 
             @Override
-            public AttributedList<Path> list(final Path file) throws BackgroundException {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
                 if(file.equals(new Path("/t", Path.DIRECTORY_TYPE))) {
                     return new AttributedList<Path>(Arrays.asList(
                             new Path("/t/a", Path.FILE_TYPE),

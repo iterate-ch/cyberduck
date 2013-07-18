@@ -17,15 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -362,8 +354,8 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file) throws BackgroundException {
-        return listService.list(file);
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return listService.list(file, listener);
     }
 
     @Override

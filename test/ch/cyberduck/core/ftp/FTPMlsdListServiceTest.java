@@ -39,7 +39,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
-        list.list(directory);
+        list.list(directory, new DisabledListProgressListener());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final ListService s = new FTPMlsdListService(session);
         final Path directory = session.workdir();
-        final AttributedList<Path> list = s.list(directory);
+        final AttributedList<Path> list = s.list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
     }
 }

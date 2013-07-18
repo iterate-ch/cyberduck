@@ -2022,7 +2022,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(session.getFeature(Logging.class, prompt) != null) {
                         logging = session.getFeature(Logging.class, prompt).getConfiguration(container);
-                        for(Path c : session.list(containerService.getContainer(getSelected()).getParent())) {
+                        for(Path c : session.list(containerService.getContainer(getSelected()).getParent(), new DisabledListProgressListener())) {
                             containers.add(c.getName());
                         }
                     }
@@ -2549,7 +2549,7 @@ public class InfoController extends ToolbarWindowController {
                     distribution = cdn.read(container, method);
                     if(cdn.getFeature(Index.class, distribution.getMethod(), prompt) != null) {
                         // Make sure container items are cached for default root object.
-                        rootDocuments.addAll(session.list(container));
+                        rootDocuments.addAll(session.list(container, new DisabledListProgressListener()));
                     }
                     return true;
                 }

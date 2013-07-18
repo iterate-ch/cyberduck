@@ -19,15 +19,7 @@ package ch.cyberduck.core.transfer.copy;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractStreamListener;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.i18n.Locale;
@@ -165,7 +157,7 @@ public class CopyTransfer extends Transfer {
             return AttributedList.emptyList();
         }
         else {
-            final AttributedList<Path> list = session.list(parent);
+            final AttributedList<Path> list = session.list(parent, new DisabledListProgressListener());
             final Path copy = files.get(parent);
             for(Path p : list) {
                 files.put(p, new Path(copy, p.getName(), p.attributes().getType()));

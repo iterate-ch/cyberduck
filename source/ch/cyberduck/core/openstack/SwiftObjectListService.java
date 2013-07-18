@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -51,7 +52,7 @@ public class SwiftObjectListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file) throws BackgroundException {
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
             final int limit = Preferences.instance().getInteger("openstack.list.limit");
@@ -92,6 +93,7 @@ public class SwiftObjectListService implements ListService {
                     children.add(child);
                     marker = object.getName();
                 }
+                listener.chunk(children);
             }
             while(list.size() == limit);
             return children;

@@ -17,15 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.*;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -52,7 +44,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         new SFTPUnixPermissionFeature(session).setUnixOwner(test, "80");
-        assertEquals("80", session.list(home).get(test.getReference()).attributes().getOwner());
+        assertEquals("80", session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getOwner());
         session.close();
     }
 
@@ -71,7 +63,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         new SFTPUnixPermissionFeature(session).setUnixGroup(test, "80");
-        assertEquals("80", session.list(home).get(test.getReference()).attributes().getGroup());
+        assertEquals("80", session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getGroup());
         session.close();
     }
 
@@ -89,7 +81,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         new SFTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
-        assertEquals("666", session.list(home).get(test.getReference()).attributes().getPermission().getOctalString());
+        assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getPermission().getOctalString());
         session.close();
     }
 }

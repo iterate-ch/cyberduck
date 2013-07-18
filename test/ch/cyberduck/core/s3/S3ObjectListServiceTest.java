@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -49,7 +50,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("static.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("EU");
-        final List<Path> list = new S3ObjectListService(session).list(container);
+        final List<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(container, p.getParent());
@@ -72,7 +73,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final List<Path> list = new S3ObjectListService(session).list(new Path(container, "test", Path.DIRECTORY_TYPE));
+        final List<Path> list = new S3ObjectListService(session).list(new Path(container, "test", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
         assertTrue(list.isEmpty());
     }
 
@@ -86,6 +87,6 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("notfound.cyberduck.ch", Path.VOLUME_TYPE);
-        new S3ObjectListService(session).list(container);
+        new S3ObjectListService(session).list(container, new DisabledListProgressListener());
     }
 }

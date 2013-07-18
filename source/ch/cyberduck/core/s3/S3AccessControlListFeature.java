@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -97,7 +98,7 @@ public class S3AccessControlListFeature implements AclPermission {
                 }
                 if(file.attributes().isDirectory()) {
                     if(recursive) {
-                        for(Path child : session.list(file)) {
+                        for(Path child : session.list(file, new DisabledListProgressListener())) {
                             this.write(child, acl, recursive);
                         }
                     }

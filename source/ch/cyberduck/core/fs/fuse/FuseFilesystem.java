@@ -19,6 +19,7 @@ package ch.cyberduck.core.fs.fuse;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
@@ -251,7 +252,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public NSArray run() throws BackgroundException {
                     final NSMutableArray contents = NSMutableArray.array();
-                    for(Path child : session.list(directory)) {
+                    for(Path child : session.list(directory, new DisabledListProgressListener())) {
                         contents.addObject(child.getName());
                     }
                     return contents;
@@ -288,7 +289,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                         return attributes;
                     }
                     final Path directory = selected.getParent();
-                    final Path file = session.list(directory).get(new NSObjectPathReference(NSString.stringWithString(path)));
+                    final Path file = session.list(directory, new DisabledListProgressListener()).get(new NSObjectPathReference(NSString.stringWithString(path)));
                     attributes.setObjectForKey(file.attributes().isDirectory() ? NSFileManager.NSFileTypeDirectory : NSFileManager.NSFileTypeRegular,
                             NSFileManager.NSFileType);
                     attributes.setObjectForKey(NSNumber.numberWithFloat(file.attributes().getSize()),
@@ -327,7 +328,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                         return false;
                     }
                     final Path directory = selected.getParent();
-                    final Path file = session.list(directory).get(new NSObjectPathReference(NSString.stringWithString(path)));
+                    final Path file = session.list(directory, new DisabledListProgressListener()).get(new NSObjectPathReference(NSString.stringWithString(path)));
                     final UnixPermission unix = session.getFeature(UnixPermission.class, new DisabledLoginController());
                     if(unix != null) {
                         final NSObject posixNumber = attributes.objectForKey(NSFileManager.NSFilePosixPermissions);

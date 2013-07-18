@@ -98,7 +98,7 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
         }
         if(recursive) {
             if(file.attributes().isDirectory()) {
-                for(Path child : session.list(file)) {
+                for(Path child : session.list(file, new DisabledListProgressListener())) {
                     this.write(child);
                 }
             }

@@ -38,7 +38,7 @@ public class NullSession extends FTPSession {
         return null;
     }
 
-    public AttributedList<Path> list(final Path file) {
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
         return AttributedList.emptyList();
     }
 }

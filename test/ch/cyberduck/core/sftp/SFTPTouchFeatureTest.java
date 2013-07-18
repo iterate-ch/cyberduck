@@ -17,15 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.*;
 
 import org.junit.Test;
 
@@ -52,7 +44,7 @@ public class SFTPTouchFeatureTest extends AbstractTestCase {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new SFTPTouchFeature(session).touch(test);
-        final AttributedList<Path> list = session.list(home);
+        final AttributedList<Path> list = session.list(home, new DisabledListProgressListener());
         assertTrue(list.contains(test.getReference()));
         assertEquals("644", list.get(test.getReference()).attributes().getPermission().getOctalString());
         session.delete(test, new DisabledLoginController());

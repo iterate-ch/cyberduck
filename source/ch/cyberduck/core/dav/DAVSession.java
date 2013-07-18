@@ -19,15 +19,7 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -146,8 +138,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file) throws BackgroundException {
-        return new DAVListService(this).list(file);
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return new DAVListService(this).list(file, listener);
     }
 
     @Override

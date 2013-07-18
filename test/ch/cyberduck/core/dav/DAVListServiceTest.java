@@ -39,7 +39,8 @@ public class DAVListServiceTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        new DAVListService(session).list(new Path("/notfound", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE));
+        new DAVListService(session).list(new Path("/notfound", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE),
+                new DisabledListProgressListener());
         session.close();
     }
 
@@ -53,7 +54,8 @@ public class DAVListServiceTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE));
+        final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE),
+                new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(new Path("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE), p.getParent());

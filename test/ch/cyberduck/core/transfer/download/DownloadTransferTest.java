@@ -76,7 +76,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         root.setLocal(new NullLocal(null, "l"));
         Transfer t = new DownloadTransfer(new NullSession(new Host("t")) {
             @Override
-            public AttributedList<Path> list(final Path file) {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> children = new AttributedList<Path>();
                 children.add(new Path("/t/c", Path.FILE_TYPE));
                 return children;
@@ -91,7 +91,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         };
         Transfer t = new DownloadTransfer(new NullSession(new Host("t")) {
             @Override
-            public AttributedList<Path> list(final Path file) {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return AttributedList.emptyList();
             }
         }, root);
@@ -111,7 +111,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         });
         final Transfer t = new DownloadTransfer(new NullSession(new Host("t")) {
             @Override
-            public AttributedList<Path> list(final Path file) {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> children = new AttributedList<Path>();
                 children.add(child);
                 return children;

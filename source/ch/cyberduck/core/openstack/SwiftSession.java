@@ -193,12 +193,12 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file) throws BackgroundException {
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return new AttributedList<Path>(new SwiftContainerListService().list(this));
         }
         else {
-            return new SwiftObjectListService(this).list(file);
+            return new SwiftObjectListService(this).list(file, listener);
         }
     }
 
@@ -376,7 +376,7 @@ public class SwiftSession extends HttpSession<Client> {
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             else if(file.attributes().isDirectory()) {
-                for(Path i : this.list(file)) {
+                for(Path i : this.list(file, new DisabledListProgressListener())) {
                     this.rename(i, new Path(renamed, i.getName(), i.attributes().getType()));
                 }
                 try {

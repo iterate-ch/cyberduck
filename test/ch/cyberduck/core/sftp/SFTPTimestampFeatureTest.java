@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -49,9 +50,9 @@ public class SFTPTimestampFeatureTest extends AbstractTestCase {
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, -1L, modified, -1L);
-        assertEquals(modified / 1000 * 1000, session.list(home).get(test.getReference()).attributes().getModificationDate());
-        assertTrue(session.list(home).get(test.getReference()).attributes().getCreationDate() == -1L);
-        assertFalse(session.list(home).get(test.getReference()).attributes().getAccessedDate() == -1L);
+        assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getModificationDate());
+        assertTrue(session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getCreationDate() == -1L);
+        assertFalse(session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getAccessedDate() == -1L);
         session.close();
     }
 }

@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -49,7 +50,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
-        final List<Path> list = new SwiftObjectListService(session).list(container);
+        final List<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(container, p.getParent());
@@ -79,6 +80,6 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("notfound.cyberduck.ch", Path.VOLUME_TYPE);
-        new SwiftObjectListService(session).list(container);
+        new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
     }
 }

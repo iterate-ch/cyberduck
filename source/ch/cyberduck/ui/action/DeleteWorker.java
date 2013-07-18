@@ -18,6 +18,7 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -64,7 +65,7 @@ public abstract class DeleteWorker extends Worker<Boolean> {
         // Compile recursive list
         final List<Path> recursive = new ArrayList<Path>();
         if(file.attributes().isDirectory()) {
-            for(Path child : session.list(file)) {
+            for(Path child : session.list(file, new DisabledListProgressListener())) {
                 recursive.addAll(this.compile(child));
             }
         }

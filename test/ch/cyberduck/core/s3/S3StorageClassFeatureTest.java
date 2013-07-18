@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -59,7 +60,7 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
         session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         final String v = UUID.randomUUID().toString();
         new S3StorageClassFeature(session).setClass(test, "REDUCED_REDUNDANCY");
-        assertEquals("REDUCED_REDUNDANCY", session.list(container).get(test.getReference()).attributes().getStorageClass());
+        assertEquals("REDUCED_REDUNDANCY", session.list(container, new DisabledListProgressListener()).get(test.getReference()).attributes().getStorageClass());
         session.close();
     }
 }

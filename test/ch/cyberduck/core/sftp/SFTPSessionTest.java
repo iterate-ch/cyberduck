@@ -1,14 +1,6 @@
 package ch.cyberduck.core.sftp;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -47,7 +39,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertTrue(session.isSecured());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();
@@ -170,13 +162,13 @@ public class SFTPSessionTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        final Path test = new Path(session.mount(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(session.mount(new DisabledListProgressListener()), UUID.randomUUID().toString(), Path.FILE_TYPE);
         final OutputStream out = session.write(test, status);
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
         assertTrue(session.exists(test));
-        assertEquals(content.length, session.list(test.getParent()).get(test.getReference()).attributes().getSize());
+        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         session.delete(test, new DisabledLoginController());
     }
 }

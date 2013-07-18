@@ -19,6 +19,7 @@ package ch.cyberduck.core.fs.kfs;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
@@ -139,7 +140,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             log.warn("Return empty stat for directory not cached:" + path);
                             return false;
                         }
-                        final Path file = session.list(directory).get(new NSObjectPathReference(NSString.stringWithString(path)));
+                        final Path file = session.list(directory, new DisabledListProgressListener()).get(new NSObjectPathReference(NSString.stringWithString(path)));
                         stat.type = file.attributes().isDirectory() ? KfsLibrary.kfstype_t.KFS_DIR : KfsLibrary.kfstype_t.KFS_REG;
                         if(session.getFeature(Timestamp.class, new DisabledLoginController()) != null) {
                             stat.mtime = new KfsLibrary.kfstime(file.attributes().getModificationDate() / 1000, 0);
@@ -211,7 +212,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsreaddir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                        for(Path child : session.list(directory)) {
+                        for(Path child : session.list(directory, new DisabledListProgressListener())) {
                             filesystem.kfscontents_append(contents, child.getName());
                         }
                         return true;

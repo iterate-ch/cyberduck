@@ -7,6 +7,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
@@ -24,6 +25,8 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -132,7 +135,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertFalse(session.isSecured());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount());
+        assertNotNull(session.mount(new DisabledListProgressListener()));
         assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();
@@ -152,7 +155,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertTrue(session.isSecured());
-        final Path path = session.mount();
+        final Path path = session.mount(new DisabledListProgressListener());
         assertNotNull(path);
         assertEquals(path, session.workdir());
         assertFalse(session.cache().isEmpty());
@@ -184,7 +187,7 @@ public class FTPSessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         session.mkdir(test, null);
         assertTrue(session.exists(test));
-        session.delete(test, new DisabledLoginController());
+        session.getFeature(Delete.class, new DisabledLoginController()).delete(Collections.singletonList(test));
         assertFalse(session.exists(test));
         session.close();
     }
@@ -202,7 +205,7 @@ public class FTPSessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         assertTrue(session.exists(test));
-        session.delete(test, new DisabledLoginController());
+        session.getFeature(Delete.class, new DisabledLoginController()).delete(Collections.singletonList(test));
         assertFalse(session.exists(test));
         session.close();
     }
@@ -235,7 +238,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        session.list(new Path("/notfound", Path.DIRECTORY_TYPE));
+        session.list(new Path("/notfound", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
     }
 
 
@@ -250,7 +253,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertEquals("/", session.mount().getAbsolute());
+        assertEquals("/", session.mount(new DisabledListProgressListener()).getAbsolute());
     }
 
     @Test
@@ -426,13 +429,13 @@ public class FTPSessionTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        final Path test = new Path(session.mount(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(session.mount(new DisabledListProgressListener()), UUID.randomUUID().toString(), Path.FILE_TYPE);
         final OutputStream out = session.write(test, status);
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
         assertTrue(session.exists(test));
-        assertEquals(content.length, session.list(test.getParent()).get(test.getReference()).attributes().getSize());
+        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         session.delete(test, new DisabledLoginController());
     }
 }
