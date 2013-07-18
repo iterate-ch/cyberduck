@@ -136,6 +136,7 @@ public class DAVSessionTest extends AbstractTestCase {
         session.mkdir(test, null);
         assertTrue(session.exists(test));
         session.delete(test, new DisabledLoginController());
+        assertFalse(session.exists(test));
         session.close();
     }
 
