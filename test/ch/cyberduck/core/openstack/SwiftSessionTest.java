@@ -35,7 +35,6 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertNull(session.getFeature(Redundancy.class, null));
         assertNull(session.getFeature(Logging.class, null));
 //        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
-        assertNotNull(session.getFeature(IdentityConfiguration.class, null));
     }
 
     @Test

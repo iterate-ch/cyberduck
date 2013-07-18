@@ -33,8 +33,6 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -410,6 +408,11 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == Location.class) {
             return (T) new Location() {
                 @Override
+                public Set<String> getLocations() {
+                    return regions.keySet();
+                }
+
+                @Override
                 public String getLocation(final Path container) throws BackgroundException {
                     return container.attributes().getRegion();
                 }
@@ -418,11 +421,8 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == AnalyticsProvider.class) {
             return (T) new QloudstatAnalyticsProvider();
         }
-        if(type == IdentityConfiguration.class) {
-            return (T) new DefaultCredentialsIdentityConfiguration(host);
-        }
         if(type == DistributionConfiguration.class) {
-            for(Region region : client.getRegions()) {
+            for(Region region : regions.values()) {
                 if(null != region.getCDNManagementUrl()) {
                     return (T) new SwiftDistributionConfiguration(this) {
                         @Override

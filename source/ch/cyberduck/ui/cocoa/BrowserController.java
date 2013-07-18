@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.i18n.Locale;
@@ -2522,9 +2523,15 @@ public class BrowserController extends WindowController
 
     @Action
     public void createFolderButtonClicked(final ID sender) {
-        SheetController sheet = new FolderController(
-                this, workdir.isRoot() ? session.getHost().getProtocol().getRegions() : new HashSet<String>());
-        sheet.beginSheet();
+        final Location feature = session.getFeature(Location.class, LoginControllerFactory.get(this));
+        if(workdir.isRoot() && feature != null) {
+            SheetController sheet = new FolderController(this, feature.getLocations());
+            sheet.beginSheet();
+        }
+        else {
+            SheetController sheet = new FolderController(this, new HashSet<String>());
+            sheet.beginSheet();
+        }
     }
 
     @Action
@@ -3807,7 +3814,7 @@ public class BrowserController extends WindowController
             return this.isMounted();
         }
         else if(action.equals(Foundation.selector("sendCustomCommandClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.getFeature(Command.class, null) != null;
+            return this.isBrowser() && this.isMounted() && session.getFeature(Command.class, LoginControllerFactory.get(this)) != null;
         }
         else if(action.equals(Foundation.selector("gotoButtonClicked:"))) {
             return this.isBrowser() && this.isMounted();
@@ -3822,7 +3829,7 @@ public class BrowserController extends WindowController
             return this.isBrowser() && this.isMounted() && session.isCreateFileSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.getFeature(Symlink.class, null) != null
+            return this.isBrowser() && this.isMounted() && session.getFeature(Symlink.class, LoginControllerFactory.get(this)) != null
                     && this.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {

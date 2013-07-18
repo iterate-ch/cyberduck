@@ -20,10 +20,14 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.Set;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Location {
+
+    Set<String> getLocations();
 
     String getLocation(Path container) throws BackgroundException;
 }

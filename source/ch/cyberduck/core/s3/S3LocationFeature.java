@@ -27,6 +27,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
+import java.util.Set;
+
 /**
  * @version $Id$
  */
@@ -37,6 +39,11 @@ public class S3LocationFeature implements Location {
 
     public S3LocationFeature(final S3Session session) {
         this.session = session;
+    }
+
+    @Override
+    public Set<String> getLocations() {
+        return session.getHost().getProtocol().getRegions();
     }
 
     @Override
