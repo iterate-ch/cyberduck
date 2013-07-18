@@ -102,14 +102,10 @@ public class InfoController extends ToolbarWindowController {
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
-    private LoginController prompt;
+    private LoginController prompt = LoginControllerFactory.get(this);
 
     private PathContainerService containerService
             = new PathContainerService();
-
-    public InfoController() {
-        this.prompt = LoginControllerFactory.get(this);
-    }
 
     private Path getSelected() {
         for(Path file : files) {
@@ -1138,10 +1134,6 @@ public class InfoController extends ToolbarWindowController {
 
     /**
      * Add a custom metadata header. This will be prefixed depending on the service.
-     *
-     * @param sender Button
-     * @see org.jets3t.service.Constants#REST_METADATA_PREFIX
-     * @see com.rackspacecloud.client.cloudfiles.FilesConstants#X_OBJECT_META
      */
     @Action
     public void metadataAddCustomClicked(ID sender) {
@@ -1922,7 +1914,9 @@ public class InfoController extends ToolbarWindowController {
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
-        if(ObjectUtils.equals(controller.getSession().getFeature(IdentityConfiguration.class, prompt).getUserCredentials(controller.getSession().getFeature(AnalyticsProvider.class, prompt).getName()), credentials)) {
+        final IdentityConfiguration identityFeature = controller.getSession().getFeature(IdentityConfiguration.class, prompt);
+        final AnalyticsProvider analyticsFeature = controller.getSession().getFeature(AnalyticsProvider.class, prompt);
+        if(ObjectUtils.equals(identityFeature.getUserCredentials(analyticsFeature.getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             bucketAnalyticsButton.setEnabled(false);
         }
@@ -2020,7 +2014,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(session.getFeature(Logging.class, prompt) != null) {
                         logging = session.getFeature(Logging.class, prompt).getConfiguration(container);
-                        for(Path c : session.list(containerService.getContainer(getSelected()).getParent())) {
+                        for(Path c : session.list(containerService.getContainer(getSelected()).getParent(), new DisabledListProgressListener())) {
                             containers.add(c.getName());
                         }
                     }
@@ -2421,25 +2415,30 @@ public class InfoController extends ToolbarWindowController {
         Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
         distributionEnableButton.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
-        distributionLoggingButton.setEnabled(stop && enable && cdn.getFeature(Logging.class, method) != null);
-        final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class, prompt);
+        distributionLoggingButton.setEnabled(stop && enable && cdn.getFeature(Logging.class, method, prompt) != null);
         if(enable) {
-            final AnalyticsProvider analytics = cdn.getFeature(AnalyticsProvider.class, method);
-            if(analytics != null && ObjectUtils.equals(iam.getUserCredentials(analytics.getName()), credentials)) {
-                // No need to create new IAM credentials when same as session credentials
+            final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method, prompt);
+            final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method, prompt);
+            if(null == analyticsFeature || null == identityFeature) {
                 distributionAnalyticsButton.setEnabled(false);
             }
             else {
-                distributionAnalyticsButton.setEnabled(stop && analytics != null);
+                if(ObjectUtils.equals(identityFeature.getUserCredentials(analyticsFeature.getName()), credentials)) {
+                    // No need to create new IAM credentials when same as session credentials
+                    distributionAnalyticsButton.setEnabled(false);
+                }
+                else {
+                    distributionAnalyticsButton.setEnabled(stop);
+                }
             }
         }
         else {
             distributionAnalyticsButton.setEnabled(false);
         }
-        distributionLoggingPopup.setEnabled(stop && enable && cdn.getFeature(Logging.class, method) != null);
-        distributionCnameField.setEnabled(stop && enable && cdn.getFeature(Cname.class, method) != null);
-        distributionInvalidateObjectsButton.setEnabled(stop && enable && cdn.getFeature(Purge.class, method) != null);
-        distributionDefaultRootPopup.setEnabled(stop && enable && cdn.getFeature(Index.class, method) != null);
+        distributionLoggingPopup.setEnabled(stop && enable && cdn.getFeature(Logging.class, method, prompt) != null);
+        distributionCnameField.setEnabled(stop && enable && cdn.getFeature(Cname.class, method, prompt) != null);
+        distributionInvalidateObjectsButton.setEnabled(stop && enable && cdn.getFeature(Purge.class, method, prompt) != null);
+        distributionDefaultRootPopup.setEnabled(stop && enable && cdn.getFeature(Index.class, method, prompt) != null);
         if(stop) {
             distributionProgress.stopAnimation(null);
         }
@@ -2459,7 +2458,7 @@ public class InfoController extends ToolbarWindowController {
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = containerService.getContainer(getSelected());
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
-                    final Purge feature = cdn.getFeature(Purge.class, method);
+                    final Purge feature = cdn.getFeature(Purge.class, method, prompt);
                     feature.invalidate(container, method, files, false);
                 }
 
@@ -2537,9 +2536,9 @@ public class InfoController extends ToolbarWindowController {
                     final Session<?> session = controller.getSession();
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
                     distribution = cdn.read(container, method);
-                    if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
+                    if(cdn.getFeature(Index.class, distribution.getMethod(), prompt) != null) {
                         // Make sure container items are cached for default root object.
-                        rootDocuments.addAll(session.list(container));
+                        rootDocuments.addAll(session.list(container, new DisabledListProgressListener()));
                     }
                 }
 
@@ -2574,14 +2573,14 @@ public class InfoController extends ToolbarWindowController {
                         if(null == distributionLoggingPopup.selectedItem()) {
                             distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
                         }
-                        if(cdn.getFeature(AnalyticsProvider.class, distribution.getMethod()) != null) {
-                            final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class, prompt);
-                            final AnalyticsProvider analytics = controller.getSession().getFeature(AnalyticsProvider.class, prompt);
-                            final Credentials credentials = iam.getUserCredentials(analytics.getName());
+                        final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method, prompt);
+                        final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method, prompt);
+                        if(analyticsFeature != null && identityFeature != null) {
+                            final Credentials credentials = identityFeature.getUserCredentials(analyticsFeature.getName());
                             distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
                             if(credentials != null) {
                                 distributionAnalyticsSetupUrlField.setAttributedStringValue(
-                                        HyperlinkAttributedStringFactory.create(analytics.getSetup(cdn.getProtocol(),
+                                        HyperlinkAttributedStringFactory.create(analyticsFeature.getSetup(cdn.getProtocol(),
                                                 distribution.getMethod().getScheme(), container.getName(), credentials)));
                             }
                         }
@@ -2624,7 +2623,7 @@ public class InfoController extends ToolbarWindowController {
                                 break;
                             }
                         }
-                        if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
+                        if(cdn.getFeature(Index.class, distribution.getMethod(), prompt) != null) {
                             for(Path next : rootDocuments) {
                                 if(next.attributes().isFile()) {
                                     distributionDefaultRootPopup.addItemWithTitle(next.getName());

@@ -33,6 +33,8 @@ import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.identity.AWSIdentityConfiguration;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -240,7 +242,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             // Configure CDN
             LoggingStatus loggingStatus = null;
             if(distribution.isLogging()) {
-                if(this.getFeature(Logging.class, distribution.getMethod()) != null) {
+                if(this.getFeature(Logging.class, distribution.getMethod(), new DisabledLoginController()) != null) {
                     final String loggingTarget;
                     if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
                         loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingTarget(),
@@ -283,7 +285,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method, final LoginController prompt) {
         if(type == Purge.class || type == Index.class) {
             if(method.equals(Distribution.DOWNLOAD)
                     || method.equals(Distribution.WEBSITE_CDN)
@@ -307,6 +309,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         }
         if(type == Cname.class) {
             return (T) this;
+        }
+        if(type == IdentityConfiguration.class) {
+            return (T) new AWSIdentityConfiguration(session.getHost(), prompt);
         }
         return null;
     }
@@ -360,7 +365,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             }
             if(file.attributes().isDirectory()) {
                 if(recursive) {
-                    keys.addAll(this.getInvalidationKeys(session.list(file), recursive));
+                    keys.addAll(this.getInvalidationKeys(session.list(file, new DisabledListProgressListener()), recursive));
                 }
             }
         }
@@ -539,10 +544,10 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         distribution.setLogging(distributionConfig.getLoggingStatus().isEnabled());
         distribution.setLoggingContainer(loggingTarget);
         distribution.setIndexDocument(distributionConfig.getDefaultRootObject());
-        if(this.getFeature(Purge.class, method) != null) {
+        if(this.getFeature(Purge.class, method, new DisabledLoginController()) != null) {
             distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
         }
-        if(this.getFeature(Logging.class, method) != null) {
+        if(this.getFeature(Logging.class, method, new DisabledLoginController()) != null) {
             distribution.setContainers(new S3BucketListService().list(session));
         }
         return distribution;

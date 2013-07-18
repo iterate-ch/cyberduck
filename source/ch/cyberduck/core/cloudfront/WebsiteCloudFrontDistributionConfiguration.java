@@ -157,7 +157,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method, final LoginController prompt) {
         if(type == Index.class) {
             if(method.equals(Distribution.WEBSITE)) {
                 return (T) this;
@@ -166,7 +166,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
         if(type == Cname.class) {
             return (T) this;
         }
-        return super.getFeature(type, method);
+        return super.getFeature(type, method, prompt);
     }
 
     /**

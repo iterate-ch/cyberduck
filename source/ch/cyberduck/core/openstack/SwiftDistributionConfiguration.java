@@ -17,6 +17,7 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
@@ -30,6 +31,8 @@ import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -160,7 +163,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method, final LoginController prompt) {
         if(type == Purge.class) {
             return (T) this;
         }
@@ -169,6 +172,9 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
         }
         if(type == Logging.class) {
             return (T) this;
+        }
+        if(type == IdentityConfiguration.class) {
+            return (T) new DefaultCredentialsIdentityConfiguration(session.getHost());
         }
         if(type == AnalyticsProvider.class) {
             return (T) new QloudstatAnalyticsProvider();

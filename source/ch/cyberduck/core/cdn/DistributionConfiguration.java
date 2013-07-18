@@ -19,6 +19,7 @@ package ch.cyberduck.core.cdn;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -74,5 +75,5 @@ public interface DistributionConfiguration {
      */
     String getName(Distribution.Method method);
 
-    <T> T getFeature(Class<T> type, Distribution.Method method);
+    <T> T getFeature(Class<T> type, Distribution.Method method, LoginController prompt);
 }
