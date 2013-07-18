@@ -6,6 +6,10 @@
 	<string>cf</string>
 	<key>Vendor</key>
 	<string>rackspaceuk</string>
+    <key>Type</key>
+    <string>swift</string>
+	<key>Name</key>
+	<string>Cloud Files</string>
 	<key>Description</key>
 	<string>Rackspace Cloud Files UK</string>
 	<key>Default Hostname</key>
