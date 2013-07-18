@@ -23,8 +23,6 @@ import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
-import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.serializer.SerializerFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -33,12 +31,13 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Set;
 import java.util.UUID;
 
 /**
  * @version $Id$
  */
-public final class Profile extends AbstractProtocol implements Serializable {
+public final class Profile implements Protocol {
     private static final Logger log = Logger.getLogger(Profile.class);
 
     private Deserializer dict;
@@ -63,20 +62,6 @@ public final class Profile extends AbstractProtocol implements Serializable {
         disk = this.write(this.getValue("Disk"));
     }
 
-    @Override
-    public <T> T getAsDictionary() {
-        final Serializer serializer = SerializerFactory.createSerializer();
-        serializer.setStringForKey("Protocol", parent.getIdentifier());
-        serializer.setStringForKey("Scheme", this.getScheme().toString());
-        serializer.setStringForKey("Vendor", this.getProvider());
-        serializer.setStringForKey("Description", this.getDescription());
-        serializer.setStringForKey("Default Hostname", this.getDefaultHostname());
-        serializer.setStringForKey("Default Port", String.valueOf(this.getDefaultPort()));
-        serializer.setStringForKey("Username Placeholder", this.getUsernamePlaceholder());
-        serializer.setStringForKey("Password Placeholder", this.getPasswordPlaceholder());
-        return serializer.<T>getSerialized();
-    }
-
     public Protocol getProtocol() {
         return parent;
     }
@@ -88,6 +73,11 @@ public final class Profile extends AbstractProtocol implements Serializable {
     public boolean isEnabled() {
         return StringUtils.isNotBlank(this.getValue("Protocol"))
                 && StringUtils.isNotBlank(this.getValue("Vendor"));
+    }
+
+    @Override
+    public boolean isSecure() {
+        throw new UnsupportedOperationException();
     }
 
     private String getValue(final String key) {
@@ -186,6 +176,16 @@ public final class Profile extends AbstractProtocol implements Serializable {
         return disk.getAbsolute();
     }
 
+    @Override
+    public String icon() {
+        return parent.icon();
+    }
+
+    @Override
+    public String favicon() {
+        return parent.favicon();
+    }
+
     /**
      * Write temporary file with data
      *
@@ -231,12 +231,22 @@ public final class Profile extends AbstractProtocol implements Serializable {
     }
 
     @Override
+    public String[] getSchemes() {
+        return parent.getSchemes();
+    }
+
+    @Override
     public String getContext() {
         final String v = this.getValue("Context");
         if(StringUtils.isBlank(v)) {
             return parent.getContext();
         }
         return v;
+    }
+
+    @Override
+    public Set<String> getRegions() {
+        return parent.getRegions();
     }
 
     @Override
@@ -247,6 +257,16 @@ public final class Profile extends AbstractProtocol implements Serializable {
     @Override
     public boolean isAnonymousConfigurable() {
         return parent.isAnonymousConfigurable();
+    }
+
+    @Override
+    public boolean isHostnameConfigurable() {
+        return parent.isHostnameConfigurable();
+    }
+
+    @Override
+    public boolean isPortConfigurable() {
+        return parent.isPortConfigurable();
     }
 
     @Override

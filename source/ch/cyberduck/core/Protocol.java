@@ -157,11 +157,6 @@ public interface Protocol {
     String getProvider();
 
     /**
-     * @return Include legacy names
-     */
-    Set<String> getProviders();
-
-    /**
      * @return Protocol family
      */
     Type getType();
