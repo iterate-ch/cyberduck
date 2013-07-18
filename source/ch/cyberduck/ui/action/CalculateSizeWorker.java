@@ -63,6 +63,8 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
      */
     private long calculateSize(final Path p) throws BackgroundException {
         long size = 0;
+        session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                p.getName()));
         if(p.attributes().isDirectory()) {
             for(Path next : session.list(p)) {
                 size += this.calculateSize(next);

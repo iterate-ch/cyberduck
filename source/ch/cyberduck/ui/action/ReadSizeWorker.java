@@ -45,9 +45,10 @@ public abstract class ReadSizeWorker extends Worker<Long> {
     @Override
     public Long run() throws BackgroundException {
         for(Path next : files) {
-            if(-1 < next.attributes().getSize()) {
-                total += next.attributes().getSize();
+            if(-1 == next.attributes().getSize()) {
+                continue;
             }
+            total += next.attributes().getSize();
         }
         return total;
     }

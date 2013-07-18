@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.i18n.Locale;
@@ -35,6 +36,8 @@ import java.util.List;
  */
 public abstract class WriteAclWorker extends Worker<Acl> {
     private static Logger log = Logger.getLogger(WriteAclWorker.class);
+
+    private Session<?> session;
 
     private AclPermission feature;
 
@@ -53,8 +56,9 @@ public abstract class WriteAclWorker extends Worker<Acl> {
      */
     private boolean recursive;
 
-    public WriteAclWorker(final AclPermission feature, final List<Path> files,
+    public WriteAclWorker(final Session session, final AclPermission feature, final List<Path> files,
                           final Acl acl, final boolean recursive) {
+        this.session = session;
         this.feature = feature;
         this.files = files;
         this.acl = acl;
@@ -63,21 +67,23 @@ public abstract class WriteAclWorker extends Worker<Acl> {
 
     @Override
     public Acl run() throws BackgroundException {
-        for(Path next : files) {
+        for(Path file : files) {
             if(acl.isModified()) {
+                session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+                        file.getName(), acl));
                 // Existing entry has been modified
-                feature.write(next, acl, recursive);
+                feature.write(file, acl, recursive);
             }
             else {
-                if(acl.equals(next.attributes().getAcl())) {
+                if(acl.equals(file.attributes().getAcl())) {
                     if(log.isInfoEnabled()) {
-                        log.info("Skip writing equal ACL for " + next);
+                        log.info("Skip writing equal ACL for " + file);
                     }
                     return acl;
                 }
                 else {
                     // Additional entry added
-                    feature.write(next, acl, recursive);
+                    feature.write(file, acl, recursive);
                 }
             }
         }
