@@ -101,7 +101,11 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     /**
      * @return The filter to apply to the file listing in the prompt dialog
      */
-    protected abstract Filter<Path> filter();
+    protected Filter<Path> filter() {
+        return new PromptFilter();
+    }
+
+    ;
 
     /**
      * Container for all paths currently being listed in the background

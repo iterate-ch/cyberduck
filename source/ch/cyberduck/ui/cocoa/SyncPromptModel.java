@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -44,16 +43,6 @@ public class SyncPromptModel extends TransferPromptModel {
         for(Path child : transfer.children(p)) {
             super.add(child);
         }
-    }
-
-    /**
-     * Filtering what files are displayed. Used to decide which files to include in the prompt.
-     */
-    private Filter<Path> filter = new PromptFilter();
-
-    @Override
-    protected Filter<Path> filter() {
-        return filter;
     }
 
     /**

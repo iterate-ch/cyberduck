@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -37,37 +36,6 @@ public class DownloadPromptModel extends TransferPromptModel {
 
     public DownloadPromptModel(TransferPromptController c, Transfer transfer) {
         super(c, transfer);
-    }
-
-    /**
-     * Filtering what files are displayed. Used to decide which files to include in the prompt dialog
-     */
-    private PromptFilter filter = new PromptFilter() {
-        /**
-         * @param path File
-         * @return True for files that already exist in the download folder
-         */
-        @Override
-        public boolean accept(final Path path) {
-            if(path.getLocal().exists()) {
-                if(path.attributes().isFile()) {
-                    if(path.getLocal().attributes().getSize() == 0) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Skip prompt for zero sized file %s", path.getName()));
-                        }
-                        // Do not prompt for zero sized files
-                        return false;
-                    }
-                }
-                return super.accept(path);
-            }
-            return false;
-        }
-    };
-
-    @Override
-    protected Filter<Path> filter() {
-        return filter;
     }
 
     @Override
