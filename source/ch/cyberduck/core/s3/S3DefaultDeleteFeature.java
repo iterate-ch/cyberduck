@@ -24,14 +24,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3DefaultDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(S3DefaultDeleteFeature.class);
@@ -52,6 +54,8 @@ public class S3DefaultDeleteFeature implements Delete {
             if(containerService.isContainer(file)) {
                 continue;
             }
+            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    file.getName()));
             try {
                 try {
                     if(file.attributes().isDirectory()) {
@@ -78,6 +82,8 @@ public class S3DefaultDeleteFeature implements Delete {
         }
         for(Path file : files) {
             if(containerService.isContainer(file)) {
+                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                        file.getName()));
                 // Finally delete bucket itself
                 try {
                     session.getClient().deleteBucket(containerService.getContainer(file).getName());

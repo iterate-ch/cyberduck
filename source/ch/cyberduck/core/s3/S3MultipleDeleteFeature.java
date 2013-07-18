@@ -24,17 +24,19 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3MultipleDeleteFeature implements Delete {
 
@@ -55,6 +57,8 @@ public class S3MultipleDeleteFeature implements Delete {
             if(containerService.isContainer(file)) {
                 continue;
             }
+            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    file.getName()));
             final Path container = containerService.getContainer(file);
             final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
             if(file.attributes().isDirectory()) {
@@ -83,6 +87,8 @@ public class S3MultipleDeleteFeature implements Delete {
         }
         for(Path file : files) {
             if(containerService.isContainer(file)) {
+                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                        file.getName()));
                 // Finally delete bucket itself
                 try {
                     session.getClient().deleteBucket(containerService.getContainer(file).getName());
