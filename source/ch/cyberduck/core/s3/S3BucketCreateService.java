@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 
-import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.utils.ServiceUtils;
@@ -33,7 +32,6 @@ import org.jets3t.service.utils.ServiceUtils;
  * @version $Id$
  */
 public class S3BucketCreateService {
-    private static final Logger log = Logger.getLogger(S3BucketCreateService.class);
 
     private S3Session session;
 
