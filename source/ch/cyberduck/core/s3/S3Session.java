@@ -339,11 +339,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
-        for(Path bucket : new S3BucketListService().list(this)) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Found bucket %s", bucket));
-            }
-        }
+        // List all buckets and cache
+        this.cache().put(new Path(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference(),
+                new AttributedList<Path>(new S3BucketListService().list(this)));
     }
 
     /**
