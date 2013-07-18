@@ -22,12 +22,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.i18n.Locale;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class SwiftProtocol extends AbstractProtocol {
     @Override
@@ -43,12 +39,6 @@ public final class SwiftProtocol extends AbstractProtocol {
     @Override
     public String getIdentifier() {
         return "swift";
-    }
-
-    @Override
-    public Set<String> getProviders() {
-        // Include legacy Rackspace identifier
-        return new HashSet<String>(Arrays.asList(this.getIdentifier(), "cf"));
     }
 
     @Override
