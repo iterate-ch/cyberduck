@@ -48,7 +48,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3SingleUploadService {
     private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
@@ -101,8 +101,7 @@ public class S3SingleUploadService {
         }
         if(null != digest) {
             final StorageObject part = out.getResponse();
-            session.message(MessageFormat.format(
-                    Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
+            session.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
             // Obtain locally-calculated MD5 hash.
             String hexMD5 = ServiceUtils.toHex(digest.digest());
             try {
