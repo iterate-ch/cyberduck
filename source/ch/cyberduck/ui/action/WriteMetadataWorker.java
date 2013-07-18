@@ -20,6 +20,7 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.i18n.Locale;
@@ -37,6 +38,8 @@ import java.util.Map;
 public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
     private static Logger log = Logger.getLogger(WriteMetadataWorker.class);
 
+    private Session<?> session;
+
     private Headers feature;
 
     /**
@@ -49,37 +52,41 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
      */
     private Map<String, String> metadata;
 
-    protected WriteMetadataWorker(final Headers feature, final List<Path> files, final Map<String, String> metadata) {
+    protected WriteMetadataWorker(final Session session, final Headers feature,
+                                  final List<Path> files, final Map<String, String> metadata) {
+        this.session = session;
         this.feature = feature;
         this.files = files;
         this.metadata = metadata;
     }
 
     @Override
-    public String getActivity() {
-        return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                this.toString(files));
-    }
-
-    @Override
     public Map<String, String> run() throws BackgroundException {
-        for(Path next : files) {
+        for(Path file : files) {
+            session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                    file.getName()));
             for(Map.Entry<String, String> entry : metadata.entrySet()) {
                 // Prune metadata from entries which are unique to a single file. For example md5-hash.
                 if(StringUtils.isBlank(entry.getValue())) {
                     // Reset with previous value
-                    metadata.put(entry.getKey(), next.attributes().getMetadata().get(entry.getKey()));
+                    metadata.put(entry.getKey(), file.attributes().getMetadata().get(entry.getKey()));
                 }
             }
-            if(metadata.equals(next.attributes().getMetadata())) {
+            if(metadata.equals(file.attributes().getMetadata())) {
                 if(log.isInfoEnabled()) {
-                    log.info("Skip writing equal metadata for " + next);
+                    log.info("Skip writing equal metadata for " + file);
                 }
             }
             else {
-                feature.setMetadata(next, metadata);
+                feature.setMetadata(file, metadata);
             }
         }
         return metadata;
+    }
+
+    @Override
+    public String getActivity() {
+        return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                this.toString(files));
     }
 }

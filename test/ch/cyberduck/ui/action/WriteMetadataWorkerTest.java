@@ -1,6 +1,8 @@
 package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
@@ -23,7 +25,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
     @Test
     public void testEmpty() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        WriteMetadataWorker worker = new WriteMetadataWorker(new Headers() {
+        WriteMetadataWorker worker = new WriteMetadataWorker(new NullSession(new Host("h")), new Headers() {
             @Override
             public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                 fail();
@@ -53,7 +55,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
         files.add(p);
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("key", "v1");
-        WriteMetadataWorker worker = new WriteMetadataWorker(new Headers() {
+        WriteMetadataWorker worker = new WriteMetadataWorker(new NullSession(new Host("h")), new Headers() {
             @Override
             public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                 throw new UnsupportedOperationException();
@@ -84,7 +86,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("nullified", null);
         updated.put("key", "v2");
-        WriteMetadataWorker worker = new WriteMetadataWorker(new Headers() {
+        WriteMetadataWorker worker = new WriteMetadataWorker(new NullSession(new Host("h")), new Headers() {
             @Override
             public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                 throw new UnsupportedOperationException();

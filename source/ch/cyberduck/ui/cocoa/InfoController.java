@@ -1251,7 +1251,7 @@ public class InfoController extends ToolbarWindowController {
                 update.put(header.getName(), header.getValue());
             }
             this.background(new WorkerBackgroundAction<Map<String, String>>(controller,
-                    new WriteMetadataWorker(controller.getSession().getFeature(Headers.class, prompt), files, update) {
+                    new WriteMetadataWorker(controller.getSession(), controller.getSession().getFeature(Headers.class, prompt), files, update) {
                         @Override
                         public void cleanup(Map<String, String> metadata) {
                             toggleMetadataSettings(true);
