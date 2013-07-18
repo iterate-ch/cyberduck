@@ -46,12 +46,11 @@ public class SFTPListService implements ListService {
     public AttributedList<Path> list(final Path directory) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-
             for(SFTPv3DirectoryEntry f : session.sftp().ls(directory.getAbsolute())) {
                 if(f.filename.equals(".") || f.filename.equals("..")) {
                     continue;
                 }
-                SFTPv3FileAttributes attributes = f.attributes;
+                final SFTPv3FileAttributes attributes = f.attributes;
                 final Path file = new Path(directory, f.filename, attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 if(null != attributes.size) {
                     if(file.attributes().isFile()) {
