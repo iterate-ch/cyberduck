@@ -119,11 +119,11 @@ public class DownloadTransferTest extends AbstractTestCase {
         }, root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+                                    final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options, status, listener);
+                super.transfer(file, filter, options, status);
                 if(file.equals(root)) {
                     assertFalse(this.cache().containsKey(root.getReference()));
                 }
