@@ -93,7 +93,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public boolean isSecure() {
-        throw new UnsupportedOperationException();
+        return parent.isSecure();
     }
 
     private String getValue(final String key) {
