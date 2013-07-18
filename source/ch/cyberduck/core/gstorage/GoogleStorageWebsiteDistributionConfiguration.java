@@ -17,6 +17,7 @@ package ch.cyberduck.core.gstorage;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
@@ -119,7 +120,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method, final LoginController prompt) {
         if(type == Index.class) {
             return (T) this;
         }
