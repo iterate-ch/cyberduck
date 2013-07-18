@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class SessionBackgroundAction extends AbstractBackgroundAction<Boolean>
+public abstract class SessionBackgroundAction<T> extends AbstractBackgroundAction<T>
         implements ProgressListener, TranscriptListener {
     private static final Logger log = Logger.getLogger(SessionBackgroundAction.class);
 
@@ -181,7 +181,7 @@ public abstract class SessionBackgroundAction extends AbstractBackgroundAction<B
     }
 
     @Override
-    public Boolean call() {
+    public T call() {
         try {
             for(Session session : this.getSessions()) {
                 if(connection.check(session)) {
@@ -203,7 +203,7 @@ public abstract class SessionBackgroundAction extends AbstractBackgroundAction<B
             exception = failure;
             failed = true;
         }
-        return false;
+        return null;
     }
 
     @Override

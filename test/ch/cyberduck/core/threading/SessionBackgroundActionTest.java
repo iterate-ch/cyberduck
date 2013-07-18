@@ -68,7 +68,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             }
 
             @Override
-            public void run() throws BackgroundException {
+            public Object run() throws BackgroundException {
                 throw new ConnectionCanceledException();
             }
         };
@@ -104,7 +104,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             }
 
             @Override
-            public void run() throws BackgroundException {
+            public Object run() throws BackgroundException {
                 throw failure;
             }
         };
@@ -139,7 +139,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             }
 
             @Override
-            public void run() throws BackgroundException {
+            public Object run() throws BackgroundException {
                 throw failure;
             }
         };

@@ -249,7 +249,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 final Path directory = new Path(path, Path.DIRECTORY_TYPE);
 
                 @Override
-                public NSArray call() throws BackgroundException {
+                public NSArray run() throws BackgroundException {
                     final NSMutableArray contents = NSMutableArray.array();
                     for(Path child : session.list(directory)) {
                         contents.addObject(child.getName());
@@ -280,7 +280,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final NSMutableDictionary attributes = NSMutableDictionary.dictionary();
             final Future<NSDictionary> future = background(new FilesystemBackgroundAction<NSDictionary>(session) {
                 @Override
-                public NSDictionary call() throws BackgroundException {
+                public NSDictionary run() throws BackgroundException {
                     final Path selected = new Path(path, Path.DIRECTORY_TYPE);
                     if(selected.isRoot()) {
                         attributes.setObjectForKey(NSFileManager.NSFileTypeDirectory,
@@ -321,7 +321,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("setAttributes_ofItemAtPath_userData_error:" + path);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() throws BackgroundException {
+                public Boolean run() throws BackgroundException {
                     final Path selected = new Path(path, Path.DIRECTORY_TYPE);
                     if(selected.isRoot()) {
                         return false;
@@ -364,7 +364,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("createDirectoryAtPath_attributes_error:" + path);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() throws BackgroundException {
+                public Boolean run() throws BackgroundException {
                     final Path directory = new Path(path, Path.DIRECTORY_TYPE);
                     session.mkdir(directory, null);
                     return true;
@@ -386,7 +386,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("createFileAtPath_attributes_userData_error:" + path);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() throws BackgroundException {
+                public Boolean run() throws BackgroundException {
                     final Path file = new Path(path, Path.DIRECTORY_TYPE);
                     if(session.isCreateFileSupported(file.getParent())) {
                         session.getFeature(Touch.class, new DisabledLoginController()).touch(file);
@@ -411,7 +411,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("removeDirectoryAtPath_error:" + path);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() throws BackgroundException {
+                public Boolean run() throws BackgroundException {
                     final Path directory = new Path(path, Path.DIRECTORY_TYPE);
                     session.delete(directory, new DisabledLoginController());
                     return true;
@@ -433,7 +433,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("removeItemAtPath_error:" + path);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() throws BackgroundException {
+                public Boolean run() throws BackgroundException {
                     final Path file = new Path(path, Path.FILE_TYPE);
                     session.delete(file, new DisabledLoginController());
                     return true;
@@ -455,7 +455,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.debug("moveItemAtPath_toPath_error:" + source);
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                 @Override
-                public Boolean call() throws BackgroundException {
+                public Boolean run() throws BackgroundException {
                     final Path file = new Path(source, Path.FILE_TYPE);
                     if(!session.isRenameSupported(file)) {
                         return false;

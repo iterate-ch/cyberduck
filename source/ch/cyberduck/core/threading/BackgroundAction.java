@@ -40,7 +40,7 @@ public interface BackgroundAction<T> extends Callable<T> {
      */
     void prepare() throws ConnectionCanceledException;
 
-    void run() throws BackgroundException;
+    T run() throws BackgroundException;
 
     /**
      * Called form a worker thread not blocking the user interface

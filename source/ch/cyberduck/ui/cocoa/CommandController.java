@@ -112,9 +112,10 @@ public class CommandController extends SheetController implements TranscriptList
                 boolean close;
 
                 @Override
-                public void run() throws BackgroundException {
+                public Boolean run() throws BackgroundException {
                     final Command feature = session.getFeature(Command.class, LoginControllerFactory.get(parent));
                     feature.send(command, this);
+                    return true;
                 }
 
                 @Override

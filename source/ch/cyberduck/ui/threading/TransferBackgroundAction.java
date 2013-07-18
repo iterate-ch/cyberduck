@@ -90,7 +90,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
     }
 
     @Override
-    public void run() throws BackgroundException {
+    public Boolean run() throws BackgroundException {
         final String lock = sleep.lock();
         try {
             queue.add(transfer, progressListener);
@@ -110,6 +110,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
             progressTimer.cancel(false);
             transferListener.stop(transfer);
         }
+        return true;
     }
 
     @Override

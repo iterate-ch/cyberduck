@@ -120,7 +120,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public boolean apply(final String path, final KfsLibrary.kfsstat stat, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
-                    public Boolean call() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         log.debug("kfsstat_f:" + path);
                         final Path selected = new Path(path, Path.DIRECTORY_TYPE);
                         if(selected.isRoot()) {
@@ -208,7 +208,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public boolean apply(final String path, final Pointer contents, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
-                    public Boolean call() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         log.debug("kfsreaddir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
                         for(Path child : session.list(directory)) {
@@ -234,7 +234,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public KfsLibrary.size_t apply(final String path, final Pointer buf, final KfsLibrary.size_t offset, final KfsLibrary.size_t length, Pointer context) {
                 final Future<KfsLibrary.size_t> future = background(new FilesystemBackgroundAction<KfsLibrary.size_t>(session) {
                     @Override
-                    public KfsLibrary.size_t call() throws BackgroundException {
+                    public KfsLibrary.size_t run() throws BackgroundException {
                         log.debug("kfsread_f:" + path);
                         final Path file = new Path(path, Path.FILE_TYPE);
                         final TransferStatus status = new TransferStatus();
@@ -280,7 +280,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public KfsLibrary.size_t apply(final String path, final Pointer buf, final KfsLibrary.size_t offset, final KfsLibrary.size_t length, Pointer context) {
                 final Future<KfsLibrary.size_t> future = background(new FilesystemBackgroundAction<KfsLibrary.size_t>(session) {
                     @Override
-                    public KfsLibrary.size_t call() {
+                    public KfsLibrary.size_t run() {
                         log.debug("kfswrite_f:" + path);
 //                        final Path file = new Path(session, path, Path.FILE_TYPE);
 //                        try {
@@ -334,7 +334,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public boolean apply(final String path, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
-                    public Boolean call() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         log.debug("kfscreate_f:" + path);
                         final Path file = new Path(path, Path.DIRECTORY_TYPE);
                         if(session.isCreateFileSupported(file.getParent())) {
@@ -361,7 +361,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public boolean apply(final String path, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
-                    public Boolean call() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         log.debug("kfsremove_f:" + path);
                         final Path file = new Path(path, Path.FILE_TYPE);
                         session.delete(file, new DisabledLoginController());
@@ -385,7 +385,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public boolean apply(final String path, final String destination, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
-                    public Boolean call() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         log.debug("kfsrename_f:" + path);
                         final Path file = new Path(path, Path.FILE_TYPE);
                         if(!session.isRenameSupported(file)) {
@@ -412,7 +412,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public boolean apply(final String path, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
-                    public Boolean call() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         log.debug("kfsremove_f:" + path);
                         final Path file = new Path(path, Path.FILE_TYPE);
                         session.delete(file, new DisabledLoginController());
@@ -460,7 +460,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public boolean apply(final String path, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
-                    public Boolean call() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         log.debug("kfsmkdir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
                         session.mkdir(directory, null);
@@ -484,7 +484,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public boolean apply(final String path, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
-                    public Boolean call() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         log.debug("kfsrmdir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
                         session.delete(directory, new DisabledLoginController());
@@ -517,9 +517,9 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         }
         final Local mountpoint = target;
         delegate.options = new KfsLibrary.kfsoptions(mountpoint.getAbsolute());
-        final Future<Void> future = background(new FilesystemBackgroundAction<Void>(this) {
+        final Future<Void> future = background(new FilesystemBackgroundAction<Void>(session) {
             @Override
-            public Void call() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 identifier = filesystem.kfs_mount(delegate);
                 // Must wait for mount notification
                 while(true) {

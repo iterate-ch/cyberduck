@@ -12,7 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AbstractControllerTest extends AbstractTestCase {
 
@@ -36,7 +36,7 @@ public class AbstractControllerTest extends AbstractTestCase {
             }
 
             @Override
-            public void run() throws BackgroundException {
+            public Object run() throws BackgroundException {
                 assertEquals("background-1", Thread.currentThread().getName());
                 entry.countDown();
                 try {
@@ -45,6 +45,7 @@ public class AbstractControllerTest extends AbstractTestCase {
                 catch(InterruptedException e) {
                     fail();
                 }
+                return null;
             }
 
             @Override
@@ -61,8 +62,9 @@ public class AbstractControllerTest extends AbstractTestCase {
         controller.background(action);
         controller.background(new AbstractBackgroundAction() {
             @Override
-            public void run() throws BackgroundException {
+            public Object run() throws BackgroundException {
                 assertFalse(controller.getActions().contains(action));
+                return null;
             }
 
             @Override

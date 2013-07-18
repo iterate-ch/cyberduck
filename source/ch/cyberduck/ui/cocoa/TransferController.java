@@ -862,12 +862,7 @@ public final class TransferController extends WindowController implements NSTool
                         pasteboard.getSession().getHost().getDownloadFolder(),
                         download.getName()));
             }
-            this.addTransfer(new DownloadTransfer(session, pasteboard), new AbstractBackgroundAction() {
-                @Override
-                public void run() throws BackgroundException {
-                    //
-                }
-            });
+            this.addTransfer(new DownloadTransfer(session, pasteboard));
             pasteboard.clear();
         }
     }

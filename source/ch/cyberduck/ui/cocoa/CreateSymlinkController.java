@@ -69,9 +69,11 @@ public class CreateSymlinkController extends FileController {
         final Path link = new Path(this.getWorkdir(), symlink, Path.FILE_TYPE);
         c.background(new BrowserBackgroundAction(c) {
             @Override
-            public void run() throws BackgroundException {
+            public Boolean run() throws BackgroundException {
                 // Symlink pointing to existing file
-                session.getFeature(Symlink.class, LoginControllerFactory.get(c)).symlink(link, selected.getName());
+                final Symlink feature = session.getFeature(Symlink.class, LoginControllerFactory.get(c));
+                feature.symlink(link, selected.getName());
+                return true;
             }
 
             @Override

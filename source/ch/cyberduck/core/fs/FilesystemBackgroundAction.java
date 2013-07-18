@@ -19,26 +19,38 @@ package ch.cyberduck.core.fs;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.DisabledAlertCallback;
+import ch.cyberduck.core.threading.SessionBackgroundAction;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @version $Id$
  */
-public abstract class FilesystemBackgroundAction<T> extends AbstractBackgroundAction<T> {
-    private Object lock;
+public abstract class FilesystemBackgroundAction<T> extends SessionBackgroundAction<T> {
 
-    public FilesystemBackgroundAction(Object lock) {
-        this.lock = lock;
+    private Session<?> session;
+
+    public FilesystemBackgroundAction(final Session session) {
+        super(new DisabledAlertCallback(), new DisabledProgressListener(), new DisabledTranscriptListener(), new DisabledLoginController(),
+                new DefaultHostKeyController());
+        this.session = session;
     }
 
     @Override
-    public Object lock() {
-        return lock;
+    public List<Session<?>> getSessions() {
+        return Collections.<Session<?>>singletonList(session);
     }
 
-    public void run() throws BackgroundException {
+    public T run() throws BackgroundException {
         throw new BackgroundException("Not supported");
     }
 

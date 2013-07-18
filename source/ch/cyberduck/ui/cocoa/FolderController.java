@@ -95,13 +95,14 @@ public class FolderController extends FileController {
                     filename, Path.DIRECTORY_TYPE);
 
             @Override
-            public void run() throws BackgroundException {
+            public Boolean run() throws BackgroundException {
                 if(!regions.isEmpty()) {
                     c.getSession().mkdir(folder, regionPopup.selectedItem().representedObject());
                 }
                 else {
                     c.getSession().mkdir(folder, null);
                 }
+                return true;
             }
 
             @Override

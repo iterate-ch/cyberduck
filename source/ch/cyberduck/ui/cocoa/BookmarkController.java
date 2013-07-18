@@ -265,7 +265,7 @@ public class BookmarkController extends WindowController {
             this.background(new AbstractBackgroundAction<Void>() {
 
                 @Override
-                public void run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     final String f = host.getProtocol().favicon();
                     if(StringUtils.isNotBlank(f)) {
                         favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
@@ -275,13 +275,14 @@ public class BookmarkController extends WindowController {
                         // Default favicon location
                         final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
                         if(null == data) {
-                            return;
+                            return null;
                         }
                         favicon = NSImage.imageWithData(data);
                     }
                     if(null != favicon) {
                         favicon.setSize(new NSSize(16, 16));
                     }
+                    return null;
                 }
 
                 @Override
@@ -647,12 +648,12 @@ public class BookmarkController extends WindowController {
 
     private void reachable() {
         if(StringUtils.isNotBlank(host.getHostname())) {
-            this.background(new AbstractBackgroundAction<Void>() {
+            this.background(new AbstractBackgroundAction<Boolean>() {
                 boolean reachable = false;
 
                 @Override
-                public void run() throws BackgroundException {
-                    reachable = ReachabilityFactory.get().isReachable(host);
+                public Boolean run() throws BackgroundException {
+                    return reachable = ReachabilityFactory.get().isReachable(host);
                 }
 
                 @Override

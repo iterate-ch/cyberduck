@@ -28,7 +28,7 @@ import ch.cyberduck.ui.Controller;
 /**
  * @version $Id$
  */
-public abstract class ControllerBackgroundAction extends SessionBackgroundAction {
+public abstract class ControllerBackgroundAction extends SessionBackgroundAction<Boolean> {
 
     public ControllerBackgroundAction(final Controller controller,
                                       final AlertCallback alert,

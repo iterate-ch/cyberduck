@@ -66,7 +66,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
         }
         controller.background(new BrowserBackgroundAction((BrowserController) controller) {
             @Override
-            public void run() throws BackgroundException {
+            public Boolean run() throws BackgroundException {
                 try {
                     final Transfer transfer = download.call();
                     growl.notify(transfer.getStatus(), transfer.getName());
@@ -77,6 +77,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
                 catch(Exception e) {
                     throw new BackgroundException(e.getMessage(), e);
                 }
+                return true;
             }
 
             @Override
@@ -97,7 +98,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
         }
         controller.background(new BrowserBackgroundAction((BrowserController) controller) {
             @Override
-            public void run() throws BackgroundException {
+            public Boolean run() throws BackgroundException {
                 try {
                     final Transfer transfer = upload.call();
                     growl.notify(transfer.getStatus(), transfer.getName());
@@ -108,6 +109,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
                 catch(Exception e) {
                     throw new BackgroundException(e.getMessage(), e);
                 }
+                return true;
             }
 
             @Override

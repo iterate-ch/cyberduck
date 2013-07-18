@@ -43,7 +43,8 @@ public class BackgroundActionRegistryTest extends AbstractTestCase {
         final CountDownLatch lock = new CountDownLatch(1);
         final AbstractBackgroundAction action = new AbstractBackgroundAction() {
             @Override
-            public void run() throws BackgroundException {
+            public Object run() throws BackgroundException {
+                return null;
             }
 
             @Override
@@ -65,7 +66,8 @@ public class BackgroundActionRegistryTest extends AbstractTestCase {
         BackgroundActionRegistry r = new BackgroundActionRegistry();
         final AbstractBackgroundAction action = new AbstractBackgroundAction() {
             @Override
-            public void run() throws BackgroundException {
+            public Object run() throws BackgroundException {
+                return null;
             }
         };
         assertTrue(r.add(action));

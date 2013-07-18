@@ -39,8 +39,9 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
     }
 
     @Override
-    public void run() throws BackgroundException {
+    public Boolean run() throws BackgroundException {
         result = worker.run();
+        return true;
     }
 
     @Override

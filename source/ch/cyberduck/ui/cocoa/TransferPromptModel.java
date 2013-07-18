@@ -130,8 +130,9 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                 controller.background(new SessionBackgroundAction(new PanelAlertCallback(controller),
                         controller, controller, new DisabledLoginController(), new DefaultHostKeyController()) {
                     @Override
-                    public void run() throws BackgroundException {
+                    public Object run() throws BackgroundException {
                         transfer.cache().put(path.getReference(), transfer.children(path));
+                        return true;
                     }
 
                     @Override

@@ -67,7 +67,7 @@ public class CreateFileController extends FileController {
                     filename, Path.FILE_TYPE);
 
             @Override
-            public void run() throws BackgroundException {
+            public Boolean run() throws BackgroundException {
                 final Session<?> session = c.getSession();
                 final Touch feature = session.getFeature(Touch.class, new DisabledLoginController());
                 feature.touch(file);
@@ -75,6 +75,7 @@ public class CreateFileController extends FileController {
                     Editor editor = EditorFactory.instance().create(c, session, file);
                     editor.open();
                 }
+                return true;
             }
 
             @Override

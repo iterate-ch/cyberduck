@@ -262,12 +262,12 @@ public class ConnectionController extends SheetController {
     private void reachable() {
         final String hostname = hostField.stringValue();
         if(StringUtils.isNotBlank(hostname)) {
-            this.background(new AbstractBackgroundAction<Void>() {
+            this.background(new AbstractBackgroundAction<Boolean>() {
                 boolean reachable = false;
 
                 @Override
-                public void run() throws BackgroundException {
-                    reachable = ReachabilityFactory.get().isReachable(new Host(hostname));
+                public Boolean run() throws BackgroundException {
+                    return reachable = ReachabilityFactory.get().isReachable(new Host(hostname));
                 }
 
                 @Override

@@ -2466,8 +2466,10 @@ public class BrowserController extends WindowController
     public void revertPath(final Path selected) {
         this.background(new BrowserBackgroundAction(this) {
             @Override
-            public void run() throws BackgroundException {
-                session.getFeature(Versioning.class, LoginControllerFactory.get(BrowserController.this)).revert(selected);
+            public Boolean run() throws BackgroundException {
+                final Versioning feature = session.getFeature(Versioning.class, LoginControllerFactory.get(BrowserController.this));
+                feature.revert(selected);
+                return true;
             }
 
             @Override
@@ -3191,8 +3193,10 @@ public class BrowserController extends WindowController
             public void run() {
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     @Override
-                    public void run() throws BackgroundException {
-                        session.getFeature(Compress.class, null).archive(archive, changed, this);
+                    public Boolean run() throws BackgroundException {
+                        final Compress feature = session.getFeature(Compress.class, null);
+                        feature.archive(archive, changed, this);
+                        return true;
                     }
 
                     @Override
@@ -3224,8 +3228,10 @@ public class BrowserController extends WindowController
                 public void run() {
                     background(new BrowserBackgroundAction(BrowserController.this) {
                         @Override
-                        public void run() throws BackgroundException {
-                            session.getFeature(Compress.class, null).unarchive(archive, s, this);
+                        public Boolean run() throws BackgroundException {
+                            final Compress feature = session.getFeature(Compress.class, null);
+                            feature.unarchive(archive, s, this);
+                            return true;
                         }
 
                         @Override
@@ -3378,9 +3384,10 @@ public class BrowserController extends WindowController
                     }
 
                     @Override
-                    public void run() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         // Mount this session
                         workdir = session.mount();
+                        return true;
                     }
 
                     @Override
@@ -3525,8 +3532,9 @@ public class BrowserController extends WindowController
             }
 
             @Override
-            public void run() throws BackgroundException {
+            public Boolean run() throws BackgroundException {
                 session.close();
+                return true;
             }
 
             @Override

@@ -133,7 +133,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 // Delay until path is cached in the background
                 controller.background(new BrowserBackgroundAction(controller) {
                     @Override
-                    public void run() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         try {
                             final AttributedList<Path> children = controller.getSession().list(path);
                             cache.put(path.getReference(), children);
@@ -147,6 +147,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                                 log.warn(String.format("Ignore directory listing failure %s", e.getMessage()));
                             }
                         }
+                        return true;
                     }
 
                     @Override

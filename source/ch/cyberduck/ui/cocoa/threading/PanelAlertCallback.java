@@ -45,7 +45,7 @@ public class PanelAlertCallback implements AlertCallback {
     }
 
     @Override
-    public void alert(final SessionBackgroundAction action,
+    public void alert(final SessionBackgroundAction<?> action,
                       final BackgroundException failure, final StringBuilder log) {
         if(controller.isVisible()) {
             final NSAlert alert = NSAlert.alert(

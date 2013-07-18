@@ -613,7 +613,7 @@ public class MainController extends BundleController implements NSApplication.De
                 // Upload file
                 this.background(new AbstractBackgroundAction<Void>() {
                     @Override
-                    public void run() throws BackgroundException {
+                    public Void run() throws BackgroundException {
                         // Wait until bookmarks are loaded
                         try {
                             loader.await();
@@ -621,6 +621,7 @@ public class MainController extends BundleController implements NSApplication.De
                         catch(InterruptedException e) {
                             log.error(e.getMessage());
                         }
+                        return null;
                     }
 
                     @Override
@@ -893,8 +894,9 @@ public class MainController extends BundleController implements NSApplication.De
         if(Preferences.instance().getBoolean("browser.serialize")) {
             this.background(new AbstractBackgroundAction<Void>() {
                 @Override
-                public void run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     sessions.load();
+                    return null;
                 }
 
                 @Override
@@ -912,10 +914,11 @@ public class MainController extends BundleController implements NSApplication.De
 
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 final BookmarkCollection c = BookmarkCollection.defaultCollection();
                 c.load();
                 loader.countDown();
+                return null;
             }
 
             @Override
@@ -936,8 +939,9 @@ public class MainController extends BundleController implements NSApplication.De
         });
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 HistoryCollection.defaultCollection().load();
+                return null;
             }
 
             @Override
@@ -947,8 +951,9 @@ public class MainController extends BundleController implements NSApplication.De
         });
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 TransferCollection.defaultCollection().load();
+                return null;
             }
 
             @Override
@@ -958,9 +963,10 @@ public class MainController extends BundleController implements NSApplication.De
         });
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 // Make sure we register to Growl first
                 GrowlFactory.get().setup();
+                return null;
             }
 
             @Override
@@ -1048,8 +1054,9 @@ public class MainController extends BundleController implements NSApplication.De
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
             this.background(new AbstractBackgroundAction<Void>() {
                 @Override
-                public void run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     RendezvousFactory.instance().init();
+                    return null;
                 }
             });
         }
@@ -1058,7 +1065,7 @@ public class MainController extends BundleController implements NSApplication.De
             private List<ThirdpartyBookmarkCollection> bookmarks = Collections.emptyList();
 
             @Override
-            public void run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 bookmarks = this.getThirdpartyBookmarks();
                 for(ThirdpartyBookmarkCollection c : bookmarks) {
                     if(!Preferences.instance().getBoolean(c.getConfiguration())) {
@@ -1073,6 +1080,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
                     }
                 }
+                return null;
             }
 
             @Override
@@ -1116,7 +1124,7 @@ public class MainController extends BundleController implements NSApplication.De
         });
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public void run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 // Wait until bookmarks are loaded
                 try {
                     loader.await();
@@ -1144,6 +1152,7 @@ public class MainController extends BundleController implements NSApplication.De
                         c.add(bookmark);
                     }
                 }
+                return null;
             }
 
             @Override

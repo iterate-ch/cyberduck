@@ -7,6 +7,6 @@ import ch.cyberduck.core.exception.BackgroundException;
  */
 public interface AlertCallback {
 
-    void alert(SessionBackgroundAction action,
+    void alert(SessionBackgroundAction<?> action,
                BackgroundException failure, StringBuilder transcript);
 }

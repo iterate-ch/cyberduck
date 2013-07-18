@@ -66,7 +66,7 @@ public class BackgroundActionPauserTest extends AbstractTestCase {
             }
 
             @Override
-            public void run() throws BackgroundException {
+            public Object run() throws BackgroundException {
                 throw new BackgroundException();
             }
         };
