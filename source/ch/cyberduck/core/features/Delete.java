@@ -23,8 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Delete {
-    void delete(final List<Path> files) throws BackgroundException;
+    void delete(List<Path> files) throws BackgroundException;
 }
