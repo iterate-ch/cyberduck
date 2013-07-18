@@ -23,18 +23,37 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
+import ch.cyberduck.ui.cocoa.application.NSView;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * @version $Id$
  */
 public class FolderController extends FileController {
 
-    public FolderController(final WindowController parent) {
+    @Outlet
+    private NSPopUpButton regionPopup;
+
+    public void setRegionPopup(final NSPopUpButton regionPopup) {
+        this.regionPopup = regionPopup;
+    }
+
+    @Outlet
+    private NSView view;
+
+    public void setView(final NSView view) {
+        this.view = view;
+    }
+
+    private Set<String> regions;
+
+    public FolderController(final WindowController parent, final Set<String> regions) {
         super(parent, NSAlert.alert(
                 Locale.localizedString("Create new folder", "Folder"),
                 Locale.localizedString("Enter the name for the new folder:", "Folder"),
@@ -43,12 +62,29 @@ public class FolderController extends FileController {
                 Locale.localizedString("Cancel", "Folder")
         ));
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
+        this.regions = regions;
+    }
+
+    @Override
+    public void setAccessoryView(final NSView input) {
+        if(!regions.isEmpty()) {
+            // Override accessory view with location menu added
+            this.loadBundle("Folder");
+            for(String region : regions) {
+                regionPopup.addItemWithTitle(Locale.localizedString(region, "S3"));
+                regionPopup.itemWithTitle(Locale.localizedString(region, "S3")).setRepresentedObject(region);
+            }
+            super.setAccessoryView(view);
+        }
+        else {
+            super.setAccessoryView(input);
+        }
     }
 
     @Override
     public void callback(int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.createFolder(this.getWorkdir(), filenameField.stringValue());
+            this.createFolder(this.getWorkdir(), this.inputField.stringValue());
         }
     }
 
@@ -60,7 +96,12 @@ public class FolderController extends FileController {
 
             @Override
             public void run() throws BackgroundException {
-                c.getSession().mkdir(folder, null);
+                if(!regions.isEmpty()) {
+                    c.getSession().mkdir(folder, regionPopup.selectedItem().representedObject());
+                }
+                else {
+                    c.getSession().mkdir(folder, null);
+                }
             }
 
             @Override

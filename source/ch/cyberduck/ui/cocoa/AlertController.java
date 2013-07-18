@@ -51,7 +51,7 @@ public abstract class AlertController extends SheetController {
         this.alert.setDelegate(this.id());
     }
 
-    public void setAccessoryView(NSView view) {
+    public void setAccessoryView(final NSView view) {
         view.setFrame(new NSRect(300, view.frame().size.height.floatValue()));
         alert.setAccessoryView(view);
     }
@@ -80,11 +80,11 @@ public abstract class AlertController extends SheetController {
         //
     }
 
-    protected void setTitle(String title) {
+    protected void setTitle(final String title) {
         alert.setMessageText(title);
     }
 
-    protected void setMessage(String message) {
+    protected void setMessage(final String message) {
         alert.setInformativeText(message);
     }
 
@@ -95,12 +95,12 @@ public abstract class AlertController extends SheetController {
      * @param returnCode  Button code
      * @param contextInfo Context
      */
-    public void alertDidEnd_returnCode_contextInfo(NSAlert alert, int returnCode, ID contextInfo) {
+    public void alertDidEnd_returnCode_contextInfo(final NSAlert alert, final int returnCode, final ID contextInfo) {
         this.sheetDidClose_returnCode_contextInfo(alert.window(), returnCode, contextInfo);
     }
 
     @Override
-    protected int getCallbackOption(NSButton selected) {
+    protected int getCallbackOption(final NSButton selected) {
         if(selected.tag() == NSPanel.NSAlertDefaultReturn) {
             return SheetCallback.DEFAULT_OPTION;
         }
@@ -126,7 +126,7 @@ public abstract class AlertController extends SheetController {
      * @param alert Alert window
      * @return True if help request was handled.
      */
-    public boolean alertShowHelp(NSAlert alert) {
+    public boolean alertShowHelp(final NSAlert alert) {
         this.help();
         return true;
     }

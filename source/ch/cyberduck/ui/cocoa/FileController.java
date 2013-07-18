@@ -35,22 +35,36 @@ import org.rococoa.cocoa.foundation.NSUInteger;
  */
 public abstract class FileController extends AlertController {
 
-    protected NSTextField filenameField
+    @Outlet
+    protected NSTextField inputField
             = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
-    public FileController(final WindowController parent, NSAlert alert) {
+    public void setInputField(final NSTextField inputField) {
+        this.inputField = inputField;
+    }
+
+    public FileController(final WindowController parent, final NSAlert alert) {
         super(parent, alert);
-        this.setAccessoryView(filenameField);
         alert.setShowsHelp(true);
     }
 
     @Override
+    public void beginSheet() {
+        this.setAccessoryView(inputField);
+        super.beginSheet();
+    }
+
+    @Override
     protected void focus() {
+        this.focus(inputField);
+    }
+
+    protected void focus(final NSTextField control) {
         // Focus accessory view.
-        filenameField.selectText(null);
-        this.window().makeFirstResponder(filenameField);
-        filenameField.currentEditor().setSelectedRange(NSRange.NSMakeRange(
-                new NSUInteger(0), new NSUInteger(FilenameUtils.getBaseName(filenameField.stringValue()).length())
+        control.selectText(null);
+        this.window().makeFirstResponder(control);
+        control.currentEditor().setSelectedRange(NSRange.NSMakeRange(
+                new NSUInteger(0), new NSUInteger(FilenameUtils.getBaseName(control.stringValue()).length())
         ));
     }
 
@@ -77,12 +91,12 @@ public abstract class FileController extends AlertController {
 
     @Override
     protected boolean validateInput() {
-        if(StringUtils.contains(filenameField.stringValue(), Path.DELIMITER)) {
+        if(StringUtils.contains(inputField.stringValue(), Path.DELIMITER)) {
             return false;
         }
-        if(StringUtils.isNotBlank(filenameField.stringValue())) {
+        if(StringUtils.isNotBlank(inputField.stringValue())) {
             Path file = new Path(this.getWorkdir(),
-                    filenameField.stringValue(), Path.FILE_TYPE);
+                    inputField.stringValue(), Path.FILE_TYPE);
             return ((BrowserController) parent).lookup(file.getReference()) == null;
         }
         return false;

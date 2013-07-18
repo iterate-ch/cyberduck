@@ -2278,6 +2278,9 @@ resources/Activity.nib/keyedobjects.nib -text
 resources/Error.nib/classes.nib -text
 resources/Error.nib/info.nib -text
 resources/Error.nib/keyedobjects.nib -text
+resources/Folder.nib/classes.nib -text svneol=unset#application/xml
+resources/Folder.nib/info.nib -text svneol=unset#application/xml
+resources/Folder.nib/keyedobjects.nib -text
 resources/Progress.nib/classes.nib -text
 resources/Progress.nib/info.nib -text
 resources/Progress.nib/keyedobjects.nib -text

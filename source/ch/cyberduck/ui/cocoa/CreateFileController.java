@@ -53,10 +53,10 @@ public class CreateFileController extends FileController {
     @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.createFile(this.getWorkdir(), filenameField.stringValue(), false);
+            this.createFile(this.getWorkdir(), inputField.stringValue(), false);
         }
         else if(returncode == ALTERNATE_OPTION) {
-            this.createFile(this.getWorkdir(), filenameField.stringValue(), true);
+            this.createFile(this.getWorkdir(), inputField.stringValue(), true);
         }
     }
 
