@@ -22,11 +22,13 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import ch.ethz.ssh2.SFTPException;
 import ch.ethz.ssh2.SFTPv3DirectoryEntry;
 import ch.ethz.ssh2.SFTPv3FileAttributes;
 
@@ -83,24 +85,34 @@ public class SFTPListService implements ListService {
                     file.attributes().setAccessedDate(attributes.atime * 1000L);
                 }
                 if(attributes.isSymlink()) {
-                    final String target = session.sftp().readLink(file.getAbsolute());
-                    final int type;
-                    final Path symlink;
-                    if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                        symlink = new Path(target, file.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                    try {
+                        final String target = session.sftp().readLink(file.getAbsolute());
+                        final int type;
+                        final Path symlink;
+                        if(target.startsWith(String.valueOf(Path.DELIMITER))) {
+                            symlink = new Path(target, file.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                        }
+                        else {
+                            symlink = new Path(directory, target, file.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                        }
+                        file.setSymlinkTarget(symlink);
+                        final SFTPv3FileAttributes targetAttributes = session.sftp().stat(symlink.getAbsolute());
+                        if(targetAttributes.isDirectory()) {
+                            type = Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE;
+                        }
+                        else {
+                            type = Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE;
+                        }
+                        file.attributes().setType(type);
                     }
-                    else {
-                        symlink = new Path(directory, target, file.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                    catch(SFTPException e) {
+                        if(new SFTPExceptionMappingService().map(e) instanceof NotfoundException) {
+                            log.warn(String.format("Cannot read symbolic link target of %s", file));
+                        }
+                        else {
+                            throw e;
+                        }
                     }
-                    file.setSymlinkTarget(symlink);
-                    final SFTPv3FileAttributes targetAttributes = session.sftp().stat(symlink.getAbsolute());
-                    if(targetAttributes.isDirectory()) {
-                        type = Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE;
-                    }
-                    else {
-                        type = Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE;
-                    }
-                    file.attributes().setType(type);
                 }
                 children.add(file);
             }
