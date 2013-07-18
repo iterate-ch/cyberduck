@@ -4,15 +4,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.i18n.Locale;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.googlecode.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVDeleteFeature implements Delete {
 
@@ -36,6 +38,8 @@ public class DAVDeleteFeature implements Delete {
             if(skip) {
                 continue;
             }
+            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    file.getName()));
             try {
                 session.getClient().delete(new DAVPathEncoder().encode(file));
             }
