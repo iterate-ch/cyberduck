@@ -221,7 +221,7 @@ public class BookmarkCollection extends AbstractHostCollection {
     public void load() {
         this.lock();
         try {
-            FolderBookmarkCollection favorites = FolderBookmarkCollection.favoritesCollection();
+            final FolderBookmarkCollection favorites = FolderBookmarkCollection.favoritesCollection();
             if(file.exists()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Found Bookmarks file %s", file.getAbsolute()));

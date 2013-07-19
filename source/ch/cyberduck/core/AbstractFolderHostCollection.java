@@ -104,7 +104,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                     }
             );
             for(Local next : bookmarks) {
-                Host bookmark = reader.read(next);
+                final Host bookmark = reader.read(next);
                 if(null == bookmark) {
                     continue;
                 }
