@@ -125,7 +125,7 @@ public class TransferStatus {
     }
 
     public TransferStatus selected(final boolean selected) {
-        this.selected = false;
+        this.selected = selected;
         return this;
     }
 
