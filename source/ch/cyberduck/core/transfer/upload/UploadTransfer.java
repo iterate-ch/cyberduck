@@ -144,7 +144,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    protected TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }

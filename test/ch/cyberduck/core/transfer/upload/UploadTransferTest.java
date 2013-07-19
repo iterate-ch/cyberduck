@@ -31,9 +31,12 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new UploadTransfer(new NullSession(new Host("t")), new Path("t", Path.FILE_TYPE));
-        t.addSize(4L);
-        t.addTransferred(3L);
+        final Path test = new Path("t", Path.FILE_TYPE);
+        Transfer t = new UploadTransfer(new NullSession(new Host("t")), test);
+        TransferStatus saved = new TransferStatus();
+        saved.setLength(4L);
+        saved.setCurrent(3L);
+        t.save(test, saved);
         final UploadTransfer serialized = new UploadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
@@ -79,11 +82,11 @@ public class UploadTransferTest extends AbstractTestCase {
         }, root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                                    final TransferOptions options) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options, status);
+                super.transfer(file, filter, options);
                 assertFalse(this.cache().containsKey(child.getReference()));
             }
 
@@ -128,11 +131,11 @@ public class UploadTransferTest extends AbstractTestCase {
         final Transfer t = new UploadTransfer(new NullSession(new Host("t")), root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                                    final TransferOptions options) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options, status);
+                super.transfer(file, filter, options);
                 assertFalse(this.cache().containsKey(child.getReference()));
             }
 
@@ -276,9 +279,9 @@ public class UploadTransferTest extends AbstractTestCase {
                 });
         final TransferStatus directory = new TransferStatus();
         directory.setExists(true);
-        assertEquals(directory, transfer.status(test));
+        assertEquals(directory, transfer.getStatus(test));
         final TransferStatus expected = new TransferStatus();
-        assertEquals(expected, transfer.status(new Path("/transfer/" + name, Path.FILE_TYPE)));
+        assertEquals(expected, transfer.getStatus(new Path("/transfer/" + name, Path.FILE_TYPE)));
     }
 
     @Test
@@ -307,14 +310,14 @@ public class UploadTransferTest extends AbstractTestCase {
                 });
         final TransferStatus directorystatus = new TransferStatus();
         directorystatus.setExists(true);
-        assertEquals(directorystatus, transfer.status(test));
+        assertEquals(directorystatus, transfer.getStatus(test));
         final TransferStatus expected = new TransferStatus();
         expected.setResume(true);
         // Remote size
         expected.setCurrent(5L);
         // Local size
         expected.setLength(2L);
-        assertEquals(expected, transfer.status(new Path("/transfer/" + name, Path.FILE_TYPE)));
+        assertEquals(expected, transfer.getStatus(new Path("/transfer/" + name, Path.FILE_TYPE)));
         local.delete();
     }
 }

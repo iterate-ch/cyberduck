@@ -64,6 +64,12 @@ public class TransferStatus {
      */
     private boolean complete = false;
 
+    /**
+     * A state variable to mark this path if the path is explicitly selected
+     * for inclusion in the transfer prompt
+     */
+    private boolean selected = true;
+
     public void setComplete() {
         this.complete = true;
         if(log.isInfoEnabled()) {
@@ -118,11 +124,10 @@ public class TransferStatus {
         this.length = length;
     }
 
-    /**
-     * A state variable to mark this path if the path is explicitly selected
-     * for inclusion in the transfer prompt
-     */
-    private boolean selected = true;
+    public TransferStatus selected(final boolean selected) {
+        this.selected = false;
+        return this;
+    }
 
     public boolean isSelected() {
         return selected;

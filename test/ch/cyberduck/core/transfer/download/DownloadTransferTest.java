@@ -32,9 +32,12 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), new Path("t", Path.FILE_TYPE));
-        t.addSize(4L);
-        t.addTransferred(3L);
+        final Path test = new Path("t", Path.FILE_TYPE);
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), test);
+        TransferStatus saved = new TransferStatus();
+        saved.setLength(4L);
+        saved.setCurrent(3L);
+        t.save(test, saved);
         final DownloadTransfer serialized = new DownloadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
@@ -119,11 +122,11 @@ public class DownloadTransferTest extends AbstractTestCase {
         }, root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                                    final TransferOptions options) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options, status);
+                super.transfer(file, filter, options);
                 if(file.equals(root)) {
                     assertFalse(this.cache().containsKey(root.getReference()));
                 }
@@ -203,12 +206,12 @@ public class DownloadTransferTest extends AbstractTestCase {
                 });
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
-        assertEquals(status, transfer.status(test));
+        assertEquals(status, transfer.getStatus(test));
         final TransferStatus expected = new TransferStatus();
         expected.setResume(false);
         expected.setLength(5L);
         expected.setCurrent(0L);
-        assertEquals(expected, transfer.status(new Path("/transfer/test", Path.FILE_TYPE)));
+        assertEquals(expected, transfer.getStatus(new Path("/transfer/test", Path.FILE_TYPE)));
     }
 
     @Test
@@ -236,13 +239,22 @@ public class DownloadTransferTest extends AbstractTestCase {
                 });
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
-        assertEquals(status, transfer.status(test));
+        assertEquals(status, transfer.getStatus(test));
         final TransferStatus expected = new TransferStatus();
         expected.setResume(true);
         expected.setCurrent("test".getBytes().length);
         // Remote size
         expected.setLength(5L);
-        assertEquals(expected, transfer.status(new Path("/transfer/test", Path.FILE_TYPE)));
+        assertEquals(expected, transfer.getStatus(new Path("/transfer/test", Path.FILE_TYPE)));
         local.delete();
+    }
+
+    @Test
+    public void testAction() throws Exception {
+        final Path parent = new Path("t", Path.FILE_TYPE);
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), parent);
+        assertEquals(TransferAction.ACTION_CALLBACK, t.action(false, false));
+        assertEquals(TransferAction.ACTION_CALLBACK, t.action(false, true));
+        assertEquals(TransferAction.ACTION_RESUME, t.action(true, false));
     }
 }

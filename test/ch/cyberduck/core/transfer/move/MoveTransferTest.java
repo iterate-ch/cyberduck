@@ -25,6 +25,8 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -40,9 +42,12 @@ public class MoveTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new MoveTransfer(new FTPSession(new Host("t")), Collections.<Path, Path>singletonMap(new Path("t", Path.FILE_TYPE), new Path("d", Path.FILE_TYPE)));
-        t.addSize(4L);
-        t.addTransferred(3L);
+        final Path test = new Path("t", Path.FILE_TYPE);
+        Transfer t = new MoveTransfer(new FTPSession(new Host("t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
+        TransferStatus saved = new TransferStatus();
+        saved.setLength(4L);
+        saved.setCurrent(3L);
+        t.save(test, saved);
         final MoveTransfer serialized = new MoveTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
@@ -59,5 +64,12 @@ public class MoveTransferTest extends AbstractTestCase {
     @Test
     public void testFilter() throws Exception {
 
+    }
+
+    @Test
+    public void testAction() throws Exception {
+        final Path test = new Path("t", Path.FILE_TYPE);
+        Transfer t = new MoveTransfer(new FTPSession(new Host("t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
+        assertEquals(TransferAction.ACTION_OVERWRITE, t.action(false, true));
     }
 }
