@@ -962,9 +962,12 @@ img/sync.tiff -text svneol=unset#image/tiff
 img/sync@2x.png -text svneol=unset#image/png
 img/throbber.gif -text
 img/throbber_small.gif -text
+img/transfer-copy.tiff -text svneol=unset#image/tiff
 img/transfer-download.png -text svneol=unset#image/png
 img/transfer-download.tiff -text svneol=unset#image/tiff
 img/transfer-download@2x.png -text svneol=unset#image/png
+img/transfer-move.tiff -text svneol=unset#image/tiff
+img/transfer-sync.tiff -text svneol=unset#image/tiff
 img/transfer-upload.png -text svneol=unset#image/png
 img/transfer-upload.tiff -text svneol=unset#image/tiff
 img/transfer-upload@2x.png -text svneol=unset#image/png

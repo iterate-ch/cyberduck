@@ -237,6 +237,9 @@
 		47CD045B12DB5F2E00694306 /* Folder.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD043912DB5F2E00694306 /* Folder.strings */; };
 		47CD047E12DB5F4500694306 /* Goto.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD045C12DB5F4500694306 /* Goto.strings */; };
 		47CD04A112DB5F5200694306 /* Duplicate.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD047F12DB5F5200694306 /* Duplicate.strings */; };
+		47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF71799309F0031DB9F /* transfer-copy.tiff */; };
+		47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF81799309F0031DB9F /* transfer-move.tiff */; };
+		47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF91799309F0031DB9F /* transfer-sync.tiff */; };
 		47E72E0E162865000002F049 /* Editor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E07162865000002F049 /* Editor.h */; };
 		47E72E0F162865000002F049 /* NSAppleEventDescriptor-Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E08162865000002F049 /* NSAppleEventDescriptor-Extensions.h */; };
 		47E72E10162865000002F049 /* ODBEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E09162865000002F049 /* ODBEditor.h */; };
@@ -1432,6 +1435,9 @@
 		47CD049D12DB5F5200694306 /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Duplicate.strings; sourceTree = "<group>"; };
 		47CD049E12DB5F5200694306 /* ko */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Duplicate.strings; sourceTree = "<group>"; };
 		47CD049F12DB5F5200694306 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Duplicate.strings; sourceTree = "<group>"; };
+		47CE3BF71799309F0031DB9F /* transfer-copy.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "transfer-copy.tiff"; sourceTree = "<group>"; };
+		47CE3BF81799309F0031DB9F /* transfer-move.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "transfer-move.tiff"; sourceTree = "<group>"; };
+		47CE3BF91799309F0031DB9F /* transfer-sync.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "transfer-sync.tiff"; sourceTree = "<group>"; };
 		47CF43A21508FCC000647729 /* ar */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ar; path = ar.lproj/Alert.nib; sourceTree = "<group>"; };
 		47CF43A31508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Alert.strings; sourceTree = "<group>"; };
 		47CF43A41508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Archive.strings; sourceTree = "<group>"; };
@@ -1968,9 +1974,12 @@
 				4767306A16108E1200B28D35 /* alert.tiff */,
 				4767306B16108E1200B28D35 /* aliasbadge.tiff */,
 				4767306C16108E1200B28D35 /* transfer-download.tiff */,
+				4767307416108E1200B28D35 /* transfer-upload.tiff */,
+				47CE3BF71799309F0031DB9F /* transfer-copy.tiff */,
+				47CE3BF81799309F0031DB9F /* transfer-move.tiff */,
+				47CE3BF91799309F0031DB9F /* transfer-sync.tiff */,
 				4767307216108E1200B28D35 /* nav-backward.tiff */,
 				4767307316108E1200B28D35 /* nav-forward.tiff */,
-				4767307416108E1200B28D35 /* transfer-upload.tiff */,
 				4767307616108E1200B28D35 /* nav-up.tiff */,
 				4767307816108E1200B28D35 /* bandwidth.tiff */,
 				4767307916108E1200B28D35 /* book.tiff */,
@@ -2845,6 +2854,9 @@
 				471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */,
 				475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */,
 				47B888A917984584004E298A /* Folder.nib in Resources */,
+				47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */,
+				47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */,
+				47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
