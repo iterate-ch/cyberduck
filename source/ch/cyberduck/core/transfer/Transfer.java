@@ -604,13 +604,6 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return The number of roots
-     */
-    public int numberOfRoots() {
-        return roots.size();
-    }
-
-    /**
      * @return True if the bytes transferred equal the size of the queue
      */
     public boolean isComplete() {

@@ -541,7 +541,7 @@ public final class TransferController extends WindowController implements NSTool
         if(1 == selected) {
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
-            if(transfer.numberOfRoots() == 1) {
+            if(transfer.getRoots().size() == 1) {
                 urlField.setAttributedStringValue(
                         HyperlinkAttributedStringFactory.create(transfer.getRemote()));
                 localField.setAttributedStringValue(
@@ -567,7 +567,7 @@ public final class TransferController extends WindowController implements NSTool
         if(1 == selected) {
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw file type icon
-            if(transfer.numberOfRoots() == 1) {
+            if(transfer.getRoots().size() == 1) {
                 if(transfer.getLocal() != null) {
                     iconView.setImage(IconCacheFactory.<NSImage>get().fileIcon(transfer.getRoot().getLocal(), 32));
                 }

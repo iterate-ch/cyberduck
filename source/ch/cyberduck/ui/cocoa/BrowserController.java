@@ -3124,11 +3124,7 @@ public class BrowserController extends WindowController
                     Path p = new Path(workdir, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                     roots.add(p);
                 }
-                final Transfer t = new UploadTransfer(session, roots);
-                if(t.numberOfRoots() > 0) {
-                    this.transfer(t);
-                    return true;
-                }
+                this.transfer(new UploadTransfer(session, roots));
             }
         }
         return false;
