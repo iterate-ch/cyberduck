@@ -77,10 +77,10 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
         }, Arrays.<Path>asList(path), permission, true
         ) {
             @Override
-            public void cleanup(Permission result) {
+            public void cleanup(Void result) {
                 throw new UnsupportedOperationException();
             }
         };
-        assertEquals(permission, worker.run());
+        worker.run();
     }
 }

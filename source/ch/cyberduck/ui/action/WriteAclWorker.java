@@ -88,7 +88,7 @@ public abstract class WriteAclWorker extends Worker<Acl> {
             }
             if(recursive) {
                 if(file.attributes().isDirectory()) {
-
+                    //todo
                 }
             }
         }

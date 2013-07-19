@@ -21,7 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
 
@@ -73,12 +73,12 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         assertTrue(session.exists(container));
-        assertTrue(new DeleteWorker(session, new DisabledLoginController(), Collections.singletonList(container)) {
+        new DeleteWorker(session, new DisabledLoginController(), Collections.singletonList(container)) {
             @Override
-            public void cleanup(final Boolean result) {
+            public void cleanup(final Void result) {
                 //
             }
-        }.run());
+        }.run();
         assertFalse(session.exists(container));
     }
 }

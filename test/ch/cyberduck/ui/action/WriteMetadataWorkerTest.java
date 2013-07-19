@@ -38,11 +38,11 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
             }
         }, files, Collections.<String, String>emptyMap()) {
             @Override
-            public void cleanup(final Map<String, String> result) {
+            public void cleanup(final Void result) {
                 fail();
             }
         };
-        assertTrue(worker.run().isEmpty());
+        worker.run();
     }
 
     @Test
@@ -67,7 +67,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
             }
         }, files, updated) {
             @Override
-            public void cleanup(final Map<String, String> map) {
+            public void cleanup(final Void map) {
                 fail();
             }
         };
@@ -101,7 +101,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
             }
         }, files, updated) {
             @Override
-            public void cleanup(final Map<String, String> map) {
+            public void cleanup(final Void map) {
                 fail();
             }
         };

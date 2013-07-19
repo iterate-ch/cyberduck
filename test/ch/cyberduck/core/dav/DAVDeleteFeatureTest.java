@@ -37,12 +37,12 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
         session.mkdir(test, null);
         assertTrue(session.exists(test));
         session.getFeature(Touch.class, new DisabledLoginController()).touch(new Path(test, UUID.randomUUID().toString(), Path.FILE_TYPE));
-        assertTrue(new DeleteWorker(session, new DisabledLoginController(), Collections.singletonList(test)) {
+        new DeleteWorker(session, new DisabledLoginController(), Collections.singletonList(test)) {
             @Override
-            public void cleanup(final Boolean result) {
+            public void cleanup(final Void result) {
                 //
             }
-        }.run());
+        }.run();
         assertFalse(session.exists(test));
     }
 }

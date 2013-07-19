@@ -1250,10 +1250,10 @@ public class InfoController extends ToolbarWindowController {
             for(Header header : metadata) {
                 update.put(header.getName(), header.getValue());
             }
-            this.background(new WorkerBackgroundAction<Map<String, String>>(controller,
+            this.background(new WorkerBackgroundAction<Void>(controller,
                     new WriteMetadataWorker(controller.getSession(), controller.getSession().getFeature(Headers.class, prompt), files, update) {
                         @Override
-                        public void cleanup(Map<String, String> metadata) {
+                        public void cleanup(final Void v) {
                             toggleMetadataSettings(true);
                         }
                     })
@@ -2348,11 +2348,11 @@ public class InfoController extends ToolbarWindowController {
      */
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
-            this.background(new WorkerBackgroundAction<Permission>(controller,
+            this.background(new WorkerBackgroundAction<Void>(controller,
                     new WritePermissionWorker(controller.getSession(),
                             controller.getSession().getFeature(UnixPermission.class, prompt), files, permission, recursive) {
                         @Override
-                        public void cleanup(final Permission permission) {
+                        public void cleanup(final Void v) {
                             setPermissions(Collections.singletonList(permission));
                             togglePermissionSettings(true);
                         }
@@ -2727,13 +2727,9 @@ public class InfoController extends ToolbarWindowController {
             this.background(new WorkerBackgroundAction<Long>(controller,
                     new CalculateSizeWorker(controller.getSession(), files) {
                         @Override
-                        public void cleanup(Long size) {
-                            try {
-                                updateSize(size);
-                            }
-                            finally {
-                                toggleSizeSettings(true);
-                            }
+                        public void cleanup(final Long size) {
+                            updateSize(size);
+                            toggleSizeSettings(true);
                         }
 
                         @Override

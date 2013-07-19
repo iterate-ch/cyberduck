@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
+public abstract class WriteMetadataWorker extends Worker<Void> {
     private static Logger log = Logger.getLogger(WriteMetadataWorker.class);
 
     private Session<?> session;
@@ -61,7 +61,7 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
     }
 
     @Override
-    public Map<String, String> run() throws BackgroundException {
+    public Void run() throws BackgroundException {
         for(Path file : files) {
             session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
@@ -81,7 +81,7 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
                 feature.setMetadata(file, metadata);
             }
         }
-        return metadata;
+        return null;
     }
 
     @Override
