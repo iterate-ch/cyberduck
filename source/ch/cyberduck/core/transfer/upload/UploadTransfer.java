@@ -184,7 +184,7 @@ public class UploadTransfer extends Transfer {
         }
         else if(file.attributes().isFile()) {
             listener.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                    this.getName()));
+                    file.getName()));
             String original = file.getName();
             final boolean temporary = Preferences.instance().getBoolean("queue.upload.file.temporary");
             if(temporary) {
@@ -208,7 +208,7 @@ public class UploadTransfer extends Transfer {
         }
         else if(file.attributes().isDirectory()) {
             listener.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
+                    file.getName()));
             if(!status.isExists()) {
                 session.mkdir(file, null);
             }

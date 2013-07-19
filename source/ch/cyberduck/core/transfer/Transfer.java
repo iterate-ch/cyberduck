@@ -576,7 +576,7 @@ public abstract class Transfer implements Serializable {
      */
     public void cancel() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Cancel transfer %s", this.getName()));
+            log.debug(String.format("Cancel transfer %s", this));
         }
         state = State.canceled;
         for(TransferStatus s : table.values()) {
@@ -589,7 +589,7 @@ public abstract class Transfer implements Serializable {
      */
     public void reset() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Reset status for %s", this.getName()));
+            log.debug(String.format("Reset status for %s", this));
         }
         transferred = 0;
         size = 0;

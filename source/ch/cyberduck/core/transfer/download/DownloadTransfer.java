@@ -192,7 +192,7 @@ public class DownloadTransfer extends Transfer {
         }
         else if(file.attributes().isFile()) {
             listener.message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
-                    this.getName()));
+                    file.getName()));
             session.download(file, bandwidth, new AbstractStreamListener() {
                 // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
                 // overhead when transferring a large amount of files
