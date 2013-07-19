@@ -1,8 +1,7 @@
-package ch.cyberduck.core.serializer;
+package ch.cyberduck.core.serializer.impl;
 
 /*
- * Copyright (c) 2002-2011 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2009 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +20,8 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.serializer.Reader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,18 +29,18 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class ProfileReaderFactory extends Factory<Reader<Profile>> {
+public abstract class HostReaderFactory extends Factory<Reader<Host>> {
 
     /**
      * Registered factories
      */
-    private static final Map<Platform, ProfileReaderFactory> factories = new HashMap<Platform, ProfileReaderFactory>();
+    protected static final Map<Platform, HostReaderFactory> factories = new HashMap<Platform, HostReaderFactory>();
 
-    public static void addFactory(Platform platform, ProfileReaderFactory f) {
+    public static void addFactory(Factory.Platform platform, HostReaderFactory f) {
         factories.put(platform, f);
     }
 
-    public static Reader<Profile> get() {
+    public static Reader<Host> get() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

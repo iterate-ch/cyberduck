@@ -20,7 +20,6 @@ package ch.cyberduck.core.serializer.impl;
  */
 
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.serializer.ProfileReaderFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 

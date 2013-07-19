@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.serializer.ProfileReaderFactory;
+import ch.cyberduck.core.serializer.impl.ProfileReaderFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.serializer;
+package ch.cyberduck.core.serializer.impl;
 
 /*
  * Copyright (c) 2009 David Kocher. All rights reserved.
@@ -21,6 +21,7 @@ package ch.cyberduck.core.serializer;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.serializer.Writer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,18 +29,18 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class HostReaderFactory extends Factory<Reader<Host>> {
+public abstract class HostWriterFactory extends Factory<Writer<Host>> {
 
     /**
      * Registered factories
      */
-    protected static final Map<Platform, HostReaderFactory> factories = new HashMap<Platform, HostReaderFactory>();
+    private static final Map<Platform, HostWriterFactory> factories = new HashMap<Platform, HostWriterFactory>();
 
-    public static void addFactory(Factory.Platform platform, HostReaderFactory f) {
+    public static void addFactory(Factory.Platform platform, HostWriterFactory f) {
         factories.put(platform, f);
     }
 
-    public static Reader<Host> get() {
+    public static Writer<Host> get() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

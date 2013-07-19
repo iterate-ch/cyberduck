@@ -22,7 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.serializer.Reader;
-import ch.cyberduck.core.serializer.TransferReaderFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.copy.CopyTransfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
@@ -60,7 +59,7 @@ public class TransferPlistReader extends PlistReader<Transfer> {
                     return new DownloadTransfer(dict, s);
                 case upload:
                     return new UploadTransfer(dict, s);
-                case sync:
+                case synchronisation:
                     return new SyncTransfer(dict, s);
                 case copy:
                     return new CopyTransfer(dict, s);

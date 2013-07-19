@@ -33,7 +33,6 @@ import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
-import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -1095,7 +1094,7 @@ public final class TransferController extends WindowController implements NSTool
             return this.validate(new TransferToolbarValidator() {
                 @Override
                 public boolean validate(Transfer transfer) {
-                    return transfer.isReloadable() && !transfer.isRunning();
+                    return transfer.getType().isReloadable() && !transfer.isRunning();
                 }
             });
         }

@@ -5,7 +5,6 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.serializer.HostReaderFactory;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

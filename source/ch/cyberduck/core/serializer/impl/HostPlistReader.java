@@ -19,7 +19,6 @@ package ch.cyberduck.core.serializer.impl;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 

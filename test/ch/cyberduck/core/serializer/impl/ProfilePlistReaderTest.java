@@ -5,7 +5,6 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.serializer.ProfileReaderFactory;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
