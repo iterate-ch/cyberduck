@@ -470,6 +470,9 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer status of %s for transfer %s", file, this));
         }
+        if(this.isCanceled()) {
+            throw new ConnectionCanceledException();
+        }
         if(this.isSelected(file)) {
             // Only prepare the path it will be actually transferred
             if(filter.accept(session, file, parent)) {
