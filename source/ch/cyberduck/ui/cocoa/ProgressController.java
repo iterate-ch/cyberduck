@@ -76,7 +76,8 @@ public class ProgressController extends BundleController implements TransferList
                 sizeFormatter.format(transfer.getTransferred()),
                 sizeFormatter.format(transfer.getSize())));
         this.message(StringUtils.EMPTY);
-        this.status(Locale.localizedString(transfer.getStatus(), "Status"));
+        this.status(Locale.localizedString(transfer.isComplete() ?
+                String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"));
         super.awakeFromNib();
     }
 
@@ -118,7 +119,8 @@ public class ProgressController extends BundleController implements TransferList
                 progress(MessageFormat.format(Locale.localizedString("{0} of {1}"),
                         sizeFormatter.format(transfer.getTransferred()),
                         sizeFormatter.format(transfer.getSize())));
-                status(Locale.localizedString(transfer.getStatus(), "Status"));
+                status(Locale.localizedString(Locale.localizedString(transfer.isComplete() ?
+                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"), "Status"));
                 statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
             }
         });
@@ -321,7 +323,7 @@ public class ProgressController extends BundleController implements TransferList
 
     public void setIconImageView(final NSImageView iconImageView) {
         this.iconImageView = iconImageView;
-        this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed(transfer.getImage(), 32));
+        this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed(String.format("transfer-%s.tiff", transfer.getType().name()), 32));
     }
 
     /**

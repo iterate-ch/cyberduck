@@ -36,6 +36,7 @@ import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -124,7 +125,8 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
     @Override
     public void cleanup() {
         if(transfer.isReset() && transfer.isComplete() && !transfer.isCanceled() && !(transfer.getTransferred() == 0)) {
-            growl.notify(transfer.getStatus(), transfer.getName());
+            growl.notify(transfer.isComplete() ?
+                    String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
         }
         super.cleanup();
     }
