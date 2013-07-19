@@ -29,7 +29,6 @@ import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
@@ -330,14 +329,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final Session session = controller.getTransferSession();
                     final List<Path> roots = new Collection<Path>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
-                        Path p = new Path(
-                                destination, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                        Path p = new Path(destination, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                         roots.add(p);
                     }
-                    final Transfer t = new UploadTransfer(session, roots);
-                    if(t.numberOfRoots() > 0) {
-                        controller.transfer(t);
-                    }
+                    controller.transfer(new UploadTransfer(session, roots));
                     return true;
                 }
                 return false;
