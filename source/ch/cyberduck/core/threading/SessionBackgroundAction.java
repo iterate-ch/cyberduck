@@ -260,6 +260,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      */
     @Override
     public Object lock() {
+        if(this.getSessions().isEmpty()) {
+            return super.lock();
+        }
         return this.getSessions().iterator().next();
     }
 }

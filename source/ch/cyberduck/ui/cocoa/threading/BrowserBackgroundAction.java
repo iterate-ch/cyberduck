@@ -51,6 +51,9 @@ public abstract class BrowserBackgroundAction extends ControllerBackgroundAction
     @Override
     public List<Session<?>> getSessions() {
         final Session<?> session = controller.getSession();
+        if(null == session) {
+            return Collections.emptyList();
+        }
         return new ArrayList<Session<?>>(Collections.singletonList(session));
     }
 
