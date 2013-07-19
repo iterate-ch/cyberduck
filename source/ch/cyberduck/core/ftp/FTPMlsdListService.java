@@ -42,17 +42,17 @@ public class FTPMlsdListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
+            if(!session.getClient().changeWorkingDirectory(file.getAbsolute())) {
+                throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+            }
+            if(!session.getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
+                // Set transfer type for traditional data socket file listings. The data transfer is over the
+                // data connection in type ASCII or type EBCDIC.
+                throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+            }
             final List<String> list = session.data(file, new DataConnectionAction<List<String>>() {
                 @Override
                 public List<String> execute() throws IOException, FTPInvalidListException {
-                    if(!session.getClient().changeWorkingDirectory(file.getAbsolute())) {
-                        throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
-                    }
-                    if(!session.getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
-                        // Set transfer type for traditional data socket file listings. The data transfer is over the
-                        // data connection in type ASCII or type EBCDIC.
-                        throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
-                    }
                     return session.getClient().list(FTPCmd.MLSD);
                 }
             });
