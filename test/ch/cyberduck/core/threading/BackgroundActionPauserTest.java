@@ -27,9 +27,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
