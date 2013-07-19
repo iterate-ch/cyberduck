@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
+
 /**
  * @version $Id$
  */
@@ -118,9 +120,12 @@ public class S3MultipleDeleteFeature implements Delete {
                         true);
             }
             else {
-                session.getClient().deleteMultipleObjects(container.getName(),
-                        keys.toArray(new ObjectKeyAndVersion[keys.size()]),
-                        true);
+                // Request contains a list of up to 1000 keys that you want to delete
+                for(List<ObjectKeyAndVersion> sub : Lists.partition(keys, 1000)) {
+                    session.getClient().deleteMultipleObjects(container.getName(),
+                            keys.toArray(new ObjectKeyAndVersion[keys.size()]),
+                            true);
+                }
             }
         }
         catch(ServiceException e) {
