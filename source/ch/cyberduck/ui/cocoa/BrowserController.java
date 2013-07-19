@@ -3395,14 +3395,17 @@ public class BrowserController extends WindowController
 
                     @Override
                     public void cleanup() {
-                        // Clear second level cache
-                        browserListModel.clear();
-                        browserOutlineModel.clear();
-                        // Update status icon
-                        bookmarkTable.setNeedsDisplay();
-                        // Set the working directory
-                        setWorkdir(workdir);
-                        if(isMounted()) {
+                        if(null == workdir) {
+                            unmount();
+                        }
+                        else {
+                            // Clear second level cache
+                            browserListModel.clear();
+                            browserOutlineModel.clear();
+                            // Update status icon
+                            bookmarkTable.setNeedsDisplay();
+                            // Set the working directory
+                            setWorkdir(workdir);
                             // Close bookmarks
                             selectBrowser(Preferences.instance().getInteger("browser.view"));
                             // Set the window title
@@ -3413,8 +3416,8 @@ public class BrowserController extends WindowController
                             securityLabel.setImage(session.isSecured() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
                                     : IconCacheFactory.<NSImage>get().iconNamed("unlocked.tiff"));
                             securityLabel.setEnabled(session instanceof SSLSession);
+                            super.cleanup();
                         }
-                        super.cleanup();
                     }
 
                     @Override
@@ -3491,11 +3494,8 @@ public class BrowserController extends WindowController
                 // No unmount yet
                 return false;
             }
-            this.unmountImpl(disconnected);
-            // Unmount in progress
-            return true;
         }
-        disconnected.run();
+        this.unmountImpl(disconnected);
         // Unmount succeeded
         return true;
     }
@@ -3507,8 +3507,11 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
-                // Clear the cache on the main thread to make sure the browser model is not in an invalid state
-                session.cache().clear();
+                if(session != null) {
+                    // Clear the cache on the main thread to make sure the browser model is not in an invalid state
+                    session.cache().clear();
+                }
+                session = null;
                 window.setTitle(Preferences.instance().getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
                 disconnected.run();
@@ -3525,9 +3528,11 @@ public class BrowserController extends WindowController
             c.window().close();
         }
         this.background(new BrowserBackgroundAction(this) {
-
             @Override
             public void prepare() throws ConnectionCanceledException {
+                if(null == session) {
+                    throw new ConnectionCanceledException();
+                }
                 if(!session.isConnected()) {
                     throw new ConnectionCanceledException();
                 }
