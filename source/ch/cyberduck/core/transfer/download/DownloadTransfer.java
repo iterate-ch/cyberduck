@@ -32,7 +32,6 @@ import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -76,10 +75,8 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public <T> T getAsDictionary() {
-        final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(Type.download.ordinal()), "Kind");
-        return dict.getSerialized();
+    public Type getType() {
+        return Type.download;
     }
 
     @Override
@@ -230,20 +227,5 @@ public class DownloadTransfer extends Transfer {
     @Override
     public boolean isResumable() {
         return session.isDownloadResumable();
-    }
-
-    @Override
-    public boolean isReloadable() {
-        return true;
-    }
-
-    @Override
-    public String getStatus() {
-        return this.isComplete() ? "Download complete" : "Transfer incomplete";
-    }
-
-    @Override
-    public String getImage() {
-        return "transfer-download.tiff";
     }
 }

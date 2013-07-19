@@ -72,12 +72,44 @@ public abstract class Transfer implements Serializable {
      */
     private long transferred = 0;
 
+    public Type getType() {
+        return Type.upload;
+    }
+
     public enum Type {
-        download,
-        upload,
-        sync,
-        copy,
-        move
+        download {
+            @Override
+            public boolean isReloadable() {
+                return true;
+            }
+        },
+        upload {
+            @Override
+            public boolean isReloadable() {
+                return true;
+            }
+        },
+        synchronisation {
+            @Override
+            public boolean isReloadable() {
+                return true;
+            }
+        },
+        copy {
+            @Override
+            public boolean isReloadable() {
+                return true;
+            }
+        },
+        move {
+            @Override
+            public boolean isReloadable() {
+                return false;
+            }
+        };
+
+        public abstract boolean isReloadable();
+
     }
 
     protected Transfer() {
@@ -141,12 +173,6 @@ public abstract class Transfer implements Serializable {
      */
     public abstract boolean isResumable();
 
-    public abstract boolean isReloadable();
-
-    public abstract String getStatus();
-
-    public abstract String getImage();
-
     /**
      * Create a transfer with a single root which can
      * be a plain file or a directory
@@ -201,11 +227,13 @@ public abstract class Transfer implements Serializable {
         }
     }
 
-    @Override
-    public abstract <T> T getAsDictionary();
+    public <T> T getAsDictionary() {
+        return this.getSerializer().getSerialized();
+    }
 
     public Serializer getSerializer() {
         final Serializer dict = SerializerFactory.createSerializer();
+        dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
         dict.setObjectForKey(session.getHost(), "Host");
         dict.setListForKey(roots, "Roots");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
@@ -278,7 +306,15 @@ public abstract class Transfer implements Serializable {
     }
 
     public String getName() {
-        return this.getRoot().getName();
+        if(roots.isEmpty()) {
+            return Locale.localizedString("None");
+        }
+        final StringBuilder name = new StringBuilder();
+        name.append(roots.get(0).getName());
+        if(roots.size() > 1) {
+            name.append("… (").append(roots.size()).append(")");
+        }
+        return name.toString();
     }
 
     /**

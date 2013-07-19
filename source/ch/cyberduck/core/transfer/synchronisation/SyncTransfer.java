@@ -28,7 +28,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.Transfer;
@@ -73,10 +72,8 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public <T> T getAsDictionary() {
-        final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(Type.sync.ordinal()), "Kind");
-        return dict.getSerialized();
+    public Type getType() {
+        return Type.synchronisation;
     }
 
     /**
@@ -103,11 +100,6 @@ public class SyncTransfer extends Transfer {
     @Override
     public boolean isResumable() {
         return _delegateDownload.isResumable() && _delegateUpload.isResumable();
-    }
-
-    @Override
-    public boolean isReloadable() {
-        return true;
     }
 
     @Override
@@ -330,17 +322,6 @@ public class SyncTransfer extends Transfer {
             return comparisons.get(p.getReference());
         }
         return Comparison.EQUAL;
-    }
-
-
-    @Override
-    public String getStatus() {
-        return this.isComplete() ? "Synchronization complete" : "Transfer incomplete";
-    }
-
-    @Override
-    public String getImage() {
-        return "sync.tiff";
     }
 
     private final class DelegateTransferPathFilter implements TransferPathFilter {

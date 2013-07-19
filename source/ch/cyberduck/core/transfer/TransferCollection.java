@@ -23,8 +23,8 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.serializer.TransferReaderFactory;
-import ch.cyberduck.core.serializer.TransferWriterFactory;
+import ch.cyberduck.core.serializer.impl.TransferReaderFactory;
+import ch.cyberduck.core.serializer.impl.TransferWriterFactory;
 
 import org.apache.log4j.Logger;
 

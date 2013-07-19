@@ -29,7 +29,6 @@ import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -70,10 +69,8 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public <T> T getAsDictionary() {
-        final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(Type.upload.ordinal()), "Kind");
-        return dict.getSerialized();
+    public Type getType() {
+        return Type.upload;
     }
 
     @Override
@@ -100,11 +97,6 @@ public class UploadTransfer extends Transfer {
     @Override
     public boolean isResumable() {
         return session.isUploadResumable();
-    }
-
-    @Override
-    public boolean isReloadable() {
-        return true;
     }
 
     @Override
@@ -221,15 +213,5 @@ public class UploadTransfer extends Transfer {
                 session.mkdir(file, null);
             }
         }
-    }
-
-    @Override
-    public String getStatus() {
-        return this.isComplete() ? "Upload complete" : "Transfer incomplete";
-    }
-
-    @Override
-    public String getImage() {
-        return "transfer-upload.tiff";
     }
 }

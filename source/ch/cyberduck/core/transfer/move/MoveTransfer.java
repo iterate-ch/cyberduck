@@ -20,6 +20,7 @@ package ch.cyberduck.core.transfer.move;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
@@ -27,7 +28,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -71,15 +71,8 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
-    public boolean isReloadable() {
-        return false;
-    }
-
-    @Override
-    public <T> T getAsDictionary() {
-        final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(Type.move.ordinal()), "Kind");
-        return dict.getSerialized();
+    public Type getType() {
+        return Type.move;
     }
 
     @Override
@@ -109,10 +102,17 @@ public class MoveTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
-        final Path destination = files.get(source);
         listener.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
-                source.getName(), destination.getName()));
-        session.rename(source, destination);
+                source.getName(), files.get(source).getName()));
+
+        if(source.attributes().isFile()) {
+            session.rename(source, files.get(source));
+        }
+        else if(source.attributes().isDirectory()) {
+            for(Path i : session.list(source, new DisabledListProgressListener())) {
+                session.rename(i, new Path(files.get(source), i.getName(), i.attributes().getType()));
+            }
+        }
     }
 
     @Override
@@ -122,17 +122,7 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
-    public String getStatus() {
-        return this.isComplete() ? "Move complete" : "Transfer incomplete";
-    }
-
-    @Override
     public String getLocal() {
         return null;
-    }
-
-    @Override
-    public String getImage() {
-        return "transfer-upload.tiff";
     }
 }

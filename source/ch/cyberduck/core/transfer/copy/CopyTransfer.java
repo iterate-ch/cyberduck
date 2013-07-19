@@ -98,14 +98,13 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public boolean isReloadable() {
-        return true;
+    public Type getType() {
+        return Type.copy;
     }
 
     @Override
-    public <T> T getAsDictionary() {
+    public Serializer getSerializer() {
         final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(Type.copy.ordinal()), "Kind");
         if(destination != null) {
             dict.setObjectForKey(destination.getHost(), "Destination");
         }
@@ -116,7 +115,7 @@ public class CopyTransfer extends Transfer {
             }
         }
         dict.setListForKey(new ArrayList<Serializable>(targets), "Destinations");
-        return dict.getSerialized();
+        return dict;
     }
 
     @Override
@@ -203,17 +202,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public String getStatus() {
-        return this.isComplete() ? "Copy complete" : "Transfer incomplete";
-    }
-
-    @Override
     public String getLocal() {
         return null;
-    }
-
-    @Override
-    public String getImage() {
-        return "transfer-upload.tiff";
     }
 }
