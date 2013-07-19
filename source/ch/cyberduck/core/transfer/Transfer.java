@@ -144,7 +144,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Transfer state
      */
-    private State state;
+    private State state = State.stopped;
 
     private enum State {
         running,
