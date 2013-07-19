@@ -311,10 +311,18 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
             // Fallback handling
             if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
                 try {
-                    this.getClient().completePendingCommand();
-                    // Expect 421 response
-                    log.warn(String.format("Aborted connection %d %s",
-                            this.getClient().getReplyCode(), this.getClient().getReplyString()));
+                    try {
+                        this.getClient().completePendingCommand();
+                        // Expect 421 response
+                        log.warn(String.format("Aborted connection %d %s",
+                                this.getClient().getReplyCode(), this.getClient().getReplyString()));
+                    }
+                    catch(IOException e) {
+                        log.warn(String.format("Ignore failure completing pending command %s", e.getMessage()));
+                        // Reconnect
+                        new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
+                                new DisabledPasswordStore(), this).connect(this);
+                    }
                     return this.fallback(action);
                 }
                 catch(IOException e) {
