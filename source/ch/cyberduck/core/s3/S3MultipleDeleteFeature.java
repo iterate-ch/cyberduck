@@ -123,7 +123,7 @@ public class S3MultipleDeleteFeature implements Delete {
                 // Request contains a list of up to 1000 keys that you want to delete
                 for(List<ObjectKeyAndVersion> sub : Lists.partition(keys, 1000)) {
                     session.getClient().deleteMultipleObjects(container.getName(),
-                            keys.toArray(new ObjectKeyAndVersion[keys.size()]),
+                            sub.toArray(new ObjectKeyAndVersion[sub.size()]),
                             true);
                 }
             }
