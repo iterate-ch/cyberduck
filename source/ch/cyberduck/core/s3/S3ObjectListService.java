@@ -95,9 +95,10 @@ public class S3ObjectListService implements ListService {
                                 Preferences.instance().getInteger("s3.listing.chunksize"),
                                 priorLastKey, priorLastVersionId, true);
                         children.addAll(this.listVersions(containerService.getContainer(file), file,
-                                Arrays.asList(chunk.getItems()), listener));
+                                Arrays.asList(chunk.getItems())));
                         priorLastKey = chunk.getNextKeyMarker();
                         priorLastVersionId = chunk.getNextVersionIdMarker();
+                        listener.chunk(children);
                     }
                     while(priorLastKey != null);
                 }
@@ -189,8 +190,7 @@ public class S3ObjectListService implements ListService {
         return children;
     }
 
-    private List<Path> listVersions(final Path bucket, final Path parent, final List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers,
-                                    final ListProgressListener listener)
+    private List<Path> listVersions(final Path bucket, final Path parent, final List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
             throws IOException, ServiceException {
         // Amazon S3 returns object versions in the order in which they were
         // stored, with the most recently stored returned first.
