@@ -238,10 +238,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
             cache.put(workdir.getReference(), this.list(workdir, listener));
             return workdir;
         }
-        finally {
-            // Reset current working directory in bookmark
-            host.setWorkdir(null);
-        }
     }
 
     /**
