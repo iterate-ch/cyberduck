@@ -140,6 +140,9 @@ public abstract class AbstractController implements Controller {
 
         @Override
         public T call() {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Synchronize on lock %s for action %s", action.lock(), action));
+            }
             // Synchronize all background threads to this lock so actions run
             // sequentially as they were initiated from the main interface thread
             synchronized(action.lock()) {
