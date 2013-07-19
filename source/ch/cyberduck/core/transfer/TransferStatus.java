@@ -71,14 +71,14 @@ public class TransferStatus {
     private boolean selected = true;
 
     public void setComplete() {
-        this.complete = true;
+        complete = true;
         if(log.isInfoEnabled()) {
             log.info(String.format("Status set to complete with %d bytes", current));
         }
     }
 
     public boolean isComplete() {
-        return this.complete;
+        return complete;
     }
 
     /**
@@ -99,7 +99,7 @@ public class TransferStatus {
      * @return Number of bytes transferred
      */
     public long getCurrent() {
-        return this.current;
+        return current;
     }
 
     /**
