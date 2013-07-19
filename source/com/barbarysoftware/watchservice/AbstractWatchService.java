@@ -26,9 +26,8 @@
 package com.barbarysoftware.watchservice;
 
 import java.io.IOException;
-
-import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingDeque;
-import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Base implementation class for watch services.

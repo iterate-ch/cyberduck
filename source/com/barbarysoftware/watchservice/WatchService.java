@@ -1,6 +1,6 @@
 package com.barbarysoftware.watchservice;
 
-import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeUnit;
 
 import java.io.Closeable;
 import java.io.IOException;
