@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -69,7 +70,8 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
             public Boolean run() throws BackgroundException {
                 try {
                     final Transfer transfer = download.call();
-                    growl.notify(transfer.getStatus(), transfer.getName());
+                    growl.notify(transfer.isComplete() ?
+                            String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
                 }
                 catch(BackgroundException e) {
                     throw e;
@@ -101,7 +103,8 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
             public Boolean run() throws BackgroundException {
                 try {
                     final Transfer transfer = upload.call();
-                    growl.notify(transfer.getStatus(), transfer.getName());
+                    growl.notify(transfer.isComplete() ?
+                            String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
                 }
                 catch(BackgroundException e) {
                     throw e;
