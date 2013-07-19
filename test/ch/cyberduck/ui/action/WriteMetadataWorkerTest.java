@@ -71,7 +71,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
                 fail();
             }
         };
-        assertEquals(updated, worker.run());
+        worker.run();
     }
 
     @Test
@@ -105,6 +105,6 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
                 fail();
             }
         };
-        assertEquals(updated, worker.run());
+        worker.run();
     }
 }
