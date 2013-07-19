@@ -144,11 +144,6 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         return Locale.localizedString("Unknown");
     }
 
-    @Override
-    public String toString() {
-        return this.getActivity();
-    }
-
     private final Object lock = new Object();
 
     @Override
