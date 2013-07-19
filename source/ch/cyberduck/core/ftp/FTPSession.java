@@ -276,16 +276,6 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 
-    @Override
-    public boolean isDownloadResumable() {
-        return true;
-    }
-
-    @Override
-    public boolean isUploadResumable() {
-        return true;
-    }
-
     /**
      * @param action Action that needs to open a data connection
      * @return True if action was successful

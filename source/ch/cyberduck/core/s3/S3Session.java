@@ -345,14 +345,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     /**
-     * @return True
-     */
-    @Override
-    public boolean isDownloadResumable() {
-        return true;
-    }
-
-    /**
      * @return No Content-Range support
      */
     @Override
