@@ -304,7 +304,7 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
                     // Throw original error message
                 }
             }
-            throw new FTPExceptionMappingService().map("", failure, file);
+            throw new FTPExceptionMappingService().map("Connection failed", failure, file);
         }
         catch(SocketTimeoutException failure) {
             log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
