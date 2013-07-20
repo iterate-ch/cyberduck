@@ -99,8 +99,8 @@ public class S3SingleUploadService {
             IOUtils.closeQuietly(in);
             IOUtils.closeQuietly(out);
         }
+        final StorageObject part = out.getResponse();
         if(null != digest) {
-            final StorageObject part = out.getResponse();
             session.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
             // Obtain locally-calculated MD5 hash.
             String hexMD5 = ServiceUtils.toHex(digest.digest());
