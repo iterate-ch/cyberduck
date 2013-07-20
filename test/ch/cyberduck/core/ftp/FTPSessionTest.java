@@ -318,7 +318,7 @@ public class FTPSessionTest extends AbstractTestCase {
         Path p = new Path("/t", Path.FILE_TYPE);
         final TransferStatus status = new TransferStatus();
         status.setLength(432768L);
-        new FTPSession(new Host("t")).transfer(p, new NullInputStream(status.getLength()), new NullOutputStream(),
+        new FTPSession(new Host("t")).transfer(new NullInputStream(status.getLength()), new NullOutputStream(),
                 new StreamListener() {
                     long sent;
                     long received;
@@ -354,7 +354,7 @@ public class FTPSessionTest extends AbstractTestCase {
             @Override
             public void run() {
                 try {
-                    new FTPSession(new Host("t")).transfer(p, new NullInputStream(status.getLength()), new NullOutputStream(),
+                    new FTPSession(new Host("t")).transfer(new NullInputStream(status.getLength()), new NullOutputStream(),
                             new StreamListener() {
                                 @Override
                                 public void bytesSent(long bytes) {

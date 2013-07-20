@@ -200,7 +200,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                     }
                 }
                 out = this.write(file, status);
-                this.upload(file, out, in, throttle, listener, status);
+                this.upload(out, in, throttle, listener, status);
             }
             finally {
                 IOUtils.closeQuietly(in);

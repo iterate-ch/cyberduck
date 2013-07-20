@@ -253,7 +253,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                         in = new DigestInputStream(file.getLocal().getInputStream(), digest);
                     }
                     out = write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
-                    session.upload(file, out, in, throttle, listener, offset, length, status);
+                    session.upload(out, in, throttle, listener, offset, length, status);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);

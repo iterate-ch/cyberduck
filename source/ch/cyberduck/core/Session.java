@@ -568,7 +568,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
             try {
                 in = read(file, status);
                 out = file.getLocal().getOutputStream(status.isResume());
-                this.download(file, in, out, throttle, listener, status);
+                this.download(in, out, throttle, listener, status);
             }
             finally {
                 IOUtils.closeQuietly(in);
@@ -594,7 +594,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
             try {
                 in = file.getLocal().getInputStream();
                 out = write(file, status);
-                this.upload(file, out, in, throttle, listener, status);
+                this.upload(out, in, throttle, listener, status);
             }
             finally {
                 IOUtils.closeQuietly(in);
@@ -614,10 +614,10 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @param status   Transfer status
      * @throws java.io.IOException Write not completed due to a I/O problem
      */
-    public void upload(final Path file, final OutputStream out, final InputStream in,
+    public void upload(final OutputStream out, final InputStream in,
                        final BandwidthThrottle throttle,
                        final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
-        this.upload(file, out, in, throttle, l, status.getCurrent(), -1, status);
+        this.upload(out, in, throttle, l, status.getCurrent(), -1, status);
     }
 
     /**
@@ -638,7 +638,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      *                     number of bytes
      * @throws IOException Write not completed due to a I/O problem
      */
-    public void upload(final Path file, final OutputStream out, final InputStream in, final BandwidthThrottle throttle,
+    public void upload(final OutputStream out, final InputStream in, final BandwidthThrottle throttle,
                        final StreamListener l, long offset, final long limit, final TransferStatus status) throws IOException, ConnectionCanceledException {
         if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
@@ -653,7 +653,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
                         skipped, status.getCurrent()));
             }
         }
-        this.transfer(file, in, new ThrottledOutputStream(out, throttle), l, limit, status);
+        this.transfer(in, new ThrottledOutputStream(out, throttle), l, limit, status);
     }
 
     /**
@@ -666,12 +666,12 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @param status   Transfer status
      * @throws IOException Write not completed due to a I/O problem
      */
-    public void download(final Path file, final InputStream in, final OutputStream out, final BandwidthThrottle throttle,
+    public void download(final InputStream in, final OutputStream out, final BandwidthThrottle throttle,
                          final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
-        this.transfer(file, new ThrottledInputStream(in, throttle), out, l, -1, status);
+        this.transfer(new ThrottledInputStream(in, throttle), out, l, -1, status);
     }
 
     /**
@@ -684,7 +684,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @param status   Transfer status
      * @throws IOException Write not completed due to a I/O problem
      */
-    public void transfer(final Path file, final InputStream in, final OutputStream out,
+    public void transfer(final InputStream in, final OutputStream out,
                          final StreamListener listener, final long limit,
                          final TransferStatus status) throws IOException, ConnectionCanceledException {
         final BufferedInputStream bi = new BufferedInputStream(in);
@@ -746,7 +746,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         OutputStream out = null;
         try {
             if(file.attributes().isFile()) {
-                this.transfer(file, in = new ThrottledInputStream(this.read(file, status), throttle),
+                this.transfer(in = new ThrottledInputStream(this.read(file, status), throttle),
                         out = new ThrottledOutputStream(this.write(copy, status), throttle),
                         listener, -1, status);
             }

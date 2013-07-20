@@ -86,7 +86,7 @@ public class S3SingleUploadService {
             out = this.write(file, object, status.getLength() - status.getCurrent(),
                     Collections.<String, String>emptyMap());
             try {
-                session.upload(file, out, in, throttle, listener, status);
+                session.upload(out, in, throttle, listener, status);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);

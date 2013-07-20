@@ -250,7 +250,7 @@ public class SwiftSession extends HttpSession<Client> {
                     in = new DigestInputStream(file.getLocal().getInputStream(), digest);
                 }
                 out = this.write(file, status, md5sum);
-                this.upload(file, out, in, throttle, listener, status);
+                this.upload(out, in, throttle, listener, status);
             }
             finally {
                 IOUtils.closeQuietly(in);
