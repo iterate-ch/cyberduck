@@ -1,7 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.local.Local;
-
 /**
  * @version $Id$
  */

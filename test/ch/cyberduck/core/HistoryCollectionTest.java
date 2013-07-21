@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.LocalFactory;
-
 import org.junit.Test;
 
 import java.util.Collections;

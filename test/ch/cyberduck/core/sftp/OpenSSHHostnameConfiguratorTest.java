@@ -20,7 +20,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.LocalFactory;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import java.io.File;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class OpenSSHHostnameConfiguratorTest extends AbstractTestCase {
 

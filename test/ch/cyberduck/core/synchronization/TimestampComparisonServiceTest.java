@@ -5,7 +5,7 @@ import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import org.junit.Test;
 

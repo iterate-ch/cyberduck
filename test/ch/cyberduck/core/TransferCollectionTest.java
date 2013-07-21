@@ -1,6 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.copy.CopyTransfer;
 

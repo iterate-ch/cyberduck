@@ -8,7 +8,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import org.junit.Test;
 

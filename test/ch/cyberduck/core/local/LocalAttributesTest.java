@@ -1,6 +1,7 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
 
 import org.junit.Test;
@@ -11,7 +12,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LocalAttributesTest extends AbstractTestCase {
 

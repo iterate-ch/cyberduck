@@ -1,7 +1,6 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.serializer.impl.HostWriterFactory;
 

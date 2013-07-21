@@ -1,8 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
-
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -23,7 +23,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultCredentials;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.LocalFactory;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import java.io.File;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
 

@@ -1,7 +1,7 @@
 package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.LocalFactory;
 
 import org.junit.Test;
 

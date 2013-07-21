@@ -171,4 +171,9 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         session.delete(test, new DisabledLoginController());
     }
+
+    @Test
+    public void testCopy() throws Exception {
+
+    }
 }

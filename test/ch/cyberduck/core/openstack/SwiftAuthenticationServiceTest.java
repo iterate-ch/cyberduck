@@ -7,7 +7,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.serializer.impl.ProfileReaderFactory;
 
 import org.junit.Test;

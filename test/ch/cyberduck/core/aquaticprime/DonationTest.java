@@ -1,8 +1,8 @@
 package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 
 import org.junit.Test;
 

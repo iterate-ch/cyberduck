@@ -416,7 +416,6 @@ public class FTPSessionTest extends AbstractTestCase {
         assertEquals(Session.State.closed, session.getState());
     }
 
-
     @Test
     public void testWrite() throws Exception {
         final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
@@ -436,5 +435,10 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         session.delete(test, new DisabledLoginController());
+    }
+
+    @Test
+    public void testCopy() throws Exception {
+
     }
 }
