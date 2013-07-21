@@ -23,6 +23,7 @@ import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.QueueFactory;
@@ -91,10 +92,16 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
     }
 
     @Override
+    public void prepare() throws ConnectionCanceledException {
+        transferListener.start(transfer);
+        queue.add(transfer, progressListener);
+        super.prepare();
+    }
+
+    @Override
     public Boolean run() throws BackgroundException {
         final String lock = sleep.lock();
         try {
-            queue.add(transfer, progressListener);
             progressTimer = controller.schedule(new Runnable() {
                 @Override
                 public void run() {
@@ -102,16 +109,20 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
                     transferListener.progress(status);
                 }
             }, 100L, TimeUnit.MILLISECONDS);
-            transferListener.start(transfer);
             transfer.start(prompt, options);
         }
         finally {
-            sleep.release(lock);
-            queue.remove(transfer);
             progressTimer.cancel(false);
-            transferListener.stop(transfer);
+            sleep.release(lock);
         }
         return true;
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        queue.remove(transfer);
+        transferListener.stop(transfer);
     }
 
     @Override
