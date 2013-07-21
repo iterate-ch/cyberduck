@@ -19,8 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.date.UserDateFormatterFactory;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 import java.util.Collections;
 import java.util.Comparator;

@@ -22,7 +22,7 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,7 +38,7 @@ import ch.ethz.ssh2.crypto.PEMDecoder;
 import ch.ethz.ssh2.crypto.PEMDecryptException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPPublicKeyAuthentication {
     private static final Logger log = Logger.getLogger(SFTPPublicKeyAuthentication.class);

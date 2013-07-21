@@ -20,7 +20,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.HostnameConfigurator;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.LocalFactory;
 
 import org.apache.log4j.Logger;
 import org.spearce.jgit.transport.OpenSshConfig;
@@ -28,7 +28,7 @@ import org.spearce.jgit.transport.OpenSshConfig;
 import java.io.File;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
     private static final Logger log = Logger.getLogger(OpenSSHHostnameConfigurator.class);

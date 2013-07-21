@@ -20,7 +20,7 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import org.apache.commons.lang.StringUtils;
 

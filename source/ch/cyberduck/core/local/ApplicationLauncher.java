@@ -18,6 +18,8 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
+
 /**
  * @version $Id$
  */

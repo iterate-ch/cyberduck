@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import java.util.List;
 

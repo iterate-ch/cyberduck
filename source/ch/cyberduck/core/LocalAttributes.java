@@ -1,4 +1,4 @@
-package ch.cyberduck.core.local;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -17,9 +17,6 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 
@@ -70,7 +67,7 @@ public class LocalAttributes extends Attributes {
      * This is only returning the correct result if the file already exists.
      *
      * @return File type
-     * @see ch.cyberduck.core.local.Local#exists()
+     * @see Local#exists()
      */
     @Override
     public int getType() {
@@ -106,7 +103,7 @@ public class LocalAttributes extends Attributes {
     /**
      * This is only returning the correct result if the file already exists.
      *
-     * @see ch.cyberduck.core.local.Local#exists()
+     * @see Local#exists()
      */
     @Override
     public boolean isDirectory() {
@@ -116,7 +113,7 @@ public class LocalAttributes extends Attributes {
     /**
      * This is only returning the correct result if the file already exists.
      *
-     * @see ch.cyberduck.core.local.Local#exists()
+     * @see Local#exists()
      */
     @Override
     public boolean isFile() {

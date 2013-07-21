@@ -18,104 +18,45 @@ package ch.cyberduck.core.transfer.copy;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
+import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
  * @version $Id$
  */
-public class CopyTransferFilter implements TransferPathFilter {
+public class CopyTransferFilter extends OverwriteFilter {
     private static final Logger log = Logger.getLogger(CopyTransferFilter.class);
 
     private Session<?> destination;
 
     private final Map<Path, Path> files;
 
-    public CopyTransferFilter(final Session destination, final Map<Path, Path> files) {
+    public CopyTransferFilter(final Session<?> destination, final Map<Path, Path> files) {
+        super(new UploadSymlinkResolver(destination.getFeature(Symlink.class, null),
+                new ArrayList<Path>(files.keySet())));
         this.destination = destination;
         this.files = files;
     }
 
     @Override
-    public boolean accept(final Session session, final Path source, final TransferStatus parent) throws BackgroundException {
-        if(source.attributes().isDirectory()) {
-            if(parent.isExists()) {
-                final Path destination = files.get(source);
-                // Do not attempt to create a directory that already exists
-                if(session.exists(destination)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    @Override
     public TransferStatus prepare(final Session session, final Path source, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = new TransferStatus();
-        if(source.attributes().isFile()) {
-            status.setLength(source.attributes().getSize());
-        }
-        return status;
+        return super.prepare(destination, source, parent);
     }
 
     @Override
-    public void complete(final Session<?> session, final Path source, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
-        if(status.isComplete()) {
-            final UnixPermission unix = destination.getFeature(UnixPermission.class, null);
-            if(unix != null) {
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    Permission permission = source.attributes().getPermission();
-                    if(!Permission.EMPTY.equals(permission)) {
-                        this.permission(source, unix, permission);
-                    }
-                }
-            }
-            final Timestamp timestamp = destination.getFeature(Timestamp.class, null);
-            if(timestamp != null) {
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    listener.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                            source.getName(), UserDateFormatterFactory.get().getShortFormat(source.attributes().getModificationDate())));
-                    this.timestamp(source, timestamp);
-                }
-            }
-        }
-    }
-
-    private void timestamp(final Path source, final Timestamp timestamp) {
-        try {
-            timestamp.setTimestamp(files.get(source), source.attributes().getCreationDate(),
-                    source.attributes().getModificationDate(),
-                    source.attributes().getAccessedDate());
-        }
-        catch(BackgroundException e) {
-            // Ignore
-            log.warn(e.getMessage());
-        }
-    }
-
-    private void permission(final Path source, final UnixPermission unix, final Permission permission) {
-        try {
-            unix.setUnixPermission(files.get(source), permission);
-        }
-        catch(BackgroundException e) {
-            // Ignore
-            log.warn(e.getMessage());
-        }
+    public void complete(final Session<?> session, final Path source, final TransferOptions options,
+                         final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+        super.complete(destination, source, options, status, listener);
     }
 }

@@ -25,7 +25,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.transfer.NullTransferFilter;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferFilter;

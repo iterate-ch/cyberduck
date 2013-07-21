@@ -26,7 +26,7 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

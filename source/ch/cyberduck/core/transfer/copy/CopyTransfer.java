@@ -22,6 +22,7 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -35,6 +36,9 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.normalizer.CopyRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
+import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 
 import org.apache.log4j.Logger;
 
@@ -138,7 +142,8 @@ public class CopyTransfer extends Transfer {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return new CopyTransferFilter(destination, files);
+            final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class, null), this.getRoots());
+            return new OverwriteFilter(resolver);
         }
         return super.filter(prompt, action);
     }

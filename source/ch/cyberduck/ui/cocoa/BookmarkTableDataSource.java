@@ -19,8 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.serializer.impl.HostReaderFactory;
 import ch.cyberduck.core.serializer.impl.HostWriterFactory;
 import ch.cyberduck.core.transfer.Transfer;

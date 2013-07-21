@@ -19,7 +19,7 @@ package ch.cyberduck.core.serializer;
  */
 
 import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import java.util.Collection;
 

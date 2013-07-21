@@ -20,7 +20,7 @@ package ch.cyberduck.core.filter;
 
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import org.apache.log4j.Logger;
 

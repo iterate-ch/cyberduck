@@ -18,6 +18,8 @@ package ch.cyberduck.core.local;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;

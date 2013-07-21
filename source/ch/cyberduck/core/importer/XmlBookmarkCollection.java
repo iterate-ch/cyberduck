@@ -19,7 +19,7 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;

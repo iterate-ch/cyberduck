@@ -19,8 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.impl.TransferReaderFactory;
 import ch.cyberduck.core.serializer.impl.TransferWriterFactory;
 import ch.cyberduck.core.transfer.Transfer;

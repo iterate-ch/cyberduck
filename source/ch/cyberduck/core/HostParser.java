@@ -7,7 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class HostParser {
     private static final Logger log = Logger.getLogger(HostParser.class);

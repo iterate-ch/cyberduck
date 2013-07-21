@@ -21,7 +21,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import org.apache.log4j.Logger;
 

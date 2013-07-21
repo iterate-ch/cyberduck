@@ -20,10 +20,10 @@ package ch.cyberduck.ui.resources;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface IconCache<I> {
 

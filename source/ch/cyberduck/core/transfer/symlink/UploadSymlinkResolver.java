@@ -20,7 +20,7 @@ package ch.cyberduck.core.transfer.symlink;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import java.util.List;
 

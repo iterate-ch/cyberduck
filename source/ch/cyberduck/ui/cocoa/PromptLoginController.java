@@ -28,7 +28,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;

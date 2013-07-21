@@ -20,8 +20,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.serializer.impl.HostReaderFactory;

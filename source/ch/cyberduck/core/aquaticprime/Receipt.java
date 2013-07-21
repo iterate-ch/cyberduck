@@ -22,8 +22,8 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;

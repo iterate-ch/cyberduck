@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 /**

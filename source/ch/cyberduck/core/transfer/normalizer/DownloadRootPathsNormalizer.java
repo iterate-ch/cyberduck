@@ -19,7 +19,7 @@ package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.LocalFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;

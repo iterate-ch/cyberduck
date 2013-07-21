@@ -20,7 +20,7 @@ package ch.cyberduck.core.serializer.impl;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;

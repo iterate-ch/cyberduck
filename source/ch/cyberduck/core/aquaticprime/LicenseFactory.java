@@ -24,8 +24,8 @@ import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.local;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
@@ -18,12 +18,6 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 
 import org.apache.commons.io.IOUtils;

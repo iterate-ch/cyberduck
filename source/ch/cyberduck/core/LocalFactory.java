@@ -1,4 +1,4 @@
-package ch.cyberduck.core.local;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
@@ -17,9 +17,6 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
-
-import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
 
 import java.io.File;
 import java.util.HashMap;

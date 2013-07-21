@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.Local;
-
 import org.apache.commons.lang.StringUtils;
 
 /**

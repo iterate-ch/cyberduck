@@ -20,7 +20,7 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 /**
  * @param <S>

@@ -20,12 +20,11 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultTouchFeature implements Touch {
 

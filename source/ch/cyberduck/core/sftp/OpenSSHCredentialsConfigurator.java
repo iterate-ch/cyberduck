@@ -22,8 +22,8 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.spearce.jgit.transport.OpenSshConfig;
@@ -31,7 +31,7 @@ import org.spearce.jgit.transport.OpenSshConfig;
 import java.io.File;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
 

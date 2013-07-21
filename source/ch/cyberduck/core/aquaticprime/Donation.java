@@ -19,7 +19,7 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.library.Native;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.Local;
 
 import org.apache.log4j.Logger;
 
