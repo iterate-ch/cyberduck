@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -37,8 +38,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -653,7 +652,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
                         skipped, status.getCurrent()));
             }
         }
-        this.transfer(in, new ThrottledOutputStream(out, throttle), l, limit, status);
+        new StreamCopier().transfer(in, new ThrottledOutputStream(out, throttle), l, limit, status);
     }
 
     /**
@@ -671,64 +670,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
-        this.transfer(new ThrottledInputStream(in, throttle), out, l, -1, status);
-    }
-
-    /**
-     * Updates the current number of bytes transferred in the status reference.
-     *
-     * @param in       The stream to read from
-     * @param out      The stream to write to
-     * @param listener The stream listener to notify about bytes received and sent
-     * @param limit    Transfer only up to this length
-     * @param status   Transfer status
-     * @throws IOException Write not completed due to a I/O problem
-     */
-    public void transfer(final InputStream in, final OutputStream out,
-                         final StreamListener listener, final long limit,
-                         final TransferStatus status) throws IOException, ConnectionCanceledException {
-        final BufferedInputStream bi = new BufferedInputStream(in);
-        final BufferedOutputStream bo = new BufferedOutputStream(out);
-        try {
-            final int chunksize = Preferences.instance().getInteger("connection.chunksize");
-            final byte[] chunk = new byte[chunksize];
-            long bytesTransferred = 0;
-            while(!status.isCanceled()) {
-                final int read = bi.read(chunk, 0, chunksize);
-                if(-1 == read) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("End of file reached");
-                    }
-                    // End of file
-                    status.setComplete();
-                    break;
-                }
-                else {
-                    status.addCurrent(read);
-                    listener.bytesReceived(read);
-                    bo.write(chunk, 0, read);
-                    listener.bytesSent(read);
-                    bytesTransferred += read;
-                    if(limit == bytesTransferred) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Limit %d reached reading from stream", limit));
-                        }
-                        // Part reached
-                        if(0 == bi.available()) {
-                            // End of file
-                            status.setComplete();
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-        finally {
-            bo.flush();
-        }
-        if(status.isCanceled()) {
-            throw new ConnectionCanceledException();
-        }
+        new StreamCopier().transfer(new ThrottledInputStream(in, throttle), out, l, -1, status);
     }
 
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {

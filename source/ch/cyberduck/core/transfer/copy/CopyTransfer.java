@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -231,7 +232,7 @@ public class CopyTransfer extends Transfer {
         OutputStream out = null;
         try {
             if(file.attributes().isFile()) {
-                session.transfer(in = new ThrottledInputStream(session.read(file, status), throttle),
+                new StreamCopier().transfer(in = new ThrottledInputStream(session.read(file, status), throttle),
                         out = new ThrottledOutputStream(destination.write(copy, status), throttle),
                         listener, -1, status);
             }
