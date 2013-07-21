@@ -18,8 +18,8 @@ package ch.cyberduck.core.serializer.impl;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.serializer.Deserializer;
-import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;

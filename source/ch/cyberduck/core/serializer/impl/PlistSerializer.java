@@ -19,8 +19,8 @@ package ch.cyberduck.core.serializer.impl;
  */
 
 import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.serializer.SerializerFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
