@@ -112,6 +112,8 @@ public class SwiftAuthenticationService {
                         Locale.localizedString("Provide additional login credentials", "Credentials"),
                         Locale.localizedString("Tenant or project identifier", "Mosso"), options);
                 tenant = tenantCredentials.getUsername();
+                // Save tenant in username
+                credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
             }
             return new Authentication20AccessKeySecretKeyRequest(
                     URI.create(url.toString()),
