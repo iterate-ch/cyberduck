@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.date.UserDateFormatter;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDateFormatter;

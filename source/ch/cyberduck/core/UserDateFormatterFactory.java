@@ -1,4 +1,4 @@
-package ch.cyberduck.core.date;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -17,8 +17,7 @@ package ch.cyberduck.core.date;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.date.AbstractUserDateFormatter;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.ui.comparator.ExtensionComparator;
 import ch.cyberduck.ui.comparator.FileTypeComparator;

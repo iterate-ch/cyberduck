@@ -24,7 +24,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;

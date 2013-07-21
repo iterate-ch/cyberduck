@@ -1,4 +1,4 @@
-package ch.cyberduck.core.i18n;
+package ch.cyberduck.core;
 
 /*
  *  Copyright (c) 2009 David Kocher. All rights reserved.
@@ -18,8 +18,7 @@ package ch.cyberduck.core.i18n;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.i18n.Locale;
 
 import java.util.HashMap;
 import java.util.Map;

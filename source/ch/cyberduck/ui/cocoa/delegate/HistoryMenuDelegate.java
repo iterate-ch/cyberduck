@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;

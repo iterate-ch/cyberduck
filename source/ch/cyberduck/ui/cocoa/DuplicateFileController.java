@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;

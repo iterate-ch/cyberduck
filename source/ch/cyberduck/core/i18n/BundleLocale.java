@@ -18,6 +18,7 @@ package ch.cyberduck.core.i18n;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.commons.collections.map.LRUMap;

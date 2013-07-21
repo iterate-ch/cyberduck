@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;

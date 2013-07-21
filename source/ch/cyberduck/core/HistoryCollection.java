@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.date.UserDateFormatterFactory;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;

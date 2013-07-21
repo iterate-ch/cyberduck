@@ -18,6 +18,8 @@ package ch.cyberduck.core.i18n;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
+
 import org.apache.commons.lang.StringUtils;
 
 /**

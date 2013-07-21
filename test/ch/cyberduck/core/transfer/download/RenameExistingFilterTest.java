@@ -2,11 +2,11 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.date.UserDateFormatterFactory;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
