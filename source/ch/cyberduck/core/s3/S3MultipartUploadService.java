@@ -24,7 +24,6 @@ import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.NamedThreadFactory;

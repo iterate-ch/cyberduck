@@ -27,7 +27,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
+import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.io.FilenameUtils;

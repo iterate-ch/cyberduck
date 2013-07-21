@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

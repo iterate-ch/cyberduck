@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang.StringUtils;

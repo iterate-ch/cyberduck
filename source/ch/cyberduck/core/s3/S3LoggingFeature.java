@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 
@@ -31,7 +30,7 @@ import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3LoggingFeature implements Logging {
     private static final Logger log = Logger.getLogger(S3LoggingFeature.class);

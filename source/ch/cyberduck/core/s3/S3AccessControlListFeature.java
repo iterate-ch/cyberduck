@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.AclPermission;
 
 import org.apache.log4j.Logger;

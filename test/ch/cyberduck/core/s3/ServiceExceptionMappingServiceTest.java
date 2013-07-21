@@ -21,7 +21,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 
 import org.jets3t.service.ServiceException;
 import org.junit.Test;

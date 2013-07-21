@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core.s3;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -17,6 +17,12 @@ package ch.cyberduck.core.exception;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
+
+import ch.cyberduck.core.exception.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.http.HttpStatus;
 import org.jets3t.service.ServiceException;

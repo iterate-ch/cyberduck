@@ -20,7 +20,7 @@ package ch.cyberduck.core.gstorage;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
+import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3LoggingFeature;
 

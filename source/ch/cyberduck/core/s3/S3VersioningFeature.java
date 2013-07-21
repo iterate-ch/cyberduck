@@ -25,7 +25,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.versioning.VersioningConfiguration;

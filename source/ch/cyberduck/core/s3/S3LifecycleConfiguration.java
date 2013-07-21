@@ -19,7 +19,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
@@ -31,7 +30,7 @@ import org.jets3t.service.model.LifecycleConfig;
 import java.util.UUID;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3LifecycleConfiguration implements Lifecycle {
     private static final Logger log = Logger.getLogger(S3LifecycleConfiguration.class);

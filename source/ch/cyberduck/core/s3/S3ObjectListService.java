@@ -26,7 +26,6 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.ServiceExceptionMappingService;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
