@@ -107,6 +107,6 @@ public final class CloudfilesProtocol extends AbstractProtocol {
 
     @Override
     public Set<String> getRegions() {
-        return new HashSet<String>(Arrays.asList("DFW", "ORD", "SYD"));
+        return new HashSet<String>(Arrays.asList("DFW", "ORD", "SYD", "LON"));
     }
 }
