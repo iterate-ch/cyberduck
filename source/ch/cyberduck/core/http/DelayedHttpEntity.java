@@ -41,7 +41,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     /**
      * @param entry Signal when stream is ready
      */
-    public DelayedHttpEntity(CountDownLatch entry) {
+    public DelayedHttpEntity(final CountDownLatch entry) {
         this.entry = entry;
     }
 
