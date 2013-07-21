@@ -68,7 +68,7 @@ public class S3MetadataFeature implements Headers {
                 target.replaceAllMetadata(new HashMap<String, Object>(metadata));
                 // Apply non standard ACL
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-                target.setAcl(acl.convert(acl.read(file)));
+                target.setAcl(acl.convert(acl.getPermission(file)));
                 session.getClient().updateObjectMetadata(new PathContainerService().getContainer(file).getName(), target);
             }
             catch(ServiceException e) {

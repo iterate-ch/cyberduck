@@ -39,12 +39,12 @@ public class ReadAclWorkerTest extends AbstractTestCase {
     public void testRun() throws Exception {
         final ReadAclWorker worker = new ReadAclWorker(new AclPermission() {
             @Override
-            public Acl read(final Path file) throws BackgroundException {
+            public Acl getPermission(final Path file) throws BackgroundException {
                 return new Acl(new Acl.DomainUser("a"), new Acl.Role("r"));
             }
 
             @Override
-            public void write(final Path file, final Acl acl, final boolean recursive) throws BackgroundException {
+            public void setPermission(final Path file, final Acl acl) throws BackgroundException {
                 //
             }
         }, Arrays.<Path>asList(new Path("/a", Path.FILE_TYPE), new Path("/b", Path.FILE_TYPE))) {

@@ -19,7 +19,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -48,7 +47,7 @@ public class S3AccessControlListFeature implements AclPermission {
     }
 
     @Override
-    public Acl read(final Path file) throws BackgroundException {
+    public Acl getPermission(final Path file) throws BackgroundException {
         final Credentials credentials = session.getHost().getCredentials();
         if(credentials.isAnonymousLogin()) {
             return Acl.EMPTY;
@@ -82,7 +81,7 @@ public class S3AccessControlListFeature implements AclPermission {
     }
 
     @Override
-    public void write(final Path file, final Acl acl, final boolean recursive) throws BackgroundException {
+    public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
             if(null == acl.getOwner()) {
                 // Owner is lost in controller
@@ -94,13 +93,6 @@ public class S3AccessControlListFeature implements AclPermission {
             else {
                 if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
                     session.getClient().putObjectAcl(containerService.getContainer(file).getName(), containerService.getKey(file), this.convert(acl));
-                }
-                if(file.attributes().isDirectory()) {
-                    if(recursive) {
-                        for(Path child : session.list(file, new DisabledListProgressListener())) {
-                            this.write(child, acl, recursive);
-                        }
-                    }
                 }
             }
         }

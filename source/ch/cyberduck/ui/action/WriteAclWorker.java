@@ -20,6 +20,7 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -34,7 +35,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class WriteAclWorker extends Worker<Acl> {
+public abstract class WriteAclWorker extends Worker<Void> {
     private static Logger log = Logger.getLogger(WriteAclWorker.class);
 
     private Session<?> session;
@@ -66,33 +67,40 @@ public abstract class WriteAclWorker extends Worker<Acl> {
     }
 
     @Override
-    public Acl run() throws BackgroundException {
+    public Void run() throws BackgroundException {
         for(Path file : files) {
-            if(acl.isModified()) {
-                session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                        file.getName(), acl));
-                // Existing entry has been modified
-                feature.write(file, acl, recursive);
+            this.write(file);
+        }
+        return null;
+    }
+
+    protected void write(final Path file) throws BackgroundException {
+        if(acl.isModified()) {
+            session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+                    file.getName(), acl));
+            // Existing entry has been modified
+            feature.setPermission(file, acl);
+        }
+        else {
+            if(acl.equals(file.attributes().getAcl())) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skip writing equal ACL for %s", file));
+                }
             }
             else {
-                if(acl.equals(file.attributes().getAcl())) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Skip writing equal ACL for " + file);
-                    }
-                    return acl;
-                }
-                else {
-                    // Additional entry added
-                    feature.write(file, acl, recursive);
-                }
+                session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+                        file.getName(), acl));
+                // Additional entry added
+                feature.setPermission(file, acl);
             }
+        }
+        if(file.attributes().isDirectory()) {
             if(recursive) {
-                if(file.attributes().isDirectory()) {
-                    //todo
+                for(Path child : session.list(file, new DisabledListProgressListener())) {
+                    this.write(child);
                 }
             }
         }
-        return acl;
     }
 
     @Override

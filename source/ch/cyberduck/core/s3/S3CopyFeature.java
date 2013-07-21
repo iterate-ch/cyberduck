@@ -46,7 +46,7 @@ public class S3CopyFeature implements Copy {
             final String encryptionAlgorithm = source.attributes().getEncryption();
             // Apply non standard ACL
             final S3AccessControlListFeature accessControlListFeature = new S3AccessControlListFeature(session);
-            final Acl acl = accessControlListFeature.read(source);
+            final Acl acl = accessControlListFeature.getPermission(source);
             this.copy(source, copy, storageClass, encryptionAlgorithm, acl);
         }
     }

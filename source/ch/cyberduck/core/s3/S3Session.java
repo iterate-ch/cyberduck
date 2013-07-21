@@ -581,9 +581,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                     Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
             object.setMd5Hash(ServiceUtils.fromHex(file.getLocal().attributes().getChecksum()));
         }
-        Acl acl = file.attributes().getAcl();
+        final Acl acl = file.attributes().getAcl();
         if(Acl.EMPTY.equals(acl)) {
-            if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
+            if(Preferences.instance().getProperty("s3.key.acl.default").equals("public-read")) {
                 object.setAcl(this.getPublicCannedReadAcl());
             }
             else {
@@ -682,7 +682,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
                 // Apply non standard ACL
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
-                destination.setAcl(acl.convert(acl.read(file)));
+                destination.setAcl(acl.convert(acl.getPermission(file)));
                 // Moving the object retaining the metadata of the original.
                 this.getClient().moveObject(containerService.getContainer(file).getName(), containerService.getKey(file),
                         containerService.getContainer(renamed).getName(),

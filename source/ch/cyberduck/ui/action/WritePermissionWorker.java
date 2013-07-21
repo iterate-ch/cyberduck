@@ -71,7 +71,7 @@ public abstract class WritePermissionWorker extends Worker<Void> {
         return null;
     }
 
-    private void write(final Path file) throws BackgroundException {
+    protected void write(final Path file) throws BackgroundException {
         session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                 file.getName(), permission));
         if(recursive && file.attributes().isFile()) {

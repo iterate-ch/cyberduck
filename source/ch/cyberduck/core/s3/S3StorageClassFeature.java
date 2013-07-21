@@ -49,7 +49,7 @@ public class S3StorageClassFeature implements Redundancy {
         if(file.attributes().isFile()) {
             final S3CopyFeature copy = new S3CopyFeature(session);
             copy.copy(file, file, redundancy, file.attributes().getEncryption(),
-                    new S3AccessControlListFeature(session).read(file));
+                    new S3AccessControlListFeature(session).getPermission(file));
         }
     }
 }

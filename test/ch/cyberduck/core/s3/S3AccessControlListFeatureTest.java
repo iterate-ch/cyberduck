@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3AccessControlListFeatureTest extends AbstractTestCase {
 
@@ -47,7 +47,7 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Acl acl = new S3AccessControlListFeature(session).read(container);
+        final Acl acl = new S3AccessControlListFeature(session).getPermission(container);
         assertEquals(2, acl.size());
         assertTrue(acl.containsKey(new Acl.GroupUser("http://acs.amazonaws.com/groups/s3/LogDelivery")));
         assertTrue(acl.get(new Acl.GroupUser("http://acs.amazonaws.com/groups/s3/LogDelivery")).contains(
@@ -72,7 +72,7 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Acl acl = new S3AccessControlListFeature(session).read(new Path(container, "test.txt", Path.FILE_TYPE));
+        final Acl acl = new S3AccessControlListFeature(session).getPermission(new Path(container, "test.txt", Path.FILE_TYPE));
         assertEquals(2, acl.size());
         assertTrue(acl.containsKey(new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers")));
         assertTrue(acl.get(new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers")).contains(

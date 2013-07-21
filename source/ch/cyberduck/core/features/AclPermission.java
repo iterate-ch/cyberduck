@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
  */
 public interface AclPermission {
 
-    public Acl read(Path file) throws BackgroundException;
+    public Acl getPermission(Path file) throws BackgroundException;
 
-    void write(Path file, Acl acl, boolean recursive) throws BackgroundException;
+    void setPermission(Path file, Acl acl) throws BackgroundException;
 }

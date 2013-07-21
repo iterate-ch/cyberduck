@@ -136,7 +136,7 @@ public class S3VersioningFeature implements Versioning {
                 destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
                 // Apply non standard ACL
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-                destination.setAcl(acl.convert(acl.read(file)));
+                destination.setAcl(acl.convert(acl.getPermission(file)));
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
                         containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
             }

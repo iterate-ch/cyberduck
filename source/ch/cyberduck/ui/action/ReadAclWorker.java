@@ -48,7 +48,7 @@ public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
         final List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
         for(Path next : files) {
             if(Acl.EMPTY.equals(next.attributes().getAcl())) {
-                next.attributes().setAcl(feature.read(next));
+                next.attributes().setAcl(feature.getPermission(next));
             }
             for(Acl.UserAndRole acl : next.attributes().getAcl().asList()) {
                 if(updated.contains(acl)) {
