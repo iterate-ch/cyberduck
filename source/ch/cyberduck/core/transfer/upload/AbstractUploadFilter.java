@@ -25,6 +25,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.i18n.Locale;
@@ -123,10 +124,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
     }
 
-    private void timestamp(final Path file, final Timestamp timestamp) {
+    private void timestamp(final Path file, final Timestamp feature) {
         // Read timestamps from local file
         try {
-            timestamp.setTimestamp(file, file.getLocal().attributes().getCreationDate(),
+            feature.setTimestamp(file, file.getLocal().attributes().getCreationDate(),
                     file.getLocal().attributes().getModificationDate(),
                     file.getLocal().attributes().getAccessedDate());
         }
@@ -136,7 +137,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
     }
 
-    private void permissions(final Path file, final UnixPermission unix) {
+    private void permissions(final Path file, final UnixPermission feature) {
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
             final Permission permission;
             if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
@@ -155,7 +156,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             if(!Permission.EMPTY.equals(permission)) {
                 try {
-                    unix.setUnixPermission(file, permission);
+                    feature.setUnixPermission(file, permission);
                 }
                 catch(BackgroundException e) {
                     // Ignore
@@ -163,5 +164,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
         }
+    }
+
+    private void acl(final Path file, final AclPermission feature) {
+
     }
 }

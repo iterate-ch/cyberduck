@@ -2,7 +2,6 @@ package ch.cyberduck.core.io;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -18,7 +17,7 @@ import java.util.concurrent.CyclicBarrier;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class StreamCopierTest extends AbstractTestCase {
 

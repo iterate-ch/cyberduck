@@ -18,7 +18,6 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -31,7 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class StreamCopier {
     private static final Logger log = Logger.getLogger(StreamCopier.class);
