@@ -18,7 +18,7 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.AbstractIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;

@@ -21,7 +21,6 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;

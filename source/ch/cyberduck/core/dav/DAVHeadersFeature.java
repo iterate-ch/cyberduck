@@ -17,9 +17,9 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.features.Headers;
 
 import org.apache.log4j.Logger;

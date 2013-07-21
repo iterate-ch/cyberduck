@@ -21,7 +21,6 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;

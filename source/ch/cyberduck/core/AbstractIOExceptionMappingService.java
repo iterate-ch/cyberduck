@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -18,7 +18,7 @@ package ch.cyberduck.core.exception;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;

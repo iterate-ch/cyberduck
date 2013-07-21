@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -17,6 +17,8 @@ package ch.cyberduck.core.exception;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
+
+import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id$

@@ -18,7 +18,7 @@ package ch.cyberduck.core.identity;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.AbstractIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 

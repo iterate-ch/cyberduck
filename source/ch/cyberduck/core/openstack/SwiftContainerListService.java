@@ -17,6 +17,7 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
@@ -24,7 +25,6 @@ import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 
 import org.apache.log4j.Logger;
 

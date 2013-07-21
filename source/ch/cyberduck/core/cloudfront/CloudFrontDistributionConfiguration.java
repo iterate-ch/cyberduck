@@ -29,7 +29,6 @@ import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.i18n.Locale;
