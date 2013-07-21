@@ -2160,7 +2160,7 @@ profiles/Openstack[!!-~]Swift[!!-~](HTTP).cyberduckprofile -text
 profiles/Openstack[!!-~]Swift[!!-~](Keystone).cyberduckprofile -text
 profiles/Rackspace[!!-~]UK.cyberduckprofile -text
 profiles/Rackspace[!!-~]US.cyberduckprofile -text svneol=unset#application/xml
-profiles/S3[!!-~]Unsecure.cyberduckprofile -text
+profiles/S3[!!-~](HTTP).cyberduckprofile -text
 profiles/assets/Dream Objects.tiff -text svneol=unset#image/tiff
 profiles/assets/Dump[!!-~]Truck.png -text svneol=unset#image/png
 profiles/assets/GreenQloud.tiff -text svneol=unset#image/tiff
