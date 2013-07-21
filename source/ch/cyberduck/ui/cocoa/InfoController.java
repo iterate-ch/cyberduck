@@ -965,11 +965,11 @@ public class InfoController extends ToolbarWindowController {
 
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
-            this.background(new WorkerBackgroundAction<Acl>(controller,
+            this.background(new WorkerBackgroundAction<Void>(controller,
                     new WriteAclWorker(controller.getSession(), controller.getSession().getFeature(AclPermission.class, prompt),
                             files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
                         @Override
-                        public void cleanup(final Acl permission) {
+                        public void cleanup(final Void v) {
                             toggleAclSettings(true);
                             initAcl();
                         }
