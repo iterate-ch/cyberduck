@@ -41,12 +41,12 @@ public abstract class Locale {
      * @return Localized from table
      */
     public static String localizedString(final String key, final String table) {
-        final String lookup = LocaleFactory.get().get(key, table);
+        final String lookup = LocaleFactory.get().localize(key, table);
         if(StringUtils.contains(lookup, "{0}")) {
             return StringUtils.replace(lookup, "'", "''");
         }
         return lookup;
     }
 
-    public abstract String get(final String key, final String table);
+    public abstract String localize(final String key, final String table);
 }

@@ -76,7 +76,7 @@ namespace Ch.Cyberduck.Core.I18n
             }
         }
 
-        public override string get(string key, string table)
+        public override string localize(string key, string table)
         {
             Dictionary<string, string> bundle;
 

@@ -53,7 +53,7 @@ public class BundleLocale extends Locale {
     });
 
     @Override
-    public String get(final String key, final String table) {
+    public String localize(final String key, final String table) {
         final String identifier = String.format("%s.%s", table, key);
         if(!cache.containsKey(identifier)) {
             cache.put(identifier, NSBundle.localizedString(key, table));
