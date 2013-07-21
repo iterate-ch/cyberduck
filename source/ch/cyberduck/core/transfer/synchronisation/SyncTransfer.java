@@ -273,16 +273,16 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void transfer(final Path file, TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Comparison compare = this.compare(file);
         if(compare.equals(Comparison.REMOTE_NEWER)) {
-            _delegateDownload.transfer(file, options, status, listener);
+            _delegateDownload.transfer(file, options, status);
         }
         else if(compare.equals(Comparison.LOCAL_NEWER)) {
-            _delegateUpload.transfer(file, options, status, listener);
+            _delegateUpload.transfer(file, options, status);
         }
     }
 

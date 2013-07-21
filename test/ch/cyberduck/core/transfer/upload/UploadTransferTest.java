@@ -4,7 +4,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -91,7 +90,7 @@ public class UploadTransferTest extends AbstractTestCase {
             }
 
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -140,7 +139,7 @@ public class UploadTransferTest extends AbstractTestCase {
             }
 
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 //
             }
         };
@@ -200,8 +199,7 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, root) {
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status,
-                                 final ProgressListener listener) throws BackgroundException {
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 assertEquals(true, options.resumeRequested);
             }
         };
@@ -243,8 +241,7 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, root) {
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status,
-                                 final ProgressListener listener) throws BackgroundException {
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 //
             }
         };

@@ -23,7 +23,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
@@ -98,11 +97,11 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path source, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void transfer(final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
-        listener.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+        session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                 source.getName(), files.get(source).getName()));
 
         if(source.attributes().isFile()) {

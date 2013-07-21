@@ -21,16 +21,15 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -414,7 +413,7 @@ public abstract class Transfer implements Serializable {
             return;
         }
         // Transfer
-        this.transfer(file, options, status, session);
+        this.transfer(file, options, status);
         if(file.attributes().isFile()) {
             // Post process of file.
             try {
@@ -452,13 +451,11 @@ public abstract class Transfer implements Serializable {
     /**
      * The actual transfer implementation
      *
-     * @param file     File
-     * @param options  Quarantine option
-     * @param status   Transfer status
-     * @param listener Progress information callback
+     * @param file    File
+     * @param options Quarantine option
+     * @param status  Transfer status
      */
-    public abstract void transfer(Path file, TransferOptions options, TransferStatus status,
-                                  ProgressListener listener) throws BackgroundException;
+    public abstract void transfer(Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
 
     /**
      * To be called before any file is actually transferred

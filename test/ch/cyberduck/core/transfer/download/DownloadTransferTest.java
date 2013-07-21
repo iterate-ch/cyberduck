@@ -4,7 +4,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -133,7 +132,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
 
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -246,5 +245,16 @@ public class DownloadTransferTest extends AbstractTestCase {
         assertEquals(TransferAction.ACTION_CALLBACK, t.action(false, false));
         assertEquals(TransferAction.ACTION_CALLBACK, t.action(false, true));
         assertEquals(TransferAction.ACTION_RESUME, t.action(true, false));
+    }
+
+    @Test
+    public void testStatus() throws Exception {
+        final Path parent = new Path("t", Path.FILE_TYPE);
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")), parent);
+        assertFalse(t.isRunning());
+        assertFalse(t.isCanceled());
+        assertFalse(t.isComplete());
+        assertFalse(t.isReset());
+        assertNull(t.getTimestamp());
     }
 }

@@ -174,13 +174,12 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path source, final TransferOptions options, final TransferStatus status,
-                         final ProgressListener listener) throws BackgroundException {
+    public void transfer(final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
         final Path copy = files.get(source);
-        listener.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+        session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
         if(source.attributes().isFile()) {
             if(session.getHost().equals(destination.getHost())) {
@@ -210,7 +209,7 @@ public class CopyTransfer extends Transfer {
         }
         else {
             if(!status.isExists()) {
-                listener.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                         copy.getName()));
                 destination.mkdir(copy, null);
             }
