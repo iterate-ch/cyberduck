@@ -43,7 +43,7 @@ public abstract class LocaleFactory extends Factory<Locale> {
     /**
      * @return Locale instance for the current platform.
      */
-    public static Locale instance() {
+    public static Locale get() {
         if(null == l) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
                 throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
