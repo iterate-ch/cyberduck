@@ -124,7 +124,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
 
     @Override
     public void cleanup() {
-        if(transfer.isReset() && transfer.isComplete() && !transfer.isCanceled() && !(transfer.getTransferred() == 0)) {
+        if(transfer.isReset()) {
             growl.notify(transfer.isComplete() ?
                     String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
         }

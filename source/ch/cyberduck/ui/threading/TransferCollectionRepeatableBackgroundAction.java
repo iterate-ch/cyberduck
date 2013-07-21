@@ -71,7 +71,7 @@ public class TransferCollectionRepeatableBackgroundAction extends TransferBackgr
         }
         super.cleanup();
         final TransferCollection collection = TransferCollection.defaultCollection();
-        if(transfer.isComplete() && !transfer.isCanceled() && transfer.isReset()) {
+        if(transfer.isReset() && transfer.isComplete()) {
             if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
                 collection.remove(transfer);
             }
