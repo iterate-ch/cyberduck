@@ -2,14 +2,10 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
-import ch.cyberduck.core.ftp.FTPException;
-import ch.cyberduck.core.ftp.FTPExceptionMappingService;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.net.SocketException;
@@ -24,10 +20,10 @@ public class FTPExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testMap() throws Exception {
-        Assert.assertEquals(ConnectionCanceledException.class,
-                new DefaultIOExceptionMappingService().map(new SocketException("Software caused connection abort")).getClass());
         assertEquals(ConnectionCanceledException.class,
-                new DefaultIOExceptionMappingService().map(new SocketException("Socket closed")).getClass());
+                new FTPExceptionMappingService().map(new SocketException("Software caused connection abort")).getClass());
+        assertEquals(ConnectionCanceledException.class,
+                new FTPExceptionMappingService().map(new SocketException("Socket closed")).getClass());
     }
 
     @Test
