@@ -72,7 +72,7 @@ public class SFTPSession extends Session<Connection> implements Delete {
     @Override
     public Connection connect(final HostKeyController key) throws BackgroundException {
         try {
-            final Connection connection = new Connection(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()), host.getPort(),
+            final Connection connection = new Connection(new OpenSSHHostnameConfigurator().lookup(host.getHostname()), host.getPort(),
                     new PreferencesUseragentProvider().get());
             connection.setTCPNoDelay(true);
             connection.addConnectionMonitor(new ConnectionMonitor() {
