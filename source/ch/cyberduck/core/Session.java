@@ -731,35 +731,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         }
     }
 
-    /**
-     * Default implementation using a temporary file on localhost as an intermediary
-     * with a download and upload transfer.
-     *
-     * @param copy     Destination
-     * @param throttle The bandwidth limit
-     * @param listener Callback
-     * @param status   Transfer status
-     */
-    public void copy(final Path file, final Path copy, final BandwidthThrottle throttle,
-                     final StreamListener listener, final TransferStatus status) throws BackgroundException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            if(file.attributes().isFile()) {
-                this.transfer(in = new ThrottledInputStream(this.read(file, status), throttle),
-                        out = new ThrottledOutputStream(this.write(copy, status), throttle),
-                        listener, -1, status);
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, file);
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
-        }
-    }
-
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Touch.class) {
             // Use login context of current session

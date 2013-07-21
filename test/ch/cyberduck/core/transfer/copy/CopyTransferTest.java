@@ -19,20 +19,29 @@ package ch.cyberduck.core.transfer.copy;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -63,5 +72,68 @@ public class CopyTransferTest extends AbstractTestCase {
         CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(Protocol.SFTP, "t")),
                 new FTPSession(new Host(Protocol.FTP, "t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
         assertEquals(TransferAction.ACTION_OVERWRITE, t.action(false, true));
+    }
+
+    @Test
+    public void testDuplicate() throws Exception {
+        final SFTPSession session = new SFTPSession(new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+
+        final Path test = session.list(session.workdir(), new DisabledListProgressListener()).get(
+                new Path(session.workdir(), "test", Path.FILE_TYPE).getReference());
+        assertNotEquals(-1, test.attributes().getSize());
+
+        final Path copy = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Transfer t = new CopyTransfer(session, session,
+                Collections.<Path, Path>singletonMap(test, copy));
+
+        t.start(new TransferPrompt() {
+            @Override
+            public TransferAction prompt() throws BackgroundException {
+                return TransferAction.ACTION_CANCEL;
+            }
+        }, new TransferOptions());
+        assertTrue(t.isComplete());
+        assertNotNull(t.getTimestamp());
+
+        session.close();
+    }
+
+    @Test
+    public void testCopyBetweenHosts() throws Exception {
+        final SFTPSession session = new SFTPSession(new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+
+        final FTPSession destination = new FTPSession(new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        )));
+        destination.open(new DefaultHostKeyController());
+        destination.login(new DisabledPasswordStore(), new DisabledLoginController());
+
+        final Path test = session.list(session.workdir(), new DisabledListProgressListener()).get(
+                new Path(session.workdir(), "test", Path.FILE_TYPE).getReference());
+        assertNotEquals(-1, test.attributes().getSize());
+
+        final Path copy = new Path(destination.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Transfer t = new CopyTransfer(session, destination,
+                Collections.<Path, Path>singletonMap(test, copy));
+
+        t.start(new TransferPrompt() {
+            @Override
+            public TransferAction prompt() throws BackgroundException {
+                return TransferAction.ACTION_CANCEL;
+            }
+        }, new TransferOptions());
+        assertTrue(t.isComplete());
+        assertNotNull(t.getTimestamp());
+
+        session.close();
+        destination.close();
     }
 }

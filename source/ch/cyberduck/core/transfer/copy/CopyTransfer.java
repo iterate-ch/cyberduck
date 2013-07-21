@@ -21,10 +21,12 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ThrottledInputStream;
+import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -36,12 +38,13 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.normalizer.CopyRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
-import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
-import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
-import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -142,8 +145,7 @@ public class CopyTransfer extends Transfer {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class, null), this.getRoots());
-            return new OverwriteFilter(resolver);
+            return new CopyTransferFilter(destination, files);
         }
         return super.filter(prompt, action);
     }
@@ -180,14 +182,24 @@ public class CopyTransfer extends Transfer {
         listener.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
         if(source.attributes().isFile()) {
-            final Copy feature = session.getFeature(Copy.class, null);
-            if(feature != null) {
-                feature.copy(source, copy);
-                addTransferred(source.attributes().getSize());
-                status.setComplete();
+            if(session.getHost().equals(destination.getHost())) {
+                final Copy feature = session.getFeature(Copy.class, null);
+                if(feature != null) {
+                    feature.copy(source, copy);
+                    addTransferred(source.attributes().getSize());
+                    status.setComplete();
+                }
+                else {
+                    this.copy(source, copy, bandwidth, new AbstractStreamListener() {
+                        @Override
+                        public void bytesSent(long bytes) {
+                            addTransferred(bytes);
+                        }
+                    }, status);
+                }
             }
             else {
-                session.copy(source, copy, bandwidth, new AbstractStreamListener() {
+                this.copy(source, copy, bandwidth, new AbstractStreamListener() {
                     @Override
                     public void bytesSent(long bytes) {
                         addTransferred(bytes);
@@ -196,7 +208,40 @@ public class CopyTransfer extends Transfer {
             }
         }
         else {
-            session.mkdir(copy, null);
+            if(!status.isExists()) {
+                listener.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                        copy.getName()));
+                destination.mkdir(copy, null);
+            }
+        }
+    }
+
+    /**
+     * Default implementation using a temporary file on localhost as an intermediary
+     * with a download and upload transfer.
+     *
+     * @param copy     Destination
+     * @param throttle The bandwidth limit
+     * @param listener Callback
+     * @param status   Transfer status
+     */
+    public void copy(final Path file, final Path copy, final BandwidthThrottle throttle,
+                     final StreamListener listener, final TransferStatus status) throws BackgroundException {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            if(file.attributes().isFile()) {
+                session.transfer(in = new ThrottledInputStream(session.read(file, status), throttle),
+                        out = new ThrottledOutputStream(destination.write(copy, status), throttle),
+                        listener, -1, status);
+            }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, file);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
         }
     }
 
