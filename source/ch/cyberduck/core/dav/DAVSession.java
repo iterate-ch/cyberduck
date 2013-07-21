@@ -246,14 +246,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                     getClient().put(new DAVPathEncoder().encode(file), entity, headers);
                 }
                 catch(SardineException e) {
-                    if(e.getStatusCode() == HttpStatus.SC_EXPECTATION_FAILED) {
-                        // Retry with the Expect header removed
-                        headers.remove(HTTP.EXPECT_DIRECTIVE);
-                        return this.call(entity);
-                    }
-                    else {
-                        throw new DAVExceptionMappingService().map("Upload failed", e, file);
-                    }
+                    throw new DAVExceptionMappingService().map("Upload failed", e, file);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
