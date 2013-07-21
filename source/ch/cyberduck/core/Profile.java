@@ -190,7 +190,11 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public String icon() {
-        return parent.icon();
+        if(null == disk) {
+            return parent.icon();
+        }
+        // Temporary file
+        return disk.getAbsolute();
     }
 
     @Override
