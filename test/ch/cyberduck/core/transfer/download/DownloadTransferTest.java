@@ -253,7 +253,6 @@ public class DownloadTransferTest extends AbstractTestCase {
         Transfer t = new DownloadTransfer(new NullSession(new Host("t")), parent);
         assertFalse(t.isRunning());
         assertFalse(t.isCanceled());
-        assertFalse(t.isComplete());
         assertFalse(t.isReset());
         assertNull(t.getTimestamp());
     }
