@@ -10,8 +10,6 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.serializer.impl.ProfileReaderFactory;
 
 import org.junit.Test;
 

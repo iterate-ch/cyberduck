@@ -22,8 +22,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
-import ch.cyberduck.core.serializer.impl.HostReaderFactory;
-import ch.cyberduck.core.serializer.impl.HostWriterFactory;
 
 import org.apache.log4j.Logger;
 

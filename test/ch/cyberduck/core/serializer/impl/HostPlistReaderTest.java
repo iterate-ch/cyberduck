@@ -1,10 +1,11 @@
 package ch.cyberduck.core.serializer.impl;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.HostReaderFactory;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.LocalFactory;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.serializer.impl;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2009 David Kocher. All rights reserved.
@@ -18,9 +18,6 @@ package ch.cyberduck.core.serializer.impl;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.serializer.Reader;
 
 import java.util.HashMap;

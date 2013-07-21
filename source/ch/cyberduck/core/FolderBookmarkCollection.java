@@ -20,7 +20,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.serializer.Writer;
-import ch.cyberduck.core.serializer.impl.HostWriterFactory;
 
 import org.apache.log4j.Logger;
 

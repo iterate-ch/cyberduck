@@ -1,8 +1,7 @@
-package ch.cyberduck.core.serializer.impl;
+package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2011 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2009 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,10 +18,8 @@ package ch.cyberduck.core.serializer.impl;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.serializer.Writer;
+import ch.cyberduck.core.serializer.Reader;
+import ch.cyberduck.core.transfer.Transfer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,18 +27,19 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class ProfileWriterFactory extends Factory<Writer<Profile>> {
+public abstract class TransferReaderFactory extends Factory<Reader<Transfer>> {
 
     /**
      * Registered factories
      */
-    private static final Map<Platform, ProfileWriterFactory> factories = new HashMap<Platform, ProfileWriterFactory>();
+    private static final Map<Platform, TransferReaderFactory> factories
+            = new HashMap<Platform, TransferReaderFactory>();
 
-    public static void addFactory(Platform platform, ProfileWriterFactory f) {
+    public static void addFactory(Factory.Platform platform, TransferReaderFactory f) {
         factories.put(platform, f);
     }
 
-    public static Writer<Profile> get() {
+    public static Reader<Transfer> get() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

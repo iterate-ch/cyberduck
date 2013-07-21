@@ -21,6 +21,7 @@ package ch.cyberduck.core.serializer.impl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.TransferReaderFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.copy.CopyTransfer;
