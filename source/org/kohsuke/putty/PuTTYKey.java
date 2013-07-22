@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -73,7 +74,7 @@ public class PuTTYKey {
     }
 
     public PuTTYKey(InputStream in) throws IOException {
-        this(new InputStreamReader(in));
+        this(new InputStreamReader(in, Charset.forName("UTF-8")));
     }
 
     public PuTTYKey(Reader in) throws IOException {
@@ -238,11 +239,11 @@ public class PuTTYKey {
     }
 
     public static boolean isPuTTYKeyFile(InputStream in) throws IOException {
-        return isPuTTYKeyFile(new InputStreamReader(in));
+        return isPuTTYKeyFile(new InputStreamReader(in, Charset.forName("UTF-8")));
     }
 
     public static boolean isPuTTYKeyFile(Reader _reader) throws IOException {
-        BufferedReader r = new BufferedReader(_reader);
+        final BufferedReader r = new BufferedReader(_reader);
         try {
             String line;
             while((line = r.readLine()) != null) {

@@ -48,6 +48,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -153,7 +154,7 @@ public class OpenSshConfig {
 
     private Map<String, Host> parse(final InputStream in) throws IOException {
         final Map<String, Host> m = new LinkedHashMap<String, Host>();
-        final BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        final BufferedReader br = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
         final List<Host> current = new ArrayList<Host>(4);
         String line;
 
