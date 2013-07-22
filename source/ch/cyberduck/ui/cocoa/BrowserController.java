@@ -31,8 +31,6 @@ import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -2206,8 +2204,7 @@ public class BrowserController extends WindowController
     @Action
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
-            final List<Path> s = this.getSelectedPaths();
-            session.cache().invalidate(this.workdir().getReference());
+            final List<Path> selected = this.getSelectedPaths();
             switch(browserSwitchView.selectedSegment()) {
                 case SWITCH_OUTLINE_VIEW: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
@@ -2219,7 +2216,8 @@ public class BrowserController extends WindowController
                     break;
                 }
             }
-            this.reloadData(s);
+            session.cache().invalidate(this.workdir().getReference());
+            this.reloadData(selected);
         }
     }
 
