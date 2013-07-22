@@ -45,7 +45,7 @@ public abstract class ReadPermissionWorker extends Worker<List<Permission>> {
 
     @Override
     public List<Permission> run() throws BackgroundException {
-        List<Permission> permissions = new ArrayList<Permission>();
+        final List<Permission> permissions = new ArrayList<Permission>();
         for(Path next : files) {
             permissions.add(next.attributes().getPermission());
         }
