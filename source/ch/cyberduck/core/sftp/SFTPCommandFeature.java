@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
@@ -57,8 +58,10 @@ public class SFTPCommandFeature implements Command {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
         }
-        final BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
-        final BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStderr())));
+        final BufferedReader stdoutReader = new BufferedReader(
+                new InputStreamReader(new StreamGobbler(sess.getStdout()), Charset.forName(session.getEncoding())));
+        final BufferedReader stderrReader = new BufferedReader(
+                new InputStreamReader(new StreamGobbler(sess.getStderr()), Charset.forName(session.getEncoding())));
         try {
             listener.message(command);
             sess.execCommand(command, session.getEncoding());
