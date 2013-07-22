@@ -355,7 +355,6 @@ public class BrowserController extends WindowController
      * Make the broser reload its content. Will make use of the cache.
      *
      * @param selected The items to be selected
-     * @see #setSelectedPaths(java.util.List)
      */
     protected void reloadData(final List<Path> selected) {
         this.reloadData(Collections.<Path>emptyList(), selected);
@@ -365,7 +364,6 @@ public class BrowserController extends WindowController
      * Make the broser reload its content. Will make use of the cache.
      *
      * @param selected The items to be selected
-     * @see #setSelectedPaths(java.util.List)
      */
     protected void reloadData(final List<Path> changed, final List<Path> selected) {
         this.reloadData(changed, selected, true);
@@ -1081,8 +1079,8 @@ public class BrowserController extends WindowController
 
         @Override
         public void selectionDidChange(NSNotification notification) {
-            List<Path> selected = new ArrayList<Path>();
-            NSIndexSet iterator = getSelectedBrowserView().selectedRowIndexes();
+            final List<Path> selected = new ArrayList<Path>();
+            final NSIndexSet iterator = getSelectedBrowserView().selectedRowIndexes();
             for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
                 Path file = this.pathAtRow(index.intValue());
                 if(null == file) {
