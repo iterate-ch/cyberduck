@@ -70,9 +70,9 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
 
     protected abstract AbstractHandler getHandler();
 
-    protected void read(Local child) {
+    protected void read(final Local child) {
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(child.getInputStream(),
+            final BufferedReader in = new BufferedReader(new InputStreamReader(child.getInputStream(),
                     Charset.forName("UTF-8")));
             AbstractHandler handler = this.getHandler();
             final XMLReader xr = XMLReaderFactory.createXMLReader();

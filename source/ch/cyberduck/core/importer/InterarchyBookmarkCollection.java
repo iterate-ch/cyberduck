@@ -21,9 +21,9 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
@@ -69,24 +69,24 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     private void parse(NSDictionary item) {
         final PlistDeserializer bookmark = new PlistDeserializer(item);
-        List<NSDictionary> children = bookmark.listForKey("Children");
+        final List<NSDictionary> children = bookmark.listForKey("Children");
         if(null != children) {
             for(NSDictionary child : children) {
                 this.parse(child);
             }
             return;
         }
-        String url = bookmark.stringForKey("URL");
+        final String url = bookmark.stringForKey("URL");
         if(StringUtils.isBlank(url)) {
             // Possibly a folder
             return;
         }
-        Host host = HostParser.parse(url);
+        final Host host = HostParser.parse(url);
         if(StringUtils.isBlank(host.getHostname())) {
             // Possibly file://
             return;
         }
-        String title = bookmark.stringForKey("Title");
+        final String title = bookmark.stringForKey("Title");
         if(StringUtils.isNotBlank(title)) {
             host.setNickname(title);
         }

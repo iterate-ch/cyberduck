@@ -21,12 +21,12 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
-import ch.cyberduck.core.Local;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -50,7 +50,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     @Override
     public void load() {
-        Local file = this.getFile();
+        final Local file = this.getFile();
         if(file.exists()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found bookmarks file at %s", file.getAbsolute()));

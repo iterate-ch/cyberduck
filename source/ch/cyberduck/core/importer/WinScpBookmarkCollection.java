@@ -20,10 +20,10 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -63,7 +64,7 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
     @Override
     protected void parse(Local file) {
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream()));
+            final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
             try {
                 Host current = null;
                 String line;

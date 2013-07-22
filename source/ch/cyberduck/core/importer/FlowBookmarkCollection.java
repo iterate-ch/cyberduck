@@ -20,11 +20,11 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
@@ -83,8 +83,8 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
         if(null == server) {
             return false;
         }
-        Host host = new Host(server);
-        String port = bookmark.stringForKey("Port");
+        final Host host = new Host(server);
+        final String port = bookmark.stringForKey("Port");
         if(StringUtils.isNotBlank(port)) {
             host.setPort(Integer.parseInt(port));
         }
@@ -104,7 +104,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
             host.getCredentials().setUsername(
                     Preferences.instance().getProperty("connection.login.anon.name"));
         }
-        String mode = bookmark.stringForKey("PreferredFTPDataConnectionType");
+        final String mode = bookmark.stringForKey("PreferredFTPDataConnectionType");
         if(StringUtils.isNotBlank(mode)) {
             if("Passive".equals(mode)) {
                 host.setFTPConnectMode(FTPConnectMode.PASV);
@@ -113,7 +113,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                 host.setFTPConnectMode(FTPConnectMode.PORT);
             }
         }
-        String protocol = bookmark.stringForKey("Protocol");
+        final String protocol = bookmark.stringForKey("Protocol");
         if(StringUtils.isNotBlank(protocol)) {
             try {
                 switch(Integer.parseInt(protocol)) {
