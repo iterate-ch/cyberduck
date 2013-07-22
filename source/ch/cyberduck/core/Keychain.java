@@ -110,22 +110,22 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     }
 
     @Override
-    public String getPassword(Scheme scheme, int port, String hostname, String user) {
+    public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
         return this.getInternetPasswordFromKeychain(scheme.name(), port, hostname, user);
     }
 
     @Override
-    public String getPassword(String hostname, String user) {
+    public String getPassword(final String hostname, final String user) {
         return this.getPasswordFromKeychain(hostname, user);
     }
 
     @Override
-    public void addPassword(String serviceName, String user, String password) {
+    public void addPassword(final String serviceName, String user, final String password) {
         this.addPasswordToKeychain(serviceName, user, password);
     }
 
     @Override
-    public void addPassword(Scheme scheme, int port, String hostname, String user, String password) {
+    public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
         this.addInternetPasswordToKeychain(scheme.name(), port, hostname, user, password);
     }
 
@@ -161,7 +161,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     private native boolean displayCertificatesNative(Object[] certificates);
 
     @Override
-    public synchronized X509Certificate choose(String[] issuers, String hostname, String prompt) {
+    public synchronized X509Certificate choose(final String[] issuers, final String hostname, final String prompt) {
         byte[] cert = this.chooseCertificateNative(issuers, hostname, prompt);
         if(null == cert) {
             log.info("No certificate selected");
