@@ -34,8 +34,23 @@ public class ThreadPool {
     private final ThreadFactory threadFactory
             = new NamedThreadFactory();
 
-    private final ExecutorService pool
-            = Executors.newCachedThreadPool(threadFactory);
+    private final ExecutorService pool;
+
+    /**
+     * With FIFO (first-in-first-out) ordered wait queue.
+     */
+    public ThreadPool() {
+        pool = Executors.newSingleThreadExecutor(threadFactory);
+    }
+
+    /**
+     * With FIFO (first-in-first-out) ordered wait queue.
+     *
+     * @param size Number of concurrent threads
+     */
+    public ThreadPool(int size) {
+        pool = Executors.newFixedThreadPool(size, threadFactory);
+    }
 
     public void shutdown() {
         pool.shutdownNow();

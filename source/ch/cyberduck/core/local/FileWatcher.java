@@ -20,8 +20,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.threading.ActionOperationBatcher;
-import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
@@ -75,48 +73,42 @@ public class FileWatcher implements FileWatcherCallback {
             @Override
             public Boolean call() throws IOException {
                 while(true) {
-                    final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
+                    // wait for key to be signaled
+                    WatchKey key;
                     try {
-                        // wait for key to be signaled
-                        WatchKey key;
-                        try {
-                            lock.countDown();
-                            key = monitor.take();
+                        lock.countDown();
+                        key = monitor.take();
+                    }
+                    catch(ClosedWatchServiceException e) {
+                        // If this watch service is closed
+                        return true;
+                    }
+                    catch(InterruptedException e) {
+                        return false;
+                    }
+                    for(WatchEvent<?> event : key.pollEvents()) {
+                        final WatchEvent.Kind<?> kind = event.kind();
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Detected file system event %s", kind.name()));
                         }
-                        catch(ClosedWatchServiceException e) {
-                            // If this watch service is closed
-                            return true;
+                        if(kind == OVERFLOW) {
+                            log.error(String.format("Overflow event for %s", watchable.getFile()));
+                            continue;
                         }
-                        catch(InterruptedException e) {
-                            return false;
+                        // The filename is the context of the event.
+                        final WatchEvent<File> ev = (WatchEvent<File>) event;
+                        if(event.context().equals(new File(file.getAbsolute()).getCanonicalFile())) {
+                            callback(ev);
                         }
-                        for(WatchEvent<?> event : key.pollEvents()) {
-                            final WatchEvent.Kind<?> kind = event.kind();
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Detected file system event %s", kind.name()));
-                            }
-                            if(kind == OVERFLOW) {
-                                log.error(String.format("Overflow event for %s", watchable.getFile()));
-                                continue;
-                            }
-                            // The filename is the context of the event.
-                            final WatchEvent<File> ev = (WatchEvent<File>) event;
-                            if(event.context().equals(new File(file.getAbsolute()).getCanonicalFile())) {
-                                callback(ev);
-                            }
-                            else {
-                                log.debug(String.format("Ignored file system event for unknown file %s", event.context()));
-                            }
-                        }
-                        // Reset the key -- this step is critical to receive further watch events.
-                        boolean valid = key.reset();
-                        if(!valid) {
-                            // The key is no longer valid and the loop can exit.
-                            return true;
+                        else {
+                            log.debug(String.format("Ignored file system event for unknown file %s", event.context()));
                         }
                     }
-                    finally {
-                        autorelease.operate();
+                    // Reset the key -- this step is critical to receive further watch events.
+                    boolean valid = key.reset();
+                    if(!valid) {
+                        // The key is no longer valid and the loop can exit.
+                        return true;
                     }
                 }
             }

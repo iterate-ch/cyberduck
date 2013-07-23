@@ -42,11 +42,22 @@ public class NamedThreadFactory implements ThreadFactory {
     }
 
     @Override
-    public Thread newThread(final Runnable r) {
+    public Thread newThread(final Runnable action) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Create thread for runnable %s", r));
+            log.debug(String.format("Create thread for runnable %s", action));
         }
-        final Thread thread = new Thread(r);
+        final Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
+                try {
+                    action.run();
+                }
+                finally {
+                    autorelease.operate();
+                }
+            }
+        });
         thread.setName(String.format("%s-%d", name, threadNumber.getAndIncrement()));
         thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override

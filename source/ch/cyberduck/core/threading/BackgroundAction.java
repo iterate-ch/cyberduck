@@ -78,7 +78,7 @@ public interface BackgroundAction<T> extends Callable<T> {
     String getName();
 
     /**
-     * @return The synchronization object
+     * @return The synchronization object. Null if no ordering is required.
      */
     Object lock();
 

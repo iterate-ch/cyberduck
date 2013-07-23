@@ -22,8 +22,6 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.threading.ActionOperationBatcher;
-import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.MainAction;
@@ -46,8 +44,11 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractController implements Controller {
     private static Logger log = Logger.getLogger(AbstractController.class);
 
-    protected ThreadPool threadPool
+    private ThreadPool singleExecutor
             = new ThreadPool();
+
+    private ThreadPool concurrentExecutor
+            = new ThreadPool(Integer.MAX_VALUE);
 
     protected ScheduledExecutorService timerPool
             = Executors.newScheduledThreadPool(1);
@@ -96,7 +97,12 @@ public abstract class AbstractController implements Controller {
         // Start background task
         final Callable<T> command = new BackgroundCallable<T>(action);
         try {
-            return threadPool.execute(command);
+            if(null == action.lock()) {
+                return concurrentExecutor.execute(command);
+            }
+            else {
+                return singleExecutor.execute(command);
+            }
         }
         catch(RejectedExecutionException e) {
             log.error(String.format("Error scheduling background task %s for execution. %s", action, e.getMessage()));
@@ -128,7 +134,7 @@ public abstract class AbstractController implements Controller {
 
     protected void invalidate() {
         timerPool.shutdownNow();
-        threadPool.shutdown();
+        singleExecutor.shutdown();
     }
 
     private final class BackgroundCallable<T> implements Callable<T> {
@@ -143,51 +149,45 @@ public abstract class AbstractController implements Controller {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Synchronize on lock %s for action %s", action.lock(), action));
             }
-            // Synchronize all background threads to this lock so actions run
-            // sequentially as they were initiated from the main interface thread
-            synchronized(action.lock()) {
-                final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Acquired lock for background runnable %s", action));
-                }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Acquired lock for background runnable %s", action));
+            }
+            try {
+                action.prepare();
+                // Execute the action of the runnable
+                return action.call();
+            }
+            catch(ConnectionCanceledException e) {
+                log.warn(String.format("Connection canceled for background task %s", action));
+            }
+            catch(BackgroundException e) {
+                log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+            }
+            catch(Exception e) {
+                log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+            }
+            finally {
+                // Increase the run counter
                 try {
-                    action.prepare();
-                    // Execute the action of the runnable
-                    return action.call();
-                }
-                catch(ConnectionCanceledException e) {
-                    log.warn(String.format("Connection canceled for background task %s", action));
-                }
-                catch(BackgroundException e) {
-                    log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
-                }
-                catch(Exception e) {
-                    log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+                    action.finish();
                 }
                 finally {
-                    // Increase the run counter
-                    try {
-                        action.finish();
-                    }
-                    finally {
-                        actions.remove(action);
-                    }
-                    // Invoke the cleanup on the main thread to let the action synchronize the user interface
-                    invoke(new ControllerMainAction(AbstractController.this) {
-                        @Override
-                        public void run() {
-                            try {
-                                action.cleanup();
-                            }
-                            catch(Exception e) {
-                                log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
-                            }
+                    actions.remove(action);
+                }
+                // Invoke the cleanup on the main thread to let the action synchronize the user interface
+                invoke(new ControllerMainAction(AbstractController.this) {
+                    @Override
+                    public void run() {
+                        try {
+                            action.cleanup();
                         }
-                    });
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Releasing lock for background runnable %s", action));
+                        catch(Exception e) {
+                            log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
+                        }
                     }
-                    autorelease.operate();
+                });
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Releasing lock for background runnable %s", action));
                 }
             }
             // Canceled action yields no result
