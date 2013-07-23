@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.download;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -29,6 +30,9 @@ import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -41,8 +45,12 @@ import ch.cyberduck.core.transfer.normalizer.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -192,7 +200,7 @@ public class DownloadTransfer extends Transfer {
             session.message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                     file.getName()));
             local.getParent().mkdir();
-            session.download(file, bandwidth, new AbstractStreamListener() {
+            this.download(file, bandwidth, new AbstractStreamListener() {
                 // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
                 // overhead when transferring a large amount of files
                 private final boolean threshold
@@ -220,6 +228,26 @@ public class DownloadTransfer extends Transfer {
             if(!status.isExists()) {
                 local.mkdir();
             }
+        }
+    }
+
+    private void download(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+                          final TransferStatus status) throws BackgroundException {
+        try {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = session.read(file, status);
+                out = file.getLocal().getOutputStream(status.isResume());
+                new StreamCopier().transfer(new ThrottledInputStream(in, throttle), out, listener, -1, status);
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+            }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
         }
     }
 

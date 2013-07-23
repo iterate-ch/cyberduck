@@ -30,7 +30,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -541,26 +540,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      */
     public abstract InputStream read(Path file, TransferStatus status) throws BackgroundException;
 
-    public void download(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status) throws BackgroundException {
-        try {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = read(file, status);
-                out = file.getLocal().getOutputStream(status.isResume());
-                this.download(in, out, throttle, listener, status);
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
-        }
-    }
-
     /**
      * @param status Transfer status
      * @return Stream to write to for upload
@@ -635,24 +614,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
             }
         }
         new StreamCopier().transfer(in, new ThrottledOutputStream(out, throttle), l, limit, status);
-    }
-
-    /**
-     * Will copy from in to out. Does not attempt to skip any bytes from the streams.
-     *
-     * @param in       The stream to read from
-     * @param out      The stream to write to
-     * @param throttle The bandwidth limit
-     * @param l        The stream listener to notify about bytes received and sent
-     * @param status   Transfer status
-     * @throws IOException Write not completed due to a I/O problem
-     */
-    public void download(final InputStream in, final OutputStream out, final BandwidthThrottle throttle,
-                         final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
-        if(log.isDebugEnabled()) {
-            log.debug("download(" + in.toString() + ", " + out.toString());
-        }
-        new StreamCopier().transfer(new ThrottledInputStream(in, throttle), out, l, -1, status);
     }
 
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
