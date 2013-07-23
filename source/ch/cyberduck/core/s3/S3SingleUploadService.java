@@ -17,7 +17,9 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
@@ -30,6 +32,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -61,7 +64,7 @@ public class S3SingleUploadService {
     }
 
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
-                       final TransferStatus status, final StorageObject object) throws BackgroundException {
+                       final TransferStatus status) throws BackgroundException {
         InputStream in = null;
         ResponseOutputStream<StorageObject> out = null;
         MessageDigest digest = null;
@@ -82,6 +85,7 @@ public class S3SingleUploadService {
             else {
                 in = new DigestInputStream(file.getLocal().getInputStream(), digest);
             }
+            final StorageObject object = this.createObjectDetails(file);
             out = this.write(file, object, status.getLength() - status.getCurrent(),
                     Collections.<String, String>emptyMap());
             try {
@@ -102,7 +106,7 @@ public class S3SingleUploadService {
         if(null != digest) {
             session.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
             // Obtain locally-calculated MD5 hash.
-            String hexMD5 = ServiceUtils.toHex(digest.digest());
+            final String hexMD5 = ServiceUtils.toHex(digest.digest());
             try {
                 session.getClient().verifyExpectedAndActualETagValues(hexMD5, part);
             }
@@ -134,5 +138,59 @@ public class S3SingleUploadService {
             }
         };
         return session.write(file, command);
+    }
+
+    protected StorageObject createObjectDetails(final Path file) throws BackgroundException {
+        final StorageObject object = new StorageObject(containerService.getKey(file));
+        final String type = new MappingMimeTypeService().getMime(file.getName());
+        object.setContentType(type);
+        if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+            session.message(MessageFormat.format(
+                    Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
+            object.setMd5Hash(ServiceUtils.fromHex(file.getLocal().attributes().getChecksum()));
+        }
+        final Acl acl = file.attributes().getAcl();
+        if(Acl.EMPTY.equals(acl)) {
+            if(Preferences.instance().getProperty("s3.key.acl.default").equals("public-read")) {
+                object.setAcl(session.getPublicCannedReadAcl());
+            }
+            else {
+                // Owner gets FULL_CONTROL. No one else has access rights (default).
+                object.setAcl(session.getPrivateCannedAcl());
+            }
+        }
+        else {
+            object.setAcl(new S3AccessControlListFeature(session).convert(acl));
+        }
+        // Storage class
+        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
+            object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
+        }
+        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
+            object.setServerSideEncryptionAlgorithm(Preferences.instance().getProperty("s3.encryption.algorithm"));
+        }
+        // Default metadata for new files
+        for(String m : Preferences.instance().getList("s3.metadata.default")) {
+            if(StringUtils.isBlank(m)) {
+                continue;
+            }
+            if(!m.contains("=")) {
+                log.warn(String.format("Invalid header %s", m));
+                continue;
+            }
+            int split = m.indexOf('=');
+            String name = m.substring(0, split);
+            if(StringUtils.isBlank(name)) {
+                log.warn(String.format("Missing key in header %s", m));
+                continue;
+            }
+            String value = m.substring(split + 1);
+            if(StringUtils.isEmpty(value)) {
+                log.warn(String.format("Missing value in header %s", m));
+                continue;
+            }
+            object.addMetadata(name, value);
+        }
+        return object;
     }
 }

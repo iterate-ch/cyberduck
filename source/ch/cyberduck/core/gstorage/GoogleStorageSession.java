@@ -60,7 +60,6 @@ import org.jets3t.service.acl.gs.GSAccessControlList;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
-import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
@@ -187,8 +186,7 @@ public class GoogleStorageSession extends S3Session {
     @Override
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
-        final StorageObject object = this.createObjectDetails(file);
-        new S3SingleUploadService(this).upload(file, throttle, listener, status, object);
+        new S3SingleUploadService(this).upload(file, throttle, listener, status);
     }
 
     @Override

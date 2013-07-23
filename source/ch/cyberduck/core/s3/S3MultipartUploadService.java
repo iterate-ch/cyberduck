@@ -88,8 +88,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
         this.session = session;
     }
 
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status,
-                       final StorageObject object) throws BackgroundException {
+    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
         try {
             MultipartUpload multipart = null;
             if(status.isResume()) {
@@ -114,7 +113,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
             }
             if(null == multipart) {
                 log.info("No pending multipart upload found");
-
+                final StorageObject object = this.createObjectDetails(file);
                 // Initiate multipart upload with metadata
                 Map<String, Object> metadata = object.getModifiableMetadata();
                 if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
@@ -236,7 +235,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                 MessageDigest digest = null;
                 try {
                     if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-                        // Content-MD5 not set. Need to verify ourselves instad of S3
+                        // Content-MD5 not set. Need to verify ourselves instead of S3
                         try {
                             digest = MessageDigest.getInstance("MD5");
                         }
@@ -264,7 +263,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                 final StorageObject part = out.getResponse();
                 if(null != digest) {
                     // Obtain locally-calculated MD5 hash
-                    String hexMD5 = ServiceUtils.toHex(digest.digest());
+                    final String hexMD5 = ServiceUtils.toHex(digest.digest());
                     try {
                         session.getClient().verifyExpectedAndActualETagValues(hexMD5, part);
                     }

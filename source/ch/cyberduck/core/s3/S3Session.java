@@ -560,76 +560,22 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public void upload(final Path file, final BandwidthThrottle throttle,
                        final StreamListener listener, final TransferStatus status) throws BackgroundException {
         if(file.attributes().isFile()) {
-            final StorageObject object = this.createObjectDetails(file);
             // Only for AWS
             if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)
                     && Preferences.instance().getBoolean("s3.upload.multipart")
                     && status.getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
-                new S3MultipartUploadService(this).upload(file, throttle, listener, status, object);
+                new S3MultipartUploadService(this).upload(file, throttle, listener, status);
             }
             else {
-                new S3SingleUploadService(this).upload(file, throttle, listener, status, object);
+                new S3SingleUploadService(this).upload(file, throttle, listener, status);
             }
         }
-    }
-
-    protected StorageObject createObjectDetails(final Path file) throws BackgroundException {
-        final StorageObject object = new StorageObject(containerService.getKey(file));
-        final String type = new MappingMimeTypeService().getMime(file.getName());
-        object.setContentType(type);
-        if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-            this.message(MessageFormat.format(
-                    Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
-            object.setMd5Hash(ServiceUtils.fromHex(file.getLocal().attributes().getChecksum()));
-        }
-        final Acl acl = file.attributes().getAcl();
-        if(Acl.EMPTY.equals(acl)) {
-            if(Preferences.instance().getProperty("s3.key.acl.default").equals("public-read")) {
-                object.setAcl(this.getPublicCannedReadAcl());
-            }
-            else {
-                // Owner gets FULL_CONTROL. No one else has access rights (default).
-                object.setAcl(this.getPrivateCannedAcl());
-            }
-        }
-        else {
-            object.setAcl(new S3AccessControlListFeature(this).convert(acl));
-        }
-        // Storage class
-        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
-            object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
-        }
-        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
-            object.setServerSideEncryptionAlgorithm(Preferences.instance().getProperty("s3.encryption.algorithm"));
-        }
-        // Default metadata for new files
-        for(String m : Preferences.instance().getList("s3.metadata.default")) {
-            if(StringUtils.isBlank(m)) {
-                continue;
-            }
-            if(!m.contains("=")) {
-                log.warn(String.format("Invalid header %s", m));
-                continue;
-            }
-            int split = m.indexOf('=');
-            String name = m.substring(0, split);
-            if(StringUtils.isBlank(name)) {
-                log.warn(String.format("Missing key in header %s", m));
-                continue;
-            }
-            String value = m.substring(split + 1);
-            if(StringUtils.isEmpty(value)) {
-                log.warn(String.format("Missing value in header %s", m));
-                continue;
-            }
-            object.addMetadata(name, value);
-        }
-        return object;
     }
 
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        return new S3SingleUploadService(this).write(file, this.createObjectDetails(file), status.getLength() - status.getCurrent(),
+        final S3SingleUploadService service = new S3SingleUploadService(this);
+        return service.write(file, service.createObjectDetails(file), status.getLength() - status.getCurrent(),
                 Collections.<String, String>emptyMap());
     }
 
