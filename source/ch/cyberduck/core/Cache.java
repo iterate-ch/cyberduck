@@ -22,6 +22,7 @@ import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -35,11 +36,18 @@ public class Cache {
     private final Map<PathReference, AttributedList<Path>> impl;
 
     public Cache() {
-        this(Preferences.instance().getInteger("browser.cache.size"));
+        impl = Collections.<PathReference, AttributedList<Path>>synchronizedMap(new LRUMap(Preferences.instance().getInteger("browser.cache.size")));
     }
 
     public Cache(int size) {
-        impl = Collections.<PathReference, AttributedList<Path>>synchronizedMap(new LRUMap(size));
+        if(size == Integer.MAX_VALUE) {
+            // Unlimited
+            impl = new LinkedHashMap<PathReference, AttributedList<Path>>();
+        }
+        else {
+            // Will inflate to the given size
+            impl = Collections.<PathReference, AttributedList<Path>>synchronizedMap(new LRUMap(size));
+        }
     }
 
     /**
