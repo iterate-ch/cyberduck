@@ -38,7 +38,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.protocol.HTTP;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +52,6 @@ import com.googlecode.sardine.impl.methods.HttpPropFind;
  * @version $Id$
  */
 public class DAVSession extends HttpSession<DAVClient> {
-    private static final Logger log = Logger.getLogger(DAVSession.class);
 
     public DAVSession(Host h) {
         super(h);
