@@ -404,7 +404,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 log.warn("Dragging destination is null.");
                 return NSDraggingInfo.NSDragOperationNone;
             }
-            final Touch feature = controller.getSession().getFeature(Touch.class, LoginControllerFactory.get(this));
+            final Touch feature = controller.getSession().getFeature(Touch.class, LoginControllerFactory.get(controller));
             if(!feature.isSupported(destination)) {
                 // Target file system does not support creating files. Creating files is not supported
                 // for example in root of cloud storage accounts.
