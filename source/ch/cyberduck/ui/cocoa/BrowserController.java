@@ -374,23 +374,25 @@ public class BrowserController extends WindowController
             log.debug(String.format("Reload data with selected files %s", selected));
         }
         for(Path p : changed) {
+            // This will force the model to list this directory
             session.cache().invalidate(p.getParent().getReference());
         }
         // Tell the browser view to reload the data. This will request all paths from the browser model
         // which will refetch paths from the server marked as invalid.
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
-        this.deselectAll();
-        for(Path path : selected) {
-            this.selectRow(path.getReference(), true, scroll);
-            // Only scroll to the first in the list
-            scroll = false;
+        if(changed.isEmpty()) {
+            for(Path path : selected) {
+                this.selectRow(path.getReference(), true, scroll);
+                // Only scroll to the first in the list
+                scroll = false;
+            }
         }
         this.setSelectedPaths(selected);
         this.setStatus();
     }
 
-    private void selectRow(PathReference reference, boolean expand, boolean scroll) {
+    private void selectRow(final PathReference reference, final boolean expand, final boolean scroll) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Select row with reference %s", reference));
         }
@@ -409,19 +411,9 @@ public class BrowserController extends WindowController
         }
     }
 
-    protected void setSelectedPaths(final List<Path> selected) {
+    private void setSelectedPaths(final List<Path> selected) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set selected paths to %s", selected));
-        }
-        if(quicklook.isOpen()) {
-            this.updateQuickLookSelection(selected);
-        }
-        if(Preferences.instance().getBoolean("browser.info.inspector")) {
-            InfoController c = InfoControllerFactory.get(BrowserController.this);
-            if(null != c) {
-                // Currently open info panel
-                c.setFiles(selected);
-            }
         }
         this.selected = selected;
         this.validateToolbar();
@@ -1057,7 +1049,6 @@ public class BrowserController extends WindowController
 
         @Override
         public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-            final List<Path> s = BrowserController.this.getSelectedPaths();
             if(this.selectedColumnIdentifier().equals(tableColumn.identifier())) {
                 this.setSortedAscending(!this.isSortedAscending());
             }
@@ -1074,7 +1065,7 @@ public class BrowserController extends WindowController
                             IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
                             IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
                     tableColumn.identifier());
-            reloadData(s);
+            reloadData(true);
         }
 
         @Override
@@ -1082,11 +1073,21 @@ public class BrowserController extends WindowController
             final List<Path> selected = new ArrayList<Path>();
             final NSIndexSet iterator = getSelectedBrowserView().selectedRowIndexes();
             for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-                Path file = this.pathAtRow(index.intValue());
+                final Path file = this.pathAtRow(index.intValue());
                 if(null == file) {
                     break;
                 }
                 selected.add(file);
+            }
+            if(quicklook.isOpen()) {
+                updateQuickLookSelection(selected);
+            }
+            if(Preferences.instance().getBoolean("browser.info.inspector")) {
+                InfoController c = InfoControllerFactory.get(BrowserController.this);
+                if(null != c) {
+                    // Currently open info panel
+                    c.setFiles(selected);
+                }
             }
             setSelectedPaths(selected);
         }
@@ -2202,7 +2203,6 @@ public class BrowserController extends WindowController
     @Action
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
-            final List<Path> selected = this.getSelectedPaths();
             switch(browserSwitchView.selectedSegment()) {
                 case SWITCH_OUTLINE_VIEW: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
@@ -2215,7 +2215,7 @@ public class BrowserController extends WindowController
                 }
             }
             session.cache().invalidate(this.workdir().getReference());
-            this.reloadData(selected);
+            this.reloadData(true);
         }
     }
 
