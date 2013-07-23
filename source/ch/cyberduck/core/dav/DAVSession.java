@@ -29,7 +29,6 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -186,19 +185,13 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
+    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+                       final TransferStatus status) throws BackgroundException {
         try {
             InputStream in = null;
             ResponseOutputStream<Void> out = null;
             try {
                 in = file.getLocal().getInputStream();
-                if(status.isResume()) {
-                    long skipped = in.skip(status.getCurrent());
-                    log.info(String.format("Skipping %d bytes", skipped));
-                    if(skipped < status.getCurrent()) {
-                        throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
-                    }
-                }
                 out = this.write(file, status);
                 this.upload(out, in, throttle, listener, status);
             }
