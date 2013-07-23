@@ -25,7 +25,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -232,7 +234,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                     log.warn("MD5 calculation disabled");
                     in = file.getLocal().getInputStream();
                     out = write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
-                    session.upload(out, in, throttle, listener, offset, length, status);
+                    new StreamCopier().transfer(in, new ThrottledOutputStream(out, throttle), listener, length, status);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
