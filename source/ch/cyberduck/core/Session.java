@@ -306,14 +306,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         return host.getMaxConnections();
     }
 
-    /**
-     * @param workdir The workdir to create query
-     * @return True if creating an empty file is possible.
-     */
-    public boolean isCreateFileSupported(final Path workdir) {
-        return true;
-    }
-
     public boolean isRenameSupported(final Path file) {
         return true;
     }

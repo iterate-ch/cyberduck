@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
@@ -102,8 +103,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class BrowserController extends WindowController
-        implements ProgressListener, TranscriptListener,
-        NSToolbar.Delegate, QLPreviewPanelController {
+        implements ProgressListener, TranscriptListener, NSToolbar.Delegate, QLPreviewPanelController {
     private static Logger log = Logger.getLogger(BrowserController.class);
 
     /**
@@ -3817,7 +3817,8 @@ public class BrowserController extends WindowController
             return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.isCreateFileSupported(this.workdir());
+            final Touch feature = session.getFeature(Touch.class, LoginControllerFactory.get(this));
+            return this.isBrowser() && this.isMounted() && feature.isSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
             return this.isBrowser() && this.isMounted() && session.getFeature(Symlink.class, LoginControllerFactory.get(this)) != null

@@ -25,15 +25,7 @@ import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Lifecycle;
-import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.features.Logging;
-import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
@@ -352,12 +344,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         return !file.attributes().isVolume();
     }
 
-    @Override
-    public boolean isCreateFileSupported(final Path workdir) {
-        // Creating files is only possible inside a bucket.
-        return !workdir.isRoot();
-    }
-
     /**
      * Overwritten to provide publicly accessible URL of given object
      *
@@ -622,6 +608,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
         if(type == Headers.class) {
             return (T) new S3MetadataFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new S3TouchFeature(this);
         }
         if(type == Location.class) {
             // Only for AWS

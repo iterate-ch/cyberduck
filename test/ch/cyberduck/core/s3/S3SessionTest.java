@@ -29,13 +29,6 @@ import static org.junit.Assert.*;
 public class S3SessionTest extends AbstractTestCase {
 
     @Test
-    public void testFile() {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, "h"));
-        assertFalse(session.isCreateFileSupported(new Path("/", Path.VOLUME_TYPE)));
-        assertTrue(session.isCreateFileSupported(new Path(new Path("/", Path.VOLUME_TYPE), "/container", Path.VOLUME_TYPE)));
-    }
-
-    @Test
     public void testConnect() throws Exception {
         final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")

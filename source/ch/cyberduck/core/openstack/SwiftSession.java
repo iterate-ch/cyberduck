@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.ResponseOutputStream;
@@ -145,12 +146,6 @@ public class SwiftSession extends HttpSession<Client> {
     @Override
     public boolean isRenameSupported(final Path file) {
         return !file.attributes().isVolume();
-    }
-
-    @Override
-    public boolean isCreateFileSupported(final Path workdir) {
-        // Creating files is only possible inside a container.
-        return !workdir.isRoot();
     }
 
     /**
@@ -404,6 +399,9 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Headers.class) {
             return (T) new SwiftMetadataFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new SwiftTouchFeature(this);
         }
         if(type == Location.class) {
             return (T) new Location() {

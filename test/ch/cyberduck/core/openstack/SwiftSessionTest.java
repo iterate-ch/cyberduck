@@ -115,13 +115,6 @@ public class SwiftSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testFile() {
-        final SwiftSession session = new SwiftSession(new Host(Protocol.SWIFT, "h"));
-        assertFalse(session.isCreateFileSupported(new Path("/", Path.VOLUME_TYPE)));
-        assertTrue(session.isCreateFileSupported(new Path("/container", Path.VOLUME_TYPE)));
-    }
-
-    @Test
     public void testCreateContainer() throws Exception {
         final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")

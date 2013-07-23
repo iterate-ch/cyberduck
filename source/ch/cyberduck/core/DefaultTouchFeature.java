@@ -49,4 +49,10 @@ public class DefaultTouchFeature implements Touch {
             temp.delete();
         }
     }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
+    }
+
 }

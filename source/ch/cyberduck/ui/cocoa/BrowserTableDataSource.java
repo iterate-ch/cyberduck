@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.WatchEditor;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.FileDescriptor;
@@ -403,7 +404,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 log.warn("Dragging destination is null.");
                 return NSDraggingInfo.NSDragOperationNone;
             }
-            if(!controller.getSession().isCreateFileSupported(destination)) {
+            final Touch feature = controller.getSession().getFeature(Touch.class, LoginControllerFactory.get(this));
+            if(!feature.isSupported(destination)) {
                 // Target file system does not support creating files. Creating files is not supported
                 // for example in root of cloud storage accounts.
                 return NSDraggingInfo.NSDragOperationNone;
