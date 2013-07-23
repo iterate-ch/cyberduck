@@ -214,7 +214,7 @@ public class SyncTransfer extends Transfer {
     /**
      * Contains both download and upload cache
      */
-    private final Cache cache = new Cache() {
+    private final Cache cache = new Cache(Integer.MAX_VALUE) {
         @Override
         public AttributedList<Path> remove(PathReference reference) {
             _delegateDownload.cache().remove(reference);

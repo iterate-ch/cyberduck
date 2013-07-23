@@ -32,18 +32,15 @@ import java.util.Map;
 public class Cache {
     private static final Logger log = Logger.getLogger(Cache.class);
 
-    /**
-     *
-     */
-    private final Map<PathReference, AttributedList<Path>> _impl = Collections.<PathReference, AttributedList<Path>>synchronizedMap(new LRUMap(
-            Preferences.instance().getInteger("browser.cache.size")
-    ) {
-        @Override
-        protected boolean removeLRU(LinkEntry entry) {
-            log.debug("Removing from cache:" + entry);
-            return true;
-        }
-    });
+    private final Map<PathReference, AttributedList<Path>> impl;
+
+    public Cache() {
+        this(Preferences.instance().getInteger("browser.cache.size"));
+    }
+
+    public Cache(int size) {
+        impl = Collections.<PathReference, AttributedList<Path>>synchronizedMap(new LRUMap(size));
+    }
 
     /**
      * Lookup a path by reference in the cache. Expensive as its parent directory must be
@@ -54,7 +51,7 @@ public class Cache {
      * @see ch.cyberduck.core.AttributedList#get(PathReference)
      */
     public Path lookup(final PathReference reference) {
-        for(AttributedList<Path> list : _impl.values()) {
+        for(AttributedList<Path> list : impl.values()) {
             final Path path = list.get(reference);
             if(null == path) {
                 continue;
@@ -66,7 +63,7 @@ public class Cache {
     }
 
     public boolean isEmpty() {
-        return _impl.isEmpty();
+        return impl.isEmpty();
     }
 
     /**
@@ -74,7 +71,7 @@ public class Cache {
      * @return True if the directory listing of this path is cached
      */
     public boolean containsKey(final PathReference reference) {
-        return _impl.containsKey(reference);
+        return impl.containsKey(reference);
     }
 
     /**
@@ -84,7 +81,7 @@ public class Cache {
      * @return The previuosly cached directory listing
      */
     public AttributedList<Path> remove(final PathReference reference) {
-        return _impl.remove(reference);
+        return impl.remove(reference);
     }
 
     /**
@@ -95,7 +92,7 @@ public class Cache {
      *          and requests a new filter here.
      */
     public AttributedList<Path> get(final PathReference reference) {
-        AttributedList<Path> children = _impl.get(reference);
+        AttributedList<Path> children = impl.get(reference);
         if(null == children) {
             log.warn(String.format("No cache for %s", reference));
             return AttributedList.emptyList();
@@ -109,7 +106,7 @@ public class Cache {
      * @return Previous cached version
      */
     public AttributedList<Path> put(final PathReference reference, final AttributedList<Path> children) {
-        return _impl.put(reference, children);
+        return impl.put(reference, children);
     }
 
     /**
@@ -136,6 +133,6 @@ public class Cache {
         if(log.isInfoEnabled()) {
             log.info(String.format("Clearing cache %s", this.toString()));
         }
-        _impl.clear();
+        impl.clear();
     }
 }

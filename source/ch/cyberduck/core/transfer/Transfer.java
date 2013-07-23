@@ -129,7 +129,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Prefetched workload
      */
-    private Cache cache = new Cache();
+    private Cache cache = new Cache(Integer.MAX_VALUE);
 
     /**
      * Transfer state
