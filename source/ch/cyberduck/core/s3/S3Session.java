@@ -331,14 +331,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 new AttributedList<Path>(new S3BucketListService().list(this)));
     }
 
-    /**
-     * @return No Content-Range support
-     */
-    @Override
-    public boolean isUploadResumable() {
-        return false;
-    }
-
     @Override
     public boolean isRenameSupported(final Path file) {
         return !file.attributes().isVolume();
@@ -525,9 +517,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        final S3SingleUploadService service = new S3SingleUploadService(this);
-        return service.write(file, service.createObjectDetails(file), status.getLength() - status.getCurrent(),
-                Collections.<String, String>emptyMap());
+        return this.getFeature(Write.class, new DisabledLoginController()).write(file, status);
     }
 
     @Override
@@ -597,6 +587,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Delete.class) {
+            return (T) new S3WriteFeature(this);
+        }
         if(type == Delete.class) {
             if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3MultipleDeleteFeature(this, prompt);

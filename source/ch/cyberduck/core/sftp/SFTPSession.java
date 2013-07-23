@@ -19,7 +19,6 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -27,10 +26,12 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -44,7 +45,15 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
-import ch.ethz.ssh2.*;
+import ch.ethz.ssh2.Connection;
+import ch.ethz.ssh2.ConnectionMonitor;
+import ch.ethz.ssh2.PacketListener;
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.SFTPException;
+import ch.ethz.ssh2.SFTPOutputStream;
+import ch.ethz.ssh2.SFTPv3Client;
+import ch.ethz.ssh2.SFTPv3FileHandle;
+import ch.ethz.ssh2.ServerHostKeyVerifier;
 
 /**
  * @version $Id$
@@ -222,25 +231,6 @@ public class SFTPSession extends Session<Connection> implements Delete {
     }
 
     @Override
-    public boolean isDownloadResumable() {
-        return this.isTransferResumable();
-    }
-
-    @Override
-    public boolean isUploadResumable() {
-        return this.isTransferResumable();
-    }
-
-    /**
-     * No resume supported for SCP transfers.
-     *
-     * @return True if SFTP is the selected transfer protocol for SSH sessions.
-     */
-    private boolean isTransferResumable() {
-        return Preferences.instance().getProperty("ssh.transfer").equals(Scheme.sftp.name());
-    }
-
-    @Override
     public boolean exists(final Path path) throws BackgroundException {
         try {
             try {
@@ -308,33 +298,7 @@ public class SFTPSession extends Session<Connection> implements Delete {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        InputStream in = null;
-        try {
-            if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.sftp.name())) {
-                final SFTPv3FileHandle handle = this.sftp().openFileRO(file.getAbsolute());
-                in = new SFTPInputStream(handle);
-                if(status.isResume()) {
-                    log.info(String.format("Skipping %d bytes", status.getCurrent()));
-                    final long skipped = in.skip(status.getCurrent());
-                    if(skipped < status.getCurrent()) {
-                        throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
-                    }
-                }
-                // No parallel requests if the file size is smaller than the buffer.
-                this.sftp().setRequestParallelism(
-                        (int) (status.getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1
-                );
-            }
-            else if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
-                final SCPClient client = new SCPClient(this.getClient());
-                client.setCharset(this.getEncoding());
-                in = client.get(file.getAbsolute());
-            }
-            return in;
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Download failed", e, file);
-        }
+        return this.getFeature(Read.class, new DisabledLoginController()).read(file, status);
     }
 
     @Override
@@ -381,6 +345,15 @@ public class SFTPSession extends Session<Connection> implements Delete {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Read.class) {
+            if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
+                return (T) new SCPReader(this);
+            }
+            return (T) new SFTPReader(this);
+        }
+        if(type == Write.class) {
+            return (T) this;
+        }
         if(type == Delete.class) {
             return (T) this;
         }

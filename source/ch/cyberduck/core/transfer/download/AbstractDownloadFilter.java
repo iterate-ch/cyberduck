@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
@@ -27,7 +28,6 @@ import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -59,7 +59,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isSymbolicLink()) {
             if(!symlinkResolver.resolve(file)) {
                 return symlinkResolver.include(file);
@@ -73,7 +73,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(file.attributes().isFile()) {
             if(file.attributes().isSymbolicLink()) {
@@ -108,7 +108,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
      * Update timestamp and permission
      */
     @Override
-    public void complete(final Session session, final Path file,
+    public void complete(final Session<?> session, final Path file,
                          final TransferOptions options, final TransferStatus status,
                          final ProgressListener listener) {
         if(log.isDebugEnabled()) {

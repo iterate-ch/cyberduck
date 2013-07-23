@@ -17,10 +17,10 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -39,7 +39,7 @@ public class RenameFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.getLocal().exists()) {
             final String parentPath = file.getLocal().getParent().getAbsolute();
             final String filename = file.getName();

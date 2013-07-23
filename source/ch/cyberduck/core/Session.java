@@ -24,7 +24,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
@@ -50,7 +52,7 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public abstract class Session<C> implements TranscriptListener, ProgressListener {
+public abstract class Session<C> implements Read, Write, TranscriptListener, ProgressListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
     /**
@@ -359,19 +361,10 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     /**
      * Content Range support
      *
-     * @return True if skipping is supported
-     */
-    public boolean isDownloadResumable() {
-        return true;
-    }
-
-    /**
-     * Content Range support
-     *
      * @return True if appending is supported
      */
     public boolean isUploadResumable() {
-        return true;
+        return true; //todo
     }
 
     public void addProgressListener(final ProgressListener listener) {
@@ -526,18 +519,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         this.getFeature(Delete.class, prompt).delete(Collections.singletonList(file));
     }
 
-    /**
-     * @param status Transfer status
-     * @return Stream to read from to download file
-     */
-    public abstract InputStream read(Path file, TransferStatus status) throws BackgroundException;
-
-    /**
-     * @param status Transfer status
-     * @return Stream to write to for upload
-     */
-    public abstract OutputStream write(Path file, TransferStatus status) throws BackgroundException;
-
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         try {
@@ -608,7 +589,18 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         new StreamCopier().transfer(in, new ThrottledOutputStream(out, throttle), l, limit, status);
     }
 
+    @Override
+    public boolean isResumable() {
+        return true;
+    }
+
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Read.class) {
+            return (T) this;
+        }
+        if(type == Write.class) {
+            return (T) this;
+        }
         if(type == Touch.class) {
             // Use login context of current session
             return (T) new DefaultTouchFeature(this);

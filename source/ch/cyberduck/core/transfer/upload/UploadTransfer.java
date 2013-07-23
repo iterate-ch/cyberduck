@@ -18,12 +18,14 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.AbstractStreamListener;
@@ -95,7 +97,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public boolean isResumable() {
-        return session.isUploadResumable();
+        return session.getFeature(Write.class, new DisabledLoginController()).isResumable();
     }
 
     @Override

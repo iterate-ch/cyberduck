@@ -45,7 +45,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
      * Rename existing file on disk if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(session, file, parent);
         if(file.getLocal().exists()) {
             Local renamed = file.getLocal();

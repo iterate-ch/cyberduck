@@ -29,27 +29,15 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.http.ResponseOutputStream;
-import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -135,14 +123,6 @@ public class SwiftSession extends HttpSession<Client> {
         distributions.clear();
     }
 
-    /**
-     * @return No Content-Range support
-     */
-    @Override
-    public boolean isUploadResumable() {
-        return false;
-    }
-
     @Override
     public boolean isRenameSupported(final Path file) {
         return !file.attributes().isVolume();
@@ -217,126 +197,8 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
-        try {
-            String md5sum = null;
-            if(Preferences.instance().getBoolean("openstack.upload.metadata.md5")) {
-                this.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                        file.getName()));
-                md5sum = file.getLocal().attributes().getChecksum();
-            }
-            MessageDigest digest = null;
-            if(!Preferences.instance().getBoolean("openstack.upload.metadata.md5")) {
-                try {
-                    digest = MessageDigest.getInstance("MD5");
-                }
-                catch(NoSuchAlgorithmException e) {
-                    log.error("Failure loading MD5 digest", e);
-                }
-            }
-            InputStream in = null;
-            ResponseOutputStream<String> out = null;
-            try {
-                if(null == digest) {
-                    log.warn("MD5 calculation disabled");
-                    in = file.getLocal().getInputStream();
-                }
-                else {
-                    in = new DigestInputStream(file.getLocal().getInputStream(), digest);
-                }
-                out = this.write(file, status, md5sum);
-                this.upload(out, in, throttle, listener, status);
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
-            if(null != digest && null != out) {
-                this.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
-                // Obtain locally-calculated MD5 hash.
-                String expectedETag = ServiceUtils.toHex(digest.digest());
-                // Compare our locally-calculated hash with the ETag returned.
-                final String result = out.getResponse();
-                if(!expectedETag.equals(result)) {
-                    throw new IOException("Mismatch between MD5 hash of uploaded data ("
-                            + expectedETag + ") and ETag returned ("
-                            + result + ") for object key: "
-                            + containerService.getKey(file));
-                }
-                else {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Object upload was automatically verified, the calculated MD5 hash " +
-                                "value matched the ETag returned: " + containerService.getKey(file));
-                    }
-                }
-            }
-        }
-        catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Upload failed", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
-        }
-    }
-
-    @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        return this.write(file, status, null);
-    }
-
-    private ResponseOutputStream<String> write(final Path file, final TransferStatus status, final String md5sum)
-            throws BackgroundException {
-        final HashMap<String, String> metadata = new HashMap<String, String>();
-        // Default metadata for new files
-        for(String m : Preferences.instance().getList("openstack.metadata.default")) {
-            if(StringUtils.isBlank(m)) {
-                continue;
-            }
-            if(!m.contains("=")) {
-                log.warn(String.format("Invalid header %s", m));
-                continue;
-            }
-            int split = m.indexOf('=');
-            String name = m.substring(0, split);
-            if(StringUtils.isBlank(name)) {
-                log.warn(String.format("Missing key in %s", m));
-                continue;
-            }
-            String value = m.substring(split + 1);
-            if(StringUtils.isEmpty(value)) {
-                log.warn(String.format("Missing value in %s", m));
-                continue;
-            }
-            metadata.put(name, value);
-        }
-        // Submit store run to background thread
-        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
-            /**
-             *
-             * @return The ETag returned by the server for the uploaded object
-             */
-            @Override
-            public String call(final AbstractHttpEntity entity) throws BackgroundException {
-                try {
-                    return getClient().storeObject(
-                            getRegion(containerService.getContainer(file)), containerService.getContainer(file).getName(),
-                            containerService.getKey(file), entity,
-                            metadata, md5sum);
-                }
-                catch(GenericException e) {
-                    throw new SwiftExceptionMappingService().map("Upload failed", e, file);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
-                }
-            }
-
-            @Override
-            public long getContentLength() {
-                return status.getLength() - status.getCurrent();
-            }
-        };
-        return this.write(file, command);
+        return this.getFeature(Write.class, new DisabledLoginController()).write(file, status);
     }
 
     @Override
@@ -394,6 +256,9 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Write.class) {
+            return (T) new SwiftWriteFeature(this);
+        }
         if(type == Delete.class) {
             return (T) new SwiftDeleteFeature(this);
         }
