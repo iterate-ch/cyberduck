@@ -26,6 +26,7 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -54,8 +55,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.acl.AccessControlList;
-import org.jets3t.service.acl.gs.GSAccessControlList;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
@@ -83,6 +82,8 @@ import java.util.Set;
  */
 public class GoogleStorageSession extends S3Session {
     private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
+
+    private PathContainerService containerService = new PathContainerService();
 
     public GoogleStorageSession(Host h) {
         super(h);
@@ -186,13 +187,14 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    protected AccessControlList getPrivateCannedAcl() {
-        return GSAccessControlList.REST_CANNED_PRIVATE;
-    }
-
-    @Override
-    protected AccessControlList getPublicCannedReadAcl() {
-        return GSAccessControlList.REST_CANNED_PUBLIC_READ;
+    public void mkdir(final Path file, final String region) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            final GoogleStorageBucketCreateService service = new GoogleStorageBucketCreateService(this);
+            service.create(file, null);
+        }
+        else {
+            super.mkdir(file, region);
+        }
     }
 
     @Override

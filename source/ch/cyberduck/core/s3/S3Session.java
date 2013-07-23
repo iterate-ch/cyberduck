@@ -358,14 +358,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         return !workdir.isRoot();
     }
 
-    protected AccessControlList getPrivateCannedAcl() {
-        return AccessControlList.REST_CANNED_PRIVATE;
-    }
-
-    protected AccessControlList getPublicCannedReadAcl() {
-        return AccessControlList.REST_CANNED_PUBLIC_READ;
-    }
-
     /**
      * Overwritten to provide publicly accessible URL of given object
      *
@@ -579,8 +571,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 // Add placeholder object
                 final StorageObject object = new StorageObject(containerService.getKey(file) + Path.DELIMITER);
                 object.setBucketName(containerService.getContainer(file).getName());
-                // Set object explicitly to private access by default.
-                object.setAcl(this.getPrivateCannedAcl());
                 object.setContentLength(0);
                 object.setContentType("application/x-directory");
                 this.getClient().putObject(containerService.getContainer(file).getName(), object);

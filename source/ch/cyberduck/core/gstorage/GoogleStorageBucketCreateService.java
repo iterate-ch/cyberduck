@@ -1,4 +1,4 @@
-package ch.cyberduck.core.s3;
+package ch.cyberduck.core.gstorage;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -22,19 +22,21 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.acl.gs.GSAccessControlList;
 import org.jets3t.service.utils.ServiceUtils;
 
 /**
  * @version $Id$
  */
-public class S3BucketCreateService {
+public class GoogleStorageBucketCreateService {
 
-    private S3Session session;
+    private GoogleStorageSession session;
 
-    public S3BucketCreateService(final S3Session session) {
+    public GoogleStorageBucketCreateService(final GoogleStorageSession session) {
         this.session = session;
     }
 
@@ -45,10 +47,10 @@ public class S3BucketCreateService {
         }
         AccessControlList acl;
         if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
-            acl = AccessControlList.REST_CANNED_PUBLIC_READ;
+            acl = GSAccessControlList.REST_CANNED_PUBLIC_READ;
         }
         else {
-            acl = AccessControlList.REST_CANNED_PRIVATE;
+            acl = GSAccessControlList.REST_CANNED_PRIVATE;
         }
         try {
             session.getClient().createBucket(new PathContainerService().getContainer(bucket).getName(), location, acl);
