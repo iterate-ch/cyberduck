@@ -20,20 +20,24 @@ package ch.cyberduck.core.threading;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ThreadPoolTest {
 
     @Test(expected = RejectedExecutionException.class)
     public void testShutdown() throws Exception {
-        ThreadPool p = new ThreadPool();
+        final ThreadPool p = new ThreadPool();
         p.shutdown();
         p.execute(new Runnable() {
             @Override
@@ -45,7 +49,7 @@ public class ThreadPoolTest {
 
     @Test
     public void testExecute() throws Exception {
-        ThreadPool p = new ThreadPool();
+        final ThreadPool p = new ThreadPool();
         final Object r = new Object();
         assertEquals(r, p.execute(new Callable<Object>() {
             @Override
@@ -53,5 +57,24 @@ public class ThreadPoolTest {
                 return r;
             }
         }).get());
+    }
+
+    @Test
+    public void testFifoOrderSingleThread() throws Exception {
+        final ThreadPool p = new ThreadPool();
+        final List<Future<Integer>> wait = new ArrayList<Future<Integer>>();
+        final AtomicInteger counter = new AtomicInteger(0);
+        for(int i = 0; i < 1000; i++) {
+            wait.add(p.execute(new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    return counter.incrementAndGet();
+                }
+            }));
+        }
+        int i = 1;
+        for(Future f : wait) {
+            assertEquals(i++, f.get());
+        }
     }
 }
