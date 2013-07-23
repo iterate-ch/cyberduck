@@ -256,11 +256,14 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     @Override
-    public void tabView_didSelectTabViewItem(NSTabView tabView, NSTabViewItem tabViewItem) {
-        this.window.setTitle(windowTitle + " – " + this.getTitle(tabViewItem));
+    public void tabView_didSelectTabViewItem(NSTabView view, NSTabViewItem item) {
+        this.setTitle(item.label());
         this.resize();
-        Preferences.instance().setProperty(this.getToolbarName() + ".selected",
-                tabView.indexOfTabViewItem(tabViewItem));
+        Preferences.instance().setProperty(this.getToolbarName() + ".selected", view.indexOfTabViewItem(item));
+    }
+
+    protected void setTitle(final String title) {
+        window.setTitle(String.format("%s – %s", windowTitle, title));
     }
 
     protected double getMinWindowHeight() {
