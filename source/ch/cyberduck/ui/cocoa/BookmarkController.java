@@ -18,20 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.ReachabilityFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -263,7 +253,6 @@ public class BookmarkController extends WindowController {
     private void updateFavicon() {
         if(Preferences.instance().getBoolean("bookmark.favicon.download")) {
             this.background(new AbstractBackgroundAction<Void>() {
-
                 @Override
                 public Void run() throws BackgroundException {
                     final String f = host.getProtocol().favicon();
@@ -294,7 +283,7 @@ public class BookmarkController extends WindowController {
 
                 @Override
                 public Object lock() {
-                    return BookmarkController.this;
+                    return host;
                 }
             });
         }
