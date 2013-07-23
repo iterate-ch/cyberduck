@@ -25,12 +25,14 @@ import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -42,6 +44,9 @@ import ch.iterate.openstack.swift.model.Region;
  */
 public class SwiftContainerListService implements RootListService<SwiftSession> {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
+
+    private ThreadFactory threadFactory
+            = new NamedThreadFactory("cdn");
 
     @Override
     public List<Path> list(final SwiftSession session) throws BackgroundException {
@@ -59,9 +64,19 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
                     container.attributes().setRegion(f.getRegion().getRegionId());
                     if(Preferences.instance().getBoolean("openstack.cdn.preload")) {
                         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, new DisabledLoginController());
-                        for(Distribution.Method method : cdn.getMethods(container)) {
-                            cdn.read(container, method);
-                        }
+                        threadFactory.newThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for(Distribution.Method method : cdn.getMethods(container)) {
+                                    try {
+                                        cdn.read(container, method);
+                                    }
+                                    catch(BackgroundException e) {
+                                        log.warn(String.format("Failure preloading CDN configuration for container %s:%s", container, e.getMessage()));
+                                    }
+                                }
+                            }
+                        }).start();
                     }
                     containers.add(container);
                 }
