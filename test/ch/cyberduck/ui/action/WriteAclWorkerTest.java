@@ -11,12 +11,13 @@ import ch.cyberduck.core.features.AclPermission;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WriteAclWorkerTest extends AbstractTestCase {
 
@@ -33,6 +34,16 @@ public class WriteAclWorkerTest extends AbstractTestCase {
             @Override
             public void setPermission(final Path file, final Acl acl) throws BackgroundException {
                 fail();
+            }
+
+            @Override
+            public List<Acl.User> getAvailableAclUsers() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
+                throw new UnsupportedOperationException();
             }
         }, Collections.<Path>emptyList(), acl, true) {
             @Override
@@ -57,6 +68,16 @@ public class WriteAclWorkerTest extends AbstractTestCase {
             @Override
             public void setPermission(final Path file, final Acl acl) throws BackgroundException {
                 fail();
+            }
+
+            @Override
+            public List<Acl.User> getAvailableAclUsers() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
+                throw new UnsupportedOperationException();
             }
         }, Collections.singletonList(t), acl, true) {
             @Override
@@ -83,6 +104,16 @@ public class WriteAclWorkerTest extends AbstractTestCase {
             public void setPermission(final Path file, final Acl n) throws BackgroundException {
                 assertEquals(acl, n);
                 set.set(true);
+            }
+
+            @Override
+            public List<Acl.User> getAvailableAclUsers() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
+                throw new UnsupportedOperationException();
             }
         }, Collections.singletonList(t), acl, true) {
             @Override

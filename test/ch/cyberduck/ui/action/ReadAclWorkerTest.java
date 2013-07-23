@@ -47,6 +47,16 @@ public class ReadAclWorkerTest extends AbstractTestCase {
             public void setPermission(final Path file, final Acl acl) throws BackgroundException {
                 //
             }
+
+            @Override
+            public List<Acl.User> getAvailableAclUsers() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
+                throw new UnsupportedOperationException();
+            }
         }, Arrays.<Path>asList(new Path("/a", Path.FILE_TYPE), new Path("/b", Path.FILE_TYPE))) {
             @Override
             public void cleanup(final List<Acl.UserAndRole> result) {
