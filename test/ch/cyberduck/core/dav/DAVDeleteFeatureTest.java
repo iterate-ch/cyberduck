@@ -44,5 +44,6 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
             }
         }.run();
         assertFalse(session.exists(test));
+        session.close();
     }
 }

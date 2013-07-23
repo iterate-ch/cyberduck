@@ -166,6 +166,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         assertNotNull(session.list(session.home(), new DisabledListProgressListener()));
+        session.close();
     }
 
     @Test(expected = LoginFailureException.class)
@@ -253,5 +254,6 @@ public class DAVSessionTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         session.delete(test, new DisabledLoginController());
+        session.close();
     }
 }
