@@ -255,6 +255,14 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         pauser.await(this);
     }
 
+    @Override
+    public String getName() {
+        for(Session session : this.getSessions()) {
+            return session.getHost().getNickname();
+        }
+        return super.getName();
+    }
+
     /**
      * @return The session instance
      */

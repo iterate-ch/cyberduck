@@ -34,12 +34,14 @@ import org.rococoa.ID;
  */
 public class TaskController extends BundleController {
 
+    private BackgroundAction task;
+
     @Outlet
     private NSTextField name;
 
     public void setName(NSTextField name) {
         this.name = name;
-        this.name.setStringValue(task.toString());
+        this.name.setStringValue(task.getName());
     }
 
     @Outlet
@@ -83,8 +85,6 @@ public class TaskController extends BundleController {
     public NSView view() {
         return view;
     }
-
-    private BackgroundAction task;
 
     public TaskController(final BackgroundAction task) {
         this.task = task;

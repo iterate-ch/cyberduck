@@ -75,6 +75,8 @@ public interface BackgroundAction<T> extends Callable<T> {
      */
     String getActivity();
 
+    String getName();
+
     /**
      * @return The synchronization object
      */
