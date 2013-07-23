@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
@@ -149,8 +148,7 @@ public class S3SingleUploadService {
                     Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
             object.setMd5Hash(ServiceUtils.fromHex(file.getLocal().attributes().getChecksum()));
         }
-        final Acl acl = file.attributes().getAcl();
-        if(Acl.EMPTY.equals(acl)) {
+        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
             if(Preferences.instance().getProperty("s3.key.acl.default").equals("public-read")) {
                 object.setAcl(session.getPublicCannedReadAcl());
             }
@@ -158,9 +156,6 @@ public class S3SingleUploadService {
                 // Owner gets FULL_CONTROL. No one else has access rights (default).
                 object.setAcl(session.getPrivateCannedAcl());
             }
-        }
-        else {
-            object.setAcl(new S3AccessControlListFeature(session).convert(acl));
         }
         // Storage class
         if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
