@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -104,17 +105,23 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            final UnixPermission unix = session.getFeature(UnixPermission.class, null);
-            if(unix != null) {
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                final UnixPermission unix = session.getFeature(UnixPermission.class, null);
+                if(unix != null) {
                     listener.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                             file.getName(), file.attributes().getPermission().getOctalString()));
                     this.permissions(file, unix);
                 }
+                final AclPermission acl = session.getFeature(AclPermission.class, null);
+                if(acl != null) {
+                    listener.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+                            file.getName(), file.attributes().getPermission().getOctalString()));
+                    this.acl(file, acl);
+                }
             }
-            final Timestamp timestamp = session.getFeature(Timestamp.class, null);
-            if(timestamp != null) {
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+            if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                final Timestamp timestamp = session.getFeature(Timestamp.class, null);
+                if(timestamp != null) {
                     listener.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                             file.getName(), UserDateFormatterFactory.get().getShortFormat(file.getLocal().attributes().getModificationDate())));
                     this.timestamp(file, timestamp);
@@ -138,35 +145,63 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     private void permissions(final Path file, final UnixPermission feature) {
-        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-            final Permission permission;
-            if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                if(file.attributes().isFile()) {
-                    permission = new Permission(
-                            Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                }
-                else {
-                    permission = new Permission(
-                            Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                }
+        final Permission permission;
+        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+            if(file.attributes().isFile()) {
+                permission = new Permission(
+                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
             }
             else {
-                // Read permissions from local file
-                permission = file.getLocal().attributes().getPermission();
+                permission = new Permission(
+                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
             }
-            if(!Permission.EMPTY.equals(permission)) {
-                try {
-                    feature.setUnixPermission(file, permission);
-                }
-                catch(BackgroundException e) {
-                    // Ignore
-                    log.warn(e.getMessage());
-                }
+        }
+        else {
+            // Read permissions from local file
+            permission = file.getLocal().attributes().getPermission();
+        }
+        if(!Permission.EMPTY.equals(permission)) {
+            try {
+                feature.setUnixPermission(file, permission);
+            }
+            catch(BackgroundException e) {
+                // Ignore
+                log.warn(e.getMessage());
             }
         }
     }
 
     private void acl(final Path file, final AclPermission feature) {
-
+        final Permission permission;
+        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+            if(file.attributes().isFile()) {
+                permission = new Permission(
+                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+            }
+            else {
+                permission = new Permission(
+                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+            }
+        }
+        else {
+            // Read permissions from local file
+            permission = file.getLocal().attributes().getPermission();
+        }
+        final Acl acl = new Acl();
+        if(permission.getOtherPermissions()[Permission.READ]) {
+            acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
+        }
+        if(permission.getGroupPermissions()[Permission.READ]) {
+            acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
+        }
+        if(!Acl.EMPTY.equals(acl)) {
+            try {
+                feature.setPermission(file, acl);
+            }
+            catch(BackgroundException e) {
+                // Ignore
+                log.warn(e.getMessage());
+            }
+        }
     }
 }

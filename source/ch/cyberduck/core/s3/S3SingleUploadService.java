@@ -35,6 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -141,25 +142,18 @@ public class S3SingleUploadService {
 
     protected StorageObject createObjectDetails(final Path file) throws BackgroundException {
         final StorageObject object = new StorageObject(containerService.getKey(file));
-        final String type = new MappingMimeTypeService().getMime(file.getName());
-        object.setContentType(type);
+        object.setContentType(new MappingMimeTypeService().getMime(file.getName()));
         if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
             session.message(MessageFormat.format(
                     Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
             object.setMd5Hash(ServiceUtils.fromHex(file.getLocal().attributes().getChecksum()));
         }
-        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-            if(Preferences.instance().getProperty("s3.key.acl.default").equals("public-read")) {
-                object.setAcl(session.getPublicCannedReadAcl());
-            }
-            else {
-                // Owner gets FULL_CONTROL. No one else has access rights (default).
-                object.setAcl(session.getPrivateCannedAcl());
-            }
-        }
         // Storage class
         if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
-            object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
+            if(!S3Object.STORAGE_CLASS_STANDARD.equals(Preferences.instance().getProperty("s3.storage.class"))) {
+                // The default setting is STANDARD.
+                object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
+            }
         }
         if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
             object.setServerSideEncryptionAlgorithm(Preferences.instance().getProperty("s3.encryption.algorithm"));
