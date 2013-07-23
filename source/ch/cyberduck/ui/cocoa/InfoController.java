@@ -904,16 +904,11 @@ public class InfoController extends ToolbarWindowController {
         this.aclAddButton.setTarget(this.id());
         this.aclAddButton.addItemWithTitle(StringUtils.EMPTY);
         this.aclAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
-        for(Acl.User user : controller.getSession().getAvailableAclUsers()) {
-            this.aclAddButton.addItemWithTitle(user.getPlaceholder());
-            this.aclAddButton.lastItem().setAction(Foundation.selector("aclAddButtonClicked:"));
-            this.aclAddButton.lastItem().setTarget(this.id());
-            this.aclAddButton.lastItem().setRepresentedObject(user.getPlaceholder());
-        }
     }
 
     public void aclAddButtonClicked(NSMenuItem sender) {
-        for(Acl.User grantee : controller.getSession().getAvailableAclUsers()) {
+        final AclPermission feature = controller.getSession().getFeature(AclPermission.class, prompt);
+        for(Acl.User grantee : feature.getAvailableAclUsers()) {
             if(sender.representedObject().equals(grantee.getPlaceholder())) {
                 this.addAclItem(new Acl.UserAndRole(grantee, new Acl.Role(StringUtils.EMPTY)));
             }
@@ -2195,8 +2190,16 @@ public class InfoController extends ToolbarWindowController {
         this.setAcl(Collections.<Acl.UserAndRole>emptyList());
         aclUrlField.setStringValue(Locale.localizedString("None"));
         if(this.toggleAclSettings(false)) {
+            final AclPermission feature = controller.getSession().getFeature(AclPermission.class, prompt);
+            aclAddButton.removeAllItems();
+            for(Acl.User user : feature.getAvailableAclUsers()) {
+                this.aclAddButton.addItemWithTitle(user.getPlaceholder());
+                this.aclAddButton.lastItem().setAction(Foundation.selector("aclAddButtonClicked:"));
+                this.aclAddButton.lastItem().setTarget(this.id());
+                this.aclAddButton.lastItem().setRepresentedObject(user.getPlaceholder());
+            }
             aclPermissionCellPrototype.removeAllItems();
-            for(Acl.Role permission : controller.getSession().getAvailableAclRoles(files)) {
+            for(Acl.Role permission : feature.getAvailableAclRoles(files)) {
                 aclPermissionCellPrototype.addItemWithObjectValue(NSString.stringWithString(permission.getName()));
             }
             if(this.numberOfFiles() > 1) {

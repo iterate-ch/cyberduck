@@ -54,7 +54,6 @@ import org.jets3t.service.Constants;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
-import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.StorageBucket;
@@ -72,11 +71,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -368,29 +364,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     protected AccessControlList getPublicCannedReadAcl() {
         return AccessControlList.REST_CANNED_PUBLIC_READ;
-    }
-
-    @Override
-    public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
-        return Arrays.asList(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ_ACP.toString()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE_ACP.toString()));
-    }
-
-    @Override
-    public List<Acl.User> getAvailableAclUsers() {
-        return new ArrayList<Acl.User>(Arrays.asList(
-                new Acl.CanonicalUser(),
-                new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier(), false),
-                new Acl.EmailUser() {
-                    @Override
-                    public String getPlaceholder() {
-                        return Locale.localizedString("Amazon Customer Email Address", "S3");
-                    }
-                })
-        );
     }
 
     /**

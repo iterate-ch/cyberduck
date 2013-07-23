@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -31,6 +32,10 @@ import org.jets3t.service.acl.EmailAddressGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.model.S3Owner;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -173,5 +178,28 @@ public class S3AccessControlListFeature implements AclPermission {
             }
         }
         return acl;
+    }
+
+    @Override
+    public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
+        return Arrays.asList(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ_ACP.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE_ACP.toString()));
+    }
+
+    @Override
+    public List<Acl.User> getAvailableAclUsers() {
+        return new ArrayList<Acl.User>(Arrays.asList(
+                new Acl.CanonicalUser(),
+                new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier(), false),
+                new Acl.EmailUser() {
+                    @Override
+                    public String getPlaceholder() {
+                        return Locale.localizedString("Amazon Customer Email Address", "S3");
+                    }
+                })
+        );
     }
 }

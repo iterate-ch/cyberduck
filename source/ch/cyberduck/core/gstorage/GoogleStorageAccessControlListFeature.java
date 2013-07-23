@@ -18,8 +18,11 @@ package ch.cyberduck.core.gstorage;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
@@ -32,6 +35,10 @@ import org.jets3t.service.acl.gs.GroupByEmailAddressGrantee;
 import org.jets3t.service.acl.gs.GroupByIdGrantee;
 import org.jets3t.service.acl.gs.UserByEmailAddressGrantee;
 import org.jets3t.service.acl.gs.UserByIdGrantee;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -94,5 +101,55 @@ public class GoogleStorageAccessControlListFeature extends S3AccessControlListFe
             }
         }
         return list;
+    }
+
+    @Override
+    public List<Acl.User> getAvailableAclUsers() {
+        final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
+                new Acl.CanonicalUser(),
+                new Acl.GroupUser("AllAuthenticatedUsers", false),
+                new Acl.GroupUser("AllUsers", false))
+        );
+        users.add(new Acl.EmailUser() {
+            @Override
+            public String getPlaceholder() {
+                return Locale.localizedString("Google Account Email Address", "S3");
+            }
+        });
+        // Google Apps customers can associate their email accounts with an Internet domain name. When you do
+        // this, each email account takes the form username@yourdomain.com. You can specify a scope by using
+        // any Internet domain name that is associated with a Google Apps account.
+        users.add(new Acl.DomainUser(StringUtils.EMPTY) {
+            @Override
+            public String getPlaceholder() {
+                return Locale.localizedString("Google Apps Domain", "S3");
+            }
+        });
+        users.add(new Acl.EmailGroupUser(StringUtils.EMPTY, true) {
+            @Override
+            public String getPlaceholder() {
+                return Locale.localizedString("Google Group Email Address", "S3");
+            }
+        });
+        return users;
+    }
+
+    @Override
+    public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
+        List<Acl.Role> roles = new ArrayList<Acl.Role>(Arrays.asList(
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()))
+        );
+        for(Path file : files) {
+            if(file.attributes().isVolume()) {
+                // When applied to a bucket, this permission lets a user create objects, overwrite objects, and
+                // delete objects in a bucket. This permission also lets a user list the contents of a bucket.
+                // You cannot apply this permission to objects because bucket ACLs control who can upload,
+                // overwrite, and delete objects. Also, you must grant READ permission if you grant WRITE permission.
+                roles.add(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()));
+                break;
+            }
+        }
+        return roles;
     }
 }

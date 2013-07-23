@@ -46,7 +46,6 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -382,23 +381,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      */
     public boolean isUploadResumable() {
         return true;
-    }
-
-    /**
-     * @return List of known ACL users
-     */
-    public List<Acl.User> getAvailableAclUsers() {
-        return Collections.emptyList();
-    }
-
-    /**
-     * Roles available for users in a configurable ACL.
-     *
-     * @param files List of files
-     * @return A list of role names.
-     */
-    public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
-        return Collections.emptyList();
     }
 
     public void addProgressListener(final ProgressListener listener) {
