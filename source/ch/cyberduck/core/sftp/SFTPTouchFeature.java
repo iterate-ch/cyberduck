@@ -57,4 +57,9 @@ public class SFTPTouchFeature implements Touch {
             }
         }
     }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
+    }
 }

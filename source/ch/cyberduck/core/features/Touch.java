@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
  * @version $Id$
  */
 public interface Touch {
+
     void touch(Path file) throws BackgroundException;
 
     /**
