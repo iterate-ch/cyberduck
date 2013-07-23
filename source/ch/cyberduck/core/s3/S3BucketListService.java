@@ -77,7 +77,7 @@ public class S3BucketListService implements RootListService<S3Session> {
                     // List all buckets owned
                     for(StorageBucket b : session.getClient().listAllBucketsImpl()) {
                         final Path bucket = new Path(b.getName(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                        bucket.attributes().setOwner(b.getOwner().getDisplayName());
+                        bucket.attributes().setOwner(b.getOwner().getId());
                         bucket.attributes().setCreationDate(b.getCreationDate().getTime());
                         if(b.isLocationKnown()) {
                             bucket.attributes().setRegion(b.getLocation());

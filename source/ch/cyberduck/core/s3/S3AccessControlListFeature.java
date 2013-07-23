@@ -88,16 +88,14 @@ public class S3AccessControlListFeature implements AclPermission {
     @Override
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
-            if(null == acl.getOwner()) {
-                // Owner is lost in controller
-                acl.setOwner(file.attributes().getAcl().getOwner());
-            }
+            final Path container = containerService.getContainer(file);
+            acl.setOwner(new Acl.CanonicalUser(container.attributes().getOwner()));
             if(containerService.isContainer(file)) {
-                session.getClient().putBucketAcl(containerService.getContainer(file).getName(), this.convert(acl));
+                session.getClient().putBucketAcl(container.getName(), this.convert(acl));
             }
             else {
                 if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
-                    session.getClient().putObjectAcl(containerService.getContainer(file).getName(), containerService.getKey(file), this.convert(acl));
+                    session.getClient().putObjectAcl(container.getName(), containerService.getKey(file), this.convert(acl));
                 }
             }
         }
