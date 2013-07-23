@@ -9,7 +9,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.s3.S3BucketCreateService;
 
 import org.junit.Test;
 
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
 
@@ -43,7 +42,7 @@ public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
             }
         }, new DisabledLoginController());
         final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        new S3BucketCreateService(session).create(bucket, "US");
+        new GoogleStorageBucketCreateService(session).create(bucket, "US");
         assertTrue(session.exists(bucket));
         session.delete(bucket, new DisabledLoginController());
         assertFalse(session.exists(bucket));
