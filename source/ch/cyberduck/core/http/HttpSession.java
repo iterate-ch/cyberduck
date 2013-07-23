@@ -29,8 +29,6 @@ import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
-import ch.cyberduck.core.threading.ActionOperationBatcher;
-import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.http.Header;
@@ -263,8 +261,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
                 @Override
                 public void run() {
-                    // Need batcher for logging messages up to the interface
-                    final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
                     try {
                         response = command.call(entity);
                     }
@@ -276,7 +272,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                         entry.countDown();
                         // Continue reading the response
                         exit.countDown();
-                        autorelease.operate();
                     }
                 }
             };
