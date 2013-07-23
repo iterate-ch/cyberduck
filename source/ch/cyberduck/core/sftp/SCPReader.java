@@ -22,18 +22,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 import ch.ethz.ssh2.SCPClient;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SCPReader implements Read {
-    private static final Logger log = Logger.getLogger(SCPReader.class);
 
     private SFTPSession session;
 
