@@ -310,6 +310,10 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     }
 
     public static class GroupUser extends User {
+
+        public static final String EVERYONE = "AllUsers";
+        public static final String AUTHENTICATED = "AllAuthenticatedUsers";
+
         public GroupUser(String identifier) {
             this(identifier, false);
         }
@@ -354,6 +358,11 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
      * The permission.
      */
     public static class Role implements Comparable<Role> {
+
+        public static final String FULL = "FULL_CONTROL";
+        public static final String READ = "READ";
+        public static final String WRITE = "WRITE";
+
         private String name;
         private boolean editable;
         private boolean modified;

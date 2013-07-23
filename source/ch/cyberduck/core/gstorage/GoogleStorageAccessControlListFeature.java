@@ -63,11 +63,13 @@ public class GoogleStorageAccessControlListFeature extends S3AccessControlListFe
                         Permission.parsePermission(userAndRole.getRole().getName()));
             }
             else if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                if(userAndRole.getUser().getIdentifier().equals("AllUsers")) {
+                if(userAndRole.getUser().getIdentifier().equals(new AllUsersGrantee().getIdentifier())
+                        || userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
                     list.grantPermission(new AllUsersGrantee(),
                             Permission.parsePermission(userAndRole.getRole().getName()));
                 }
-                else if(userAndRole.getUser().getIdentifier().equals("AllAuthenticatedUsers")) {
+                else if(userAndRole.getUser().getIdentifier().equals(new AllAuthenticatedUsersGrantee().getIdentifier())
+                        || userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.AUTHENTICATED)) {
                     list.grantPermission(new AllAuthenticatedUsersGrantee(),
                             Permission.parsePermission(userAndRole.getRole().getName()));
                 }
@@ -107,8 +109,8 @@ public class GoogleStorageAccessControlListFeature extends S3AccessControlListFe
     public List<Acl.User> getAvailableAclUsers() {
         final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
                 new Acl.CanonicalUser(),
-                new Acl.GroupUser("AllAuthenticatedUsers", false),
-                new Acl.GroupUser("AllUsers", false))
+                new Acl.GroupUser(new AllAuthenticatedUsersGrantee().getIdentifier(), false),
+                new Acl.GroupUser(new AllUsersGrantee().getIdentifier(), false))
         );
         users.add(new Acl.EmailUser() {
             @Override

@@ -127,8 +127,18 @@ public class S3AccessControlListFeature implements AclPermission {
                         org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
             }
             else if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                list.grantPermission(new GroupGrantee(userAndRole.getUser().getIdentifier()),
-                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                    list.grantPermission(GroupGrantee.ALL_USERS,
+                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                }
+                else if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.AUTHENTICATED)) {
+                    list.grantPermission(GroupGrantee.AUTHENTICATED_USERS,
+                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                }
+                else {
+                    list.grantPermission(new GroupGrantee(userAndRole.getUser().getIdentifier()),
+                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                }
             }
             else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
                 list.grantPermission(new CanonicalGrantee(userAndRole.getUser().getIdentifier()),
