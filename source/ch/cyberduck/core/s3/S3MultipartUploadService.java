@@ -36,13 +36,9 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.StorageObject;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -232,24 +228,9 @@ public class S3MultipartUploadService extends S3SingleUploadService {
 
                 InputStream in = null;
                 ResponseOutputStream<StorageObject> out = null;
-                MessageDigest digest = null;
                 try {
-                    if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-                        // Content-MD5 not set. Need to verify ourselves instead of S3
-                        try {
-                            digest = MessageDigest.getInstance("MD5");
-                        }
-                        catch(NoSuchAlgorithmException e) {
-                            log.error(e.getMessage());
-                        }
-                    }
-                    if(null == digest) {
-                        log.warn("MD5 calculation disabled");
-                        in = file.getLocal().getInputStream();
-                    }
-                    else {
-                        in = new DigestInputStream(file.getLocal().getInputStream(), digest);
-                    }
+                    log.warn("MD5 calculation disabled");
+                    in = file.getLocal().getInputStream();
                     out = write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
                     session.upload(out, in, throttle, listener, offset, length, status);
                 }
@@ -261,16 +242,6 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                     IOUtils.closeQuietly(out);
                 }
                 final StorageObject part = out.getResponse();
-                if(null != digest) {
-                    // Obtain locally-calculated MD5 hash
-                    final String hexMD5 = ServiceUtils.toHex(digest.digest());
-                    try {
-                        session.getClient().verifyExpectedAndActualETagValues(hexMD5, part);
-                    }
-                    catch(ServiceException e) {
-                        throw new ServiceExceptionMappingService().map("Upload failed", e, file);
-                    }
-                }
                 // Populate part with response data that is accessible via the object's metadata
                 return new MultipartPart(partNumber, part.getLastModifiedDate(),
                         part.getETag(), part.getContentLength());
