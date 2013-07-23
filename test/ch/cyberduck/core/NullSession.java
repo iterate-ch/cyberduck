@@ -33,11 +33,6 @@ public class NullSession extends FTPSession {
         //
     }
 
-    @Override
-    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
-        return null;
-    }
-
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
         return AttributedList.emptyList();
     }
