@@ -1484,7 +1484,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     public String getTitle(NSTabViewItem item) {
-        return item.label() + " – " + this.getName();
+        return String.format("%s – %s", item.label(), this.getName());
     }
 
     @Outlet
@@ -1546,6 +1546,7 @@ public class InfoController extends ToolbarWindowController {
         }
         this.files = files;
         this.initTab(this.getSelectedTab());
+        this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
     }
 
     private static NSPoint cascadedWindowPoint;
@@ -1553,10 +1554,10 @@ public class InfoController extends ToolbarWindowController {
     @Override
     protected void cascade() {
         if(null == cascadedWindowPoint) {
-            cascadedWindowPoint = this.window.cascadeTopLeftFromPoint(this.window.frame().origin);
+            cascadedWindowPoint = window.cascadeTopLeftFromPoint(window.frame().origin);
         }
         else {
-            cascadedWindowPoint = this.window.cascadeTopLeftFromPoint(cascadedWindowPoint);
+            cascadedWindowPoint = window.cascadeTopLeftFromPoint(cascadedWindowPoint);
         }
     }
 
@@ -1646,8 +1647,8 @@ public class InfoController extends ToolbarWindowController {
     private void initGeneral() {
         final int count = this.numberOfFiles();
         if(count > 0) {
-            Path file = getSelected();
             filenameField.setStringValue(this.getName());
+            final Path file = getSelected();
             filenameField.setEnabled(1 == count && controller.getSession().isRenameSupported(file));
             // Where
             String path;
@@ -1710,7 +1711,6 @@ public class InfoController extends ToolbarWindowController {
         // Sum of files
         this.initSize();
         this.initChecksum();
-        this.initPermissions();
         // Read HTTP URL
         this.initWebUrl();
     }
@@ -1740,7 +1740,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.togglePermissionSettings(false)) {
             this.background(new WorkerBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
                 @Override
-                public void cleanup(List<Permission> permissions) {
+                public void cleanup(final List<Permission> permissions) {
                     setPermissions(permissions);
                     togglePermissionSettings(true);
                 }
@@ -1853,7 +1853,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleSizeSettings(false)) {
             this.background(new WorkerBackgroundAction<Long>(controller, new ReadSizeWorker(files) {
                 @Override
-                public void cleanup(Long size) {
+                public void cleanup(final Long size) {
                     try {
                         updateSize(size);
                     }
@@ -2172,7 +2172,7 @@ public class InfoController extends ToolbarWindowController {
             this.background(new WorkerBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(
                     controller.getSession().getFeature(Headers.class, prompt), files) {
                 @Override
-                public void cleanup(Map<String, String> updated) {
+                public void cleanup(final Map<String, String> updated) {
                     try {
                         List<Header> m = new ArrayList<Header>();
                         for(Map.Entry<String, String> key : updated.entrySet()) {
