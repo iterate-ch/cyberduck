@@ -358,15 +358,6 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
         }
     }
 
-    /**
-     * Content Range support
-     *
-     * @return True if appending is supported
-     */
-    public boolean isUploadResumable() {
-        return true; //todo
-    }
-
     public void addProgressListener(final ProgressListener listener) {
         progressListeners.add(listener);
     }
