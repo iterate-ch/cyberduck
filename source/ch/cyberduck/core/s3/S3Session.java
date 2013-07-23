@@ -587,7 +587,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
-        if(type == Delete.class) {
+        if(type == Write.class) {
             return (T) new S3WriteFeature(this);
         }
         if(type == Delete.class) {
