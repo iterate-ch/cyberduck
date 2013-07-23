@@ -158,7 +158,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                             isLoadingListingInBackground.remove(path);
                             if(isLoadingListingInBackground.isEmpty()) {
                                 tableViewCache.clear();
-                                controller.reloadData(true, false);
+                                controller.reloadData(true, true);
                             }
                         }
                     }
