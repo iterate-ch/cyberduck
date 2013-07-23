@@ -124,11 +124,6 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public boolean isWebUrlConfigurable() {
-        return true;
-    }
-
-    @Override
     public boolean isEncodingConfigurable() {
         return false;
     }

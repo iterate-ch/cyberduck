@@ -116,8 +116,6 @@ public interface Protocol {
      */
     boolean isPortConfigurable();
 
-    boolean isWebUrlConfigurable();
-
     /**
      * @return True if the character set is not defined in the protocol.
      */

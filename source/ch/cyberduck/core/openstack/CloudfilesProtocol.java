@@ -86,11 +86,6 @@ public final class CloudfilesProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isWebUrlConfigurable() {
-        return false;
-    }
-
-    @Override
     public boolean isAnonymousConfigurable() {
         return false;
     }

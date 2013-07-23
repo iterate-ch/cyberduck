@@ -84,11 +84,6 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isWebUrlConfigurable() {
-        return false;
-    }
-
-    @Override
     public boolean isAnonymousConfigurable() {
         return false;
     }

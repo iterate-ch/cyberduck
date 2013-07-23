@@ -91,9 +91,6 @@ public class BookmarkController extends WindowController {
             // Prefill with default hostname
             host.setHostname(selected.getDefaultHostname());
         }
-        if(!selected.isWebUrlConfigurable()) {
-            host.setWebURL(null);
-        }
         host.setProtocol(selected);
         this.itemChanged();
         this.init();
@@ -789,7 +786,6 @@ public class BookmarkController extends WindowController {
             pkLabel.setStringValue(Locale.localizedString("No private key selected"));
             pkLabel.setTextColor(NSColor.disabledControlTextColor());
         }
-        webURLField.setEnabled(host.getProtocol().isWebUrlConfigurable());
         final String webURL = host.getWebURL();
         webUrlImage.setToolTip(webURL);
         this.updateField(webURLField, host.getDefaultWebURL().equals(webURL) ? null : webURL);

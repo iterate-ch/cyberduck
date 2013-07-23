@@ -233,11 +233,6 @@ public final class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public boolean isWebUrlConfigurable() {
-        return parent.isWebUrlConfigurable();
-    }
-
-    @Override
     public Scheme getScheme() {
         final String v = this.getValue("Scheme");
         if(StringUtils.isBlank(v)) {

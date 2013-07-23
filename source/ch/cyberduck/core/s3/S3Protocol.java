@@ -87,11 +87,6 @@ public final class S3Protocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isWebUrlConfigurable() {
-        return false;
-    }
-
-    @Override
     public String getUsernamePlaceholder() {
         return Locale.localizedString("Access Key ID", "S3");
     }
