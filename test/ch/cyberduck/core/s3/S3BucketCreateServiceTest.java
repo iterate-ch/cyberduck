@@ -49,5 +49,6 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
         assertTrue(session.exists(bucket));
         session.delete(bucket, new DisabledLoginController());
         assertFalse(session.exists(bucket));
+        session.close();
     }
 }

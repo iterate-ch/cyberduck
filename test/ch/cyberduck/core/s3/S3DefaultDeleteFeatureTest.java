@@ -40,6 +40,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         session.getFeature(Delete.class, new DisabledLoginController()).delete(Collections.singletonList(test));
         assertFalse(session.exists(test));
+        session.close();
     }
 
     @Test
@@ -57,6 +58,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         session.getFeature(Delete.class, new DisabledLoginController()).delete(Collections.singletonList(test));
         assertFalse(session.exists(test));
+        session.close();
     }
 
     @Test
@@ -80,5 +82,6 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
             }
         }.run();
         assertFalse(session.exists(container));
+        session.close();
     }
 }

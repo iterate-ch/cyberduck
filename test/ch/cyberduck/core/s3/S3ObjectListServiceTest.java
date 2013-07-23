@@ -61,6 +61,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                 assertNotNull(p.attributes().getChecksum());
             }
         }
+        session.close();
     }
 
     @Test
@@ -75,6 +76,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final List<Path> list = new S3ObjectListService(session).list(new Path(container, "test", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
         assertTrue(list.isEmpty());
+        session.close();
     }
 
     @Test(expected = NotfoundException.class)
@@ -88,5 +90,6 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("notfound.cyberduck.ch", Path.VOLUME_TYPE);
         new S3ObjectListService(session).list(container, new DisabledListProgressListener());
+        session.close();
     }
 }

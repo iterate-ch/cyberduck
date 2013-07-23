@@ -35,5 +35,6 @@ public class S3BucketListServiceTest extends AbstractTestCase {
         final List<Path> list = new S3BucketListService().list(session);
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE)));
+        session.close();
     }
 }

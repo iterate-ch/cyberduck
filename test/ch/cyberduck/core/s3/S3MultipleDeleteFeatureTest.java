@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
 
@@ -53,5 +53,6 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
             keys.add(new ObjectKeyAndVersion(UUID.randomUUID().toString()));
         }
         new S3MultipleDeleteFeature(session, new DisabledLoginController()).delete(container, keys);
+        session.close();
     }
 }

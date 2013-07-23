@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3MultipartUploadServiceTest extends AbstractTestCase {
 
@@ -50,5 +50,6 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertEquals(random.getBytes().length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         session.delete(test, new DisabledLoginController());
+        session.close();
     }
 }

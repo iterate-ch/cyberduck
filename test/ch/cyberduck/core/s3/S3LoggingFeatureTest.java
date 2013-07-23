@@ -51,5 +51,6 @@ public class S3LoggingFeatureTest extends AbstractTestCase {
         assertNotNull(configuration);
         assertEquals("log.cyberduck.ch", configuration.getLoggingTarget());
         assertTrue(configuration.isEnabled());
+        session.close();
     }
 }

@@ -48,5 +48,6 @@ public class S3LocationFeatureTest extends AbstractTestCase {
         assertEquals("EU", new S3LocationFeature(session).getLocation(
                 new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE)
         ));
+        session.close();
     }
 }
