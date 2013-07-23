@@ -112,7 +112,7 @@ public class S3AccessControlListFeature implements AclPermission {
      * @param acl Edited ACL
      * @return ACL to write to server
      */
-    protected org.jets3t.service.acl.AccessControlList convert(Acl acl) {
+    protected org.jets3t.service.acl.AccessControlList convert(final Acl acl) {
         if(null == acl) {
             return null;
         }

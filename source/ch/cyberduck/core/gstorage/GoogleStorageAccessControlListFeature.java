@@ -51,7 +51,7 @@ public class GoogleStorageAccessControlListFeature extends S3AccessControlListFe
     }
 
     @Override
-    protected AccessControlList convert(Acl acl) {
+    protected AccessControlList convert(final Acl acl) {
         GSAccessControlList list = new GSAccessControlList();
         // Do not set owner for ACL which is set automatically
         for(Acl.UserAndRole userAndRole : acl.asList()) {
@@ -137,7 +137,7 @@ public class GoogleStorageAccessControlListFeature extends S3AccessControlListFe
     }
 
     @Override
-    public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
+    public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
         List<Acl.Role> roles = new ArrayList<Acl.Role>(Arrays.asList(
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()))
