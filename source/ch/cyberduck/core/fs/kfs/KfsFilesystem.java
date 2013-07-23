@@ -21,6 +21,8 @@ package ch.cyberduck.core.fs.kfs;
 
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -32,8 +34,6 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -338,8 +338,9 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfscreate_f:" + path);
                         final Path file = new Path(path, Path.DIRECTORY_TYPE);
-                        if(session.isCreateFileSupported(file.getParent())) {
-                            session.getFeature(Touch.class, new DisabledLoginController()).touch(file);
+                        final Touch feature = session.getFeature(Touch.class, new DisabledLoginController());
+                        if(feature.isSupported(file.getParent())) {
+                            feature.touch(file);
                             return true;
                         }
                         return false;

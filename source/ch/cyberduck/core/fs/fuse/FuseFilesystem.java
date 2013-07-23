@@ -21,6 +21,8 @@ package ch.cyberduck.core.fs.fuse;
 
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -33,8 +35,6 @@ import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -389,8 +389,9 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path file = new Path(path, Path.DIRECTORY_TYPE);
-                    if(session.isCreateFileSupported(file.getParent())) {
-                        session.getFeature(Touch.class, new DisabledLoginController()).touch(file);
+                    final Touch feature = session.getFeature(Touch.class, new DisabledLoginController());
+                    if(feature.isSupported(file.getParent())) {
+                        feature.touch(file);
                         return true;
                     }
                     return false;

@@ -21,8 +21,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Touch {
     void touch(Path file) throws BackgroundException;
+
+    /**
+     * @param workdir The workdir to create query
+     * @return True if creating an empty file is possible.
+     */
+    boolean isSupported(Path workdir);
 }
