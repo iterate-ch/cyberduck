@@ -37,13 +37,7 @@ public class AttributeCache<K> {
     private Map<K, Map<String, NSObject>> impl;
 
     public AttributeCache(int size) {
-        impl = Collections.<K, Map<String, NSObject>>synchronizedMap(new LRUMap(size) {
-            @Override
-            protected boolean removeLRU(LinkEntry entry) {
-                log.debug("Removing from cache:" + entry);
-                return true;
-            }
-        });
+        impl = Collections.<K, Map<String, NSObject>>synchronizedMap(new LRUMap(size));
     }
 
     public NSObject put(K key, String attribute, NSObject value) {
@@ -62,7 +56,7 @@ public class AttributeCache<K> {
     public NSObject get(K key, String attribute) {
         if(!impl.containsKey(key)) {
             if(log.isDebugEnabled()) {
-                log.debug("No cached attributes for " + key);
+                log.debug(String.format("No cached attributes for %s", key));
             }
             return null;
         }
@@ -72,7 +66,7 @@ public class AttributeCache<K> {
 
     public void remove(K key) {
         if(log.isDebugEnabled()) {
-            log.debug("Remove from cache:" + key);
+            log.debug(String.format("Remove %s from cache", key));
         }
         impl.remove(key);
     }
