@@ -3515,37 +3515,39 @@ public class BrowserController extends WindowController
         if(null != c) {
             c.window().close();
         }
-        this.background(new BrowserBackgroundAction(this) {
-            @Override
-            public void prepare() throws ConnectionCanceledException {
-                if(null == session) {
-                    throw new ConnectionCanceledException();
+        if(this.hasSession()) {
+            this.background(new BrowserBackgroundAction(this) {
+                @Override
+                public void prepare() throws ConnectionCanceledException {
+                    if(!session.isConnected()) {
+                        throw new ConnectionCanceledException();
+                    }
+                    super.prepare();
                 }
-                if(!session.isConnected()) {
-                    throw new ConnectionCanceledException();
+
+                @Override
+                public Boolean run() throws BackgroundException {
+                    session.close();
+                    return true;
                 }
-                super.prepare();
-            }
 
-            @Override
-            public Boolean run() throws BackgroundException {
-                session.close();
-                return true;
-            }
+                @Override
+                public void cleanup() {
+                    super.cleanup();
+                    window.setDocumentEdited(false);
+                    disconnected.run();
+                }
 
-            @Override
-            public void cleanup() {
-                super.cleanup();
-                window.setDocumentEdited(false);
-                disconnected.run();
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
-                        session.getHost().getHostname());
-            }
-        });
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
+                            session.getHost().getHostname());
+                }
+            });
+        }
+        else {
+            disconnected.run();
+        }
     }
 
     @Action
