@@ -167,28 +167,6 @@ public class S3SessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testWrite() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
-        ));
-        final S3Session session = new S3Session(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final TransferStatus status = new TransferStatus();
-        final byte[] content = "test".getBytes("UTF-8");
-        status.setLength(content.length);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final OutputStream out = session.write(test, status);
-        assertNotNull(out);
-        IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
-        assertTrue(session.exists(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        session.delete(test, new DisabledLoginController());
-    }
-
-    @Test
     public void testMakeDirectory() throws Exception {
         final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")

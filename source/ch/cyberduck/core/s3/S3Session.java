@@ -493,7 +493,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        return this.getFeature(Write.class, new DisabledLoginController()).write(file, status);
+        throw new UnsupportedOperationException();
     }
 
     @Override
