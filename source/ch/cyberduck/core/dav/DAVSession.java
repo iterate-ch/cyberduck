@@ -28,11 +28,8 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.ResponseOutputStream;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
@@ -179,33 +176,6 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
-        }
-    }
-
-    @Override
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
-                       final TransferStatus status) throws BackgroundException {
-        try {
-            InputStream in = null;
-            ResponseOutputStream<Void> out = null;
-            try {
-                in = file.getLocal().getInputStream();
-                out = this.write(file, status);
-                this.upload(out, in, throttle, listener, status);
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
-            if(null != out) {
-                out.getResponse();
-            }
-        }
-        catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Upload failed", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
         }
     }
 
