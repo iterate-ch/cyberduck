@@ -503,9 +503,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public void upload(final Path file, final BandwidthThrottle throttle,
                        final StreamListener listener, final TransferStatus status) throws BackgroundException {
         if(file.attributes().isFile()) {
-            // Only for AWS
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)
-                    && Preferences.instance().getBoolean("s3.upload.multipart")
+            if(Preferences.instance().getBoolean("s3.upload.multipart")
                     && status.getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
                 new S3MultipartUploadService(this).upload(file, throttle, listener, status);
             }
