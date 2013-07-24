@@ -141,13 +141,12 @@ public final class ProtocolFactory {
             }
         }
         log.warn(String.format("Cannot find default protocol for port %d", port));
-        return forName(
-                Preferences.instance().getProperty("connection.protocol.default"));
+        return forName(Preferences.instance().getProperty("connection.protocol.default"));
     }
 
     /**
      * @param identifier Provider name or hash code of protocol
-     * @return Matching protocol or default if no match
+     * @return Matching protocol or null if no match
      */
     public static Protocol forName(final String identifier) {
         for(Protocol protocol : getKnownProtocols(false)) {
@@ -160,9 +159,8 @@ public final class ProtocolFactory {
                 return protocol;
             }
         }
-        log.fatal(String.format("Unknown protocol with identifier %s", identifier));
-        return forName(
-                Preferences.instance().getProperty("connection.protocol.default"));
+        log.warn(String.format("Unknown protocol with identifier %s", identifier));
+        return null;
     }
 
     /**
@@ -177,9 +175,8 @@ public final class ProtocolFactory {
                 }
             }
         }
-        log.fatal(String.format("Unknown scheme %s", scheme));
-        return forName(
-                Preferences.instance().getProperty("connection.protocol.default"));
+        log.error(String.format("Unknown scheme %s", scheme));
+        return forName(Preferences.instance().getProperty("connection.protocol.default"));
     }
 
     /**

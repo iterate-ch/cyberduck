@@ -214,7 +214,13 @@ public final class Host implements Serializable {
         }
         Object providerObj = dict.stringForKey("Provider");
         if(providerObj != null) {
-            this.setProtocol(ProtocolFactory.forName(providerObj.toString()));
+            final Protocol provider = ProtocolFactory.forName(providerObj.toString());
+            if(null != provider) {
+                this.setProtocol(provider);
+            }
+            else {
+                log.warn(String.format("Provider %s no more available. Default to %s", providerObj, protocolObj));
+            }
         }
         Object hostnameObj = dict.stringForKey("Hostname");
         if(hostnameObj != null) {

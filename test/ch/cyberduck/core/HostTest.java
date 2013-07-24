@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.serializer.Serializer;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -35,8 +37,17 @@ public class HostTest extends AbstractTestCase {
     }
 
     @Test
-    public void testWebURL() {
+    public void testDeserialize() throws Exception {
+        final Serializer dict = SerializerFactory.createSerializer();
+        dict.setStringForKey("swift", "Protocol");
+        dict.setStringForKey("unknown provider", "Provider");
+        dict.setStringForKey("h", "Hostname");
+        final Host host = new Host(dict.getSerialized());
+        assertEquals(Protocol.SWIFT, host.getProtocol());
+    }
 
+    @Test
+    public void testWebURL() {
         Host host = new Host("test");
         host.setWebURL("http://localhost/~dkocher");
         assertEquals("http://localhost/~dkocher", host.getWebURL());
