@@ -1908,8 +1908,8 @@ public class InfoController extends ToolbarWindowController {
             analytics = session.getFeature(AnalyticsProvider.class, prompt) != null;
             versioning = session.getFeature(Versioning.class, prompt) != null;
             lifecycle = session.getFeature(Lifecycle.class, prompt) != null;
-            encryption = controller.getSession().getFeature(Encryption.class, prompt) != null;
-            storageclass = controller.getSession().getFeature(Redundancy.class, prompt) != null;
+            encryption = session.getFeature(Encryption.class, prompt) != null;
+            storageclass = session.getFeature(Redundancy.class, prompt) != null;
         }
         storageClassPopup.setEnabled(stop && enable && storageclass);
         encryptionButton.setEnabled(stop && enable && encryption);
@@ -1918,9 +1918,8 @@ public class InfoController extends ToolbarWindowController {
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
-        final IdentityConfiguration identityFeature = controller.getSession().getFeature(IdentityConfiguration.class, prompt);
-        final AnalyticsProvider analyticsFeature = controller.getSession().getFeature(AnalyticsProvider.class, prompt);
-        if(ObjectUtils.equals(identityFeature.getUserCredentials(analyticsFeature.getName()), credentials)) {
+        if(analytics && ObjectUtils.equals(controller.getSession().getFeature(IdentityConfiguration.class, prompt).getUserCredentials(
+                controller.getSession().getFeature(AnalyticsProvider.class, prompt).getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             bucketAnalyticsButton.setEnabled(false);
         }
@@ -1960,10 +1959,14 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
 
+        final Session<?> session = controller.getSession();
+
         if(this.toggleS3Settings(false)) {
-            for(String redundancy : controller.getSession().getFeature(Redundancy.class, prompt).getClasses()) {
-                storageClassPopup.addItemWithTitle(Locale.localizedString(redundancy, "S3"));
-                storageClassPopup.lastItem().setRepresentedObject(redundancy);
+            if(session.getFeature(Redundancy.class, prompt) != null) {
+                for(String redundancy : session.getFeature(Redundancy.class, prompt).getClasses()) {
+                    storageClassPopup.addItemWithTitle(Locale.localizedString(redundancy, "S3"));
+                    storageClassPopup.lastItem().setRepresentedObject(redundancy);
+                }
             }
             if(this.numberOfFiles() > 1) {
                 s3PublicUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
@@ -1979,8 +1982,8 @@ public class InfoController extends ToolbarWindowController {
                     storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 }
                 if(file.attributes().isFile()) {
-                    if(controller.getSession() instanceof S3Session) {
-                        final DescriptiveUrl url = ((S3Session) controller.getSession()).toSignedUrl(file);
+                    if(session instanceof S3Session) {
+                        final DescriptiveUrl url = ((S3Session) session).toSignedUrl(file);
                         if(StringUtils.isNotBlank(url.getUrl())) {
                             s3PublicUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(url.getUrl())
@@ -1990,7 +1993,7 @@ public class InfoController extends ToolbarWindowController {
                         if(StringUtils.isNotBlank(url.getHelp())) {
                             s3PublicUrlValidityField.setStringValue(url.getHelp());
                         }
-                        final DescriptiveUrl torrent = ((S3Session) controller.getSession()).toTorrentUrl(file);
+                        final DescriptiveUrl torrent = ((S3Session) session).toTorrentUrl(file);
                         if(StringUtils.isNotBlank(torrent.getUrl())) {
                             s3torrentUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(torrent.getUrl())
@@ -2011,7 +2014,6 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Session<?> session = controller.getSession();
                     final Path container = containerService.getContainer(getSelected());
                     if(session.getFeature(Location.class, prompt) != null) {
                         location = session.getFeature(Location.class, prompt).getLocation(container);
@@ -2029,8 +2031,10 @@ public class InfoController extends ToolbarWindowController {
                         lifecycle = session.getFeature(Lifecycle.class, prompt).getConfiguration(container);
                     }
                     if(session.getFeature(AnalyticsProvider.class, prompt) != null) {
-                        credentials = session.getFeature(IdentityConfiguration.class, prompt).getUserCredentials(
-                                session.getFeature(AnalyticsProvider.class, prompt).getName());
+                        if(session.getFeature(IdentityConfiguration.class, prompt) != null) {
+                            credentials = session.getFeature(IdentityConfiguration.class, prompt).getUserCredentials(
+                                    session.getFeature(AnalyticsProvider.class, prompt).getName());
+                        }
                     }
                     if(numberOfFiles() == 1) {
                         if(session.getFeature(Encryption.class, prompt) != null) {
@@ -2070,8 +2074,8 @@ public class InfoController extends ToolbarWindowController {
                     encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
                     if(null != credentials) {
                         bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                                controller.getSession().getFeature(AnalyticsProvider.class, prompt).getSetup(controller.getSession().getHost().getProtocol(),
-                                        controller.getSession().getHost().getProtocol().getScheme(),
+                                session.getFeature(AnalyticsProvider.class, prompt).getSetup(session.getHost().getProtocol(),
+                                        session.getHost().getProtocol().getScheme(),
                                         containerService.getContainer(getSelected()).getName(), credentials)
                         ));
                     }
@@ -2542,13 +2546,12 @@ public class InfoController extends ToolbarWindowController {
             final Distribution.Method method
                     = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
             final List<Path> rootDocuments = new ArrayList<Path>();
-
+            final Session<?> session = controller.getSession();
             this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
                 private Distribution distribution = new Distribution(container.getName(), method);
 
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Session<?> session = controller.getSession();
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
                     distribution = cdn.read(container, method);
                     if(cdn.getFeature(Index.class, distribution.getMethod(), prompt) != null) {
@@ -2562,7 +2565,6 @@ public class InfoController extends ToolbarWindowController {
                 public void cleanup() {
                     super.cleanup();
                     try {
-                        final Session<?> session = controller.getSession();
                         final Path container = containerService.getContainer(getSelected());
                         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
                         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
