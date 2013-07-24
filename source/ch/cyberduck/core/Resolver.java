@@ -48,7 +48,7 @@ public class Resolver {
      * @return True if hostname is resolved to IP address
      */
     public boolean isResolved() {
-        return this.resolved != null;
+        return resolved != null;
     }
 
     private UnknownHostException exception;
@@ -57,7 +57,7 @@ public class Resolver {
      * @return True if the lookup has failed and the host is unkown
      */
     public boolean hasFailed() {
-        return this.exception != null;
+        return exception != null;
     }
 
     /**
@@ -71,7 +71,7 @@ public class Resolver {
      * @see #cancel
      */
     public InetAddress resolve(final String hostname) throws UnknownHostException, ResolveCanceledException {
-        Thread t = threadFactory.newThread(new Runnable() {
+        final Thread t = threadFactory.newThread(new Runnable() {
             @Override
             public void run() {
                 try {
