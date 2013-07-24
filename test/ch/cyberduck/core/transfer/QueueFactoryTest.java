@@ -19,16 +19,17 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AbstractTestCase;
 
-import org.junit.Assert;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class QueueFactoryTest extends AbstractTestCase {
 
     @Test
     public void testGet() throws Exception {
-        Assert.assertTrue(QueueFactory.get() == QueueFactory.get());
+        assertTrue(QueueFactory.get() == QueueFactory.get());
     }
 }
