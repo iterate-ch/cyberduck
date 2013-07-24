@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 public class S3MultipartUploadServiceTest extends AbstractTestCase {
 
     @Test
-    public void testUpload() throws Exception {
+    public void testUploadSinglePart() throws Exception {
         final S3Session session = new S3Session(
                 new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
                         new Credentials(
@@ -68,5 +68,31 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         final TransferStatus status = new TransferStatus();
         m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
+    }
+
+    @Test
+    public void testMultipleParts() throws Exception {
+        // 5L * 1024L * 1024L
+        final S3Session session = new S3Session(
+                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final S3MultipartUploadService m = new S3MultipartUploadService(session);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
+        final String random = RandomStringUtils.random(10 * 5 * 1024 * 1024);
+        IOUtils.write(random, test.getLocal().getOutputStream(false));
+        final TransferStatus status = new TransferStatus();
+        status.setLength(random.getBytes().length);
+        m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
+        assertTrue(session.exists(test));
+        assertEquals(random.getBytes().length, session.list(container,
+                new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        session.delete(test, new DisabledLoginController());
+        session.close();
     }
 }
