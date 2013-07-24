@@ -27,10 +27,12 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.EmailAddressGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
+import org.jets3t.service.acl.Permission;
 import org.jets3t.service.model.S3Owner;
 
 import java.util.ArrayList;
@@ -110,11 +112,8 @@ public class S3AccessControlListFeature implements AclPermission {
      * @param acl Edited ACL
      * @return ACL to write to server
      */
-    protected org.jets3t.service.acl.AccessControlList convert(final Acl acl) {
-        if(null == acl) {
-            return null;
-        }
-        org.jets3t.service.acl.AccessControlList list = new org.jets3t.service.acl.AccessControlList();
+    protected AccessControlList convert(final Acl acl) {
+        final AccessControlList list = new AccessControlList();
         list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
@@ -122,25 +121,25 @@ public class S3AccessControlListFeature implements AclPermission {
             }
             if(userAndRole.getUser() instanceof Acl.EmailUser) {
                 list.grantPermission(new EmailAddressGrantee(userAndRole.getUser().getIdentifier()),
-                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                        Permission.parsePermission(userAndRole.getRole().getName()));
             }
             else if(userAndRole.getUser() instanceof Acl.GroupUser) {
                 if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
                     list.grantPermission(GroupGrantee.ALL_USERS,
-                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                            Permission.parsePermission(userAndRole.getRole().getName()));
                 }
                 else if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.AUTHENTICATED)) {
                     list.grantPermission(GroupGrantee.AUTHENTICATED_USERS,
-                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                            Permission.parsePermission(userAndRole.getRole().getName()));
                 }
                 else {
                     list.grantPermission(new GroupGrantee(userAndRole.getUser().getIdentifier()),
-                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                            Permission.parsePermission(userAndRole.getRole().getName()));
                 }
             }
             else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
                 list.grantPermission(new CanonicalGrantee(userAndRole.getUser().getIdentifier()),
-                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                        Permission.parsePermission(userAndRole.getRole().getName()));
             }
             else {
                 log.warn("Unsupported user:" + userAndRole.getUser());
@@ -161,7 +160,7 @@ public class S3AccessControlListFeature implements AclPermission {
      * @param list ACL from server
      * @return Editable ACL
      */
-    protected Acl convert(final org.jets3t.service.acl.AccessControlList list) {
+    protected Acl convert(final AccessControlList list) {
         if(log.isDebugEnabled()) {
             try {
                 log.debug(list.toXml());
@@ -190,11 +189,11 @@ public class S3AccessControlListFeature implements AclPermission {
 
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
-        return Arrays.asList(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ_ACP.toString()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE_ACP.toString()));
+        return Arrays.asList(new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()),
+                new Acl.Role(Permission.PERMISSION_READ.toString()),
+                new Acl.Role(Permission.PERMISSION_WRITE.toString()),
+                new Acl.Role(Permission.PERMISSION_READ_ACP.toString()),
+                new Acl.Role(Permission.PERMISSION_WRITE_ACP.toString()));
     }
 
     @Override
