@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.UUID;
@@ -351,7 +352,9 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         final byte[] buffer = new byte[content.length];
-        IOUtils.readFully(session.read(test, new TransferStatus()), buffer);
+        final InputStream in = session.read(test, new TransferStatus());
+        IOUtils.readFully(in, buffer);
+        IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
         session.delete(test, new DisabledLoginController());
     }
