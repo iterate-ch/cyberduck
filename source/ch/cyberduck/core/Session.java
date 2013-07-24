@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -484,7 +485,7 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
         if(type == Write.class) {
             return (T) this;
         }
-        if(type == Write.class) {
+        if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this);
         }
         if(type == Touch.class) {
