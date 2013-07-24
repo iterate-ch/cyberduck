@@ -39,9 +39,10 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public List<String> getClasses() {
-        return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD,
+        return Arrays.asList(
+                S3Object.STORAGE_CLASS_STANDARD,
                 S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-                "GLACIER");
+                S3Object.STORAGE_CLASS_GLACIER);
     }
 
     @Override
