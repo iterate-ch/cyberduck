@@ -46,6 +46,7 @@ import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
+import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
 import ch.cyberduck.ui.action.ReadAclWorker;
 import ch.cyberduck.ui.action.ReadMetadataWorker;

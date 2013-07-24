@@ -17,13 +17,13 @@ package ch.cyberduck.ui.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.HostKeyControllerFactory;
-import ch.cyberduck.core.LoginControllerFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.HostKeyControllerFactory;
+import ch.cyberduck.ui.LoginControllerFactory;
 
 /**
  * @version $Id$

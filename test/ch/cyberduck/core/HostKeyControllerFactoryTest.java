@@ -1,9 +1,11 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.ui.HostKeyControllerFactory;
+
 import org.junit.Test;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class HostKeyControllerFactoryTest extends AbstractTestCase {
 

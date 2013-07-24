@@ -3,11 +3,11 @@ package ch.cyberduck.ui.cocoa.threading;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.HostKeyControllerFactory;
 import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginControllerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.HostKeyControllerFactory;
+import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.cocoa.BrowserController;
 
 import org.junit.Test;
@@ -15,7 +15,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class BrowserBackgroundActionTest extends AbstractTestCase {
 

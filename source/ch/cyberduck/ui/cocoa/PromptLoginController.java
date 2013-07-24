@@ -19,8 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginControllerFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
@@ -28,8 +28,8 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;

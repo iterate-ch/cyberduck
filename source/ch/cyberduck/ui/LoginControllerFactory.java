@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.ui;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -19,7 +19,9 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.Controller;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.LoginController;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -17,10 +17,12 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.ui.LoginControllerFactory;
+
 import org.junit.Test;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LoginControllerFactoryTest extends AbstractTestCase {
 
