@@ -173,10 +173,9 @@ public class BrowserController extends WindowController
 
     private NSToolbar toolbar;
 
-    /**
-     * Navigation history
-     */
     private final Navigation navigation = new Navigation();
+
+    private PathPasteboard pasteboard;
 
     public BrowserController() {
         this.loadBundle();
@@ -244,6 +243,10 @@ public class BrowserController extends WindowController
 
     protected Filter<Path> getFileFilter() {
         return this.filenameFilter;
+    }
+
+    public PathPasteboard getPasteboard() {
+        return pasteboard;
     }
 
     protected void setPathFilter(final String search) {
@@ -2239,20 +2242,19 @@ public class BrowserController extends WindowController
      * @param destination The destination of the duplicated file
      */
     protected void duplicatePath(final Path source, final Path destination) {
-        this.duplicatePaths(Collections.singletonMap(source, destination), true);
+        this.duplicatePaths(Collections.singletonMap(source, destination));
     }
 
     /**
      * @param selected A map with the original files as the key and the destination
      *                 files as the value
-     * @param browser  Transfer in browser session
      */
-    protected void duplicatePaths(final Map<Path, Path> selected, final boolean browser) {
+    protected void duplicatePaths(final Map<Path, Path> selected) {
         this.checkOverwrite(selected.values(), new DefaultMainAction() {
             @Override
             public void run() {
                 transfer(new CopyTransfer(session, SessionFactory.createSession(session.getHost()), selected),
-                        new ArrayList<Path>(selected.values()), browser);
+                        new ArrayList<Path>(selected.values()), true);
             }
         });
     }
@@ -3018,7 +3020,6 @@ public class BrowserController extends WindowController
 
     @Action
     public void copy(final ID sender) {
-        PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(session);
         pasteboard.clear();
         pasteboard.setCopy(true);
         final List<Path> s = this.getSelectedPaths();
@@ -3046,7 +3047,6 @@ public class BrowserController extends WindowController
 
     @Action
     public void cut(final ID sender) {
-        PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(session);
         pasteboard.clear();
         pasteboard.setCut(true);
         for(Path s : this.getSelectedPaths()) {
@@ -3062,7 +3062,6 @@ public class BrowserController extends WindowController
 
     @Action
     public void paste(final ID sender) {
-        final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(session);
         if(pasteboard.isEmpty()) {
             NSPasteboard pboard = NSPasteboard.generalPasteboard();
             this.upload(pboard);
@@ -3088,7 +3087,7 @@ public class BrowserController extends WindowController
                 this.renamePaths(files);
             }
             if(pasteboard.isCopy()) {
-                this.duplicatePaths(files, true);
+                this.duplicatePaths(files);
             }
         }
     }
@@ -3341,6 +3340,7 @@ public class BrowserController extends WindowController
         session = SessionFactory.createSession(host);
         transcript.clear();
         navigation.clear();
+        pasteboard = PathPasteboardFactory.getPasteboard(session);
         this.setWorkdir(null);
         this.setEncoding(session.getEncoding());
         return session;
@@ -3499,6 +3499,7 @@ public class BrowserController extends WindowController
                     // Clear the cache on the main thread to make sure the browser model is not in an invalid state
                     session.cache().clear();
                 }
+                PathPasteboardFactory.delete(session);
                 session = null;
                 window.setTitle(Preferences.instance().getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
@@ -3605,7 +3606,6 @@ public class BrowserController extends WindowController
             final String title = "Paste {0}";
             item.setTitle(MessageFormat.format(Locale.localizedString(title), StringUtils.EMPTY).trim());
             if(this.isMounted()) {
-                final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(session);
                 if(pasteboard.isEmpty()) {
                     if(NSPasteboard.generalPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                         NSObject o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
@@ -3721,7 +3721,6 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("paste:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(session);
                 if(pasteboard.isEmpty()) {
                     NSPasteboard pboard = NSPasteboard.generalPasteboard();
                     if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {

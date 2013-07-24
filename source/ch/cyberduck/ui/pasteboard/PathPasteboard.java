@@ -33,7 +33,7 @@ public final class PathPasteboard extends Collection<Path> implements Pasteboard
 
     private Session session;
 
-    public PathPasteboard(Session session) {
+    protected PathPasteboard(final Session session) {
         this.session = session;
     }
 

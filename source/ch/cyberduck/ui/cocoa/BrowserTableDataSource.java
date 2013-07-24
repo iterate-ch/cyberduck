@@ -27,6 +27,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
+import ch.cyberduck.core.transfer.copy.CopyTransfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
@@ -174,8 +175,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     protected void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {
-        if(log.isTraceEnabled()) {
-            log.trace("setObjectValueForItem:" + item.getAbsolute());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set new value %s for item %s", value, item));
         }
         if(identifier.equals(FILENAME_COLUMN)) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
@@ -288,7 +289,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      */
     @Override
     public NSUInteger draggingSourceOperationMaskForLocal(boolean local) {
-        log.debug("draggingSourceOperationMaskForLocal:" + local);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Request dragging source operation mask for %s", local));
+        }
         if(local) {
             // Move or copy within the browser
             return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
@@ -304,7 +307,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * @return True if accepted
      */
     public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo info) {
-        log.debug("acceptDrop:" + destination);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Accept drop for destination %s", destination));
+        }
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             // Mount .webloc URLs dragged to browser window
@@ -335,7 +340,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
                 return false;
             }
-            List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
+            final List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
             for(PathPasteboard pasteboard : pasteboards) {
                 // A file dragged within the browser has been received
                 if(pasteboard.isEmpty()) {
@@ -345,12 +350,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         || !pasteboard.getSession().equals(controller.getSession())) {
                     // Drag to browser windows with different session or explicit copy requested by user.
                     final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard) {
-                        final Path copy = new Path(
-                                destination, next.getName(), next.attributes().getType());
-                        files.put(next, copy);
+                    for(Path file : pasteboard) {
+                        files.put(file, new Path(destination, file.getName(), file.attributes().getType()));
                     }
-                    controller.duplicatePaths(files, pasteboard.getSession().equals(controller.getSession()));
+                    controller.transfer(new CopyTransfer(pasteboard.getSession(), controller.getSession(), files));
                 }
                 else {
                     // The file should be renamed
@@ -377,6 +380,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * @return Drag operation
      */
     public NSUInteger validateDrop(NSTableView view, Path destination, NSInteger row, NSDraggingInfo info) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Validate drop for destination %s", destination));
+        }
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             // Dragging URLs to mount new session
             NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
@@ -416,7 +422,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 return NSDraggingInfo.NSDragOperationCopy;
             }
             // Files dragged from browser
-            for(Path next : PathPasteboardFactory.getPasteboard(controller.getSession())) {
+            for(Path next : controller.getPasteboard()) {
                 if(destination.equals(next)) {
                     // Do not allow dragging onto myself
                     return NSDraggingInfo.NSDragOperationNone;
@@ -432,7 +438,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             log.debug("Operation Mask:" + info.draggingSourceOperationMask().intValue());
             this.setDropRowAndDropOperation(view, destination, row);
-            List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
+            final List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
             for(PathPasteboard pasteboard : pasteboards) {
                 if(pasteboard.isEmpty()) {
                     continue;
@@ -476,7 +482,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
                 final NSMutableArray fileTypes = NSMutableArray.array();
-                final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(controller.getSession());
+                final PathPasteboard pasteboard = controller.getPasteboard();
                 for(int i = 0; i < items.count().intValue(); i++) {
                     final Path path = controller.lookup(new NSObjectPathReference(items.objectAtIndex(new NSUInteger(i))));
                     if(null == path) {
@@ -523,7 +529,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     @Override
     public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
         log.trace("draggedImage_endedAt_operation:" + operation);
-        final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(controller.getSession());
+        final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             controller.deletePaths(pasteboard);
         }
@@ -548,7 +554,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != url) {
             final Local destination = LocalFactory.createLocal(url.path());
-            final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(controller.getSession());
+            final PathPasteboard pasteboard = controller.getPasteboard();
             for(Path p : pasteboard) {
                 final Local local = LocalFactory.createLocal(destination, p.getName());
                 p.setLocal(local);
