@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.shared;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -17,6 +17,10 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;

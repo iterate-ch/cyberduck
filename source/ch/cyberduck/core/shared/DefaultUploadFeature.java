@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.shared;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -18,6 +18,10 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -34,7 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultUploadFeature implements Upload {
 

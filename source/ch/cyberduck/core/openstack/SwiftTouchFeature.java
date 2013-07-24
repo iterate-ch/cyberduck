@@ -1,10 +1,10 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.DefaultTouchFeature;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftTouchFeature extends DefaultTouchFeature {
 
