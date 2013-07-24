@@ -8,6 +8,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.features.Cname;
+import ch.cyberduck.core.cdn.features.Index;
+import ch.cyberduck.core.cdn.features.Logging;
+import ch.cyberduck.core.cdn.features.Purge;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.junit.Test;
@@ -82,6 +87,26 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.WEBSITE);
         assertEquals("The specified bucket does not have a website configuration", distribution.getStatus());
+    }
+
+
+    @Test
+    public void testFeatures() {
+        final CloudFrontDistributionConfiguration d = new WebsiteCloudFrontDistributionConfiguration(
+                new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname())), new DisabledLoginController()
+        );
+        assertNotNull(d.getFeature(Purge.class, Distribution.DOWNLOAD, new DisabledLoginController()));
+        assertNotNull(d.getFeature(Purge.class, Distribution.WEBSITE_CDN, new DisabledLoginController()));
+        assertNull(d.getFeature(Purge.class, Distribution.STREAMING, new DisabledLoginController()));
+        assertNull(d.getFeature(Purge.class, Distribution.WEBSITE, new DisabledLoginController()));
+        assertNotNull(d.getFeature(Index.class, Distribution.DOWNLOAD, new DisabledLoginController()));
+        assertNotNull(d.getFeature(Index.class, Distribution.WEBSITE_CDN, new DisabledLoginController()));
+        assertNotNull(d.getFeature(Index.class, Distribution.WEBSITE, new DisabledLoginController()));
+        assertNull(d.getFeature(Index.class, Distribution.STREAMING, new DisabledLoginController()));
+        assertNotNull(d.getFeature(Logging.class, Distribution.DOWNLOAD, new DisabledLoginController()));
+        assertNotNull(d.getFeature(Cname.class, Distribution.DOWNLOAD, new DisabledLoginController()));
+        assertNotNull(d.getFeature(Cname.class, Distribution.WEBSITE, new DisabledLoginController()));
+        assertNotNull(d.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD, new DisabledLoginController()));
     }
 }
 
