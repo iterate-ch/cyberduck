@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
@@ -382,33 +381,6 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
     }
 
     /**
-     * @param other Session instance
-     * @return true if the other session denotes the same hostname and protocol
-     */
-    @Override
-    public boolean equals(Object other) {
-        if(null == other) {
-            return false;
-        }
-        if(other instanceof Session) {
-            return host.getHostname().equals(((Session) other).getHost().getHostname())
-                    && host.getProtocol().equals(((Session) other).getHost().getProtocol());
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = host.getHostname() != null ? host.getHostname().hashCode() : 0;
-        result = 31 * result + (host.getProtocol() != null ? host.getProtocol().hashCode() : 0);
-        return result;
-    }
-
-    public String toString() {
-        return String.format("Session %s", host);
-    }
-
-    /**
      * URL pointing to the resource using the protocol of the current session.
      *
      * @return Null if there is a encoding failure
@@ -517,7 +489,7 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
             try {
                 in = file.getLocal().getInputStream();
                 out = write(file, status);
-                this.upload(out, in, throttle, listener, status);
+                new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, -1);
             }
             finally {
                 IOUtils.closeQuietly(in);
@@ -527,21 +499,6 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
         }
-    }
-
-    /**
-     * @param out      Remote stream
-     * @param in       Local stream
-     * @param throttle The bandwidth limit
-     * @param listener Listener for bytes sent
-     * @param status   Transfer status
-     * @throws java.io.IOException Write not completed due to a I/O problem
-     */
-    public void upload(final OutputStream out, final InputStream in,
-                       final BandwidthThrottle throttle,
-                       final StreamListener listener,
-                       final TransferStatus status) throws IOException, ConnectionCanceledException {
-        new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, -1);
     }
 
     @Override

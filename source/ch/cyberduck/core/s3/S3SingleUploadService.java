@@ -27,7 +27,9 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -89,7 +91,7 @@ public class S3SingleUploadService {
             out = this.write(file, object, status.getLength() - status.getCurrent(),
                     Collections.<String, String>emptyMap());
             try {
-                session.upload(out, in, throttle, listener, status);
+                new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, -1);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
