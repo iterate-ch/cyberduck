@@ -902,8 +902,6 @@ public class InfoController extends ToolbarWindowController {
     public void setAclAddButton(NSPopUpButton b) {
         this.aclAddButton = b;
         this.aclAddButton.setTarget(this.id());
-        this.aclAddButton.addItemWithTitle(StringUtils.EMPTY);
-        this.aclAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
     }
 
     public void aclAddButtonClicked(NSMenuItem sender) {
@@ -1851,12 +1849,8 @@ public class InfoController extends ToolbarWindowController {
             this.background(new WorkerBackgroundAction<Long>(controller, new ReadSizeWorker(files) {
                 @Override
                 public void cleanup(final Long size) {
-                    try {
-                        updateSize(size);
-                    }
-                    finally {
-                        toggleSizeSettings(true);
-                    }
+                    updateSize(size);
+                    toggleSizeSettings(true);
                 }
             }));
         }
@@ -2174,16 +2168,12 @@ public class InfoController extends ToolbarWindowController {
                     controller.getSession().getFeature(Headers.class, prompt), files) {
                 @Override
                 public void cleanup(final Map<String, String> updated) {
-                    try {
-                        List<Header> m = new ArrayList<Header>();
-                        for(Map.Entry<String, String> key : updated.entrySet()) {
-                            m.add(new Header(key.getKey(), key.getValue()));
-                        }
-                        setMetadata(m);
+                    List<Header> m = new ArrayList<Header>();
+                    for(Map.Entry<String, String> key : updated.entrySet()) {
+                        m.add(new Header(key.getKey(), key.getValue()));
                     }
-                    finally {
-                        toggleMetadataSettings(true);
-                    }
+                    setMetadata(m);
+                    toggleMetadataSettings(true);
                 }
             }));
         }
@@ -2198,6 +2188,8 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleAclSettings(false)) {
             final AclPermission feature = controller.getSession().getFeature(AclPermission.class, prompt);
             aclAddButton.removeAllItems();
+            this.aclAddButton.addItemWithTitle(StringUtils.EMPTY);
+            this.aclAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
             for(Acl.User user : feature.getAvailableAclUsers()) {
                 this.aclAddButton.addItemWithTitle(user.getPlaceholder());
                 this.aclAddButton.lastItem().setAction(Foundation.selector("aclAddButtonClicked:"));
@@ -2564,114 +2556,110 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     super.cleanup();
-                    try {
-                        final Path container = containerService.getContainer(getSelected());
-                        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
-                        distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                cdn.getName(distribution.getMethod())));
-                        distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
-                        distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                    final Path container = containerService.getContainer(getSelected());
+                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
+                    distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                            cdn.getName(distribution.getMethod())));
+                    distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
+                    distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
 
-                        distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
-                        final List<Path> containers = distribution.getContainers();
-                        for(Path c : containers) {
-                            // Populate with list of available logging targets
-                            distributionLoggingPopup.addItemWithTitle(c.getName());
-                            distributionLoggingPopup.lastItem().setRepresentedObject(c.getName());
+                    distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
+                    final List<Path> containers = distribution.getContainers();
+                    for(Path c : containers) {
+                        // Populate with list of available logging targets
+                        distributionLoggingPopup.addItemWithTitle(c.getName());
+                        distributionLoggingPopup.lastItem().setRepresentedObject(c.getName());
+                    }
+                    if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
+                        // Select configured logging container if any
+                        distributionLoggingPopup.selectItemWithTitle(distribution.getLoggingTarget());
+                    }
+                    else {
+                        if(distributionLoggingPopup.itemWithTitle(container.getName()) != null) {
+                            distributionLoggingPopup.selectItemWithTitle(container.getName());
                         }
-                        if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
-                            // Select configured logging container if any
-                            distributionLoggingPopup.selectItemWithTitle(distribution.getLoggingTarget());
+                    }
+                    if(null == distributionLoggingPopup.selectedItem()) {
+                        distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
+                    }
+                    final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method, prompt);
+                    final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method, prompt);
+                    if(analyticsFeature != null && identityFeature != null) {
+                        final Credentials credentials = identityFeature.getUserCredentials(analyticsFeature.getName());
+                        distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(credentials != null) {
+                            distributionAnalyticsSetupUrlField.setAttributedStringValue(
+                                    HyperlinkAttributedStringFactory.create(analyticsFeature.getSetup(cdn.getProtocol(),
+                                            distribution.getMethod().getScheme(), container.getName(), credentials)));
+                        }
+                    }
+
+                    distributionOriginField.setAttributedStringValue(
+                            HyperlinkAttributedStringFactory.create(distribution.getOrigin(getSelected())));
+
+                    final Path file = getSelected();
+                    // Concatenate URLs
+                    if(numberOfFiles() > 1) {
+                        distributionUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                        distributionUrlField.setToolTip(StringUtils.EMPTY);
+                        distributionCnameUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                    }
+                    else {
+                        final String url = distribution.getURL(file);
+                        if(StringUtils.isNotBlank(url)) {
+                            distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
+                            distributionUrlField.setToolTip(Locale.localizedString("CDN URL"));
                         }
                         else {
-                            if(distributionLoggingPopup.itemWithTitle(container.getName()) != null) {
-                                distributionLoggingPopup.selectItemWithTitle(container.getName());
-                            }
-                        }
-                        if(null == distributionLoggingPopup.selectedItem()) {
-                            distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
-                        }
-                        final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method, prompt);
-                        final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method, prompt);
-                        if(analyticsFeature != null && identityFeature != null) {
-                            final Credentials credentials = identityFeature.getUserCredentials(analyticsFeature.getName());
-                            distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
-                            if(credentials != null) {
-                                distributionAnalyticsSetupUrlField.setAttributedStringValue(
-                                        HyperlinkAttributedStringFactory.create(analyticsFeature.getSetup(cdn.getProtocol(),
-                                                distribution.getMethod().getScheme(), container.getName(), credentials)));
-                            }
-                        }
-
-                        distributionOriginField.setAttributedStringValue(
-                                HyperlinkAttributedStringFactory.create(distribution.getOrigin(getSelected())));
-
-                        final Path file = getSelected();
-                        // Concatenate URLs
-                        if(numberOfFiles() > 1) {
-                            distributionUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                            distributionUrlField.setStringValue(Locale.localizedString("None"));
                             distributionUrlField.setToolTip(StringUtils.EMPTY);
-                            distributionCnameUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                         }
-                        else {
-                            final String url = distribution.getURL(file);
-                            if(StringUtils.isNotBlank(url)) {
-                                distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
-                                distributionUrlField.setToolTip(Locale.localizedString("CDN URL"));
-                            }
-                            else {
-                                distributionUrlField.setStringValue(Locale.localizedString("None"));
-                                distributionUrlField.setToolTip(StringUtils.EMPTY);
-                            }
-                        }
-                        final String[] cnames = distribution.getCNAMEs();
-                        if(0 == cnames.length) {
-                            distributionCnameField.setStringValue(StringUtils.EMPTY);
-                            distributionCnameUrlField.setStringValue(StringUtils.EMPTY);
-                            distributionCnameUrlField.setToolTip(StringUtils.EMPTY);
-                        }
-                        else {
-                            distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                            for(DescriptiveUrl url : distribution.getCnameURL(file)) {
-                                distributionCnameUrlField.setAttributedStringValue(
-                                        HyperlinkAttributedStringFactory.create(url.getUrl())
-                                );
-                                distributionCnameUrlField.setToolTip(Locale.localizedString("CDN URL"));
-                                // We only support one CNAME URL to be displayed
-                                break;
-                            }
-                        }
-                        if(cdn.getFeature(Index.class, distribution.getMethod(), prompt) != null) {
-                            for(Path next : rootDocuments) {
-                                if(next.attributes().isFile()) {
-                                    distributionDefaultRootPopup.addItemWithTitle(next.getName());
-                                    distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
-                                }
-                            }
-                        }
-                        if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
-                            if(null == distributionDefaultRootPopup.itemWithTitle(distribution.getIndexDocument())) {
-                                distributionDefaultRootPopup.addItemWithTitle(distribution.getIndexDocument());
-                            }
-                            distributionDefaultRootPopup.selectItemWithTitle(distribution.getIndexDocument());
-                        }
-                        else {
-                            distributionDefaultRootPopup.selectItemWithTitle(Locale.localizedString("None"));
-                        }
-                        StringBuilder tooltip = new StringBuilder();
-                        for(Iterator<Path> iter = files.iterator(); iter.hasNext(); ) {
-                            Path f = iter.next();
-                            tooltip.append(f.getAbsolute());
-                            if(iter.hasNext()) {
-                                tooltip.append("\n");
-                            }
-                        }
-                        distributionInvalidateObjectsButton.setToolTip(tooltip.toString());
-                        distributionInvalidationStatusField.setStringValue(distribution.getInvalidationStatus());
                     }
-                    finally {
-                        toggleDistributionSettings(true);
+                    final String[] cnames = distribution.getCNAMEs();
+                    if(0 == cnames.length) {
+                        distributionCnameField.setStringValue(StringUtils.EMPTY);
+                        distributionCnameUrlField.setStringValue(StringUtils.EMPTY);
+                        distributionCnameUrlField.setToolTip(StringUtils.EMPTY);
                     }
+                    else {
+                        distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
+                        for(DescriptiveUrl url : distribution.getCnameURL(file)) {
+                            distributionCnameUrlField.setAttributedStringValue(
+                                    HyperlinkAttributedStringFactory.create(url.getUrl())
+                            );
+                            distributionCnameUrlField.setToolTip(Locale.localizedString("CDN URL"));
+                            // We only support one CNAME URL to be displayed
+                            break;
+                        }
+                    }
+                    if(cdn.getFeature(Index.class, distribution.getMethod(), prompt) != null) {
+                        for(Path next : rootDocuments) {
+                            if(next.attributes().isFile()) {
+                                distributionDefaultRootPopup.addItemWithTitle(next.getName());
+                                distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
+                            }
+                        }
+                    }
+                    if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
+                        if(null == distributionDefaultRootPopup.itemWithTitle(distribution.getIndexDocument())) {
+                            distributionDefaultRootPopup.addItemWithTitle(distribution.getIndexDocument());
+                        }
+                        distributionDefaultRootPopup.selectItemWithTitle(distribution.getIndexDocument());
+                    }
+                    else {
+                        distributionDefaultRootPopup.selectItemWithTitle(Locale.localizedString("None"));
+                    }
+                    StringBuilder tooltip = new StringBuilder();
+                    for(Iterator<Path> iter = files.iterator(); iter.hasNext(); ) {
+                        Path f = iter.next();
+                        tooltip.append(f.getAbsolute());
+                        if(iter.hasNext()) {
+                            tooltip.append("\n");
+                        }
+                    }
+                    distributionInvalidateObjectsButton.setToolTip(tooltip.toString());
+                    distributionInvalidationStatusField.setStringValue(distribution.getInvalidationStatus());
+                    toggleDistributionSettings(true);
                 }
 
                 @Override
