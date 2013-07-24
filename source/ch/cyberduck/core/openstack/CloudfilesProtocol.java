@@ -91,6 +91,11 @@ public final class CloudfilesProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getUsernamePlaceholder() {
+        return Locale.localizedString("Username", "Credentials");
+    }
+
+    @Override
     public String getPasswordPlaceholder() {
         return Locale.localizedString("API Access Key", "Mosso");
     }

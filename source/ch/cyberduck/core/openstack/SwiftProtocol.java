@@ -62,11 +62,6 @@ public final class SwiftProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String getPasswordPlaceholder() {
-        return Locale.localizedString("API Access Key", "Mosso");
-    }
-
-    @Override
     public SwiftSession createSession(final Host host) {
         return new SwiftSession(host);
     }
