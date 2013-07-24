@@ -18,14 +18,9 @@ import static org.junit.Assert.assertNotNull;
  */
 public class ProfilePlistReaderTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        ProfilePlistReader.register();
-    }
-
     @Test
     public void testDeserialize() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
+        final Profile profile = new ProfilePlistReader().read(
                 LocalFactory.createLocal("test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile")
         );
         assertFalse(profile.isEnabled());
@@ -39,7 +34,7 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
                 return file.getName().endsWith(".cyberduckprofile");
             }
         })) {
-            final Profile profile = ProfileReaderFactory.get().read(l);
+            final Profile profile = new ProfilePlistReader().read(l);
             assertNotNull(profile);
         }
     }

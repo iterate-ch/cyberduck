@@ -19,22 +19,24 @@ import static org.junit.Assert.assertNull;
  */
 public class HostPlistReaderTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        HostPlistReader.register();
-    }
-
     @Test
     public void testDeserializeDeprecatedProtocol() throws Exception {
         assertNull(HostReaderFactory.get().read(LocalFactory.createLocal("test")));
-        assertEquals(Protocol.FTP, HostReaderFactory.get().read(
+        assertEquals(Protocol.FTP, new HostPlistReader().read(
                 LocalFactory.createLocal("test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck")).getProtocol());
     }
 
     @Test
     public void testRead() throws Exception {
         PlistReader reader = new HostPlistReader();
-        final Serializable read = reader.read(new FinderLocal("bookmarks/mirror.switch.ch – FTP.duck"));
+        final Serializable read = reader.read(new FinderLocal("bookmarks/s3.amazonaws.com – S3.duck"));
         assertNotNull(read);
+    }
+
+    @Test
+    public void testReadNotFound() throws Exception {
+        PlistReader reader = new HostPlistReader();
+        final Serializable read = reader.read(new FinderLocal("notfound.duck"));
+        assertNull(read);
     }
 }
