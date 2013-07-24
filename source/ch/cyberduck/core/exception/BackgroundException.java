@@ -21,6 +21,9 @@ package ch.cyberduck.core.exception;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.commons.lang.StringUtils;
+
+import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -30,7 +33,6 @@ import java.net.UnknownHostException;
  * @version $Id$
  */
 public class BackgroundException extends Exception {
-
     private static final long serialVersionUID = -6114495291207129418L;
 
     private String message = Locale.localizedString("Unknown");
@@ -80,11 +82,6 @@ public class BackgroundException extends Exception {
         return detail;
     }
 
-    @Deprecated
-    public String getDetailedCauseMessage() {
-        return this.getDetail();
-    }
-
     /**
      * @return What kind of error
      */
@@ -102,11 +99,6 @@ public class BackgroundException extends Exception {
         return Locale.localizedString("Error");
     }
 
-    @Deprecated
-    public String getReadableTitle() {
-        return this.getTitle();
-    }
-
     /**
      * @return The path accessed when the exception was thrown or null if
      *         the exception is not related to any path
@@ -117,6 +109,9 @@ public class BackgroundException extends Exception {
 
     public boolean isNetworkFailure() {
         final Throwable cause = this.getCause();
+        if(cause instanceof SSLException) {
+            return StringUtils.contains(cause.getMessage(), "Received close_notify during handshake");
+        }
         return cause instanceof SocketException
                 || cause instanceof SocketTimeoutException
                 || cause instanceof UnknownHostException;
