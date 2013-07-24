@@ -39,8 +39,8 @@ public class PathAttributesTest extends AbstractTestCase {
     @Test
     public void testPermissions() throws Exception {
         PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
-        assertNotNull(attributes.getOwner());
-        assertNotNull(attributes.getGroup());
+        assertNull(attributes.getOwner());
+        assertNull(attributes.getGroup());
         assertNotNull(attributes.getPermission());
         assertEquals(Permission.EMPTY, attributes.getPermission());
         assertEquals(Acl.EMPTY, attributes.getAcl());
