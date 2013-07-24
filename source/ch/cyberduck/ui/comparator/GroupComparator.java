@@ -21,6 +21,8 @@ package ch.cyberduck.ui.comparator;
 
 import ch.cyberduck.core.Path;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @version $Id$
  */
@@ -33,6 +35,9 @@ public class GroupComparator extends BrowserComparator {
 
     @Override
     protected int compareFirst(Path p1, Path p2) {
+        if(StringUtils.isBlank(p1.attributes().getGroup()) || StringUtils.isBlank(p2.attributes().getGroup())) {
+            return 0;
+        }
         if(ascending) {
             return p1.attributes().getGroup().compareToIgnoreCase(p2.attributes().getGroup());
         }
