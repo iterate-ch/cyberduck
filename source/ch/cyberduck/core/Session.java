@@ -455,18 +455,25 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
         }
     }
 
+    /**
+     * @param file   File
+     * @param region Location
+     */
     public abstract void mkdir(Path file, String region) throws BackgroundException;
 
+    /**
+     * @param file     Directory
+     * @param listener Callback
+     */
     public abstract AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
 
     /**
-     * @param renamed Must be an absolute path
+     * @param file    Origin
+     * @param renamed New location
      */
     public abstract void rename(Path file, Path renamed) throws BackgroundException;
 
     /**
-     * Remove this file from the remote host. Does not affect any corresponding local file
-     *
      * @param prompt Login prompt for multi factor authentication
      */
     public void delete(Path file, final LoginController prompt) throws BackgroundException {
