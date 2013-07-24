@@ -19,6 +19,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
@@ -29,7 +30,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
  */
 public class DefaultTouchFeature implements Touch {
 
-    private Session session;
+    private Session<?> session;
 
     public DefaultTouchFeature(final Session session) {
         this.session = session;
@@ -42,7 +43,8 @@ public class DefaultTouchFeature implements Touch {
         file.setLocal(temp);
         final TransferStatus status = new TransferStatus();
         try {
-            session.upload(file, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+            session.getFeature(Upload.class, new DisabledLoginController()).upload(file,
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                     new AbstractStreamListener(), status);
         }
         finally {

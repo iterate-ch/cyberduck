@@ -25,6 +25,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.i18n.Locale;
@@ -192,7 +193,7 @@ public class UploadTransfer extends Transfer {
                         file.getName(), UUID.randomUUID().toString()));
             }
             // Transfer
-            session.upload(file, bandwidth, new AbstractStreamListener() {
+            session.getFeature(Upload.class, new DisabledLoginController()).upload(file, bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     addTransferred(bytes);

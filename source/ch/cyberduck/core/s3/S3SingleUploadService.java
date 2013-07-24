@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
@@ -54,7 +55,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class S3SingleUploadService {
+public class S3SingleUploadService implements Upload {
     private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
 
     private S3Session session;
@@ -65,6 +66,7 @@ public class S3SingleUploadService {
         this.session = session;
     }
 
+    @Override
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         InputStream in = null;

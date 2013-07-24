@@ -37,17 +37,15 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -181,12 +179,6 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
-                       final TransferStatus status) throws BackgroundException {
-        new S3SingleUploadService(this).upload(file, throttle, listener, status);
-    }
-
-    @Override
     public void mkdir(final Path file, final String region) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final GoogleStorageBucketCreateService service = new GoogleStorageBucketCreateService(this);
@@ -297,6 +289,9 @@ public class GoogleStorageSession extends S3Session {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Upload.class) {
+            return (T) new S3SingleUploadService(this);
+        }
         if(type == Delete.class) {
             return (T) new S3DefaultDeleteFeature(this);
         }

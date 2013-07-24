@@ -84,6 +84,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
         this.session = session;
     }
 
+    @Override
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         try {

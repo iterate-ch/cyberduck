@@ -27,19 +27,10 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.ThrottledOutputStream;
-import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -481,26 +472,6 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
         this.getFeature(Delete.class, prompt).delete(Collections.singletonList(file));
     }
 
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
-                       final TransferStatus status) throws BackgroundException {
-        try {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = file.getLocal().getInputStream();
-                out = write(file, status);
-                new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, -1);
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
-        }
-    }
-
     @Override
     public boolean isResumable() {
         return true;
@@ -512,6 +483,9 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
         }
         if(type == Write.class) {
             return (T) this;
+        }
+        if(type == Write.class) {
+            return (T) new DefaultUploadFeature(this);
         }
         if(type == Touch.class) {
             // Use login context of current session

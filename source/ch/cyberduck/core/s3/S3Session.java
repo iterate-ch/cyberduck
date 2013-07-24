@@ -30,8 +30,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang.StringUtils;
@@ -75,12 +73,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     private static final Logger log = Logger.getLogger(S3Session.class);
 
     private PathContainerService containerService = new PathContainerService();
-
-    /**
-     * Default size threshold for when to use multipart uploads.
-     */
-    private static final long DEFAULT_MULTIPART_UPLOAD_THRESHOLD =
-            Preferences.instance().getLong("s3.upload.multipart.threshold");
 
     public S3Session(Host h) {
         super(h);
@@ -500,20 +492,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public void upload(final Path file, final BandwidthThrottle throttle,
-                       final StreamListener listener, final TransferStatus status) throws BackgroundException {
-        if(file.attributes().isFile()) {
-            if(Preferences.instance().getBoolean("s3.upload.multipart")
-                    && status.getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
-                new S3MultipartUploadService(this).upload(file, throttle, listener, status);
-            }
-            else {
-                new S3SingleUploadService(this).upload(file, throttle, listener, status);
-            }
-        }
-    }
-
-    @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         return this.getFeature(Write.class, new DisabledLoginController()).write(file, status);
     }
@@ -585,8 +563,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
-        if(type == Write.class) {
-            return (T) new S3WriteFeature(this);
+        if(type == Upload.class) {
+            return (T) new S3ThresholdUploadService(this);
         }
         if(type == Delete.class) {
             if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
