@@ -28,7 +28,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledOutputStream;
-import ch.cyberduck.core.threading.NamedThreadFactory;
+import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -47,8 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
@@ -77,8 +75,8 @@ public class S3MultipartUploadService extends S3SingleUploadService {
      * At any point, at most
      * <tt>nThreads</tt> threads will be active processing tasks.
      */
-    private ExecutorService pool = Executors.newFixedThreadPool(
-            Preferences.instance().getInteger("s3.upload.multipart.concurency"), new NamedThreadFactory("multipart"));
+    private ThreadPool pool = new ThreadPool(
+            Preferences.instance().getInteger("s3.upload.multipart.concurency"));
 
 
     public S3MultipartUploadService(final S3Session session) {
@@ -216,11 +214,8 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                                              final BandwidthThrottle throttle, final StreamListener listener,
                                              final TransferStatus status, final MultipartUpload multipart,
                                              final int partNumber, final long offset, final long length) throws BackgroundException {
-        if(pool.isShutdown()) {
-            throw new ConnectionCanceledException();
-        }
         log.info(String.format("Submit part %d to queue", partNumber));
-        return pool.submit(new Callable<MultipartPart>() {
+        return pool.execute(new Callable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
                 final Map<String, String> requestParameters = new HashMap<String, String>();
@@ -230,7 +225,6 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                 InputStream in = null;
                 ResponseOutputStream<StorageObject> out = null;
                 try {
-                    log.warn("MD5 calculation disabled");
                     in = file.getLocal().getInputStream();
                     out = write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
                     new StreamCopier(status).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
