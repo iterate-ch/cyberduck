@@ -53,6 +53,8 @@ public class DAVCopyFeatureTest extends AbstractTestCase {
         new DAVCopyFeature(session).copy(test, copy);
         assertTrue(session.exists(test));
         assertTrue(session.exists(copy));
+        session.delete(test, new DisabledLoginController());
+        session.delete(copy, new DisabledLoginController());
         session.close();
     }
 }
