@@ -84,7 +84,8 @@ public class S3MultipartUploadService extends S3SingleUploadService {
         this.session = session;
     }
 
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) throws BackgroundException {
+    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+                       final TransferStatus status) throws BackgroundException {
         try {
             MultipartUpload multipart = null;
             if(status.isResume()) {
