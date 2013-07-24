@@ -42,19 +42,20 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
             return this.wrap(new SocketException(), buffer);
         }
         if(e instanceof SFTPException) {
-            if(((SFTPException) e).getServerErrorCode() == ErrorCodes.SSH_FX_NO_SUCH_FILE) {
+            final int code = ((SFTPException) e).getServerErrorCode();
+            if(code == ErrorCodes.SSH_FX_NO_SUCH_FILE) {
                 return new NotfoundException(buffer.toString(), e);
             }
-            if(((SFTPException) e).getServerErrorCode() == ErrorCodes.SSH_FX_NO_SUCH_PATH) {
+            if(code == ErrorCodes.SSH_FX_NO_SUCH_PATH) {
                 return new NotfoundException(buffer.toString(), e);
             }
-            if(((SFTPException) e).getServerErrorCode() == ErrorCodes.SSH_FX_INVALID_HANDLE) {
+            if(code == ErrorCodes.SSH_FX_INVALID_HANDLE) {
                 return new NotfoundException(buffer.toString(), e);
             }
-            if(((SFTPException) e).getServerErrorCode() == ErrorCodes.SSH_FX_NOT_A_DIRECTORY) {
+            if(code == ErrorCodes.SSH_FX_NOT_A_DIRECTORY) {
                 return new NotfoundException(buffer.toString(), e);
             }
-            if(((SFTPException) e).getServerErrorCode() == ErrorCodes.SSH_FX_QUOTA_EXCEEDED) {
+            if(code == ErrorCodes.SSH_FX_QUOTA_EXCEEDED) {
                 return new QuotaException(buffer.toString(), e);
             }
         }
