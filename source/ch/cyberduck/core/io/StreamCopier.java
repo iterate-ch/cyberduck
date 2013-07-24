@@ -37,6 +37,8 @@ public class StreamCopier {
 
     private TransferStatus status;
 
+    private Integer chunksize = Preferences.instance().getInteger("connection.chunksize");
+
     public StreamCopier(final TransferStatus status) {
         this.status = status;
     }
@@ -53,19 +55,9 @@ public class StreamCopier {
     public void transfer(final InputStream in, final long offset, final OutputStream out,
                          final StreamListener listener, final long limit) throws IOException, ConnectionCanceledException {
         final BufferedInputStream bi = new BufferedInputStream(in);
-        if(offset > 0) {
-            long skipped = bi.skip(offset);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skipping %d bytes", skipped));
-            }
-            if(skipped < status.getCurrent()) {
-                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
-                        skipped, status.getCurrent()));
-            }
-        }
+        this.skip(offset, bi);
         final BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
-            final int chunksize = Preferences.instance().getInteger("connection.chunksize");
             final byte[] chunk = new byte[chunksize];
             long bytesTransferred = 0;
             while(!status.isCanceled()) {
@@ -103,6 +95,19 @@ public class StreamCopier {
         }
         if(status.isCanceled()) {
             throw new ConnectionCanceledException();
+        }
+    }
+
+    private void skip(final long offset, final BufferedInputStream bi) throws IOException {
+        if(offset > 0) {
+            long skipped = bi.skip(offset);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Skipping %d bytes", skipped));
+            }
+            if(skipped < status.getCurrent()) {
+                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
+                        skipped, status.getCurrent()));
+            }
         }
     }
 }
