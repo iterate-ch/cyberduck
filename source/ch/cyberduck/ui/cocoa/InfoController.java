@@ -1655,8 +1655,6 @@ public class InfoController extends ToolbarWindowController {
             }
             this.updateField(pathField, path, TRUNCATE_MIDDLE_ATTRIBUTES);
             pathField.setToolTip(path);
-            groupField.setStringValue(count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
-                    file.attributes().getGroup());
             if(count > 1) {
                 kindField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                 checksumField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
@@ -1689,7 +1687,11 @@ public class InfoController extends ToolbarWindowController {
             }
             // Owner
             this.updateField(ownerField, count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
-                    file.attributes().getOwner(), TRUNCATE_MIDDLE_ATTRIBUTES);
+                    StringUtils.isBlank(file.attributes().getOwner()) ? Locale.localizedString("Unknown") : file.attributes().getOwner(),
+                    TRUNCATE_MIDDLE_ATTRIBUTES);
+            this.updateField(groupField, count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
+                    StringUtils.isBlank(file.attributes().getGroup()) ? Locale.localizedString("Unknown") : file.attributes().getGroup(),
+                    TRUNCATE_MIDDLE_ATTRIBUTES);
             // Icon
             if(count > 1) {
                 iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSMultipleDocuments", 32));

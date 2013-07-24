@@ -230,12 +230,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             if(identifier.equals(OWNER_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        item.attributes().getOwner(),
+                        StringUtils.isBlank(item.attributes().getOwner()) ? Locale.localizedString("Unknown") : item.attributes().getOwner(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(GROUP_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        item.attributes().getGroup(),
+                        StringUtils.isBlank(item.attributes().getGroup()) ? Locale.localizedString("Unknown") : item.attributes().getGroup(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(PERMISSIONS_COLUMN)) {

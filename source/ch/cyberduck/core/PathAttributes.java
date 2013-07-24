@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -281,14 +280,8 @@ public class PathAttributes extends Attributes implements Serializable {
         this.owner = o;
     }
 
-    /**
-     * @return The owner of the file or 'Unknown' if not set
-     */
     @Override
     public String getOwner() {
-        if(null == owner) {
-            return Locale.localizedString("Unknown");
-        }
         return owner;
     }
 
@@ -296,14 +289,8 @@ public class PathAttributes extends Attributes implements Serializable {
         this.group = g;
     }
 
-    /**
-     * @return Group owner of file
-     */
     @Override
     public String getGroup() {
-        if(null == group) {
-            return Locale.localizedString("Unknown");
-        }
         return group;
     }
 
