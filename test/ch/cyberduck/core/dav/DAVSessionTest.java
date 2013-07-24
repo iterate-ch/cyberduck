@@ -12,7 +12,6 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.Controller;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -190,29 +189,18 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/digest");
         final DAVSession session = new DAVSession(host);
-        LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginControllerFactory() {
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController() {
             @Override
-            protected LoginController create(final Controller c) {
-                return create();
-            }
-
-            @Override
-            protected LoginController create() {
-                return new DisabledLoginController() {
-                    @Override
-                    public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason,
-                                       final LoginOptions options) throws LoginCanceledException {
-                        assertEquals(host.getCredentials(), credentials);
-                        assertEquals("Login failed", title);
-                        assertEquals("Authorization Required.", reason);
-                        assertFalse(options.publickey);
-                        throw new LoginCanceledException();
-                    }
-                };
+            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason,
+                               final LoginOptions options) throws LoginCanceledException {
+                assertEquals(host.getCredentials(), credentials);
+                assertEquals("Login failed", title);
+                assertEquals("Authorization Required.", reason);
+                assertFalse(options.publickey);
+                throw new LoginCanceledException();
             }
         });
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
     @Test
