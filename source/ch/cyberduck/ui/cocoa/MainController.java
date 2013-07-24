@@ -1274,7 +1274,9 @@ public class MainController extends BundleController implements NSApplication.De
             nextreminder.setTimeInMillis(Preferences.instance().getLong("donate.reminder.date"));
             // Display donationPrompt every n days
             nextreminder.add(Calendar.DAY_OF_YEAR, Preferences.instance().getInteger("y"));
-            log.debug("Next reminder:" + nextreminder.getTime().toString());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Next reminder %s", nextreminder.getTime().toString()));
+            }
             // Display after upgrade
             if(nextreminder.getTime().after(new Date(System.currentTimeMillis()))) {
                 // Do not display if shown in the reminder interval
@@ -1334,6 +1336,7 @@ public class MainController extends BundleController implements NSApplication.De
                     app.replyToApplicationShouldTerminate(true);
                 }
             };
+            donationController.loadBundle();
             // Delay application termination. Dismissing the donation dialog will reply to quit.
             return NSApplication.NSTerminateLater;
         }
