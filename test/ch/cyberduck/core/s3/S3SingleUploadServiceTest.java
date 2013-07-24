@@ -1,6 +1,7 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.gstorage.GoogleStorageSession;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -84,5 +85,24 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         session.delete(test, new DisabledLoginController());
         session.close();
+    }
+
+
+    @Test(expected = NotfoundException.class)
+    public void testUploadInvalidContainer() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final S3SingleUploadService m = new S3SingleUploadService(session);
+        final Path container = new Path("nosuchcontainer.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
+        test.getLocal().touch();
+        final TransferStatus status = new TransferStatus();
+        m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
     }
 }

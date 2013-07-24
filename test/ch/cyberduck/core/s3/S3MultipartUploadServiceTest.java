@@ -9,6 +9,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.FinderLocal;
@@ -51,5 +52,21 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         session.delete(test, new DisabledLoginController());
         session.close();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testUploadInvalidContainer() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final S3MultipartUploadService m = new S3MultipartUploadService(session);
+        final Path container = new Path("nosuchcontainer.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final TransferStatus status = new TransferStatus();
+        m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
     }
 }
