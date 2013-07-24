@@ -59,8 +59,14 @@ public final class Queue {
     private List<Transfer> running
             = Collections.synchronizedList(new ArrayList<Transfer>());
 
+    private int size;
+
     public Queue() {
-        //
+        this(Preferences.instance().getInteger("queue.maxtransfers"));
+    }
+
+    public Queue(final int size) {
+        this.size = size;
     }
 
     /**
@@ -73,7 +79,7 @@ public final class Queue {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Add transfer %s", t));
         }
-        if(running.size() >= Preferences.instance().getInteger("queue.maxtransfers")) {
+        if(running.size() >= size) {
             listener.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Queuing transfer %s", t));
@@ -81,7 +87,7 @@ public final class Queue {
             for(Session s : t.getSessions()) {
                 growl.notify("Transfer queued", s.getHost().getHostname());
             }
-            while(running.size() >= Preferences.instance().getInteger("queue.maxtransfers")) {
+            while(running.size() >= size) {
                 // The maximum number of transfers is already reached
                 if(t.isCanceled()) {
                     break;
@@ -127,14 +133,14 @@ public final class Queue {
      */
     public void resize() {
         log.debug("resize");
-        int size = running.size();
-        while(size < Preferences.instance().getInteger("queue.maxtransfers")) {
+        int counter = running.size();
+        while(counter < size) {
             if(overflow.isEmpty()) {
                 log.debug("No more waiting transfers in queue");
                 break;
             }
             this.poll();
-            size++;
+            counter++;
         }
     }
 
