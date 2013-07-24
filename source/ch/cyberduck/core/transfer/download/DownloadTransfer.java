@@ -202,6 +202,7 @@ public class DownloadTransfer extends Transfer {
             session.message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                     file.getName()));
             local.getParent().mkdir();
+            // Transfer
             this.download(file, bandwidth, new AbstractStreamListener() {
                 // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
                 // overhead when transferring a large amount of files
@@ -239,7 +240,8 @@ public class DownloadTransfer extends Transfer {
             InputStream in = null;
             OutputStream out = null;
             try {
-                in = session.read(file, status);
+                final Read reader = session.getFeature(Read.class, new DisabledLoginController());
+                in = reader.read(file, status);
                 out = file.getLocal().getOutputStream(status.isResume());
                 new StreamCopier(status).transfer(new ThrottledInputStream(in, throttle), 0, out, listener, -1);
             }
