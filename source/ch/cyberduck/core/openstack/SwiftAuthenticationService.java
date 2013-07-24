@@ -33,6 +33,7 @@ import java.net.URI;
 
 import ch.iterate.openstack.swift.method.Authentication10UsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication11UsernameKeyRequest;
+import ch.iterate.openstack.swift.method.Authentication20AccessKeySecretKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20RAXUsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordRequest;
 import ch.iterate.openstack.swift.method.AuthenticationRequest;
@@ -115,6 +116,12 @@ public class SwiftAuthenticationService {
                 tenant = tenantCredentials.getUsername();
                 // Save tenant in username
                 credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
+            }
+            if(host.getHostname(true).endsWith("identity.hpcloudsvc.com")) {
+                return new Authentication20AccessKeySecretKeyRequest(
+                        URI.create(url.toString()),
+                        user, credentials.getPassword(), tenant
+                );
             }
             return new Authentication20UsernamePasswordRequest(
                     URI.create(url.toString()),

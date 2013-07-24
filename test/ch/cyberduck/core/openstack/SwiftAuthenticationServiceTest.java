@@ -18,6 +18,7 @@ import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.method.Authentication10UsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20AccessKeySecretKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20RAXUsernameKeyRequest;
+import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -62,6 +63,9 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
         assertEquals(Client.AuthVersion.v20,
                 s.getRequest(new Host(Protocol.SWIFT, "myhost", new Credentials("tenant:u", "P")),
                         new DisabledLoginController()).getVersion());
+        assertEquals(Authentication20UsernamePasswordRequest.class,
+                s.getRequest(new Host(Protocol.SWIFT, "myhost", new Credentials("tenant:u", "P")),
+                        new DisabledLoginController()).getClass());
     }
 
     @Test(expected = LoginCanceledException.class)
