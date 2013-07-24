@@ -21,12 +21,12 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.DefaultPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -61,11 +61,11 @@ public class DownloadController extends AlertController {
 
     public DownloadController(final WindowController parent, final String url) {
         super(parent, NSAlert.alert(
-                Locale.localizedString("New Download", "Download"),
-                Locale.localizedString("URL", "Download"),
-                Locale.localizedString("Download", "Download"),
+                LocaleFactory.localizedString("New Download", "Download"),
+                LocaleFactory.localizedString("URL", "Download"),
+                LocaleFactory.localizedString("Download", "Download"),
                 null,
-                Locale.localizedString("Cancel", "Download")
+                LocaleFactory.localizedString("Cancel", "Download")
         ), NSAlert.NSInformationalAlertStyle);
         this.url = url;
     }

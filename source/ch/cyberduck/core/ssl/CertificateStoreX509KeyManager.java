@@ -18,8 +18,8 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.CertificateStore;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -111,7 +111,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             final X509Certificate selected;
             try {
                 selected = certificateStore.choose(list.toArray(new String[list.size()]), hostname,
-                        MessageFormat.format(Locale.localizedString("Select the certificate to use when connecting to {0}."), hostname));
+                        MessageFormat.format(LocaleFactory.localizedString("Select the certificate to use when connecting to {0}."), hostname));
             }
             catch(ConnectionCanceledException e) {
                 if(log.isInfoEnabled()) {

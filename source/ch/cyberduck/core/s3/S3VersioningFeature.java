@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
@@ -26,7 +27,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import org.apache.log4j.Logger;
@@ -159,18 +159,18 @@ public class S3VersioningFeature implements Versioning {
                 Preferences.instance().getProperty("s3.mfa.serialnumber"), null, false) {
             @Override
             public String getUsernamePlaceholder() {
-                return Locale.localizedString("MFA Serial Number", "S3");
+                return LocaleFactory.localizedString("MFA Serial Number", "S3");
             }
 
             @Override
             public String getPasswordPlaceholder() {
-                return Locale.localizedString("MFA Authentication Code", "S3");
+                return LocaleFactory.localizedString("MFA Authentication Code", "S3");
             }
         };
         // Prompt for MFA credentials.
         controller.prompt(session.getHost().getProtocol(), credentials,
-                Locale.localizedString("Provide additional login credentials", "Credentials"),
-                Locale.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions());
+                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions());
 
         Preferences.instance().setProperty("s3.mfa.serialnumber", credentials.getUsername());
         return credentials;

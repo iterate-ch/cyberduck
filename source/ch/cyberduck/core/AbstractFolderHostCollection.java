@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 
@@ -51,7 +50,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public String getName() {
-        return Locale.localizedString(folder.getName());
+        return LocaleFactory.localizedString(folder.getName());
     }
 
     /**

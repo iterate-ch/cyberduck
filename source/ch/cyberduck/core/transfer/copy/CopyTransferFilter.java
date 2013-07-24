@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.copy;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
@@ -26,7 +27,6 @@ import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -89,7 +89,7 @@ public class CopyTransferFilter implements TransferPathFilter {
             final Timestamp timestamp = destination.getFeature(Timestamp.class, null);
             if(timestamp != null) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    listener.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
+                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
                             source.getName(), UserDateFormatterFactory.get().getShortFormat(source.attributes().getModificationDate())));
                     this.timestamp(source, timestamp);
                 }

@@ -18,11 +18,11 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.date.PeriodFormatter;
 import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -95,7 +95,7 @@ public class Speedometer {
 
     public String getProgress(final Long time, final Boolean running, final Long size, final Long transferred) {
         final StringBuilder b = new StringBuilder(
-                MessageFormat.format(Locale.localizedString("{0} of {1}"),
+                MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
                         sizeFormatter.format(transferred, running),
                         sizeFormatter.format(size))
         );

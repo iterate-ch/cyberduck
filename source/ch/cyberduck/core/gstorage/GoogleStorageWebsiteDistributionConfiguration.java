@@ -17,6 +17,7 @@ package ch.cyberduck.core.gstorage;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -28,7 +29,6 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -76,7 +76,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
                     configuration.isWebsiteConfigActive());
             // http://example-bucket.s3-website-us-east-1.amazonaws.com/
             distribution.setUrl(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()));
-            distribution.setStatus(Locale.localizedString("Deployed", "S3"));
+            distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
             distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
             return distribution;
         }
@@ -95,7 +95,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
 
     @Override
     public String getName() {
-        return Locale.localizedString("Website Configuration", "S3");
+        return LocaleFactory.localizedString("Website Configuration", "S3");
     }
 
     @Override

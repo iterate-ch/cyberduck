@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -26,7 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
@@ -108,7 +108,7 @@ public class S3SingleUploadService implements Upload {
         }
         final StorageObject part = out.getResponse();
         if(null != digest) {
-            session.message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
+            session.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
             // Obtain locally-calculated MD5 hash.
             final String hexMD5 = ServiceUtils.toHex(digest.digest());
             try {
@@ -149,7 +149,7 @@ public class S3SingleUploadService implements Upload {
         object.setContentType(new MappingMimeTypeService().getMime(file.getName()));
         if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
             session.message(MessageFormat.format(
-                    Locale.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
+                    LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
             object.setMd5Hash(ServiceUtils.fromHex(file.getLocal().attributes().getChecksum()));
         }
         // Storage class

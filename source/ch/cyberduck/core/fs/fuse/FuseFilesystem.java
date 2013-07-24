@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -34,7 +35,6 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -225,7 +225,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.warn(String.format("Mount failed with %s", notification));
             NSDictionary userInfo = notification.userInfo();
             NSError error = Rococoa.cast(userInfo.objectForKey(GMUserFileSystem.kGMUserFileSystemErrorKey), NSError.class);
-            log.error(Locale.localizedString("Mount failed", "Error"), null);
+            log.error(LocaleFactory.localizedString("Mount failed", "Error"), null);
         }
 
         public NSDictionary attributesOfFileSystemForPath_error(String path, long error) {
@@ -260,7 +260,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
                 @Override
                 public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                    return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
                             directory.getName());
                 }
             });

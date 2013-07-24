@@ -23,7 +23,6 @@ import ch.cyberduck.core.editor.WatchEditor;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
@@ -150,7 +149,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
                     @Override
                     public String getActivity() {
-                        return MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                        return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
                                 path.getName());
                     }
 
@@ -232,12 +231,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             if(identifier.equals(OWNER_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isBlank(item.attributes().getOwner()) ? Locale.localizedString("Unknown") : item.attributes().getOwner(),
+                        StringUtils.isBlank(item.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : item.attributes().getOwner(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(GROUP_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isBlank(item.attributes().getGroup()) ? Locale.localizedString("Unknown") : item.attributes().getGroup(),
+                        StringUtils.isBlank(item.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : item.attributes().getGroup(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(PERMISSIONS_COLUMN)) {
@@ -253,12 +252,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             if(identifier.equals(EXTENSION_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        item.attributes().isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : Locale.localizedString("None") : Locale.localizedString("None"),
+                        item.attributes().isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(REGION_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() : Locale.localizedString("Unknown"),
+                        StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() : LocaleFactory.localizedString("Unknown"),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));

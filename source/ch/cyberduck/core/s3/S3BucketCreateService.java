@@ -17,11 +17,11 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
@@ -41,7 +41,7 @@ public class S3BucketCreateService {
     public void create(final Path bucket, final String location) throws BackgroundException {
         // Create bucket
         if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
-            throw new BackgroundException(Locale.localizedString("Bucket name is not DNS compatible", "S3"));
+            throw new BackgroundException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
         }
         AccessControlList acl;
         if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {

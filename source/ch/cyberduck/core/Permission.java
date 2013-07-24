@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -69,7 +68,7 @@ public class Permission implements Serializable {
 
         @Override
         public String toString() {
-            return Locale.localizedString("--");
+            return LocaleFactory.localizedString("--");
         }
     };
 

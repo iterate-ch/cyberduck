@@ -19,10 +19,10 @@ package ch.cyberduck.core.transfer;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.ApplicationBadgeLabeler;
 import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
 import ch.cyberduck.ui.growl.Growl;
@@ -80,7 +80,7 @@ public final class Queue {
             log.debug(String.format("Add transfer %s", t));
         }
         if(running.size() >= size) {
-            listener.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
+            listener.message(LocaleFactory.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Queuing transfer %s", t));
             }

@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
-
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -34,7 +32,7 @@ public class DescriptiveUrl {
     private String help = StringUtils.EMPTY;
 
     public DescriptiveUrl(final String url) {
-        this(url, Locale.localizedString("Open in Web Browser"));
+        this(url, LocaleFactory.localizedString("Open in Web Browser"));
     }
 
     public DescriptiveUrl(final String url, final String help) {

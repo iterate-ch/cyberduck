@@ -19,10 +19,10 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.LocaleFactory;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractFileDescriptor implements FileDescriptor {
 
@@ -32,8 +32,8 @@ public abstract class AbstractFileDescriptor implements FileDescriptor {
             return this.getKind(file.getName());
         }
         if(file.attributes().isDirectory()) {
-            return Locale.localizedString("Folder");
+            return LocaleFactory.localizedString("Folder");
         }
-        return Locale.localizedString("Unknown");
+        return LocaleFactory.localizedString("Unknown");
     }
 }

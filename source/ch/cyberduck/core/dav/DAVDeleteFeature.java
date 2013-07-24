@@ -1,10 +1,10 @@
 package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -38,7 +38,7 @@ public class DAVDeleteFeature implements Delete {
             if(skip) {
                 continue;
             }
-            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+            session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             try {
                 session.getClient().delete(new DAVPathEncoder().encode(file));

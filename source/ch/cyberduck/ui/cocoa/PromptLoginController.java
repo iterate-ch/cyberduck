@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
@@ -27,7 +28,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -89,7 +89,7 @@ public final class PromptLoginController implements LoginController {
         );
         alert.setShowsHelp(true);
         alert.setShowsSuppressionButton(true);
-        alert.suppressionButton().setTitle(Locale.localizedString("Don't show again", "Credentials"));
+        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again", "Credentials"));
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
         site.append("/").append(protocol.getScheme().name());
@@ -165,7 +165,7 @@ public final class PromptLoginController implements LoginController {
 
             public void setTitleField(NSTextField titleField) {
                 this.titleField = titleField;
-                this.updateField(this.titleField, Locale.localizedString(title, "Credentials"));
+                this.updateField(this.titleField, LocaleFactory.localizedString(title, "Credentials"));
             }
 
             @Outlet
@@ -208,11 +208,11 @@ public final class PromptLoginController implements LoginController {
                         this.textField.setSelectable(true);
                     }
                     catch(URISyntaxException e) {
-                        this.updateField(this.textField, Locale.localizedString(reason, "Credentials"));
+                        this.updateField(this.textField, LocaleFactory.localizedString(reason, "Credentials"));
                     }
                 }
                 else {
-                    this.updateField(this.textField, Locale.localizedString(reason, "Credentials"));
+                    this.updateField(this.textField, LocaleFactory.localizedString(reason, "Credentials"));
                 }
             }
 
@@ -298,8 +298,8 @@ public final class PromptLoginController implements LoginController {
                     publicKeyPanel.setCanChooseDirectories(false);
                     publicKeyPanel.setCanChooseFiles(true);
                     publicKeyPanel.setAllowsMultipleSelection(false);
-                    publicKeyPanel.setMessage(Locale.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
-                    publicKeyPanel.setPrompt(Locale.localizedString("Choose"));
+                    publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+                    publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
                     publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
                             null, this.window(), this.id(),
                             Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
@@ -349,7 +349,7 @@ public final class PromptLoginController implements LoginController {
                 }
                 else {
                     this.pkCheckbox.setState(NSCell.NSOffState);
-                    this.pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+                    this.pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
                     this.pkLabel.setTextColor(NSColor.disabledControlTextColor());
                 }
             }

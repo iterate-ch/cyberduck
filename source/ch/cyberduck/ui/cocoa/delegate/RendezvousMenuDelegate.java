@@ -19,8 +19,8 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.RendezvousCollection;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -49,7 +49,7 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         if(collection.size() == 0) {
-            item.setTitle(Locale.localizedString("No Bonjour services available"));
+            item.setTitle(LocaleFactory.localizedString("No Bonjour services available"));
             item.setTarget(null);
             item.setAction(null);
             item.setImage(null);

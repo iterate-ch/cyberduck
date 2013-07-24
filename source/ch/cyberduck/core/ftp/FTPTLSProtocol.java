@@ -2,11 +2,11 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.i18n.Locale;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class FTPTLSProtocol extends AbstractProtocol {
     @Override
@@ -26,7 +26,7 @@ public final class FTPTLSProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return Locale.localizedString("FTP-SSL (Explicit AUTH TLS)");
+        return LocaleFactory.localizedString("FTP-SSL (Explicit AUTH TLS)");
     }
 
     @Override

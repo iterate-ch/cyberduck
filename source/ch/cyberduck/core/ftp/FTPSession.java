@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -220,10 +219,10 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
                 // Propose protocol change if AUTH TLS is available.
                 try {
                     prompt.warn(host.getProtocol(),
-                            MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
-                            MessageFormat.format(Locale.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"), Protocol.FTP_TLS.getName()),
-                            Locale.localizedString("Continue", "Credentials"),
-                            Locale.localizedString("Change", "Credentials"),
+                            MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+                            MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"), Protocol.FTP_TLS.getName()),
+                            LocaleFactory.localizedString("Continue", "Credentials"),
+                            LocaleFactory.localizedString("Change", "Credentials"),
                             "connection.unsecure." + host.getHostname());
                     // Continue choosen. Login using plain FTP.
                 }
@@ -382,7 +381,7 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
     @Override
     public void delete(final List<Path> files) throws BackgroundException {
         for(Path file : files) {
-            this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+            this.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             try {
                 if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {

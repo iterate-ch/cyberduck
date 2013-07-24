@@ -21,8 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -171,7 +169,7 @@ public class ConnectionController extends SheetController {
             }
             else {
                 pkCheckbox.setState(NSCell.NSOffState);
-                pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+                pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
             }
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 usernameField.setStringValue(credentials.getUsername());
@@ -368,7 +366,7 @@ public class ConnectionController extends SheetController {
 
     public void setPkLabel(NSTextField pkLabel) {
         this.pkLabel = pkLabel;
-        this.pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+        this.pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
         this.pkLabel.setTextColor(NSColor.disabledControlTextColor());
     }
 
@@ -434,8 +432,8 @@ public class ConnectionController extends SheetController {
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.setMessage(Locale.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
-            publicKeyPanel.setPrompt(Locale.localizedString("Choose"));
+            publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+            publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
             publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
                     null, this.window(), this.id(),
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
@@ -443,7 +441,7 @@ public class ConnectionController extends SheetController {
         else {
             passField.setEnabled(true);
             pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+            pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
             pkLabel.setTextColor(NSColor.disabledControlTextColor());
         }
     }
@@ -463,7 +461,7 @@ public class ConnectionController extends SheetController {
         if(NSPanel.NSCancelButton == returncode) {
             passField.setEnabled(true);
             pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+            pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
             pkLabel.setTextColor(NSColor.disabledControlTextColor());
         }
         publicKeyPanel = null;
@@ -494,8 +492,8 @@ public class ConnectionController extends SheetController {
     @Outlet
     private NSPopUpButton connectmodePopup;
 
-    private static final String CONNECTMODE_ACTIVE = Locale.localizedString("Active");
-    private static final String CONNECTMODE_PASSIVE = Locale.localizedString("Passive");
+    private static final String CONNECTMODE_ACTIVE = LocaleFactory.localizedString("Active");
+    private static final String CONNECTMODE_PASSIVE = LocaleFactory.localizedString("Passive");
 
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;

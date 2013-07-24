@@ -22,7 +22,6 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
@@ -179,7 +178,7 @@ public class CopyTransfer extends Transfer {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
         final Path copy = files.get(source);
-        session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+        session.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
         if(source.attributes().isFile()) {
             if(session.getHost().equals(destination.getHost())) {
@@ -209,7 +208,7 @@ public class CopyTransfer extends Transfer {
         }
         else {
             if(!status.isExists()) {
-                session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         copy.getName()));
                 destination.mkdir(copy, null);
             }
@@ -247,7 +246,7 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public String getName() {
-        return MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+        return MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
     }
 

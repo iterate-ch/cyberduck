@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -46,7 +46,7 @@ import java.util.Set;
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
     private static Logger log = Logger.getLogger(WindowController.class);
 
-    protected static final String DEFAULT = Locale.localizedString("Default");
+    protected static final String DEFAULT = LocaleFactory.localizedString("Default");
 
     public WindowController() {
         super();

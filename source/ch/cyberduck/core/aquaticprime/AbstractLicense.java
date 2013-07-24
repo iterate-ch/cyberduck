@@ -19,8 +19,8 @@ package ch.cyberduck.core.aquaticprime;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -79,6 +79,6 @@ public abstract class AbstractLicense implements License {
 
     @Override
     public String toString() {
-        return MessageFormat.format(Locale.localizedString("Registered to {0}", "License"), this.getName());
+        return MessageFormat.format(LocaleFactory.localizedString("Registered to {0}", "License"), this.getName());
     }
 }

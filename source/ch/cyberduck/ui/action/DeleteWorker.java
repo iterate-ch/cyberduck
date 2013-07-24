@@ -19,12 +19,12 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public abstract class DeleteWorker extends Worker<Void> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+        return MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                 this.toString(files));
     }
 }

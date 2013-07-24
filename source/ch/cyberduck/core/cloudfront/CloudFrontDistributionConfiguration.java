@@ -31,7 +31,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3BucketListService;
@@ -113,7 +112,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     if(new CloudFrontServiceExceptionMappingService().map(failure) instanceof LoginFailureException) {
                         try {
                             prompt.prompt(session.getHost().getProtocol(), session.getHost().getCredentials(),
-                                    Locale.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
+                                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
                         }
                         catch(LoginCanceledException e) {
                             throw new CloudFrontServiceException(e);
@@ -130,7 +129,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     @Override
     public String getName() {
-        return Locale.localizedString("Amazon CloudFront", "S3");
+        return LocaleFactory.localizedString("Amazon CloudFront", "S3");
     }
 
     @Override
@@ -158,7 +157,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
             @Override
             public String getDescription() {
-                return Locale.localizedString("Amazon CloudFront", "S3");
+                return LocaleFactory.localizedString("Amazon CloudFront", "S3");
             }
 
             @Override
@@ -392,12 +391,12 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 }
             }
             if(inprogress > 0) {
-                return MessageFormat.format(Locale.localizedString("{0} invalidations in progress", "S3"), inprogress);
+                return MessageFormat.format(LocaleFactory.localizedString("{0} invalidations in progress", "S3"), inprogress);
             }
             if(complete) {
-                return MessageFormat.format(Locale.localizedString("{0} invalidations completed", "S3"), summaries.size());
+                return MessageFormat.format(LocaleFactory.localizedString("{0} invalidations completed", "S3"), summaries.size());
             }
-            return Locale.localizedString("None");
+            return LocaleFactory.localizedString("None");
         }
         catch(CloudFrontServiceException e) {
             throw new CloudFrontServiceExceptionMappingService().map("Cannot read CDN configuration", e);
@@ -538,7 +537,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 ? String.format("https://%s%s", d.getDomainName(), method.getContext()) : null);
         distribution.setReference(distributionConfig.getCallerReference());
         distribution.setEtag(distributionConfig.getEtag());
-        distribution.setStatus(Locale.localizedString(d.getStatus(), "S3"));
+        distribution.setStatus(LocaleFactory.localizedString(d.getStatus(), "S3"));
         distribution.setCNAMEs(distributionConfig.getCNAMEs());
         distribution.setLogging(distributionConfig.getLoggingStatus().isEnabled());
         distribution.setLoggingContainer(loggingTarget);

@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,5 +53,26 @@ public abstract class LocaleFactory extends Factory<Locale> {
             l = factories.get(NATIVE_PLATFORM).create();
         }
         return l;
+    }
+
+    /**
+     * @param key English variant
+     * @return Localized from default table
+     */
+    public static String localizedString(final String key) {
+        return localizedString(key, "Localizable");
+    }
+
+    /**
+     * @param key   English variant
+     * @param table The identifier of the table to lookup the string in. Could be a file.
+     * @return Localized from table
+     */
+    public static String localizedString(final String key, final String table) {
+        final String lookup = get().localize(key, table);
+        if(StringUtils.contains(lookup, "{0}")) {
+            return StringUtils.replace(lookup, "'", "''");
+        }
+        return lookup;
     }
 }

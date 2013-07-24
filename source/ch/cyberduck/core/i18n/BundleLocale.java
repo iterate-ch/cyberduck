@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class BundleLocale extends Locale {
+public class BundleLocale implements Locale {
     private static Logger log = Logger.getLogger(BundleLocale.class);
 
     public static void register() {

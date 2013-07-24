@@ -17,12 +17,12 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -50,7 +50,7 @@ public class S3DefaultDeleteFeature implements Delete {
             if(containerService.isContainer(file)) {
                 continue;
             }
-            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+            session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             try {
                 try {
@@ -78,7 +78,7 @@ public class S3DefaultDeleteFeature implements Delete {
         }
         for(Path file : files) {
             if(containerService.isContainer(file)) {
-                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                         file.getName()));
                 // Finally delete bucket itself
                 try {

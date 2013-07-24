@@ -19,9 +19,9 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -38,7 +38,7 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return Locale.localizedString("Google Cloud Storage", "S3");
+        return LocaleFactory.localizedString("Google Cloud Storage", "S3");
     }
 
     @Override
@@ -90,12 +90,12 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
 
     @Override
     public String getUsernamePlaceholder() {
-        return Locale.localizedString("x-goog-project-id", "Credentials");
+        return LocaleFactory.localizedString("x-goog-project-id", "Credentials");
     }
 
     @Override
     public String getPasswordPlaceholder() {
-        return Locale.localizedString("Authorization code", "Credentials");
+        return LocaleFactory.localizedString("Authorization code", "Credentials");
     }
 
     @Override

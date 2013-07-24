@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.resources.IconCacheFactory;
@@ -38,11 +38,11 @@ public class DuplicateFileController extends FileController {
 
     public DuplicateFileController(final WindowController parent) {
         super(parent, NSAlert.alert(
-                Locale.localizedString("Duplicate File", "Duplicate"),
-                Locale.localizedString("Enter the name for the new file:", "Duplicate"),
-                Locale.localizedString("Duplicate", "Duplicate"),
+                LocaleFactory.localizedString("Duplicate File", "Duplicate"),
+                LocaleFactory.localizedString("Enter the name for the new file:", "Duplicate"),
+                LocaleFactory.localizedString("Duplicate", "Duplicate"),
                 null,
-                Locale.localizedString("Cancel", "Duplicate")
+                LocaleFactory.localizedString("Cancel", "Duplicate")
         ));
         alert.setIcon(IconCacheFactory.<NSImage>get().fileIcon(this.getSelected(), 64));
         final Path selected = this.getSelected();

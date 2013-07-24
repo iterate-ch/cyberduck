@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
@@ -55,11 +55,11 @@ public class FolderController extends FileController {
 
     public FolderController(final WindowController parent, final Set<String> regions) {
         super(parent, NSAlert.alert(
-                Locale.localizedString("Create new folder", "Folder"),
-                Locale.localizedString("Enter the name for the new folder:", "Folder"),
-                Locale.localizedString("Create", "Folder"),
+                LocaleFactory.localizedString("Create new folder", "Folder"),
+                LocaleFactory.localizedString("Enter the name for the new folder:", "Folder"),
+                LocaleFactory.localizedString("Create", "Folder"),
                 null,
-                Locale.localizedString("Cancel", "Folder")
+                LocaleFactory.localizedString("Cancel", "Folder")
         ));
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
         this.regions = regions;
@@ -71,8 +71,8 @@ public class FolderController extends FileController {
             // Override accessory view with location menu added
             this.loadBundle("Folder");
             for(String region : regions) {
-                regionPopup.addItemWithTitle(Locale.localizedString(region, "S3"));
-                regionPopup.itemWithTitle(Locale.localizedString(region, "S3")).setRepresentedObject(region);
+                regionPopup.addItemWithTitle(LocaleFactory.localizedString(region, "S3"));
+                regionPopup.itemWithTitle(LocaleFactory.localizedString(region, "S3")).setRepresentedObject(region);
             }
             super.setAccessoryView(view);
         }
@@ -107,7 +107,7 @@ public class FolderController extends FileController {
 
             @Override
             public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         folder.getName());
             }
 

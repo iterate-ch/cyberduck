@@ -19,8 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -153,7 +151,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
             Host host = services.values().toArray(new Host[services.size()])[index];
             return host.getNickname();
         }
-        return Locale.localizedString("Unknown");
+        return LocaleFactory.localizedString("Unknown");
     }
 
     /**
@@ -164,7 +162,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
     public String getDisplayedName(String identifier) {
         Host host = services.get(identifier);
         if(null == host) {
-            return Locale.localizedString("Unknown");
+            return LocaleFactory.localizedString("Unknown");
         }
         return host.getNickname();
     }

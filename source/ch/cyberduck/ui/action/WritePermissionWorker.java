@@ -20,12 +20,12 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -72,7 +72,7 @@ public abstract class WritePermissionWorker extends Worker<Void> {
     }
 
     protected void write(final Path file) throws BackgroundException {
-        session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+        session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                 file.getName(), permission));
         if(recursive && file.attributes().isFile()) {
             // Do not write executable bit for files if not already set when recursively updating directory.
@@ -107,7 +107,7 @@ public abstract class WritePermissionWorker extends Worker<Void> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+        return MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                 this.toString(files), permission);
     }
 }

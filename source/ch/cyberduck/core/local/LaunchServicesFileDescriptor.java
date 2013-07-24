@@ -18,7 +18,7 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.library.Native;
 
 import org.apache.commons.io.FilenameUtils;
@@ -53,13 +53,13 @@ public final class LaunchServicesFileDescriptor extends AbstractFileDescriptor {
         if(StringUtils.isBlank(FilenameUtils.getExtension(filename))) {
             final String kind = this.kind(filename);
             if(StringUtils.isBlank(kind)) {
-                return Locale.localizedString("Unknown");
+                return LocaleFactory.localizedString("Unknown");
             }
             return kind;
         }
         final String kind = this.kind(FilenameUtils.getExtension(filename));
         if(StringUtils.isBlank(kind)) {
-            return Locale.localizedString("Unknown");
+            return LocaleFactory.localizedString("Unknown");
         }
         return kind;
     }

@@ -18,7 +18,7 @@ package ch.cyberduck.core.exception;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -34,11 +34,11 @@ import java.net.UnknownHostException;
 public class BackgroundException extends Exception {
     private static final long serialVersionUID = -6114495291207129418L;
 
-    private String message = Locale.localizedString("Unknown");
+    private String message = LocaleFactory.localizedString("Unknown");
     private String detail;
 
     public BackgroundException() {
-        this(Locale.localizedString("Unknown"), null);
+        this(LocaleFactory.localizedString("Unknown"), null);
     }
 
     public BackgroundException(final Exception cause) {
@@ -60,7 +60,7 @@ public class BackgroundException extends Exception {
 
     @Override
     public String getMessage() {
-        return Locale.localizedString(message, "Error");
+        return LocaleFactory.localizedString(message, "Error");
     }
 
     /**
@@ -76,15 +76,15 @@ public class BackgroundException extends Exception {
     public String getTitle() {
         final Throwable cause = this.getCause();
         if(cause instanceof SocketException) {
-            return String.format("Network %s", Locale.localizedString("Error"));
+            return String.format("Network %s", LocaleFactory.localizedString("Error"));
         }
         if(cause instanceof UnknownHostException) {
-            return String.format("DNS %s", Locale.localizedString("Error"));
+            return String.format("DNS %s", LocaleFactory.localizedString("Error"));
         }
         if(cause instanceof IOException) {
-            return String.format("I/O %s", Locale.localizedString("Error"));
+            return String.format("I/O %s", LocaleFactory.localizedString("Error"));
         }
-        return Locale.localizedString("Error");
+        return LocaleFactory.localizedString("Error");
     }
 
     public boolean isNetworkFailure() {

@@ -19,13 +19,13 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -41,11 +41,11 @@ public class CreateFileController extends FileController {
 
     public CreateFileController(final WindowController parent) {
         super(parent, NSAlert.alert(
-                Locale.localizedString("Create new file", "File"),
-                Locale.localizedString("Enter the name for the new file:", "File"),
-                Locale.localizedString("Create", "File"),
-                EditorFactory.instance().getDefaultEditor() != null ? Locale.localizedString("Edit", "File") : null,
-                Locale.localizedString("Cancel", "File")
+                LocaleFactory.localizedString("Create new file", "File"),
+                LocaleFactory.localizedString("Enter the name for the new file:", "File"),
+                LocaleFactory.localizedString("Create", "File"),
+                EditorFactory.instance().getDefaultEditor() != null ? LocaleFactory.localizedString("Edit", "File") : null,
+                LocaleFactory.localizedString("Cancel", "File")
         ));
         alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(null, 64));
     }
@@ -80,7 +80,7 @@ public class CreateFileController extends FileController {
 
             @Override
             public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                         file.getName());
             }
 

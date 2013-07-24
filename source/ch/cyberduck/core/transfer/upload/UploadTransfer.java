@@ -20,6 +20,7 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -28,7 +29,6 @@ import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.Transfer;
@@ -184,7 +184,7 @@ public class UploadTransfer extends Transfer {
             status.setComplete();
         }
         else if(file.attributes().isFile()) {
-            session.message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+            session.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
             String original = file.getName();
             final boolean temporary = Preferences.instance().getBoolean("queue.upload.file.temporary");
@@ -208,7 +208,7 @@ public class UploadTransfer extends Transfer {
             }
         }
         else if(file.attributes().isDirectory()) {
-            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+            session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                     file.getName()));
             if(!status.isExists()) {
                 session.mkdir(file, null);

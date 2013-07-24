@@ -19,7 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -87,7 +86,7 @@ public class LoginConnectionService implements ConnectionService {
     public void connect(final Session session) throws BackgroundException {
         if(session.isConnected()) {
             try {
-                listener.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
                         session.getHost().getHostname()));
                 // Close the underlying socket first
                 session.interrupt();
@@ -101,7 +100,7 @@ public class LoginConnectionService implements ConnectionService {
         // Configuring proxy if any
         ProxyFactory.get().configure(bookmark);
 
-        listener.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"),
                 bookmark.getHostname()));
 
         // Try to resolve the hostname first
@@ -112,13 +111,13 @@ public class LoginConnectionService implements ConnectionService {
             throw new DefaultIOExceptionMappingService().map(e);
         }
 
-        listener.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
                 bookmark.getProtocol().getName(), bookmark.getHostname()));
 
         // The IP address could successfully be determined
         session.open(key);
 
-        listener.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
                 bookmark.getProtocol().getName()));
 
         // Update last accessed timestamp

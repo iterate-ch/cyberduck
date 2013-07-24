@@ -19,7 +19,7 @@ package ch.cyberduck.core.ssl;
 */
 
 import ch.cyberduck.core.CertificateStore;
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.log4j.Logger;
 
@@ -78,7 +78,7 @@ public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
         else {
             // The certificate has not been trusted
             throw new CertificateException(
-                    Locale.localizedString("No trusted certificate found", "Status"));
+                    LocaleFactory.localizedString("No trusted certificate found", "Status"));
         }
     }
 }

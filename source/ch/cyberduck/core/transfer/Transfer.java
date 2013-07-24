@@ -21,7 +21,6 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
@@ -293,7 +292,7 @@ public abstract class Transfer implements Serializable {
 
     public String getName() {
         if(roots.isEmpty()) {
-            return Locale.localizedString("None");
+            return LocaleFactory.localizedString("None");
         }
         final StringBuilder name = new StringBuilder();
         name.append(roots.get(0).getName());
@@ -467,7 +466,7 @@ public abstract class Transfer implements Serializable {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Accepted in %s transfer", file));
                 }
-                session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), file.getName()));
+                session.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
                 final TransferStatus status = filter.prepare(session, file, parent);
                 if(file.attributes().isDirectory()) {
                     // Call recursively for all children

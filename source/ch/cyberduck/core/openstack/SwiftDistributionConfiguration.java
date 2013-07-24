@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -30,7 +31,6 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 
@@ -106,7 +106,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                         method, info.isEnabled()
                 );
                 distribution.setId(info.getName());
-                distribution.setStatus(info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"));
+                distribution.setStatus(info.isEnabled() ? LocaleFactory.localizedString("CDN Enabled", "Mosso") : LocaleFactory.localizedString("CDN Disabled", "Mosso"));
                 distribution.setUrl(info.getCdnURL());
                 distribution.setSslUrl(info.getSslURL());
                 distribution.setStreamingUrl(info.getStreamingURL());
@@ -127,7 +127,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 }
                 final Distribution distribution = new Distribution(
                         session.getRegion(container).getStorageUrl().getHost(), method, false);
-                distribution.setStatus(Locale.localizedString("CDN Disabled", "Mosso"));
+                distribution.setStatus(LocaleFactory.localizedString("CDN Disabled", "Mosso"));
                 return distribution;
             }
         }
@@ -194,7 +194,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
 
     @Override
     public String getName() {
-        return Locale.localizedString("Akamai", "Mosso");
+        return LocaleFactory.localizedString("Akamai", "Mosso");
     }
 
     @Override

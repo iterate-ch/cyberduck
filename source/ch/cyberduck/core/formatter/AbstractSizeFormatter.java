@@ -17,7 +17,7 @@ package ch.cyberduck.core.formatter;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.LocaleFactory;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -51,7 +51,7 @@ public class AbstractSizeFormatter implements SizeFormatter {
     @Override
     public String format(final long size, final boolean plain, final boolean bytes) {
         if(-1 == size) {
-            return Locale.localizedString("--");
+            return LocaleFactory.localizedString("--");
         }
         if(size < kilo) {
             return (int) size + (bytes ? " B" : " bit");

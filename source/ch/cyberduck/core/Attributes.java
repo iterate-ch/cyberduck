@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
-
 /**
  * @version $Id$
  */
@@ -85,11 +83,11 @@ public abstract class Attributes {
     public abstract boolean isSymbolicLink();
 
     public String getOwner() {
-        return Locale.localizedString("Unknown");
+        return LocaleFactory.localizedString("Unknown");
     }
 
     public String getGroup() {
-        return Locale.localizedString("Unknown");
+        return LocaleFactory.localizedString("Unknown");
     }
 
     public abstract String getChecksum();

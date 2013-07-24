@@ -30,7 +30,6 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
@@ -464,7 +463,7 @@ public class BrowserController extends WindowController
 
                     @Override
                     public String getActivity() {
-                        return Locale.localizedString("Quick Look", "Status");
+                        return LocaleFactory.localizedString("Quick Look", "Status");
                     }
                 });
             }
@@ -572,7 +571,7 @@ public class BrowserController extends WindowController
 
     public void setDonateButton(NSButton donateButton) {
         this.donateButton = donateButton;
-        this.donateButton.setTitle(Locale.localizedString("Get a donation key!", "License"));
+        this.donateButton.setTitle(LocaleFactory.localizedString("Get a donation key!", "License"));
         this.donateButton.setAction(Foundation.selector("donateMenuClicked:"));
         this.donateButton.sizeToFit();
     }
@@ -829,7 +828,7 @@ public class BrowserController extends WindowController
     public void setBookmarkSwitchView(NSSegmentedControl bookmarkSwitchView) {
         this.bookmarkSwitchView = bookmarkSwitchView;
         this.bookmarkSwitchView.setSegmentCount(1);
-        this.bookmarkSwitchView.setToolTip(Locale.localizedString("Bookmarks"));
+        this.bookmarkSwitchView.setToolTip(LocaleFactory.localizedString("Bookmarks"));
         final NSImage image = IconCacheFactory.<NSImage>get().iconNamed("book.tiff");
         this.bookmarkSwitchView.setImage_forSegment(image, SWITCH_BOOKMARK_VIEW);
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
@@ -1292,7 +1291,7 @@ public class BrowserController extends WindowController
         }).id());
         {
             NSTableColumn c = browserOutlineColumnsFactory.create(BrowserTableDataSource.FILENAME_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Filename"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
             c.setMinWidth(new CGFloat(100));
             c.setWidth(new CGFloat(250));
             c.setMaxWidth(new CGFloat(1000));
@@ -1372,7 +1371,7 @@ public class BrowserController extends WindowController
         }
         {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.FILENAME_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Filename"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
             c.setMinWidth((100));
             c.setWidth((250));
             c.setMaxWidth((1000));
@@ -1414,7 +1413,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.SIZE_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnSize")) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.SIZE_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Size"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Size"));
             c.setMinWidth(50f);
             c.setWidth(80f);
             c.setMaxWidth(150f);
@@ -1425,7 +1424,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.MODIFIED_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnModification")) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.MODIFIED_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Modified"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Modified"));
             c.setMinWidth(100f);
             c.setWidth(150);
             c.setMaxWidth(500);
@@ -1436,7 +1435,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.OWNER_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnOwner")) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.OWNER_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Owner"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Owner"));
             c.setMinWidth(50);
             c.setWidth(80);
             c.setMaxWidth(500);
@@ -1447,7 +1446,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.GROUP_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnGroup")) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.GROUP_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Group"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Group"));
             c.setMinWidth(50);
             c.setWidth(80);
             c.setMaxWidth(500);
@@ -1458,7 +1457,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.PERMISSIONS_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnPermissions")) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.PERMISSIONS_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Permissions"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Permissions"));
             c.setMinWidth(100);
             c.setWidth(100);
             c.setMaxWidth(800);
@@ -1469,7 +1468,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.KIND_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnKind")) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.KIND_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Kind"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Kind"));
             c.setMinWidth(50);
             c.setWidth(80);
             c.setMaxWidth(500);
@@ -1480,7 +1479,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.EXTENSION_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnExtension")) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.EXTENSION_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Extension"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Extension"));
             c.setMinWidth(50);
             c.setWidth(80);
             c.setMaxWidth(500);
@@ -1491,7 +1490,7 @@ public class BrowserController extends WindowController
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.REGION_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnRegion")) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.REGION_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Region"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Region"));
             c.setMinWidth(50);
             c.setWidth(80);
             c.setMaxWidth(500);
@@ -1641,7 +1640,7 @@ public class BrowserController extends WindowController
         }
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.BOOKMARK_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Bookmarks"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Bookmarks"));
             c.setMinWidth(150);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(BookmarkCell.bookmarkCell());
@@ -1897,7 +1896,7 @@ public class BrowserController extends WindowController
             selected.add(bookmarkModel.getSource().get(index.intValue()));
         }
         StringBuilder alertText = new StringBuilder(
-                Locale.localizedString("Do you want to delete the selected bookmark?"));
+                LocaleFactory.localizedString("Do you want to delete the selected bookmark?"));
         int i = 0;
         Iterator<Host> iter = selected.iterator();
         while(i < 10 && iter.hasNext()) {
@@ -1907,10 +1906,10 @@ public class BrowserController extends WindowController
         if(iter.hasNext()) {
             alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
         }
-        final NSAlert alert = NSAlert.alert(Locale.localizedString("Delete Bookmark"),
+        final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete Bookmark"),
                 alertText.toString(),
-                Locale.localizedString("Delete"),
-                Locale.localizedString("Cancel"),
+                LocaleFactory.localizedString("Delete"),
+                LocaleFactory.localizedString("Cancel"),
                 null);
         this.alert(alert, new SheetCallback() {
             @Override
@@ -2135,14 +2134,14 @@ public class BrowserController extends WindowController
                     if(getSelectedTabView() == TAB_BOOKMARKS) {
                         statusLabel.setAttributedStringValue(
                                 NSAttributedString.attributedStringWithAttributes(String.format("%s %s", bookmarkTable.numberOfRows(),
-                                        Locale.localizedString("Bookmarks")),
+                                        LocaleFactory.localizedString("Bookmarks")),
                                         TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     else {
                         // Browser view
                         if(isConnected()) {
                             statusLabel.setAttributedStringValue(
-                                    NSAttributedString.attributedStringWithAttributes(MessageFormat.format(Locale.localizedString("{0} Files"),
+                                    NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
                                             String.valueOf(getSelectedBrowserView().numberOfRows())),
                                             TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
@@ -2292,7 +2291,7 @@ public class BrowserController extends WindowController
     private void checkOverwrite(final java.util.Collection<Path> selected, final MainAction action) {
         if(selected.size() > 0) {
             StringBuilder alertText = new StringBuilder(
-                    Locale.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
+                    LocaleFactory.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
             int i = 0;
             Iterator<Path> iter;
             boolean shouldWarn = false;
@@ -2311,10 +2310,10 @@ public class BrowserController extends WindowController
             }
             if(shouldWarn) {
                 NSAlert alert = NSAlert.alert(
-                        Locale.localizedString("Overwrite"), //title
+                        LocaleFactory.localizedString("Overwrite"), //title
                         alertText.toString(),
-                        Locale.localizedString("Overwrite"), // defaultbutton
-                        Locale.localizedString("Cancel"), //alternative button
+                        LocaleFactory.localizedString("Overwrite"), // defaultbutton
+                        LocaleFactory.localizedString("Cancel"), //alternative button
                         null //other button
                 );
                 this.alert(alert, new SheetCallback() {
@@ -2341,7 +2340,7 @@ public class BrowserController extends WindowController
         if(selected.size() > 0) {
             if(Preferences.instance().getBoolean("browser.confirmMove")) {
                 StringBuilder alertText = new StringBuilder(
-                        Locale.localizedString("Do you want to move the selected files?"));
+                        LocaleFactory.localizedString("Do you want to move the selected files?"));
                 int i = 0;
                 Iterator<Path> iter;
                 for(iter = selected.iterator(); i < 10 && iter.hasNext(); ) {
@@ -2353,10 +2352,10 @@ public class BrowserController extends WindowController
                     alertText.append(String.format("\n%s ...)", Character.toString('\u2022')));
                 }
                 final NSAlert alert = NSAlert.alert(
-                        Locale.localizedString("Move"), //title
+                        LocaleFactory.localizedString("Move"), //title
                         alertText.toString(),
-                        Locale.localizedString("Move"), // defaultbutton
-                        Locale.localizedString("Cancel"), //alternative button
+                        LocaleFactory.localizedString("Move"), // defaultbutton
+                        LocaleFactory.localizedString("Cancel"), //alternative button
                         null //other button
                 );
                 this.alert(alert, new SheetCallback() {
@@ -2419,7 +2418,7 @@ public class BrowserController extends WindowController
             return;
         }
         StringBuilder alertText =
-                new StringBuilder(Locale.localizedString("Really delete the following files? This cannot be undone."));
+                new StringBuilder(LocaleFactory.localizedString("Really delete the following files? This cannot be undone."));
         int i = 0;
         Iterator<Path> iter;
         for(iter = normalized.iterator(); i < 10 && iter.hasNext(); ) {
@@ -2429,10 +2428,10 @@ public class BrowserController extends WindowController
         if(iter.hasNext()) {
             alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
         }
-        NSAlert alert = NSAlert.alert(Locale.localizedString("Delete"), //title
+        NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete"), //title
                 alertText.toString(),
-                Locale.localizedString("Delete"), // defaultbutton
-                Locale.localizedString("Cancel"), //alternative button
+                LocaleFactory.localizedString("Delete"), // defaultbutton
+                LocaleFactory.localizedString("Cancel"), //alternative button
                 null //other button
         );
         this.alert(alert, new SheetCallback() {
@@ -2470,7 +2469,7 @@ public class BrowserController extends WindowController
 
             @Override
             public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Reverting {0}", "Status"),
+                return MessageFormat.format(LocaleFactory.localizedString("Reverting {0}", "Status"),
                         selected.getName());
             }
 
@@ -2607,7 +2606,7 @@ public class BrowserController extends WindowController
         downloadToPanel.setCanCreateDirectories(true);
         downloadToPanel.setCanChooseFiles(false);
         downloadToPanel.setAllowsMultipleSelection(false);
-        downloadToPanel.setPrompt(Locale.localizedString("Choose"));
+        downloadToPanel.setPrompt(LocaleFactory.localizedString("Choose"));
         downloadToPanel.beginSheetForDirectory(
                 lastSelectedDownloadDirectory, //trying to be smart
                 null, this.window, this.id(),
@@ -2630,9 +2629,9 @@ public class BrowserController extends WindowController
     @Action
     public void downloadAsButtonClicked(final ID sender) {
         downloadAsPanel = NSSavePanel.savePanel();
-        downloadAsPanel.setMessage(Locale.localizedString("Download the selected file to…"));
-        downloadAsPanel.setNameFieldLabel(Locale.localizedString("Download As:"));
-        downloadAsPanel.setPrompt(Locale.localizedString("Download"));
+        downloadAsPanel.setMessage(LocaleFactory.localizedString("Download the selected file to…"));
+        downloadAsPanel.setNameFieldLabel(LocaleFactory.localizedString("Download As:"));
+        downloadAsPanel.setPrompt(LocaleFactory.localizedString("Download"));
         downloadAsPanel.setCanCreateDirectories(true);
         downloadAsPanel.beginSheetForDirectory(null, this.getSelectedPath().getDisplayName(), this.window, this.id(),
                 Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"),
@@ -2667,9 +2666,9 @@ public class BrowserController extends WindowController
         syncPanel.setCanChooseFiles(selection.attributes().isFile());
         syncPanel.setCanCreateDirectories(true);
         syncPanel.setAllowsMultipleSelection(false);
-        syncPanel.setMessage(MessageFormat.format(Locale.localizedString("Synchronize {0} with"),
+        syncPanel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Synchronize {0} with"),
                 selection.getName()));
-        syncPanel.setPrompt(Locale.localizedString("Choose"));
+        syncPanel.setPrompt(LocaleFactory.localizedString("Choose"));
         syncPanel.beginSheetForDirectory(session.getHost().getDownloadFolder().getAbsolute(), null, this.window, this.id(),
                 Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
@@ -2734,10 +2733,10 @@ public class BrowserController extends WindowController
         uploadPanel.setTreatsFilePackagesAsDirectories(true);
         uploadPanel.setCanChooseFiles(true);
         uploadPanel.setAllowsMultipleSelection(true);
-        uploadPanel.setPrompt(Locale.localizedString("Upload"));
+        uploadPanel.setPrompt(LocaleFactory.localizedString("Upload"));
         if(uploadPanel.respondsToSelector(Foundation.selector("setShowsHiddenFiles:"))) {
             uploadPanelHiddenFilesCheckbox = NSButton.buttonWithFrame(new NSRect(0, 0));
-            uploadPanelHiddenFilesCheckbox.setTitle(Locale.localizedString("Show Hidden Files"));
+            uploadPanelHiddenFilesCheckbox.setTitle(LocaleFactory.localizedString("Show Hidden Files"));
             uploadPanelHiddenFilesCheckbox.setTarget(this.id());
             uploadPanelHiddenFilesCheckbox.setAction(Foundation.selector("uploadPanelSetShowHiddenFiles:"));
             uploadPanelHiddenFilesCheckbox.setButtonType(NSButton.NSSwitchButton);
@@ -3411,7 +3410,7 @@ public class BrowserController extends WindowController
 
                     @Override
                     public String getActivity() {
-                        return MessageFormat.format(Locale.localizedString("Mounting {0}", "Status"),
+                        return MessageFormat.format(LocaleFactory.localizedString("Mounting {0}", "Status"),
                                 host.getHostname());
                     }
                 });
@@ -3462,14 +3461,14 @@ public class BrowserController extends WindowController
             if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                 // Defer the unmount to the callback function
                 final NSAlert alert = NSAlert.alert(
-                        MessageFormat.format(Locale.localizedString("Disconnect from {0}"), this.session.getHost().getHostname()), //title
-                        Locale.localizedString("The connection will be closed."), // message
-                        Locale.localizedString("Disconnect"), // defaultbutton
-                        Locale.localizedString("Cancel"), // alternate button
+                        MessageFormat.format(LocaleFactory.localizedString("Disconnect from {0}"), this.session.getHost().getHostname()), //title
+                        LocaleFactory.localizedString("The connection will be closed."), // message
+                        LocaleFactory.localizedString("Disconnect"), // defaultbutton
+                        LocaleFactory.localizedString("Cancel"), // alternate button
                         null //other button
                 );
                 alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
+                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
                 this.alert(alert, new SheetCallback() {
                     @Override
                     public void callback(int returncode) {
@@ -3542,7 +3541,7 @@ public class BrowserController extends WindowController
 
                 @Override
                 public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
+                    return MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
                             session.getHost().getHostname());
                 }
             });
@@ -3605,7 +3604,7 @@ public class BrowserController extends WindowController
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
             final String title = "Paste {0}";
-            item.setTitle(MessageFormat.format(Locale.localizedString(title), StringUtils.EMPTY).trim());
+            item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title), StringUtils.EMPTY).trim());
             if(this.isMounted()) {
                 if(pasteboard.isEmpty()) {
                     if(NSPasteboard.generalPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
@@ -3613,12 +3612,12 @@ public class BrowserController extends WindowController
                         if(o != null) {
                             final NSArray elements = Rococoa.cast(o, NSArray.class);
                             if(elements.count().intValue() == 1) {
-                                item.setTitle(MessageFormat.format(Locale.localizedString(title),
+                                item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
                                         "\"" + elements.objectAtIndex(new NSUInteger(0)) + "\"").trim());
                             }
                             else {
-                                item.setTitle(MessageFormat.format(Locale.localizedString(title),
-                                        MessageFormat.format(Locale.localizedString("{0} Files"),
+                                item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
+                                        MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
                                                 String.valueOf(elements.count().intValue()))).trim());
                             }
                         }
@@ -3626,12 +3625,12 @@ public class BrowserController extends WindowController
                 }
                 else {
                     if(pasteboard.size() == 1) {
-                        item.setTitle(MessageFormat.format(Locale.localizedString(title),
+                        item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
                                 "\"" + pasteboard.get(0).getName() + "\"").trim());
                     }
                     else {
-                        item.setTitle(MessageFormat.format(Locale.localizedString(title),
-                                MessageFormat.format(Locale.localizedString("{0} Files"), String.valueOf(pasteboard.size()))).trim());
+                        item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
+                                MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(pasteboard.size()))).trim());
                     }
                 }
             }
@@ -3647,19 +3646,19 @@ public class BrowserController extends WindowController
             if(this.isMounted()) {
                 int count = this.getSelectionCount();
                 if(0 == count) {
-                    item.setTitle(MessageFormat.format(Locale.localizedString(title), StringUtils.EMPTY).trim());
+                    item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title), StringUtils.EMPTY).trim());
                 }
                 else if(1 == count) {
-                    item.setTitle(MessageFormat.format(Locale.localizedString(title),
+                    item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
                             "\"" + this.getSelectedPath().getName() + "\"").trim());
                 }
                 else {
-                    item.setTitle(MessageFormat.format(Locale.localizedString(title),
-                            MessageFormat.format(Locale.localizedString("{0} Files"), String.valueOf(this.getSelectionCount()))).trim());
+                    item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
+                            MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(this.getSelectionCount()))).trim());
                 }
             }
             else {
-                item.setTitle(MessageFormat.format(Locale.localizedString(title), StringUtils.EMPTY).trim());
+                item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title), StringUtils.EMPTY).trim());
             }
         }
         else if(action.equals(Foundation.selector("showHiddenFilesClicked:"))) {
@@ -3976,15 +3975,15 @@ public class BrowserController extends WindowController
         }
         else if(identifier.equals(TOOLBAR_DISCONNECT)) {
             if(this.isActivityRunning()) {
-                item.setLabel(Locale.localizedString("Stop"));
-                item.setPaletteLabel(Locale.localizedString("Stop"));
-                item.setToolTip(Locale.localizedString("Cancel current operation in progress"));
+                item.setLabel(LocaleFactory.localizedString("Stop"));
+                item.setPaletteLabel(LocaleFactory.localizedString("Stop"));
+                item.setToolTip(LocaleFactory.localizedString("Cancel current operation in progress"));
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop", 32));
             }
             else {
-                item.setLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
-                item.setPaletteLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
-                item.setToolTip(Locale.localizedString("Disconnect from server"));
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
+                item.setToolTip(LocaleFactory.localizedString("Disconnect from server"));
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
             }
         }
@@ -3992,13 +3991,13 @@ public class BrowserController extends WindowController
             final Path selected = getSelectedPath();
             if(null != selected) {
                 if(Archive.isArchive(selected.getName())) {
-                    item.setLabel(Locale.localizedString("Unarchive", "Archive"));
-                    item.setPaletteLabel(Locale.localizedString("Unarchive"));
+                    item.setLabel(LocaleFactory.localizedString("Unarchive", "Archive"));
+                    item.setPaletteLabel(LocaleFactory.localizedString("Unarchive"));
                     item.setAction(Foundation.selector("unarchiveButtonClicked:"));
                 }
                 else {
-                    item.setLabel(Locale.localizedString("Archive", "Archive"));
-                    item.setPaletteLabel(Locale.localizedString("Archive"));
+                    item.setLabel(LocaleFactory.localizedString("Archive", "Archive"));
+                    item.setPaletteLabel(LocaleFactory.localizedString("Archive"));
                     item.setAction(Foundation.selector("archiveButtonClicked:"));
                 }
             }
@@ -4024,19 +4023,19 @@ public class BrowserController extends WindowController
         }
         final NSToolbarItem item = toolbarItems.get(itemIdentifier);
         if(itemIdentifier.equals(TOOLBAR_BROWSER_VIEW)) {
-            item.setLabel(Locale.localizedString("View"));
-            item.setPaletteLabel(Locale.localizedString("View"));
-            item.setToolTip(Locale.localizedString("Switch Browser View"));
+            item.setLabel(LocaleFactory.localizedString("View"));
+            item.setPaletteLabel(LocaleFactory.localizedString("View"));
+            item.setToolTip(LocaleFactory.localizedString("Switch Browser View"));
             item.setView(browserSwitchView);
             // Add a menu representation for text mode of toolbar
-            NSMenuItem viewMenu = NSMenuItem.itemWithTitle(Locale.localizedString("View"), null, StringUtils.EMPTY);
+            NSMenuItem viewMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("View"), null, StringUtils.EMPTY);
             NSMenu viewSubmenu = NSMenu.menu();
-            viewSubmenu.addItemWithTitle_action_keyEquivalent(Locale.localizedString("List"),
+            viewSubmenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("List"),
                     Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
-            viewSubmenu.itemWithTitle(Locale.localizedString("List")).setTag(0);
-            viewSubmenu.addItemWithTitle_action_keyEquivalent(Locale.localizedString("Outline"),
+            viewSubmenu.itemWithTitle(LocaleFactory.localizedString("List")).setTag(0);
+            viewSubmenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("Outline"),
                     Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
-            viewSubmenu.itemWithTitle(Locale.localizedString("Outline")).setTag(1);
+            viewSubmenu.itemWithTitle(LocaleFactory.localizedString("Outline")).setTag(1);
             viewMenu.setSubmenu(viewSubmenu);
             item.setMenuFormRepresentation(viewMenu);
             item.setMinSize(this.browserSwitchView.frame().size);
@@ -4044,29 +4043,29 @@ public class BrowserController extends WindowController
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_NEW_CONNECTION)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_NEW_CONNECTION));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_CONNECTION));
-            item.setToolTip(Locale.localizedString("Connect to server"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_CONNECTION));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_CONNECTION));
+            item.setToolTip(LocaleFactory.localizedString("Connect to server"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("connect.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("connectButtonClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_TRANSFERS)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_TRANSFERS));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_TRANSFERS));
-            item.setToolTip(Locale.localizedString("Show Transfers window"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_TRANSFERS));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_TRANSFERS));
+            item.setToolTip(LocaleFactory.localizedString("Show Transfers window"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("queue.tiff", 32));
             item.setAction(Foundation.selector("showTransferQueueClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_TOOLS)) {
-            item.setLabel(Locale.localizedString("Action"));
-            item.setPaletteLabel(Locale.localizedString("Action"));
+            item.setLabel(LocaleFactory.localizedString("Action"));
+            item.setPaletteLabel(LocaleFactory.localizedString("Action"));
             if(inserted || !Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
                 item.setView(this.actionPopupButton);
                 // Add a menu representation for text mode of toolbar
-                NSMenuItem toolMenu = NSMenuItem.itemWithTitle(Locale.localizedString("Action"), null, StringUtils.EMPTY);
+                NSMenuItem toolMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("Action"), null, StringUtils.EMPTY);
                 NSMenu toolSubmenu = NSMenu.menu();
                 for(int i = 1; i < this.actionPopupButton.menu().numberOfItems().intValue(); i++) {
                     NSMenuItem template = this.actionPopupButton.menu().itemAtIndex(new NSInteger(i));
@@ -4081,28 +4080,28 @@ public class BrowserController extends WindowController
             }
             else {
                 NSToolbarItem temporary = NSToolbarItem.itemWithIdentifier(itemIdentifier);
-                temporary.setPaletteLabel(Locale.localizedString("Action"));
+                temporary.setPaletteLabel(LocaleFactory.localizedString("Action"));
                 temporary.setImage(IconCacheFactory.<NSImage>get().iconNamed("advanced.tiff", 32));
                 return temporary;
             }
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_QUICK_CONNECT)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_QUICK_CONNECT));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_QUICK_CONNECT));
-            item.setToolTip(Locale.localizedString("Connect to server"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_QUICK_CONNECT));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_QUICK_CONNECT));
+            item.setToolTip(LocaleFactory.localizedString("Connect to server"));
             item.setView(quickConnectPopup);
             item.setMinSize(this.quickConnectPopup.frame().size);
             item.setMaxSize(this.quickConnectPopup.frame().size);
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_ENCODING)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_ENCODING));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_ENCODING));
-            item.setToolTip(Locale.localizedString("Character Encoding"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_ENCODING));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_ENCODING));
+            item.setToolTip(LocaleFactory.localizedString("Character Encoding"));
             item.setView(this.encodingPopup);
             // Add a menu representation for text mode of toolbar
-            NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(Locale.localizedString(TOOLBAR_ENCODING),
+            NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(TOOLBAR_ENCODING),
                     Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
             String[] charsets = MainController.availableCharsets();
             NSMenu charsetMenu = NSMenu.menu();
@@ -4116,54 +4115,54 @@ public class BrowserController extends WindowController
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_REFRESH)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_REFRESH));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_REFRESH));
-            item.setToolTip(Locale.localizedString("Refresh directory listing"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_REFRESH));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_REFRESH));
+            item.setToolTip(LocaleFactory.localizedString("Refresh directory listing"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reload.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_DOWNLOAD)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_DOWNLOAD));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_DOWNLOAD));
-            item.setToolTip(Locale.localizedString("Download file"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_DOWNLOAD));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DOWNLOAD));
+            item.setToolTip(LocaleFactory.localizedString("Download file"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("download.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("downloadButtonClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_UPLOAD)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_UPLOAD));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_UPLOAD));
-            item.setToolTip(Locale.localizedString("Upload local file to the remote host"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_UPLOAD));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_UPLOAD));
+            item.setToolTip(LocaleFactory.localizedString("Upload local file to the remote host"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("upload.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("uploadButtonClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_SYNCHRONIZE)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_SYNCHRONIZE));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_SYNCHRONIZE));
-            item.setToolTip(Locale.localizedString("Synchronize files"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_SYNCHRONIZE));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_SYNCHRONIZE));
+            item.setToolTip(LocaleFactory.localizedString("Synchronize files"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("sync.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("syncButtonClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_GET_INFO)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_GET_INFO));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_GET_INFO));
-            item.setToolTip(Locale.localizedString("Show file attributes"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_GET_INFO));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_GET_INFO));
+            item.setToolTip(LocaleFactory.localizedString("Show file attributes"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("info.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("infoButtonClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_WEBVIEW)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_WEBVIEW));
-            item.setPaletteLabel(Locale.localizedString("Open in Web Browser"));
-            item.setToolTip(Locale.localizedString("Open in Web Browser"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_WEBVIEW));
+            item.setPaletteLabel(LocaleFactory.localizedString("Open in Web Browser"));
+            item.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
             final Application browser = SchemeHandlerFactory.get().getDefaultHandler(Scheme.http);
             if(null == browser) {
                 item.setEnabled(false);
@@ -4177,14 +4176,14 @@ public class BrowserController extends WindowController
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_EDIT)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_EDIT));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_EDIT));
-            item.setToolTip(Locale.localizedString("Edit file in external editor"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_EDIT));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_EDIT));
+            item.setToolTip(LocaleFactory.localizedString("Edit file in external editor"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("editButtonClicked:"));
             // Add a menu representation for text mode of toolbar
-            NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(Locale.localizedString(TOOLBAR_EDIT),
+            NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(TOOLBAR_EDIT),
                     Foundation.selector("editButtonClicked:"), StringUtils.EMPTY);
             NSMenu editMenu = NSMenu.menu();
             editMenu.setAutoenablesItems(true);
@@ -4194,36 +4193,36 @@ public class BrowserController extends WindowController
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_DELETE)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_DELETE));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_DELETE));
-            item.setToolTip(Locale.localizedString("Delete file"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_DELETE));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DELETE));
+            item.setToolTip(LocaleFactory.localizedString("Delete file"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("delete.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("deleteFileButtonClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_NEW_FOLDER)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_NEW_FOLDER));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_FOLDER));
-            item.setToolTip(Locale.localizedString("Create New Folder"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_FOLDER));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_FOLDER));
+            item.setToolTip(LocaleFactory.localizedString("Create New Folder"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("createFolderButtonClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_NEW_BOOKMARK)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_NEW_BOOKMARK));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_BOOKMARK));
-            item.setToolTip(Locale.localizedString("New Bookmark"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_BOOKMARK));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_BOOKMARK));
+            item.setToolTip(LocaleFactory.localizedString("New Bookmark"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("bookmark", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("addBookmarkButtonClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_DISCONNECT)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
-            item.setToolTip(Locale.localizedString("Disconnect from server"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
+            item.setToolTip(LocaleFactory.localizedString("Disconnect from server"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("disconnectButtonClicked:"));
@@ -4247,16 +4246,16 @@ public class BrowserController extends WindowController
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_ARCHIVE)) {
-            item.setLabel(Locale.localizedString("Archive", "Archive"));
-            item.setPaletteLabel(Locale.localizedString("Archive", "Archive"));
+            item.setLabel(LocaleFactory.localizedString("Archive", "Archive"));
+            item.setPaletteLabel(LocaleFactory.localizedString("Archive", "Archive"));
             item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(new Application("com.apple.archiveutility"), 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("archiveButtonClicked:"));
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_QUICKLOOK)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_QUICKLOOK));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_QUICKLOOK));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_QUICKLOOK));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_QUICKLOOK));
             if(quicklook.isAvailable()) {
                 quicklookButton = NSButton.buttonWithFrame(new NSRect(29, 23));
                 quicklookButton.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
@@ -4275,9 +4274,9 @@ public class BrowserController extends WindowController
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_LOG)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_LOG));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_LOG));
-            item.setToolTip(Locale.localizedString("Toggle Log Drawer"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
+            item.setToolTip(LocaleFactory.localizedString("Toggle Log Drawer"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("log", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("toggleLogDrawer:"));

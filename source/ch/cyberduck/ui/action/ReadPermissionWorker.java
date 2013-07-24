@@ -20,10 +20,10 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public abstract class ReadPermissionWorker extends Worker<List<Permission>> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
+        return MessageFormat.format(LocaleFactory.localizedString("Getting permission of {0}", "Status"),
                 this.toString(files));
     }
 }

@@ -19,8 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
-
 import java.util.Iterator;
 
 /**
@@ -56,7 +54,7 @@ public final class RendezvousCollection extends AbstractHostCollection implement
 
     @Override
     public String getName() {
-        return Locale.localizedString("Bonjour");
+        return LocaleFactory.localizedString("Bonjour");
     }
 
     @Override

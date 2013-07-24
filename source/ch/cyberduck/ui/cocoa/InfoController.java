@@ -38,7 +38,6 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.local.FileDescriptor;
@@ -380,7 +379,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                    return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                             this.toString(files));
                 }
             });
@@ -421,7 +420,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                    return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                             this.toString(files));
                 }
             });
@@ -459,7 +458,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                    return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                             this.toString(files));
                 }
             });
@@ -634,7 +633,7 @@ public class InfoController extends ToolbarWindowController {
         this.lifecycleTransitionPopup = b;
         this.lifecycleTransitionPopup.setTarget(this.id());
         for(String option : Preferences.instance().getList("s3.lifecycle.transition.options")) {
-            this.lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), option));
+            this.lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(LocaleFactory.localizedString("after {0} Days", "S3"), option));
             this.lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
             this.lifecycleTransitionPopup.lastItem().setTarget(this.id());
             this.lifecycleTransitionPopup.lastItem().setRepresentedObject(option);
@@ -655,7 +654,7 @@ public class InfoController extends ToolbarWindowController {
     public void setLifecycleDeletePopup(final NSPopUpButton b) {
         this.lifecycleDeletePopup = b;
         for(String option : Preferences.instance().getList("s3.lifecycle.delete.options")) {
-            this.lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), option));
+            this.lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(LocaleFactory.localizedString("after {0} Days", "S3"), option));
             this.lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
             this.lifecycleDeletePopup.lastItem().setTarget(this.id());
             this.lifecycleDeletePopup.lastItem().setRepresentedObject(option);
@@ -1093,7 +1092,7 @@ public class InfoController extends ToolbarWindowController {
                 if(c.identifier().equals(HEADER_METADATA_VALUE_COLUMN)) {
                     final String value = metadata.get(row.intValue()).getValue();
                     if(null == value) {
-                        cell.setPlaceholderString(Locale.localizedString("Multiple files"));
+                        cell.setPlaceholderString(LocaleFactory.localizedString("Multiple files"));
                     }
                 }
             }
@@ -1109,7 +1108,7 @@ public class InfoController extends ToolbarWindowController {
         this.metadataAddButton.setTarget(this.id());
         this.metadataAddButton.addItemWithTitle(StringUtils.EMPTY);
         this.metadataAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
-        this.metadataAddButton.addItemWithTitle(Locale.localizedString("Custom Header", "S3"));
+        this.metadataAddButton.addItemWithTitle(LocaleFactory.localizedString("Custom Header", "S3"));
         this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddCustomClicked:"));
         this.metadataAddButton.lastItem().setTarget(this.id());
         this.metadataAddButton.menu().addItem(NSMenuItem.separatorItem());
@@ -1628,7 +1627,7 @@ public class InfoController extends ToolbarWindowController {
     private String getName() {
         final int count = this.numberOfFiles();
         if(count > 1) {
-            return "(" + Locale.localizedString("Multiple files") + ")";
+            return "(" + LocaleFactory.localizedString("Multiple files") + ")";
         }
         return this.getSelected().getName();
     }
@@ -1655,20 +1654,20 @@ public class InfoController extends ToolbarWindowController {
             this.updateField(pathField, path, TRUNCATE_MIDDLE_ATTRIBUTES);
             pathField.setToolTip(path);
             if(count > 1) {
-                kindField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
-                checksumField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                kindField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
+                checksumField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
             }
             else {
                 this.updateField(kindField, descriptor.getKind(file), TRUNCATE_MIDDLE_ATTRIBUTES);
             }
             // Timestamps
             if(count > 1) {
-                modifiedField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
-                createdField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                modifiedField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
+                createdField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
             }
             else {
                 if(-1 == file.attributes().getModificationDate()) {
-                    this.updateField(modifiedField, Locale.localizedString("Unknown"));
+                    this.updateField(modifiedField, LocaleFactory.localizedString("Unknown"));
                 }
                 else {
                     this.updateField(modifiedField, UserDateFormatterFactory.get().getLongFormat(
@@ -1676,7 +1675,7 @@ public class InfoController extends ToolbarWindowController {
                             TRUNCATE_MIDDLE_ATTRIBUTES);
                 }
                 if(-1 == file.attributes().getCreationDate()) {
-                    this.updateField(createdField, Locale.localizedString("Unknown"));
+                    this.updateField(createdField, LocaleFactory.localizedString("Unknown"));
                 }
                 else {
                     this.updateField(createdField, UserDateFormatterFactory.get().getLongFormat(
@@ -1685,11 +1684,11 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             // Owner
-            this.updateField(ownerField, count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
-                    StringUtils.isBlank(file.attributes().getOwner()) ? Locale.localizedString("Unknown") : file.attributes().getOwner(),
+            this.updateField(ownerField, count > 1 ? "(" + LocaleFactory.localizedString("Multiple files") + ")" :
+                    StringUtils.isBlank(file.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getOwner(),
                     TRUNCATE_MIDDLE_ATTRIBUTES);
-            this.updateField(groupField, count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
-                    StringUtils.isBlank(file.attributes().getGroup()) ? Locale.localizedString("Unknown") : file.attributes().getGroup(),
+            this.updateField(groupField, count > 1 ? "(" + LocaleFactory.localizedString("Multiple files") + ")" :
+                    StringUtils.isBlank(file.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getGroup(),
                     TRUNCATE_MIDDLE_ATTRIBUTES);
             // Icon
             if(count > 1) {
@@ -1714,15 +1713,15 @@ public class InfoController extends ToolbarWindowController {
     private void initWebUrl() {
         // Web URL
         if(this.numberOfFiles() > 1) {
-            this.updateField(webUrlField, "(" + Locale.localizedString("Multiple files") + ")");
+            this.updateField(webUrlField, "(" + LocaleFactory.localizedString("Multiple files") + ")");
             webUrlField.setToolTip(StringUtils.EMPTY);
         }
         else {
-            this.updateField(webUrlField, Locale.localizedString("Unknown"));
+            this.updateField(webUrlField, LocaleFactory.localizedString("Unknown"));
             String url = controller.getSession().toHttpURL(this.getSelected());
             if(StringUtils.isNotBlank(url)) {
                 webUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
-                webUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                webUrlField.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
             }
         }
     }
@@ -1731,7 +1730,7 @@ public class InfoController extends ToolbarWindowController {
      *
      */
     private void initPermissions() {
-        permissionsField.setStringValue(Locale.localizedString("Unknown"));
+        permissionsField.setStringValue(LocaleFactory.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
             this.background(new WorkerBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
@@ -1764,7 +1763,7 @@ public class InfoController extends ToolbarWindowController {
         }
         final int count = permissions.size();
         if(count > 1) {
-            permissionsField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+            permissionsField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
         }
         else {
             for(Permission permission : permissions) {
@@ -1798,28 +1797,28 @@ public class InfoController extends ToolbarWindowController {
      * Read content distribution settings
      */
     private void initDistribution() {
-        distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
-        distributionCnameField.cell().setPlaceholderString(Locale.localizedString("None"));
-        distributionOriginField.setStringValue(Locale.localizedString("Unknown"));
-        distributionUrlField.setStringValue(Locale.localizedString("Unknown"));
-        distributionInvalidationStatusField.setStringValue(Locale.localizedString("None"));
+        distributionStatusField.setStringValue(LocaleFactory.localizedString("Unknown"));
+        distributionCnameField.cell().setPlaceholderString(LocaleFactory.localizedString("None"));
+        distributionOriginField.setStringValue(LocaleFactory.localizedString("Unknown"));
+        distributionUrlField.setStringValue(LocaleFactory.localizedString("Unknown"));
+        distributionInvalidationStatusField.setStringValue(LocaleFactory.localizedString("None"));
 
         // Remember last selection
         final String selected = distributionDeliveryPopup.titleOfSelectedItem();
 
         distributionDeliveryPopup.removeAllItems();
-        distributionDeliveryPopup.addItemWithTitle(Locale.localizedString("None"));
+        distributionDeliveryPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
         distributionDefaultRootPopup.removeAllItems();
-        distributionDefaultRootPopup.addItemWithTitle(Locale.localizedString("None"));
+        distributionDefaultRootPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
         distributionDefaultRootPopup.menu().addItem(NSMenuItem.separatorItem());
 
         final Session<?> session = controller.getSession();
         final Path container = containerService.getContainer(getSelected());
 
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
-        distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+        distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                 cdn.getName()));
-        distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("None"));
+        distributionDeliveryPopup.removeItemWithTitle(LocaleFactory.localizedString("None"));
         for(Distribution.Method method : cdn.getMethods(container)) {
             distributionDeliveryPopup.addItemWithTitle(method.toString());
             distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
@@ -1833,10 +1832,10 @@ public class InfoController extends ToolbarWindowController {
         }
 
         distributionLoggingPopup.removeAllItems();
-        distributionLoggingPopup.addItemWithTitle(Locale.localizedString("None"));
-        distributionLoggingPopup.itemWithTitle(Locale.localizedString("None")).setEnabled(false);
+        distributionLoggingPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+        distributionLoggingPopup.itemWithTitle(LocaleFactory.localizedString("None")).setEnabled(false);
 
-        distributionAnalyticsSetupUrlField.setStringValue(Locale.localizedString("None"));
+        distributionAnalyticsSetupUrlField.setStringValue(LocaleFactory.localizedString("None"));
 
         this.distributionStatusButtonClicked(null);
     }
@@ -1865,12 +1864,12 @@ public class InfoController extends ToolbarWindowController {
 
     private void initChecksum() {
         if(this.numberOfFiles() > 1) {
-            checksumField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+            checksumField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
         }
         else {
             final Path file = this.getSelected();
             if(StringUtils.isBlank(file.attributes().getChecksum())) {
-                checksumField.setStringValue(Locale.localizedString("Unknown"));
+                checksumField.setStringValue(LocaleFactory.localizedString("Unknown"));
             }
             else {
                 this.updateField(checksumField, file.attributes().getChecksum(), TRUNCATE_MIDDLE_ATTRIBUTES);
@@ -1938,43 +1937,43 @@ public class InfoController extends ToolbarWindowController {
      *
      */
     private void initS3() {
-        bucketLocationField.setStringValue(Locale.localizedString("Unknown"));
-        bucketAnalyticsSetupUrlField.setStringValue(Locale.localizedString("None"));
+        bucketLocationField.setStringValue(LocaleFactory.localizedString("Unknown"));
+        bucketAnalyticsSetupUrlField.setStringValue(LocaleFactory.localizedString("None"));
 
         bucketLoggingPopup.removeAllItems();
-        bucketLoggingPopup.addItemWithTitle(Locale.localizedString("None"));
-        bucketLoggingPopup.itemWithTitle(Locale.localizedString("None")).setEnabled(false);
+        bucketLoggingPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+        bucketLoggingPopup.itemWithTitle(LocaleFactory.localizedString("None")).setEnabled(false);
 
-        s3PublicUrlField.setStringValue(Locale.localizedString("None"));
-        s3PublicUrlValidityField.setStringValue(Locale.localizedString("Unknown"));
-        s3torrentUrlField.setStringValue(Locale.localizedString("None"));
+        s3PublicUrlField.setStringValue(LocaleFactory.localizedString("None"));
+        s3PublicUrlValidityField.setStringValue(LocaleFactory.localizedString("Unknown"));
+        s3torrentUrlField.setStringValue(LocaleFactory.localizedString("None"));
 
         storageClassPopup.removeAllItems();
-        storageClassPopup.addItemWithTitle(Locale.localizedString("Unknown"));
-        storageClassPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
-        storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
+        storageClassPopup.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
+        storageClassPopup.itemWithTitle(LocaleFactory.localizedString("Unknown")).setEnabled(false);
+        storageClassPopup.selectItemWithTitle(LocaleFactory.localizedString("Unknown"));
 
         final Session<?> session = controller.getSession();
 
         if(this.toggleS3Settings(false)) {
             if(session.getFeature(Redundancy.class, prompt) != null) {
                 for(String redundancy : session.getFeature(Redundancy.class, prompt).getClasses()) {
-                    storageClassPopup.addItemWithTitle(Locale.localizedString(redundancy, "S3"));
+                    storageClassPopup.addItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
                     storageClassPopup.lastItem().setRepresentedObject(redundancy);
                 }
             }
             if(this.numberOfFiles() > 1) {
-                s3PublicUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                s3PublicUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
                 s3PublicUrlField.setToolTip(StringUtils.EMPTY);
-                s3torrentUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                s3torrentUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
                 s3torrentUrlField.setToolTip(StringUtils.EMPTY);
             }
             else {
                 Path file = this.getSelected();
                 final String redundancy = file.attributes().getStorageClass();
                 if(StringUtils.isNotEmpty(redundancy)) {
-                    storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
-                    storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
+                    storageClassPopup.removeItemWithTitle(LocaleFactory.localizedString("Unknown"));
+                    storageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
                 }
                 if(file.attributes().isFile()) {
                     if(session instanceof S3Session) {
@@ -1993,7 +1992,7 @@ public class InfoController extends ToolbarWindowController {
                             s3torrentUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(torrent.getUrl())
                             );
-                            s3torrentUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                            s3torrentUrlField.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
                         }
                     }
                 }
@@ -2060,7 +2059,7 @@ public class InfoController extends ToolbarWindowController {
                         }
                     }
                     if(StringUtils.isNotBlank(location)) {
-                        bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
+                        bucketLocationField.setStringValue(LocaleFactory.localizedString(location, "S3"));
                     }
                     if(versioning != null) {
                         bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
@@ -2080,7 +2079,7 @@ public class InfoController extends ToolbarWindowController {
                         if(lifecycle.getExpiration() != null) {
                             final NSInteger index = lifecycleDeletePopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getExpiration()));
                             if(-1 == index.intValue()) {
-                                lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getExpiration())));
+                                lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(LocaleFactory.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getExpiration())));
                                 lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
                                 lifecycleDeletePopup.lastItem().setTarget(id());
                                 lifecycleDeletePopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getExpiration()));
@@ -2091,7 +2090,7 @@ public class InfoController extends ToolbarWindowController {
                         if(lifecycle.getTransition() != null) {
                             final NSInteger index = lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition()));
                             if(-1 == index.intValue()) {
-                                lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(Locale.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getTransition())));
+                                lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(LocaleFactory.localizedString("after {0} Days", "S3"), String.valueOf(lifecycle.getTransition())));
                                 lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
                                 lifecycleTransitionPopup.lastItem().setTarget(id());
                                 lifecycleTransitionPopup.lastItem().setRepresentedObject(String.valueOf(lifecycle.getTransition()));
@@ -2104,7 +2103,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                    return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
                             this.toString(files));
                 }
             });
@@ -2185,7 +2184,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initAcl() {
         this.setAcl(Collections.<Acl.UserAndRole>emptyList());
-        aclUrlField.setStringValue(Locale.localizedString("None"));
+        aclUrlField.setStringValue(LocaleFactory.localizedString("None"));
         if(this.toggleAclSettings(false)) {
             final AclPermission feature = controller.getSession().getFeature(AclPermission.class, prompt);
             aclAddButton.removeAllItems();
@@ -2202,7 +2201,7 @@ public class InfoController extends ToolbarWindowController {
                 aclPermissionCellPrototype.addItemWithObjectValue(NSString.stringWithString(permission.getName()));
             }
             if(this.numberOfFiles() > 1) {
-                aclUrlField.setStringValue(String.format("(%s)", Locale.localizedString("Multiple files")));
+                aclUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
                 aclUrlField.setToolTip(StringUtils.EMPTY);
             }
             else {
@@ -2482,7 +2481,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
+                    return MessageFormat.format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
                             containerService.getContainer(getSelected()).getName());
                 }
             });
@@ -2525,7 +2524,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
+                    return MessageFormat.format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
                             getSelected().getName());
                 }
             });
@@ -2559,7 +2558,7 @@ public class InfoController extends ToolbarWindowController {
                     super.cleanup();
                     final Path container = containerService.getContainer(getSelected());
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
-                    distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                    distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                             cdn.getName(distribution.getMethod())));
                     distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                     distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -2581,7 +2580,7 @@ public class InfoController extends ToolbarWindowController {
                         }
                     }
                     if(null == distributionLoggingPopup.selectedItem()) {
-                        distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
+                        distributionLoggingPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
                     }
                     final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method, prompt);
                     final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method, prompt);
@@ -2601,18 +2600,18 @@ public class InfoController extends ToolbarWindowController {
                     final Path file = getSelected();
                     // Concatenate URLs
                     if(numberOfFiles() > 1) {
-                        distributionUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                        distributionUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
                         distributionUrlField.setToolTip(StringUtils.EMPTY);
-                        distributionCnameUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                        distributionCnameUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
                     }
                     else {
                         final String url = distribution.getURL(file);
                         if(StringUtils.isNotBlank(url)) {
                             distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
-                            distributionUrlField.setToolTip(Locale.localizedString("CDN URL"));
+                            distributionUrlField.setToolTip(LocaleFactory.localizedString("CDN URL"));
                         }
                         else {
-                            distributionUrlField.setStringValue(Locale.localizedString("None"));
+                            distributionUrlField.setStringValue(LocaleFactory.localizedString("None"));
                             distributionUrlField.setToolTip(StringUtils.EMPTY);
                         }
                     }
@@ -2628,7 +2627,7 @@ public class InfoController extends ToolbarWindowController {
                             distributionCnameUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(url.getUrl())
                             );
-                            distributionCnameUrlField.setToolTip(Locale.localizedString("CDN URL"));
+                            distributionCnameUrlField.setToolTip(LocaleFactory.localizedString("CDN URL"));
                             // We only support one CNAME URL to be displayed
                             break;
                         }
@@ -2648,7 +2647,7 @@ public class InfoController extends ToolbarWindowController {
                         distributionDefaultRootPopup.selectItemWithTitle(distribution.getIndexDocument());
                     }
                     else {
-                        distributionDefaultRootPopup.selectItemWithTitle(Locale.localizedString("None"));
+                        distributionDefaultRootPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
                     }
                     StringBuilder tooltip = new StringBuilder();
                     for(Iterator<Path> iter = files.iterator(); iter.hasNext(); ) {
@@ -2665,7 +2664,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
+                    return MessageFormat.format(LocaleFactory.localizedString("Reading CDN configuration of {0}", "Status"),
                             getSelected().getName());
                 }
             });

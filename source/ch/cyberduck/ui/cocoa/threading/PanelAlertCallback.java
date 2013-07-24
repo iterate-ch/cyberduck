@@ -17,11 +17,11 @@ package ch.cyberduck.ui.cocoa.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.cocoa.AlertController;
@@ -51,9 +51,9 @@ public class PanelAlertCallback implements AlertCallback {
             final NSAlert alert = NSAlert.alert(
                     failure.getMessage(), //title
                     failure.getDetail(),
-                    Locale.localizedString("Try Again", "Alert"), // default button
-                    failure.isNetworkFailure() ? Locale.localizedString("Network Diagnostics") : null, //other button
-                    Locale.localizedString("Cancel") // alternate button
+                    LocaleFactory.localizedString("Try Again", "Alert"), // default button
+                    failure.isNetworkFailure() ? LocaleFactory.localizedString("Network Diagnostics") : null, //other button
+                    LocaleFactory.localizedString("Cancel") // alternate button
             );
             alert.setShowsHelp(true);
             final AlertController c = new AlertController(controller, alert) {

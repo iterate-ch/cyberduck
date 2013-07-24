@@ -23,9 +23,9 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.DisabledAlertCallback;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 
@@ -61,6 +61,6 @@ public abstract class FilesystemBackgroundAction<T> extends SessionBackgroundAct
 
     @Override
     public String getActivity() {
-        return Locale.localizedString("Filesystem");
+        return LocaleFactory.localizedString("Filesystem");
     }
 }

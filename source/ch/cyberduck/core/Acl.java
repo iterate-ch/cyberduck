@@ -19,8 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
-
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -189,7 +187,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         }
 
         public String getDisplayName() {
-            return Locale.localizedString(this.getIdentifier(), "S3");
+            return LocaleFactory.localizedString(this.getIdentifier(), "S3");
         }
 
         public String getIdentifier() {
@@ -259,7 +257,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         @Override
         public String getPlaceholder() {
-            return Locale.localizedString("Canonical User ID", "S3");
+            return LocaleFactory.localizedString("Canonical User ID", "S3");
         }
 
         @Override
@@ -305,7 +303,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         @Override
         public String getPlaceholder() {
-            return Locale.localizedString("Email Address", "S3");
+            return LocaleFactory.localizedString("Email Address", "S3");
         }
     }
 
@@ -324,7 +322,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         @Override
         public String getPlaceholder() {
-            return Locale.localizedString(this.getIdentifier(), "S3");
+            return LocaleFactory.localizedString(this.getIdentifier(), "S3");
         }
     }
 
@@ -339,7 +337,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         @Override
         public String getPlaceholder() {
-            return Locale.localizedString("Email Address", "S3");
+            return LocaleFactory.localizedString("Email Address", "S3");
         }
     }
 
@@ -350,7 +348,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         @Override
         public String getPlaceholder() {
-            return Locale.localizedString("Domain Name", "S3");
+            return LocaleFactory.localizedString("Domain Name", "S3");
         }
     }
 
@@ -381,7 +379,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         }
 
         public String getDisplayName() {
-            return Locale.localizedString(this.getName(), "S3");
+            return LocaleFactory.localizedString(this.getName(), "S3");
         }
 
         public void setName(String name) {

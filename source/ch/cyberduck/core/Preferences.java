@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -245,7 +244,7 @@ public abstract class Preferences {
         defaults.put("browser.hidden.regex", "\\..*");
 
         defaults.put("browser.openUntitled", String.valueOf(true));
-        defaults.put("browser.defaultBookmark", Locale.localizedString("None"));
+        defaults.put("browser.defaultBookmark", LocaleFactory.localizedString("None"));
 
         /**
          * Confirm closing the browsing connection

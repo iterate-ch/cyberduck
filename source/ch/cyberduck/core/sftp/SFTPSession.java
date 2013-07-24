@@ -32,7 +32,6 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -138,12 +137,12 @@ public class SFTPSession extends Session<Connection> implements Delete {
                     }
                 };
                 prompt.prompt(host.getProtocol(), additional,
-                        Locale.localizedString("Partial authentication success", "Credentials"),
-                        Locale.localizedString("Provide additional login credentials", "Credentials") + ".", new LoginOptions());
+                        LocaleFactory.localizedString("Partial authentication success", "Credentials"),
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials") + ".", new LoginOptions());
                 if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
                     prompt.prompt(host.getProtocol(), host.getCredentials(),
-                            Locale.localizedString("Login failed", "Credentials"),
-                            Locale.localizedString("Login with username and password", "Credentials"),
+                            LocaleFactory.localizedString("Login failed", "Credentials"),
+                            LocaleFactory.localizedString("Login with username and password", "Credentials"),
                             new LoginOptions(host.getProtocol()));
                 }
             }
@@ -168,8 +167,8 @@ public class SFTPSession extends Session<Connection> implements Delete {
             }
             else {
                 prompt.prompt(host.getProtocol(), host.getCredentials(),
-                        Locale.localizedString("Login failed", "Credentials"),
-                        Locale.localizedString("Login with username and password", "Credentials"),
+                        LocaleFactory.localizedString("Login failed", "Credentials"),
+                        LocaleFactory.localizedString("Login with username and password", "Credentials"),
                         new LoginOptions(host.getProtocol()));
             }
         }
@@ -280,7 +279,7 @@ public class SFTPSession extends Session<Connection> implements Delete {
     @Override
     public void delete(final List<Path> files) throws BackgroundException {
         for(Path file : files) {
-            this.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+            this.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             try {
                 if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {

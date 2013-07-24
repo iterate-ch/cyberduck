@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -39,7 +37,7 @@ public abstract class Archive {
             = new Archive("tar") {
         @Override
         public String getDescription() {
-            return Locale.localizedString("tar archive", "Archive");
+            return LocaleFactory.localizedString("tar archive", "Archive");
         }
     };
 
@@ -47,7 +45,7 @@ public abstract class Archive {
             = new Archive("tar.gz") {
         @Override
         public String getDescription() {
-            return Locale.localizedString("gzip compressed tar archive", "Archive");
+            return LocaleFactory.localizedString("gzip compressed tar archive", "Archive");
         }
 
         @Override
@@ -60,7 +58,7 @@ public abstract class Archive {
             = new Archive("tar.bz2") {
         @Override
         public String getDescription() {
-            return Locale.localizedString("bzip2 compressed tar archive", "Archive");
+            return LocaleFactory.localizedString("bzip2 compressed tar archive", "Archive");
         }
 
         @Override
@@ -73,7 +71,7 @@ public abstract class Archive {
             = new Archive("zip") {
         @Override
         public String getDescription() {
-            return Locale.localizedString("ZIP archive", "Archive");
+            return LocaleFactory.localizedString("ZIP archive", "Archive");
         }
     };
 
@@ -81,7 +79,7 @@ public abstract class Archive {
             = new Archive("gz") {
         @Override
         public String getDescription() {
-            return Locale.localizedString("gzip compressed tar archive", "Archive");
+            return LocaleFactory.localizedString("gzip compressed tar archive", "Archive");
         }
 
         @Override
@@ -94,7 +92,7 @@ public abstract class Archive {
             = new Archive("bz2") {
         @Override
         public String getDescription() {
-            return Locale.localizedString("bzip2 compressed archive", "Archive");
+            return LocaleFactory.localizedString("bzip2 compressed archive", "Archive");
         }
 
         @Override
@@ -179,7 +177,7 @@ public abstract class Archive {
                     Path.FILE_TYPE);
         }
         return new Path(files.get(0).getParent(),
-                Locale.localizedString("Archive", "Archive") + "." + this.getIdentifier(),
+                LocaleFactory.localizedString("Archive", "Archive") + "." + this.getIdentifier(),
                 Path.FILE_TYPE);
     }
 

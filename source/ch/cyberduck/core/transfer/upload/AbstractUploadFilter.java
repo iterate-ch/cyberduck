@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
@@ -29,7 +30,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -108,13 +108,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                 final UnixPermission unix = session.getFeature(UnixPermission.class, null);
                 if(unix != null) {
-                    listener.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                             file.getName(), file.attributes().getPermission().getOctalString()));
                     this.permissions(file, unix);
                 }
                 final AclPermission acl = session.getFeature(AclPermission.class, null);
                 if(acl != null) {
-                    listener.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                             file.getName(), file.attributes().getPermission().getOctalString()));
                     this.acl(file, acl);
                 }
@@ -122,7 +122,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                 final Timestamp timestamp = session.getFeature(Timestamp.class, null);
                 if(timestamp != null) {
-                    listener.message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
+                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
                             file.getName(), UserDateFormatterFactory.get().getShortFormat(file.getLocal().attributes().getModificationDate())));
                     this.timestamp(file, timestamp);
 

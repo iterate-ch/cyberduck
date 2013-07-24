@@ -19,9 +19,9 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public abstract class Worker<T> {
 
     protected String toString(List<Path> files) {
         if(files.isEmpty()) {
-            return Locale.localizedString("None");
+            return LocaleFactory.localizedString("None");
         }
         final StringBuilder name = new StringBuilder();
         name.append(files.get(0).getName());
@@ -49,6 +49,6 @@ public abstract class Worker<T> {
     public abstract void cleanup(T result);
 
     public String getActivity() {
-        return Locale.localizedString("Unknown");
+        return LocaleFactory.localizedString("Unknown");
     }
 }

@@ -1,8 +1,8 @@
 package ch.cyberduck.core.threading;
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -27,7 +27,7 @@ public class BackgroundActionPauser {
             = Preferences.instance().getInteger("connection.retry.delay");
 
     private final String pattern
-            = Locale.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status");
+            = LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status");
 
     public BackgroundActionPauser(final SessionBackgroundAction action) {
         this.action = action;

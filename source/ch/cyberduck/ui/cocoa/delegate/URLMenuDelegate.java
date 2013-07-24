@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
 import ch.cyberduck.ui.cocoa.application.NSColor;
@@ -93,7 +93,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             this.clearShortcut(item);
         }
         if(selected.isEmpty() || this.getURLs(selected.iterator().next()).isEmpty()) {
-            item.setTitle(Locale.localizedString("None"));
+            item.setTitle(LocaleFactory.localizedString("None"));
             item.setEnabled(false);
             item.setAction(null);
             item.setTarget(null);
@@ -127,7 +127,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                     item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(s, URL_FONT_ATTRIBUTES));
                 }
                 else {
-                    item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Unknown"), URL_FONT_ATTRIBUTES));
+                    item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(LocaleFactory.localizedString("Unknown"), URL_FONT_ATTRIBUTES));
                 }
             }
         }

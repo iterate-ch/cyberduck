@@ -19,8 +19,8 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,12 +32,12 @@ import java.util.Set;
 public final class CloudfilesProtocol extends AbstractProtocol {
     @Override
     public String getName() {
-        return Locale.localizedString("Cloud Files", "Mosso");
+        return LocaleFactory.localizedString("Cloud Files", "Mosso");
     }
 
     @Override
     public String getDescription() {
-        return Locale.localizedString("Rackspace Cloud Files", "Mosso");
+        return LocaleFactory.localizedString("Rackspace Cloud Files", "Mosso");
     }
 
     @Override
@@ -92,12 +92,12 @@ public final class CloudfilesProtocol extends AbstractProtocol {
 
     @Override
     public String getUsernamePlaceholder() {
-        return Locale.localizedString("Username", "Credentials");
+        return LocaleFactory.localizedString("Username", "Credentials");
     }
 
     @Override
     public String getPasswordPlaceholder() {
-        return Locale.localizedString("API Access Key", "Mosso");
+        return LocaleFactory.localizedString("API Access Key", "Mosso");
     }
 
     @Override

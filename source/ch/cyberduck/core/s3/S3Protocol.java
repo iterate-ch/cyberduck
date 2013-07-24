@@ -19,8 +19,8 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,7 +37,7 @@ public final class S3Protocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return Locale.localizedString("S3 (Amazon Simple Storage Service)", "S3");
+        return LocaleFactory.localizedString("S3 (Amazon Simple Storage Service)", "S3");
     }
 
     @Override
@@ -88,12 +88,12 @@ public final class S3Protocol extends AbstractProtocol {
 
     @Override
     public String getUsernamePlaceholder() {
-        return Locale.localizedString("Access Key ID", "S3");
+        return LocaleFactory.localizedString("Access Key ID", "S3");
     }
 
     @Override
     public String getPasswordPlaceholder() {
-        return Locale.localizedString("Secret Access Key", "S3");
+        return LocaleFactory.localizedString("Secret Access Key", "S3");
     }
 
     @Override

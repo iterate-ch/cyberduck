@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -32,13 +31,13 @@ public abstract class AbstractIOExceptionMappingService<T extends Exception> imp
 
     public BackgroundException map(final String message, final T failure) {
         final BackgroundException exception = this.map(failure);
-        exception.setMessage(StringUtils.chomp(Locale.localizedString(message, "Error")));
+        exception.setMessage(StringUtils.chomp(LocaleFactory.localizedString(message, "Error")));
         return exception;
     }
 
     public BackgroundException map(final String message, final T failure, final Path directory) {
         final BackgroundException exception = this.map(failure);
-        exception.setMessage(MessageFormat.format(StringUtils.chomp(Locale.localizedString(message, "Error")), directory.getName()));
+        exception.setMessage(MessageFormat.format(StringUtils.chomp(LocaleFactory.localizedString(message, "Error")), directory.getName()));
         return exception;
     }
 
@@ -65,7 +64,7 @@ public abstract class AbstractIOExceptionMappingService<T extends Exception> imp
 
     protected BackgroundException wrap(final T e, final StringBuilder buffer) {
         final BackgroundException exception = new BackgroundException(buffer.toString(), e);
-        exception.setMessage(Locale.localizedString("Connection failed"));
+        exception.setMessage(LocaleFactory.localizedString("Connection failed"));
         return exception;
     }
 }

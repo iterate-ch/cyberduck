@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -306,7 +305,7 @@ public class BookmarkController extends WindowController {
     /**
      * Calculate timezone
      */
-    protected static final String AUTO = Locale.localizedString("Auto");
+    protected static final String AUTO = LocaleFactory.localizedString("Auto");
 
     @Outlet
     private NSPopUpButton timezonePopup;
@@ -361,8 +360,8 @@ public class BookmarkController extends WindowController {
     @Outlet
     private NSPopUpButton connectmodePopup;
 
-    private static final String CONNECTMODE_ACTIVE = Locale.localizedString("Active");
-    private static final String CONNECTMODE_PASSIVE = Locale.localizedString("Passive");
+    private static final String CONNECTMODE_ACTIVE = LocaleFactory.localizedString("Active");
+    private static final String CONNECTMODE_PASSIVE = LocaleFactory.localizedString("Passive");
 
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;
@@ -392,8 +391,8 @@ public class BookmarkController extends WindowController {
     @Outlet
     private NSPopUpButton transferPopup;
 
-    private static final String TRANSFER_NEWCONNECTION = Locale.localizedString("Open new connection");
-    private static final String TRANSFER_BROWSERCONNECTION = Locale.localizedString("Use browser connection");
+    private static final String TRANSFER_NEWCONNECTION = LocaleFactory.localizedString("Open new connection");
+    private static final String TRANSFER_BROWSERCONNECTION = LocaleFactory.localizedString("Use browser connection");
 
     public void setTransferPopup(NSPopUpButton transferPopup) {
         this.transferPopup = transferPopup;
@@ -423,7 +422,7 @@ public class BookmarkController extends WindowController {
     @Outlet
     private NSPopUpButton downloadPathPopup;
 
-    private static final String CHOOSE = Locale.localizedString("Choose") + "…";
+    private static final String CHOOSE = LocaleFactory.localizedString("Choose") + "…";
 
     public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
         this.downloadPathPopup = downloadPathPopup;
@@ -588,8 +587,8 @@ public class BookmarkController extends WindowController {
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.setMessage(Locale.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
-            publicKeyPanel.setPrompt(Locale.localizedString("Choose"));
+            publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+            publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
             publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(), null, this.window(), this.id(),
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
@@ -783,7 +782,7 @@ public class BookmarkController extends WindowController {
         }
         else {
             pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+            pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
             pkLabel.setTextColor(NSColor.disabledControlTextColor());
         }
         final String webURL = host.getWebURL();

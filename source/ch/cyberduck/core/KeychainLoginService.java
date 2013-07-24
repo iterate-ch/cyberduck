@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -50,18 +49,18 @@ public class KeychainLoginService implements LoginService {
     @Override
     public void login(final Session session, final ProgressListener listener) throws BackgroundException {
         final Host bookmark = session.getHost();
-        this.validate(bookmark, Locale.localizedString("Login with username and password", "Credentials"));
+        this.validate(bookmark, LocaleFactory.localizedString("Login with username and password", "Credentials"));
         if(session.alert()) {
             // Warning if credentials are sent plaintext.
-            controller.warn(bookmark.getProtocol(), MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"),
+            controller.warn(bookmark.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
                     bookmark.getProtocol().getName()),
-                    MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"),
+                    MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
                             bookmark.getCredentials().getPasswordPlaceholder()),
-                    Locale.localizedString("Continue", "Credentials"),
-                    Locale.localizedString("Disconnect", "Credentials"),
+                    LocaleFactory.localizedString("Continue", "Credentials"),
+                    LocaleFactory.localizedString("Disconnect", "Credentials"),
                     String.format("connection.unsecure.%s", bookmark.getHostname()));
         }
-        listener.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
                 bookmark.getCredentials().getUsername()));
         try {
             if(log.isDebugEnabled()) {
@@ -71,17 +70,17 @@ public class KeychainLoginService implements LoginService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for session %s", session));
             }
-            listener.message(Locale.localizedString("Login successful", "Credentials"));
+            listener.message(LocaleFactory.localizedString("Login successful", "Credentials"));
             // Write credentials to keychain
             keychain.save(bookmark);
             // Reset password in memory
             bookmark.getCredentials().setPassword(null);
         }
         catch(LoginFailureException e) {
-            listener.message(Locale.localizedString("Login failed", "Credentials"));
+            listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
             try {
                 controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
-                        Locale.localizedString("Login failed", "Credentials"), e.getDetail(),
+                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(),
                         new LoginOptions(bookmark.getProtocol()));
             }
             catch(LoginCanceledException c) {
@@ -110,7 +109,7 @@ public class KeychainLoginService implements LoginService {
                     if(StringUtils.isBlank(password)) {
                         if(!bookmark.getCredentials().isPublicKeyAuthentication()) {
                             controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
-                                    title, Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"),
+                                    title, LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"),
                                     options);
                         }
                         // We decide later if the key is encrypted and a password must be known to decrypt.
@@ -125,7 +124,7 @@ public class KeychainLoginService implements LoginService {
                     if(!bookmark.getCredentials().isPublicKeyAuthentication()) {
                         controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
                                 title,
-                                Locale.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"), options);
+                                LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"), options);
                     }
                     // We decide later if the key is encrypted and a password must be known to decrypt.
                 }
@@ -133,7 +132,7 @@ public class KeychainLoginService implements LoginService {
             else {
                 controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
                         title,
-                        Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"), options);
+                        LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"), options);
             }
         }
     }

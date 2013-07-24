@@ -2,11 +2,11 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.i18n.Locale;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class FTPProtocol extends AbstractProtocol {
 
@@ -17,7 +17,7 @@ public final class FTPProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return Locale.localizedString("FTP (File Transfer Protocol)");
+        return LocaleFactory.localizedString("FTP (File Transfer Protocol)");
     }
 
     @Override

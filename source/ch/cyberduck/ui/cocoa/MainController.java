@@ -23,7 +23,6 @@ import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
 import ch.cyberduck.core.importer.FetchBookmarkCollection;
 import ch.cyberduck.core.importer.FilezillaBookmarkCollection;
@@ -233,14 +232,14 @@ public class MainController extends BundleController implements NSApplication.De
     public void setColumnMenu(NSMenu columnMenu) {
         this.columnMenu = columnMenu;
         Map<String, String> columns = new HashMap<String, String>();
-        columns.put("browser.columnKind", Locale.localizedString("Kind"));
-        columns.put("browser.columnExtension", Locale.localizedString("Extension"));
-        columns.put("browser.columnSize", Locale.localizedString("Size"));
-        columns.put("browser.columnModification", Locale.localizedString("Modified"));
-        columns.put("browser.columnOwner", Locale.localizedString("Owner"));
-        columns.put("browser.columnGroup", Locale.localizedString("Group"));
-        columns.put("browser.columnPermissions", Locale.localizedString("Permissions"));
-        columns.put("browser.columnRegion", Locale.localizedString("Region"));
+        columns.put("browser.columnKind", LocaleFactory.localizedString("Kind"));
+        columns.put("browser.columnExtension", LocaleFactory.localizedString("Extension"));
+        columns.put("browser.columnSize", LocaleFactory.localizedString("Size"));
+        columns.put("browser.columnModification", LocaleFactory.localizedString("Modified"));
+        columns.put("browser.columnOwner", LocaleFactory.localizedString("Owner"));
+        columns.put("browser.columnGroup", LocaleFactory.localizedString("Group"));
+        columns.put("browser.columnPermissions", LocaleFactory.localizedString("Permissions"));
+        columns.put("browser.columnRegion", LocaleFactory.localizedString("Region"));
         for(Map.Entry<String, String> entry : columns.entrySet()) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
                     Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);
@@ -547,10 +546,10 @@ public class MainController extends BundleController implements NSApplication.De
                     if(l.verify()) {
                         final NSAlert alert = NSAlert.alert(
                                 l.toString(),
-                                Locale.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
+                                LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
                                         + "\n\n"
-                                        + Locale.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
-                                Locale.localizedString("Continue", "License"), //default
+                                        + LocaleFactory.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
+                                LocaleFactory.localizedString("Continue", "License"), //default
                                 null, //other
                                 null);
                         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
@@ -565,9 +564,9 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                     else {
                         final NSAlert alert = NSAlert.alert(
-                                Locale.localizedString("Not a valid donation key", "License"),
-                                Locale.localizedString("This donation key does not appear to be valid.", "License"),
-                                Locale.localizedString("Continue", "License"), //default
+                                LocaleFactory.localizedString("Not a valid donation key", "License"),
+                                LocaleFactory.localizedString("This donation key does not appear to be valid.", "License"),
+                                LocaleFactory.localizedString("Continue", "License"), //default
                                 null, //other
                                 null);
                         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
@@ -660,7 +659,7 @@ public class MainController extends BundleController implements NSApplication.De
             return false;
         }
         final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
-        bookmarksPopup.setToolTip(Locale.localizedString("Bookmarks"));
+        bookmarksPopup.setToolTip(LocaleFactory.localizedString("Bookmarks"));
         for(Host b : BookmarkCollection.defaultCollection()) {
             String title = b.getNickname();
             int i = 1;
@@ -703,9 +702,9 @@ public class MainController extends BundleController implements NSApplication.De
         AlertController alert = new AlertController(t, NSAlert.alert("Select Bookmark",
                 MessageFormat.format("Upload {0} to the selected bookmark.",
                         files.size() == 1 ? files.iterator().next().getName()
-                                : MessageFormat.format(Locale.localizedString("{0} Files"), String.valueOf(files.size()))),
-                Locale.localizedString("Upload"),
-                Locale.localizedString("Cancel"),
+                                : MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(files.size()))),
+                LocaleFactory.localizedString("Upload"),
+                LocaleFactory.localizedString("Cancel"),
                 null)) {
             @Override
             public void callback(int returncode) {
@@ -1004,15 +1003,15 @@ public class MainController extends BundleController implements NSApplication.De
                     Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
                     new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()))) {
                 final NSAlert alert = NSAlert.alert(
-                        Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
-                        Locale.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links " +
+                        LocaleFactory.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
+                        LocaleFactory.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links " +
                                 "in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration"),
-                        Locale.localizedString("Change", "Configuration"), //default
+                        LocaleFactory.localizedString("Change", "Configuration"), //default
                         null, //other
-                        Locale.localizedString("Cancel", "Configuration"));
+                        LocaleFactory.localizedString("Cancel", "Configuration"));
                 alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                 alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
+                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
                 int choice = alert.runModal(); //alternate
                 if(alert.suppressionButton().state() == NSCell.NSOnState) {
                     // Never show again.
@@ -1085,13 +1084,13 @@ public class MainController extends BundleController implements NSApplication.De
                         continue;
                     }
                     final NSAlert alert = NSAlert.alert(
-                            MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
-                            MessageFormat.format(Locale.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), c.size()),
-                            Locale.localizedString("Import", "Configuration"), //default
+                            MessageFormat.format(LocaleFactory.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
+                            MessageFormat.format(LocaleFactory.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), c.size()),
+                            LocaleFactory.localizedString("Import", "Configuration"), //default
                             null, //other
-                            Locale.localizedString("Cancel", "Configuration"));
+                            LocaleFactory.localizedString("Cancel", "Configuration"));
                     alert.setShowsSuppressionButton(true);
-                    alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
+                    alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
                     alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                     int choice = alert.runModal(); //alternate
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
@@ -1217,14 +1216,14 @@ public class MainController extends BundleController implements NSApplication.De
             }
             if(controller.isConnected()) {
                 if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                    final NSAlert alert = NSAlert.alert(Locale.localizedString("Quit"),
-                            Locale.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
-                            Locale.localizedString("Quit Anyway"), //default
-                            Locale.localizedString("Cancel"), //other
-                            Locale.localizedString("Review…"));
+                    final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Quit"),
+                            LocaleFactory.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
+                            LocaleFactory.localizedString("Quit Anyway"), //default
+                            LocaleFactory.localizedString("Cancel"), //other
+                            LocaleFactory.localizedString("Review…"));
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     alert.setShowsSuppressionButton(true);
-                    alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
+                    alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
                     int choice = alert.runModal(); //alternate
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.

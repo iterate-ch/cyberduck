@@ -18,10 +18,10 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -141,12 +141,12 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
 
     @Override
     public String getActivity() {
-        return Locale.localizedString("Unknown");
+        return LocaleFactory.localizedString("Unknown");
     }
 
     @Override
     public String getName() {
-        return Locale.localizedString("Unknown");
+        return LocaleFactory.localizedString("Unknown");
     }
 
     @Override

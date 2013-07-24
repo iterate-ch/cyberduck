@@ -3,7 +3,6 @@ package ch.cyberduck.core.identity;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -67,12 +66,12 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
         options.publickey = false;
         try {
             final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
-            login.validate(host, Locale.localizedString("AWS Identity and Access Management", "S3"), options);
+            login.validate(host, LocaleFactory.localizedString("AWS Identity and Access Management", "S3"), options);
             return run.call();
         }
         catch(LoginFailureException failure) {
             prompt.prompt(host.getProtocol(), host.getCredentials(),
-                    Locale.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
+                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
             return this.authenticated(run);
         }
         catch(BackgroundException e) {

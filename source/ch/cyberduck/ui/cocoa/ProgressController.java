@@ -18,12 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferListener;
@@ -72,11 +72,11 @@ public class ProgressController extends BundleController implements TransferList
      */
     @Override
     public void awakeFromNib() {
-        this.progress(MessageFormat.format(Locale.localizedString("{0} of {1}"),
+        this.progress(MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
                 sizeFormatter.format(transfer.getTransferred()),
                 sizeFormatter.format(transfer.getSize())));
         this.message(StringUtils.EMPTY);
-        this.status(Locale.localizedString(transfer.isComplete() ?
+        this.status(LocaleFactory.localizedString(transfer.isComplete() ?
                 String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"));
         super.awakeFromNib();
     }
@@ -116,10 +116,10 @@ public class ProgressController extends BundleController implements TransferList
                 progressBar.setIndeterminate(true);
                 progressBar.setHidden(true);
                 message(StringUtils.EMPTY);
-                progress(MessageFormat.format(Locale.localizedString("{0} of {1}"),
+                progress(MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
                         sizeFormatter.format(transfer.getTransferred()),
                         sizeFormatter.format(transfer.getSize())));
-                status(Locale.localizedString(Locale.localizedString(transfer.isComplete() ?
+                status(LocaleFactory.localizedString(LocaleFactory.localizedString(transfer.isComplete() ?
                         String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"), "Status"));
                 statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
             }

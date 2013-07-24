@@ -18,11 +18,11 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.Local;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -63,8 +63,8 @@ public class SFTPPublicKeyAuthentication {
                     if(putty.isEncrypted()) {
                         if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
                             prompt.prompt(host.getProtocol(), host.getCredentials(),
-                                    Locale.localizedString("Private key password protected", "Credentials"),
-                                    Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
+                                    LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                    LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials")
                                             + " (" + identity + ")",
                                     new LoginOptions(host.getProtocol()));
                         }
@@ -74,8 +74,8 @@ public class SFTPPublicKeyAuthentication {
                     }
                     catch(PEMDecryptException e) {
                         prompt.prompt(host.getProtocol(), host.getCredentials(),
-                                Locale.localizedString("Invalid passphrase", "Credentials"),
-                                Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
+                                LocaleFactory.localizedString("Invalid passphrase", "Credentials"),
+                                LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials")
                                         + " (" + identity + ")", new LoginOptions(host.getProtocol()));
                         return this.authenticate(host, prompt);
                     }
@@ -85,8 +85,8 @@ public class SFTPPublicKeyAuthentication {
                     if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
                         if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
                             prompt.prompt(host.getProtocol(), host.getCredentials(),
-                                    Locale.localizedString("Private key password protected", "Credentials"),
-                                    Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
+                                    LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                    LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials")
                                             + " (" + identity + ")", new LoginOptions(host.getProtocol()));
                         }
                     }
@@ -95,8 +95,8 @@ public class SFTPPublicKeyAuthentication {
                     }
                     catch(PEMDecryptException e) {
                         prompt.prompt(host.getProtocol(), host.getCredentials(),
-                                Locale.localizedString("Invalid passphrase", "Credentials"),
-                                Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
+                                LocaleFactory.localizedString("Invalid passphrase", "Credentials"),
+                                LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials")
                                         + " (" + identity + ")", new LoginOptions(host.getProtocol()));
                         return this.authenticate(host, prompt);
                     }

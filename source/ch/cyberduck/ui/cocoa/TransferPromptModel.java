@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -141,7 +140,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
                     @Override
                     public String getActivity() {
-                        return MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                        return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
                                 path.getName());
                     }
 

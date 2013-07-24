@@ -20,11 +20,11 @@ package ch.cyberduck.core.cdn;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -173,7 +173,7 @@ public class Distribution {
      */
     public static final Method WEBSITE = new Method() {
         public String toString() {
-            return Locale.localizedString("Website Configuration (HTTP)", "S3");
+            return LocaleFactory.localizedString("Website Configuration (HTTP)", "S3");
         }
 
         @Override
@@ -192,7 +192,7 @@ public class Distribution {
      */
     public static final Method WEBSITE_CDN = new Method() {
         public String toString() {
-            return Locale.localizedString("Website Configuration (HTTP) CDN", "S3");
+            return LocaleFactory.localizedString("Website Configuration (HTTP) CDN", "S3");
         }
 
         @Override
@@ -208,7 +208,7 @@ public class Distribution {
 
     public static final Method DOWNLOAD = new Method() {
         public String toString() {
-            return Locale.localizedString("Download (HTTP) CDN", "S3");
+            return LocaleFactory.localizedString("Download (HTTP) CDN", "S3");
         }
 
         @Override
@@ -224,7 +224,7 @@ public class Distribution {
 
     public static final Method CUSTOM = new Method() {
         public String toString() {
-            return Locale.localizedString("Custom Origin Server (HTTP/HTTPS) CDN", "S3");
+            return LocaleFactory.localizedString("Custom Origin Server (HTTP/HTTPS) CDN", "S3");
         }
 
         @Override
@@ -240,7 +240,7 @@ public class Distribution {
 
     public static final Method STREAMING = new Method() {
         public String toString() {
-            return Locale.localizedString("Streaming (RTMP) CDN", "S3");
+            return LocaleFactory.localizedString("Streaming (RTMP) CDN", "S3");
         }
 
         @Override
@@ -449,14 +449,14 @@ public class Distribution {
     public List<DescriptiveUrl> getURLs(final Path file) {
         List<DescriptiveUrl> urls = this.getCnameURL(file);
         urls.add(new DescriptiveUrl(this.getURL(file),
-                MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(method.toString(), "S3"))));
         if(StringUtils.isNotBlank(this.getSslUrl())) {
             urls.add(new DescriptiveUrl(this.getSslUrl(file),
-                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3")) + " (SSL)"));
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(method.toString(), "S3")) + " (SSL)"));
         }
         if(StringUtils.isNotBlank(this.getStreamingUrl())) {
             urls.add(new DescriptiveUrl(this.getStreamingUrl(file),
-                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3")) + " (Streaming)"));
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(method.toString(), "S3")) + " (Streaming)"));
         }
         return urls;
     }
@@ -469,7 +469,7 @@ public class Distribution {
         List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>();
         for(String cname : this.getCNAMEs()) {
             urls.add(new DescriptiveUrl(this.getCnameURL(cname, file),
-                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(method.toString(), "S3"))));
         }
         return urls;
     }
@@ -494,7 +494,7 @@ public class Distribution {
      */
     public String getStatus() {
         if(null == status) {
-            return Locale.localizedString("Unknown");
+            return LocaleFactory.localizedString("Unknown");
         }
         return status;
     }
@@ -505,7 +505,7 @@ public class Distribution {
 
     public String getInvalidationStatus() {
         if(null == invalidationStatus) {
-            return Locale.localizedString("None");
+            return LocaleFactory.localizedString("None");
         }
         return invalidationStatus;
     }

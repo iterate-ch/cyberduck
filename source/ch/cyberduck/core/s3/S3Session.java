@@ -27,7 +27,6 @@ import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -417,8 +416,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             return new DescriptiveUrl(client.createSignedUrl("GET",
                     containerService.getContainer(file).getName(), containerService.getKey(file), null,
                     null, expiry.getTimeInMillis() / 1000, false, this.getHost().getProtocol().isSecure(), false),
-                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed", "S3"))
-                            + " (" + MessageFormat.format(Locale.localizedString("Expires on {0}", "S3") + ")",
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
+                            + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires on {0}", "S3") + ")",
                             UserDateFormatterFactory.get().getShortFormat(expiry.getTimeInMillis()))
             );
         }
@@ -445,7 +444,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         final Set<DescriptiveUrl> urls = super.getHttpURLs(path);
         // Always include HTTP URL
         urls.add(new DescriptiveUrl(this.toURL(path, Scheme.http.name()),
-                MessageFormat.format(Locale.localizedString("{0} URL"), Scheme.http.name().toUpperCase(java.util.Locale.ENGLISH))));
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.http.name().toUpperCase(java.util.Locale.ENGLISH))));
         final DescriptiveUrl hour = this.toSignedUrl(path, 60 * 60);
         if(StringUtils.isNotBlank(hour.getUrl())) {
             urls.add(hour);
@@ -462,7 +461,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         final DescriptiveUrl torrent = this.toTorrentUrl(path);
         if(StringUtils.isNotBlank(torrent.getUrl())) {
             urls.add(new DescriptiveUrl(torrent.getUrl(),
-                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Torrent"))));
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
         }
         return urls;
     }

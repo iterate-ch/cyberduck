@@ -18,7 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.LocaleFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +59,7 @@ public abstract class TransferAction {
     public static final TransferAction ACTION_OVERWRITE = new TransferAction("overwrite") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Overwrite");
+            return LocaleFactory.localizedString("Overwrite");
         }
     };
 
@@ -69,7 +69,7 @@ public abstract class TransferAction {
     public static final TransferAction ACTION_RESUME = new TransferAction("resume") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Resume");
+            return LocaleFactory.localizedString("Resume");
         }
     };
 
@@ -79,7 +79,7 @@ public abstract class TransferAction {
     public static final TransferAction ACTION_RENAME = new TransferAction("similar") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Rename");
+            return LocaleFactory.localizedString("Rename");
         }
     };
 
@@ -89,7 +89,7 @@ public abstract class TransferAction {
     public static final TransferAction ACTION_RENAME_EXISTING = new TransferAction("rename") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Rename existing");
+            return LocaleFactory.localizedString("Rename existing");
         }
     };
 
@@ -99,7 +99,7 @@ public abstract class TransferAction {
     public static final TransferAction ACTION_SKIP = new TransferAction("skip") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Skip");
+            return LocaleFactory.localizedString("Skip");
         }
     };
 
@@ -109,7 +109,7 @@ public abstract class TransferAction {
     public static final TransferAction ACTION_CALLBACK = new TransferAction("ask") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Prompt");
+            return LocaleFactory.localizedString("Prompt");
         }
     };
 
@@ -119,14 +119,14 @@ public abstract class TransferAction {
     public static final TransferAction ACTION_COMPARISON = new TransferAction("compare") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Compare");
+            return LocaleFactory.localizedString("Compare");
         }
     };
 
     public static final TransferAction ACTION_CANCEL = new TransferAction("cancel") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Cancel");
+            return LocaleFactory.localizedString("Cancel");
         }
     };
 

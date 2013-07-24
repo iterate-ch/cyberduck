@@ -18,10 +18,10 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.Controller;
@@ -84,7 +84,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
 
             @Override
             public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
+                return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
                         edited.getName());
             }
         });
@@ -117,7 +117,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
 
             @Override
             public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                         edited.getName());
             }
         });

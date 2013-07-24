@@ -19,10 +19,10 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -99,7 +99,7 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+        return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
                 this.toString(files));
     }
 }

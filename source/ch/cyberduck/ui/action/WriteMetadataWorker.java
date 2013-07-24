@@ -19,11 +19,11 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -63,7 +63,7 @@ public abstract class WriteMetadataWorker extends Worker<Void> {
     @Override
     public Void run() throws BackgroundException {
         for(Path file : files) {
-            session.message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+            session.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
             for(Map.Entry<String, String> entry : metadata.entrySet()) {
                 // Prune metadata from entries which are unique to a single file. For example md5-hash.
@@ -86,7 +86,7 @@ public abstract class WriteMetadataWorker extends Worker<Void> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+        return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                 this.toString(files));
     }
 }

@@ -20,13 +20,13 @@ package ch.cyberduck.core.transfer.synchronisation;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
@@ -123,21 +123,21 @@ public class SyncTransfer extends Transfer {
     public static final TransferAction ACTION_DOWNLOAD = new TransferAction("download") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Download");
+            return LocaleFactory.localizedString("Download");
         }
     };
 
     public static final TransferAction ACTION_UPLOAD = new TransferAction("upload") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Upload");
+            return LocaleFactory.localizedString("Upload");
         }
     };
 
     public static final TransferAction ACTION_MIRROR = new TransferAction("mirror") {
         @Override
         public String getLocalizableString() {
-            return Locale.localizedString("Mirror");
+            return LocaleFactory.localizedString("Mirror");
         }
     };
 

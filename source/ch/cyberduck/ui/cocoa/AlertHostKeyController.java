@@ -21,10 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.sftp.MemoryHostKeyVerifier;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyControllerFactory;
@@ -89,16 +89,16 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                            final byte[] serverHostKey) throws ConnectionCanceledException {
-        final NSAlert alert = NSAlert.alert(MessageFormat.format(Locale.localizedString("Unknown host key for {0}."), hostname), //title
-                MessageFormat.format(Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
+        final NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Unknown host key for {0}."), hostname), //title
+                MessageFormat.format(LocaleFactory.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
                         KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
-                Locale.localizedString("Allow"), // default button
-                Locale.localizedString("Deny"), // alternate button
+                LocaleFactory.localizedString("Allow"), // default button
+                LocaleFactory.localizedString("Deny"), // alternate button
                 null //other button
         );
         if(this.isHostKeyDatabaseWritable()) {
             alert.setShowsSuppressionButton(true);
-            alert.suppressionButton().setTitle(Locale.localizedString("Always"));
+            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
         }
         alert.setShowsHelp(true);
         SheetController c = new AlertController(parent, alert) {
@@ -131,16 +131,16 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     @Override
     protected boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                            final byte[] serverHostKey) throws ConnectionCanceledException {
-        NSAlert alert = NSAlert.alert(MessageFormat.format(Locale.localizedString("Host key mismatch for {0}"), hostname), //title
-                MessageFormat.format(Locale.localizedString("The host key supplied is {0}."),
+        NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname), //title
+                MessageFormat.format(LocaleFactory.localizedString("The host key supplied is {0}."),
                         KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
-                Locale.localizedString("Allow"), // defaultbutton
-                Locale.localizedString("Deny"), //alternative button
+                LocaleFactory.localizedString("Allow"), // defaultbutton
+                LocaleFactory.localizedString("Deny"), //alternative button
                 null //other button
         );
         if(this.isHostKeyDatabaseWritable()) {
             alert.setShowsSuppressionButton(true);
-            alert.suppressionButton().setTitle(Locale.localizedString("Always"));
+            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
         }
         alert.setShowsHelp(true);
         SheetController c = new AlertController(parent, alert) {

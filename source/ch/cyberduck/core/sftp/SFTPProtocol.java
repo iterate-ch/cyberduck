@@ -19,11 +19,11 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.i18n.Locale;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class SFTPProtocol extends AbstractProtocol {
 
@@ -39,7 +39,7 @@ public final class SFTPProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return Locale.localizedString("SFTP (SSH File Transfer Protocol)");
+        return LocaleFactory.localizedString("SFTP (SSH File Transfer Protocol)");
     }
 
     @Override

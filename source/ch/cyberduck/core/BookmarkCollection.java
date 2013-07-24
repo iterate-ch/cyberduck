@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
-
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
@@ -56,7 +54,7 @@ public class BookmarkCollection extends AbstractHostCollection {
 
     @Override
     public String getName() {
-        return Locale.localizedString("Favorites");
+        return LocaleFactory.localizedString("Favorites");
     }
 
     /**

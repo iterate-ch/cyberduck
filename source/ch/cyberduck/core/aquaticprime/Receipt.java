@@ -20,10 +20,10 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Preferences;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
@@ -249,14 +249,14 @@ public class Receipt extends AbstractLicense {
 
     @Override
     public String getValue(String property) {
-        return Locale.localizedString("Unknown");
+        return LocaleFactory.localizedString("Unknown");
     }
 
     @Override
     public String getName() {
         if(StringUtils.isEmpty(name)) {
             log.warn("Need to validate first before hash is available");
-            return Locale.localizedString("Unknown");
+            return LocaleFactory.localizedString("Unknown");
         }
         return name;
     }

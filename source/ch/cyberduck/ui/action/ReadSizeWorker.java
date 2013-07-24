@@ -19,9 +19,9 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -55,7 +55,7 @@ public abstract class ReadSizeWorker extends Worker<Long> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+        return MessageFormat.format(LocaleFactory.localizedString("Getting size of {0}", "Status"),
                 this.toString(files));
     }
 }

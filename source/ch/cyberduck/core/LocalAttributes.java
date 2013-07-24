@@ -17,7 +17,6 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 
 import org.apache.log4j.Logger;
@@ -183,7 +182,7 @@ public class LocalAttributes extends Attributes {
 
         @Override
         public String toString() {
-            return Locale.localizedString("Unknown");
+            return LocaleFactory.localizedString("Unknown");
         }
     }
 }

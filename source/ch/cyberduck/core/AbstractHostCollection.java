@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.text.NaturalOrderComparator;
 
 import org.apache.commons.lang.CharUtils;
@@ -43,7 +42,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
 
         @Override
         public String getName() {
-            return Locale.localizedString("None");
+            return LocaleFactory.localizedString("None");
         }
     };
 

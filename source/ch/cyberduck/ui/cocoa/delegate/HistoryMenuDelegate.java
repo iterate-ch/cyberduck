@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
@@ -87,7 +87,7 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         final int size = collection.size();
         if(size == 0) {
-            item.setTitle(Locale.localizedString("No recently connected servers available"));
+            item.setTitle(LocaleFactory.localizedString("No recently connected servers available"));
             item.setTarget(null);
             item.setAction(null);
             item.setImage(null);
@@ -115,7 +115,7 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
                 }
                 else {
                     item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
-                            Locale.localizedString("Unknown"), TIMESTAMP_FONT_ATTRIBUTES));
+                            LocaleFactory.localizedString("Unknown"), TIMESTAMP_FONT_ATTRIBUTES));
                 }
             }
         }
@@ -128,7 +128,7 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setEnabled(false);
         }
         else if(index.intValue() == size * 2 + 1) {
-            item.setTitle(Locale.localizedString("Clear Menu"));
+            item.setTitle(LocaleFactory.localizedString("Clear Menu"));
             item.setAction(Foundation.selector("clearMenuItemClicked:"));
             item.setTarget(this.id());
             item.setEnabled(true);

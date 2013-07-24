@@ -19,8 +19,8 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.i18n.Locale;
 
 /**
  * @version $Id$
@@ -28,12 +28,12 @@ import ch.cyberduck.core.i18n.Locale;
 public final class SwiftProtocol extends AbstractProtocol {
     @Override
     public String getName() {
-        return Locale.localizedString("Swift", "Mosso");
+        return LocaleFactory.localizedString("Swift", "Mosso");
     }
 
     @Override
     public String getDescription() {
-        return Locale.localizedString("Swift (OpenStack Object Storage)", "Mosso");
+        return LocaleFactory.localizedString("Swift (OpenStack Object Storage)", "Mosso");
     }
 
     @Override

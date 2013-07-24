@@ -19,10 +19,10 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -73,11 +73,11 @@ public class GotoController extends AlertController {
 
     public GotoController(final WindowController parent) {
         super(parent, NSAlert.alert(
-                Locale.localizedString("Go to folder", "Goto"),
-                Locale.localizedString("Enter the pathname to list:", "Goto"),
-                Locale.localizedString("Go", "Goto"),
+                LocaleFactory.localizedString("Go to folder", "Goto"),
+                LocaleFactory.localizedString("Enter the pathname to list:", "Goto"),
+                LocaleFactory.localizedString("Go", "Goto"),
                 null,
-                Locale.localizedString("Cancel", "Goto")
+                LocaleFactory.localizedString("Cancel", "Goto")
         ));
         alert.setIcon(IconCacheFactory.<NSImage>get().folderIcon(64));
         folderCombobox = NSComboBox.textfieldWithFrame(new NSRect(0, 26));

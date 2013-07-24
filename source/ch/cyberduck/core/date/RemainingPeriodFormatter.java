@@ -17,7 +17,7 @@ package ch.cyberduck.core.date;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.LocaleFactory;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -36,20 +36,20 @@ public class RemainingPeriodFormatter implements PeriodFormatter {
         StringBuilder b = new StringBuilder();
         if(remaining < 0) {
             // File sizes larger than advertised
-            return Locale.localizedString("Unknown");
+            return LocaleFactory.localizedString("Unknown");
         }
         if(remaining > 7200) { // More than two hours
-            b.append(MessageFormat.format(Locale.localizedString("{0} hours remaining", "Status"),
+            b.append(MessageFormat.format(LocaleFactory.localizedString("{0} hours remaining", "Status"),
                     new BigDecimal(remaining).divide(new BigDecimal(3600), 1, BigDecimal.ROUND_DOWN).toString())
             );
         }
         else if(remaining > 120) { // More than two minutes
-            b.append(MessageFormat.format(Locale.localizedString("{0} minutes remaining", "Status"),
+            b.append(MessageFormat.format(LocaleFactory.localizedString("{0} minutes remaining", "Status"),
                     String.valueOf((int) (remaining / 60)))
             );
         }
         else {
-            b.append(MessageFormat.format(Locale.localizedString("{0} seconds remaining", "Status"),
+            b.append(MessageFormat.format(LocaleFactory.localizedString("{0} seconds remaining", "Status"),
                     String.valueOf((int) remaining))
             );
         }

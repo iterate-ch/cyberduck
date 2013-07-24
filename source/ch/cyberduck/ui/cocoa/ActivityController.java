@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.application.NSCell;
@@ -113,7 +113,7 @@ public final class ActivityController extends WindowController {
 
     @Override
     public void setWindow(NSWindow window) {
-        window.setTitle(Locale.localizedString("Activity"));
+        window.setTitle(LocaleFactory.localizedString("Activity"));
         super.setWindow(window);
     }
 

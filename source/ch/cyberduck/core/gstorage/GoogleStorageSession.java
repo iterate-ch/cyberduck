@@ -19,15 +19,7 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -39,7 +31,6 @@ import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3BucketListService;
@@ -139,7 +130,7 @@ public class GoogleStorageSession extends S3Session {
                 final LoginOptions options = new LoginOptions();
                 options.keychain = false;
                 controller.prompt(host.getProtocol(), host.getCredentials(),
-                        Locale.localizedString("OAuth2 Authentication", "Credentials"), url, options);
+                        LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url, options);
 
                 try {
                     // Swap the given authorization token for access/refresh tokens
@@ -282,7 +273,7 @@ public class GoogleStorageSession extends S3Session {
         DescriptiveUrl url = this.toAuthenticatedUrl(path);
         if(StringUtils.isNotBlank(url.getUrl())) {
             urls.add(new DescriptiveUrl(url.getUrl(),
-                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Authenticated"))));
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Authenticated"))));
         }
         return urls;
     }

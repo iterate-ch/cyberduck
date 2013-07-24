@@ -19,23 +19,12 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.FileDescriptorFactory;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
@@ -511,9 +500,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setDefaultBookmarkCombobox(NSPopUpButton b) {
         this.defaultBookmarkCombobox = b;
-        this.defaultBookmarkCombobox.setToolTip(Locale.localizedString("Bookmarks"));
+        this.defaultBookmarkCombobox.setToolTip(LocaleFactory.localizedString("Bookmarks"));
         this.defaultBookmarkCombobox.removeAllItems();
-        this.defaultBookmarkCombobox.addItemWithTitle(Locale.localizedString("None"));
+        this.defaultBookmarkCombobox.addItemWithTitle(LocaleFactory.localizedString("None"));
         this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
         this.defaultBookmarkCombobox.menu().addItem(NSMenuItem.separatorItem());
         for(Host bookmark : BookmarkCollection.defaultCollection()) {
@@ -1062,7 +1051,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton downloadPathPopup;
 
-    private static final String CHOOSE = Locale.localizedString("Choose") + "…";
+    private static final String CHOOSE = LocaleFactory.localizedString("Choose") + "…";
 
     // The currently set download folder
     private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
@@ -1660,14 +1649,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.sshTransfersCombobox.setTarget(this.id());
         this.sshTransfersCombobox.setAction(Foundation.selector("sshTransfersComboboxClicked:"));
         this.sshTransfersCombobox.removeAllItems();
-        this.sshTransfersCombobox.addItemsWithTitles(NSArray.arrayWithObjects(Protocol.SFTP.getDescription(), Locale.localizedString("SCP (Secure Copy)")));
+        this.sshTransfersCombobox.addItemsWithTitles(NSArray.arrayWithObjects(Protocol.SFTP.getDescription(), LocaleFactory.localizedString("SCP (Secure Copy)")));
         this.sshTransfersCombobox.itemWithTitle(Protocol.SFTP.getDescription()).setRepresentedObject(Scheme.sftp.name());
-        this.sshTransfersCombobox.itemWithTitle(Locale.localizedString("SCP (Secure Copy)")).setRepresentedObject(Scheme.scp.name());
+        this.sshTransfersCombobox.itemWithTitle(LocaleFactory.localizedString("SCP (Secure Copy)")).setRepresentedObject(Scheme.scp.name());
         if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.sftp.name())) {
             this.sshTransfersCombobox.selectItemWithTitle(Protocol.SFTP.getDescription());
         }
         else if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
-            this.sshTransfersCombobox.selectItemWithTitle(Locale.localizedString("SCP (Secure Copy)"));
+            this.sshTransfersCombobox.selectItemWithTitle(LocaleFactory.localizedString("SCP (Secure Copy)"));
         }
     }
 
@@ -1679,7 +1668,7 @@ public class PreferencesController extends ToolbarWindowController {
     private void configureDefaultProtocolHandlerCombobox(NSPopUpButton defaultProtocolHandlerCombobox, Scheme protocol) {
         final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol);
         if(null == defaultHandler) {
-            defaultProtocolHandlerCombobox.addItemWithTitle(Locale.localizedString("Unknown"));
+            defaultProtocolHandlerCombobox.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
             defaultProtocolHandlerCombobox.setEnabled(false);
             return;
         }
@@ -1842,11 +1831,11 @@ public class PreferencesController extends ToolbarWindowController {
         this.updateFeedPopup = b;
         this.updateFeedPopup.removeAllItems();
         this.updateFeedPopup.setAction(Foundation.selector("updateFeedPopupClicked:"));
-        this.updateFeedPopup.addItemWithTitle(Locale.localizedString("Release"));
+        this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Release"));
         this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.release"));
-        this.updateFeedPopup.addItemWithTitle(Locale.localizedString("Beta"));
+        this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Beta"));
         this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.beta"));
-        this.updateFeedPopup.addItemWithTitle(Locale.localizedString("Snapshot Builds"));
+        this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Snapshot Builds"));
         this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.nightly"));
         String feed = Preferences.instance().getProperty("SUFeedURL");
         NSInteger selected = this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(feed);
@@ -1881,12 +1870,12 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
         for(String location : Protocol.S3_SSL.getRegions()) {
-            this.defaultBucketLocation.addItemWithTitle(Locale.localizedString(location, "S3"));
+            this.defaultBucketLocation.addItemWithTitle(LocaleFactory.localizedString(location, "S3"));
             this.defaultBucketLocation.lastItem().setRepresentedObject(location);
         }
         this.defaultBucketLocation.setTarget(this.id());
         this.defaultBucketLocation.setAction(Foundation.selector("defaultBucketLocationClicked:"));
-        this.defaultBucketLocation.selectItemWithTitle(Locale.localizedString(Preferences.instance().getProperty("s3.location"), "S3"));
+        this.defaultBucketLocation.selectItemWithTitle(LocaleFactory.localizedString(Preferences.instance().getProperty("s3.location"), "S3"));
     }
 
     @Action
@@ -1901,13 +1890,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup = b;
         this.defaultStorageClassPopup.setAutoenablesItems(false);
         this.defaultStorageClassPopup.removeAllItems();
-        this.defaultStorageClassPopup.addItemWithTitle(Locale.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3"));
+        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3"));
         this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_STANDARD);
-        this.defaultStorageClassPopup.addItemWithTitle(Locale.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"));
+        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"));
         this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         this.defaultStorageClassPopup.setTarget(this.id());
         this.defaultStorageClassPopup.setAction(Foundation.selector("defaultStorageClassPopupClicked:"));
-        this.defaultStorageClassPopup.selectItemWithTitle(Locale.localizedString(Preferences.instance().getProperty("s3.storage.class"), "S3"));
+        this.defaultStorageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(Preferences.instance().getProperty("s3.storage.class"), "S3"));
     }
 
     @Action
@@ -1922,16 +1911,16 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultEncryptionPopup = b;
         this.defaultEncryptionPopup.setAutoenablesItems(false);
         this.defaultEncryptionPopup.removeAllItems();
-        this.defaultEncryptionPopup.addItemWithTitle(Locale.localizedString("None"));
-        this.defaultEncryptionPopup.addItemWithTitle(Locale.localizedString("AES256", "S3"));
+        this.defaultEncryptionPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+        this.defaultEncryptionPopup.addItemWithTitle(LocaleFactory.localizedString("AES256", "S3"));
         this.defaultEncryptionPopup.lastItem().setRepresentedObject("AES256");
         this.defaultEncryptionPopup.setTarget(this.id());
         this.defaultEncryptionPopup.setAction(Foundation.selector("defaultEncryptionPopupClicked:"));
         if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
-            this.defaultEncryptionPopup.selectItemWithTitle(Locale.localizedString(Preferences.instance().getProperty("s3.encryption.algorithm"), "S3"));
+            this.defaultEncryptionPopup.selectItemWithTitle(LocaleFactory.localizedString(Preferences.instance().getProperty("s3.encryption.algorithm"), "S3"));
         }
         else {
-            this.defaultEncryptionPopup.selectItemWithTitle(Locale.localizedString("None"));
+            this.defaultEncryptionPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
         }
     }
 
@@ -2064,13 +2053,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.languagePopup.removeAllItems();
         this.languagePopup.setTarget(this.id());
         this.languagePopup.setAction(Foundation.selector("languagePopupClicked:"));
-        this.languagePopup.addItemWithTitle(Locale.localizedString("Default"));
+        this.languagePopup.addItemWithTitle(LocaleFactory.localizedString("Default"));
         this.languagePopup.menu().addItem(NSMenuItem.separatorItem());
         String custom = null;
         if(Preferences.instance().systemLocales().size() > 1) {
             // No user default application scope single value of AppleLanguages property is set but a list
             // of preferred languages from system preferences is returned.
-            this.languagePopup.selectItemWithTitle(Locale.localizedString("Default"));
+            this.languagePopup.selectItemWithTitle(LocaleFactory.localizedString("Default"));
         }
         else {
             // Custom language set for this application identifier

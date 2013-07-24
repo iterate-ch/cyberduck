@@ -19,11 +19,11 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -204,7 +204,7 @@ public class S3AccessControlListFeature implements AclPermission {
                 new Acl.EmailUser() {
                     @Override
                     public String getPlaceholder() {
-                        return Locale.localizedString("Amazon Customer Email Address", "S3");
+                        return LocaleFactory.localizedString("Amazon Customer Email Address", "S3");
                     }
                 })
         );

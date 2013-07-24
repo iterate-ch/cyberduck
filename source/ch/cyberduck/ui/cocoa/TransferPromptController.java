@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
@@ -27,7 +28,6 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -146,7 +146,7 @@ public abstract class TransferPromptController extends SheetController
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                MessageFormat.format(Locale.localizedString("{0} Files"), String.valueOf(browserView.numberOfRows())),
+                MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(browserView.numberOfRows())),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
@@ -165,7 +165,7 @@ public abstract class TransferPromptController extends SheetController
     }
 
     private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
-            Locale.localizedString("Unknown"),
+            LocaleFactory.localizedString("Unknown"),
             TRUNCATE_MIDDLE_ATTRIBUTES);
 
     // Setting appearance attributes
@@ -319,7 +319,7 @@ public abstract class TransferPromptController extends SheetController
         }
         {
             NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.FILENAME_COLUMN);
-            c.headerCell().setStringValue(Locale.localizedString("Filename"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
             c.setMinWidth(100f);
             c.setWidth(220f);
             c.setMaxWidth(800f);

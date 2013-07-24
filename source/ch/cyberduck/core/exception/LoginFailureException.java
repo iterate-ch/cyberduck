@@ -18,7 +18,7 @@ package ch.cyberduck.core.exception;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.LocaleFactory;
 
 /**
  * @version $Id$
@@ -36,6 +36,6 @@ public class LoginFailureException extends BackgroundException {
 
     @Override
     public String getMessage() {
-        return Locale.localizedString("Login failed", "Credentials");
+        return LocaleFactory.localizedString("Login failed", "Credentials");
     }
 }

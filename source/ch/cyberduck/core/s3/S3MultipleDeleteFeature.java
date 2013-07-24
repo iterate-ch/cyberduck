@@ -18,12 +18,12 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
@@ -58,7 +58,7 @@ public class S3MultipleDeleteFeature implements Delete {
             if(containerService.isContainer(file)) {
                 continue;
             }
-            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+            session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             final Path container = containerService.getContainer(file);
             final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
@@ -88,7 +88,7 @@ public class S3MultipleDeleteFeature implements Delete {
         }
         for(Path file : files) {
             if(containerService.isContainer(file)) {
-                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                         file.getName()));
                 // Finally delete bucket itself
                 try {

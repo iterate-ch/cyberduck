@@ -22,10 +22,10 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 
 import org.apache.commons.lang.StringUtils;
@@ -130,7 +130,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             comment.append(" ");
         }
-        comment.append(MessageFormat.format(Locale.localizedString("Imported from {0}", "Configuration"),
+        comment.append(MessageFormat.format(LocaleFactory.localizedString("Imported from {0}", "Configuration"),
                 this.getName()));
         bookmark.setComment(comment.toString());
         if(log.isDebugEnabled()) {

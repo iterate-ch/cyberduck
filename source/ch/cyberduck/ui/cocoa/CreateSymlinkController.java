@@ -19,11 +19,11 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -43,16 +43,16 @@ public class CreateSymlinkController extends FileController {
 
     public CreateSymlinkController(final WindowController parent) {
         super(parent, NSAlert.alert(
-                Locale.localizedString("Create new symbolic link", "File"),
+                LocaleFactory.localizedString("Create new symbolic link", "File"),
                 StringUtils.EMPTY,
-                Locale.localizedString("Create", "File"),
+                LocaleFactory.localizedString("Create", "File"),
                 null,
-                Locale.localizedString("Cancel", "File")
+                LocaleFactory.localizedString("Cancel", "File")
         ));
         alert.setIcon(IconCacheFactory.<NSImage>get().aliasIcon(null, 64));
         final Path selected = this.getSelected();
         this.inputField.setStringValue(FilenameUtils.getBaseName(selected.getName()));
-        this.setMessage(MessageFormat.format(Locale.localizedString("Enter the name for the new symbolic link for {0}:", "File"),
+        this.setMessage(MessageFormat.format(LocaleFactory.localizedString("Enter the name for the new symbolic link for {0}:", "File"),
                 selected.getName()));
     }
 
@@ -78,7 +78,7 @@ public class CreateSymlinkController extends FileController {
 
             @Override
             public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                         symlink);
             }
 

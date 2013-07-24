@@ -19,10 +19,10 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -31,7 +31,7 @@ import java.io.IOException;
 import ch.ethz.ssh2.InteractiveCallback;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPChallengeResponseAuthentication {
     private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
@@ -79,7 +79,7 @@ public class SFTPChallengeResponseAuthentication {
                             String[] response = new String[numPrompts];
                             for(int i = 0; i < numPrompts; i++) {
                                 controller.prompt(host.getProtocol(), credentials,
-                                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i], new LoginOptions());
+                                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), prompt[i], new LoginOptions());
                                 response[i] = credentials.getPassword();
                                 promptCount++;
                             }

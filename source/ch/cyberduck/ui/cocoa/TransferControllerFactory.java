@@ -17,9 +17,9 @@ package ch.cyberduck.ui.cocoa;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
@@ -58,10 +58,10 @@ public class TransferControllerFactory {
         //Saving state of transfer window
         Preferences.instance().setProperty("queue.openByDefault", shared.window().isVisible());
         if(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0) {
-            final NSAlert alert = NSAlert.alert(Locale.localizedString("Transfer in progress"), //title
-                    Locale.localizedString("There are files currently being transferred. Quit anyway?"), // message
-                    Locale.localizedString("Quit"), // defaultbutton
-                    Locale.localizedString("Cancel"), //alternative button
+            final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Transfer in progress"), //title
+                    LocaleFactory.localizedString("There are files currently being transferred. Quit anyway?"), // message
+                    LocaleFactory.localizedString("Quit"), // defaultbutton
+                    LocaleFactory.localizedString("Cancel"), //alternative button
                     null //other button
             );
             shared.alert(alert, new SheetCallback() {

@@ -19,12 +19,12 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -104,15 +104,15 @@ public class SwiftAuthenticationService {
                 final Credentials tenantCredentials = new Credentials() {
                     @Override
                     public String getUsernamePlaceholder() {
-                        return Locale.localizedString("Tenant", "Mosso");
+                        return LocaleFactory.localizedString("Tenant", "Mosso");
                     }
                 };
                 final LoginOptions options = new LoginOptions();
                 options.user = false;
                 options.password = false;
                 prompt.prompt(host.getProtocol(), tenantCredentials,
-                        Locale.localizedString("Provide additional login credentials", "Credentials"),
-                        Locale.localizedString("Tenant or project identifier", "Mosso"), options);
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        LocaleFactory.localizedString("Tenant or project identifier", "Mosso"), options);
                 tenant = tenantCredentials.getUsername();
                 // Save tenant in username
                 credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));

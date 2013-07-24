@@ -27,7 +27,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 
@@ -409,7 +408,7 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
      */
     public Set<DescriptiveUrl> getURLs(final Path path) {
         Set<DescriptiveUrl> list = new LinkedHashSet<DescriptiveUrl>();
-        list.add(new DescriptiveUrl(this.toURL(path), MessageFormat.format(Locale.localizedString("{0} URL"),
+        list.add(new DescriptiveUrl(this.toURL(path), MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                 host.getProtocol().getScheme().toString().toUpperCase(java.util.Locale.ENGLISH))));
         list.addAll(this.getHttpURLs(path));
         return list;
@@ -426,7 +425,7 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
         // Include default Web URL
         final String http = this.toHttpURL(path);
         if(StringUtils.isNotBlank(http)) {
-            urls.add(new DescriptiveUrl(http, MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")));
+            urls.add(new DescriptiveUrl(http, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
         }
         return urls;
     }

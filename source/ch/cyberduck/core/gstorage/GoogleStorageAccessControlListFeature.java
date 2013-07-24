@@ -18,8 +18,8 @@ package ch.cyberduck.core.gstorage;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 
 import org.apache.commons.lang.StringUtils;
@@ -115,7 +115,7 @@ public class GoogleStorageAccessControlListFeature extends S3AccessControlListFe
         users.add(new Acl.EmailUser() {
             @Override
             public String getPlaceholder() {
-                return Locale.localizedString("Google Account Email Address", "S3");
+                return LocaleFactory.localizedString("Google Account Email Address", "S3");
             }
         });
         // Google Apps customers can associate their email accounts with an Internet domain name. When you do
@@ -124,13 +124,13 @@ public class GoogleStorageAccessControlListFeature extends S3AccessControlListFe
         users.add(new Acl.DomainUser(StringUtils.EMPTY) {
             @Override
             public String getPlaceholder() {
-                return Locale.localizedString("Google Apps Domain", "S3");
+                return LocaleFactory.localizedString("Google Apps Domain", "S3");
             }
         });
         users.add(new Acl.EmailGroupUser(StringUtils.EMPTY, true) {
             @Override
             public String getPlaceholder() {
-                return Locale.localizedString("Google Group Email Address", "S3");
+                return LocaleFactory.localizedString("Google Group Email Address", "S3");
             }
         });
         return users;

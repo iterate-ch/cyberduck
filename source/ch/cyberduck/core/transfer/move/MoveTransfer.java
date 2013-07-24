@@ -21,11 +21,11 @@ package ch.cyberduck.core.transfer.move;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -101,7 +101,7 @@ public class MoveTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
-        session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+        session.message(MessageFormat.format(LocaleFactory.localizedString("Renaming {0} to {1}", "Status"),
                 source.getName(), files.get(source).getName()));
 
         if(source.attributes().isFile()) {
@@ -116,7 +116,7 @@ public class MoveTransfer extends Transfer {
 
     @Override
     public String getName() {
-        return MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+        return MessageFormat.format(LocaleFactory.localizedString("Renaming {0} to {1}", "Status"),
                 files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
     }
 

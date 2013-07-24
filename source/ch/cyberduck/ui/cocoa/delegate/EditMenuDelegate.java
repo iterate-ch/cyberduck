@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.editor.EditorFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -99,7 +99,7 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
             editors = EditorFactory.instance().getEditors(selected.getName());
         }
         if(editors.size() == 0) {
-            item.setTitle(Locale.localizedString("No external editor available"));
+            item.setTitle(LocaleFactory.localizedString("No external editor available"));
             return false;
         }
         final Application application = editors.get(index.intValue());

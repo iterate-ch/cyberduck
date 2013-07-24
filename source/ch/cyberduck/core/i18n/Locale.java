@@ -18,35 +18,10 @@ package ch.cyberduck.core.i18n;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
-
-import org.apache.commons.lang.StringUtils;
-
 /**
  * @version $Id$
  */
-public abstract class Locale {
+public interface Locale {
 
-    /**
-     * @param key English variant
-     * @return Localized from default table
-     */
-    public static String localizedString(final String key) {
-        return localizedString(key, "Localizable");
-    }
-
-    /**
-     * @param key   English variant
-     * @param table The identifier of the table to lookup the string in. Could be a file.
-     * @return Localized from table
-     */
-    public static String localizedString(final String key, final String table) {
-        final String lookup = LocaleFactory.get().localize(key, table);
-        if(StringUtils.contains(lookup, "{0}")) {
-            return StringUtils.replace(lookup, "'", "''");
-        }
-        return lookup;
-    }
-
-    public abstract String localize(final String key, final String table);
+    String localize(String key, String table);
 }

@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -28,10 +30,8 @@ import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
@@ -159,7 +159,7 @@ public final class TransferController extends WindowController implements NSTool
     @Override
     public void setWindow(NSWindow window) {
         window.setMovableByWindowBackground(true);
-        window.setTitle(Locale.localizedString("Transfers"));
+        window.setTitle(LocaleFactory.localizedString("Transfers"));
         window.setDelegate(this.id());
         super.setWindow(window);
     }
@@ -212,7 +212,7 @@ public final class TransferController extends WindowController implements NSTool
 
     public void setLocalLabel(NSTextField localLabel) {
         this.localLabel = localLabel;
-        this.localLabel.setStringValue(Locale.localizedString("Local File:", "Transfer"));
+        this.localLabel.setStringValue(LocaleFactory.localizedString("Local File:", "Transfer"));
     }
 
     @Outlet
@@ -338,7 +338,7 @@ public final class TransferController extends WindowController implements NSTool
         this.bandwidthPopup.removeAllItems();
         this.bandwidthPopup.addItemWithTitle(StringUtils.EMPTY);
         this.bandwidthPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("bandwidth.tiff", 16));
-        this.bandwidthPopup.addItemWithTitle(Locale.localizedString("Unlimited Bandwidth", "Transfer"));
+        this.bandwidthPopup.addItemWithTitle(LocaleFactory.localizedString("Unlimited Bandwidth", "Transfer"));
         this.bandwidthPopup.lastItem().setRepresentedObject(String.valueOf(BandwidthThrottle.UNLIMITED));
         this.bandwidthPopup.menu().addItem(NSMenuItem.separatorItem());
         final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
@@ -549,10 +549,10 @@ public final class TransferController extends WindowController implements NSTool
             }
             else {
                 urlField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        Locale.localizedString("Multiple files"),
+                        LocaleFactory.localizedString("Multiple files"),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
                 localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        Locale.localizedString("Multiple files"),
+                        LocaleFactory.localizedString("Multiple files"),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
         }
@@ -625,14 +625,14 @@ public final class TransferController extends WindowController implements NSTool
         final TransferCollection collection = TransferCollection.defaultCollection();
         if(collection.size() > Preferences.instance().getInteger("queue.size.warn")) {
             final NSAlert alert = NSAlert.alert(
-                    Locale.localizedString(TOOLBAR_CLEAN_UP), //title
-                    Locale.localizedString("Remove completed transfers from list."), // message
-                    Locale.localizedString(TOOLBAR_CLEAN_UP), // defaultbutton
-                    Locale.localizedString("Cancel"), // alternate button
+                    LocaleFactory.localizedString(TOOLBAR_CLEAN_UP), //title
+                    LocaleFactory.localizedString("Remove completed transfers from list."), // message
+                    LocaleFactory.localizedString(TOOLBAR_CLEAN_UP), // defaultbutton
+                    LocaleFactory.localizedString("Cancel"), // alternate button
                     null //other button
             );
             alert.setShowsSuppressionButton(true);
-            alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
+            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
             this.alert(alert, new SheetCallback() {
                 @Override
                 public void callback(int returncode) {
@@ -753,89 +753,89 @@ public final class TransferController extends WindowController implements NSTool
         }
         final NSToolbarItem item = toolbarItems.get(itemIdentifier);
         if(itemIdentifier.equals(TOOLBAR_STOP)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_STOP));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_STOP));
-            item.setToolTip(Locale.localizedString(TOOLBAR_STOP));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_STOP));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_STOP));
+            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_STOP));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("stopButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_RESUME)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_RESUME));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_RESUME));
-            item.setToolTip(Locale.localizedString(TOOLBAR_RESUME));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_RESUME));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_RESUME));
+            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_RESUME));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("resume.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("resumeButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_RELOAD)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_RELOAD));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_RELOAD));
-            item.setToolTip(Locale.localizedString(TOOLBAR_RELOAD));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_RELOAD));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_RELOAD));
+            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_RELOAD));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reload.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_SHOW)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_SHOW));
-            item.setPaletteLabel(Locale.localizedString("Show in Finder"));
-            item.setToolTip(Locale.localizedString("Show in Finder"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_SHOW));
+            item.setPaletteLabel(LocaleFactory.localizedString("Show in Finder"));
+            item.setToolTip(LocaleFactory.localizedString("Show in Finder"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reveal.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("revealButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_OPEN)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_OPEN));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_OPEN));
-            item.setToolTip(Locale.localizedString(TOOLBAR_OPEN));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_OPEN));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_OPEN));
+            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_OPEN));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("open.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_REMOVE)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_REMOVE));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_REMOVE));
-            item.setToolTip(Locale.localizedString(TOOLBAR_REMOVE));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_REMOVE));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_REMOVE));
+            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_REMOVE));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("clean.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("deleteButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_CLEAN_UP)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
-            item.setToolTip(Locale.localizedString(TOOLBAR_CLEAN_UP));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_CLEAN_UP));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_CLEAN_UP));
+            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_CLEAN_UP));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("cleanall.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("clearButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_TRASH)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_TRASH));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_TRASH));
-            item.setToolTip(Locale.localizedString("Move to Trash"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_TRASH));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_TRASH));
+            item.setToolTip(LocaleFactory.localizedString("Move to Trash"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("trash.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("trashButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_LOG)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_LOG));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_LOG));
-            item.setToolTip(Locale.localizedString("Toggle Log Drawer"));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
+            item.setToolTip(LocaleFactory.localizedString("Toggle Log Drawer"));
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed("log.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("toggleLogDrawer:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_FILTER)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_FILTER));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_FILTER));
+            item.setLabel(LocaleFactory.localizedString(TOOLBAR_FILTER));
+            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_FILTER));
             item.setView(this.filterField);
             item.setMinSize(this.filterField.frame().size);
             item.setMaxSize(this.filterField.frame().size);
@@ -1049,16 +1049,16 @@ public final class TransferController extends WindowController implements NSTool
             if(pasteboards.size() == 1) {
                 for(PathPasteboard pasteboard : pasteboards) {
                     if(pasteboard.size() == 1) {
-                        item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"), pasteboard.get(0).getName()));
+                        item.setTitle(MessageFormat.format(LocaleFactory.localizedString("Paste {0}"), pasteboard.get(0).getName()));
                     }
                     else {
-                        item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"),
-                                MessageFormat.format(Locale.localizedString("{0} Files"), String.valueOf(pasteboard.size())) + ")"));
+                        item.setTitle(MessageFormat.format(LocaleFactory.localizedString("Paste {0}"),
+                                MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(pasteboard.size())) + ")"));
                     }
                 }
             }
             else {
-                item.setTitle(Locale.localizedString("Paste"));
+                item.setTitle(LocaleFactory.localizedString("Paste"));
             }
         }
         return this.validateItem(action);

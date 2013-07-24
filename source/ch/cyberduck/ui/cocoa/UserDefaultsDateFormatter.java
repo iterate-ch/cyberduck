@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.date.UserDateFormatter;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDateFormatter;
 import ch.cyberduck.ui.cocoa.foundation.NSLocale;
@@ -128,7 +128,7 @@ public class UserDefaultsDateFormatter extends AbstractUserDateFormatter impleme
     public String getShortFormat(final long milliseconds, boolean natural) {
         synchronized(shortDateFormatter) {
             if(-1 == milliseconds) {
-                return Locale.localizedString("Unknown");
+                return LocaleFactory.localizedString("Unknown");
             }
             if(natural) {
                 return shortDateNaturalFormatter.stringFromDate(toDate(milliseconds));
@@ -148,7 +148,7 @@ public class UserDefaultsDateFormatter extends AbstractUserDateFormatter impleme
     public String getMediumFormat(final long milliseconds, boolean natural) {
         synchronized(mediumDateFormatter) {
             if(-1 == milliseconds) {
-                return Locale.localizedString("Unknown");
+                return LocaleFactory.localizedString("Unknown");
             }
             if(natural) {
                 return mediumDateNaturalFormatter.stringFromDate(toDate(milliseconds));
@@ -168,7 +168,7 @@ public class UserDefaultsDateFormatter extends AbstractUserDateFormatter impleme
     public String getLongFormat(final long milliseconds, boolean natural) {
         synchronized(longDateFormatter) {
             if(-1 == milliseconds) {
-                return Locale.localizedString("Unknown");
+                return LocaleFactory.localizedString("Unknown");
             }
             if(natural) {
                 return longDateNaturalFormatter.stringFromDate(toDate(milliseconds));

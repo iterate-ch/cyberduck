@@ -22,10 +22,10 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Preferences;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -115,7 +115,7 @@ public abstract class LicenseFactory extends Factory<License> {
 
         @Override
         public String getName() {
-            return Locale.localizedString("Not a valid donation key", "License");
+            return LocaleFactory.localizedString("Not a valid donation key", "License");
         }
 
         @Override
@@ -138,7 +138,7 @@ public abstract class LicenseFactory extends Factory<License> {
 
         @Override
         public String toString() {
-            return Locale.localizedString("Not a valid donation key", "License");
+            return LocaleFactory.localizedString("Not a valid donation key", "License");
         }
     };
 }

@@ -18,6 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -25,10 +26,9 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.s3.ServiceExceptionMappingService;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -97,7 +97,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 final Distribution distribution = new Distribution(this.getOrigin(container, method),
                         method,
                         configuration.isWebsiteConfigActive());
-                distribution.setStatus(Locale.localizedString("Deployed", "S3"));
+                distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
                 // http://example-bucket.s3-website-us-east-1.amazonaws.com/
                 distribution.setUrl(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)));
                 distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
