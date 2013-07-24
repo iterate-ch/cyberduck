@@ -18,7 +18,6 @@ package ch.cyberduck.core.exception;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,36 +37,25 @@ public class BackgroundException extends Exception {
     private String message = Locale.localizedString("Unknown");
     private String detail;
 
-    private Path path;
-
     public BackgroundException() {
-        this(null, Locale.localizedString("Unknown"), null);
+        this(Locale.localizedString("Unknown"), null);
     }
 
     public BackgroundException(final Exception cause) {
-        this(null, cause.getMessage(), cause);
+        this(cause.getMessage(), cause);
     }
 
     public BackgroundException(final String detail) {
-        this(null, detail, null);
+        this(detail, null);
     }
 
     public BackgroundException(final String detail, final Exception cause) {
-        this(null, detail, cause);
-    }
-
-    public BackgroundException(final Path path, final String detail, final Exception cause) {
         super(cause);
-        this.path = path;
         this.detail = detail;
     }
 
     public void setMessage(final String title) {
         this.message = title;
-    }
-
-    public void setPath(final Path path) {
-        this.path = path;
     }
 
     @Override
@@ -97,14 +85,6 @@ public class BackgroundException extends Exception {
             return String.format("I/O %s", Locale.localizedString("Error"));
         }
         return Locale.localizedString("Error");
-    }
-
-    /**
-     * @return The path accessed when the exception was thrown or null if
-     *         the exception is not related to any path
-     */
-    public Path getPath() {
-        return path;
     }
 
     public boolean isNetworkFailure() {
@@ -137,16 +117,12 @@ public class BackgroundException extends Exception {
         if(detail != null ? !detail.equals(that.detail) : that.detail != null) {
             return false;
         }
-        if(path != null ? !path.equals(that.path) : that.path != null) {
-            return false;
-        }
         return true;
     }
 
     @Override
     public int hashCode() {
         int result = detail != null ? detail.hashCode() : 0;
-        result = 31 * result + (path != null ? path.hashCode() : 0);
         result = 31 * result + (this.getCause() != null ? this.getCause().hashCode() : 0);
         return result;
     }
