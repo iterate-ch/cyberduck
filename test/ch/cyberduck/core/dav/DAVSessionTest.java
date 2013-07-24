@@ -247,7 +247,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        final Path test = new Path(session.mount(new DisabledListProgressListener()), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         final OutputStream out = session.write(test, status);
         assertNotNull(out);
         IOUtils.write(content, out);
@@ -272,5 +272,18 @@ public class DAVSessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final TransferStatus status = new TransferStatus();
         session.read(new Path(session.workdir(), "nosuchname", Path.FILE_TYPE), status);
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testWriteNotFound() throws Exception {
+        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), Path.FILE_TYPE);
+        session.write(test, new TransferStatus());
     }
 }
