@@ -569,6 +569,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(type == Upload.class) {
             return (T) new S3ThresholdUploadService(this);
         }
+        if(type == Copy.class) {
+            return (T) new S3CopyFeature(this);
+        }
         if(type == Delete.class) {
             if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3MultipleDeleteFeature(this, prompt);

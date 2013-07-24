@@ -6,6 +6,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
@@ -231,6 +232,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final Session session = new DAVSession(new Host("h"));
         assertNull(session.getFeature(UnixPermission.class, null));
         assertNull(session.getFeature(Timestamp.class, null));
+        assertNotNull(session.getFeature(Copy.class, null));
         assertNotNull(session.getFeature(Headers.class, null));
         assertNotNull(session.getFeature(DistributionConfiguration.class, null));
     }

@@ -25,6 +25,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Location;
@@ -258,6 +259,9 @@ public class SwiftSession extends HttpSession<Client> {
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Write.class) {
             return (T) new SwiftWriteFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new SwiftCopyFeature(this);
         }
         if(type == Delete.class) {
             return (T) new SwiftDeleteFeature(this);
