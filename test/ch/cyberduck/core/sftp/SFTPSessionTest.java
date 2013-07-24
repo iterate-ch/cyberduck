@@ -152,7 +152,7 @@ public class SFTPSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testWrite() throws Exception {
+    public void testReadWrite() throws Exception {
         final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
@@ -169,11 +169,9 @@ public class SFTPSessionTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         assertTrue(session.exists(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        final byte[] buffer = new byte[content.length];
+        IOUtils.readFully(session.read(test, new TransferStatus()), buffer);
+        assertArrayEquals(content, buffer);
         session.delete(test, new DisabledLoginController());
-    }
-
-    @Test
-    public void testCopy() throws Exception {
-
     }
 }
