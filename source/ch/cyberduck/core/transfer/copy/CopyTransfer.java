@@ -231,9 +231,9 @@ public class CopyTransfer extends Transfer {
         OutputStream out = null;
         try {
             if(file.attributes().isFile()) {
-                new StreamCopier().transfer(in = new ThrottledInputStream(session.read(file, status), throttle),
-                        out = new ThrottledOutputStream(destination.write(copy, status), throttle),
-                        listener, -1, status);
+                new StreamCopier(status).transfer(in = new ThrottledInputStream(session.read(file, status), throttle),
+                        0, out = new ThrottledOutputStream(destination.write(copy, status), throttle),
+                        listener, -1);
             }
         }
         catch(IOException e) {

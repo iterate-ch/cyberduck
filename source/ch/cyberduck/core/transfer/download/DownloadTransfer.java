@@ -241,7 +241,7 @@ public class DownloadTransfer extends Transfer {
             try {
                 in = session.read(file, status);
                 out = file.getLocal().getOutputStream(status.isResume());
-                new StreamCopier().transfer(new ThrottledInputStream(in, throttle), out, listener, -1, status);
+                new StreamCopier(status).transfer(new ThrottledInputStream(in, throttle), 0, out, listener, -1);
             }
             finally {
                 IOUtils.closeQuietly(in);

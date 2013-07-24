@@ -215,8 +215,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
     private Future<MultipartPart> submitPart(final Path file,
                                              final BandwidthThrottle throttle, final StreamListener listener,
                                              final TransferStatus status, final MultipartUpload multipart,
-                                             final int partNumber,
-                                             final long offset, final long length) throws BackgroundException {
+                                             final int partNumber, final long offset, final long length) throws BackgroundException {
         if(pool.isShutdown()) {
             throw new ConnectionCanceledException();
         }
@@ -234,7 +233,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                     log.warn("MD5 calculation disabled");
                     in = file.getLocal().getInputStream();
                     out = write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
-                    new StreamCopier().transfer(in, new ThrottledOutputStream(out, throttle), listener, length, status);
+                    new StreamCopier(status).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);

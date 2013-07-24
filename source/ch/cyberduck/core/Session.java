@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledOutputStream;
@@ -534,50 +533,15 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
      * @param out      Remote stream
      * @param in       Local stream
      * @param throttle The bandwidth limit
-     * @param l        Listener for bytes sent
+     * @param listener Listener for bytes sent
      * @param status   Transfer status
      * @throws java.io.IOException Write not completed due to a I/O problem
      */
     public void upload(final OutputStream out, final InputStream in,
                        final BandwidthThrottle throttle,
-                       final StreamListener l, final TransferStatus status) throws IOException, ConnectionCanceledException {
-        this.upload(out, in, throttle, l, status.getCurrent(), -1, status);
-    }
-
-    /**
-     * Will copy from in to out. Will attempt to skip Status#getCurrent
-     * from the inputstream but not from the outputstream. The outputstream
-     * is asssumed to append to a already existing file if
-     * Status#getCurrent > 0
-     *
-     * @param out      The stream to write to
-     * @param in       The stream to read from
-     * @param throttle The bandwidth limit
-     * @param l        The stream listener to notify about bytes received and sent
-     * @param offset   Start reading at offset in file
-     * @param limit    Transfer only up to this length
-     * @param status   Transfer status
-     * @throws ch.cyberduck.core.io.IOResumeException
-     *                     If the input stream fails to skip the appropriate
-     *                     number of bytes
-     * @throws IOException Write not completed due to a I/O problem
-     */
-    public void upload(final OutputStream out, final InputStream in, final BandwidthThrottle throttle,
-                       final StreamListener l, long offset, final long limit, final TransferStatus status) throws IOException, ConnectionCanceledException {
-        if(log.isDebugEnabled()) {
-            log.debug("upload(" + out.toString() + ", " + in.toString());
-        }
-        if(offset > 0) {
-            long skipped = in.skip(offset);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skipping %d bytes", skipped));
-            }
-            if(skipped < status.getCurrent()) {
-                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
-                        skipped, status.getCurrent()));
-            }
-        }
-        new StreamCopier().transfer(in, new ThrottledOutputStream(out, throttle), l, limit, status);
+                       final StreamListener listener,
+                       final TransferStatus status) throws IOException, ConnectionCanceledException {
+        new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, -1);
     }
 
     @Override

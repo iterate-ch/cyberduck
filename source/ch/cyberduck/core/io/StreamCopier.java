@@ -35,20 +35,34 @@ import java.io.OutputStream;
 public class StreamCopier {
     private static final Logger log = Logger.getLogger(StreamCopier.class);
 
+    private TransferStatus status;
+
+    public StreamCopier(final TransferStatus status) {
+        this.status = status;
+    }
+
     /**
      * Updates the current number of bytes transferred in the status reference.
      *
      * @param in       The stream to read from
+     * @param offset   Skip bytes from input
      * @param out      The stream to write to
      * @param listener The stream listener to notify about bytes received and sent
      * @param limit    Transfer only up to this length
-     * @param status   Transfer status
-     * @throws java.io.IOException Write not completed due to a I/O problem
      */
-    public void transfer(final InputStream in, final OutputStream out,
-                         final StreamListener listener, final long limit,
-                         final TransferStatus status) throws IOException, ConnectionCanceledException {
+    public void transfer(final InputStream in, final long offset, final OutputStream out,
+                         final StreamListener listener, final long limit) throws IOException, ConnectionCanceledException {
         final BufferedInputStream bi = new BufferedInputStream(in);
+        if(offset > 0) {
+            long skipped = bi.skip(offset);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Skipping %d bytes", skipped));
+            }
+            if(skipped < status.getCurrent()) {
+                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
+                        skipped, status.getCurrent()));
+            }
+        }
         final BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
             final int chunksize = Preferences.instance().getInteger("connection.chunksize");
