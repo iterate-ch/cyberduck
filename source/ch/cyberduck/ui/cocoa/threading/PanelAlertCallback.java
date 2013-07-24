@@ -72,11 +72,10 @@ public class PanelAlertCallback implements AlertCallback {
 
                 @Override
                 protected void help() {
-                    StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-                    if(null != failure.getPath()) {
-                        site.append("/").append(action.getSessions().iterator().next().getHost().getProtocol().getProvider());
-                    }
-                    controller.openUrl(site.toString());
+                    final String provider = action.getSessions().iterator().next().getHost().getProtocol().getProvider();
+                    controller.openUrl(
+                            String.format("%s/%s", Preferences.instance().getProperty("website.help"), provider)
+                    );
                 }
             };
             if(log.length() > 0) {
