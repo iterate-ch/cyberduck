@@ -93,7 +93,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public boolean apply(final String path, final KfsLibrary.kfsstatfs stat, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
-                    public Boolean call() {
+                    public Boolean run() {
                         log.debug("kfsstatfs_f:" + path);
                         final Path selected = new Path(path, Path.DIRECTORY_TYPE);
                         if(selected.isRoot()) {
