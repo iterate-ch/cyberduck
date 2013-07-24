@@ -33,8 +33,8 @@ import java.net.URI;
 
 import ch.iterate.openstack.swift.method.Authentication10UsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication11UsernameKeyRequest;
-import ch.iterate.openstack.swift.method.Authentication20AccessKeySecretKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20RAXUsernameKeyRequest;
+import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordRequest;
 import ch.iterate.openstack.swift.method.AuthenticationRequest;
 
 /**
@@ -107,6 +107,7 @@ public class SwiftAuthenticationService {
                     }
                 };
                 final LoginOptions options = new LoginOptions();
+                options.user = false;
                 options.password = false;
                 prompt.prompt(host.getProtocol(), tenantCredentials,
                         Locale.localizedString("Provide additional login credentials", "Credentials"),
@@ -115,7 +116,7 @@ public class SwiftAuthenticationService {
                 // Save tenant in username
                 credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
             }
-            return new Authentication20AccessKeySecretKeyRequest(
+            return new Authentication20UsernamePasswordRequest(
                     URI.create(url.toString()),
                     user, host.getCredentials().getPassword(), tenant
             );
