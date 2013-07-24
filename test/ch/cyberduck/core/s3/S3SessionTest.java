@@ -13,12 +13,9 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import java.io.OutputStream;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
