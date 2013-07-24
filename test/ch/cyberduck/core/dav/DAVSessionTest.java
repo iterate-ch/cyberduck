@@ -5,6 +5,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
@@ -235,7 +236,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testWrite() throws Exception {
+    public void testReadWrite() throws Exception {
         final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
         ));
@@ -253,7 +254,23 @@ public class DAVSessionTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         assertTrue(session.exists(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        final byte[] buffer = new byte[content.length];
+        IOUtils.readFully(session.read(test, new TransferStatus()), buffer);
+        assertArrayEquals(content, buffer);
         session.delete(test, new DisabledLoginController());
         session.close();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testReadNotFound() throws Exception {
+        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final TransferStatus status = new TransferStatus();
+        session.read(new Path(session.workdir(), "nosuchname", Path.FILE_TYPE), status);
     }
 }
