@@ -1,7 +1,7 @@
 package ch.cyberduck.core.features;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * Copyright (c) 2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,14 +14,15 @@ package ch.cyberduck.core.features;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Symlink {
 
