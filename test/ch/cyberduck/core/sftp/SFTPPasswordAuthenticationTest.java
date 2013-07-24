@@ -30,7 +30,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPPasswordAuthenticationTest extends AbstractTestCase {
 
@@ -42,6 +42,7 @@ public class SFTPPasswordAuthenticationTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         assertTrue(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginController()));
+        session.close();
     }
 
     @Test
@@ -52,5 +53,6 @@ public class SFTPPasswordAuthenticationTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         assertFalse(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginController()));
+        session.close();
     }
 }

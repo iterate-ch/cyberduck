@@ -29,7 +29,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPChallengeResponseAuthenticationTest extends AbstractTestCase {
 
@@ -41,5 +41,6 @@ public class SFTPChallengeResponseAuthenticationTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         assertFalse(new SFTPChallengeResponseAuthentication(session).authenticate(host, new DisabledLoginController()));
+        session.close();
     }
 }

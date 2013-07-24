@@ -176,5 +176,6 @@ public class SFTPSessionTest extends AbstractTestCase {
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
         session.delete(test, new DisabledLoginController());
+        session.close();
     }
 }
