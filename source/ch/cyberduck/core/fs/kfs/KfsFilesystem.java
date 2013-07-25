@@ -28,6 +28,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
@@ -390,10 +391,10 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsrename_f:" + path);
                         final Path file = new Path(path, Path.FILE_TYPE);
-                        if(!session.isRenameSupported(file)) {
+                        if(!session.getFeature(Move.class, new DisabledLoginController()).isSupported(file)) {
                             return false;
                         }
-                        session.rename(file, new Path(destination, Path.FILE_TYPE));
+                        session.getFeature(Move.class, new DisabledLoginController()).move(file, new Path(destination, Path.FILE_TYPE));
                         return true;
                     }
                 });

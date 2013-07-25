@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.ResponseOutputStream;
@@ -150,19 +151,6 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void rename(final Path file, final Path renamed) throws BackgroundException {
-        try {
-            this.getClient().move(new DAVPathEncoder().encode(file), new DAVPathEncoder().encode(renamed));
-        }
-        catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Cannot rename {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
-        }
-    }
-
-    @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         Map<String, String> headers = new HashMap<String, String>();
         if(status.isResume()) {
@@ -228,6 +216,9 @@ public class DAVSession extends HttpSession<DAVClient> {
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Delete.class) {
             return (T) new DAVDeleteFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new DAVMoveFeature(this);
         }
         if(type == Headers.class) {
             return (T) new DAVHeadersFeature(this);

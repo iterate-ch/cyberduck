@@ -28,15 +28,7 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Lifecycle;
-import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.features.Logging;
-import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
@@ -1642,7 +1634,8 @@ public class InfoController extends ToolbarWindowController {
         if(count > 0) {
             filenameField.setStringValue(this.getName());
             final Path file = getSelected();
-            filenameField.setEnabled(1 == count && controller.getSession().isRenameSupported(file));
+            filenameField.setEnabled(1 == count
+                    && controller.getSession().getFeature(Move.class, prompt).isSupported(file));
             // Where
             String path;
             if(file.attributes().isSymbolicLink()) {

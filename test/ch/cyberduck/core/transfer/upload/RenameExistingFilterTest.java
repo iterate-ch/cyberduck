@@ -4,13 +4,18 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
@@ -39,10 +44,25 @@ public class RenameExistingFilterTest extends AbstractTestCase {
             }
         };
         p.setLocal(new NullLocal("/Downloads", "n"));
+        final AtomicBoolean c = new AtomicBoolean();
         f.prepare(new NullSession(new Host("h")) {
             @Override
-            public void rename(final Path file, final Path renamed) {
-                assertNotSame(file.getName(), renamed.getName());
+            public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+                if(type == Move.class) {
+                    return (T) new Move() {
+                        @Override
+                        public void move(final Path file, final Path renamed) throws BackgroundException {
+                            assertNotSame(file.getName(), renamed.getName());
+                            c.set(true);
+                        }
+
+                        @Override
+                        public boolean isSupported(final Path file) {
+                            return true;
+                        }
+                    };
+                }
+                return null;
             }
 
             @Override
@@ -52,5 +72,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 return l;
             }
         }, p, new ch.cyberduck.core.transfer.TransferStatus());
+        assertTrue(c.get());
     }
 }

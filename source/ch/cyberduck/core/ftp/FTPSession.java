@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -367,18 +368,6 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
     }
 
     @Override
-    public void rename(final Path file, final Path renamed) throws BackgroundException {
-        try {
-            if(!this.getClient().rename(file.getAbsolute(), renamed.getAbsolute())) {
-                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
-            }
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Cannot rename {0}", e, file);
-        }
-    }
-
-    @Override
     public void delete(final List<Path> files) throws BackgroundException {
         for(Path file : files) {
             this.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
@@ -500,6 +489,9 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Delete.class) {
             return (T) this;
+        }
+        if(type == Move.class) {
+            return (T) new FTPMoveFeature(this);
         }
         if(type == UnixPermission.class) {
             return (T) permission;

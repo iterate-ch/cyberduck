@@ -1,0 +1,57 @@
+package ch.cyberduck.core.s3;
+
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Move;
+
+import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.StorageObject;
+
+/**
+ * @version $Id:$
+ */
+public class S3MoveFeature implements Move {
+
+    private PathContainerService containerService = new PathContainerService();
+
+    private S3Session session;
+
+    public S3MoveFeature(final S3Session session) {
+        this.session = session;
+    }
+
+    @Override
+    public void move(final Path file, final Path renamed) throws BackgroundException {
+        try {
+            if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
+                final StorageObject destination = new StorageObject(containerService.getKey(renamed));
+                // Keep same storage class
+                destination.setStorageClass(file.attributes().getStorageClass());
+                // Keep encryption setting
+                destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
+                // Apply non standard ACL
+                final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+                destination.setAcl(acl.convert(acl.getPermission(file)));
+                // Moving the object retaining the metadata of the original.
+                session.getClient().moveObject(containerService.getContainer(file).getName(), containerService.getKey(file),
+                        containerService.getContainer(renamed).getName(),
+                        destination, false);
+            }
+            else if(file.attributes().isDirectory()) {
+                for(Path i : session.list(file, new DisabledListProgressListener())) {
+                    this.move(i, new Path(renamed, i.getName(), i.attributes().getType()));
+                }
+            }
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Cannot rename {0}", e, file);
+        }
+    }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        return !file.attributes().isVolume();
+    }
+}

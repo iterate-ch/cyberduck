@@ -23,15 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Command;
-import ch.cyberduck.core.features.Compress;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -41,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.List;
 
 import ch.ethz.ssh2.Connection;
@@ -264,19 +255,6 @@ public class SFTPSession extends Session<Connection> implements Delete {
     }
 
     @Override
-    public void rename(final Path file, final Path renamed) throws BackgroundException {
-        try {
-            if(this.exists(renamed)) {
-                this.delete(Collections.singletonList(file));
-            }
-            this.sftp().mv(file.getAbsolute(), renamed.getAbsolute());
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot rename {0}", e, file);
-        }
-    }
-
-    @Override
     public void delete(final List<Path> files) throws BackgroundException {
         for(Path file : files) {
             this.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
@@ -355,6 +333,9 @@ public class SFTPSession extends Session<Connection> implements Delete {
         }
         if(type == Delete.class) {
             return (T) this;
+        }
+        if(type == Move.class) {
+            return (T) new SFTPMoveFeature(this);
         }
         if(type == UnixPermission.class) {
             return (T) new SFTPUnixPermissionFeature(this);

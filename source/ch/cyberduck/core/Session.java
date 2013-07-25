@@ -299,10 +299,6 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
         return host.getMaxConnections();
     }
 
-    public boolean isRenameSupported(final Path file) {
-        return true;
-    }
-
     /**
      * Send a 'no operation' command
      */
@@ -467,12 +463,6 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
      * @param listener Callback
      */
     public abstract AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
-
-    /**
-     * @param file    Origin
-     * @param renamed New location
-     */
-    public abstract void rename(Path file, Path renamed) throws BackgroundException;
 
     /**
      * @param prompt Login prompt for multi factor authentication

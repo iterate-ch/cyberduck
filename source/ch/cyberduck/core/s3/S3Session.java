@@ -322,11 +322,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 new AttributedList<Path>(new S3BucketListService().list(this)));
     }
 
-    @Override
-    public boolean isRenameSupported(final Path file) {
-        return !file.attributes().isVolume();
-    }
-
     /**
      * Overwritten to provide publicly accessible URL of given object
      *
@@ -533,40 +528,15 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public void rename(final Path file, final Path renamed) throws BackgroundException {
-        try {
-            if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
-                final StorageObject destination = new StorageObject(containerService.getKey(renamed));
-                // Keep same storage class
-                destination.setStorageClass(file.attributes().getStorageClass());
-                // Keep encryption setting
-                destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
-                // Apply non standard ACL
-                final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
-                destination.setAcl(acl.convert(acl.getPermission(file)));
-                // Moving the object retaining the metadata of the original.
-                this.getClient().moveObject(containerService.getContainer(file).getName(), containerService.getKey(file),
-                        containerService.getContainer(renamed).getName(),
-                        destination, false);
-            }
-            else if(file.attributes().isDirectory()) {
-                for(Path i : this.list(file, new DisabledListProgressListener())) {
-                    this.rename(i, new Path(renamed, i.getName(), i.attributes().getType()));
-                }
-            }
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot rename {0}", e, file);
-        }
-    }
-
-    @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Write.class) {
             return (T) new S3WriteFeature(this);
         }
         if(type == Upload.class) {
             return (T) new S3ThresholdUploadService(this);
+        }
+        if(type == Move.class) {
+            return (T) new S3MoveFeature(this);
         }
         if(type == Copy.class) {
             return (T) new S3CopyFeature(this);

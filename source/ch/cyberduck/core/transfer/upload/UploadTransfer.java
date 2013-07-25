@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -201,7 +202,7 @@ public class UploadTransfer extends Transfer {
             }, status);
             if(status.isComplete()) {
                 if(temporary) {
-                    session.rename(file, new Path(file.getParent(),
+                    session.getFeature(Move.class, new DisabledLoginController()).move(file, new Path(file.getParent(),
                             original, file.attributes().getType()));
                     file.setPath(file.getParent(), original);
                 }

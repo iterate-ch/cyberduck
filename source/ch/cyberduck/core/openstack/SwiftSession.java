@@ -25,10 +25,10 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
@@ -46,7 +46,6 @@ import java.util.Set;
 import ch.iterate.openstack.swift.AuthenticationResponse;
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
-import ch.iterate.openstack.swift.exception.NotFoundException;
 import ch.iterate.openstack.swift.model.Region;
 
 /**
@@ -122,11 +121,6 @@ public class SwiftSession extends HttpSession<Client> {
         super.logout();
         regions.clear();
         distributions.clear();
-    }
-
-    @Override
-    public boolean isRenameSupported(final Path file) {
-        return !file.attributes().isVolume();
     }
 
     /**
@@ -224,50 +218,18 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public void rename(final Path file, final Path renamed) throws BackgroundException {
-        try {
-            if(file.attributes().isFile()) {
-                this.getClient().copyObject(this.getRegion(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(), containerService.getKey(file),
-                        containerService.getContainer(renamed).getName(), containerService.getKey(renamed));
-                this.getClient().deleteObject(this.getRegion(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
-            }
-            else if(file.attributes().isDirectory()) {
-                for(Path i : this.list(file, new DisabledListProgressListener())) {
-                    this.rename(i, new Path(renamed, i.getName(), i.attributes().getType()));
-                }
-                try {
-                    this.getClient().deleteObject(this.getRegion(containerService.getContainer(file)),
-                            containerService.getContainer(file).getName(), containerService.getKey(file));
-                }
-                catch(NotFoundException e) {
-                    // No real placeholder but just a delimiter returned in the object listing.
-                    log.warn(e.getMessage());
-                }
-            }
-        }
-        catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Cannot rename {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
-        }
-    }
-
-    @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Write.class) {
             return (T) new SwiftWriteFeature(this);
-        }
-        if(type == Copy.class) {
-            return (T) new SwiftCopyFeature(this);
         }
         if(type == Delete.class) {
             return (T) new SwiftDeleteFeature(this);
         }
         if(type == Headers.class) {
             return (T) new SwiftMetadataFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new SwiftMoveFeature(this);
         }
         if(type == Touch.class) {
             return (T) new SwiftTouchFeature(this);

@@ -17,11 +17,13 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -43,7 +45,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      * Rename existing file on server if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         Path renamed = file;
         while(session.exists(renamed)) {
             String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
@@ -54,7 +56,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
                     proposal, file.attributes().getType());
         }
         if(!renamed.equals(file)) {
-            session.rename(file, renamed);
+            session.getFeature(Move.class, new DisabledLoginController()).move(file, renamed);
         }
         return super.prepare(session, file, parent);
     }

@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
@@ -1228,7 +1229,7 @@ public class BrowserController extends WindowController
                     return;
                 }
                 if(tableColumn.identifier().equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    cell.setEditable(session.isRenameSupported(path));
+                    cell.setEditable(session.getFeature(Move.class, LoginControllerFactory.get(BrowserController.this)).isSupported(path));
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
                 if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
@@ -1341,7 +1342,7 @@ public class BrowserController extends WindowController
                 final String identifier = tableColumn.identifier();
                 final Path path = browserListModel.children(BrowserController.this.workdir()).get(row.intValue());
                 if(identifier.equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    cell.setEditable(session.isRenameSupported(path));
+                    cell.setEditable(session.getFeature(Move.class, LoginControllerFactory.get(BrowserController.this)).isSupported(path));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
@@ -3832,7 +3833,7 @@ public class BrowserController extends WindowController
                 if(null == selected) {
                     return false;
                 }
-                return session.isRenameSupported(selected);
+                return session.getFeature(Move.class, LoginControllerFactory.get(BrowserController.this)).isSupported(selected);
             }
             return false;
         }

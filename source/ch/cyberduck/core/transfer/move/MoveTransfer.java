@@ -20,12 +20,13 @@ package ch.cyberduck.core.transfer.move;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -104,14 +105,8 @@ public class MoveTransfer extends Transfer {
         session.message(MessageFormat.format(LocaleFactory.localizedString("Renaming {0} to {1}", "Status"),
                 source.getName(), files.get(source).getName()));
 
-        if(source.attributes().isFile()) {
-            session.rename(source, files.get(source));
-        }
-        else if(source.attributes().isDirectory()) {
-            for(Path i : session.list(source, new DisabledListProgressListener())) {
-                session.rename(i, new Path(files.get(source), i.getName(), i.attributes().getType()));
-            }
-        }
+        final Move feature = session.getFeature(Move.class, new DisabledLoginController());
+        feature.move(source, files.get(source));
     }
 
     @Override

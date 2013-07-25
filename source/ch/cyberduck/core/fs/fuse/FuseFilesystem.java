@@ -29,6 +29,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
@@ -459,10 +460,10 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path file = new Path(source, Path.FILE_TYPE);
-                    if(!session.isRenameSupported(file)) {
+                    if(!session.getFeature(Move.class, new DisabledLoginController()).isSupported(file)) {
                         return false;
                     }
-                    session.rename(file, new Path(destination, Path.FILE_TYPE));
+                    session.getFeature(Move.class, new DisabledLoginController()).move(file, new Path(destination, Path.FILE_TYPE));
                     return true;
                 }
             });
