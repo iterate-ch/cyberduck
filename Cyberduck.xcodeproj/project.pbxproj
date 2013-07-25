@@ -584,7 +584,6 @@
 		4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace US.cyberduckprofile"; sourceTree = "<group>"; };
 		471B4905102C66600059687D /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Growl.h; sourceTree = "<group>"; };
 		471B4907102C66600059687D /* Growl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Growl.m; sourceTree = "<group>"; };
-		471D2C5405A2505600675163 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "cyberduck-document.icns"; sourceTree = "<group>"; };
 		471F5C0D12AD1B6B0005D323 /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = pt_PT; path = pt_PT.lproj/Alert.strings; sourceTree = "<group>"; };
@@ -1750,7 +1749,6 @@
 				474152D706C4F08A00AC0BD2 /* source */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				471D2C5405A2505600675163 /* Info.plist */,
 			);
 			name = "cyberduck-cocoa";
 			sourceTree = "<group>";
@@ -4459,6 +4457,7 @@
 				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
+				INFOPLIST_EXPAND_BUILD_SETTINGS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				SDKROOT = macosx;
 				SEPARATE_STRIP = NO;
@@ -4475,14 +4474,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = $CONFIGURATION_BUILD_DIR/Info.plist;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-lz",
 					"-sectcreate",
 					__TEXT,
 					__info_plist,
-					Info.plist,
+					$CONFIGURATION_BUILD_DIR/Info.plist,
 				);
 				PRODUCT_NAME = Cyberduck;
 				SECTORDER_FLAGS = "";
@@ -4692,12 +4691,12 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = $CONFIGURATION_BUILD_DIR/Info.plist;
 				OTHER_LDFLAGS = (
 					"-sectcreate",
 					__TEXT,
 					__info_plist,
-					Info.plist,
+					$CONFIGURATION_BUILD_DIR/Info.plist,
 				);
 				PRODUCT_NAME = Cyberduck;
 				WRAPPER_EXTENSION = app;
@@ -4719,6 +4718,7 @@
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = unsupported;
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
+				INFOPLIST_EXPAND_BUILD_SETTINGS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				SDKROOT = macosx;
 				SEPARATE_STRIP = YES;

@@ -104,6 +104,19 @@
                 <include name="*.jar"/>
             </fileset>
         </copy>
+        <copy todir="${build.deploy}">
+            <fileset dir="${home}">
+                <include name="Info.plist"/>
+            </fileset>
+        </copy>
+        <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
+            <include name="Info.plist"/>
+            <replacefilter token="_REVISION_" value="${svn.revision}"/>
+            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+            <replacefilter token="_RUNTIME_" value="${app.runtime.properties.key}"/>
+            <replacefilter token="_MINIMUM_SYSTEM_" value="${app.runtime.system.min}"/>
+            <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
+        </replace>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="-sdk ${build.sdk.version} xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.xcodeoptions}"/>
         </exec>
@@ -111,11 +124,6 @@
             <fileset dir="${build.deploy}">
                 <include name="*.dylib"/>
                 <include name="*.jar"/>
-            </fileset>
-        </copy>
-        <copy todir="${app.contents}">
-            <fileset dir="${basedir}">
-                <include name="Info.plist"/>
             </fileset>
         </copy>
         <!-- Copy runtime -->
@@ -133,14 +141,6 @@
         <echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}"/>
         <echo message="_REVISION_=${svn.revision}"/>
         <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
-        <replace dir="${app.contents}" summary="true" encoding="UTF-8">
-            <include name="Info.plist"/>
-            <replacefilter token="_REVISION_" value="${svn.revision}"/>
-            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-            <replacefilter token="_RUNTIME_" value="${app.runtime.properties.key}"/>
-            <replacefilter token="_MINIMUM_SYSTEM_" value="${app.runtime.system.min}"/>
-            <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
-        </replace>
     </target>
 
     <target name="distribution-sparkle">
