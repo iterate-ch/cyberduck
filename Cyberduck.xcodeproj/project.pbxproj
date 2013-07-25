@@ -1746,7 +1746,6 @@
 		29B97314FDCFA39411CA2CEA /* cyberduck-cocoa */ = {
 			isa = PBXGroup;
 			children = (
-				47CB03A5177F798200A6E3B5 /* libcrypto.dylib */,
 				4741639206C4F58D00AC0BD2 /* Resources */,
 				474152D706C4F08A00AC0BD2 /* source */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -1759,6 +1758,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47CB03A5177F798200A6E3B5 /* libcrypto.dylib */,
 				479BF77D1725A68C006854BF /* IOKit.framework */,
 				4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */,
 				4792112812F6F4FD00E35E16 /* Sparkle.framework */,
