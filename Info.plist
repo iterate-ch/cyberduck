@@ -180,13 +180,6 @@
         <string>_REVISION_</string>
         <key>CFBundleShortVersionString</key>
         <string>_VERSION_</string>
-        <key>LSArchitecturePriority</key>
-        <array>
-            <string>i386</string>
-            <string>x86_64</string>
-            <string>ppc</string>
-            <string>ppc64</string>
-        </array>
         <key>LSApplicationCategoryType</key>
         <string>public.app-category.productivity</string>
         <key>_RUNTIME_</key>
