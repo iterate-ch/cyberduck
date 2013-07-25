@@ -20,10 +20,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPInvalidListException extends BackgroundException {
-
-    public FTPInvalidListException() {
-    }
 }
