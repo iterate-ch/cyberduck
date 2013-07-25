@@ -156,7 +156,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     public int retry() {
         if(this.hasFailed() && !this.isCanceled()) {
             // Check for an exception we consider possibly temporary
-            if(exception.isNetworkFailure()) {
+            if(new NetworkFailureDiagnostics().isNetworkFailure(exception)) {
                 // The initial connection attempt does not count
                 return Preferences.instance().getInteger("connection.retry") - repeatCount;
             }

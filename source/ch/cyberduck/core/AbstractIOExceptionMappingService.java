@@ -64,7 +64,7 @@ public abstract class AbstractIOExceptionMappingService<T extends Exception> imp
 
     protected BackgroundException wrap(final T e, final StringBuilder buffer) {
         final BackgroundException exception = new BackgroundException(buffer.toString(), e);
-        exception.setMessage(LocaleFactory.localizedString("Connection failed"));
+        exception.setMessage(LocaleFactory.localizedString("Connection failed", "Error"));
         return exception;
     }
 }

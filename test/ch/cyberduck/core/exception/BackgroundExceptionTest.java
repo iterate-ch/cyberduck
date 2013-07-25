@@ -18,14 +18,12 @@ public class BackgroundExceptionTest extends AbstractTestCase {
     public void testGetMessage() throws Exception {
         final BackgroundException e = new BackgroundException(new LoginCanceledException());
         assertEquals("Unknown", e.getMessage());
-        assertEquals("Error", e.getTitle());
     }
 
     @Test
     public void testGetMessageIO() throws Exception {
         final BackgroundException e = new BackgroundException(new IOException());
         assertEquals("Unknown", e.getMessage());
-        assertEquals("I/O Error", e.getTitle());
     }
 
     @Test
@@ -33,7 +31,6 @@ public class BackgroundExceptionTest extends AbstractTestCase {
         final BackgroundException e = new BackgroundException(new SocketException("s"));
         assertEquals("Unknown", e.getMessage());
         assertEquals("s", e.getDetail());
-        assertEquals("Network Error", e.getTitle());
         assertEquals("Unknown. s", e.toString());
     }
 }

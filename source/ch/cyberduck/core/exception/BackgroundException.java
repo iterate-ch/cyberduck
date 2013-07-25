@@ -18,27 +18,17 @@ package ch.cyberduck.core.exception;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
-
-import org.apache.commons.lang.StringUtils;
-
-import javax.net.ssl.SSLException;
-import java.io.IOException;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-
 /**
  * @version $Id$
  */
 public class BackgroundException extends Exception {
     private static final long serialVersionUID = -6114495291207129418L;
 
-    private String message = LocaleFactory.localizedString("Unknown");
+    private String message;
     private String detail;
 
     public BackgroundException() {
-        this(LocaleFactory.localizedString("Unknown"), null);
+        this(null, null);
     }
 
     public BackgroundException(final Exception cause) {
@@ -60,7 +50,7 @@ public class BackgroundException extends Exception {
 
     @Override
     public String getMessage() {
-        return LocaleFactory.localizedString(message, "Error");
+        return message;
     }
 
     /**
@@ -68,33 +58,6 @@ public class BackgroundException extends Exception {
      */
     public String getDetail() {
         return detail;
-    }
-
-    /**
-     * @return What kind of error
-     */
-    public String getTitle() {
-        final Throwable cause = this.getCause();
-        if(cause instanceof SocketException) {
-            return String.format("Network %s", LocaleFactory.localizedString("Error"));
-        }
-        if(cause instanceof UnknownHostException) {
-            return String.format("DNS %s", LocaleFactory.localizedString("Error"));
-        }
-        if(cause instanceof IOException) {
-            return String.format("I/O %s", LocaleFactory.localizedString("Error"));
-        }
-        return LocaleFactory.localizedString("Error");
-    }
-
-    public boolean isNetworkFailure() {
-        final Throwable cause = this.getCause();
-        if(cause instanceof SSLException) {
-            return StringUtils.contains(cause.getMessage(), "Received close_notify during handshake");
-        }
-        return cause instanceof SocketException
-                || cause instanceof SocketTimeoutException
-                || cause instanceof UnknownHostException;
     }
 
     @Override

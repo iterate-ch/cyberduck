@@ -22,7 +22,8 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.threading.AlertCallback;
+import ch.cyberduck.core.threading.AbstractAlertCallback;
+import ch.cyberduck.core.threading.NetworkFailureDiagnostics;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.cocoa.AlertController;
 import ch.cyberduck.ui.cocoa.SheetCallback;
@@ -36,7 +37,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 /**
  * @version $Id$
  */
-public class PanelAlertCallback implements AlertCallback {
+public class PanelAlertCallback extends AbstractAlertCallback {
 
     private final WindowController controller;
 
@@ -52,7 +53,7 @@ public class PanelAlertCallback implements AlertCallback {
                     failure.getMessage(), //title
                     failure.getDetail(),
                     LocaleFactory.localizedString("Try Again", "Alert"), // default button
-                    failure.isNetworkFailure() ? LocaleFactory.localizedString("Network Diagnostics") : null, //other button
+                    new NetworkFailureDiagnostics().isNetworkFailure(failure) ? LocaleFactory.localizedString("Network Diagnostics") : null, //other button
                     LocaleFactory.localizedString("Cancel") // alternate button
             );
             alert.setShowsHelp(true);
