@@ -25,6 +25,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Location;
@@ -227,6 +228,9 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Headers.class) {
             return (T) new SwiftMetadataFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new SwiftCopyFeature(this);
         }
         if(type == Move.class) {
             return (T) new SwiftMoveFeature(this);
