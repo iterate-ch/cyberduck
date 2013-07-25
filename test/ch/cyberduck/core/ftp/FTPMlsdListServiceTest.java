@@ -20,6 +20,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -40,9 +41,11 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         list.list(directory, new DisabledListProgressListener());
+        session.close();
     }
 
     @Test
+    @Ignore
     public void testList() throws Exception {
         final Host host = new Host(Protocol.FTP, "ftp.crushftp.com", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
@@ -54,5 +57,6 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         final Path directory = session.workdir();
         final AttributedList<Path> list = s.list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
+        session.close();
     }
 }

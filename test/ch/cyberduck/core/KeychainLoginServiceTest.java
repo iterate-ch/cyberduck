@@ -82,7 +82,6 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
             fail();
         }
         catch(LoginCanceledException e) {
-            assertEquals("Unknown", e.getMessage());
             assertTrue(warned.get());
             throw e;
         }

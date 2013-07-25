@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.SocketException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @version $Id$
@@ -17,20 +18,22 @@ public class BackgroundExceptionTest extends AbstractTestCase {
     @Test
     public void testGetMessage() throws Exception {
         final BackgroundException e = new BackgroundException(new LoginCanceledException());
-        assertEquals("Unknown", e.getMessage());
+        e.setMessage("m");
+        assertEquals("m", e.getMessage());
     }
 
     @Test
     public void testGetMessageIO() throws Exception {
-        final BackgroundException e = new BackgroundException(new IOException());
-        assertEquals("Unknown", e.getMessage());
+        final BackgroundException e = new BackgroundException(new IOException("m"));
+        assertNull(e.getMessage());
+        assertEquals("m", e.getDetail());
     }
 
     @Test
     public void testIOMessage() throws Exception {
         final BackgroundException e = new BackgroundException(new SocketException("s"));
-        assertEquals("Unknown", e.getMessage());
+        e.setMessage("m");
         assertEquals("s", e.getDetail());
-        assertEquals("Unknown. s", e.toString());
+        assertEquals("m. s", e.toString());
     }
 }
