@@ -26,7 +26,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.util.Arrays;
