@@ -29,8 +29,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.googlecode.sardine.DavResource;
-import com.googlecode.sardine.impl.SardineException;
+import com.github.sardine.DavResource;
+import com.github.sardine.impl.SardineException;
 
 /**
  * @version $Id$

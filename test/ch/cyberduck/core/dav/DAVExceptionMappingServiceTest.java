@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.googlecode.sardine.impl.SardineException;
+import com.github.sardine.impl.SardineException;
 
 import static org.junit.Assert.assertEquals;
 

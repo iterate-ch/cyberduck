@@ -25,7 +25,7 @@ import ch.cyberduck.core.features.Copy;
 
 import java.io.IOException;
 
-import com.googlecode.sardine.impl.SardineException;
+import com.github.sardine.impl.SardineException;
 
 /**
  * @version $Id$

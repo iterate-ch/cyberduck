@@ -28,7 +28,7 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import java.io.IOException;
 import java.net.URI;
 
-import com.googlecode.sardine.impl.SardineImpl;
+import com.github.sardine.impl.SardineImpl;
 
 /**
  * @version $Id$

@@ -42,9 +42,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.googlecode.sardine.impl.SardineException;
-import com.googlecode.sardine.impl.handler.VoidResponseHandler;
-import com.googlecode.sardine.impl.methods.HttpPropFind;
+import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.handler.VoidResponseHandler;
+import com.github.sardine.impl.methods.HttpPropFind;
 
 /**
  * @version $Id$

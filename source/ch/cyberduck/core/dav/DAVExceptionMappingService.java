@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.http.HttpStatus;
 
-import com.googlecode.sardine.impl.SardineException;
+import com.github.sardine.impl.SardineException;
 
 /**
  * @version $Id$

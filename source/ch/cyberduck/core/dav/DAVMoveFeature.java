@@ -7,10 +7,10 @@ import ch.cyberduck.core.features.Move;
 
 import java.io.IOException;
 
-import com.googlecode.sardine.impl.SardineException;
+import com.github.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVMoveFeature implements Move {
 

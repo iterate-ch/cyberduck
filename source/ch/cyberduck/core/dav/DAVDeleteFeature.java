@@ -11,7 +11,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.googlecode.sardine.impl.SardineException;
+import com.github.sardine.impl.SardineException;
 
 /**
  * @version $Id$

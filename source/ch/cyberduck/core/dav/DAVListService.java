@@ -28,8 +28,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.io.IOException;
 import java.util.List;
 
-import com.googlecode.sardine.DavResource;
-import com.googlecode.sardine.impl.SardineException;
+import com.github.sardine.DavResource;
+import com.github.sardine.impl.SardineException;
 
 /**
  * @version $Id$
