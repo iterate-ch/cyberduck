@@ -96,7 +96,6 @@
             <include name="build/ui.jar"/>
             <include name="lib/*.jar"/>
             <exclude name="lib/jna-*.jar"/>
-            <exclude name="lib/activation-*.jar"/>
             <exclude name="lib/asm-*.jar"/>
             <exclude name="lib/cglib-*.jar"/>
             <exclude name="lib/dns_sd.jar"/>
@@ -119,7 +118,6 @@
             <fileset dir="${lib}">
                 <include name="*.jar"/>
                 <exclude name="jna-*.jar"/>
-                <exclude name="activation-*.jar"/>
                 <exclude name="asm-*.jar"/>
                 <exclude name="cglib-*.jar"/>
                 <exclude name="dns_sd.jar"/>
