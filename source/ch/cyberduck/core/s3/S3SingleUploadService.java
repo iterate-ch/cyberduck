@@ -108,7 +108,6 @@ public class S3SingleUploadService implements Upload {
         }
         final StorageObject part = out.getResponse();
         if(null != digest) {
-            session.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
             // Obtain locally-calculated MD5 hash.
             final String hexMD5 = ServiceUtils.toHex(digest.digest());
             try {
@@ -148,8 +147,6 @@ public class S3SingleUploadService implements Upload {
         final StorageObject object = new StorageObject(containerService.getKey(file));
         object.setContentType(new MappingMimeTypeService().getMime(file.getName()));
         if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-            session.message(MessageFormat.format(
-                    LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
             object.setMd5Hash(ServiceUtils.fromHex(file.getLocal().attributes().getChecksum()));
         }
         // Storage class
