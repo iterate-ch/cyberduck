@@ -2486,10 +2486,13 @@ public class BrowserController extends WindowController
      * @return True if the selected path is editable (not a directory and no known binary file)
      */
     protected boolean isEditable(final Path selected) {
-        if(session.getHost().getCredentials().isAnonymousLogin()) {
-            return false;
+        if(this.isMounted()) {
+            if(session.getHost().getCredentials().isAnonymousLogin()) {
+                return false;
+            }
+            return selected.attributes().isFile();
         }
-        return selected.attributes().isFile();
+        return false;
     }
 
     @Action
