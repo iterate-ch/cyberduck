@@ -714,9 +714,11 @@ public final class TransferController extends WindowController implements NSTool
             @Override
             public void cleanup() {
                 super.cleanup();
-                if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                    if(!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)) {
-                        window.close();
+                if(transfer.isReset() && transfer.isComplete()) {
+                    if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
+                        if(!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)) {
+                            window.close();
+                        }
                     }
                 }
             }
