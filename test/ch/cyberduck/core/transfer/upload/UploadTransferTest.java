@@ -267,8 +267,8 @@ public class UploadTransferTest extends AbstractTestCase {
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/" + name);
         local.touch();
         final Transfer transfer = new UploadTransfer(session, test);
-        transfer.prepare(test, new TransferStatus().exists(true), new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList()))
-        );
+        transfer.prepare(test, new TransferStatus().exists(true),
+                new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())));
         final TransferStatus directory = new TransferStatus();
         directory.setExists(true);
         assertEquals(directory, transfer.getStatus(test));
@@ -293,8 +293,8 @@ public class UploadTransferTest extends AbstractTestCase {
         IOUtils.write("te", out);
         IOUtils.closeQuietly(out);
         final Transfer transfer = new UploadTransfer(session, test);
-        transfer.prepare(test, new TransferStatus().exists(true), new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList()))
-        );
+        transfer.prepare(test, new TransferStatus().exists(true),
+                new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())));
         final TransferStatus directorystatus = new TransferStatus();
         directorystatus.setExists(true);
         assertEquals(directorystatus, transfer.getStatus(test));

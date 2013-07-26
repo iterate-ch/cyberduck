@@ -196,8 +196,8 @@ public class DownloadTransferTest extends AbstractTestCase {
         final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
         test.setLocal(new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final Transfer transfer = new DownloadTransfer(session, test);
-        transfer.prepare(test, new TransferStatus().exists(true), new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(test)))
-        );
+        transfer.prepare(test, new TransferStatus().exists(true),
+                new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(test))));
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
         assertEquals(status, transfer.getStatus(test));
@@ -224,8 +224,8 @@ public class DownloadTransferTest extends AbstractTestCase {
         IOUtils.write("test", out);
         IOUtils.closeQuietly(out);
         final Transfer transfer = new DownloadTransfer(session, test);
-        transfer.prepare(test, new TransferStatus().exists(true), new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(test)))
-        );
+        transfer.prepare(test, new TransferStatus().exists(true),
+                new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(test))));
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
         assertEquals(status, transfer.getStatus(test));
