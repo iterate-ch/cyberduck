@@ -120,6 +120,9 @@ public abstract class AbstractController implements Controller {
     }
 
     public void openUrl(final DescriptiveUrl url) {
+        if(url.equals(DescriptiveUrl.EMPTY)) {
+            return;
+        }
         openUrl(url.getUrl());
     }
 
