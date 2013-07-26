@@ -435,7 +435,7 @@ public class BrowserController extends WindowController
             }
             if(downloads.size() > 0) {
                 final Transfer download = new DownloadTransfer(session, downloads);
-                TransferOptions options = new TransferOptions();
+                final TransferOptions options = new TransferOptions();
                 background(new TransferBackgroundAction(this, new PanelAlertCallback(this), new TransferAdapter() {
                     @Override
                     public void progress(final TransferProgress status) {
