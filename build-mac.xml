@@ -149,7 +149,9 @@
             <param name="codesign.certificate" value="Developer ID Application: David Kocher"/>
         </antcall>
         <antcall target="tar"/>
-        <antcall target="zip"/>
+        <antcall target="zip">
+            <param name="zip.filename" value="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"/>
+        </antcall>
         <antcall target="sparkle-feed"/>
     </target>
 
@@ -379,10 +381,9 @@
     <target name="zip">
         <echo message="Creating ZIP archive..."/>
         <exec dir="${build.deploy}" executable="zip" spawn="false" failonerror="true">
-            <arg line="-y -r ../${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip ${app.name}.app"/>
+            <arg line="-y -r ../${zip.filename} ${app.name}.app"/>
         </exec>
-        <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
-                  algorithm="md5"/>
+        <checksum file="${build}/${zip.filename}" algorithm="md5"/>
     </target>
 
     <target name="nightly" depends="clean, revision">
@@ -459,7 +460,10 @@
 
     <target name="release" depends="clean, revision">
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Java"/>
+            <param name="app.runtime.properties.key" value="Runtime"/>
+            <param name="app.runtime.system.min" value="10.6"/>
+            <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
+            <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
@@ -495,6 +499,31 @@
         <scp file="${www.update}/changelog.html"
              todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
              keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+    </target>
+
+    <target name="universal" depends="clean, revision">
+        <antcall target="build">
+            <param name="app.runtime.properties.key" value="Java"/>
+            <param name="app.runtime.system.min" value="10.6"/>
+            <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
+        </antcall>
+        <antcall target="codesign">
+            <param name="codesign.arg" value="--requirements ${codesign.requirement}"/>
+            <param name="codesign.certificate" value="Developer ID Application: David Kocher"/>
+        </antcall>
+        <antcall target="zip">
+            <param name="zip.filename" value="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}u.zip"/>
+        </antcall>
+        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}u.zip"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}u.zip.md5"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
              passphrase="">
         </scp>
     </target>
