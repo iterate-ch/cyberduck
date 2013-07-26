@@ -100,7 +100,6 @@
             <exclude name="lib/asm-*.jar"/>
             <exclude name="lib/cglib-*.jar"/>
             <exclude name="lib/dns_sd.jar"/>
-            <exclude name="lib/jaxb*.jar"/>
         </fileset>
         <pathconvert property="jars" refid="jars" pathsep=" ">
             <mapper type="regexp" from="^(.*)$" to="{ \1 }"/>
@@ -124,7 +123,6 @@
                 <exclude name="asm-*.jar"/>
                 <exclude name="cglib-*.jar"/>
                 <exclude name="dns_sd.jar"/>
-                <exclude name="jaxb*.jar"/>
             </fileset>
         </ikvmc>
     </target>
