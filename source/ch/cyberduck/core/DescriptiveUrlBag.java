@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DescriptiveUrlBag extends LinkedHashSet<DescriptiveUrl> {
 
@@ -65,7 +65,6 @@ public class DescriptiveUrlBag extends LinkedHashSet<DescriptiveUrl> {
      */
     public DescriptiveUrl find(DescriptiveUrl.Type type) {
         for(DescriptiveUrl url : this) {
-            boolean remove = true;
             if(url.getType().equals(type)) {
                 return url;
             }

@@ -34,10 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DistributionUrlProvider implements UrlProvider {
-    private static final Logger log = Logger.getLogger(DistributionUrlProvider.class);
 
     private Distribution distribution;
 

@@ -37,7 +37,6 @@ import java.util.List;
  * @version $Id$
  */
 public class Distribution {
-    private static final Logger log = Logger.getLogger(Distribution.class);
 
     /**
      * Unique identifier
