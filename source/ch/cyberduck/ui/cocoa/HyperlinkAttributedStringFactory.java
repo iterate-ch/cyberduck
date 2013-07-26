@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.ui.cocoa.application.NSColor;
 import ch.cyberduck.ui.cocoa.application.NSFont;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -39,13 +40,17 @@ public final class HyperlinkAttributedStringFactory {
         super();
     }
 
+    public static NSAttributedString create(final DescriptiveUrl url) {
+        return create(url.getUrl());
+    }
+
     /**
-     * @param hyperlink URL
+     * @param url URL
      * @return Clickable and underlined string to put into textfield.
      */
-    public static NSAttributedString create(final String hyperlink) {
-        return create(NSMutableAttributedString.create(hyperlink,
-                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), hyperlink);
+    public static NSAttributedString create(final String url) {
+        return create(NSMutableAttributedString.create(url,
+                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), url);
     }
 
     /**
