@@ -32,7 +32,7 @@ import java.text.MessageFormat;
 import java.util.Calendar;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3UrlProvider extends DefaultUrlProvider {
 
@@ -54,7 +54,7 @@ public class S3UrlProvider extends DefaultUrlProvider {
 
     @Override
     public DescriptiveUrlBag get(final Path file) {
-        final DescriptiveUrlBag list = super.get(file);
+        final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.attributes().isFile()) {
             // Publicly accessible URL of given object
             list.add(this.createBucketUrl(file, session.getHost().getProtocol().getScheme()));
@@ -76,6 +76,7 @@ public class S3UrlProvider extends DefaultUrlProvider {
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
             }
         }
+        list.addAll(super.get(file));
         return list;
     }
 

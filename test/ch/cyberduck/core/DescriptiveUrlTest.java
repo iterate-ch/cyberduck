@@ -17,6 +17,8 @@ public class DescriptiveUrlTest extends AbstractTestCase {
                 new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider, "b")));
         assertFalse(new DescriptiveUrl(URI.create("http://host.domainb"), DescriptiveUrl.Type.provider, "a").equals(
                 new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider, "b")));
+        assertTrue(new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider).equals(
+                new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.http)));
     }
 
     @Test
