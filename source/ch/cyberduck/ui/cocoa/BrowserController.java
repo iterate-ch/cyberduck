@@ -2572,11 +2572,15 @@ public class BrowserController extends WindowController
 
     @Action
     public void openBrowserButtonClicked(final ID sender) {
+        final DescriptiveUrlBag list;
         if(this.getSelectionCount() == 1) {
-            openUrl(session.toHttpURL(this.getSelectedPath()));
+            list = session.getURLs(this.getSelectedPath());
         }
         else {
-            openUrl(session.toHttpURL(this.workdir()));
+            list = session.getURLs(this.workdir());
+        }
+        if(!list.isEmpty()) {
+            this.openUrl(list.find(DescriptiveUrl.Type.http));
         }
     }
 

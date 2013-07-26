@@ -57,9 +57,7 @@ import org.jets3t.service.utils.oauth.OAuthUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.text.MessageFormat;
 import java.util.Date;
-import java.util.Set;
 
 /**
  * Google Storage for Developers is a new service for developers to store and
@@ -233,49 +231,8 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public DescriptiveUrl toSignedUrl(final Path file, int seconds) {
-        return DescriptiveUrl.EMPTY;
-    }
-
-    /**
-     * Torrent links are not supported.
-     *
-     * @return Always null.
-     */
-    @Override
-    public DescriptiveUrl toTorrentUrl(final Path path) {
-        return DescriptiveUrl.EMPTY;
-    }
-
-
-    /**
-     * This creates an URL that uses Cookie-based Authentication. The ACLs for the given Google user account
-     * has to be setup first.
-     * <p/>
-     * Google Storage lets you provide browser-based authenticated downloads to users who do not have
-     * Google Storage accounts. To do this, you apply Google account-based ACLs to the object and then
-     * you provide users with a URL that is scoped to the object.
-     *
-     * @return URL to be displayed in browser
-     */
-    @Override
-    public DescriptiveUrl toAuthenticatedUrl(final Path path) {
-        if(path.attributes().isFile()) {
-            // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
-            return new DescriptiveUrl(String.format("https://sandbox.google.com/storage%s", path.getAbsolute()));
-        }
-        return DescriptiveUrl.EMPTY;
-    }
-
-    @Override
-    public Set<DescriptiveUrl> getHttpURLs(final Path path) {
-        Set<DescriptiveUrl> urls = super.getHttpURLs(path);
-        DescriptiveUrl url = this.toAuthenticatedUrl(path);
-        if(StringUtils.isNotBlank(url.getUrl())) {
-            urls.add(new DescriptiveUrl(url.getUrl(),
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Authenticated"))));
-        }
-        return urls;
+    public DescriptiveUrlBag getURLs(final Path file) {
+        return new GoogleStorageUrlProvider(this).get(file);
     }
 
     @Override

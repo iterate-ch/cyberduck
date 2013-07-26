@@ -204,18 +204,6 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testHttpUrl() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
-                "u", "p"
-        ));
-        host.setDefaultPath("/my/documentroot");
-        final DAVSession session = new DAVSession(host);
-        assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toURL(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)));
-        assertEquals("http://test.cyberduck.ch/my/documentroot/f", session.toHttpURL(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)));
-    }
-
-
-    @Test
     public void testFeatures() throws Exception {
         final Session session = new DAVSession(new Host("h"));
         assertNull(session.getFeature(UnixPermission.class, null));

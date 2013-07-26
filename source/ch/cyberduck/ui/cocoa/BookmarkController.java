@@ -740,9 +740,7 @@ public class BookmarkController extends WindowController {
         else {
             url = host.toURL();
         }
-        urlField.setAttributedStringValue(
-                HyperlinkAttributedStringFactory.create(url)
-        );
+        urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
         this.updateField(portField, String.valueOf(host.getPort()));
         portField.setEnabled(host.getProtocol().isPortConfigurable());
         this.updateField(pathField, host.getDefaultPath());

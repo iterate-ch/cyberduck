@@ -55,42 +55,6 @@ public class HostTest extends AbstractTestCase {
     }
 
     @Test
-    public void testAbsoluteDocumentRoot() {
-        Host host = new Host("localhost");
-        host.setDefaultPath("/usr/home/dkocher/public_html");
-        final Session session = SessionFactory.createSession(host);
-        Path path = new Path(
-                "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
-        assertEquals("http://localhost/file", session.toHttpURL(path));
-        host.setWebURL("http://127.0.0.1/~dkocher");
-        assertEquals("http://127.0.0.1/~dkocher/file", session.toHttpURL(path));
-    }
-
-    @Test
-    public void testRelativeDocumentRoot() {
-        Host host = new Host("localhost");
-        host.setDefaultPath("public_html");
-        final Session session = SessionFactory.createSession(host);
-        Path path = new Path(
-                "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
-        assertEquals("http://localhost/file", session.toHttpURL(path));
-        host.setWebURL("http://127.0.0.1/~dkocher");
-        assertEquals("http://127.0.0.1/~dkocher/file", session.toHttpURL(path));
-    }
-
-    @Test
-    public void testDefaultPathRoot() {
-        Host host = new Host("localhost");
-        host.setDefaultPath("/");
-        final Session session = SessionFactory.createSession(host);
-        Path path = new Path(
-                "/file", Path.DIRECTORY_TYPE);
-        assertEquals("http://localhost/file", session.toHttpURL(path));
-        host.setWebURL("http://127.0.0.1/~dkocher");
-        assertEquals("http://127.0.0.1/~dkocher/file", session.toHttpURL(path));
-    }
-
-    @Test
     public void testDownloadFolder() {
         Host host = new Host("localhost");
         assertTrue("~/Desktop".equals(host.getDownloadFolder().getAbbreviatedPath()) || "~/Downloads".equals(host.getDownloadFolder().getAbbreviatedPath()));

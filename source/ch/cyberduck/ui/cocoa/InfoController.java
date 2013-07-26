@@ -23,6 +23,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
@@ -35,7 +36,6 @@ import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
@@ -1406,7 +1406,7 @@ public class InfoController extends ToolbarWindowController {
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
-            if(session instanceof S3Session) {
+            if(session.getHost().getProtocol().getType() == Protocol.Type.s3) {
                 // Set icon of cloud service provider
                 item.setLabel(session.getHost().getProtocol().getName());
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
@@ -1455,7 +1455,7 @@ public class InfoController extends ToolbarWindowController {
             if(anonymous) {
                 return false;
             }
-            return session instanceof S3Session;
+            return session.getHost().getProtocol().getType() == Protocol.Type.s3;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
             if(anonymous) {
@@ -1711,9 +1711,9 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             this.updateField(webUrlField, LocaleFactory.localizedString("Unknown"));
-            String url = controller.getSession().toHttpURL(this.getSelected());
-            if(StringUtils.isNotBlank(url)) {
-                webUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
+            final DescriptiveUrl http = controller.getSession().getURLs(this.getSelected()).find(DescriptiveUrl.Type.http);
+            if(!http.equals(DescriptiveUrl.EMPTY)) {
+                webUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(http));
                 webUrlField.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
             }
         }
@@ -1880,7 +1880,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Session<?> session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = session instanceof S3Session;
+        boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3;
         if(enable) {
             enable = !credentials.isAnonymousLogin();
         }
@@ -1969,24 +1969,16 @@ public class InfoController extends ToolbarWindowController {
                     storageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
                 }
                 if(file.attributes().isFile()) {
-                    if(session instanceof S3Session) {
-                        final DescriptiveUrl url = ((S3Session) session).toSignedUrl(file);
-                        if(StringUtils.isNotBlank(url.getUrl())) {
-                            s3PublicUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(url.getUrl())
-                            );
-                            s3PublicUrlField.setToolTip(url.getHelp());
-                        }
-                        if(StringUtils.isNotBlank(url.getHelp())) {
-                            s3PublicUrlValidityField.setStringValue(url.getHelp());
-                        }
-                        final DescriptiveUrl torrent = ((S3Session) session).toTorrentUrl(file);
-                        if(StringUtils.isNotBlank(torrent.getUrl())) {
-                            s3torrentUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(torrent.getUrl())
-                            );
-                            s3torrentUrlField.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
-                        }
+                    final DescriptiveUrl signed = session.getURLs(file).find(DescriptiveUrl.Type.signed);
+                    if(!signed.equals(DescriptiveUrl.EMPTY)) {
+                        s3PublicUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(signed.getUrl()));
+                        s3PublicUrlField.setToolTip(signed.getHelp());
+                        s3PublicUrlValidityField.setStringValue(signed.getHelp());
+                    }
+                    final DescriptiveUrl torrent = session.getURLs(file).find(DescriptiveUrl.Type.torrent);
+                    if(!torrent.equals(DescriptiveUrl.EMPTY)) {
+                        s3torrentUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(torrent.getUrl()));
+                        s3torrentUrlField.setToolTip(torrent.getHelp());
                     }
                 }
             }
@@ -2178,8 +2170,9 @@ public class InfoController extends ToolbarWindowController {
     private void initAcl() {
         this.setAcl(Collections.<Acl.UserAndRole>emptyList());
         aclUrlField.setStringValue(LocaleFactory.localizedString("None"));
+        final Session<?> session = controller.getSession();
         if(this.toggleAclSettings(false)) {
-            final AclPermission feature = controller.getSession().getFeature(AclPermission.class, prompt);
+            final AclPermission feature = session.getFeature(AclPermission.class, prompt);
             aclAddButton.removeAllItems();
             this.aclAddButton.addItemWithTitle(StringUtils.EMPTY);
             this.aclAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
@@ -2200,18 +2193,16 @@ public class InfoController extends ToolbarWindowController {
             else {
                 for(Path file : files) {
                     if(file.attributes().isFile()) {
-                        final DescriptiveUrl url = controller.getSession().toAuthenticatedUrl(file);
-                        if(StringUtils.isNotBlank(url.getUrl())) {
-                            aclUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(url.getUrl())
-                            );
-                            aclUrlField.setToolTip(url.getHelp());
+                        final DescriptiveUrl authenticated = session.getURLs(file).find(DescriptiveUrl.Type.authenticated);
+                        if(!authenticated.equals(DescriptiveUrl.EMPTY)) {
+                            aclUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(authenticated.getUrl()));
+                            aclUrlField.setToolTip(authenticated.getHelp());
                         }
                     }
                 }
             }
             this.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new ReadAclWorker(
-                    controller.getSession().getFeature(AclPermission.class, prompt), files) {
+                    session.getFeature(AclPermission.class, prompt), files) {
                 @Override
                 public void cleanup(final List<Acl.UserAndRole> updated) {
                     setAcl(updated);
@@ -2598,8 +2589,8 @@ public class InfoController extends ToolbarWindowController {
                         distributionCnameUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
                     }
                     else {
-                        final String url = distribution.getURL(file);
-                        if(StringUtils.isNotBlank(url)) {
+                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).get(file).find(DescriptiveUrl.Type.cdn);
+                        if(!url.equals(DescriptiveUrl.EMPTY)) {
                             distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
                             distributionUrlField.setToolTip(LocaleFactory.localizedString("CDN URL"));
                         }
@@ -2616,13 +2607,11 @@ public class InfoController extends ToolbarWindowController {
                     }
                     else {
                         distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                        for(DescriptiveUrl url : distribution.getCnameURL(file)) {
-                            distributionCnameUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(url.getUrl())
-                            );
-                            distributionCnameUrlField.setToolTip(LocaleFactory.localizedString("CDN URL"));
+                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).get(file).find(DescriptiveUrl.Type.cname);
+                        if(!url.equals(DescriptiveUrl.EMPTY)) {
                             // We only support one CNAME URL to be displayed
-                            break;
+                            distributionCnameUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url.getUrl()));
+                            distributionCnameUrlField.setToolTip(LocaleFactory.localizedString("CDN URL"));
                         }
                     }
                     if(cdn.getFeature(Index.class, distribution.getMethod(), prompt) != null) {

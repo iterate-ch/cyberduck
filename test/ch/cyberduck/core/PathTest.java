@@ -18,10 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.s3.S3Session;
-
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -174,20 +171,6 @@ public class PathTest extends AbstractTestCase {
         assertEquals("/", path.getParent().getAbsolute());
         assertTrue(new PathContainerService().isContainer(path));
         assertFalse(path.isRoot());
-    }
-
-    @Test
-    public void testToURL() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        Path p = new Path("/bucket/f/key", Path.FILE_TYPE);
-        assertEquals("https://bucket.s3.amazonaws.com/f/key", session.toURL(p));
-    }
-
-    @Test
-    public void testToHttpURL() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        Path p = new Path("/bucket/f/key", Path.FILE_TYPE);
-        assertEquals("http://bucket.s3.amazonaws.com/f/key", session.toHttpURL(p));
     }
 
     @Test

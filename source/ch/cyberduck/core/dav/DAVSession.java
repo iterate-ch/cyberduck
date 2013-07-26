@@ -103,11 +103,6 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public String toHttpURL(final Path path) {
-        return this.toURL(path);
-    }
-
-    @Override
     public boolean exists(final Path path) throws BackgroundException {
         if(super.exists(path)) {
             return true;

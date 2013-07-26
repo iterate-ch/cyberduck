@@ -215,11 +215,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         return target;
     }
 
-    @Override
-    public String toURL(final Path path) {
-        return this.toURL(path, false);
-    }
-
     private abstract class FutureHttpResponse<T> implements Runnable {
 
         Exception exception;

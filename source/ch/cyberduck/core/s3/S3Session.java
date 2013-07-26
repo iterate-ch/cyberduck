@@ -54,16 +54,12 @@ import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
 import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.RestUtils;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.MessageFormat;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @version $Id$
@@ -295,19 +291,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         return configuration;
     }
 
-    private String getHostnameForContainer(final Path bucket) {
-        if(this.configure().getBoolProperty("s3service.disable-dns-buckets", false)) {
-            return this.getHost().getHostname(true);
-        }
-        if(!ServiceUtils.isBucketNameValidDNSName(containerService.getContainer(bucket).getName())) {
-            return this.getHost().getHostname(true);
-        }
-        if(this.getHost().getHostname().equals(this.getHost().getProtocol().getDefaultHostname())) {
-            return String.format("%s.%s", bucket.getName(), this.getHost().getHostname(true));
-        }
-        return this.getHost().getHostname(true);
-    }
-
     @Override
     public RequestEntityRestStorageService connect(final HostKeyController key) throws BackgroundException {
         return new RequestEntityRestStorageService(this.configure());
@@ -320,145 +303,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         // List all buckets and cache
         this.cache().put(new Path(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference(),
                 new AttributedList<Path>(new S3BucketListService().list(this)));
-    }
-
-    /**
-     * Overwritten to provide publicly accessible URL of given object
-     *
-     * @return Using scheme from protocol
-     */
-    @Override
-    public String toURL(final Path path) {
-        return this.toURL(path, this.getHost().getProtocol().getScheme().toString());
-    }
-
-    /**
-     * Overwritten to provide publicy accessible URL of given object
-     *
-     * @return Plain HTTP link
-     */
-    @Override
-    public String toHttpURL(final Path path) {
-        return this.toURL(path, Scheme.http.name());
-    }
-
-    /**
-     * Properly URI encode and prepend the bucket name.
-     *
-     * @param scheme Protocol
-     * @return URL to be displayed in browser
-     */
-    private String toURL(final Path file, final String scheme) {
-        final StringBuilder url = new StringBuilder(scheme);
-        url.append("://");
-        if(file.isRoot()) {
-            url.append(this.getHost().getHostname());
-        }
-        else {
-            final String hostname = this.getHostnameForContainer(containerService.getContainer(file));
-            if(hostname.startsWith(containerService.getContainer(file).getName())) {
-                url.append(hostname);
-                if(!containerService.isContainer(file)) {
-                    url.append(URIEncoder.encode(containerService.getKey(file)));
-                }
-            }
-            else {
-                url.append(this.getHost().getHostname());
-                url.append(URIEncoder.encode(file.getAbsolute()));
-            }
-        }
-        return url.toString();
-    }
-
-    /**
-     * Query string authentication. Query string authentication is useful for giving HTTP or browser access to
-     * resources that would normally require authentication. The signature in the query string secures the request.
-     *
-     * @return A signed URL with a limited validity over time.
-     */
-    public DescriptiveUrl toSignedUrl(final Path path) {
-        return toSignedUrl(path, Preferences.instance().getInteger("s3.url.expire.seconds"));
-    }
-
-    /**
-     * Query String Authentication generates a signed URL string that will grant
-     * access to an S3 resource (bucket or object)
-     * to whoever uses the URL up until the time specified.
-     *
-     * @param seconds Expire after seconds elapsed
-     * @return Temporary URL to be displayed in browser
-     */
-    public DescriptiveUrl toSignedUrl(final Path file, final int seconds) {
-        return this.toSignedUrl(file, seconds, PasswordStoreFactory.get());
-    }
-
-    protected DescriptiveUrl toSignedUrl(final Path file, final int seconds, final HostPasswordStore store) {
-        if(this.getHost().getCredentials().isAnonymousLogin()) {
-            return DescriptiveUrl.EMPTY;
-        }
-        if(file.attributes().isFile()) {
-            // Determine expiry time for URL
-            final Calendar expiry = Calendar.getInstance();
-            expiry.add(Calendar.SECOND, seconds);
-            // Generate URL
-            final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this.configure());
-            final String secret = store.find(host);
-            if(StringUtils.isBlank(secret)) {
-                return DescriptiveUrl.EMPTY;
-            }
-            client.setProviderCredentials(
-                    new AWSCredentials(host.getCredentials().getUsername(), secret));
-            return new DescriptiveUrl(client.createSignedUrl("GET",
-                    containerService.getContainer(file).getName(), containerService.getKey(file), null,
-                    null, expiry.getTimeInMillis() / 1000, false, this.getHost().getProtocol().isSecure(), false),
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
-                            + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires on {0}", "S3") + ")",
-                            UserDateFormatterFactory.get().getShortFormat(expiry.getTimeInMillis()))
-            );
-        }
-        return DescriptiveUrl.EMPTY;
-    }
-
-    /**
-     * Generates a URL string that will return a Torrent file for an object in S3,
-     * which file can be downloaded and run in a BitTorrent client.
-     *
-     * @return Torrent URL
-     */
-    public DescriptiveUrl toTorrentUrl(final Path path) {
-        if(path.attributes().isFile()) {
-            return new DescriptiveUrl(new RequestEntityRestStorageService(this.configure()).createTorrentUrl(
-                    containerService.getContainer(path).getName(),
-                    containerService.getKey(path)));
-        }
-        return DescriptiveUrl.EMPTY;
-    }
-
-    @Override
-    public Set<DescriptiveUrl> getHttpURLs(final Path path) {
-        final Set<DescriptiveUrl> urls = super.getHttpURLs(path);
-        // Always include HTTP URL
-        urls.add(new DescriptiveUrl(this.toURL(path, Scheme.http.name()),
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.http.name().toUpperCase(java.util.Locale.ENGLISH))));
-        final DescriptiveUrl hour = this.toSignedUrl(path, 60 * 60);
-        if(StringUtils.isNotBlank(hour.getUrl())) {
-            urls.add(hour);
-        }
-        // Default signed URL expiring in 24 hours.
-        final DescriptiveUrl day = this.toSignedUrl(path, Preferences.instance().getInteger("s3.url.expire.seconds"));
-        if(StringUtils.isNotBlank(day.getUrl())) {
-            urls.add(day);
-        }
-        final DescriptiveUrl week = this.toSignedUrl(path, 7 * 24 * 60 * 60);
-        if(StringUtils.isNotBlank(week.getUrl())) {
-            urls.add(week);
-        }
-        final DescriptiveUrl torrent = this.toTorrentUrl(path);
-        if(StringUtils.isNotBlank(torrent.getUrl())) {
-            urls.add(new DescriptiveUrl(torrent.getUrl(),
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
-        }
-        return urls;
     }
 
     @Override
@@ -525,6 +369,11 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
+    }
+
+    @Override
+    public DescriptiveUrlBag getURLs(final Path file) {
+        return new S3UrlProvider(this, PasswordStoreFactory.get()).get(file);
     }
 
     @Override

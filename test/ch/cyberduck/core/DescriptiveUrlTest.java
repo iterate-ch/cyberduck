@@ -2,6 +2,8 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
+import java.net.URI;
+
 import static org.junit.Assert.*;
 
 /**
@@ -11,12 +13,14 @@ public class DescriptiveUrlTest extends AbstractTestCase {
 
     @Test
     public void testEquals() throws Exception {
-        assertTrue(new DescriptiveUrl("http://host.domain", "a").equals(new DescriptiveUrl("http://host.domain", "b")));
-        assertFalse(new DescriptiveUrl("http://host.domainb", "a").equals(new DescriptiveUrl("http://host.domain", "b")));
+        assertTrue(new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider, "a").equals(
+                new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider, "b")));
+        assertFalse(new DescriptiveUrl(URI.create("http://host.domainb"), DescriptiveUrl.Type.provider, "a").equals(
+                new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider, "b")));
     }
 
     @Test
     public void testDefault() throws Exception {
-        assertEquals("Open in Web Browser", new DescriptiveUrl("http://me").getHelp());
+        assertEquals("Open in Web Browser", new DescriptiveUrl(URI.create("http://me")).getHelp());
     }
 }

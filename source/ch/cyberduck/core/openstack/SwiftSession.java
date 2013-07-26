@@ -22,6 +22,7 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -124,21 +125,12 @@ public class SwiftSession extends HttpSession<Client> {
         distributions.clear();
     }
 
-    /**
-     * @return Publicy accessible URL of given object
-     */
     @Override
-    public String toHttpURL(final Path file) {
+    public DescriptiveUrlBag getURLs(final Path file) {
         if(distributions.containsKey(containerService.getContainer(file))) {
-            return distributions.get(containerService.getContainer(file)).getURL(file);
+            return new DistributionUrlProvider(distributions.get(containerService.getContainer(file))).get(file);
         }
-        return null;
-    }
-
-    @Override
-    public Set<DescriptiveUrl> getURLs(final Path path) {
-        // Storage URL is not accessible
-        return this.getHttpURLs(path);
+        return DescriptiveUrlBag.empty();
     }
 
     @Override

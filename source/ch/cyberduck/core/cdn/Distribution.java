@@ -18,7 +18,6 @@ package ch.cyberduck.core.cdn;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -30,9 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +37,7 @@ import java.util.List;
  * @version $Id$
  */
 public class Distribution {
-    private static Logger log = Logger.getLogger(Distribution.class);
+    private static final Logger log = Logger.getLogger(Distribution.class);
 
     /**
      * Unique identifier
@@ -310,13 +306,7 @@ public class Distribution {
         if(!new PathContainerService().isContainer(file)) {
             url.append(Path.DELIMITER).append(URIEncoder.encode(new PathContainerService().getKey(file)));
         }
-        try {
-            return new URI(url.toString()).normalize().toString();
-        }
-        catch(URISyntaxException e) {
-            log.error("Failure parsing URI", e);
-        }
-        return url.toString();
+        return URI.create(url.toString()).normalize().toString();
     }
 
     /**
@@ -382,36 +372,6 @@ public class Distribution {
         return url;
     }
 
-    /**
-     * @param file File in origin container
-     * @return URL to file in distribution
-     */
-    public String getURL(final Path file) {
-        return this.getURL(file, this.getUrl());
-    }
-
-    /**
-     * @param file File in origin container
-     * @param base Distribution URL
-     * @return URL to file in distribution
-     */
-    private String getURL(final Path file, final String base) {
-        if(StringUtils.isEmpty(base)) {
-            return null;
-        }
-        StringBuilder b = new StringBuilder(base);
-        if(StringUtils.isNotEmpty(new PathContainerService().getKey(file))) {
-            b.append(Path.DELIMITER).append(URIEncoder.encode(new PathContainerService().getKey(file)));
-        }
-        try {
-            return new URI(b.toString()).normalize().toString();
-        }
-        catch(URISyntaxException e) {
-            log.error("Failure parsing URI", e);
-        }
-        return b.toString();
-    }
-
     public void setSslUrl(final String sslUrl) {
         this.sslUrl = sslUrl;
     }
@@ -425,68 +385,12 @@ public class Distribution {
         return sslUrl;
     }
 
-    public String getSslUrl(final Path file) {
-        return this.getURL(file, this.getSslUrl());
-    }
-
     public void setStreamingUrl(final String streamingUrl) {
         this.streamingUrl = streamingUrl;
     }
 
     public String getStreamingUrl() {
         return streamingUrl;
-    }
-
-    public String getStreamingUrl(final Path file) {
-        return this.getURL(file, this.getStreamingUrl());
-    }
-
-
-    /**
-     * @param file File in origin container
-     * @return Both CNAME and original URL
-     */
-    public List<DescriptiveUrl> getURLs(final Path file) {
-        List<DescriptiveUrl> urls = this.getCnameURL(file);
-        urls.add(new DescriptiveUrl(this.getURL(file),
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(method.toString(), "S3"))));
-        if(StringUtils.isNotBlank(this.getSslUrl())) {
-            urls.add(new DescriptiveUrl(this.getSslUrl(file),
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(method.toString(), "S3")) + " (SSL)"));
-        }
-        if(StringUtils.isNotBlank(this.getStreamingUrl())) {
-            urls.add(new DescriptiveUrl(this.getStreamingUrl(file),
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(method.toString(), "S3")) + " (Streaming)"));
-        }
-        return urls;
-    }
-
-    /**
-     * @param file File in origin container
-     * @return CNAME to distribution
-     */
-    public List<DescriptiveUrl> getCnameURL(final Path file) {
-        List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>();
-        for(String cname : this.getCNAMEs()) {
-            urls.add(new DescriptiveUrl(this.getCnameURL(cname, file),
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(method.toString(), "S3"))));
-        }
-        return urls;
-    }
-
-    private String getCnameURL(final String cname, final Path file) {
-        StringBuilder b = new StringBuilder();
-        b.append(String.format("%s://%s", method.getScheme(), cname)).append(method.getContext());
-        if(StringUtils.isNotEmpty(new PathContainerService().getKey(file))) {
-            b.append(Path.DELIMITER).append(URIEncoder.encode(new PathContainerService().getKey(file)));
-        }
-        try {
-            return new URI(b.toString()).normalize().toString();
-        }
-        catch(URISyntaxException e) {
-            log.error("Failure parsing URI", e);
-        }
-        return b.toString();
     }
 
     /**

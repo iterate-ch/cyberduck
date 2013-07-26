@@ -108,56 +108,6 @@ public class S3SessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testUri() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        assertEquals("https://test.cyberduck.ch.s3.amazonaws.com/key",
-                session.toURL(new Path("/test.cyberduck.ch/key", Path.FILE_TYPE)));
-    }
-
-    @Test
-    public void testHttpUri() throws Exception {
-        final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        assertEquals("http://test.cyberduck.ch.s3.amazonaws.com/key", aws.toHttpURL(new Path("/test.cyberduck.ch/key", Path.FILE_TYPE)));
-    }
-
-    @Test
-    public void testToSignedUrlAnonymous() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
-                new Credentials("anonymous", null)));
-        assertEquals(DescriptiveUrl.EMPTY, session.toSignedUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE)));
-    }
-
-    @Test
-    public void testToSignedUrlNoKeyFound() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), null
-        )));
-        assertEquals(DescriptiveUrl.EMPTY, session.toSignedUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE), 30, new DisabledPasswordStore()));
-    }
-
-    @Test
-    public void testToSignedUrl() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), null
-        )));
-        assertTrue(session.toSignedUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE), 30, new DisabledPasswordStore() {
-            @Override
-            public String find(final Host host) {
-                return "k";
-            }
-        }).getUrl().startsWith(
-                "https://test.cyberduck.ch.s3.amazonaws.com/test?AWSAccessKeyId=AKIAIUTN5UDAA36D3RLQ&Expires="));
-    }
-
-    @Test
-    public void testToTorrentUrl() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
-                new Credentials("anonymous", null)));
-        assertEquals(new DescriptiveUrl("http://test.cyberduck.ch.s3.amazonaws.com/test?torrent"),
-                session.toTorrentUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE)));
-    }
-
-    @Test
     public void testMakeDirectory() throws Exception {
         final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")

@@ -70,26 +70,6 @@ public class SFTPSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testUrl() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
-                "u", "p"
-        ));
-        host.setDefaultPath("/my/documentroot");
-        final SFTPSession session = new SFTPSession(host);
-        assertEquals("sftp://u@test.cyberduck.ch/my/documentroot/f", session.toURL(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)));
-    }
-
-    @Test
-    public void testHttpUrl() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
-                "u", "p"
-        ));
-        host.setDefaultPath("/my/documentroot");
-        final SFTPSession session = new SFTPSession(host);
-        assertEquals("http://test.cyberduck.ch/f", session.toHttpURL(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)));
-    }
-
-    @Test
     public void testFeatures() throws Exception {
         final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch");
         final Session session = new SFTPSession(host);

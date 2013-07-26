@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.library.Native;
@@ -50,9 +51,10 @@ public class ODBEditor extends BrowserBackgroundEditor {
      */
     @Override
     public void edit() throws IOException {
+        final Path file = this.getEdited();
         // Important, should always be run on the main thread; otherwise applescript crashes
-        if(!this.edit(this.getEdited().getLocal().getAbsolute(), session.toURL(this.getEdited()), this.getApplication().getIdentifier())) {
-            throw new IOException(String.format("Edit failed for %s", this.getEdited().getLocal().getAbsolute()));
+        if(!this.edit(file.getLocal().getAbsolute(), session.getURLs(file).find(DescriptiveUrl.Type.provider).getUrl(), this.getApplication().getIdentifier())) {
+            throw new IOException(String.format("Edit failed for %s", file.getLocal().getAbsolute()));
         }
     }
 

@@ -51,10 +51,11 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertFalse(session.cache().isEmpty());
         final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        assertNull(session.toHttpURL(new Path(container, "d/f", Path.FILE_TYPE)));
+        assertEquals(DescriptiveUrl.EMPTY, session.getURLs(new Path(container, "d/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.cdn));
         assertNotNull(session.getFeature(DistributionConfiguration.class, null));
         container.attributes().setRegion("DFW");
-        assertEquals("http://2b72124779a6075376a9-dc3ef5db7541ebd1f458742f9170bbe4.r64.cf1.rackcdn.com/d/f", session.toHttpURL(new Path(container, "d/f", Path.FILE_TYPE)));
+        assertEquals("http://2b72124779a6075376a9-dc3ef5db7541ebd1f458742f9170bbe4.r64.cf1.rackcdn.com/d/f",
+                session.getURLs(new Path(container, "d/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.cdn).getUrl());
         session.close();
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());

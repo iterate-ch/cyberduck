@@ -106,6 +106,7 @@ public class CopyTransferFilter implements TransferPathFilter {
         catch(BackgroundException e) {
             // Ignore
             log.warn(e.getMessage());
+            //todo flag
         }
     }
 
@@ -116,6 +117,7 @@ public class CopyTransferFilter implements TransferPathFilter {
         catch(BackgroundException e) {
             // Ignore
             log.warn(e.getMessage());
+            //todo flag
         }
     }
 }

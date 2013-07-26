@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -121,11 +122,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
             if(options.quarantine) {
                 // Set quarantine attributes
-                quarantine.setQuarantine(file.getLocal(), session.getHost().toURL(), session.toURL(file));
+                quarantine.setQuarantine(file.getLocal(), session.getHost().toURL(), session.getURLs(file).find(DescriptiveUrl.Type.provider).getUrl());
             }
             if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
                 // Set quarantine attributes
-                quarantine.setWhereFrom(file.getLocal(), session.toURL(file));
+                quarantine.setWhereFrom(file.getLocal(), session.getURLs(file).find(DescriptiveUrl.Type.provider).getUrl());
             }
             if(options.open) {
                 launcher.open(file.getLocal());

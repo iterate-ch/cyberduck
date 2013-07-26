@@ -20,28 +20,60 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.net.URI;
+
 /**
  * @version $Id$
  */
 public class DescriptiveUrl {
 
-    public static final DescriptiveUrl EMPTY = new DescriptiveUrl(null, null);
+    public static final DescriptiveUrl EMPTY = new DescriptiveUrl(null);
 
-    private String url = StringUtils.EMPTY;
+    private URI url;
+
+    private Type type;
 
     private String help = StringUtils.EMPTY;
 
-    public DescriptiveUrl(final String url) {
-        this(url, LocaleFactory.localizedString("Open in Web Browser"));
+    public enum Type {
+        /**
+         * Native protocol
+         */
+        provider,
+        /**
+         * Web URL
+         */
+        http,
+        cdn,
+        cname,
+        signed,
+        torrent,
+        authenticated
     }
 
-    public DescriptiveUrl(final String url, final String help) {
+    public DescriptiveUrl(final URI url) {
+        this(url, Type.http, LocaleFactory.localizedString("Open in Web Browser"));
+    }
+
+    public DescriptiveUrl(final URI url, Type type) {
+        this(url, type, LocaleFactory.localizedString("Open in Web Browser"));
+    }
+
+    public DescriptiveUrl(final URI url, Type type, final String help) {
         this.url = url;
+        this.type = type;
         this.help = help;
     }
 
     public String getUrl() {
-        return url;
+        if(null == url) {
+            return null;
+        }
+        return url.toString();
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public String getHelp() {

@@ -43,7 +43,9 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
 
     @Override
     protected List<DescriptiveUrl> getURLs(Path selected) {
-        return new ArrayList<DescriptiveUrl>(this.getSession().getHttpURLs(selected));
+        return new ArrayList<DescriptiveUrl>(this.getSession().getURLs(selected).filter(
+                DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
+                DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated, DescriptiveUrl.Type.torrent));
     }
 
     @Override
