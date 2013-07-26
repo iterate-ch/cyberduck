@@ -492,16 +492,15 @@ public abstract class Transfer implements Serializable {
         }
     }
 
-    public void save(final Path file, final TransferStatus s) {
+    public void save(final Path file, final TransferStatus status) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Determined transfer status %s of %s for transfer %s", s, file, this));
+            log.info(String.format("Determined transfer status %s of %s for transfer %s", status, file, this));
         }
         // Add transfer length to total bytes
-        size += s.getLength();
+        size += status.getLength();
         // Add skipped bytes
-        transferred += s.getCurrent();
-
-        table.put(file, s.selected(this.isSelected(file)));
+        transferred += status.getCurrent();
+        table.put(file, status);
     }
 
     /**
