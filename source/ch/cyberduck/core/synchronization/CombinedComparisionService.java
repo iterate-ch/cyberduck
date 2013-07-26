@@ -53,21 +53,21 @@ public class CombinedComparisionService implements ComparisonService {
         if(p.getLocal().exists() && session.exists(p)) {
             if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                 // MD5/ETag Checksum is supported
-                Comparison comparison = checksum.compare(p);
+                final Comparison comparison = checksum.compare(p);
                 if(!Comparison.UNEQUAL.equals(comparison)) {
                     // Decision is available
                     return comparison;
                 }
             }
             if(Preferences.instance().getBoolean("queue.sync.compare.size")) {
-                Comparison comparison = size.compare(p);
+                final Comparison comparison = size.compare(p);
                 if(!Comparison.UNEQUAL.equals(comparison)) {
                     // Decision is available
                     return comparison;
                 }
             }
             // Default comparison is using timestamp of file.
-            Comparison comparison = timestamp.compare(p);
+            final Comparison comparison = timestamp.compare(p);
             if(!Comparison.UNEQUAL.equals(comparison)) {
                 // Decision is available
                 return comparison;
