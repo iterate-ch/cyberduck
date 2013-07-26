@@ -91,16 +91,16 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 // Read file size
                 status.setLength(file.attributes().getSize());
             }
+            // No icon update if disabled
+            if(Preferences.instance().getBoolean("queue.download.icon.update")) {
+                icon.set(file.getLocal(), 0);
+            }
         }
         if(file.attributes().isDirectory()) {
             // Do not attempt to create a directory that already exists
             if(file.getLocal().exists()) {
                 status.setExists(true);
             }
-        }
-        // No icon update if disabled
-        if(Preferences.instance().getBoolean("queue.download.icon.update")) {
-            icon.set(file.getLocal(), 0);
         }
         return status;
     }
@@ -116,20 +116,22 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            // Remove custom icon if complete. The Finder will display the default icon for this file type
-            if(Preferences.instance().getBoolean("queue.download.icon.update")) {
-                icon.remove(file.getLocal());
-            }
-            if(options.quarantine) {
-                // Set quarantine attributes
-                quarantine.setQuarantine(file.getLocal(), session.getHost().toURL(), session.getURLs(file).find(DescriptiveUrl.Type.provider).getUrl());
-            }
-            if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
-                // Set quarantine attributes
-                quarantine.setWhereFrom(file.getLocal(), session.getURLs(file).find(DescriptiveUrl.Type.provider).getUrl());
-            }
-            if(options.open) {
-                launcher.open(file.getLocal());
+            if(file.attributes().isFile()) {
+                // Remove custom icon if complete. The Finder will display the default icon for this file type
+                if(Preferences.instance().getBoolean("queue.download.icon.update")) {
+                    icon.remove(file.getLocal());
+                }
+                if(options.quarantine) {
+                    // Set quarantine attributes
+                    quarantine.setQuarantine(file.getLocal(), session.getHost().toURL(), session.getURLs(file).find(DescriptiveUrl.Type.provider).getUrl());
+                }
+                if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
+                    // Set quarantine attributes
+                    quarantine.setWhereFrom(file.getLocal(), session.getURLs(file).find(DescriptiveUrl.Type.provider).getUrl());
+                }
+                if(options.open) {
+                    launcher.open(file.getLocal());
+                }
             }
             launcher.bounce(file.getLocal());
         }
