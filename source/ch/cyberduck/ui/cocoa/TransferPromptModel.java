@@ -32,6 +32,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 import ch.cyberduck.ui.comparator.FilenameComparator;
+import ch.cyberduck.ui.threading.ControllerBackgroundAction;
 
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -130,10 +131,9 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
-                controller.background(new SessionBackgroundAction(new PanelAlertCallback(controller),
-                        controller, controller, new DisabledLoginController(), new DefaultHostKeyController()) {
+                controller.background(new ControllerBackgroundAction(controller, new PanelAlertCallback(controller), controller, controller) {
                     @Override
-                    public Object run() throws BackgroundException {
+                    public Boolean run() throws BackgroundException {
                         transfer.cache().put(path.getReference(), transfer.children(path));
                         return true;
                     }
