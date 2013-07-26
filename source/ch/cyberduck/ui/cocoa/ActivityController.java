@@ -37,7 +37,6 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -153,17 +152,17 @@ public final class ActivityController extends WindowController {
             }
 
             @Override
-            public String tooltip(TaskController c) {
+            public String tooltip(final TaskController c) {
                 return null;
             }
 
             @Override
-            public boolean tableView_shouldSelectRow(NSTableView view, NSInteger row) {
+            public boolean tableView_shouldSelectRow(final NSTableView view, final NSInteger row) {
                 return false;
             }
 
             @Override
-            public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+            public void tableColumnClicked(final NSTableView view, final NSTableColumn tableColumn) {
             }
 
             @Override
@@ -171,7 +170,7 @@ public final class ActivityController extends WindowController {
             }
 
             @Override
-            public void selectionDidChange(NSNotification notification) {
+            public void selectionDidChange(final NSNotification notification) {
             }
 
             @Override
@@ -179,10 +178,9 @@ public final class ActivityController extends WindowController {
                 return false;
             }
 
-            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
-                final Collection<TaskController> values = tasks.values();
-                int size = values.size();
-                Rococoa.cast(cell, ControllerCell.class).setView(values.toArray(new TaskController[size])[size - 1 - row.intValue()].view());
+            public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell,
+                                                                     final NSTableColumn tableColumn, final NSInteger row) {
+                Rococoa.cast(cell, ControllerCell.class).setView(tasks.values().toArray(new TaskController[tasks.size()])[row.intValue()].view());
             }
         }).id());
         {
