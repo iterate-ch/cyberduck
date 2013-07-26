@@ -131,8 +131,11 @@ public final class Queue {
     /**
      * Resize queue with current setting in preferences.
      */
-    public void resize() {
-        log.debug("resize");
+    public void resize(int newsize) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Resize queue to %d", newsize));
+        }
+        size = newsize;
         int counter = running.size();
         while(counter < size) {
             if(overflow.isEmpty()) {
