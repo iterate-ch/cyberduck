@@ -58,7 +58,7 @@ import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 import ch.cyberduck.ui.threading.ControllerMainAction;
-import ch.cyberduck.ui.threading.TransferCollectionRepeatableBackgroundAction;
+import ch.cyberduck.ui.threading.TransferCollectionBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -688,7 +688,7 @@ public final class TransferController extends WindowController implements NSTool
      */
     public void startTransfer(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController controller = transferTableModel.getController(transfer);
-        final BackgroundAction action = new TransferCollectionRepeatableBackgroundAction(this,
+        final BackgroundAction action = new TransferCollectionBackgroundAction(this,
                 new PanelAlertCallback(this), controller, controller, transcript,
                 transfer, new TransferPrompt() {
             @Override

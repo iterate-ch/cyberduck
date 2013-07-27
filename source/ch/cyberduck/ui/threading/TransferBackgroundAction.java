@@ -25,8 +25,6 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.AlertCallback;
-import ch.cyberduck.core.transfer.Queue;
-import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -55,8 +53,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
     protected TransferOptions options;
 
     private SleepPreventer sleep = SleepPreventerFactory.get();
-
-    private Queue queue = QueueFactory.get();
 
     private Growl growl = GrowlFactory.get();
 
@@ -94,7 +90,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
     @Override
     public void prepare() throws ConnectionCanceledException {
         transferListener.start(transfer);
-        queue.add(transfer, progressListener);
         super.prepare();
     }
 
@@ -121,7 +116,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
     @Override
     public void finish() {
         super.finish();
-        queue.remove(transfer);
         transferListener.stop(transfer);
     }
 

@@ -23,7 +23,10 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.AlertCallback;
+import ch.cyberduck.core.transfer.Queue;
+import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -35,15 +38,23 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class TransferCollectionRepeatableBackgroundAction extends TransferBackgroundAction {
-    private static final Logger log = Logger.getLogger(TransferCollectionRepeatableBackgroundAction.class);
+public class TransferCollectionBackgroundAction extends TransferBackgroundAction {
+    private static final Logger log = Logger.getLogger(TransferCollectionBackgroundAction.class);
 
-    public TransferCollectionRepeatableBackgroundAction(final Controller controller, final AlertCallback alert,
-                                                        final TransferListener transferListener,
-                                                        final ProgressListener progressListener,
-                                                        final TranscriptListener transcriptListener,
-                                                        final Transfer transfer, final TransferPrompt prompt, final TransferOptions options) {
+    private Queue queue = QueueFactory.get();
+
+    public TransferCollectionBackgroundAction(final Controller controller, final AlertCallback alert,
+                                              final TransferListener transferListener,
+                                              final ProgressListener progressListener,
+                                              final TranscriptListener transcriptListener,
+                                              final Transfer transfer, final TransferPrompt prompt, final TransferOptions options) {
         super(controller, alert, transferListener, progressListener, transcriptListener, transfer, prompt, options);
+    }
+
+    @Override
+    public void prepare() throws ConnectionCanceledException {
+        queue.add(transfer, progressListener);
+        super.prepare();
     }
 
     @Override
@@ -62,6 +73,7 @@ public class TransferCollectionRepeatableBackgroundAction extends TransferBackgr
             // We have our own session independent of any browser.
             s.cache().clear();
         }
+        queue.remove(transfer);
     }
 
     @Override
