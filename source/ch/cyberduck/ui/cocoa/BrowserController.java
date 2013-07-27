@@ -2279,7 +2279,7 @@ public class BrowserController extends WindowController
                 final ArrayList<Path> changed = new ArrayList<Path>();
                 changed.addAll(selected.keySet());
                 changed.addAll(selected.values());
-                transfer(new MoveTransfer(session, selected), changed, true);
+                transfer(new MoveTransfer(session, selected), new ArrayList<Path>(selected.values()), true);
             }
         });
     }
