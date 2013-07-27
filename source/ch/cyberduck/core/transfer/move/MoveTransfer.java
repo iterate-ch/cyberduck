@@ -107,6 +107,8 @@ public class MoveTransfer extends Transfer {
 
         final Move feature = session.getFeature(Move.class, new DisabledLoginController());
         feature.move(source, files.get(source));
+        addTransferred(source.attributes().getSize());
+        status.setComplete();
     }
 
     @Override
