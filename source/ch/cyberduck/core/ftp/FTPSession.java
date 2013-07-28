@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -163,7 +164,7 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
         final FTPClient client = new FTPClient(f, f.getSSLContext());
         try {
             this.configure(client);
-            client.connect(host.getHostname(true), host.getPort());
+            client.connect(new PunycodeConverter().convert(host.getHostname()), host.getPort());
             client.setTcpNoDelay(false);
             final TimeZone zone = host.getTimezone();
             if(log.isInfoEnabled()) {

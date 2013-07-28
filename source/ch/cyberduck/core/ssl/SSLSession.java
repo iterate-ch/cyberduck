@@ -20,6 +20,7 @@ package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.idna.PunycodeConverter;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
@@ -44,7 +45,7 @@ public abstract class SSLSession<C> extends Session<C> implements TrustManagerHo
     }
 
     public String getTarget() {
-        return this.getHost().getHostname(true);
+        return new PunycodeConverter().convert(host.getHostname());
     }
 
     /**
