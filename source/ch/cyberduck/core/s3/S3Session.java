@@ -30,7 +30,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.idna.PunycodeConverter;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -57,8 +56,6 @@ import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.RestUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Map;
 
@@ -311,35 +308,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            if(file.attributes().isDuplicate()) {
-                return this.getClient().getVersionedObject(file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file),
-                        null, // ifModifiedSince
-                        null, // ifUnmodifiedSince
-                        null, // ifMatch
-                        null, // ifNoneMatch
-                        status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
-            }
-            return this.getClient().getObject(containerService.getContainer(file).getName(), containerService.getKey(file),
-                    null, // ifModifiedSince
-                    null, // ifUnmodifiedSince
-                    null, // ifMatch
-                    null, // ifNoneMatch
-                    status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Download failed", e, file);
-        }
-    }
-
-    @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        return this.getFeature(Write.class, new DisabledLoginController()).write(file, status);
-    }
-
-    @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             // List all buckets
@@ -383,6 +351,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Read.class) {
+            return (T) new S3ReadFeature(this);
+        }
         if(type == Write.class) {
             return (T) new S3WriteFeature(this);
         }
