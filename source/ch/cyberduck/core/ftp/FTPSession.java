@@ -54,6 +54,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     private Timestamp timestamp;
 
     private UnixPermission permission;
+
     private FTPListService listService;
 
     public FTPSession(Host h) {
