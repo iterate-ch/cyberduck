@@ -2283,7 +2283,7 @@ public class BrowserController extends WindowController
                         new MoveWorker(session, selected) {
                             @Override
                             public void cleanup(final Void result) {
-                                reloadData(new ArrayList<Path>(selected.keySet()), new ArrayList<Path>(selected.values()));
+                                reloadData(changed, new ArrayList<Path>(selected.values()));
                             }
                         })
                 );
@@ -3970,54 +3970,7 @@ public class BrowserController extends WindowController
 
     @Override
     public boolean validateToolbarItem(final NSToolbarItem item) {
-        final String identifier = item.itemIdentifier();
-        if(identifier.equals(TOOLBAR_EDIT)) {
-            Application editor = null;
-            final Path selected = this.getSelectedPath();
-            if(null != selected) {
-                if(this.isEditable(selected)) {
-                    // Choose editor for selected file
-                    editor = EditorFactory.instance().getEditor(selected.getName());
-                }
-            }
-            if(null == editor) {
-                // No editor found
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
-            }
-            else {
-                item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(editor, 32));
-            }
-        }
-        else if(identifier.equals(TOOLBAR_DISCONNECT)) {
-            if(this.isActivityRunning()) {
-                item.setLabel(LocaleFactory.localizedString("Stop"));
-                item.setPaletteLabel(LocaleFactory.localizedString("Stop"));
-                item.setToolTip(LocaleFactory.localizedString("Cancel current operation in progress"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop", 32));
-            }
-            else {
-                item.setLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
-                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
-                item.setToolTip(LocaleFactory.localizedString("Disconnect from server"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
-            }
-        }
-        else if(identifier.equals(TOOLBAR_ARCHIVE)) {
-            final Path selected = getSelectedPath();
-            if(null != selected) {
-                if(Archive.isArchive(selected.getName())) {
-                    item.setLabel(LocaleFactory.localizedString("Unarchive", "Archive"));
-                    item.setPaletteLabel(LocaleFactory.localizedString("Unarchive"));
-                    item.setAction(Foundation.selector("unarchiveButtonClicked:"));
-                }
-                else {
-                    item.setLabel(LocaleFactory.localizedString("Archive", "Archive"));
-                    item.setPaletteLabel(LocaleFactory.localizedString("Archive"));
-                    item.setAction(Foundation.selector("archiveButtonClicked:"));
-                }
-            }
-        }
-        return validateItem(item.action());
+        return true;
     }
 
     /**
