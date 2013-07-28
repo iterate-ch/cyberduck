@@ -59,6 +59,6 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
         catch(URISyntaxException e) {
             log.error(String.format("Failure parsing URI %s", origin.getWebURL()), e);
         }
-        return origin.getHostname(true);
+        return origin.getHostname();
     }
 }
