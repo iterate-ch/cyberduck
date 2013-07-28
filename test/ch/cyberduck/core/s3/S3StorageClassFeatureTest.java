@@ -61,6 +61,7 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
         final String v = UUID.randomUUID().toString();
         new S3StorageClassFeature(session).setClass(test, "REDUCED_REDUNDANCY");
         assertEquals("REDUCED_REDUNDANCY", session.list(container, new DisabledListProgressListener()).get(test.getReference()).attributes().getStorageClass());
+        session.delete(test, new DisabledLoginController());
         session.close();
     }
 }
