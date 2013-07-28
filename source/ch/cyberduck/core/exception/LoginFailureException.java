@@ -27,15 +27,10 @@ public class LoginFailureException extends BackgroundException {
     private static final long serialVersionUID = -7628228280711158915L;
 
     public LoginFailureException(final String detail) {
-        super(detail, null);
+        this(detail, null);
     }
 
     public LoginFailureException(final String detail, final Exception cause) {
-        super(detail, cause);
-    }
-
-    @Override
-    public String getMessage() {
-        return LocaleFactory.localizedString("Login failed", "Credentials");
+        super(LocaleFactory.localizedString("Login failed", "Credentials"), detail, cause);
     }
 }

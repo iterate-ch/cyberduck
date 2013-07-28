@@ -17,11 +17,14 @@ package ch.cyberduck.core.exception;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class QuotaException extends BackgroundException {
+
     public QuotaException(final String detail, final Exception cause) {
-        super(detail, cause);
+        super(LocaleFactory.localizedString("Insufficient disk space", "Error"), detail, cause);
     }
 }

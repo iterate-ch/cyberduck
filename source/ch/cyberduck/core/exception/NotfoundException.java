@@ -17,12 +17,14 @@ package ch.cyberduck.core.exception;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NotfoundException extends BackgroundException {
 
     public NotfoundException(final String detail, final Exception cause) {
-        super(detail, cause);
+        super(LocaleFactory.localizedString("File not found", "Error"), detail, cause);
     }
 }
