@@ -10,13 +10,9 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -242,31 +238,5 @@ public class FTPSessionTest extends AbstractTestCase {
             assertEquals(failure, e);
         }
         assertEquals(Session.State.closed, session.getState());
-    }
-
-    @Test
-    public void testReadWrite() throws Exception {
-        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final TransferStatus status = new TransferStatus();
-        final byte[] content = "test".getBytes("UTF-8");
-        status.setLength(content.length);
-        final Path test = new Path(session.mount(new DisabledListProgressListener()), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final OutputStream out = session.write(test, status);
-        assertNotNull(out);
-        IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
-        assertTrue(session.exists(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        final byte[] buffer = new byte[content.length];
-        final InputStream in = session.read(test, new TransferStatus());
-        IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
-        assertArrayEquals(content, buffer);
-        session.delete(test, new DisabledLoginController());
     }
 }
