@@ -17,6 +17,8 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Path;
@@ -30,6 +32,8 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
  * @version $Id$
  */
 public class ResumeFilter extends AbstractUploadFilter {
+
+    private Cache cache = new Cache(100);
 
     public ResumeFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
@@ -70,6 +74,14 @@ public class ResumeFilter extends AbstractUploadFilter {
     }
 
     private long getSize(final Session<?> session, final Path file) throws BackgroundException {
-        return session.list(file.getParent(), new DisabledListProgressListener()).get(file.getReference()).attributes().getSize();
+        final AttributedList<Path> list;
+        if(cache.containsKey(file.getReference())) {
+            list = session.list(file.getParent(), new DisabledListProgressListener());
+            cache.put(file.getReference(), list);
+        }
+        else {
+            list = cache.get(file.getReference());
+        }
+        return list.get(file.getReference()).attributes().getSize();
     }
 }
