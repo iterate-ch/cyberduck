@@ -47,12 +47,12 @@ import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.copy.CopyTransfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
-import ch.cyberduck.core.transfer.move.MoveTransfer;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.action.DeleteWorker;
+import ch.cyberduck.ui.action.MoveWorker;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
@@ -2279,7 +2279,14 @@ public class BrowserController extends WindowController
                 final ArrayList<Path> changed = new ArrayList<Path>();
                 changed.addAll(selected.keySet());
                 changed.addAll(selected.values());
-                transfer(new MoveTransfer(session, selected), new ArrayList<Path>(selected.values()), true);
+                background(new WorkerBackgroundAction<Void>(BrowserController.this,
+                        new MoveWorker(session, selected) {
+                            @Override
+                            public void cleanup(final Void result) {
+                                reloadData(new ArrayList<Path>(selected.values()));
+                            }
+                        })
+                );
             }
         });
     }
