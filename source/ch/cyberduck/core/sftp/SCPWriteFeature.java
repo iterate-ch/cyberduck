@@ -44,8 +44,7 @@ public class SCPWriteFeature implements Write {
         try {
             client.setCharset(session.getEncoding());
             return client.put(file.getName(), status.getLength(),
-                    file.getParent().getAbsolute(),
-                    "0" + file.attributes().getPermission().getOctalString());
+                    file.getParent().getAbsolute(), "0640");
 
         }
         catch(IOException e) {
