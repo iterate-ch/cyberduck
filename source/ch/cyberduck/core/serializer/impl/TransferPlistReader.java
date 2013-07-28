@@ -26,7 +26,6 @@ import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.copy.CopyTransfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
-import ch.cyberduck.core.transfer.move.MoveTransfer;
 import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -64,8 +63,6 @@ public class TransferPlistReader extends PlistReader<Transfer> {
                     return new SyncTransfer(dict, s);
                 case copy:
                     return new CopyTransfer(dict, s);
-                case move:
-                    return new MoveTransfer(dict, s);
             }
         }
         log.error(String.format("Unknown transfer %s", kindObj));
