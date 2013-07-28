@@ -100,40 +100,6 @@ public class SFTPSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testTouch() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
-        assertTrue(session.exists(test));
-        session.delete(test, new DisabledLoginController());
-        assertFalse(session.exists(test));
-        session.close();
-    }
-
-    @Test
-    public void testTouchFeature() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, null).touch(test);
-        assertTrue(session.exists(test));
-        session.close();
-    }
-
-    @Test
     public void testReadWrite() throws Exception {
         final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
