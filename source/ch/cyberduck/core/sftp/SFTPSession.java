@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -38,11 +37,8 @@ import java.util.List;
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.ConnectionMonitor;
 import ch.ethz.ssh2.PacketListener;
-import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.SFTPException;
-import ch.ethz.ssh2.SFTPOutputStream;
 import ch.ethz.ssh2.SFTPv3Client;
-import ch.ethz.ssh2.SFTPv3FileHandle;
 import ch.ethz.ssh2.ServerHostKeyVerifier;
 
 /**
@@ -280,44 +276,7 @@ public class SFTPSession extends Session<Connection> implements Delete {
 
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            final String mode = Preferences.instance().getProperty("ssh.transfer");
-            if(mode.equals(Scheme.sftp.name())) {
-                SFTPv3FileHandle handle;
-                if(status.isResume()) {
-                    handle = this.sftp().openFile(file.getAbsolute(),
-                            SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
-                }
-                else {
-                    handle = this.sftp().openFile(file.getAbsolute(),
-                            SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
-                }
-                final OutputStream out = new SFTPOutputStream(handle);
-                if(status.isResume()) {
-                    long skipped = ((SFTPOutputStream) out).skip(status.getCurrent());
-                    log.info(String.format("Skipping %d bytes", skipped));
-                    if(skipped < status.getCurrent()) {
-                        throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
-                    }
-                }
-                // No parallel requests if the file size is smaller than the buffer.
-                this.sftp().setRequestParallelism(
-                        (int) (status.getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1
-                );
-                return out;
-            }
-            else if(mode.equals(Scheme.scp.name())) {
-                final SCPClient client = new SCPClient(this.getClient());
-                client.setCharset(this.getEncoding());
-                return client.put(file.getName(), status.getLength(),
-                        file.getParent().getAbsolute(),
-                        "0" + file.attributes().getPermission().getOctalString());
-            }
-            throw new IOException("Unknown transfer mode:" + mode);
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Upload failed", e, file);
-        }
+        return this.getFeature(Write.class, new DisabledLoginController()).write(file, status);
     }
 
     @Override
@@ -329,7 +288,10 @@ public class SFTPSession extends Session<Connection> implements Delete {
             return (T) new SFTPReader(this);
         }
         if(type == Write.class) {
-            return (T) this;
+            if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
+                return (T) new SCPWriter(this);
+            }
+            return (T) new SFTPWriter(this);
         }
         if(type == Delete.class) {
             return (T) this;
