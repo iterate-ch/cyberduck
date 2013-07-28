@@ -22,6 +22,8 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
@@ -63,7 +65,7 @@ public class CopyTransfer extends Transfer {
      */
     protected Map<Path, Path> files = Collections.emptyMap();
 
-    private Session destination;
+    private Session<?> destination;
 
     /**
      * @param files Source to destination mapping
@@ -235,8 +237,8 @@ public class CopyTransfer extends Transfer {
         OutputStream out = null;
         try {
             if(file.attributes().isFile()) {
-                new StreamCopier(status).transfer(in = new ThrottledInputStream(session.read(file, status), throttle),
-                        0, out = new ThrottledOutputStream(destination.write(copy, status), throttle),
+                new StreamCopier(status).transfer(in = new ThrottledInputStream(session.getFeature(Read.class, new DisabledLoginController()).read(file, status), throttle),
+                        0, out = new ThrottledOutputStream(destination.getFeature(Write.class, new DisabledLoginController()).write(copy, status), throttle),
                         listener, -1);
             }
         }
