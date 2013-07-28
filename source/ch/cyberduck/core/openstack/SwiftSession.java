@@ -31,16 +31,14 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -166,30 +164,6 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            if(status.isResume()) {
-                return this.getClient().getObject(this.getRegion(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(), containerService.getKey(file),
-                        status.getCurrent(), status.getLength());
-            }
-            return this.getClient().getObject(this.getRegion(containerService.getContainer(file)),
-                    containerService.getContainer(file).getName(), containerService.getKey(file));
-        }
-        catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Download failed", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
-        }
-    }
-
-    @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        return this.getFeature(Write.class, new DisabledLoginController()).write(file, status);
-    }
-
-    @Override
     public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
@@ -212,6 +186,9 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Read.class) {
+            return (T) new SwiftReadFeature(this);
+        }
         if(type == Write.class) {
             return (T) new SwiftWriteFeature(this);
         }
