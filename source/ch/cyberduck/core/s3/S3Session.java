@@ -67,9 +67,11 @@ import java.util.Map;
 public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
-    private PathContainerService containerService = new PathContainerService();
+    private PathContainerService containerService
+            = new PathContainerService();
 
-    private S3AccessControlListFeature acl;
+    private S3AccessControlListFeature acl
+            = new S3AccessControlListFeature(this);
 
     public S3Session(Host h) {
         super(h);
@@ -295,9 +297,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public RequestEntityRestStorageService connect(final HostKeyController key) throws BackgroundException {
-        final RequestEntityRestStorageService service = new RequestEntityRestStorageService(this.configure());
-        acl = new S3AccessControlListFeature(this);
-        return service;
+        return new RequestEntityRestStorageService(this.configure());
     }
 
     @Override
