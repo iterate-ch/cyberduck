@@ -40,7 +40,12 @@ public class BackgroundException extends Exception {
     }
 
     public BackgroundException(final String detail, final Exception cause) {
+        this(null, detail, cause);
+    }
+
+    public BackgroundException(final String message, final String detail, final Exception cause) {
         super(cause);
+        this.message = message;
         this.detail = detail;
     }
 
