@@ -65,7 +65,7 @@ public class SwiftAuthenticationService {
         if(!(host.getProtocol().getScheme().getPort() == host.getPort())) {
             url.append(":").append(host.getPort());
         }
-        if(host.getHostname(true).endsWith("identity.api.rackspacecloud.com")) {
+        if(host.getHostname().endsWith("identity.api.rackspacecloud.com")) {
             // Fix access to *.identity.api.rackspacecloud.com
             url.append("/v2.0/tokens");
             return new Authentication20RAXUsernameKeyRequest(
@@ -117,7 +117,7 @@ public class SwiftAuthenticationService {
                 // Save tenant in username
                 credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
             }
-            if(host.getHostname(true).endsWith("identity.hpcloudsvc.com")) {
+            if(host.getHostname().endsWith("identity.hpcloudsvc.com")) {
                 return new Authentication20AccessKeySecretKeyRequest(
                         URI.create(url.toString()),
                         user, credentials.getPassword(), tenant
