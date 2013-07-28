@@ -22,7 +22,6 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -402,13 +401,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @param listener Callback
      */
     public abstract AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
-
-    /**
-     * @param prompt Login prompt for multi factor authentication
-     */
-    public void delete(Path file, final LoginController prompt) throws BackgroundException {
-        this.getFeature(Delete.class, prompt).delete(Collections.singletonList(file));
-    }
 
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Upload.class) {
