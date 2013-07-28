@@ -10,7 +10,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.ui.action.DeleteWorker;
 
 import org.junit.Test;
 
@@ -75,12 +74,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         assertTrue(session.exists(container));
-        new DeleteWorker(session, new DisabledLoginController(), Collections.singletonList(container)) {
-            @Override
-            public void cleanup(final Void result) {
-                //
-            }
-        }.run();
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container));
         assertFalse(session.exists(container));
         session.close();
     }

@@ -8,8 +8,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.ui.action.DeleteWorker;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.junit.Test;
 
@@ -36,13 +35,8 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         session.mkdir(test, null);
         assertTrue(session.exists(test));
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(new Path(test, UUID.randomUUID().toString(), Path.FILE_TYPE));
-        new DeleteWorker(session, new DisabledLoginController(), Collections.singletonList(test)) {
-            @Override
-            public void cleanup(final Void result) {
-                //
-            }
-        }.run();
+        new DefaultTouchFeature(session).touch(new Path(test, UUID.randomUUID().toString(), Path.FILE_TYPE));
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test));
         assertFalse(session.exists(test));
         session.close();
     }
