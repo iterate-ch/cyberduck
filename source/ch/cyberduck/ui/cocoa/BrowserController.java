@@ -2283,7 +2283,7 @@ public class BrowserController extends WindowController
                         new MoveWorker(session, selected) {
                             @Override
                             public void cleanup(final Void result) {
-                                reloadData(new ArrayList<Path>(selected.values()));
+                                reloadData(new ArrayList<Path>(selected.keySet()), new ArrayList<Path>(selected.values()));
                             }
                         })
                 );
