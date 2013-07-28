@@ -18,14 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.serializer.Serializer;
+
 /**
  * @version $Id$
  */
 public interface Serializable {
 
     /**
-     * @param <T> The serialized object type
-     * @return Native dictionary format
+     * @param dict @return Native dictionary format
      */
-    <T> T getAsDictionary();
+    <T> T serialize(Serializer dict);
 }

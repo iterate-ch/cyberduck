@@ -262,7 +262,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                         Preferences.instance().getInteger("bookmark.icon.size"));
             }
             if(identifier.equals(BOOKMARK_COLUMN)) {
-                NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>getAsDictionary());
+                NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>serialize(SerializerFactory.get()));
                 dict.setObjectForKey(host.toURL() + PathNormalizer.normalize(host.getDefaultPath()), "URL");
                 String comment = this.getSource().getComment(host);
                 if(StringUtils.isNotBlank(comment)) {
@@ -452,8 +452,8 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 List<Host> duplicates = new ArrayList<Host>();
                 for(Host bookmark : HostPasteboard.getPasteboard()) {
-                    final Host duplicate = new Host(bookmark.getAsDictionary());
-                    // Make sure a new UUID is asssigned for duplicate
+                    final Host duplicate = new Host(bookmark.serialize(SerializerFactory.get()));
+                    // Make sure a new UUID is assigned for duplicate
                     duplicate.setUuid(null);
                     source.add(row.intValue(), duplicate);
                     duplicates.add(duplicate);

@@ -36,7 +36,7 @@ public class UploadTransferTest extends AbstractTestCase {
         saved.setLength(4L);
         saved.setCurrent(3L);
         t.save(test, saved);
-        final UploadTransfer serialized = new UploadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
+        final UploadTransfer serialized = new UploadTransfer(t.serialize(SerializerFactory.get()), new SFTPSession(new Host(Protocol.SFTP, "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());

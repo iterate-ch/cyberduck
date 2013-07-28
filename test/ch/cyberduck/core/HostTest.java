@@ -33,12 +33,12 @@ public class HostTest extends AbstractTestCase {
     @Test
     public void testDictionary() {
         final Host h = new Host(Protocol.WEBDAV, "h", 66);
-        assertEquals(h, new Host(h.getAsDictionary()));
+        assertEquals(h, new Host(h.serialize(SerializerFactory.get())));
     }
 
     @Test
     public void testDeserialize() throws Exception {
-        final Serializer dict = SerializerFactory.createSerializer();
+        final Serializer dict = SerializerFactory.get();
         dict.setStringForKey("swift", "Protocol");
         dict.setStringForKey("unknown provider", "Provider");
         dict.setStringForKey("h", "Hostname");
@@ -60,32 +60,5 @@ public class HostTest extends AbstractTestCase {
         assertTrue("~/Desktop".equals(host.getDownloadFolder().getAbbreviatedPath()) || "~/Downloads".equals(host.getDownloadFolder().getAbbreviatedPath()));
         host.setDownloadFolder(LocalFactory.createLocal("/t"));
         assertEquals("/t", host.getDownloadFolder().getAbbreviatedPath());
-    }
-
-    @Test
-    public void testToUrl() {
-        assertEquals("sftp://user@localhost", new Host(Protocol.SFTP, "localhost", new Credentials("user", "p") {
-            @Override
-            public String getUsernamePlaceholder() {
-                return null;
-            }
-
-            @Override
-            public String getPasswordPlaceholder() {
-                return null;
-            }
-        }).toURL(true));
-        assertEquals("sftp://localhost", new Host(Protocol.SFTP, "localhost", new Credentials("user", "p") {
-            @Override
-            public String getUsernamePlaceholder() {
-                return null;
-            }
-
-            @Override
-            public String getPasswordPlaceholder() {
-                return null;
-            }
-        }).toURL(false));
-        assertEquals("sftp://localhost:222", new Host(Protocol.SFTP, "localhost", 222).toURL(false));
     }
 }

@@ -34,7 +34,7 @@ public class PathTest extends AbstractTestCase {
     public void testDictionary() {
         final Session s = SessionFactory.createSession(new Host("localhost"));
         Path path = new Path("/path", Path.DIRECTORY_TYPE);
-        assertEquals(path, new Path(path.getAsDictionary()));
+        assertEquals(path, new Path(path.serialize(SerializerFactory.get())));
     }
 
     @Test

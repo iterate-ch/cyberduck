@@ -25,6 +25,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileWriterFactory;
 import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TransferWriterFactory;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -43,21 +44,21 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
         TransferWriterFactory.addFactory(Factory.NATIVE_PLATFORM, new TransferFactory());
     }
 
-    private static class HostFactory extends HostWriterFactory {
+    private static final class HostFactory extends HostWriterFactory {
         @Override
         public Writer<Host> create() {
             return new PlistWriter<Host>();
         }
     }
 
-    private static class TransferFactory extends TransferWriterFactory {
+    private static final class TransferFactory extends TransferWriterFactory {
         @Override
         public Writer<Transfer> create() {
             return new PlistWriter<Transfer>();
         }
     }
 
-    private static class ProtocolFactory extends ProfileWriterFactory {
+    private static final class ProtocolFactory extends ProfileWriterFactory {
         @Override
         public Writer<Profile> create() {
             return new PlistWriter<Profile>();
@@ -68,13 +69,13 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
     public void write(Collection<S> collection, Local file) {
         NSMutableArray list = NSMutableArray.array();
         for(S bookmark : collection) {
-            list.addObject(bookmark.<NSDictionary>getAsDictionary());
+            list.addObject(bookmark.<NSDictionary>serialize(SerializerFactory.get()));
         }
         list.writeToFile(file.getAbsolute());
     }
 
     @Override
     public void write(S item, Local file) {
-        item.<NSDictionary>getAsDictionary().writeToFile(file.getAbsolute());
+        item.<NSDictionary>serialize(SerializerFactory.get()).writeToFile(file.getAbsolute());
     }
 }

@@ -127,7 +127,7 @@ public class LoginConnectionService implements ConnectionService {
             this.login(session);
 
             final HistoryCollection history = HistoryCollection.defaultCollection();
-            history.add(new Host(bookmark.getAsDictionary()));
+            history.add(new Host(bookmark.serialize(SerializerFactory.get())));
 
             // Notify changed bookmark
             if(BookmarkCollection.defaultCollection().contains(bookmark)) {

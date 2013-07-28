@@ -1831,7 +1831,7 @@ public class BrowserController extends WindowController
     public void duplicateBookmarkButtonClicked(final ID sender) {
         final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
         this.selectBookmarks();
-        final Host duplicate = new Host(selected.getAsDictionary());
+        final Host duplicate = new Host(selected.serialize(SerializerFactory.get()));
         // Make sure a new UUID is asssigned for duplicate
         duplicate.setUuid(null);
         this.addBookmark(duplicate);
@@ -1854,7 +1854,7 @@ public class BrowserController extends WindowController
             if(null == selected || !selected.attributes().isDirectory()) {
                 selected = this.workdir();
             }
-            bookmark = new Host(this.session.getHost().getAsDictionary());
+            bookmark = new Host(this.session.getHost().serialize(SerializerFactory.get()));
             // Make sure a new UUID is asssigned for duplicate
             bookmark.setUuid(null);
             bookmark.setDefaultPath(selected.getAbsolute());
@@ -2233,7 +2233,7 @@ public class BrowserController extends WindowController
             selected = this.workdir();
         }
         BrowserController c = MainController.newDocument(true);
-        final Host host = new Host(session.getHost().<NSDictionary>getAsDictionary());
+        final Host host = new Host(session.getHost().serialize(SerializerFactory.get()));
         host.setDefaultPath(selected.getAbsolute());
         c.mount(host);
     }

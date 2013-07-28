@@ -78,12 +78,7 @@ public class Path extends AbstractPath implements Serializable {
     }
 
     @Override
-    public <T> T getAsDictionary() {
-        final Serializer dict = SerializerFactory.createSerializer();
-        return this.getAsDictionary(dict);
-    }
-
-    protected <S> S getAsDictionary(Serializer dict) {
+    public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getAbsolute(), "Remote");
         if(local != null) {
             dict.setStringForKey(local.getAbsolute(), "Local");

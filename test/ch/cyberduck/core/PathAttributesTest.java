@@ -14,8 +14,8 @@ public class PathAttributesTest extends AbstractTestCase {
         PathAttributes attributes = new PathAttributes(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         attributes.setSize(3L);
         attributes.setModificationDate(5343L);
-        assertEquals(attributes, new PathAttributes(attributes.getAsDictionary()));
-        assertEquals(attributes.hashCode(), new PathAttributes(attributes.getAsDictionary()).hashCode());
+        assertEquals(attributes, new PathAttributes(attributes.serialize(SerializerFactory.get())));
+        assertEquals(attributes.hashCode(), new PathAttributes(attributes.serialize(SerializerFactory.get())).hashCode());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class PathAttributesTest extends AbstractTestCase {
         attributes.setDuplicate(true);
         attributes.setVersionId("v-1");
         attributes.setModificationDate(System.currentTimeMillis());
-        assertEquals(attributes, new PathAttributes(attributes.getAsDictionary()));
-        assertEquals(attributes.hashCode(), new PathAttributes(attributes.getAsDictionary()).hashCode());
+        assertEquals(attributes, new PathAttributes(attributes.serialize(SerializerFactory.get())));
+        assertEquals(attributes.hashCode(), new PathAttributes(attributes.serialize(SerializerFactory.get())).hashCode());
     }
 }

@@ -37,7 +37,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         saved.setLength(4L);
         saved.setCurrent(3L);
         t.save(test, saved);
-        final DownloadTransfer serialized = new DownloadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
+        final DownloadTransfer serialized = new DownloadTransfer(t.serialize(SerializerFactory.get()), new SFTPSession(new Host(Protocol.SFTP, "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
@@ -66,7 +66,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }, new TransferOptions());
         assertTrue(t.isComplete());
-        final DownloadTransfer serialized = new DownloadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
+        final DownloadTransfer serialized = new DownloadTransfer(t.serialize(SerializerFactory.get()), new SFTPSession(new Host(Protocol.SFTP, "t")));
         assertNotSame(t, serialized);
         assertTrue(serialized.isComplete());
     }

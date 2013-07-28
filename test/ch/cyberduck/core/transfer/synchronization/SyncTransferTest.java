@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -51,7 +52,7 @@ public class SyncTransferTest extends AbstractTestCase {
                 return 3L;
             }
         };
-        final SyncTransfer serialized = new SyncTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
+        final SyncTransfer serialized = new SyncTransfer(t.serialize(SerializerFactory.get()), new SFTPSession(new Host(Protocol.SFTP, "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
@@ -64,15 +65,5 @@ public class SyncTransferTest extends AbstractTestCase {
         final Path p = new Path("t", Path.FILE_TYPE);
         Transfer t = new SyncTransfer(new NullSession(new Host("t")), p);
         t.filter(null, TransferAction.ACTION_OVERWRITE);
-    }
-
-    @Test
-    public void testChildren() throws Exception {
-
-    }
-
-    @Test
-    public void testIsSkipped() throws Exception {
-
     }
 }

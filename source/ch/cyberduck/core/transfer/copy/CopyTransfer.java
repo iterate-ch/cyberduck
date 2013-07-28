@@ -105,8 +105,9 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public Serializer getSerializer() {
-        final Serializer dict = super.getSerializer();
+    public <T> T serialize(final Serializer dict) {
+        dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
+        dict.setObjectForKey(session.getHost(), "Host");
         if(destination != null) {
             dict.setObjectForKey(destination.getHost(), "Destination");
         }
@@ -117,7 +118,16 @@ public class CopyTransfer extends Transfer {
             }
         }
         dict.setListForKey(new ArrayList<Serializable>(targets), "Destinations");
-        return dict;
+        dict.setListForKey(this.getRoots(), "Roots");
+        dict.setStringForKey(String.valueOf(this.getSize()), "Size");
+        dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
+        if(this.getTimestamp() != null) {
+            dict.setStringForKey(String.valueOf(this.getTimestamp().getTime()), "Timestamp");
+        }
+        if(bandwidth != null) {
+            dict.setStringForKey(String.valueOf(bandwidth.getRate()), "Bandwidth");
+        }
+        return dict.getSerialized();
     }
 
     @Override

@@ -207,12 +207,7 @@ public abstract class Transfer implements Serializable {
         }
     }
 
-    public <T> T getAsDictionary() {
-        return this.getSerializer().getSerialized();
-    }
-
-    public Serializer getSerializer() {
-        final Serializer dict = SerializerFactory.createSerializer();
+    public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
         dict.setObjectForKey(session.getHost(), "Host");
         dict.setListForKey(roots, "Roots");
@@ -224,7 +219,7 @@ public abstract class Transfer implements Serializable {
         if(bandwidth != null) {
             dict.setStringForKey(String.valueOf(bandwidth.getRate()), "Bandwidth");
         }
-        return dict;
+        return dict.getSerialized();
     }
 
     /**

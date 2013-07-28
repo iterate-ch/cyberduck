@@ -27,7 +27,7 @@ public class AttributesTest extends AbstractTestCase {
     @Test
     public void testClone() throws Exception {
         PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
-        PathAttributes clone = new PathAttributes(attributes.getAsDictionary());
+        PathAttributes clone = new PathAttributes(attributes.serialize(SerializerFactory.get()));
 
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());

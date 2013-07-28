@@ -38,7 +38,7 @@ public abstract class SerializerFactory extends Factory<Serializer> {
         factories.put(platform, f);
     }
 
-    public static Serializer createSerializer() {
+    public static Serializer get() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

@@ -60,14 +60,14 @@ public class PlistSerializer implements Serializer {
 
     @Override
     public void setObjectForKey(Serializable value, String key) {
-        dict.setObjectForKey(value.<NSDictionary>getAsDictionary(), key);
+        dict.setObjectForKey(value.<NSDictionary>serialize(SerializerFactory.get()), key);
     }
 
     @Override
     public <T extends Serializable> void setListForKey(List<T> value, String key) {
         final NSMutableArray list = NSMutableArray.array();
         for(Serializable serializable : value) {
-            list.addObject(serializable.<NSDictionary>getAsDictionary());
+            list.addObject(serializable.<NSDictionary>serialize(SerializerFactory.get()));
         }
         dict.setObjectForKey(list, key);
     }

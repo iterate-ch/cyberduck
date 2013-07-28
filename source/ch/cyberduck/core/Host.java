@@ -298,8 +298,7 @@ public final class Host implements Serializable {
     }
 
     @Override
-    public <T> T getAsDictionary() {
-        final Serializer dict = SerializerFactory.createSerializer();
+    public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getProtocol().getIdentifier(), "Protocol");
         if(StringUtils.isNotBlank(this.getProtocol().getProvider())) {
             if(!StringUtils.equals(this.getProtocol().getProvider(), this.getProtocol().getIdentifier())) {

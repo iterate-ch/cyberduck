@@ -81,10 +81,9 @@ public class Permission implements Serializable {
     }
 
     @Override
-    public <T> T getAsDictionary() {
-        final Serializer dict = SerializerFactory.createSerializer();
+    public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getMask(), "Mask");
-        return dict.<T>getSerialized();
+        return dict.getSerialized();
     }
 
     /**

@@ -69,7 +69,7 @@ public final class SystemConfigurationReachability implements Reachability {
      */
     @Override
     public void diagnose(final Host host) {
-        this.diagnose(new HostUrlProvider().get(host));
+//        this.diagnose(new HostUrlProvider().get(host));
     }
 
     private native void diagnose(String url);
