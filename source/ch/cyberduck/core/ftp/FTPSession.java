@@ -24,24 +24,20 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
-import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.CountingInputStream;
-import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.net.ProtocolCommandListener;
-import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +48,7 @@ import java.util.TimeZone;
  *
  * @version $Id$
  */
-public class FTPSession extends SSLSession<FTPClient> implements Delete {
+public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
     private Timestamp timestamp;
@@ -293,127 +289,15 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files) throws BackgroundException {
-        for(Path file : files) {
-            this.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
-            try {
-                if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
-                    if(!this.getClient().deleteFile(file.getAbsolute())) {
-                        throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
-                    }
-                }
-                else if(file.attributes().isDirectory()) {
-                    if(!this.getClient().removeDirectory(file.getAbsolute())) {
-                        throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
-                    }
-                }
-            }
-            catch(IOException e) {
-                throw new FTPExceptionMappingService().map("Cannot delete {0}", e, file);
-
-            }
-        }
-    }
-
-    @Override
-    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            if(!this.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
-                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
-            }
-            if(status.isResume()) {
-                // Where a server process supports RESTart in STREAM mode
-                if(!this.getClient().hasFeature("REST STREAM")) {
-                    status.setResume(false);
-                }
-                else {
-                    this.getClient().setRestartOffset(status.getCurrent());
-                }
-            }
-            final InputStream in = new FTPDataFallback(this).data(file, new DataConnectionAction<InputStream>() {
-                @Override
-                public InputStream execute() throws IOException {
-                    return getClient().retrieveFileStream(file.getAbsolute());
-                }
-            });
-            return new CountingInputStream(in) {
-                @Override
-                public void close() throws IOException {
-                    try {
-                        super.close();
-                    }
-                    finally {
-                        if(this.getByteCount() == status.getLength()) {
-                            // Read 226 status
-                            if(!getClient().completePendingCommand()) {
-                                throw new FTPException(getClient().getReplyCode(), getClient().getReplyString());
-                            }
-                        }
-                        else {
-                            // Interrupted transfer
-                            if(!getClient().abort()) {
-                                log.error("Error closing data socket:" + getClient().getReplyString());
-                            }
-                        }
-                    }
-                }
-            };
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Download failed", e, file);
-        }
-    }
-
-    @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            if(!this.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
-            }
-            final OutputStream out = new FTPDataFallback(this).data(file, new DataConnectionAction<OutputStream>() {
-                @Override
-                public OutputStream execute() throws IOException {
-                    if(status.isResume()) {
-                        return getClient().appendFileStream(file.getAbsolute());
-                    }
-                    else {
-                        return getClient().storeFileStream(file.getAbsolute());
-                    }
-                }
-            });
-            return new CountingOutputStream(out) {
-                @Override
-                public void close() throws IOException {
-                    try {
-                        super.close();
-                    }
-                    finally {
-                        if(this.getByteCount() == status.getLength()) {
-                            // Read 226 status
-                            if(!getClient().completePendingCommand()) {
-                                throw new FTPException(getClient().getReplyCode(), getClient().getReplyString());
-                            }
-                        }
-                        else {
-                            // Interrupted transfer
-                            if(!getClient().abort()) {
-                                log.error("Error closing data socket:" + getClient().getReplyString());
-                            }
-                        }
-                    }
-                }
-            };
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Upload failed", e, file);
-        }
-    }
-
-    @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Delete.class) {
-            return (T) this;
+            return (T) new FTPDeleteFeature(this);
+        }
+        if(type == Read.class) {
+            return (T) new FTPReadFeature(this);
+        }
+        if(type == Write.class) {
+            return (T) new FTPWriteFeature(this);
         }
         if(type == Move.class) {
             return (T) new FTPMoveFeature(this);
