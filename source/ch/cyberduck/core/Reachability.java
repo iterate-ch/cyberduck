@@ -29,7 +29,6 @@ public interface Reachability {
      * @return True if the host is reachable. Returns false if there is a
      *         network configuration error, no such host is known or the server does
      *         not listing at any such port
-     * @see Host#toURL
      */
     boolean isReachable(Host host);
 
@@ -37,7 +36,6 @@ public interface Reachability {
      * Opens the network configuration assistant for the URL denoting this host
      *
      * @param host Hostname
-     * @see Host#toURL
      */
     void diagnose(Host host);
 }
