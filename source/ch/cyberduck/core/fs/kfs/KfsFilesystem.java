@@ -28,7 +28,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
@@ -46,6 +48,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -241,7 +244,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         final Path file = new Path(path, Path.FILE_TYPE);
                         final TransferStatus status = new TransferStatus();
                         try {
-                            final InputStream in = session.read(file, status);
+                            final InputStream in = session.getFeature(Read.class, new DisabledLoginController()).read(file, status);
                             try {
                                 long total = 0;
                                 byte[] chunk = new byte[length.intValue()];
@@ -367,7 +370,8 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsremove_f:" + path);
                         final Path file = new Path(path, Path.FILE_TYPE);
-                        session.delete(file, new DisabledLoginController());
+                        session.getFeature(Delete.class, new DisabledLoginController()).delete(
+                                Collections.singletonList(file));
                         return true;
                     }
                 });
@@ -395,30 +399,6 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             return false;
                         }
                         session.getFeature(Move.class, new DisabledLoginController()).move(file, new Path(destination, Path.FILE_TYPE));
-                        return true;
-                    }
-                });
-                try {
-                    return future.get();
-                }
-                catch(InterruptedException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                catch(ExecutionException e) {
-                    log.error("Error executing action for mounted disk:" + e.getMessage());
-                }
-                return false;
-            }
-        };
-        delegate.remove = new KfsLibrary.kfsremove_f() {
-            @Override
-            public boolean apply(final String path, Pointer context) {
-                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
-                    @Override
-                    public Boolean run() throws BackgroundException {
-                        log.debug("kfsremove_f:" + path);
-                        final Path file = new Path(path, Path.FILE_TYPE);
-                        session.delete(file, new DisabledLoginController());
                         return true;
                     }
                 });
@@ -490,7 +470,8 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsrmdir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                        session.delete(directory, new DisabledLoginController());
+                        session.getFeature(Delete.class, new DisabledLoginController()).delete(
+                                Collections.singletonList(directory));
                         return true;
                     }
                 });

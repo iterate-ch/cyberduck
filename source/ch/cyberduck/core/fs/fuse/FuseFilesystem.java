@@ -29,6 +29,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
@@ -49,6 +50,7 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSError;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -416,7 +418,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                    session.delete(directory, new DisabledLoginController());
+                    session.getFeature(Delete.class, new DisabledLoginController()).delete(
+                            Collections.singletonList(directory));
                     return true;
                 }
             });
@@ -438,7 +441,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path file = new Path(path, Path.FILE_TYPE);
-                    session.delete(file, new DisabledLoginController());
+                    session.getFeature(Delete.class, new DisabledLoginController()).delete(
+                            Collections.singletonList(file));
                     return true;
                 }
             });
