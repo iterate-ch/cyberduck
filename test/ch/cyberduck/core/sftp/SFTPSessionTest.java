@@ -95,6 +95,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         session.mkdir(test, null);
         assertTrue(session.exists(test));
+        session.delete(test, new DisabledLoginController());
         session.close();
     }
 
