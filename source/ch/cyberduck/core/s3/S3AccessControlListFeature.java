@@ -47,6 +47,11 @@ public class S3AccessControlListFeature implements AclPermission {
 
     private S3Session session;
 
+    /**
+     * Cached failure
+     */
+    private BackgroundException failure;
+
     private PathContainerService containerService = new PathContainerService();
 
     public S3AccessControlListFeature(final S3Session session) {
@@ -89,6 +94,12 @@ public class S3AccessControlListFeature implements AclPermission {
 
     @Override
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
+        if(failure != null) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Skip setting ACL for %s due to previous failure %s", file, failure.getMessage()));
+            }
+            throw failure;
+        }
         try {
             final Path container = containerService.getContainer(file);
             acl.setOwner(new Acl.CanonicalUser(container.attributes().getOwner()));
@@ -102,7 +113,7 @@ public class S3AccessControlListFeature implements AclPermission {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot change permissions", e, file);
+            throw failure = new ServiceExceptionMappingService().map("Cannot change permissions", e, file);
         }
     }
 

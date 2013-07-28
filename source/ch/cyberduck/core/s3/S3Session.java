@@ -69,6 +69,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     private PathContainerService containerService = new PathContainerService();
 
+    private S3AccessControlListFeature acl;
+
     public S3Session(Host h) {
         super(h);
     }
@@ -293,7 +295,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public RequestEntityRestStorageService connect(final HostKeyController key) throws BackgroundException {
-        return new RequestEntityRestStorageService(this.configure());
+        final RequestEntityRestStorageService service = new RequestEntityRestStorageService(this.configure());
+        acl = new S3AccessControlListFeature(this);
+        return service;
     }
 
     @Override
@@ -397,7 +401,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             return (T) new S3DefaultDeleteFeature(this);
         }
         if(type == AclPermission.class) {
-            return (T) new S3AccessControlListFeature(this);
+            return (T) acl;
         }
         if(type == Headers.class) {
             return (T) new S3MetadataFeature(this);
