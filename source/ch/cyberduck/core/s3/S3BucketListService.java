@@ -100,7 +100,7 @@ public class S3BucketListService implements RootListService<S3Session> {
         if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
             return null;
         }
-        final String hostname = host.getHostname(true);
+        final String hostname = host.getHostname();
         if(hostname.equals(host.getProtocol().getDefaultHostname())) {
             return null;
         }

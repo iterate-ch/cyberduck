@@ -140,12 +140,12 @@ public class S3UrlProvider extends DefaultUrlProvider {
 
     private String getHostnameForContainer(final Path bucket) {
         if(!ServiceUtils.isBucketNameValidDNSName(containerService.getContainer(bucket).getName())) {
-            return session.getHost().getHostname(true);
+            return session.getHost().getHostname();
         }
         if(session.getHost().getHostname().equals(session.getHost().getProtocol().getDefaultHostname())) {
-            return String.format("%s.%s", bucket.getName(), session.getHost().getHostname(true));
+            return String.format("%s.%s", bucket.getName(), session.getHost().getHostname());
         }
-        return session.getHost().getHostname(true);
+        return session.getHost().getHostname();
     }
 }
 
