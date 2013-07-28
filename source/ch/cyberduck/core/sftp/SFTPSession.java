@@ -24,13 +24,10 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -267,16 +264,6 @@ public class SFTPSession extends Session<Connection> implements Delete {
                 throw new SFTPExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
-    }
-
-    @Override
-    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        return this.getFeature(Read.class, new DisabledLoginController()).read(file, status);
-    }
-
-    @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        return this.getFeature(Write.class, new DisabledLoginController()).write(file, status);
     }
 
     @Override

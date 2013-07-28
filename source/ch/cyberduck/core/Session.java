@@ -23,10 +23,8 @@ import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfigurat
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -41,7 +39,7 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public abstract class Session<C> implements Read, Write, TranscriptListener, ProgressListener {
+public abstract class Session<C> implements TranscriptListener, ProgressListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
     /**
@@ -412,18 +410,7 @@ public abstract class Session<C> implements Read, Write, TranscriptListener, Pro
         this.getFeature(Delete.class, prompt).delete(Collections.singletonList(file));
     }
 
-    @Override
-    public boolean isResumable() {
-        return true;
-    }
-
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
-        if(type == Read.class) {
-            return (T) this;
-        }
-        if(type == Write.class) {
-            return (T) this;
-        }
         if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this);
         }
