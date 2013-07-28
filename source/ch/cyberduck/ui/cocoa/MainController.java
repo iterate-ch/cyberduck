@@ -155,7 +155,8 @@ public class MainController extends BundleController implements NSApplication.De
             else {
                 for(BrowserController controller : MainController.getBrowsers()) {
                     if(controller.isMounted()) {
-                        if(controller.getSession().getHost().toURL().equals(h.toURL())) {
+                        if(new HostUrlProvider().get(controller.getSession().getHost()).equals(
+                                new HostUrlProvider().get(h))) {
                             // Handle browser window already connected to the same host. #4215
                             controller.window().makeKeyAndOrderFront(null);
                             return;

@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -474,17 +473,6 @@ public final class Host implements Serializable {
      * @return User readable hostname
      */
     public String getHostname() {
-        return this.getHostname(false);
-    }
-
-    /**
-     * @param punycode Use the ToASCII operation as defined in the IDNA RFC
-     * @return Hostname decoded
-     */
-    public String getHostname(final boolean punycode) {
-        if(punycode) {
-            return new PunycodeConverter().convert(hostname);
-        }
         return hostname;
     }
 
@@ -681,43 +669,6 @@ public final class Host implements Serializable {
      */
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    /**
-     * @return The URL of the remote host including user login hostname and port
-     * @see #toURL()
-     */
-    @Override
-    public String toString() {
-        return this.toURL();
-    }
-
-    /**
-     * protocol://user@host:port
-     *
-     * @return The URL of the remote host including user login hostname and port
-     * @see #toURL(boolean)
-     */
-    public String toURL() {
-        return this.toURL(true);
-    }
-
-    /**
-     * @param includeUsername Prepend username to host
-     * @return URL
-     */
-    public String toURL(final boolean includeUsername) {
-        final StringBuilder url = new StringBuilder(this.getProtocol().getScheme().toString());
-        url.append("://");
-        if(includeUsername
-                && StringUtils.isNotEmpty(this.getCredentials().getUsername())) {
-            url.append(this.getCredentials().getUsername()).append("@");
-        }
-        url.append(this.getHostname(true));
-        if(this.getPort() != this.getProtocol().getScheme().getPort()) {
-            url.append(":").append(this.getPort());
-        }
-        return url.toString();
     }
 
     @Override

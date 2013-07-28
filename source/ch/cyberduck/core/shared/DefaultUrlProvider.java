@@ -17,15 +17,7 @@ package ch.cyberduck.core.shared;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.PathRelativizer;
-import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -47,7 +39,8 @@ public class DefaultUrlProvider implements UrlProvider {
         if(file.attributes().isVolume()) {
             return list;
         }
-        list.add(new DescriptiveUrl(URI.create(String.format("%s%s", host.toURL(false), URIEncoder.encode(file.getAbsolute()))),
+        list.add(new DescriptiveUrl(URI.create(String.format("%s%s",
+                new HostUrlProvider().get(host), URIEncoder.encode(file.getAbsolute()))),
                 DescriptiveUrl.Type.provider,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(java.util.Locale.ENGLISH))));
         list.add(new DescriptiveUrl(URI.create(host.getWebURL() + URIEncoder.encode(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute()))).normalize(),

@@ -1524,7 +1524,7 @@ public class BrowserController extends WindowController
         this.bookmarkTable.setDelegate((this.bookmarkTableDelegate = new AbstractTableDelegate<Host>() {
             @Override
             public String tooltip(Host bookmark) {
-                return bookmark.toURL();
+                return new HostUrlProvider().get(bookmark);
             }
 
             @Override

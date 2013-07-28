@@ -735,10 +735,10 @@ public class BookmarkController extends WindowController {
         this.updateField(nicknameField, host.getNickname());
         final String url;
         if(StringUtils.isNotBlank(host.getDefaultPath())) {
-            url = host.toURL() + PathNormalizer.normalize(host.getDefaultPath());
+            url = new HostUrlProvider().get(host) + PathNormalizer.normalize(host.getDefaultPath());
         }
         else {
-            url = host.toURL();
+            url = new HostUrlProvider().get(host);
         }
         urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
         this.updateField(portField, String.valueOf(host.getPort()));

@@ -263,7 +263,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
             if(identifier.equals(BOOKMARK_COLUMN)) {
                 NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>serialize(SerializerFactory.get()));
-                dict.setObjectForKey(host.toURL() + PathNormalizer.normalize(host.getDefaultPath()), "URL");
+                dict.setObjectForKey(new HostUrlProvider().get(host) + PathNormalizer.normalize(host.getDefaultPath()), "URL");
                 String comment = this.getSource().getComment(host);
                 if(StringUtils.isNotBlank(comment)) {
                     dict.setObjectForKey(comment, "Comment");
