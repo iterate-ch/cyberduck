@@ -246,8 +246,4 @@ public class DownloadTransfer extends Transfer {
         }
     }
 
-    @Override
-    public boolean isResumable() {
-        return session.getFeature(Read.class, new DisabledLoginController()).isResumable();
-    }
 }

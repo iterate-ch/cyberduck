@@ -159,11 +159,6 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return True if appending to files is supported
-     */
-    public abstract boolean isResumable();
-
-    /**
      * Create a transfer with a single root which can
      * be a plain file or a directory
      *

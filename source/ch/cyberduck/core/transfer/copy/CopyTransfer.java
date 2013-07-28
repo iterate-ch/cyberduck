@@ -100,11 +100,6 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public boolean isResumable() {
-        return false;
-    }
-
-    @Override
     public Type getType() {
         return Type.copy;
     }

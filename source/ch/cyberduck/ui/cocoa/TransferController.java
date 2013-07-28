@@ -1116,7 +1116,7 @@ public final class TransferController extends WindowController implements NSTool
                     if(transfer.isRunning()) {
                         return false;
                     }
-                    return transfer.isResumable() && !transfer.isComplete();
+                    return !transfer.isComplete();
                 }
             });
         }

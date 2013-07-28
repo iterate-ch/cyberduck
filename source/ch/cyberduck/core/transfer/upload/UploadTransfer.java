@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -95,11 +94,6 @@ public class UploadTransfer extends Transfer {
             }
             return list;
         }
-    }
-
-    @Override
-    public boolean isResumable() {
-        return session.getFeature(Write.class, new DisabledLoginController()).isResumable();
     }
 
     @Override

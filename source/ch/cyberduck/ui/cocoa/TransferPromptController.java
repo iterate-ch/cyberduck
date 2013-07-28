@@ -447,7 +447,7 @@ public abstract class TransferPromptController extends SheetController
                 = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
 
         final TransferAction[] actions = new TransferAction[]{
-                transfer.isResumable() ? TransferAction.ACTION_RESUME : null,
+                TransferAction.ACTION_RESUME,
                 TransferAction.ACTION_OVERWRITE,
                 TransferAction.ACTION_RENAME,
                 TransferAction.ACTION_SKIP,

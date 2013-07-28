@@ -98,11 +98,6 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public boolean isResumable() {
-        return _delegateDownload.isResumable() && _delegateUpload.isResumable();
-    }
-
-    @Override
     public long getTransferred() {
         // Include super for serialized state.
         return super.getTransferred() + _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
