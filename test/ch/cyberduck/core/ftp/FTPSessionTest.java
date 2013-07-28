@@ -15,13 +15,11 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
@@ -29,93 +27,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class FTPSessionTest extends AbstractTestCase {
-
-    @Test
-    public void testFallbackDataConnectionSocketTimeout() throws Exception {
-        final Host host = new Host(Protocol.FTP, "mirror.switch.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
-        ));
-        host.setFTPConnectMode(FTPConnectMode.PORT);
-
-        final AtomicInteger count = new AtomicInteger();
-
-        final FTPSession session = new FTPSession(host) {
-            protected int timeout() {
-                return 2000;
-            }
-
-            @Override
-            protected <T> T fallback(final DataConnectionAction<T> action) throws IOException, FTPInvalidListException {
-                count.incrementAndGet();
-                return super.fallback(action);
-            }
-        };
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-
-        final Path path = new Path("/pub/debian/README.html", Path.FILE_TYPE);
-        final TransferStatus status = new TransferStatus();
-        final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
-            @Override
-            public Void execute() throws IOException {
-                try {
-                    assertNotNull(session.read(path, status));
-                    assertEquals(1, count.get());
-                }
-                catch(BackgroundException e) {
-                    fail();
-                }
-                return null;
-            }
-        };
-        session.data(path, action);
-    }
-
-    @Test
-    public void testFallbackDataConnection500Error() throws Exception {
-        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        ));
-        host.setFTPConnectMode(FTPConnectMode.PORT);
-
-        final AtomicInteger count = new AtomicInteger();
-
-        // Expect failure from server
-        // 220 (vsFTPd 2.2.2)
-        // PORT 192,168,1,38,241,18
-        // 550 Permission denied.
-
-        final FTPSession session = new FTPSession(host) {
-            protected int timeout() {
-                return 2000;
-            }
-
-            @Override
-            protected <T> T fallback(final DataConnectionAction<T> action) throws IOException, FTPInvalidListException {
-                count.incrementAndGet();
-                return super.fallback(action);
-            }
-        };
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-
-        final Path path = new Path(session.home(), "test", Path.FILE_TYPE);
-        final TransferStatus status = new TransferStatus();
-        final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
-            @Override
-            public Void execute() throws IOException {
-                try {
-                    assertNotNull(session.read(path, status));
-                    assertEquals(1, count.get());
-                }
-                catch(BackgroundException e) {
-                    fail();
-                }
-                return null;
-            }
-        };
-        session.data(path, action);
-    }
 
     @Test
     public void testConnectAnonymous() throws Exception {

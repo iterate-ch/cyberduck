@@ -35,22 +35,41 @@ public class ResumeFilter extends AbstractUploadFilter {
         super(symlinkResolver);
     }
 
-    /**
-     * Append to existing file.
-     */
+    @Override
+    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+        if(file.attributes().isFile()) {
+            if(parent.isExists()) {
+                if(session.exists(file)) {
+                    final long size = this.getSize(session, file);
+                    if(file.getLocal().attributes().getSize() >= size) {
+                        // No need to resume completed transfers
+                        return false;
+                    }
+                }
+            }
+        }
+        return super.accept(session, file, parent);
+    }
+
     @Override
     public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(session, file, parent);
         if(file.attributes().isFile()) {
-            if(parent.isExists()) {
-                if(session.getFeature(Write.class, new DisabledLoginController()).isResumable()) {
+            if(session.getFeature(Write.class, new DisabledLoginController()).isResumable()) {
+                if(parent.isExists()) {
                     if(session.exists(file)) {
+                        // Append to existing file
                         status.setResume(true);
-                        status.setCurrent(session.list(file.getParent(), new DisabledListProgressListener()).get(file.getReference()).attributes().getSize());
+                        final long size = this.getSize(session, file);
+                        status.setCurrent(size);
                     }
                 }
             }
         }
         return status;
+    }
+
+    private long getSize(final Session<?> session, final Path file) throws BackgroundException {
+        return session.list(file.getParent(), new DisabledListProgressListener()).get(file.getReference()).attributes().getSize();
     }
 }

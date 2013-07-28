@@ -41,7 +41,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -275,81 +274,6 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 
-    /**
-     * @param action Action that needs to open a data connection
-     * @return True if action was successful
-     */
-    protected <T> T data(final Path file, final DataConnectionAction<T> action)
-            throws IOException, BackgroundException {
-        try {
-            // Make sure to always configure data mode because connect event sets defaults.
-            if(this.getConnectMode().equals(FTPConnectMode.PASV)) {
-                this.getClient().enterLocalPassiveMode();
-            }
-            else if(this.getConnectMode().equals(FTPConnectMode.PORT)) {
-                this.getClient().enterLocalActiveMode();
-            }
-            return action.execute();
-        }
-        catch(FTPException failure) {
-            log.warn(String.format("Server denied data socket %s", failure.getMessage()));
-            // Fallback handling
-            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
-                try {
-                    return this.fallback(action);
-                }
-                catch(IOException e) {
-                    log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
-                    // Throw original error message
-                }
-            }
-            throw new FTPExceptionMappingService().map("Connection failed", failure, file);
-        }
-        catch(SocketTimeoutException failure) {
-            log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
-            // Fallback handling
-            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
-                try {
-                    try {
-                        this.getClient().completePendingCommand();
-                        // Expect 421 response
-                        log.warn(String.format("Aborted connection %d %s",
-                                this.getClient().getReplyCode(), this.getClient().getReplyString()));
-                    }
-                    catch(IOException e) {
-                        log.warn(String.format("Ignore failure completing pending command %s", e.getMessage()));
-                        // Reconnect
-                        new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
-                                new DisabledPasswordStore(), this).connect(this);
-                    }
-                    return this.fallback(action);
-                }
-                catch(IOException e) {
-                    log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
-                    // Throw original error message
-                }
-            }
-            throw new DefaultIOExceptionMappingService().map(failure, file);
-        }
-    }
-
-    /**
-     * @param action Action that needs to open a data connection
-     * @return True if action was successful
-     */
-    protected <T> T fallback(final DataConnectionAction<T> action) throws IOException, FTPInvalidListException {
-        // Fallback to other connect mode
-        if(this.getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
-            log.warn("Fallback to active data connection");
-            this.getClient().enterLocalActiveMode();
-        }
-        else if(this.getClient().getDataConnectionMode() == FTPClient.ACTIVE_LOCAL_DATA_CONNECTION_MODE) {
-            log.warn("Fallback to passive data connection");
-            this.getClient().enterLocalPassiveMode();
-        }
-        return action.execute();
-    }
-
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         return listService.list(file, listener);
@@ -406,7 +330,7 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
                     this.getClient().setRestartOffset(status.getCurrent());
                 }
             }
-            final InputStream in = this.data(file, new DataConnectionAction<InputStream>() {
+            final InputStream in = new FTPDataFallback(this).data(file, new DataConnectionAction<InputStream>() {
                 @Override
                 public InputStream execute() throws IOException {
                     return getClient().retrieveFileStream(file.getAbsolute());
@@ -446,7 +370,7 @@ public class FTPSession extends SSLSession<FTPClient> implements Delete {
             if(!this.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
                 throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
             }
-            final OutputStream out = this.data(file, new DataConnectionAction<OutputStream>() {
+            final OutputStream out = new FTPDataFallback(this).data(file, new DataConnectionAction<OutputStream>() {
                 @Override
                 public OutputStream execute() throws IOException {
                     if(status.isResume()) {
