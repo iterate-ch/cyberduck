@@ -76,11 +76,11 @@ public class ResumeFilter extends AbstractUploadFilter {
     private long getSize(final Session<?> session, final Path file) throws BackgroundException {
         final AttributedList<Path> list;
         if(cache.containsKey(file.getReference())) {
-            list = session.list(file.getParent(), new DisabledListProgressListener());
-            cache.put(file.getReference(), list);
+            list = cache.get(file.getReference());
         }
         else {
-            list = cache.get(file.getReference());
+            list = session.list(file.getParent(), new DisabledListProgressListener());
+            cache.put(file.getReference(), list);
         }
         return list.get(file.getReference()).attributes().getSize();
     }
