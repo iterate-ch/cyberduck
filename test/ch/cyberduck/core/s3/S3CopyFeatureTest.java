@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Touch;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
@@ -50,9 +51,9 @@ public class S3CopyFeatureTest extends AbstractTestCase {
         final Path copy = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new S3CopyFeature(session).copy(test, copy);
         assertTrue(session.exists(test));
-        session.delete(test, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         assertTrue(session.exists(copy));
-        session.delete(copy, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(copy));
         session.close();
     }
 }

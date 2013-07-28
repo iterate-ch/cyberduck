@@ -5,8 +5,10 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.FTPSession;
 
 import org.junit.Test;
@@ -27,11 +29,16 @@ public class DeleteWorkerTest extends AbstractTestCase {
     public void testCompile() throws Exception {
         final FTPSession session = new FTPSession(new Host("t")) {
             @Override
-            public void delete(final List<Path> files) throws BackgroundException {
-                assertEquals(new Path("/t/a", Path.FILE_TYPE), files.get(0));
-                assertEquals(new Path("/t/d/b", Path.FILE_TYPE), files.get(1));
-                assertEquals(new Path("/t/d", Path.FILE_TYPE), files.get(2));
-                assertEquals(new Path("/t", Path.FILE_TYPE), files.get(3));
+            public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+                return (T) new Delete() {
+                    @Override
+                    public void delete(final List<Path> files) throws BackgroundException {
+                        assertEquals(new Path("/t/a", Path.FILE_TYPE), files.get(0));
+                        assertEquals(new Path("/t/d/b", Path.FILE_TYPE), files.get(1));
+                        assertEquals(new Path("/t/d", Path.FILE_TYPE), files.get(2));
+                        assertEquals(new Path("/t", Path.FILE_TYPE), files.get(3));
+                    }
+                };
             }
 
             @Override

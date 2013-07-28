@@ -9,9 +9,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -44,7 +46,7 @@ public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
         final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         assertTrue(session.exists(bucket));
-        session.delete(bucket, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket));
         assertFalse(session.exists(bucket));
     }
 }

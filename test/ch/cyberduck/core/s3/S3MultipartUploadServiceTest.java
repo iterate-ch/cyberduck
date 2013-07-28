@@ -19,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -50,7 +51,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         assertEquals(random.getBytes().length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        session.delete(test, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
     }
 
@@ -92,7 +93,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         assertEquals(random.getBytes().length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        session.delete(test, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
     }
 }

@@ -21,6 +21,7 @@ import ch.cyberduck.core.*;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -47,7 +48,7 @@ public class SFTPTouchFeatureTest extends AbstractTestCase {
         final AttributedList<Path> list = session.list(home, new DisabledListProgressListener());
         assertTrue(list.contains(test.getReference()));
         assertEquals("644", list.get(test.getReference()).attributes().getPermission().getOctalString());
-        session.delete(test, new DisabledLoginController());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
     }
 }

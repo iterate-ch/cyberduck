@@ -60,7 +60,7 @@ public class S3EncryptionFeatureTest extends AbstractTestCase {
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
         feature.setEncryption(test, "AES256");
         assertEquals("AES256", feature.getEncryption(test));
-        session.delete(test, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
     }
 }

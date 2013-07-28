@@ -2,13 +2,15 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase {
 
@@ -39,7 +41,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
         f.setPermission(test, acl);
-        session.delete(test, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
     }
 }

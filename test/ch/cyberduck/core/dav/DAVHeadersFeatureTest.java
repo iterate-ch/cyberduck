@@ -90,7 +90,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
-        session.delete(test, new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
 
     }
@@ -112,7 +112,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
-        session.delete(test, new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
 
     }

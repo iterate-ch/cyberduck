@@ -16,12 +16,13 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPWriteFeatureTest extends AbstractTestCase {
 
@@ -48,6 +49,6 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
-        session.delete(test, new DisabledLoginController());
+        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test));
     }
 }

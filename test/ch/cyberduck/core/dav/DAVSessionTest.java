@@ -13,6 +13,7 @@ import ch.cyberduck.core.features.UnixPermission;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -132,7 +133,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         session.mkdir(test, null);
         assertTrue(session.exists(test));
-        session.delete(test, new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         assertFalse(session.exists(test));
         session.close();
     }
@@ -149,7 +150,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         assertTrue(session.exists(test));
-        session.delete(test, new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         assertFalse(session.exists(test));
         session.close();
     }

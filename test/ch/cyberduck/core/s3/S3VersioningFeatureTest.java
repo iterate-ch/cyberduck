@@ -31,6 +31,7 @@ import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -87,7 +88,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
         final Versioning feature = new S3VersioningFeature(session);
         feature.setConfiguration(container, new DisabledLoginController(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
-        session.delete(container, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container));
         session.close();
     }
 }

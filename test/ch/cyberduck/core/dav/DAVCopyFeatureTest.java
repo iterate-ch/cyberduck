@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Touch;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
@@ -53,8 +54,8 @@ public class DAVCopyFeatureTest extends AbstractTestCase {
         new DAVCopyFeature(session).copy(test, copy);
         assertTrue(session.exists(test));
         assertTrue(session.exists(copy));
-        session.delete(test, new DisabledLoginController());
-        session.delete(copy, new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy));
         session.close();
     }
 }

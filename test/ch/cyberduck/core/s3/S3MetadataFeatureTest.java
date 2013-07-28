@@ -92,7 +92,7 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("test"));
         assertEquals(v, metadata.get("test"));
-        session.delete(test, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
     }
 }

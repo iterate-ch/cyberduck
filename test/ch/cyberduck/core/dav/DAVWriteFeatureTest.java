@@ -16,12 +16,13 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVWriteFeatureTest extends AbstractTestCase {
 
@@ -47,7 +48,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final byte[] buffer = new byte[content.length];
         IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
         assertArrayEquals(content, buffer);
-        session.delete(test, new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
     }
 

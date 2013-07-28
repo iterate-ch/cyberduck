@@ -14,6 +14,7 @@ import ch.cyberduck.core.features.Versioning;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -128,7 +129,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         final Path container = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         session.mkdir(container, null);
         assertTrue(session.exists(container));
-        session.delete(container, new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container));
         assertFalse(session.exists(container));
     }
 
@@ -144,7 +145,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         session.mkdir(placeholder, null);
         assertTrue(session.exists(placeholder));
-        session.delete(placeholder, new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder));
         assertFalse(session.exists(placeholder));
     }
 }

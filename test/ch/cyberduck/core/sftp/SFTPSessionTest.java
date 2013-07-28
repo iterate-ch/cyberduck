@@ -13,6 +13,7 @@ import ch.cyberduck.core.features.UnixPermission;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -91,7 +92,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         session.mkdir(test, null);
         assertTrue(session.exists(test));
-        session.delete(test, new DisabledLoginController());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
     }
 }

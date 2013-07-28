@@ -8,6 +8,7 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -118,7 +119,7 @@ public class S3SessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         session.mkdir(test, null);
         assertTrue(session.exists(test));
-        session.delete(test, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         session.close();
     }
 
@@ -133,7 +134,7 @@ public class S3SessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         assertTrue(session.exists(test));
-        session.delete(test, new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         assertFalse(session.exists(test));
         session.close();
     }
