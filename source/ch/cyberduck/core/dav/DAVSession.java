@@ -26,21 +26,14 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.http.ResponseOutputStream;
-import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.VoidResponseHandler;
@@ -146,70 +139,15 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
     }
 
-    @Override
-    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        Map<String, String> headers = new HashMap<String, String>();
-        if(status.isResume()) {
-            headers.put(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-");
-        }
-        try {
-            return this.getClient().get(new DAVPathEncoder().encode(file), headers);
-        }
-        catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Download failed", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
-        }
-    }
-
-    @Override
-    public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final Map<String, String> headers = new HashMap<String, String>();
-        if(status.isResume()) {
-            headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
-                    + status.getCurrent()
-                    + "-" + (status.getLength() - 1)
-                    + "/" + status.getLength()
-            );
-        }
-        if(Preferences.instance().getBoolean("webdav.expect-continue")) {
-            headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
-        }
-        return this.write(file, headers, status);
-    }
-
-    private ResponseOutputStream<Void> write(final Path file, final Map<String, String> headers, final TransferStatus status)
-            throws BackgroundException {
-        // Submit store call to background thread
-        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
-            /**
-             * @return The ETag returned by the server for the uploaded object
-             */
-            @Override
-            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
-                try {
-                    getClient().put(new DAVPathEncoder().encode(file), entity, headers);
-                }
-                catch(SardineException e) {
-                    throw new DAVExceptionMappingService().map("Upload failed", e, file);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
-                }
-                return null;
-            }
-
-            @Override
-            public long getContentLength() {
-                return status.getLength() - status.getCurrent();
-            }
-        };
-        return this.write(file, command);
-    }
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Read.class) {
+            return (T) new DAVReadFeature(this);
+        }
+        if(type == Write.class) {
+            return (T) new DAVWriteFeature(this);
+        }
         if(type == Delete.class) {
             return (T) new DAVDeleteFeature(this);
         }

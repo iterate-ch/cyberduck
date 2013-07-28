@@ -5,18 +5,14 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import java.io.OutputStream;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -211,57 +207,5 @@ public class DAVSessionTest extends AbstractTestCase {
         assertNotNull(session.getFeature(Copy.class, null));
         assertNotNull(session.getFeature(Headers.class, null));
         assertNotNull(session.getFeature(DistributionConfiguration.class, null));
-    }
-
-    @Test
-    public void testReadWrite() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final TransferStatus status = new TransferStatus();
-        final byte[] content = "test".getBytes("UTF-8");
-        status.setLength(content.length);
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final OutputStream out = session.write(test, status);
-        assertNotNull(out);
-        IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
-        assertTrue(session.exists(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        final byte[] buffer = new byte[content.length];
-        IOUtils.readFully(session.read(test, new TransferStatus()), buffer);
-        assertArrayEquals(content, buffer);
-        session.delete(test, new DisabledLoginController());
-        session.close();
-    }
-
-    @Test(expected = NotfoundException.class)
-    public void testReadNotFound() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final TransferStatus status = new TransferStatus();
-        session.read(new Path(session.workdir(), "nosuchname", Path.FILE_TYPE), status);
-    }
-
-    @Test(expected = LoginFailureException.class)
-    public void testWriteNotFound() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.write(test, new TransferStatus());
     }
 }
