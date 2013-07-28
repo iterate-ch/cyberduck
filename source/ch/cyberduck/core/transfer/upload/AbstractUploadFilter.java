@@ -141,7 +141,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         catch(BackgroundException e) {
             // Ignore
             log.warn(e.getMessage());
-            //todo flag
         }
     }
 
@@ -168,7 +167,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             catch(BackgroundException e) {
                 // Ignore
                 log.warn(e.getMessage());
-                //todo flag
             }
         }
     }
@@ -203,7 +201,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             catch(BackgroundException e) {
                 // Ignore
                 log.warn(e.getMessage());
-                //todo flag
             }
         }
     }
