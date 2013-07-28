@@ -18,8 +18,6 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -35,22 +33,22 @@ import com.github.sardine.impl.SardineImpl;
  */
 public class DAVClient extends SardineImpl {
 
-    private Host host;
+    private String uri;
 
-    public DAVClient(final Host host, final AbstractHttpClient http) {
+    public DAVClient(final String uri, final AbstractHttpClient http) {
         super(http);
-        this.host = host;
+        this.uri = uri;
     }
 
     @Override
     public <T> T execute(final HttpRequestBase request, final ResponseHandler<T> responseHandler) throws IOException {
-        request.setURI(URI.create(host.toURL(false) + request.getURI().getRawPath()));
+        request.setURI(URI.create(uri + request.getURI().getRawPath()));
         return super.execute(request, responseHandler);
     }
 
     @Override
     protected HttpResponse execute(final HttpRequestBase request) throws IOException {
-        request.setURI(URI.create(host.toURL(false) + request.getURI().getRawPath()));
+        request.setURI(URI.create(uri + request.getURI().getRawPath()));
         return super.execute(request);
     }
 }

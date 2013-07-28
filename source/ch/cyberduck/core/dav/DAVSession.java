@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
@@ -57,7 +58,11 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public DAVClient connect(final HostKeyController key) throws BackgroundException {
-        return new DAVClient(host, super.connect());
+        return new DAVClient(String.format("%s://%s%s",
+                host.getProtocol().getScheme().toString(),
+                new PunycodeConverter().convert(host.getHostname()),
+                host.getPort() != host.getProtocol().getScheme().getPort() ? String.format(":%d", host.getPort()) : ""),
+                super.connect());
     }
 
     @Override
