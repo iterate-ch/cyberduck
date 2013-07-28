@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPMoveFeature implements Move {
 
@@ -27,7 +27,7 @@ public class SFTPMoveFeature implements Move {
     public void move(final Path file, final Path renamed) throws BackgroundException {
         try {
             if(session.exists(renamed)) {
-                session.delete(Collections.singletonList(file));
+                new SFTPDeleteFeature(session).delete(Collections.singletonList(file));
             }
             session.sftp().mv(file.getAbsolute(), renamed.getAbsolute());
         }
