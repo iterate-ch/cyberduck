@@ -28,8 +28,6 @@ import ch.cyberduck.core.features.*;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.List;
 
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.ConnectionMonitor;
@@ -41,7 +39,7 @@ import ch.ethz.ssh2.ServerHostKeyVerifier;
 /**
  * @version $Id$
  */
-public class SFTPSession extends Session<Connection> implements Delete {
+public class SFTPSession extends Session<Connection> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
     private SFTPv3Client sftp;
@@ -248,25 +246,6 @@ public class SFTPSession extends Session<Connection> implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files) throws BackgroundException {
-        for(Path file : files) {
-            this.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
-            try {
-                if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
-                    this.sftp().rm(file.getAbsolute());
-                }
-                else if(file.attributes().isDirectory()) {
-                    this.sftp().rmdir(file.getAbsolute());
-                }
-            }
-            catch(IOException e) {
-                throw new SFTPExceptionMappingService().map("Cannot delete {0}", e, file);
-            }
-        }
-    }
-
-    @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Read.class) {
             if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
@@ -281,7 +260,7 @@ public class SFTPSession extends Session<Connection> implements Delete {
             return (T) new SFTPWriteFeature(this);
         }
         if(type == Delete.class) {
-            return (T) this;
+            return (T) new SFTPDeleteFeature(this);
         }
         if(type == Move.class) {
             return (T) new SFTPMoveFeature(this);
