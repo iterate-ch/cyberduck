@@ -19,37 +19,36 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 
 import ch.ethz.ssh2.SCPClient;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class SCPWriter implements Write {
+public class SCPReadFeature implements Read {
 
     private SFTPSession session;
 
-    public SCPWriter(final SFTPSession session) {
+    public SCPReadFeature(final SFTPSession session) {
         this.session = session;
     }
 
     @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        final SCPClient client = new SCPClient(session.getClient());
+    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+        InputStream in;
         try {
+            final SCPClient client = new SCPClient(session.getClient());
             client.setCharset(session.getEncoding());
-            return client.put(file.getName(), status.getLength(),
-                    file.getParent().getAbsolute(),
-                    "0" + file.attributes().getPermission().getOctalString());
-
+            in = client.get(file.getAbsolute());
+            return in;
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Upload failed", e, file);
+            throw new SFTPExceptionMappingService().map("Download failed", e, file);
         }
     }
 

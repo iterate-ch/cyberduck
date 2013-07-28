@@ -20,47 +20,39 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 
-import ch.ethz.ssh2.SFTPOutputStream;
-import ch.ethz.ssh2.SFTPv3Client;
+import ch.ethz.ssh2.SFTPInputStream;
 import ch.ethz.ssh2.SFTPv3FileHandle;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class SFTPWriter implements Write {
-    private static final Logger log = Logger.getLogger(SFTPWriter.class);
+public class SFTPReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(SFTPReadFeature.class);
 
     private SFTPSession session;
 
-    public SFTPWriter(final SFTPSession session) {
+    public SFTPReadFeature(final SFTPSession session) {
         this.session = session;
     }
 
     @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+        InputStream in;
         try {
-            SFTPv3FileHandle handle;
+            final SFTPv3FileHandle handle = session.sftp().openFileRO(file.getAbsolute());
+            in = new SFTPInputStream(handle);
             if(status.isResume()) {
-                handle = session.sftp().openFile(file.getAbsolute(),
-                        SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
-            }
-            else {
-                handle = session.sftp().openFile(file.getAbsolute(),
-                        SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
-            }
-            final OutputStream out = new SFTPOutputStream(handle);
-            if(status.isResume()) {
-                long skipped = ((SFTPOutputStream) out).skip(status.getCurrent());
-                log.info(String.format("Skipping %d bytes", skipped));
+                log.info(String.format("Skipping %d bytes", status.getCurrent()));
+                final long skipped = in.skip(status.getCurrent());
                 if(skipped < status.getCurrent()) {
                     throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
                 }
@@ -69,10 +61,10 @@ public class SFTPWriter implements Write {
             session.sftp().setRequestParallelism(
                     (int) (status.getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1
             );
-            return out;
+            return in;
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Upload failed", e, file);
+            throw new SFTPExceptionMappingService().map("Download failed", e, file);
         }
     }
 

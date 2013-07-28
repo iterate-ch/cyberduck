@@ -283,15 +283,15 @@ public class SFTPSession extends Session<Connection> implements Delete {
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Read.class) {
             if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
-                return (T) new SCPReader(this);
+                return (T) new SCPReadFeature(this);
             }
-            return (T) new SFTPReader(this);
+            return (T) new SFTPReadFeature(this);
         }
         if(type == Write.class) {
             if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
-                return (T) new SCPWriter(this);
+                return (T) new SCPWriteFeature(this);
             }
-            return (T) new SFTPWriter(this);
+            return (T) new SFTPWriteFeature(this);
         }
         if(type == Delete.class) {
             return (T) this;
