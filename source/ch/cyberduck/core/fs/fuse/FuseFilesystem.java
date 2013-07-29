@@ -205,7 +205,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.warn(String.format("Mount finished with %s", notification));
             unmount = new CountDownLatch(1);
             try {
-                Local folder = LocalFactory.createLocal(mountpoint, session.home().getAbsolute());
+                Local folder = LocalFactory.createLocal(mountpoint, session.workdir().getAbsolute());
                 reveal.reveal(folder);
             }
             catch(BackgroundException e) {

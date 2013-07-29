@@ -140,10 +140,6 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             return true;
                         }
                         final Path directory = selected.getParent();
-                        if(!session.cache().isCached(directory.getReference())) {
-                            log.warn("Return empty stat for directory not cached:" + path);
-                            return false;
-                        }
                         final Path file = session.list(directory, new DisabledListProgressListener()).get(new NSObjectPathReference(NSString.stringWithString(path)));
                         stat.type = file.attributes().isDirectory() ? KfsLibrary.kfstype_t.KFS_DIR : KfsLibrary.kfstype_t.KFS_REG;
                         if(session.getFeature(Timestamp.class, new DisabledLoginController()) != null) {
@@ -511,8 +507,8 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         break;
                     }
                 }
-                Path workdir = session.home();
-                Local folder = LocalFactory.createLocal(delegate.options.mountpoint, workdir.getAbsolute());
+                final Path workdir = session.workdir();
+                final Local folder = LocalFactory.createLocal(delegate.options.mountpoint, workdir.getAbsolute());
                 reveal.reveal(folder);
                 return null;
             }
