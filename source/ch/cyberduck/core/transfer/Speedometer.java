@@ -90,17 +90,23 @@ public class Speedometer {
      * @return 500.0 KB (500,000 bytes) of 1.0 MB (50%, 500.0 KB/sec, 2 seconds remaining)
      */
     public String getProgress(final Boolean running, final Long size, final Long transferred) {
-        return this.getProgress(System.currentTimeMillis(), running, size, transferred);
+        final long time = System.currentTimeMillis();
+        return this.getProgress(time, running, size, transferred, this.getSpeed(time, transferred));
     }
 
-    public String getProgress(final Long time, final Boolean running, final Long size, final Long transferred) {
+    public String getProgress(final Long time, final Boolean running,
+                              final Long size, final Long transferred) {
+        return this.getProgress(time, running, size, transferred, this.getSpeed(time, transferred));
+    }
+
+    public String getProgress(final Long time, final Boolean running,
+                              final Long size, final Long transferred, final Double speed) {
         final StringBuilder b = new StringBuilder(
                 MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
                         sizeFormatter.format(transferred, running),
                         sizeFormatter.format(size))
         );
         if(running && transferred > 0) {
-            final double speed = this.getSpeed(time, transferred);
             if(size > 0) {
                 b.append(" (");
                 if(size > 0) {

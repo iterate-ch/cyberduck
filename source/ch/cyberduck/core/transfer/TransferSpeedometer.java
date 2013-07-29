@@ -29,29 +29,13 @@ public class TransferSpeedometer extends Speedometer {
         this.transfer = transfer;
     }
 
-    /**
-     * Returns the data transfer rate. The rate should depend on the transfer
-     * rate timestamp.
-     *
-     * @return The bytes being processed per millisecond
-     */
-    protected double getSpeed() {
-        return this.getSpeed(transfer.getTransferred());
-    }
-
-    /**
-     * @return Progress information string with bytes transferred
-     *         including a percentage and estimated time remaining
-     */
-    public String getProgress() {
-        return this.getProgress(transfer.isRunning(), transfer.getSize(), transfer.getTransferred());
-    }
-
     public TransferProgress getStatus() {
+        final Long time = System.currentTimeMillis();
         final Long transferred = transfer.getTransferred();
         final Long size = transfer.getSize();
+        final Double speed = this.getSpeed(transferred);
         return new TransferProgress(size, transferred,
-                this.getProgress(transfer.isRunning(), size, transferred), this.getSpeed(transferred));
+                this.getProgress(time, transfer.isRunning(), size, transferred, speed), speed);
     }
 
     public void reset() {
