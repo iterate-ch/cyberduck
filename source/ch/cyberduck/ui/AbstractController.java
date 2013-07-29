@@ -25,6 +25,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 
@@ -51,7 +52,7 @@ public abstract class AbstractController implements Controller {
             = new ThreadPool(Integer.MAX_VALUE);
 
     protected ScheduledExecutorService timerPool
-            = Executors.newScheduledThreadPool(1);
+            = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer"));
 
     /**
      * Does wait for main action to return before continuing the caller thread.
