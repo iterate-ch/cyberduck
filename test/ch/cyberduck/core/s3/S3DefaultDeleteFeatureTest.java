@@ -8,8 +8,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Touch;
 
 import org.junit.Test;
 
@@ -35,9 +33,9 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
+        new S3TouchFeature(session).touch(test);
         assertTrue(session.exists(test));
-        session.getFeature(Delete.class, new DisabledLoginController()).delete(Collections.singletonList(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test));
         assertFalse(session.exists(test));
         session.close();
     }
@@ -55,7 +53,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         session.mkdir(test, null);
         assertTrue(session.exists(test));
-        session.getFeature(Delete.class, new DisabledLoginController()).delete(Collections.singletonList(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test));
         assertFalse(session.exists(test));
         session.close();
     }
@@ -71,8 +69,6 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         session.mkdir(container, null);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
         assertTrue(session.exists(container));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container));
         assertFalse(session.exists(container));

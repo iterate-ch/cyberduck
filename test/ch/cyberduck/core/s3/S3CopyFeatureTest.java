@@ -20,11 +20,9 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.features.Touch;
 
 import org.junit.Test;
 
@@ -47,7 +45,7 @@ public class S3CopyFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
+        new S3TouchFeature(session).touch(test);
         final Path copy = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new S3CopyFeature(session).copy(test, copy);
         assertTrue(session.exists(test));

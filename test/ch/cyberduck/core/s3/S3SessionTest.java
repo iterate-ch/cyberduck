@@ -3,7 +3,15 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Lifecycle;
+import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.junit.Test;
@@ -132,7 +140,7 @@ public class S3SessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
+        new S3TouchFeature(session).touch(test);
         assertTrue(session.exists(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         assertFalse(session.exists(test));

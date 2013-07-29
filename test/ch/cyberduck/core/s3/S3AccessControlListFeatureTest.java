@@ -26,7 +26,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.features.Touch;
 
 import org.junit.Test;
 
@@ -102,7 +101,7 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setOwner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6");
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
+        new S3TouchFeature(session).touch(test);
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         final Acl acl = new Acl();
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
