@@ -21,33 +21,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public abstract class PathReference<T> {
+public interface PathReference<T> {
 
-    public abstract T unique();
-
-    @Override
-    public int hashCode() {
-        return this.unique().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return this.unique().toString();
-    }
-
-    /**
-     * Comparing the hashcode.
-     *
-     * @see #hashCode()
-     */
-    @Override
-    public boolean equals(Object other) {
-        if(null == other) {
-            return false;
-        }
-        if(other instanceof PathReference) {
-            return this.hashCode() == other.hashCode();
-        }
-        return false;
-    }
+    T unique();
 }

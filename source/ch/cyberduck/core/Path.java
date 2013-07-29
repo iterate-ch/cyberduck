@@ -22,7 +22,6 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @version $Id$
@@ -168,14 +167,6 @@ public class Path extends AbstractPath implements Serializable {
                 }
             }
         }
-    }
-
-    @Override
-    public String unique() {
-        if(StringUtils.isNotBlank(this.attributes().getRegion())) {
-            return String.format("%s-%s", super.unique(), this.attributes().getRegion());
-        }
-        return super.unique();
     }
 
     /**

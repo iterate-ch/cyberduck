@@ -33,12 +33,12 @@ import java.util.Map;
  *
  * @version $Id$
  */
-public class NSObjectPathReference extends PathReference<NSObject> {
+public class NSObjectPathReference implements PathReference<NSObject> {
 
     private static class Factory extends PathReferenceFactory {
         @Override
         protected PathReference create() {
-            throw new UnsupportedOperationException("Please provide a parameter");
+            throw new FactoryException();
         }
 
         @Override
@@ -62,7 +62,7 @@ public class NSObjectPathReference extends PathReference<NSObject> {
 
     protected NSObjectPathReference(final Path path) {
         // Unique name
-        final String name = path.unique();
+        final String name = new DefaultPathReference(path).unique();
         if(!cache.containsKey(name)) {
             cache.put(name, NSString.stringWithString(name));
         }

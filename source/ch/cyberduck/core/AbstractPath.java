@@ -42,20 +42,6 @@ public abstract class AbstractPath {
     public abstract Attributes attributes();
 
     /**
-     * Obtain a string representation of the path that is unique for versioned files.
-     *
-     * @return The absolute path with version ID and checksum if any.
-     */
-    public String unique() {
-        if(this.attributes().isDuplicate()) {
-            if(StringUtils.isNotBlank(this.attributes().getVersionId())) {
-                return String.format("%s-%s", this.getAbsolute(), this.attributes().getVersionId());
-            }
-        }
-        return this.getAbsolute();
-    }
-
-    /**
      * Default implementation returning a reference to self. You can override this
      * if you need a different strategy to compare hashcode and equality for caching
      * in a model.
