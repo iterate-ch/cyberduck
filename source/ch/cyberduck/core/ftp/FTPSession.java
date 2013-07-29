@@ -26,9 +26,11 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.idna.PunycodeConverter;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 
@@ -291,6 +293,9 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Touch.class) {
+            return (T) new DefaultTouchFeature(this);
+        }
         if(type == Delete.class) {
             return (T) new FTPDeleteFeature(this);
         }

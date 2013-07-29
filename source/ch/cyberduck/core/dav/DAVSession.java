@@ -27,8 +27,10 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
@@ -142,6 +144,9 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+        if(type == Touch.class) {
+            return (T) new DefaultTouchFeature(this);
+        }
         if(type == Read.class) {
             return (T) new DAVReadFeature(this);
         }

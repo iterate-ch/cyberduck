@@ -22,9 +22,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -405,10 +403,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this);
-        }
-        if(type == Touch.class) {
-            // Use login context of current session
-            return (T) new DefaultTouchFeature(this);
         }
         if(type == DistributionConfiguration.class) {
             // Use login context of current session
