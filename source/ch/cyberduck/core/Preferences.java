@@ -787,7 +787,7 @@ public abstract class Preferences {
         defaults.put("archive.command.create.tar", "tar -cpPf {0}.tar {1}");
         defaults.put("archive.command.create.tar.gz", "tar -czpPf {0}.tar.gz {1}");
         defaults.put("archive.command.create.tar.bz2", "tar -cjpPf {0}.tar.bz2 {1}");
-        defaults.put("archive.command.create.zip", "zip -qrj {0}.zip {1}");
+        defaults.put("archive.command.create.zip", "zip -qr {0}.zip {1}");
         defaults.put("archive.command.create.gz", "gzip -qr {1}");
         defaults.put("archive.command.create.bz2", "bzip2 -zk {1}");
 
