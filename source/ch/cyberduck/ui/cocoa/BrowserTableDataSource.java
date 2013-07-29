@@ -123,8 +123,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(cache.isCached(path.getReference())) {
                 return cache.get(path.getReference()).filter(controller.getComparator(), controller.getFileFilter());
             }
-            // Temporary empty listing
-            cache.put(path.getReference(), AttributedList.<Path>emptyList());
             if(!isLoadingListingInBackground.contains(path)) {
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
@@ -137,6 +135,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                             cache.put(path.getReference(), children);
                         }
                         catch(BackgroundException e) {
+                            // Cache empty listing
+                            cache.put(path.getReference(), AttributedList.<Path>emptyList());
                             if(path.attributes().getPermission().isReadable() && path.attributes().getPermission().isExecutable()) {
                                 throw e;
                             }
