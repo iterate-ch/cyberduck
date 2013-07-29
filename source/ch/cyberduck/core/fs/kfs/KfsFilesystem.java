@@ -19,6 +19,7 @@ package ch.cyberduck.core.fs.kfs;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Local;
@@ -34,6 +35,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
@@ -48,6 +50,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -259,9 +262,8 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             }
                         }
                         catch(IOException e) {
-                            log.error(e.getMessage());
+                            throw new DefaultIOExceptionMappingService().map(e);
                         }
-                        return new KfsLibrary.size_t(-1);
                     }
                 });
                 try {
@@ -281,25 +283,25 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             public KfsLibrary.size_t apply(final String path, final Pointer buf, final KfsLibrary.size_t offset, final KfsLibrary.size_t length, Pointer context) {
                 final Future<KfsLibrary.size_t> future = background(new FilesystemBackgroundAction<KfsLibrary.size_t>(session) {
                     @Override
-                    public KfsLibrary.size_t run() {
+                    public KfsLibrary.size_t run() throws BackgroundException {
                         log.debug("kfswrite_f:" + path);
-//                        final Path file = new Path(session, path, Path.FILE_TYPE);
-//                        try {
-//                            final OutputStream out = file.write();
-//                            try {
-//                                byte[] chunk = new byte[length.intValue()];
-//                                buf.read(offset.longValue(), chunk, 0, length.intValue());
-//                                out.write(chunk, 0, length.intValue());
-//                                return new KfsLibrary.size_t(length.longValue());
-//                            }
-//                            finally {
-//                                IOUtils.closeQuietly(out);
-//                            }
-//                        }
-//                        catch(IOException e) {
-//                            log.error(e.getMessage());
-//                        }
-                        return new KfsLibrary.size_t(-1);
+                        final Path file = new Path(path, Path.FILE_TYPE);
+                        try {
+                            final TransferStatus status = new TransferStatus();
+                            final OutputStream out = session.getFeature(Write.class, new DisabledLoginController()).write(file, status);
+                            try {
+                                byte[] chunk = new byte[length.intValue()];
+                                buf.read(offset.longValue(), chunk, 0, length.intValue());
+                                out.write(chunk, 0, length.intValue());
+                                return new KfsLibrary.size_t(length.longValue());
+                            }
+                            finally {
+                                IOUtils.closeQuietly(out);
+                            }
+                        }
+                        catch(IOException e) {
+                            throw new DefaultIOExceptionMappingService().map(e);
+                        }
                     }
                 });
                 try {
