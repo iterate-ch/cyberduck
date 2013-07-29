@@ -40,7 +40,7 @@ public class DefaultUrlProvider implements UrlProvider {
             return list;
         }
         list.add(new DescriptiveUrl(URI.create(String.format("%s%s",
-                new HostUrlProvider().get(host), URIEncoder.encode(file.getAbsolute()))),
+                new HostUrlProvider(false).get(host), URIEncoder.encode(file.getAbsolute()))),
                 DescriptiveUrl.Type.provider,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(java.util.Locale.ENGLISH))));
         list.add(new DescriptiveUrl(URI.create(host.getWebURL() + URIEncoder.encode(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute()))).normalize(),
