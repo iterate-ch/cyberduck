@@ -1,10 +1,27 @@
 package ch.cyberduck.core;
 
+/*
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ */
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class HostPasswordStore implements PasswordStore {
     private static final Logger log = Logger.getLogger(KeychainLoginService.class);
@@ -21,7 +38,7 @@ public abstract class HostPasswordStore implements PasswordStore {
             log.warn("No hostname given");
             return null;
         }
-        Credentials credentials = host.getCredentials();
+        final Credentials credentials = host.getCredentials();
         if(StringUtils.isEmpty(credentials.getUsername())) {
             log.warn("No username given");
             return null;
