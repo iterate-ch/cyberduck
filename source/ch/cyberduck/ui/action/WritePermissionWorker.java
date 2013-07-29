@@ -87,14 +87,10 @@ public abstract class WritePermissionWorker extends Worker<Void> {
             if(!file.attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
                 modified.getOtherPermissions()[Permission.EXECUTE] = false;
             }
-            if(!file.attributes().getPermission().equals(modified)) {
-                feature.setUnixPermission(file, modified);
-            }
+            feature.setUnixPermission(file, modified);
         }
         else {
-            if(!file.attributes().getPermission().equals(permission)) {
-                feature.setUnixPermission(file, permission);
-            }
+            feature.setUnixPermission(file, permission);
         }
         if(recursive) {
             if(file.attributes().isDirectory()) {

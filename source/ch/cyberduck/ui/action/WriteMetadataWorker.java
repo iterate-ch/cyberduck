@@ -72,14 +72,7 @@ public abstract class WriteMetadataWorker extends Worker<Void> {
                     metadata.put(entry.getKey(), file.attributes().getMetadata().get(entry.getKey()));
                 }
             }
-            if(metadata.equals(file.attributes().getMetadata())) {
-                if(log.isInfoEnabled()) {
-                    log.info("Skip writing equal metadata for " + file);
-                }
-            }
-            else {
-                feature.setMetadata(file, metadata);
-            }
+            feature.setMetadata(file, metadata);
         }
         return null;
     }

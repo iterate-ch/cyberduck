@@ -82,17 +82,10 @@ public abstract class WriteAclWorker extends Worker<Void> {
             feature.setPermission(file, acl);
         }
         else {
-            if(acl.equals(file.attributes().getAcl())) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Skip writing equal ACL for %s", file));
-                }
-            }
-            else {
-                session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                        file.getName(), acl));
-                // Additional entry added
-                feature.setPermission(file, acl);
-            }
+            session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                    file.getName(), acl));
+            // Additional entry added
+            feature.setPermission(file, acl);
         }
         if(file.attributes().isDirectory()) {
             if(recursive) {
