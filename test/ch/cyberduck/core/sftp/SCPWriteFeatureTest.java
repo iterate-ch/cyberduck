@@ -37,7 +37,7 @@ public class SCPWriteFeatureTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        final Path test = new Path(session.mount(new DisabledListProgressListener()), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         final OutputStream out = new SCPWriteFeature(session).write(test, status);
         assertNotNull(out);
         IOUtils.write(content, out);

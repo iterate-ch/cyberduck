@@ -3,7 +3,6 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -42,7 +41,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertTrue(session.isSecured());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
+        assertNotNull(session.workdir());
         assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();

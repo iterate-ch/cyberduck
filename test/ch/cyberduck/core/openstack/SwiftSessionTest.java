@@ -2,6 +2,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Copy;
@@ -45,13 +46,14 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
+        assertNotNull(session.workdir());
         assertTrue(session.isConnected());
-        assertFalse(session.cache().isEmpty());
         final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        assertEquals(DescriptiveUrl.EMPTY, session.getURLs(new Path(container, "d/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.cdn));
-        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
         container.attributes().setRegion("DFW");
+        assertEquals(DescriptiveUrl.EMPTY, session.getURLs(new Path(container, "d/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.cdn));
+        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, null);
+        assertNotNull(cdn);
+        cdn.read(container, Distribution.DOWNLOAD);
         assertEquals("http://2b72124779a6075376a9-dc3ef5db7541ebd1f458742f9170bbe4.r64.cf1.rackcdn.com/d/f",
                 session.getURLs(new Path(container, "d/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.cdn).getUrl());
         session.close();
@@ -71,8 +73,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
-        assertFalse(session.cache().isEmpty());
+        assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -107,8 +108,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
-        assertFalse(session.cache().isEmpty());
+        assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());

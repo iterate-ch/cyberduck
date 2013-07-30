@@ -36,8 +36,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
-        assertFalse(session.cache().isEmpty());
+        assertNotNull(session.workdir());
         assertTrue(session.cache().containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertNotNull(session.cache().lookup(new Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertTrue(session.isConnected());
@@ -46,7 +45,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertEquals(Session.State.closed, session.getState());
         session.open(new DefaultHostKeyController());
         assertTrue(session.isConnected());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
+        assertNotNull(session.workdir());
         session.close();
         assertFalse(session.isConnected());
     }
@@ -61,7 +60,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
+        assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -78,7 +77,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
+        assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());

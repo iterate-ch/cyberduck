@@ -33,8 +33,7 @@ public class DAVSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
-        assertFalse(session.cache().isEmpty());
+        assertNotNull(session.workdir());
         assertTrue(session.cache().containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertNotNull(session.cache().lookup(new Path("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertNotNull(session.cache().lookup(new Path("/branches", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
@@ -93,7 +92,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
+        assertNotNull(session.workdir());
         session.close();
     }
 
@@ -117,7 +116,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.mount(new DisabledListProgressListener()));
+        assertNotNull(session.workdir());
         session.close();
     }
 
