@@ -27,16 +27,17 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final AWSIdentityConfiguration iam = new AWSIdentityConfiguration(host, new DisabledLoginController());
+        final String username = UUID.randomUUID().toString();
         try {
-            iam.createUser(UUID.randomUUID().toString(), "{}");
+            iam.createUser(username, "{}");
             fail();
         }
         catch(BackgroundException e) {
             assertEquals("Cannot write user configuration", e.getMessage());
             assertEquals(MalformedPolicyDocumentException.class, e.getCause().getClass());
+            iam.deleteUser(username);
         }
-        final String user = UUID.randomUUID().toString();
-        iam.createUser(user, "{\n" +
+        iam.createUser(username, "{\n" +
                 "  \"Version\": \"2012-10-17\",\n" +
                 "  \"Statement\": [\n" +
                 "    {\n" +
@@ -46,9 +47,9 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
                 "    }\n" +
                 "  ]\n" +
                 "}");
-        assertNotNull(iam.getUserCredentials(user));
-        iam.deleteUser(user);
-        assertNull(iam.getUserCredentials(user));
+        assertNotNull(iam.getUserCredentials(username));
+        iam.deleteUser(username);
+        assertNull(iam.getUserCredentials(username));
     }
 
     @Test(expected = LoginCanceledException.class)
