@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -54,7 +55,7 @@ import ch.iterate.openstack.swift.model.ContainerMetadata;
 /**
  * @version $Id$
  */
-public class SwiftDistributionConfiguration implements DistributionConfiguration, Purge {
+public class SwiftDistributionConfiguration implements DistributionConfiguration, Purge, UrlProvider {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
     private SwiftSession session;
@@ -192,7 +193,8 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
         return null;
     }
 
-    public DescriptiveUrlBag getURLs(final Path file) {
+    @Override
+    public DescriptiveUrlBag get(final Path file) {
         if(cache.containsKey(containerService.getContainer(file))) {
             return new DistributionUrlProvider(cache.get(containerService.getContainer(file))).get(file);
         }

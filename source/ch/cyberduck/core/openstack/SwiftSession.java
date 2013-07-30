@@ -124,7 +124,7 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     public DescriptiveUrlBag getURLs(final Path file) {
-        return cdn.getURLs(file);
+        return cdn.get(file);
     }
 
     @Override
