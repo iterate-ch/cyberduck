@@ -37,13 +37,14 @@ public class SFTPCompressFeature implements Compress {
     }
 
     /**
-     * Create ompressed archive.
+     * Create compressed archive.
      *
      * @param archive Archive format description
+     * @param workdir Working directory
      * @param files   List of files to archive
      */
-    public void archive(final Archive archive, final List<Path> files, final ProgressListener listener) throws BackgroundException {
-        command.send(archive.getCompressCommand(files), listener);
+    public void archive(final Archive archive, final Path workdir, final List<Path> files, final ProgressListener listener) throws BackgroundException {
+        command.send(archive.getCompressCommand(workdir, files), listener);
     }
 
     /**

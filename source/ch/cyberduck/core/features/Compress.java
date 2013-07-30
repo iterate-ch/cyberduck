@@ -30,7 +30,7 @@ import java.util.List;
  */
 public interface Compress {
 
-    void archive(Archive archive, List<Path> files, ProgressListener listener) throws BackgroundException;
+    void archive(Archive archive, final Path workdir, List<Path> files, ProgressListener listener) throws BackgroundException;
 
     void unarchive(Archive archive, Path file, ProgressListener listener) throws BackgroundException;
 }

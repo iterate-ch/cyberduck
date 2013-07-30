@@ -784,10 +784,10 @@ public abstract class Preferences {
         /**
          * Archiver
          */
-        defaults.put("archive.command.create.tar", "tar -cpPf {0}.tar {1}");
-        defaults.put("archive.command.create.tar.gz", "tar -czpPf {0}.tar.gz {1}");
-        defaults.put("archive.command.create.tar.bz2", "tar -cjpPf {0}.tar.bz2 {1}");
-        defaults.put("archive.command.create.zip", "zip -qr {0}.zip {1}");
+        defaults.put("archive.command.create.tar", "cd {2}; tar -cpPf {0}.tar {1}");
+        defaults.put("archive.command.create.tar.gz", "cd {2}; tar -czpPf {0}.tar.gz {1}");
+        defaults.put("archive.command.create.tar.bz2", "cd {2}; tar -cjpPf {0}.tar.bz2 {1}");
+        defaults.put("archive.command.create.zip", "cd {2}; zip -qr {0}.zip {1}");
         defaults.put("archive.command.create.gz", "gzip -qr {1}");
         defaults.put("archive.command.create.bz2", "bzip2 -zk {1}");
 

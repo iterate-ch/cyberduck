@@ -29,7 +29,7 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
         for(Archive archive : Archive.getKnownArchives()) {
             final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
             session.getFeature(Touch.class, null).touch(test);
-            feature.archive(archive, Collections.<Path>singletonList(test), new ProgressListener() {
+            feature.archive(archive, session.home(), Collections.<Path>singletonList(test), new ProgressListener() {
                 @Override
                 public void message(final String message) {
                     //
