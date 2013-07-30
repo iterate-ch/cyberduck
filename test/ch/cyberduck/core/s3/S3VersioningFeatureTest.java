@@ -17,15 +17,8 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 
@@ -90,5 +83,15 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
         assertTrue(feature.getConfiguration(container).isEnabled());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container));
         session.close();
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testForbidden() throws Exception {
+        final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        new S3VersioningFeature(session).getConfiguration(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE));
     }
 }
