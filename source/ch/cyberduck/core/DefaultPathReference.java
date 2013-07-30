@@ -3,7 +3,7 @@ package ch.cyberduck.core;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultPathReference implements PathReference<String> {
 
@@ -20,15 +20,17 @@ public class DefaultPathReference implements PathReference<String> {
      */
     @Override
     public String unique() {
-        String region = StringUtils.EMPTY;
-        String version = StringUtils.EMPTY;
+        String qualifier = StringUtils.EMPTY;
         if(StringUtils.isNotBlank(path.attributes().getRegion())) {
-            region = path.attributes().getRegion();
+            qualifier += path.attributes().getRegion();
         }
         if(StringUtils.isNotBlank(path.attributes().getVersionId())) {
-            version = path.attributes().getVersionId();
+            qualifier += path.attributes().getVersionId();
         }
-        return String.format("%s%s%s", path.getAbsolute(), version, region);
+        if(StringUtils.isNotBlank(qualifier)) {
+            return String.format("%s-%s", path.getAbsolute(), qualifier);
+        }
+        return path.getAbsolute();
     }
 
     @Override
