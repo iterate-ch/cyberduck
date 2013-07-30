@@ -69,8 +69,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
 
     private ScheduledThreadPool timerPool = new ScheduledThreadPool();
 
-    private Controller controller;
-
     private TransferListener transferListener;
 
     public TransferBackgroundAction(final Controller controller,
@@ -82,7 +80,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
                                     final TransferPrompt prompt,
                                     final TransferOptions options) {
         super(controller, alert, progressListener, transcriptListener);
-        this.controller = controller;
         this.prompt = prompt;
         this.transfer = transfer;
         this.options = options;
