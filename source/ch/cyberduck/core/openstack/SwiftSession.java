@@ -20,9 +20,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
-import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -60,10 +58,11 @@ public class SwiftSession extends HttpSession<Client> {
     private Map<String, Region> regions
             = new HashMap<String, Region>();
 
-    private Map<Path, Distribution> distributions
-            = new HashMap<Path, Distribution>();
+    private PathContainerService containerService
+            = new PathContainerService();
 
-    private PathContainerService containerService = new PathContainerService();
+    private SwiftDistributionConfiguration cdn
+            = new SwiftDistributionConfiguration(this);
 
     public SwiftSession(Host h) {
         super(h);
@@ -121,15 +120,11 @@ public class SwiftSession extends HttpSession<Client> {
     protected void logout() throws BackgroundException {
         super.logout();
         regions.clear();
-        distributions.clear();
     }
 
     @Override
     public DescriptiveUrlBag getURLs(final Path file) {
-        if(distributions.containsKey(containerService.getContainer(file))) {
-            return new DistributionUrlProvider(distributions.get(containerService.getContainer(file))).get(file);
-        }
-        return DescriptiveUrlBag.empty();
+        return cdn.getURLs(file);
     }
 
     @Override
@@ -207,19 +202,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new QloudstatAnalyticsProvider();
         }
         if(type == DistributionConfiguration.class) {
-            for(Region region : regions.values()) {
-                if(null != region.getCDNManagementUrl()) {
-                    return (T) new SwiftDistributionConfiguration(this) {
-                        @Override
-                        public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
-                            final Distribution distribution = super.read(container, method);
-                            distributions.put(container, distribution);
-                            return distribution;
-                        }
-                    };
-                }
-            }
-            return null;
+            return (T) cdn;
         }
         return super.getFeature(type, prompt);
     }

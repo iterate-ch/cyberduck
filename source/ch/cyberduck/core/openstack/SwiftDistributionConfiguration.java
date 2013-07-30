@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
@@ -27,6 +28,7 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.cdn.features.Purge;
@@ -40,7 +42,9 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.exception.NotFoundException;
@@ -54,6 +58,11 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
     private SwiftSession session;
+
+    private PathContainerService containerService = new PathContainerService();
+
+    private Map<Path, Distribution> cache
+            = new HashMap<Path, Distribution>();
 
     public SwiftDistributionConfiguration(final SwiftSession session) {
         this.session = session;
@@ -118,6 +127,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                     distribution.setIndexDocument(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
                 distribution.setContainers(Collections.<Path>singletonList(new Path(".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
+                cache.put(container, distribution);
                 return distribution;
             }
             catch(NotFoundException e) {
@@ -180,6 +190,13 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             return (T) new QloudstatAnalyticsProvider();
         }
         return null;
+    }
+
+    public DescriptiveUrlBag getURLs(final Path file) {
+        if(cache.containsKey(containerService.getContainer(file))) {
+            return new DistributionUrlProvider(cache.get(containerService.getContainer(file))).get(file);
+        }
+        return DescriptiveUrlBag.empty();
     }
 
     @Override
