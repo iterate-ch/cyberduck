@@ -51,7 +51,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
             int i = name.lastIndexOf("\r\n");
             name = name.substring(0, i);
         }
-        if(null == name || name.equals("") || name.equals(".") || name.equals("..")) {
+        if(StringUtils.isBlank(name) || name.equals(".") || name.equals("..")) {
             return null;
         }
         file.setName(name);
