@@ -49,6 +49,11 @@ public class Path extends AbstractPath implements Serializable {
     private Path symlink;
 
     /**
+     * The path delimiter for remote paths
+     */
+    public static final char DELIMITER = '/';
+
+    /**
      * Attributes denoting this path
      */
     private PathAttributes attributes;
@@ -168,11 +173,6 @@ public class Path extends AbstractPath implements Serializable {
             }
         }
     }
-
-    /**
-     * The path delimiter for remote paths
-     */
-    public static final char DELIMITER = '/';
 
     @Override
     public char getPathDelimiter() {
