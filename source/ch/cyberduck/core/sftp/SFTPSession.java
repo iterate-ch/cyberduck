@@ -235,17 +235,6 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
-        try {
-            this.sftp().mkdir(file.getAbsolute(),
-                    Integer.parseInt(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getOctalString(), 8));
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot create folder {0}", e, file);
-        }
-    }
-
-    @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Read.class) {
             if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
@@ -258,6 +247,9 @@ public class SFTPSession extends Session<Connection> {
                 return (T) new SCPWriteFeature(this);
             }
             return (T) new SFTPWriteFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new SFTPDirectoryFeature(this);
         }
         if(type == Delete.class) {
             return (T) new SFTPDeleteFeature(this);

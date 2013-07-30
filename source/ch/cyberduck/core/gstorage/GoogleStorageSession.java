@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
@@ -168,17 +169,6 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
-        if(containerService.isContainer(file)) {
-            final GoogleStorageBucketCreateService service = new GoogleStorageBucketCreateService(this);
-            service.create(file, null);
-        }
-        else {
-            super.mkdir(file, region);
-        }
-    }
-
-    @Override
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
         return new XmlResponsesSaxParser(this.configure(), false) {
             @Override
@@ -242,6 +232,9 @@ public class GoogleStorageSession extends S3Session {
         }
         if(type == Delete.class) {
             return (T) new S3DefaultDeleteFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new GoogleStorageDirectoryFeature(this);
         }
         if(type == AclPermission.class) {
             return (T) new GoogleStorageAccessControlListFeature(this);

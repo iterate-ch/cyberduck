@@ -1,5 +1,22 @@
 package ch.cyberduck.core.dav;
 
+/*
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ */
+
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
@@ -8,7 +25,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.junit.Test;
 
@@ -19,12 +35,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class DAVDeleteFeatureTest extends AbstractTestCase {
+public class DAVDirectoryFeatureTest extends AbstractTestCase {
 
     @Test
-    public void testDeleteDirectory() throws Exception {
+    public void testMakeDirectory() throws Exception {
         final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
         ));
@@ -35,8 +51,7 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new DAVDirectoryFeature(session).mkdir(test, null);
         assertTrue(session.exists(test));
-        new DefaultTouchFeature(session).touch(new Path(test, UUID.randomUUID().toString(), Path.FILE_TYPE));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
         assertFalse(session.exists(test));
         session.close();
     }

@@ -14,9 +14,6 @@ import ch.cyberduck.core.features.Versioning;
 
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.UUID;
-
 import static org.junit.Assert.*;
 
 /**
@@ -116,36 +113,5 @@ public class SwiftSessionTest extends AbstractTestCase {
         session.close();
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());
-    }
-
-    @Test
-    public void testCreateContainer() throws Exception {
-        final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(container, null);
-        assertTrue(session.exists(container));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container));
-        assertFalse(session.exists(container));
-    }
-
-    @Test
-    public void testCreatePlaceholder() throws Exception {
-        final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
-                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        final Path placeholder = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(placeholder, null);
-        assertTrue(session.exists(placeholder));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder));
-        assertFalse(session.exists(placeholder));
     }
 }

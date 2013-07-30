@@ -30,6 +30,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
@@ -370,7 +371,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                    session.mkdir(directory, null);
+                    final Directory feature = session.getFeature(Directory.class, new DisabledLoginController());
+                    feature.mkdir(directory, null);
                     return true;
                 }
             });

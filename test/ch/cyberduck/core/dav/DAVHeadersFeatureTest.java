@@ -105,7 +105,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(test, null);
+        new DAVDirectoryFeature(session).mkdir(test, null);
         final String v = UUID.randomUUID().toString();
         new DAVHeadersFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
         final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(test);

@@ -30,6 +30,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
@@ -444,7 +445,8 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsmkdir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                        session.mkdir(directory, null);
+                        final Directory feature = session.getFeature(Directory.class, new DisabledLoginController());
+                        feature.mkdir(directory, null);
                         return true;
                     }
                 });

@@ -6,10 +6,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.junit.Test;
 
@@ -77,24 +76,6 @@ public class FTPSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testMakeDirectory() throws Exception {
-        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(test, null);
-        assertTrue(session.exists(test));
-        session.getFeature(Delete.class, new DisabledLoginController()).delete(Collections.singletonList(test));
-        assertFalse(session.exists(test));
-        session.close();
-    }
-
-    @Test
     public void testTouch() throws Exception {
         final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
@@ -105,9 +86,9 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
+        new DefaultTouchFeature(session).touch(test);
         assertTrue(session.exists(test));
-        session.getFeature(Delete.class, new DisabledLoginController()).delete(Collections.singletonList(test));
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test));
         assertFalse(session.exists(test));
         session.close();
     }

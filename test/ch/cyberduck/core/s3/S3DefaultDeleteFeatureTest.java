@@ -51,7 +51,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(test, null);
+        new S3DirectoryFeature(session).mkdir(test, null);
         assertTrue(session.exists(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test));
         assertFalse(session.exists(test));
@@ -68,7 +68,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        session.mkdir(container, null);
+        new S3DirectoryFeature(session).mkdir(container, null);
         assertTrue(session.exists(container));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container));
         assertFalse(session.exists(container));

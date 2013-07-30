@@ -389,12 +389,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     }
 
     /**
-     * @param file   File
-     * @param region Location
-     */
-    public abstract void mkdir(Path file, String region) throws BackgroundException;
-
-    /**
      * @param file     Directory
      * @param listener Callback
      */

@@ -270,18 +270,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
-        try {
-            if(!this.getClient().makeDirectory(file.getAbsolute())) {
-                throw new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString());
-            }
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Cannot create folder {0}", e, file);
-        }
-    }
-
-    @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Touch.class) {
             return (T) new DefaultTouchFeature(this);

@@ -122,23 +122,6 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testMakeDirectory() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
-                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        session.mkdir(test, null);
-        assertTrue(session.exists(test));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
-        assertFalse(session.exists(test));
-        session.close();
-    }
-
-    @Test
     public void testTouch() throws Exception {
         final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("webdav.user"), properties.getProperty("webdav.password")

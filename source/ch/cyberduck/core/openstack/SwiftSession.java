@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
@@ -164,33 +165,15 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
-        try {
-            if(containerService.isContainer(file)) {
-                // Create container at top level
-                this.getClient().createContainer(this.getRegion(region), file.getName());
-            }
-            else {
-                // Create virtual directory. Use region of parent container.
-                this.getClient().createPath(this.getRegion(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
-            }
-        }
-        catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Cannot create folder {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
-        }
-    }
-
-    @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Read.class) {
             return (T) new SwiftReadFeature(this);
         }
         if(type == Write.class) {
             return (T) new SwiftWriteFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new SwiftDirectoryFeature(this);
         }
         if(type == Delete.class) {
             return (T) new SwiftDeleteFeature(this);

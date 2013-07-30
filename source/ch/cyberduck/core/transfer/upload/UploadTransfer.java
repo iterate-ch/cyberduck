@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
@@ -206,7 +207,7 @@ public class UploadTransfer extends Transfer {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                     file.getName()));
             if(!status.isExists()) {
-                session.mkdir(file, null);
+                session.getFeature(Directory.class, new DisabledLoginController()).mkdir(file, null);
             }
         }
     }

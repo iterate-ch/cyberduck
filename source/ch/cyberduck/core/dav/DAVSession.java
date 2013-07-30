@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
@@ -129,23 +130,12 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
-        try {
-            this.getClient().createDirectory(new DAVPathEncoder().encode(file));
-        }
-        catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Cannot create folder {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
-        }
-    }
-
-
-    @Override
     public <T> T getFeature(final Class<T> type, final LoginController prompt) {
         if(type == Touch.class) {
             return (T) new DefaultTouchFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new DAVDirectoryFeature(this);
         }
         if(type == Read.class) {
             return (T) new DAVReadFeature(this);

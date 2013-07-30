@@ -22,6 +22,7 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.AbstractStreamListener;
@@ -217,7 +218,7 @@ public class CopyTransfer extends Transfer {
             if(!status.isExists()) {
                 session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         copy.getName()));
-                destination.mkdir(copy, null);
+                destination.getFeature(Directory.class, new DisabledLoginController()).mkdir(copy, null);
             }
         }
     }

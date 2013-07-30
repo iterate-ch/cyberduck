@@ -319,32 +319,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
-        try {
-            if(containerService.isContainer(file)) {
-                final S3BucketCreateService service = new S3BucketCreateService(this);
-                if(StringUtils.isBlank(region)) {
-                    service.create(file, Preferences.instance().getProperty("s3.location"));
-                }
-                else {
-                    service.create(file, region);
-                }
-            }
-            else {
-                // Add placeholder object
-                final StorageObject object = new StorageObject(containerService.getKey(file) + Path.DELIMITER);
-                object.setBucketName(containerService.getContainer(file).getName());
-                object.setContentLength(0);
-                object.setContentType("application/x-directory");
-                this.getClient().putObject(containerService.getContainer(file).getName(), object);
-            }
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, file);
-        }
-    }
-
-    @Override
     public DescriptiveUrlBag getURLs(final Path file) {
         return new S3UrlProvider(this, PasswordStoreFactory.get()).get(file);
     }
@@ -359,6 +333,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
         if(type == Upload.class) {
             return (T) new S3ThresholdUploadService(this);
+        }
+        if(type == Directory.class) {
+            return (T) new S3DirectoryFeature(this);
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this);
