@@ -207,10 +207,11 @@ public abstract class Archive {
     }
 
     /**
-     * @param files Files to archive
+     * @param workdir Working directory
+     * @param files   Files to archive
      * @return Archive command
      */
-    public String getCompressCommand(final List<Path> files) {
+    public String getCompressCommand(final Path workdir, final List<Path> files) {
         final StringBuilder archive = new StringBuilder();
         if(files.size() == 1) {
             archive.append(files.get(0).getAbsolute());
@@ -221,10 +222,10 @@ public abstract class Archive {
         }
         final List<String> command = new ArrayList<String>();
         for(Path path : files) {
-            command.add(this.escape(path.getAbsolute()));
+            command.add(this.escape(PathRelativizer.relativize(workdir.getAbsolute(), path.getAbsolute())));
         }
         return MessageFormat.format(Preferences.instance().getProperty(String.format("archive.command.create.%s", this.getIdentifier())),
-                this.escape(archive.toString()), StringUtils.join(command, " "));
+                this.escape(archive.toString()), StringUtils.join(command, " "), workdir.getAbsolute());
     }
 
     /**
