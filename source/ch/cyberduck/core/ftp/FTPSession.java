@@ -34,7 +34,6 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 
-import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
@@ -79,23 +78,17 @@ public class FTPSession extends SSLSession<FTPClient> {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
         }
-        finally {
-            client.removeProtocolCommandListener(listener);
-        }
     }
 
     @Override
     protected void disconnect() {
         try {
             client.disconnect();
-            super.disconnect();
         }
         catch(IOException e) {
             log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
         }
-        finally {
-            client.removeProtocolCommandListener(listener);
-        }
+        super.disconnect();
     }
 
     @Override
@@ -108,17 +101,14 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
     }
 
-    private final ProtocolCommandListener listener = new LoggingProtocolCommandListener() {
-        @Override
-        public void log(boolean request, String event) {
-            FTPSession.this.log(request, event);
-        }
-    };
-
     protected void configure(final FTPClient client) throws IOException {
         client.setControlEncoding(this.getEncoding());
-        client.removeProtocolCommandListener(listener);
-        client.addProtocolCommandListener(listener);
+        client.addProtocolCommandListener(new LoggingProtocolCommandListener() {
+            @Override
+            public void log(boolean request, String event) {
+                FTPSession.this.log(request, event);
+            }
+        });
         client.setConnectTimeout(this.timeout());
         client.setDefaultTimeout(this.timeout());
         client.setDataTimeout(this.timeout());

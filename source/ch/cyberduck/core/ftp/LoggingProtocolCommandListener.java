@@ -21,23 +21,24 @@ package ch.cyberduck.core.ftp;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
+import org.apache.commons.net.ftp.FTPCmd;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class LoggingProtocolCommandListener implements ProtocolCommandListener {
 
     @Override
-    public void protocolCommandSent(ProtocolCommandEvent event) {
+    public void protocolCommandSent(final ProtocolCommandEvent event) {
         String message = StringUtils.chomp(event.getMessage());
-        if(message.startsWith("PASS")) {
-            message = "PASS ********";
+        if(message.startsWith(FTPCmd.PASS.name())) {
+            message = String.format("%s ********", FTPCmd.PASS.name());
         }
         this.log(true, message);
     }
 
     @Override
-    public void protocolReplyReceived(ProtocolCommandEvent event) {
+    public void protocolReplyReceived(final ProtocolCommandEvent event) {
         this.log(false, StringUtils.chomp(event.getMessage()));
     }
 
