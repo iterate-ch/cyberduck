@@ -161,13 +161,13 @@ public class Receipt extends AbstractLicense {
                             if(((DERInteger) type).getValue().intValue() == 2) {
                                 DEREncodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
-                                    bundleIdentifier = new String(((DEROctetString) value).getOctets(), "utf-8");
+                                    bundleIdentifier = new String(((DEROctetString) value).getOctets(), "UTF-8");
                                 }
                             }
                             else if(((DERInteger) type).getValue().intValue() == 3) {
                                 DEREncodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
-                                    bundleVersion = new String(((DEROctetString) value).getOctets(), "utf-8");
+                                    bundleVersion = new String(((DEROctetString) value).getOctets(), "UTF-8");
                                 }
                             }
                             else if(((DERInteger) type).getValue().intValue() == 4) {
@@ -198,8 +198,7 @@ public class Receipt extends AbstractLicense {
                     StringUtils.trim(bundleVersion))) {
                 log.warn("Bundle version in ASN set does not match");
             }
-
-            NetworkInterface en0 = NetworkInterface.getByName("en0");
+            final NetworkInterface en0 = NetworkInterface.getByName("en0");
             if(null == en0) {
                 // Interface is not found when link is down #fail
                 log.warn("No network interface en0");
@@ -219,13 +218,13 @@ public class Receipt extends AbstractLicense {
                 MessageDigest digest = MessageDigest.getInstance("SHA-1");
                 digest.update(mac);
                 digest.update(opaque);
-                digest.update(bundleIdentifier.getBytes(Charset.forName("utf-8")));
+                digest.update(bundleIdentifier.getBytes(Charset.forName("UTF-8")));
                 byte[] result = digest.digest();
                 if(Arrays.equals(result, hash)) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Valid receipt for GUID %s", hex));
                     }
-                    this.name = hex;
+                    name = hex;
                 }
                 else {
                     log.error(String.format("Failed verification. Hash with GUID %s does not match hash in receipt", hex));
