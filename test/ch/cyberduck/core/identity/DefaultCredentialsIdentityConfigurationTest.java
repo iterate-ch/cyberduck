@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultCredentialsIdentityConfigurationTest {
 
@@ -17,6 +17,6 @@ public class DefaultCredentialsIdentityConfigurationTest {
     public void testGetUserCredentials() throws Exception {
         final Credentials credentials = new Credentials("u", "p");
         assertEquals(credentials, new DefaultCredentialsIdentityConfiguration(new Host(Protocol.WEBDAV,
-                "h", credentials)).getUserCredentials("a"));
+                "h", credentials)).getCredentials("a"));
     }
 }

@@ -29,15 +29,15 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
         final AWSIdentityConfiguration iam = new AWSIdentityConfiguration(host, new DisabledLoginController());
         final String username = UUID.randomUUID().toString();
         try {
-            iam.createUser(username, "{}");
+            iam.create(username, "{}");
             fail();
         }
         catch(BackgroundException e) {
             assertEquals("Cannot write user configuration", e.getMessage());
             assertEquals(MalformedPolicyDocumentException.class, e.getCause().getClass());
-            iam.deleteUser(username);
+            iam.delete(username);
         }
-        iam.createUser(username, "{\n" +
+        iam.create(username, "{\n" +
                 "  \"Version\": \"2012-10-17\",\n" +
                 "  \"Statement\": [\n" +
                 "    {\n" +
@@ -47,9 +47,9 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
                 "    }\n" +
                 "  ]\n" +
                 "}");
-        assertNotNull(iam.getUserCredentials(username));
-        iam.deleteUser(username);
-        assertNull(iam.getUserCredentials(username));
+        assertNotNull(iam.getCredentials(username));
+        iam.delete(username);
+        assertNull(iam.getCredentials(username));
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -57,6 +57,6 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
         final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
                 "key", "secret"
         ));
-        new AWSIdentityConfiguration(host, new DisabledLoginController()).createUser("u", "{}");
+        new AWSIdentityConfiguration(host, new DisabledLoginController()).create("u", "{}");
     }
 }
