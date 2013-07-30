@@ -26,7 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -36,7 +35,6 @@ import java.util.Map;
  * @version $Id$
  */
 public abstract class WriteMetadataWorker extends Worker<Void> {
-    private static Logger log = Logger.getLogger(WriteMetadataWorker.class);
 
     private Session<?> session;
 
