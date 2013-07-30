@@ -18,6 +18,8 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -44,7 +46,8 @@ public class SCPWriteFeature implements Write {
         try {
             client.setCharset(session.getEncoding());
             return client.put(file.getName(), status.getLength(),
-                    file.getParent().getAbsolute(), "0640");
+                    file.getParent().getAbsolute(), String.format("0%s",
+                    new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default")).getOctalString()));
 
         }
         catch(IOException e) {
