@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.idna.PunycodeConverter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -261,20 +260,11 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure for endpoint %s", host));
         }
-        if(StringUtils.isNotBlank(host.getProtocol().getDefaultHostname())
-                && host.getHostname().endsWith(host.getProtocol().getDefaultHostname())) {
-            // The user specified a DNS bucket endpoint. Connect to the default hostname instead.
-            configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
-            configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
-        }
-        else {
-            // Standard configuration
-            configuration.setProperty("s3service.s3-endpoint", new PunycodeConverter().convert(host.getHostname()));
-            configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
-            configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
-        }
+        configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
+        configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
-            configuration.setProperty("s3service.s3-endpoint-virtual-path", PathNormalizer.normalize(host.getProtocol().getContext()));
+            configuration.setProperty("s3service.s3-endpoint-virtual-path",
+                    PathNormalizer.normalize(host.getProtocol().getContext()));
         }
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
         if(host.getProtocol().isSecure()) {

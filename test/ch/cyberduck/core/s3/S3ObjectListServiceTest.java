@@ -86,7 +86,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     }
 
     @Test
-    public void testListAnon() throws Exception {
+    public void testListCnameAnonymous() throws Exception {
         final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
@@ -95,5 +95,43 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         final AttributedList<Path> list
                 = new S3ObjectListService(session).list(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
+        assertTrue(list.contains(new Path("/dist.springframework.org/release", Path.DIRECTORY_TYPE).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/milestone", Path.DIRECTORY_TYPE).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/snapshot", Path.DIRECTORY_TYPE).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/robots.txt", Path.FILE_TYPE).getReference()));
+        session.close();
+    }
+
+    @Test
+    public void testListBuckenameAnonymous() throws Exception {
+        final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org.s3.amazonaws.com", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        final AttributedList<Path> list
+                = new S3ObjectListService(session).list(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
+        assertFalse(list.isEmpty());
+        assertTrue(list.contains(new Path("/dist.springframework.org/release", Path.DIRECTORY_TYPE).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/milestone", Path.DIRECTORY_TYPE).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/snapshot", Path.DIRECTORY_TYPE).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/robots.txt", Path.FILE_TYPE).getReference()));
+        session.close();
+    }
+
+    @Test
+    public void testListDefaultPath() throws Exception {
+        final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org.s3.amazonaws.com", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        host.setDefaultPath("/dist.springframework.org/release");
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        assertEquals(new Path("/dist.springframework.org/release", Path.DIRECTORY_TYPE), session.home());
+        final AttributedList<Path> list
+                = new S3ObjectListService(session).list(session.home(), new DisabledListProgressListener());
+        assertFalse(list.isEmpty());
+        assertTrue(list.contains(new Path("/dist.springframework.org/release/SWF", Path.DIRECTORY_TYPE).getReference()));
+        session.close();
     }
 }

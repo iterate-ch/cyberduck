@@ -1,6 +1,14 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.features.AclPermission;
@@ -48,40 +56,6 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(session.workdir());
         session.close();
         assertFalse(session.isConnected());
-    }
-
-    @Test
-    public void testConnectCnameAnonymous() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
-        ));
-        final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.workdir());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
-    }
-
-    @Test
-    public void testConnectBuckenameAnonymous() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org.s3.amazonaws.com", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
-        ));
-        final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.workdir());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
     }
 
     @Test
