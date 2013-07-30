@@ -30,7 +30,6 @@ import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.GSWebsiteConfig;
@@ -104,7 +103,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             if(distribution.isEnabled()) {
                 String suffix = "index.html";
                 if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
-                    suffix = FilenameUtils.getName(distribution.getIndexDocument());
+                    suffix = Path.getName(distribution.getIndexDocument());
                 }
                 // Enable website endpoint
                 session.getClient().setWebsiteConfigImpl(container.getName(), new GSWebsiteConfig(suffix));

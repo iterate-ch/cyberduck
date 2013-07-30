@@ -30,7 +30,6 @@ import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
@@ -124,7 +123,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 if(distribution.isEnabled()) {
                     String suffix = "index.html";
                     if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
-                        suffix = FilenameUtils.getName(distribution.getIndexDocument());
+                        suffix = Path.getName(distribution.getIndexDocument());
                     }
                     // Enable website endpoint
                     session.getClient().setWebsiteConfig(container.getName(), new S3WebsiteConfig(suffix));

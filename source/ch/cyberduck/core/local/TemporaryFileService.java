@@ -24,8 +24,6 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 
-import org.apache.commons.io.FilenameUtils;
-
 import java.io.File;
 import java.util.UUID;
 
@@ -57,6 +55,6 @@ public class TemporaryFileService {
         final Local folder = LocalFactory.createLocal(
                 new File(Preferences.instance().getProperty("tmp.dir"),
                         uid + String.valueOf(Path.DELIMITER) + file.getParent().getAbsolute()));
-        return LocalFactory.createLocal(folder, FilenameUtils.getName(new DefaultPathReference(file).unique()));
+        return LocalFactory.createLocal(folder, Path.getName(new DefaultPathReference(file).unique()));
     }
 }
