@@ -3200,7 +3200,7 @@ public class BrowserController extends WindowController
                     @Override
                     public Boolean run() throws BackgroundException {
                         final Compress feature = session.getFeature(Compress.class, null);
-                        feature.archive(archive, changed, this);
+                        feature.archive(archive, workdir, changed, this);
                         return true;
                     }
 
@@ -3212,7 +3212,7 @@ public class BrowserController extends WindowController
 
                     @Override
                     public String getActivity() {
-                        return archive.getCompressCommand(changed);
+                        return archive.getCompressCommand(workdir, changed);
                     }
                 });
             }
