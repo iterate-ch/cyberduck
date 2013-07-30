@@ -12,12 +12,7 @@ public class CacheTest extends AbstractTestCase {
     @Test
     public void testLookup() throws Exception {
         Cache cache = new Cache();
-        assertNull(cache.lookup(new PathReference() {
-            @Override
-            public Object unique() {
-                return new Object();
-            }
-        }));
+        assertNull(cache.lookup(new DefaultPathReference(new Path("/", Path.DIRECTORY_TYPE))));
         final Object u = new Object();
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path file = new Path("name", Path.FILE_TYPE);
@@ -35,37 +30,16 @@ public class CacheTest extends AbstractTestCase {
     public void testIsEmpty() throws Exception {
         Cache cache = new Cache();
         assertTrue(cache.isEmpty());
-        cache.put(new PathReference() {
-            @Override
-            public Object unique() {
-                return new Object();
-            }
-        }, new AttributedList<Path>());
+        cache.put(new DefaultPathReference(new Path("/", Path.DIRECTORY_TYPE)), new AttributedList<Path>());
         assertFalse(cache.isEmpty());
     }
 
     @Test
     public void testContainsKey() throws Exception {
         Cache cache = new Cache();
-        final Object u = new Object();
-        assertFalse(cache.containsKey(new PathReference() {
-            @Override
-            public Object unique() {
-                return u;
-            }
-        }));
-        cache.put(new PathReference() {
-            @Override
-            public Object unique() {
-                return u;
-            }
-        }, new AttributedList<Path>());
-        final PathReference reference = new PathReference() {
-            @Override
-            public Object unique() {
-                return u;
-            }
-        };
+        assertFalse(cache.containsKey(new DefaultPathReference(new Path("/", Path.DIRECTORY_TYPE))));
+        cache.put(new DefaultPathReference(new Path("/", Path.DIRECTORY_TYPE)), new AttributedList<Path>());
+        final PathReference reference = new DefaultPathReference(new Path("/", Path.DIRECTORY_TYPE));
         assertTrue(cache.containsKey(reference));
         assertTrue(cache.isCached(reference));
     }
@@ -74,14 +48,7 @@ public class CacheTest extends AbstractTestCase {
     public void testInvalidate() throws Exception {
         Cache cache = new Cache();
         final AttributedList<Path> list = new AttributedList<Path>();
-        final PathReference reference = new PathReference() {
-            final Object o = new Object();
-
-            @Override
-            public Object unique() {
-                return o;
-            }
-        };
+        final PathReference reference = new DefaultPathReference(new Path("/t", Path.DIRECTORY_TYPE));
         cache.put(reference, list);
         assertFalse(cache.get(reference).attributes().isInvalid());
         cache.invalidate(reference);
