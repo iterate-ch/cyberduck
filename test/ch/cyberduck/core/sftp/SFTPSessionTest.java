@@ -42,7 +42,6 @@ public class SFTPSessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertTrue(session.isSecured());
         assertNotNull(session.workdir());
-        assertFalse(session.cache().isEmpty());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
