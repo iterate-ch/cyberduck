@@ -1918,7 +1918,6 @@ lib/ext/junit-4.11.jar -text svneol=unset#application/jar
 lib/ext/nunit.framework.dll -text
 lib/ext/sonar-ant-task-2.1.jar -text svneol=unset#application/jar
 lib/ganymed-ssh-2-260.jar -text
-lib/google-collect-1.0.jar -text
 lib/httpclient-4.2.5.jar -text svneol=unset#application/zip
 lib/httpcore-4.2.4.jar -text svneol=unset#application/zip
 lib/httpmime-4.2.5.jar -text svneol=unset#application/x-gzip

@@ -29,12 +29,11 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
 
 import java.text.MessageFormat;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
 
 /**
  * @version $Id$
@@ -120,7 +119,7 @@ public class S3MultipleDeleteFeature implements Delete {
             }
             else {
                 // Request contains a list of up to 1000 keys that you want to delete
-                for(List<ObjectKeyAndVersion> sub : Lists.partition(keys, 1000)) {
+                for(List<ObjectKeyAndVersion> sub : new Partition<ObjectKeyAndVersion>(keys, 1000)) {
                     session.getClient().deleteMultipleObjects(container.getName(),
                             sub.toArray(new ObjectKeyAndVersion[sub.size()]),
                             true);
@@ -132,4 +131,31 @@ public class S3MultipleDeleteFeature implements Delete {
         }
     }
 
+    private static class Partition<T> extends AbstractList<List<T>> {
+        final List<T> list;
+        final int size;
+
+        Partition(List<T> list, int size) {
+            this.list = list;
+            this.size = size;
+        }
+
+        @Override
+        public List<T> get(int index) {
+            int listSize = size();
+            int start = index * size;
+            int end = Math.min(start + size, list.size());
+            return list.subList(start, end);
+        }
+
+        @Override
+        public int size() {
+            return (list.size() + size - 1) / size;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return list.isEmpty();
+        }
+    }
 }
