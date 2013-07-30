@@ -33,10 +33,6 @@ public class NamedThreadFactory implements ThreadFactory {
 
     private String name;
 
-    public NamedThreadFactory() {
-        this("background");
-    }
-
     public NamedThreadFactory(String name) {
         this.name = name;
     }

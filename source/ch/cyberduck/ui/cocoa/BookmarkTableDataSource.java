@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
@@ -87,6 +88,8 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     private CollectionListener<Host> listener;
 
+    private ScheduledThreadPool timerPool = new ScheduledThreadPool();
+
     public BookmarkTableDataSource(final BrowserController controller) {
         this.controller = controller;
     }
@@ -146,7 +149,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                             }
                         });
                     }
-                }, 1, TimeUnit.SECONDS);
+                }, 1L, TimeUnit.SECONDS);
             }
         });
         this.setFilter(null);

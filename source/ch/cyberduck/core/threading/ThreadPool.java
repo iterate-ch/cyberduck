@@ -32,7 +32,7 @@ import java.util.concurrent.ThreadFactory;
 public class ThreadPool {
 
     private final ThreadFactory threadFactory
-            = new NamedThreadFactory();
+            = new NamedThreadFactory("background");
 
     private final ExecutorService pool;
 

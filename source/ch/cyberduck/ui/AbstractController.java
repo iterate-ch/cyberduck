@@ -25,19 +25,14 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -50,9 +45,6 @@ public abstract class AbstractController implements Controller {
 
     private ThreadPool concurrentExecutor
             = new ThreadPool(Integer.MAX_VALUE);
-
-    protected ScheduledExecutorService timerPool
-            = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer"));
 
     /**
      * Does wait for main action to return before continuing the caller thread.
@@ -115,11 +107,6 @@ public abstract class AbstractController implements Controller {
         return null;
     }
 
-    @Override
-    public ScheduledFuture schedule(final Runnable runnable, final Long period, final TimeUnit unit) {
-        return timerPool.scheduleAtFixedRate(runnable, 0L, period, unit);
-    }
-
     public void openUrl(final DescriptiveUrl url) {
         if(url.equals(DescriptiveUrl.EMPTY)) {
             return;
@@ -137,7 +124,6 @@ public abstract class AbstractController implements Controller {
     }
 
     protected void invalidate() {
-        timerPool.shutdownNow();
         singleExecutor.shutdown();
     }
 

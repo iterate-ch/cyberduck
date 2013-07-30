@@ -25,6 +25,7 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.AlertCallback;
+import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -66,6 +67,8 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
      */
     private ScheduledFuture progressTimer;
 
+    private ScheduledThreadPool timerPool = new ScheduledThreadPool();
+
     private Controller controller;
 
     private TransferListener transferListener;
@@ -97,7 +100,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
     public Boolean run() throws BackgroundException {
         final String lock = sleep.lock();
         try {
-            progressTimer = controller.schedule(new Runnable() {
+            progressTimer = timerPool.schedule(new Runnable() {
                 @Override
                 public void run() {
                     final TransferProgress status = meter.getStatus();
@@ -117,6 +120,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
     public void finish() {
         super.finish();
         transferListener.stop(transfer);
+        timerPool.shutdown();
     }
 
     @Override

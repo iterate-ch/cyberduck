@@ -22,8 +22,6 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -57,12 +55,4 @@ public interface Controller {
      * @param wait     Block calling thread
      */
     void invoke(final MainAction runnable, final boolean wait);
-
-    /**
-     * Schedule at fixed rate
-     *
-     * @param runnable Action
-     * @return Scheduled
-     */
-    ScheduledFuture schedule(Runnable runnable, Long period, TimeUnit unit);
 }

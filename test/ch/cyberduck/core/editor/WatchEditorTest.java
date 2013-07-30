@@ -20,10 +20,10 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.Controller;
@@ -31,8 +31,6 @@ import ch.cyberduck.ui.Controller;
 import org.junit.Test;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -61,15 +59,10 @@ public class WatchEditorTest extends AbstractTestCase {
             public void invoke(final MainAction runnable, final boolean wait) {
                 //
             }
-
-            @Override
-            public ScheduledFuture schedule(final Runnable runnable, final Long period, final TimeUnit unit) {
-                return null;
-            }
         }, new FTPSession(new Host("h")), new Application("com.apple.TextEdit", null), path);
         assertEquals(new Application("com.apple.TextEdit", null), editor.getApplication());
-        assertEquals("t", editor.edited.getName());
-        final Local local = editor.edited.getLocal();
+        assertEquals("t", editor.getEdited().getName());
+        final Local local = editor.getEdited().getLocal();
         assertEquals("t-1", local.getName());
         assertEquals("f2", local.getParent().getName());
         assertEquals("f1", local.getParent().getParent().getName());
