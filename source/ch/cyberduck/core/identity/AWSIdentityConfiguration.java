@@ -1,5 +1,22 @@
 package ch.cyberduck.core.identity;
 
+/*
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ */
+
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -83,7 +100,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     }
 
     @Override
-    public void deleteUser(final String username) throws BackgroundException {
+    public void delete(final String username) throws BackgroundException {
         this.authenticated(new Callable<Void>() {
             @Override
             public Void call() throws BackgroundException {
@@ -114,29 +131,19 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     }
 
     @Override
-    public Credentials getUserCredentials(final String username) {
+    public Credentials getCredentials(final String username) {
         // Resolve access key id
-        final String id = Preferences.instance().getProperty(String.format("%s%s", prefix, username));
-        if(null == id) {
+        final String key = Preferences.instance().getProperty(String.format("%s%s", prefix, username));
+        if(null == key) {
             log.warn(String.format("No access key found for user %s", username));
             return null;
         }
-        return new Credentials(id, PasswordStoreFactory.get().getPassword(host.getProtocol().getScheme(), host.getPort(),
-                host.getHostname(), id)) {
-            @Override
-            public String getUsernamePlaceholder() {
-                return host.getProtocol().getUsernamePlaceholder();
-            }
-
-            @Override
-            public String getPasswordPlaceholder() {
-                return host.getProtocol().getPasswordPlaceholder();
-            }
-        };
+        return new Credentials(key, PasswordStoreFactory.get().getPassword(host.getProtocol().getScheme(), host.getPort(),
+                host.getHostname(), key));
     }
 
     @Override
-    public void createUser(final String username, final String policy) throws BackgroundException {
+    public void create(final String username, final String policy) throws BackgroundException {
         this.authenticated(new Callable<Void>() {
             @Override
             public Void call() throws BackgroundException {

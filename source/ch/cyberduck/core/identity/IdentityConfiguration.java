@@ -1,5 +1,22 @@
 package ch.cyberduck.core.identity;
 
+/*
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ */
+
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -13,15 +30,15 @@ public interface IdentityConfiguration {
      *
      * @param username Username
      */
-    void deleteUser(final String username) throws BackgroundException;
+    void delete(final String username) throws BackgroundException;
 
     /**
-     * Verify user exsits and get credentials from keychain
+     * Verify user exists and find access key and secret key in keychain
      *
-     * @param username Username
-     * @return Access credentials for user
+     * @param username Username Username assigned such as iam.qloudstat
+     * @return Access credentials for user or null
      */
-    Credentials getUserCredentials(String username);
+    Credentials getCredentials(String username);
 
     /**
      * Create new user and create access credentials
@@ -29,5 +46,5 @@ public interface IdentityConfiguration {
      * @param username Username
      * @param policy   Policy language document
      */
-    void createUser(String username, String policy) throws BackgroundException;
+    void create(String username, String policy) throws BackgroundException;
 }

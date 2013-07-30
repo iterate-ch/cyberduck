@@ -491,11 +491,11 @@ public class InfoController extends ToolbarWindowController {
                     final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class, prompt);
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                        iam.createUser(controller.getSession().getFeature(AnalyticsProvider.class,
+                        iam.create(controller.getSession().getFeature(AnalyticsProvider.class,
                                 prompt).getName(), document);
                     }
                     else {
-                        iam.deleteUser(controller.getSession().getFeature(AnalyticsProvider.class,
+                        iam.delete(controller.getSession().getFeature(AnalyticsProvider.class,
                                 prompt).getName());
                     }
                     return true;
@@ -1905,7 +1905,7 @@ public class InfoController extends ToolbarWindowController {
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
-        if(analytics && ObjectUtils.equals(controller.getSession().getFeature(IdentityConfiguration.class, prompt).getUserCredentials(
+        if(analytics && ObjectUtils.equals(controller.getSession().getFeature(IdentityConfiguration.class, prompt).getCredentials(
                 controller.getSession().getFeature(AnalyticsProvider.class, prompt).getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             bucketAnalyticsButton.setEnabled(false);
@@ -2011,7 +2011,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(session.getFeature(AnalyticsProvider.class, prompt) != null) {
                         if(session.getFeature(IdentityConfiguration.class, prompt) != null) {
-                            credentials = session.getFeature(IdentityConfiguration.class, prompt).getUserCredentials(
+                            credentials = session.getFeature(IdentityConfiguration.class, prompt).getCredentials(
                                     session.getFeature(AnalyticsProvider.class, prompt).getName());
                         }
                     }
@@ -2416,7 +2416,7 @@ public class InfoController extends ToolbarWindowController {
                 distributionAnalyticsButton.setEnabled(false);
             }
             else {
-                if(ObjectUtils.equals(identityFeature.getUserCredentials(analyticsFeature.getName()), credentials)) {
+                if(ObjectUtils.equals(identityFeature.getCredentials(analyticsFeature.getName()), credentials)) {
                     // No need to create new IAM credentials when same as session credentials
                     distributionAnalyticsButton.setEnabled(false);
                 }
@@ -2569,7 +2569,7 @@ public class InfoController extends ToolbarWindowController {
                     final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method, prompt);
                     final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method, prompt);
                     if(analyticsFeature != null && identityFeature != null) {
-                        final Credentials credentials = identityFeature.getUserCredentials(analyticsFeature.getName());
+                        final Credentials credentials = identityFeature.getCredentials(analyticsFeature.getName());
                         distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
                         if(credentials != null) {
                             distributionAnalyticsSetupUrlField.setAttributedStringValue(
@@ -2670,10 +2670,10 @@ public class InfoController extends ToolbarWindowController {
                     final Session<?> session = controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                        session.getFeature(IdentityConfiguration.class, prompt).createUser(session.getFeature(AnalyticsProvider.class, prompt).getName(), document);
+                        session.getFeature(IdentityConfiguration.class, prompt).create(session.getFeature(AnalyticsProvider.class, prompt).getName(), document);
                     }
                     else {
-                        session.getFeature(IdentityConfiguration.class, prompt).deleteUser(session.getFeature(AnalyticsProvider.class, prompt).getName());
+                        session.getFeature(IdentityConfiguration.class, prompt).delete(session.getFeature(AnalyticsProvider.class, prompt).getName());
                     }
                     return true;
                 }
