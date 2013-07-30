@@ -18,8 +18,8 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.HostnameConfigurator;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 
 import org.apache.log4j.Logger;
@@ -37,7 +37,7 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
 
     public OpenSSHHostnameConfigurator() {
         this(new OpenSshConfig(
-                new File(LocalFactory.createLocal(AbstractPath.HOME, ".ssh/config").getAbsolute())));
+                new File(LocalFactory.createLocal(Local.HOME, ".ssh/config").getAbsolute())));
     }
 
     public OpenSSHHostnameConfigurator(OpenSshConfig configuration) {

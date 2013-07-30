@@ -18,12 +18,11 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
 
 import org.apache.commons.lang.StringUtils;
 import org.spearce.jgit.transport.OpenSshConfig;
@@ -39,7 +38,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
 
     public OpenSSHCredentialsConfigurator() {
         this(new OpenSshConfig(
-                new File(LocalFactory.createLocal(AbstractPath.HOME, ".ssh/config").getAbsolute())));
+                new File(LocalFactory.createLocal(Local.HOME, ".ssh/config").getAbsolute())));
     }
 
     public OpenSSHCredentialsConfigurator(OpenSshConfig configuration) {
