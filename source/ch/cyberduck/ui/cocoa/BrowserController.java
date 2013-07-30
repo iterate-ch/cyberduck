@@ -2484,6 +2484,7 @@ public class BrowserController extends WindowController
 
             @Override
             public void cleanup() {
+                super.cleanup();
                 reloadData(Collections.singletonList(selected), false);
             }
         });
@@ -3207,6 +3208,7 @@ public class BrowserController extends WindowController
 
                     @Override
                     public void cleanup() {
+                        super.cleanup();
                         // Update Selection
                         reloadData(changed, Collections.singletonList(archive.getArchive(changed)));
                     }
@@ -3242,6 +3244,7 @@ public class BrowserController extends WindowController
 
                         @Override
                         public void cleanup() {
+                            super.cleanup();
                             expanded.addAll(archive.getExpanded(Collections.singletonList(s)));
                             // Update Selection
                             reloadData(selected, expanded);
