@@ -17,15 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
@@ -91,5 +83,17 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         final Path container = new Path("notfound.cyberduck.ch", Path.VOLUME_TYPE);
         new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         session.close();
+    }
+
+    @Test
+    public void testListAnon() throws Exception {
+        final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        final AttributedList<Path> list
+                = new S3ObjectListService(session).list(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
+        assertFalse(list.isEmpty());
     }
 }

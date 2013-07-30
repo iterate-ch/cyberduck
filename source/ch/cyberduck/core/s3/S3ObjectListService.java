@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -82,18 +83,26 @@ public class S3ObjectListService implements ListService {
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
             final AttributedList<Path> children = new AttributedList<Path>();
-            children.addAll(this.listObjects(containerService.getContainer(file),
+            final Path container = containerService.getContainer(file);
+            children.addAll(this.listObjects(container,
                     file, prefix, String.valueOf(Path.DELIMITER), listener));
             if(Preferences.instance().getBoolean("s3.revisions.enable")) {
-                if(new S3VersioningFeature(session).getConfiguration(containerService.getContainer(file)).isEnabled()) {
+                boolean versioning = false;
+                try {
+                    versioning = new S3VersioningFeature(session).getConfiguration(container).isEnabled();
+                }
+                catch(LoginFailureException e) {
+                    log.warn(String.format("Missing permission to read versioning configuration for %s %s", container, e.getMessage()));
+                }
+                if(versioning) {
                     String priorLastKey = null;
                     String priorLastVersionId = null;
                     do {
                         final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                                containerService.getContainer(file).getName(), prefix, String.valueOf(Path.DELIMITER),
+                                container.getName(), prefix, String.valueOf(Path.DELIMITER),
                                 Preferences.instance().getInteger("s3.listing.chunksize"),
                                 priorLastKey, priorLastVersionId, true);
-                        children.addAll(this.listVersions(containerService.getContainer(file), file,
+                        children.addAll(this.listVersions(container, file,
                                 Arrays.asList(chunk.getItems())));
                         priorLastKey = chunk.getNextKeyMarker();
                         priorLastVersionId = chunk.getNextVersionIdMarker();
