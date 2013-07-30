@@ -75,9 +75,12 @@ public abstract class WriteAclWorker extends Worker<Void> {
     }
 
     protected void write(final Path file) throws BackgroundException {
-        session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                file.getName(), acl));
-        feature.setPermission(file, acl);
+        if(!acl.equals(file.attributes().getAcl())) {
+            session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                    file.getName(), acl));
+            feature.setPermission(file, acl);
+            file.attributes().setAcl(acl);
+        }
         if(file.attributes().isDirectory()) {
             if(recursive) {
                 for(Path child : session.list(file, new DisabledListProgressListener())) {
