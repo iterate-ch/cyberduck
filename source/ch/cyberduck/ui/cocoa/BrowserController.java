@@ -52,6 +52,7 @@ import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.action.DeleteWorker;
+import ch.cyberduck.ui.action.MountWorker;
 import ch.cyberduck.ui.action.MoveWorker;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
@@ -3376,10 +3377,34 @@ public class BrowserController extends WindowController
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
-
-                background(new BrowserBackgroundAction(BrowserController.this) {
-                    private Path workdir;
-
+                background(new WorkerBackgroundAction<Path>(BrowserController.this,
+                        new MountWorker(session, new DisabledListProgressListener()) {
+                            @Override
+                            public void cleanup(final Path workdir) {
+                                if(null == workdir) {
+                                    unmount();
+                                }
+                                else {
+                                    // Clear second level cache
+                                    browserListModel.clear();
+                                    browserOutlineModel.clear();
+                                    // Update status icon
+                                    bookmarkTable.setNeedsDisplay();
+                                    // Set the working directory
+                                    setWorkdir(workdir);
+                                    // Close bookmarks
+                                    selectBrowser(Preferences.instance().getInteger("browser.view"));
+                                    // Set the window title
+                                    window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(host).getAbsolute());
+                                    if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                                        window.setDocumentEdited(true);
+                                    }
+                                    securityLabel.setImage(session.isSecured() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
+                                            : IconCacheFactory.<NSImage>get().iconNamed("unlocked.tiff"));
+                                    securityLabel.setEnabled(session instanceof SSLSession);
+                                }
+                            }
+                        }) {
                     @Override
                     public void init() {
                         super.init();
@@ -3387,46 +3412,6 @@ public class BrowserController extends WindowController
                         window.setRepresentedFilename(StringUtils.EMPTY);
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
-                    }
-
-                    @Override
-                    public Boolean run() throws BackgroundException {
-                        // Mount this session
-                        workdir = session.mount(new DisabledListProgressListener());
-                        return true;
-                    }
-
-                    @Override
-                    public void cleanup() {
-                        if(null == workdir) {
-                            unmount();
-                        }
-                        else {
-                            // Clear second level cache
-                            browserListModel.clear();
-                            browserOutlineModel.clear();
-                            // Update status icon
-                            bookmarkTable.setNeedsDisplay();
-                            // Set the working directory
-                            setWorkdir(workdir);
-                            // Close bookmarks
-                            selectBrowser(Preferences.instance().getInteger("browser.view"));
-                            // Set the window title
-                            window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(host).getAbsolute());
-                            if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                                window.setDocumentEdited(true);
-                            }
-                            securityLabel.setImage(session.isSecured() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
-                                    : IconCacheFactory.<NSImage>get().iconNamed("unlocked.tiff"));
-                            securityLabel.setEnabled(session instanceof SSLSession);
-                            super.cleanup();
-                        }
-                    }
-
-                    @Override
-                    public String getActivity() {
-                        return MessageFormat.format(LocaleFactory.localizedString("Mounting {0}", "Status"),
-                                host.getHostname());
                     }
                 });
             }

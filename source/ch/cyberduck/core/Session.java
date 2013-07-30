@@ -204,26 +204,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     }
 
     /**
-     * Mount the default path of the configured host or the home directory as returned by the server
-     * when not given.
-     */
-    public Path mount(final ListProgressListener listener) throws BackgroundException {
-        try {
-            final Path home = this.home();
-            // Retrieve directory listing of default path
-            cache.put(home.getReference(), this.list(home, listener));
-            return home;
-        }
-        catch(NotfoundException e) {
-            // The default path does not exist or is not readable due to possible permission issues
-            // Fallback to default working directory
-            final Path workdir = this.workdir();
-            cache.put(workdir.getReference(), this.list(workdir, listener));
-            return workdir;
-        }
-    }
-
-    /**
      * @return Home directory
      */
     public Path home() throws BackgroundException {
