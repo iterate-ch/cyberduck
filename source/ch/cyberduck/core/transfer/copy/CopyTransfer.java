@@ -194,7 +194,6 @@ public class CopyTransfer extends Transfer {
                 if(feature != null) {
                     feature.copy(source, copy);
                     addTransferred(source.attributes().getSize());
-                    status.setComplete();
                 }
                 else {
                     this.copy(source, copy, bandwidth, new AbstractStreamListener() {

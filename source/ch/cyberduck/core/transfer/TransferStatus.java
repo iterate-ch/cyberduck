@@ -60,25 +60,16 @@ public class TransferStatus {
     private boolean canceled = false;
 
     /**
-     * Indicates that the last action has been completed.
-     */
-    private boolean complete = false;
-
-    /**
      * A state variable to mark this path if the path is explicitly selected
      * for inclusion in the transfer prompt
      */
     private boolean selected = true;
 
     public void setComplete() {
-        complete = true;
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Status set to complete with %d bytes", current));
-        }
     }
 
     public boolean isComplete() {
-        return complete;
+        return current == length;
     }
 
     /**
@@ -122,6 +113,11 @@ public class TransferStatus {
 
     public void setLength(final long length) {
         this.length = length;
+    }
+
+    public TransferStatus length(final long length) {
+        this.length = length;
+        return this;
     }
 
     public TransferStatus selected(final boolean selected) {
@@ -184,9 +180,6 @@ public class TransferStatus {
         if(canceled != that.canceled) {
             return false;
         }
-        if(complete != that.complete) {
-            return false;
-        }
         if(current != that.current) {
             return false;
         }
@@ -211,7 +204,6 @@ public class TransferStatus {
         result = 31 * result + (int) (current ^ (current >>> 32));
         result = 31 * result + (int) (length ^ (length >>> 32));
         result = 31 * result + (canceled ? 1 : 0);
-        result = 31 * result + (complete ? 1 : 0);
         result = 31 * result + (selected ? 1 : 0);
         result = 31 * result + (exists ? 1 : 0);
         return result;
@@ -225,7 +217,6 @@ public class TransferStatus {
         sb.append(", current=").append(current);
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);
-        sb.append(", complete=").append(complete);
         sb.append(", selected=").append(selected);
         sb.append(", exists=").append(exists);
         sb.append('}');

@@ -187,7 +187,6 @@ public class DownloadTransfer extends Transfer {
                 log.debug(String.format("Create symbolic link from %s to %s", file.getLocal(), target));
             }
             file.getLocal().symlink(target);
-            status.setComplete();
         }
         else if(file.attributes().isFile()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),

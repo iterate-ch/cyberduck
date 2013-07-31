@@ -75,7 +75,11 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public void complete(final Session<?> session, final Path source, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void complete(final Session<?> session, final Path source, final TransferOptions options,
+                         final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Complete %s with status %s", source.getAbsolute(), status));
+        }
         if(status.isComplete()) {
             final UnixPermission unix = destination.getFeature(UnixPermission.class, null);
             if(unix != null) {

@@ -66,8 +66,6 @@ public class StreamCopier {
                     if(log.isDebugEnabled()) {
                         log.debug("End of file reached");
                     }
-                    // End of file
-                    status.setComplete();
                     break;
                 }
                 else {
@@ -79,11 +77,6 @@ public class StreamCopier {
                     if(limit == bytesTransferred) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Limit %d reached reading from stream", limit));
-                        }
-                        // Part reached
-                        if(0 == bi.available()) {
-                            // End of file
-                            status.setComplete();
                         }
                         break;
                     }

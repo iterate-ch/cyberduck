@@ -177,7 +177,6 @@ public class UploadTransfer extends Transfer {
                 log.debug(String.format("Create symbolic link from %s to %s", file, target));
             }
             symlink.symlink(file, target);
-            status.setComplete();
         }
         else if(file.attributes().isFile()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),

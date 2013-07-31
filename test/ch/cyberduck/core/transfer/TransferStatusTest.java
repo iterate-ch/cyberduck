@@ -20,8 +20,7 @@ package ch.cyberduck.core.transfer;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TransferStatusTest {
 
@@ -38,7 +37,9 @@ public class TransferStatusTest {
     @Test
     public void testSetComplete() throws Exception {
         TransferStatus status = new TransferStatus();
-        status.setComplete();
+        status.setLength(1L);
+        assertFalse(status.isComplete());
+        status.setCurrent(1L);
         assertTrue(status.isComplete());
     }
 

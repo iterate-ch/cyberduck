@@ -389,7 +389,6 @@ public abstract class Transfer implements Serializable {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skip file %s with status %s", file, status));
             }
-            status.setComplete();
             return;
         }
         // Transfer
@@ -404,18 +403,10 @@ public abstract class Transfer implements Serializable {
             }
         }
         if(file.attributes().isDirectory()) {
-            boolean failure = false;
             for(Path child : this.cache().get(file.getReference())) {
                 // Recursive
                 this.transfer(child, filter, options);
-                if(!table.get(child).isComplete()) {
-                    failure = true;
-                }
                 table.remove(child);
-            }
-            // Set completion status
-            if(!failure) {
-                status.setComplete();
             }
             // Post process of directory.
             try {
