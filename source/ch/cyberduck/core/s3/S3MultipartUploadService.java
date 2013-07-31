@@ -88,6 +88,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                        final TransferStatus status) throws BackgroundException {
         try {
             final S3TouchFeature touch = new S3TouchFeature(session);
+            // Placeholder
             touch.touch(file);
             MultipartUpload multipart = null;
             if(status.isAppend()) {
@@ -158,7 +159,9 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                     final long length = Math.min(Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     if(!skip) {
                         // Submit to queue
-                        parts.add(this.submitPart(file, throttle, listener, status, multipart, partNumber, marker, length));
+                        final Future<MultipartPart> multipartPartFuture = this.submitPart(file, throttle, listener,
+                                status, multipart, partNumber, marker, length);
+                        parts.add(multipartPartFuture);
                     }
                     remaining -= length;
                     marker += length;
@@ -183,6 +186,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                     }
                 }
                 if(status.isComplete()) {
+                    // Combining all the given parts into the final object.
                     session.getClient().multipartCompleteUpload(multipart, completed);
                 }
             }
