@@ -39,7 +39,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final S3MultipartUploadService m = new S3MultipartUploadService(session);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
@@ -64,7 +64,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final S3MultipartUploadService m = new S3MultipartUploadService(session);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         final TransferStatus status = new TransferStatus();
@@ -81,7 +81,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final S3MultipartUploadService m = new S3MultipartUploadService(session);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));

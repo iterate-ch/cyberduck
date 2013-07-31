@@ -56,12 +56,6 @@ public class S3MultipartUploadService extends S3SingleUploadService {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
 
     /**
-     * Default minimum part size for upload parts.
-     */
-    private static final int DEFAULT_MINIMUM_UPLOAD_PART_SIZE =
-            Preferences.instance().getInteger("s3.upload.multipart.size");
-
-    /**
      * The maximum allowed parts in a multipart upload.
      */
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
@@ -78,16 +72,23 @@ public class S3MultipartUploadService extends S3SingleUploadService {
     private ThreadPool pool = new ThreadPool(
             Preferences.instance().getInteger("s3.upload.multipart.concurency"));
 
+    /**
+     * A split smaller than 5M is not allowed
+     */
+    private Long partsize;
 
-    public S3MultipartUploadService(final S3Session session) {
+    public S3MultipartUploadService(final S3Session session, final Long partsize) {
         super(session);
         this.session = session;
+        this.partsize = partsize;
     }
 
     @Override
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         try {
+            final S3TouchFeature touch = new S3TouchFeature(session);
+            touch.touch(file);
             MultipartUpload multipart = null;
             if(status.isAppend()) {
                 // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
@@ -138,13 +139,8 @@ public class S3MultipartUploadService extends S3SingleUploadService {
             }
             try {
                 final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
-
-                final long defaultPartSize = Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS),
-                        DEFAULT_MINIMUM_UPLOAD_PART_SIZE);
-
                 long remaining = status.getLength();
                 long marker = 0;
-
                 for(int partNumber = 1; remaining > 0; partNumber++) {
                     boolean skip = false;
                     if(status.isAppend()) {
@@ -159,7 +155,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                         }
                     }
                     // Last part can be less than 5 MB. Adjust part size.
-                    final long length = Math.min(defaultPartSize, remaining);
+                    final long length = Math.min(Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     if(!skip) {
                         // Submit to queue
                         parts.add(this.submitPart(file, throttle, listener, status, multipart, partNumber, marker, length));
@@ -191,11 +187,6 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                 }
             }
             finally {
-                if(!status.isComplete()) {
-                    // Cancel all previous parts
-                    log.info(String.format("Cancel multipart upload %s", multipart.getUploadId()));
-                    session.getClient().multipartAbortUpload(multipart);
-                }
                 // Cancel future tasks
                 pool.shutdown();
             }

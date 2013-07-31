@@ -1,5 +1,6 @@
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements
+- [Feature] Resumable multipart uploads (S3) (#6208)
 - [Feature] Bucket lifecycle configuration to archive objects in Glacier (S3) (#6830)
 - [Feature] Keystone (2.0) authentication support (OpenStack) (#6330)
 - [Feature] Multiple region support (OpenStack) (#6902)
@@ -13,3 +14,4 @@
 - [Bugfix] Authentication with none password (SFTP) (#7322)
 - [Bugfix] Interoperability issues (WebDAV) (#7227)
 - [Bugfix] Subsequent edit fails (#7248)
+- [Bugfix] Omit absolute paths in archives (ZIP, TAR) (#6644)
