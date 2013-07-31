@@ -221,7 +221,7 @@ public class TransferStatus {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("TransferStatus");
-        sb.append("{resume=").append(append);
+        sb.append("{append=").append(append);
         sb.append(", current=").append(current);
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);
