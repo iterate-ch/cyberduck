@@ -67,7 +67,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
      */
     private ScheduledFuture progressTimer;
 
-    private ScheduledThreadPool timerPool = new ScheduledThreadPool();
+    private ScheduledThreadPool timerPool;
 
     private TransferListener transferListener;
 
@@ -85,6 +85,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
         this.options = options;
         this.transferListener = transferListener;
         this.meter = new TransferSpeedometer(transfer);
+        this.timerPool = new ScheduledThreadPool();
     }
 
     @Override
@@ -97,6 +98,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
     public Boolean run() throws BackgroundException {
         final String lock = sleep.lock();
         try {
+            timerPool = new ScheduledThreadPool();
             progressTimer = timerPool.schedule(new Runnable() {
                 @Override
                 public void run() {
