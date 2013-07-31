@@ -556,12 +556,11 @@ public abstract class Preferences {
          * If set calculate MD5 sum of uploaded file and set metadata header Content-MD5
          */
         defaults.put("s3.upload.metadata.md5", String.valueOf(false));
-        defaults.put("s3.upload.multipart", String.valueOf(true));
         defaults.put("s3.upload.multipart.concurency", String.valueOf(5));
         /**
          * Threshold in bytes. Only use multipart uploads for files more than 5GB
          */
-        defaults.put("s3.upload.multipart.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
+        defaults.put("s3.upload.multipart.threshold", String.valueOf(1L * 1024L * 1024L * 1024L));
         defaults.put("s3.upload.multipart.size", String.valueOf(5L * 1024L * 1024L));
 
         /**
