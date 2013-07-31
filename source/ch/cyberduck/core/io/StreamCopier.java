@@ -104,9 +104,9 @@ public class StreamCopier {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skipping %d bytes", skipped));
             }
-            if(skipped < status.getCurrent()) {
+            if(skipped < offset) {
                 throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
-                        skipped, status.getCurrent()));
+                        skipped, offset));
             }
         }
     }
