@@ -20,7 +20,6 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -45,7 +44,6 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testList() throws Exception {
         final Host host = new Host(Protocol.FTP, "ftp.crushftp.com", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
