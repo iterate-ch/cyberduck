@@ -88,20 +88,4 @@ public class S3SessionTest extends AbstractTestCase {
         assertNull(o.getFeature(IdentityConfiguration.class, null));
         assertEquals(S3DefaultDeleteFeature.class, o.getFeature(Delete.class, null).getClass());
     }
-
-    @Test
-    public void testTouch() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
-        ));
-        final S3Session session = new S3Session(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new S3TouchFeature(session).touch(test);
-        assertTrue(session.exists(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
-        assertFalse(session.exists(test));
-        session.close();
-    }
 }
