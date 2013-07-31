@@ -45,7 +45,7 @@ public class ResumeFilter extends AbstractUploadFilter {
             if(parent.isExists()) {
                 if(session.exists(file)) {
                     final long size = this.getSize(session, file);
-                    if(file.getLocal().attributes().getSize() >= size) {
+                    if(size >= file.getLocal().attributes().getSize()) {
                         // No need to resume completed transfers
                         return false;
                     }
