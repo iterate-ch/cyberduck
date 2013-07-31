@@ -1,9 +1,11 @@
 package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import java.io.IOException;
 
@@ -23,7 +25,8 @@ public class DAVMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed) throws BackgroundException {
         try {
-            session.getClient().move(new DAVPathEncoder().encode(file), new DAVPathEncoder().encode(renamed));
+            session.getClient().move(new DAVPathEncoder().encode(file),
+                    new DefaultUrlProvider(session.getHost()).get(renamed).find(DescriptiveUrl.Type.provider).getUrl());
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot rename {0}", e, file);
