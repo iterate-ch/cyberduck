@@ -14,6 +14,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 
 import java.io.OutputStream;
@@ -290,20 +291,19 @@ public class UploadTransferTest extends AbstractTestCase {
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/" + name);
         local.touch();
         final OutputStream out = local.getOutputStream(false);
-        IOUtils.write("te", out);
+        final byte[] bytes = RandomStringUtils.random(1000).getBytes();
+        IOUtils.write(bytes, out);
         IOUtils.closeQuietly(out);
         final Transfer transfer = new UploadTransfer(session, test);
         transfer.prepare(test, new TransferStatus().exists(true),
                 new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())));
-        final TransferStatus directorystatus = new TransferStatus();
-        directorystatus.setExists(true);
-        assertEquals(directorystatus, transfer.getStatus(test));
+        assertEquals(new TransferStatus().exists(true), transfer.getStatus(test));
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(true);
         // Remote size
         expected.setCurrent(5L);
         // Local size
-        expected.setLength(2L);
+        expected.setLength(bytes.length);
         assertEquals(expected, transfer.getStatus(new Path("/transfer/" + name, Path.FILE_TYPE)));
         local.delete();
     }
