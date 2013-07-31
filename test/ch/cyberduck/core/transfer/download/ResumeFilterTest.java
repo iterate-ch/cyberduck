@@ -71,7 +71,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         };
         p.attributes().setSize(2L);
         final TransferStatus status = f.prepare(new NullSession(new Host("h")), p, new TransferStatus());
-        assertTrue(status.isResume());
+        assertTrue(status.isAppend());
         assertEquals(1L, status.getCurrent(), 0L);
     }
 
@@ -95,6 +95,6 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         });
         final TransferStatus status = f.prepare(new NullSession(new Host("h")), p, new TransferStatus());
-        assertFalse(status.isResume());
+        assertFalse(status.isAppend());
     }
 }

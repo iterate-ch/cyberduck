@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -26,7 +27,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3WriteFeature implements Write {
 
@@ -47,7 +48,7 @@ public class S3WriteFeature implements Write {
      * @return No Content-Range support
      */
     @Override
-    public boolean isResumable() {
-        return false;
+    public boolean append(final Path file) {
+        return file.getLocal().attributes().getSize() > Preferences.instance().getLong("s3.upload.multipart.threshold");
     }
 }

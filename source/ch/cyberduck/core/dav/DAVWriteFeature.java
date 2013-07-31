@@ -37,7 +37,7 @@ import java.util.Map;
 import com.github.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVWriteFeature implements Write {
 
@@ -50,7 +50,7 @@ public class DAVWriteFeature implements Write {
     @Override
     public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         final Map<String, String> headers = new HashMap<String, String>();
-        if(status.isResume()) {
+        if(status.isAppend()) {
             headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
                     + status.getCurrent()
                     + "-" + (status.getLength() - 1)
@@ -93,7 +93,7 @@ public class DAVWriteFeature implements Write {
     }
 
     @Override
-    public boolean isResumable() {
+    public boolean append(final Path file) {
         return true;
     }
 }

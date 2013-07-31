@@ -89,7 +89,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                        final TransferStatus status) throws BackgroundException {
         try {
             MultipartUpload multipart = null;
-            if(status.isResume()) {
+            if(status.isAppend()) {
                 // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
                 // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
                 // not yet been completed or aborted.
@@ -128,7 +128,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
             }
 
             final List<MultipartPart> completed;
-            if(status.isResume()) {
+            if(status.isAppend()) {
                 log.info(String.format("List completed parts of %s", multipart.getUploadId()));
                 // This operation lists the parts that have been uploaded for a specific multipart upload.
                 completed = session.getClient().multipartListParts(multipart);
@@ -136,7 +136,6 @@ public class S3MultipartUploadService extends S3SingleUploadService {
             else {
                 completed = new ArrayList<MultipartPart>();
             }
-
             try {
                 final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
 
@@ -148,7 +147,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
 
                 for(int partNumber = 1; remaining > 0; partNumber++) {
                     boolean skip = false;
-                    if(status.isResume()) {
+                    if(status.isAppend()) {
                         log.info(String.format("Determine if part %d can be skipped", partNumber));
                         for(MultipartPart c : completed) {
                             if(c.getPartNumber().equals(partNumber)) {
@@ -159,15 +158,12 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                             }
                         }
                     }
-
                     // Last part can be less than 5 MB. Adjust part size.
                     final long length = Math.min(defaultPartSize, remaining);
-
                     if(!skip) {
                         // Submit to queue
                         parts.add(this.submitPart(file, throttle, listener, status, multipart, partNumber, marker, length));
                     }
-
                     remaining -= length;
                     marker += length;
                 }

@@ -13,7 +13,7 @@ import java.io.InputStream;
 import ch.iterate.openstack.swift.exception.GenericException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftReadFeature implements Read {
 
@@ -29,7 +29,7 @@ public class SwiftReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            if(status.isResume()) {
+            if(status.isAppend()) {
                 return session.getClient().getObject(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file),
                         status.getCurrent(), status.getLength());

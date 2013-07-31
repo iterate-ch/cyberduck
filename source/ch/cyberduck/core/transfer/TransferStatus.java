@@ -42,7 +42,7 @@ public class TransferStatus {
     /**
      * Append to file
      */
-    private boolean resume = false;
+    private boolean append = false;
 
     /**
      * The number of transfered bytes. Must be less or equals size.
@@ -158,18 +158,18 @@ public class TransferStatus {
     /**
      * Mark this path with an append flag when transferred
      *
-     * @param resume If false, the current status is cleared
+     * @param append If false, the current status is cleared
      * @see #setCurrent(long)
      */
-    public void setResume(final boolean resume) {
-        if(!resume) {
+    public void setAppend(final boolean append) {
+        if(!append) {
             current = 0;
         }
-        this.resume = resume;
+        this.append = append;
     }
 
-    public boolean isResume() {
-        return resume;
+    public boolean isAppend() {
+        return append;
     }
 
     @Override
@@ -193,7 +193,7 @@ public class TransferStatus {
         if(length != that.length) {
             return false;
         }
-        if(resume != that.resume) {
+        if(append != that.append) {
             return false;
         }
         if(selected != that.selected) {
@@ -207,7 +207,7 @@ public class TransferStatus {
 
     @Override
     public int hashCode() {
-        int result = (resume ? 1 : 0);
+        int result = (append ? 1 : 0);
         result = 31 * result + (int) (current ^ (current >>> 32));
         result = 31 * result + (int) (length ^ (length >>> 32));
         result = 31 * result + (canceled ? 1 : 0);
@@ -221,7 +221,7 @@ public class TransferStatus {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("TransferStatus");
-        sb.append("{resume=").append(resume);
+        sb.append("{resume=").append(append);
         sb.append(", current=").append(current);
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);

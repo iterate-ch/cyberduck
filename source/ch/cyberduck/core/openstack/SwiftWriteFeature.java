@@ -37,7 +37,7 @@ import java.util.HashMap;
 import ch.iterate.openstack.swift.exception.GenericException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftWriteFeature implements Write {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
@@ -107,9 +107,10 @@ public class SwiftWriteFeature implements Write {
 
     /**
      * @return No Content-Range support
+     * @param file
      */
     @Override
-    public boolean isResumable() {
+    public boolean append(final Path file) {
         return false;
     }
 }

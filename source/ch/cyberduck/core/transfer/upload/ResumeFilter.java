@@ -59,11 +59,11 @@ public class ResumeFilter extends AbstractUploadFilter {
     public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(session, file, parent);
         if(file.attributes().isFile()) {
-            if(session.getFeature(Write.class, new DisabledLoginController()).isResumable()) {
+            if(session.getFeature(Write.class, new DisabledLoginController()).append(file)) {
                 if(parent.isExists()) {
                     if(session.exists(file)) {
                         // Append to existing file
-                        status.setResume(true);
+                        status.setAppend(true);
                         final long size = this.getSize(session, file);
                         status.setCurrent(size);
                     }

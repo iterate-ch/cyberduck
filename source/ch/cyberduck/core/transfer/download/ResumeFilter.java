@@ -54,7 +54,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
             if(file.attributes().isFile()) {
                 if(file.getLocal().exists()) {
                     if(file.getLocal().attributes().getSize() > 0) {
-                        status.setResume(true);
+                        status.setAppend(true);
                         status.setCurrent(file.getLocal().attributes().getSize());
                     }
                 }

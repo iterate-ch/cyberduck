@@ -27,17 +27,11 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3ThresholdUploadService implements Upload {
 
     private S3Session session;
-
-    /**
-     * Default size threshold for when to use multipart uploads.
-     */
-    private static final long DEFAULT_MULTIPART_UPLOAD_THRESHOLD =
-            Preferences.instance().getLong("s3.upload.multipart.threshold");
 
     public S3ThresholdUploadService(final S3Session session) {
         this.session = session;
@@ -46,8 +40,7 @@ public class S3ThresholdUploadService implements Upload {
     @Override
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
-        if(Preferences.instance().getBoolean("s3.upload.multipart")
-                && status.getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
+        if(status.getLength() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
             new S3MultipartUploadService(session).upload(file, throttle, listener, status);
         }
         else {

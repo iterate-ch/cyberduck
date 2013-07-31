@@ -11,7 +11,7 @@ import org.jets3t.service.ServiceException;
 import java.io.InputStream;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3ReadFeature implements Read {
 
@@ -34,14 +34,14 @@ public class S3ReadFeature implements Read {
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
-                        status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
+                        status.isAppend() ? status.getCurrent() : null, null).getDataInputStream();
             }
             return session.getClient().getObject(containerService.getContainer(file).getName(), containerService.getKey(file),
                     null, // ifModifiedSince
                     null, // ifUnmodifiedSince
                     null, // ifMatch
                     null, // ifNoneMatch
-                    status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
+                    status.isAppend() ? status.getCurrent() : null, null).getDataInputStream();
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Download failed", e, file);

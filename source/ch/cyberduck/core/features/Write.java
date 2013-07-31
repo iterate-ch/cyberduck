@@ -35,5 +35,9 @@ public interface Write {
      */
     OutputStream write(Path file, TransferStatus status) throws BackgroundException;
 
-    boolean isResumable();
+    /**
+     * @param file File
+     * @return True if can append to existing file
+     */
+    boolean append(Path file);
 }

@@ -233,7 +233,7 @@ public class DownloadTransfer extends Transfer {
             try {
                 final Read reader = session.getFeature(Read.class, new DisabledLoginController());
                 in = reader.read(file, status);
-                out = file.getLocal().getOutputStream(status.isResume());
+                out = file.getLocal().getOutputStream(status.isAppend());
                 new StreamCopier(status).transfer(new ThrottledInputStream(in, throttle), 0, out, listener, -1);
             }
             finally {

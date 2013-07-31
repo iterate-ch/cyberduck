@@ -202,7 +202,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         status.setExists(true);
         assertEquals(status, transfer.getStatus(test));
         final TransferStatus expected = new TransferStatus();
-        expected.setResume(false);
+        expected.setAppend(false);
         expected.setLength(5L);
         expected.setCurrent(0L);
         assertEquals(expected, transfer.getStatus(new Path("/transfer/test", Path.FILE_TYPE)));
@@ -230,7 +230,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         status.setExists(true);
         assertEquals(status, transfer.getStatus(test));
         final TransferStatus expected = new TransferStatus();
-        expected.setResume(true);
+        expected.setAppend(true);
         expected.setCurrent("test".getBytes().length);
         // Remote size
         expected.setLength(5L);

@@ -29,9 +29,9 @@ public class TransferStatusTest {
     public void testSetResume() throws Exception {
         TransferStatus status = new TransferStatus();
         status.setCurrent(1024);
-        status.setResume(true);
+        status.setAppend(true);
         assertEquals(1024, status.getCurrent());
-        status.setResume(false);
+        status.setAppend(false);
         assertEquals(0, status.getCurrent());
     }
 

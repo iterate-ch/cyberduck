@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPReadFeature implements Read {
     private static final Logger log = Logger.getLogger(FTPReadFeature.class);
@@ -47,10 +47,10 @@ public class FTPReadFeature implements Read {
             if(!session.getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            if(status.isResume()) {
+            if(status.isAppend()) {
                 // Where a server process supports RESTart in STREAM mode
                 if(!session.getClient().hasFeature("REST STREAM")) {
-                    status.setResume(false);
+                    status.setAppend(false);
                 }
                 else {
                     session.getClient().setRestartOffset(status.getCurrent());

@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPWriteFeature implements Write {
     private static final Logger log = Logger.getLogger(FTPWriteFeature.class);
@@ -49,7 +49,7 @@ public class FTPWriteFeature implements Write {
             final OutputStream out = new FTPDataFallback(session).data(file, new DataConnectionAction<OutputStream>() {
                 @Override
                 public OutputStream execute() throws IOException {
-                    if(status.isResume()) {
+                    if(status.isAppend()) {
                         return session.getClient().appendFileStream(file.getAbsolute());
                     }
                     else {
@@ -86,7 +86,7 @@ public class FTPWriteFeature implements Write {
     }
 
     @Override
-    public boolean isResumable() {
+    public boolean append(final Path file) {
         return true;
     }
 }

@@ -299,7 +299,7 @@ public class UploadTransferTest extends AbstractTestCase {
         directorystatus.setExists(true);
         assertEquals(directorystatus, transfer.getStatus(test));
         final TransferStatus expected = new TransferStatus();
-        expected.setResume(true);
+        expected.setAppend(true);
         // Remote size
         expected.setCurrent(5L);
         // Local size

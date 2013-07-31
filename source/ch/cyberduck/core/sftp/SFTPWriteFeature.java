@@ -49,7 +49,7 @@ public class SFTPWriteFeature implements Write {
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             SFTPv3FileHandle handle;
-            if(status.isResume()) {
+            if(status.isAppend()) {
                 handle = session.sftp().openFile(file.getAbsolute(),
                         SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
             }
@@ -58,7 +58,7 @@ public class SFTPWriteFeature implements Write {
                         SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
             }
             final OutputStream out = new SFTPOutputStream(handle);
-            if(status.isResume()) {
+            if(status.isAppend()) {
                 long skipped = ((SFTPOutputStream) out).skip(status.getCurrent());
                 log.info(String.format("Skipping %d bytes", skipped));
                 if(skipped < status.getCurrent()) {
@@ -77,7 +77,7 @@ public class SFTPWriteFeature implements Write {
     }
 
     @Override
-    public boolean isResumable() {
+    public boolean append(final Path file) {
         return true;
     }
 }

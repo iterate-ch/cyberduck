@@ -33,7 +33,7 @@ import java.util.Map;
 import com.github.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVReadFeature implements Read {
 
@@ -46,7 +46,7 @@ public class DAVReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         Map<String, String> headers = new HashMap<String, String>();
-        if(status.isResume()) {
+        if(status.isAppend()) {
             headers.put(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-");
         }
         try {

@@ -56,7 +56,7 @@ public class SCPWriteFeature implements Write {
     }
 
     @Override
-    public boolean isResumable() {
+    public boolean append(final Path file) {
         return false;
     }
 }
