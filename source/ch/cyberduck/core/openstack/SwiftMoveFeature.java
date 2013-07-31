@@ -15,7 +15,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.exception.NotFoundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SwiftMoveFeature.class);
@@ -32,9 +32,7 @@ public class SwiftMoveFeature implements Move {
     public void move(final Path file, final Path renamed) throws BackgroundException {
         try {
             if(file.attributes().isFile()) {
-                session.getClient().copyObject(session.getRegion(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(), containerService.getKey(file),
-                        containerService.getContainer(renamed).getName(), containerService.getKey(renamed));
+                new SwiftCopyFeature(session).copy(file, renamed);
                 session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
