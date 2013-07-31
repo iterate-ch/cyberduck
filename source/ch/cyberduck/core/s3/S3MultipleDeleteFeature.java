@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
@@ -29,7 +30,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
 
 import java.text.MessageFormat;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -131,31 +131,4 @@ public class S3MultipleDeleteFeature implements Delete {
         }
     }
 
-    private static class Partition<T> extends AbstractList<List<T>> {
-        final List<T> list;
-        final int size;
-
-        Partition(List<T> list, int size) {
-            this.list = list;
-            this.size = size;
-        }
-
-        @Override
-        public List<T> get(int index) {
-            int listSize = size();
-            int start = index * size;
-            int end = Math.min(start + size, list.size());
-            return list.subList(start, end);
-        }
-
-        @Override
-        public int size() {
-            return (list.size() + size - 1) / size;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return list.isEmpty();
-        }
-    }
 }
