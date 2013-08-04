@@ -17,6 +17,7 @@ package ch.cyberduck.ui.action;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -27,16 +28,19 @@ import ch.cyberduck.core.exception.NotfoundException;
 import java.text.MessageFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class MountWorker extends Worker<Path> {
 
     private Session<?> session;
 
+    private Cache cache;
+
     private ListProgressListener listener;
 
-    public MountWorker(final Session<?> session, final ListProgressListener listener) {
+    protected MountWorker(final Session<?> session, final Cache cache, final ListProgressListener listener) {
         this.session = session;
+        this.cache = cache;
         this.listener = listener;
     }
 
@@ -49,14 +53,13 @@ public abstract class MountWorker extends Worker<Path> {
         try {
             final Path home = session.home();
             // Retrieve directory listing of default path
-            session.cache().put(home.getReference(), session.list(home, listener));
+            cache.put(home.getReference(), session.list(home, listener));
             return home;
         }
         catch(NotfoundException e) {
-            // The default path does not exist or is not readable due to possible permission issues
-            // Fallback to default working directory
+            // The default path does not exist or is not readable due to possible permission issues. Fallback to default working directory
             final Path workdir = session.workdir();
-            session.cache().put(workdir.getReference(), session.list(workdir, listener));
+            cache.put(workdir.getReference(), session.list(workdir, listener));
             return workdir;
         }
     }
