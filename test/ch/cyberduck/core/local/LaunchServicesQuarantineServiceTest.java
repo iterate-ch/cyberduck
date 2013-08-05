@@ -4,7 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 
-import org.junit.BeforeClass;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -15,14 +15,23 @@ import java.util.concurrent.Callable;
  */
 public class LaunchServicesQuarantineServiceTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        LaunchServicesQuarantineService.register();
+    @Test
+    public void testSetQuarantineEmptyUrl() throws Exception {
+        final QuarantineService q = new LaunchServicesQuarantineService();
+        q.setQuarantine(new NullLocal("/", "n"), null, null);
+        q.setQuarantine(new NullLocal("/", "n"), StringUtils.EMPTY, StringUtils.EMPTY);
+    }
+
+    @Test
+    public void testSetWhereEmptyUrl() throws Exception {
+        final QuarantineService q = new LaunchServicesQuarantineService();
+        q.setWhereFrom(new NullLocal("/", "n"), null);
+        q.setWhereFrom(new NullLocal("/", "n"), StringUtils.EMPTY);
     }
 
     @Test
     public void testSetQuarantine() throws Exception {
-        final QuarantineService q = QuarantineServiceFactory.get();
+        final QuarantineService q = new LaunchServicesQuarantineService();
         Callable<Local> c = new Callable<Local>() {
             @Override
             public Local call() throws Exception {
@@ -39,7 +48,7 @@ public class LaunchServicesQuarantineServiceTest extends AbstractTestCase {
 
     @Test
     public void testSetWhereFrom() throws Exception {
-        final QuarantineService q = QuarantineServiceFactory.get();
+        final QuarantineService q = new LaunchServicesQuarantineService();
         Callable<Local> c = new Callable<Local>() {
             @Override
             public Local call() throws Exception {

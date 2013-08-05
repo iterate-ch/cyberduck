@@ -45,7 +45,7 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
         Native.load("LaunchServicesQuarantineService");
     }
 
-    private LaunchServicesQuarantineService() {
+    protected LaunchServicesQuarantineService() {
         //
     }
 
@@ -91,6 +91,10 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
     @Override
     public void setWhereFrom(final Local file, final String dataUrl) {
         synchronized(lock) {
+            if(StringUtils.isBlank(dataUrl)) {
+                log.warn("No data url given");
+                return;
+            }
             this.setWhereFrom(file.getAbsolute(), dataUrl);
         }
     }
