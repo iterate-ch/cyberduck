@@ -900,14 +900,14 @@ public class BrowserController extends WindowController
                 browserTabView.selectTabViewItemAtIndex(TAB_OUTLINE_VIEW);
                 break;
         }
+        // Save selected browser view
+        Preferences.instance().setProperty("browser.view", selected);
         // Remove any custom file filter
         this.setPathFilter(null);
         // Update from model
         this.reloadData(true);
         // Focus on browser view
         this.getFocus();
-        // Save selected browser view
-        Preferences.instance().setProperty("browser.view", selected);
     }
 
     private void selectBookmarks() {
