@@ -21,6 +21,7 @@ import ch.cyberduck.core.*;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Locale;
 
 /**
  * @version $Id$
@@ -42,7 +43,7 @@ public class DefaultUrlProvider implements UrlProvider {
         list.add(new DescriptiveUrl(URI.create(String.format("%s%s",
                 new HostUrlProvider(false).get(host), URIEncoder.encode(file.getAbsolute()))),
                 DescriptiveUrl.Type.provider,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(java.util.Locale.ENGLISH))));
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ENGLISH))));
         list.add(new DescriptiveUrl(URI.create(host.getWebURL() + URIEncoder.encode(PathRelativizer.relativize(PathNormalizer.normalize(host.getDefaultPath(), true), file.getAbsolute()))).normalize(),
                 DescriptiveUrl.Type.http,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
