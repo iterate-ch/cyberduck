@@ -124,8 +124,7 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     public DescriptiveUrlBag getURLs(final Path file) {
-        // Add provider URL
-        final DescriptiveUrlBag list = super.getURLs(file);
+        final DescriptiveUrlBag list = new SwiftUrlProvider(this).get(file);
         list.addAll(cdn.get(file));
         return list;
     }
