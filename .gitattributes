@@ -1919,7 +1919,7 @@ lib/ext/nunit.framework.dll -text
 lib/ext/sonar-ant-task-2.1.jar -text svneol=unset#application/jar
 lib/ganymed-ssh-2-260.jar -text
 lib/httpclient-4.2.5.jar -text svneol=unset#application/zip
-lib/httpcore-4.2.4.jar -text svneol=unset#application/zip
+lib/httpcore-4.3.jar -text svneol=unset#application/zip
 lib/httpmime-4.2.5.jar -text svneol=unset#application/x-gzip
 lib/icu4j-module-4.4.1.1.jar -text
 lib/jackson-core-asl-1.9.13.jar -text svneol=unset#application/jar
