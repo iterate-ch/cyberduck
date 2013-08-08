@@ -51,9 +51,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      */
     private Cache cache = new Cache();
 
-    private DistributionConfiguration cdn
-            = new CustomOriginCloudFrontDistributionConfiguration(host);
-
     private Set<ConnectionListener> connectionListeners
             = Collections.synchronizedSet(new HashSet<ConnectionListener>(0));
 
@@ -383,7 +380,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         }
         if(type == DistributionConfiguration.class) {
             // Use login context of current session
-            return (T) cdn;
+            return (T) new CustomOriginCloudFrontDistributionConfiguration(host);
         }
         return null;
     }
