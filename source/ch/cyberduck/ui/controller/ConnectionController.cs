@@ -300,10 +300,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
                 Protocol protocol = View.SelectedProtocol;
-                View.Password = KeychainFactory.get().getPassword(protocol.getScheme(),
-                                                                  Integer.parseInt(View.Port),
-                                                                  View.Hostname,
-                                                                  View.Username);
+                View.Password = PasswordStoreFactory.get().getPassword(protocol.getScheme(),
+                                                                       Integer.parseInt(View.Port),
+                                                                       View.Hostname,
+                                                                       View.Username);
             }
         }
 

@@ -55,12 +55,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Path dir;
             if (!filename.StartsWith(Path.DELIMITER.ToString()))
             {
-                dir = PathFactory.createPath(BrowserController.getSession(), workdir, filename,
-                                             AbstractPath.DIRECTORY_TYPE);
+                dir = new Path(workdir, filename, AbstractPath.DIRECTORY_TYPE);
             }
             else
             {
-                dir = PathFactory.createPath(BrowserController.getSession(), filename, AbstractPath.DIRECTORY_TYPE);
+                dir = new Path(filename, AbstractPath.DIRECTORY_TYPE);
             }
             if (workdir.getParent().Equals(dir))
             {

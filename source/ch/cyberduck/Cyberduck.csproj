@@ -192,12 +192,21 @@
     <Compile Include="core\editor\RegistryApplicationFinder.cs" />
     <Compile Include="core\editor\WatchEditor.cs" />
     <Compile Include="core\i18n\LocaleImpl.cs" />
+    <Compile Include="core\Keychain.cs" />
     <Compile Include="core\local\ExplorerRevealService.cs" />
     <Compile Include="core\local\LocalImpl.cs" />
     <Compile Include="core\local\TaskbarApplicationBadgeLabeler.cs" />
     <Compile Include="core\local\Win32FileDescriptor.cs" />
     <Compile Include="core\local\WindowsApplicationLauncher.cs" />
     <Compile Include="core\local\WindowsTemporaryFileService.cs" />
+    <Compile Include="core\Proxy.cs" />
+    <Compile Include="core\serializer\impl\HostPlistReader.cs" />
+    <Compile Include="core\serializer\impl\PlistDeserializer.cs" />
+    <Compile Include="core\serializer\impl\PlistReader.cs" />
+    <Compile Include="core\serializer\impl\PlistSerializer.cs" />
+    <Compile Include="core\serializer\impl\PlistWriter.cs" />
+    <Compile Include="core\serializer\impl\ProfilePlistReader.cs" />
+    <Compile Include="core\serializer\impl\TransferPlistReader.cs" />
     <Compile Include="core\ssl\HostnameVerifier.cs" />
     <Compile Include="core\urlhandler\URLSchemeHandlerConfiguration.cs" />
     <Compile Include="core\collections\IndexedLinkedList.cs" />
@@ -264,8 +273,7 @@
     <Compile Include="ui\winforms\GotoPromptForm.Designer.cs">
       <DependentUpon>GotoPromptForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\winforms\serializer\HostPlistReader.cs" />
-    <Compile Include="ui\winforms\serializer\ProfilePlistReader.cs" />
+    <Compile Include="ui\winforms\threading\DialogAlertCallback.cs" />
     <Compile Include="ui\winforms\UpdateForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -415,8 +423,7 @@
     <Compile Include="ui\controller\ITransferPromptView.cs" />
     <Compile Include="ui\controller\ITransferView.cs" />
     <Compile Include="ui\controller\IView.cs" />
-    <Compile Include="ui\controller\Keychain.cs" />
-    <Compile Include="ui\controller\LoginController.cs" />
+    <Compile Include="ui\controller\PromptLoginController.cs" />
     <Compile Include="ui\controller\PathClipboard.cs" />
     <Compile Include="ui\controller\PersistentFormHandler.cs" />
     <Compile Include="ui\controller\SyncPromptController.cs" />
@@ -430,14 +437,9 @@
     <Compile Include="ui\winforms\controls\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ui\winforms\serializer\PlistDeserializer.cs" />
-    <Compile Include="ui\winforms\serializer\PlistReader.cs" />
-    <Compile Include="ui\winforms\serializer\PlistSerializer.cs" />
-    <Compile Include="ui\winforms\serializer\PlistWriter.cs" />
     <Compile Include="ui\controller\UserPreferences.cs" />
     <Compile Include="ui\controller\PreferencesController.cs" />
     <Compile Include="ui\controller\ProgressController.cs" />
-    <Compile Include="ui\controller\Proxy.cs" />
     <Compile Include="ui\controller\Renderers.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -600,7 +602,6 @@
     <Compile Include="ui\winforms\TransferForm.Designer.cs">
       <DependentUpon>TransferForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\winforms\serializer\TransferPlistReader.cs" />
     <Compile Include="ui\winforms\TransferPromptForm.cs">
       <SubType>Form</SubType>
     </Compile>

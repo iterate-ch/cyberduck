@@ -56,9 +56,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static readonly Logger Log = Logger.getLogger(typeof (IconCache).FullName);
 
-        private static readonly bool OverlayFolderImage
-            = Preferences.instance().getBoolean("browser.markInaccessibleFolders");
-
         private static readonly IconCache instance = new IconCache();
 
         private readonly TypedLRUCache<Bitmap> _bitmapCache =
@@ -131,29 +128,29 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 return IconForFilename(path.getName(), size);
             }
+            //TODO volume wird nicht mehr speziell ausgewiesen
+            /*
             if (path.attributes().isVolume())
             {
                 return IconForName(path.getHost().getProtocol().disk(), size);
             }
+            */
             if (path.attributes().isDirectory())
             {
-                if (OverlayFolderImage)
+                if (!path.attributes().getPermission().isExecutable())
                 {
-                    if (!path.attributes().getPermission().isExecutable())
+                    return IconForFolder(IconForName("privatefolderbadge", size), size);
+                }
+                if (!path.attributes().getPermission().isReadable())
+                {
+                    if (path.attributes().getPermission().isWritable())
                     {
-                        return IconForFolder(IconForName("privatefolderbadge", size), size);
+                        return IconForFolder(IconForName("dropfolderbadge", size), size);
                     }
-                    if (!path.attributes().getPermission().isReadable())
-                    {
-                        if (path.attributes().getPermission().isWritable())
-                        {
-                            return IconForFolder(IconForName("dropfolderbadge", size), size);
-                        }
-                    }
-                    if (!path.attributes().getPermission().isWritable())
-                    {
-                        return IconForFolder(IconForName("readonlyfolderbadge", size), size);
-                    }
+                }
+                if (!path.attributes().getPermission().isWritable())
+                {
+                    return IconForFolder(IconForName("readonlyfolderbadge", size), size);
                 }
                 return IconForFolder(size);
             }

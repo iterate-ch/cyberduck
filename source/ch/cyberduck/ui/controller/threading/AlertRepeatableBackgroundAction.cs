@@ -16,13 +16,9 @@
 // yves@cyberduck.ch
 // 
 
-using System.Windows.Forms;
+using Ch.Cyberduck.Ui.Winforms.Threading;
 using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.threading;
 using ch.cyberduck.ui.threading;
-using java.lang;
-using String = System.String;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
@@ -40,49 +36,6 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
         public WindowController Controller
         {
             get { return _controller; }
-        }
-
-        private class DialogAlertCallback : AlertCallback
-        {
-            private readonly WindowController _controller;
-            private RepeatableBackgroundAction _action;
-
-            public DialogAlertCallback(WindowController controller)
-            {
-                _controller = controller;
-            }
-
-            public void alert(RepeatableBackgroundAction rba, BackgroundException failure, StringBuilder log)
-            {
-                _action = rba;
-                _controller.Invoke(delegate
-                    {
-                        string footer = Preferences.instance().getProperty("website.help");
-                        if (null != failure.getPath())
-                        {
-                            footer = Preferences.instance().getProperty("website.help") + "/" +
-                                     failure.getPath().getSession().getHost().getProtocol().
-                                             getProvider();
-                        }
-                        DialogResult result =
-                            _controller.WarningBox(failure.getReadableTitle(),
-                                                   failure.getMessage(),
-                                                   failure.getDetail(),
-                                                   log.length() > 0 ? log.toString() : null,
-                                                   String.Format("{0}", Locale.localizedString("Try Again", "Alert")),
-                                                   true, footer);
-                        Callback(result);
-                    }, true);
-            }
-
-            private void Callback(DialogResult result)
-            {
-                if (DialogResult.OK == result)
-                {
-                    // Re-run the action with the previous lock used
-                    _controller.background(_action);
-                }
-            }
         }
     }
 }

@@ -18,6 +18,7 @@
 
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
 using java.util;
 
@@ -25,6 +26,8 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
 {
     public abstract class BrowserBackgroundAction : AlertRepeatableBackgroundAction
     {
+        private readonly BackgroundActionRegistry _registry = BackgroundActionRegistry.global();
+
         protected BrowserBackgroundAction(BrowserController controller) : base(controller, controller, controller)
         {
             BrowserController = controller;
@@ -86,6 +89,18 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
                     BrowserController.SetStatus();
                 };
             BrowserController.Invoke(mainAction);
+        }
+
+        public override void init()
+        {
+            // Add to the registry so it will be displayed in the activity window.
+            _registry.add(this);
+        }
+
+        public override void cleanup()
+        {
+            _registry.remove(this);
+            base.cleanup();
         }
     }
 }

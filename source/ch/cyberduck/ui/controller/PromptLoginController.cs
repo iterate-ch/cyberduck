@@ -22,25 +22,23 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class LoginController : AbstractLoginController
+    public class PromptLoginController : LoginController
     {
         private static readonly Logger Log = Logger.getLogger(typeof (LoginController).FullName);
         private readonly WindowController _browser;
         private Credentials _credentials;
-        private bool _enableAnonymous;
-
-        private bool _enableKeychain;
-        private bool _enablePublicKey;
+        private LoginOptions _options;
         private Protocol _protocol;
         private ILoginView _view;
 
-        private LoginController(WindowController c)
+        private PromptLoginController(WindowController c)
         {
             _browser = c;
         }
@@ -49,6 +47,80 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             get { return _view; }
             set { _view = value; }
+        }
+
+        public void warn(String title, String message, String continueButton, String disconnectButton,
+                         String preference)
+        {
+            AsyncController.AsyncDelegate d = delegate
+                {
+                    _browser.CommandBox(title,
+                                        title,
+                                        message,
+                                        String.Format("{0}|{1}",
+                                                      continueButton,
+                                                      disconnectButton),
+                                        false,
+                                        Locale.localizedString("Don't show again",
+                                                               "Credentials"),
+                                        SysIcons.Question,
+                                        Preferences.instance().getProperty(
+                                            "website.help") + "/" +
+                                        Protocol.FTP.getIdentifier(),
+                                        delegate(int option,
+                                                 Boolean verificationChecked)
+                                            {
+                                                if (verificationChecked)
+                                                {
+                                                    // Never show again.
+                                                    Preferences.instance().setProperty
+                                                        (preference, true);
+                                                }
+                                                switch (option)
+                                                {
+                                                    case 1:
+                                                        throw new LoginCanceledException
+                                                            ();
+                                                }
+                                            });
+                };
+            _browser.Invoke(d);
+            //Proceed nevertheless.
+        }
+
+        public void prompt(Protocol protocol, Credentials credentials,
+                           String title, String reason, LoginOptions options)
+        {
+            _view = ObjectFactory.GetInstance<ILoginView>();
+            InitEventHandlers();
+
+            _protocol = protocol;
+            _credentials = credentials;
+            _options = options;
+
+            _view.Title = Locale.localizedString(title, "Credentials");
+            _view.Message = Locale.localizedString(reason, "Credentials");
+            _view.Username = credentials.getUsername();
+            _view.UsernameLabel = protocol.getUsernamePlaceholder() + ":";
+            _view.PasswordLabel = protocol.getPasswordPlaceholder() + ":";
+            _view.SavePasswordState =
+                Preferences.instance().getBoolean("connection.login.useKeychain") &&
+                Preferences.instance().getBoolean("connection.login.addKeychain");
+            _view.DiskIcon = IconCache.Instance.IconForName(_protocol.disk(), 64);
+
+            Update();
+
+            AsyncController.AsyncDelegate d = delegate
+                {
+                    if (DialogResult.Cancel == _view.ShowDialog(_browser.View))
+                    {
+                        throw new LoginCanceledException();
+                    }
+                    credentials.setSaved(_view.SavePasswordState);
+                    credentials.setUsername(Utils.SafeString(_view.Username));
+                    credentials.setPassword(Utils.SafeString(_view.Password));
+                };
+            _browser.Invoke(d);
         }
 
         public static void Register()
@@ -107,98 +179,16 @@ namespace Ch.Cyberduck.Ui.Controller
             _credentials.setUsername(_view.Username);
             if (Utils.IsNotBlank(_credentials.getUsername()))
             {
-                String password = KeychainFactory.get().getPassword(_protocol.getScheme(),
-                                                                    _protocol.getDefaultPort(),
-                                                                    _protocol.getDefaultHostname(),
-                                                                    _credentials.getUsername());
+                String password = PasswordStoreFactory.get().getPassword(_protocol.getScheme(),
+                                                                         _protocol.getDefaultPort(),
+                                                                         _protocol.getDefaultHostname(),
+                                                                         _credentials.getUsername());
                 if (Utils.IsNotBlank(password))
                 {
                     _view.Password = password;
                 }
             }
             Update();
-        }
-
-        public override void warn(String title, String message, String continueButton, String disconnectButton,
-                                  String preference)
-        {
-            AsyncController.AsyncDelegate d = delegate
-                {
-                    _browser.CommandBox(title,
-                                        title,
-                                        message,
-                                        String.Format("{0}|{1}",
-                                                      continueButton,
-                                                      disconnectButton),
-                                        false,
-                                        Locale.localizedString("Don't show again",
-                                                               "Credentials"),
-                                        SysIcons.Question,
-                                        Preferences.instance().getProperty(
-                                            "website.help") + "/" +
-                                        Protocol.FTP.getIdentifier(),
-                                        delegate(int option,
-                                                 Boolean verificationChecked)
-                                            {
-                                                if (verificationChecked)
-                                                {
-                                                    // Never show again.
-                                                    Preferences.instance().setProperty
-                                                        (preference, true);
-                                                }
-                                                switch (option)
-                                                {
-                                                    case 1:
-                                                        throw new LoginCanceledException
-                                                            ();
-                                                }
-                                            });
-                };
-            _browser.Invoke(d);
-            //Proceed nevertheless.
-        }
-
-        public override void prompt(Protocol protocol, Credentials credentials, string title, string reason)
-        {
-            prompt(protocol, credentials, title, reason, true, protocol.equals(Protocol.SFTP), true);
-        }
-
-        public override void prompt(Protocol protocol, Credentials credentials,
-                                    String title, String reason,
-                                    bool enableKeychain, bool enablePublicKey, bool enableAnonymous)
-        {
-            _view = ObjectFactory.GetInstance<ILoginView>();
-            InitEventHandlers();
-
-            _protocol = protocol;
-            _credentials = credentials;
-            _enableKeychain = enableKeychain;
-            _enablePublicKey = enablePublicKey;
-            _enableAnonymous = enableAnonymous;
-
-            _view.Title = Locale.localizedString(title, "Credentials");
-            _view.Message = Locale.localizedString(reason, "Credentials");
-            _view.Username = credentials.getUsername();
-            _view.UsernameLabel = protocol.getUsernamePlaceholder() + ":";
-            _view.PasswordLabel = protocol.getPasswordPlaceholder() + ":";
-            _view.SavePasswordState =
-                Preferences.instance().getBoolean("connection.login.useKeychain") &&
-                Preferences.instance().getBoolean("connection.login.addKeychain");
-            _view.DiskIcon = IconCache.Instance.IconForName(_protocol.disk(), 64);
-
-            Update();
-
-            AsyncController.AsyncDelegate d = delegate
-                {
-                    if (DialogResult.Cancel == _view.ShowDialog(_browser.View))
-                    {
-                        throw new LoginCanceledException();
-                    }
-                    credentials.setSaved(_view.SavePasswordState);
-                    credentials.setUsername(Utils.SafeString(_view.Username));
-                    credentials.setPassword(Utils.SafeString(_view.Password));
-                };
-            _browser.Invoke(d);
         }
 
         private void InitEventHandlers()
@@ -214,7 +204,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateInput()
         {
-            return _credentials.validate(_protocol);
+            return _credentials.validate(_protocol, _options);
         }
 
         private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
@@ -225,18 +215,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void Update()
         {
-            _view.UsernameEnabled = !_credentials.isAnonymousLogin();
-            _view.PasswordEnabled = !_credentials.isAnonymousLogin();
+            _view.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
+            _view.PasswordEnabled = _options.password() && !_credentials.isAnonymousLogin();
             {
-                bool enable = _enableKeychain && !_credentials.isAnonymousLogin();
+                bool enable = _options.isKeychain() && !_credentials.isAnonymousLogin();
                 _view.SavePasswordEnabled = enable;
                 if (!enable)
                 {
                     _view.SavePasswordState = false;
                 }
             }
-            _view.AnonymousEnabled = _enableAnonymous;
-            if (_enableAnonymous && _credentials.isAnonymousLogin())
+            _view.AnonymousEnabled = _options.isAnonymous();
+            if (_options.isAnonymous() && _credentials.isAnonymousLogin())
             {
                 _view.AnonymousState = true;
             }
@@ -244,8 +234,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _view.AnonymousState = false;
             }
-            _view.PkCheckboxEnabled = _enablePublicKey;
-            if (_enablePublicKey && _credentials.isPublicKeyAuthentication())
+            _view.PkCheckboxEnabled = _options.isPublickey();
+            if (_options.isPublickey() && _credentials.isPublicKeyAuthentication())
             {
                 _view.PkCheckboxState = true;
                 _view.PkLabel = _credentials.getIdentity().getAbbreviatedPath();
@@ -261,12 +251,12 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             protected override object create()
             {
-                return new LoginController(TransferController.Instance);
+                return new PromptLoginController(TransferController.Instance);
             }
 
-            protected override ch.cyberduck.core.LoginController create(ch.cyberduck.ui.Controller c)
+            protected override LoginController create(ch.cyberduck.ui.Controller c)
             {
-                return new LoginController((WindowController) c);
+                return new PromptLoginController((WindowController) c);
             }
         }
     }

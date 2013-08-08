@@ -27,15 +27,16 @@ using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.analytics;
 using ch.cyberduck.core.cdn;
-using ch.cyberduck.core.cloud;
 using ch.cyberduck.core.date;
+using ch.cyberduck.core.features;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.identity;
 using ch.cyberduck.core.lifecycle;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.logging;
 using ch.cyberduck.core.s3;
-using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.versioning;
 using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.controller.threading;
@@ -56,18 +57,22 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly Logger Log = Logger.getLogger(typeof (InfoController).FullName);
 
         private readonly BrowserController _controller;
+        private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
         private readonly string _multipleFilesString = "(" + Locale.localizedString("Multiple files") + ")";
-        private readonly FileDescriptor descriptor = FileDescriptorFactory.get();
+        private readonly LoginController _prompt;
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
         private IList<KeyValuePair<string, string>> _lifecycleTransitionPeriods;
         private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
 
+        private PathContainerService containerService;
+
         private InfoController(BrowserController controller, IList<Path> files)
         {
             View = ObjectFactory.GetInstance<IInfoView>();
             _controller = controller;
+            _prompt = LoginControllerFactory.get(this);
             Files = files;
 
             _controller.View.ViewClosedEvent += delegate
@@ -100,23 +105,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 ConfigureToolbar();
                 ConfigureHelp();
-
-                if (_controller.getSession().isAclSupported())
-                {
-                    PopulateAclUsers();
-                    PopulateAclRoles();
-                }
-                if (_controller.getSession() is CloudSession &&
-                    !_controller.getSession().getHost().getCredentials().isAnonymousLogin())
-                {
-                    PopulateMetadata();
-                }
                 InitTab(View.ActiveTab);
-                if (View.ActiveTab != InfoTab.General)
-                {
-                    // always set general settings (e.g. contains form title)
-                    //InitGeneral();
-                }
             }
         }
 
@@ -173,7 +162,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     InitDistribution();
                     break;
                 case InfoTab.S3:
-                    InitMetadata();
                     InitS3();
                     break;
                 case InfoTab.Metadata:
@@ -197,7 +185,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Session session = _controller.getSession();
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
-            if (session is CloudSession)
+            if (session is S3Session)
             {
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
@@ -212,7 +200,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             //ACL or permission view
-            View.AclPanel = session.isAclSupported();
+            View.AclPanel = session.getFeature(typeof (AccessControlList), _prompt) != null;
 
             if (anonymous)
             {
@@ -221,7 +209,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.ToolbarPermissionsEnabled = session.isAclSupported() || session.isUnixPermissionsSupported();
+                View.ToolbarPermissionsEnabled = session.getFeature(typeof (UnixPermission), _prompt) != null;
             }
 
             if (anonymous)
@@ -232,8 +220,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.ToolbarDistributionEnabled = session.isCDNSupported();
-                if (session is CloudSession)
+                bool distribution = session.getFeature(typeof (DistributionConfiguration), _prompt) != null;
+                View.ToolbarDistributionEnabled = distribution;
+                if (distribution)
                 {
                     View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
                         session.getHost().getProtocol().getProvider()];
@@ -261,7 +250,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.ToolbarMetadataEnabled = session.isMetadataSupported();
+                View.ToolbarMetadataEnabled = session.getFeature(typeof (Headers), _prompt) != null;
             }
         }
 
@@ -273,6 +262,7 @@ namespace Ch.Cyberduck.Ui.Controller
             SetMetadata(new List<CustomHeaderEntry>());
             if (ToggleMetadataSettings(false))
             {
+                PopulateMetadata();
                 _controller.Background(new ReadMetadataBackgroundAction(_controller, this));
             }
         }
@@ -286,7 +276,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Session session = _controller.getSession();
             Credentials credentials = session.getHost().getCredentials();
-            bool enable = !credentials.isAnonymousLogin() && session.isMetadataSupported();
+            bool enable = !credentials.isAnonymousLogin() && session.getFeature(typeof (Headers), _prompt) != null;
             if (enable)
             {
                 foreach (Path file in _files)
@@ -499,6 +489,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.AclUrlEnabled = false;
             if (ToggleAclSettings(false))
             {
+                PopulateAclUsers();
+                PopulateAclRoles();
                 if (NumberOfFiles > 1)
                 {
                     View.AclUrl = _multipleFilesString;
@@ -589,7 +581,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Session session = _controller.getSession();
             Credentials credentials = session.getHost().getCredentials();
-            bool enable = !credentials.isAnonymousLogin() && session.isAclSupported();
+            bool enable = !credentials.isAnonymousLogin() &&
+                          session.getFeature(typeof (AccessControlList), _prompt) != null;
             View.AclTableEnabled = stop && enable;
             View.AclAddEnabled = stop && enable;
             bool selection = View.SelectedAclEntries.Count > 0;
@@ -632,9 +625,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        Path renamed = PathFactory.createPath(_controller.getSession(),
-                                                              current.getParent(), View.Filename,
-                                                              current.attributes().getType());
+                        Path renamed = new Path(current.getParent(), View.Filename, current.attributes().getType());
                         _controller.RenamePath(current, renamed);
                         InitWebUrl();
                     }
@@ -683,14 +674,16 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Session session = _controller.getSession();
             Credentials credentials = session.getHost().getCredentials();
-            bool enable = !credentials.isAnonymousLogin() && session.isCDNSupported();
-            Path container = SelectedPath.getContainer();
+            DistributionConfiguration cdn =
+                (DistributionConfiguration) session.getFeature(typeof (DistributionConfiguration), _prompt);
+            bool enable = !credentials.isAnonymousLogin() && cdn != null;
+            Path container = containerService.getContainer(SelectedPath);
             if (enable)
             {
                 // Not enabled if multiple files selected with not same parent container
                 foreach (Path next in _files)
                 {
-                    if (next.getContainer().Equals(container))
+                    if (containerService.getContainer(next).Equals(container))
                     {
                         continue;
                     }
@@ -701,24 +694,20 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionEnabled = stop && enable;
             View.DistributionDeliveryMethodEnabled = stop && enable;
             View.DistributionLoggingCheckboxEnabled = stop && enable &&
-                                                      session.cdn(LoginControllerFactory.get(_controller))
-                                                             .isLoggingSupported(View.DistributionDeliveryMethod);
+                                                      cdn.isLoggingSupported(View.DistributionDeliveryMethod);
             View.DistributionLoggingPopupEnabled = stop && enable &&
-                                                   session.cdn(LoginControllerFactory.get(_controller))
-                                                          .isLoggingSupported(View.DistributionDeliveryMethod);
-            View.DistributionCnameEnabled = stop && enable &&
-                                            session.cdn(LoginControllerFactory.get(_controller))
-                                                   .isCnameSupported(View.DistributionDeliveryMethod);
+                                                   cdn.isLoggingSupported(View.DistributionDeliveryMethod);
+            View.DistributionCnameEnabled = stop && enable && cdn.isCnameSupported(View.DistributionDeliveryMethod);
             View.DistributionInvalidateObjectsEnabled = stop && enable &&
-                                                        session.cdn(LoginControllerFactory.get(_controller))
-                                                               .isInvalidationSupported(
-                                                                   View.DistributionDeliveryMethod);
+                                                        cdn.isInvalidationSupported(View.DistributionDeliveryMethod);
             View.DistributionDefaultRootEnabled = stop && enable &&
-                                                  session.cdn(LoginControllerFactory.get(_controller))
-                                                         .isDefaultRootSupported(View.DistributionDeliveryMethod);
+                                                  cdn.isDefaultRootSupported(View.DistributionDeliveryMethod);
+            IdentityConfiguration iam =
+                (IdentityConfiguration) session.getFeature(typeof (IdentityConfiguration), _prompt);
             if (
                 ObjectUtils.equals(
-                    session.iam(LoginControllerFactory.get(this)).getUserCredentials(session.analytics().getName()),
+                    iam.getUserCredentials(
+                        ((AnalyticsProvider) session.getFeature(typeof (AnalyticsProvider), _prompt)).getName()),
                     credentials))
             {
                 // No need to create new IAM credentials when same as session credentials
@@ -727,9 +716,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 View.DistributionAnalyticsCheckboxEnabled = stop && enable &&
-                                                            session.cdn(LoginControllerFactory.get(_controller))
-                                                                   .isAnalyticsSupported(
-                                                                       View.DistributionDeliveryMethod);
+                                                            cdn.isAnalyticsSupported(View.DistributionDeliveryMethod);
             }
             if (stop)
             {
@@ -1133,7 +1120,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    View.Kind = descriptor.getKind(file);
+                    View.Kind = _descriptor.getKind(file);
                     if (-1 == file.attributes().getModificationDate())
                     {
                         View.Modified = Locale.localizedString("Unknown");
@@ -1209,7 +1196,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (ToggleS3Settings(false))
             {
-                List list = ((CloudSession) _controller.getSession()).getSupportedStorageClasses();
+                List list =
+                    ((Redundancy) _controller.getSession().getFeature(typeof (Redundancy), _prompt)).getClasses();
                 for (int i = 0; i < list.size(); i++)
                 {
                     string redundancy = (string) list.get(i);
@@ -1234,10 +1222,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (file.attributes().isFile())
                     {
-                        if (file is S3Path)
+                        if (_controller.getSession() is S3Session)
                         {
-                            S3Path s3 = (S3Path) file;
-                            DescriptiveUrl url = ((S3Session)_controller.getSession()).toSignedUrl(file);
+                            DescriptiveUrl url = ((S3Session) _controller.getSession()).toSignedUrl(file);
                             if (null != url)
                             {
                                 View.S3PublicUrl = url.getUrl();
@@ -1245,7 +1232,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 View.S3PublicUrlTooltip = url.getUrl();
                                 View.S3PublicUrlValidity = url.getHelp();
                             }
-                            DescriptiveUrl torrent = ((S3Session)_controller.getSession()).toTorrentUrl(file);
+                            DescriptiveUrl torrent = ((S3Session) _controller.getSession()).toTorrentUrl(file);
                             if (null != torrent)
                             {
                                 View.S3TorrentUrl = torrent.getUrl();
@@ -1284,12 +1271,12 @@ namespace Ch.Cyberduck.Ui.Controller
             bool lifecycle = false;
             if (enable)
             {
-                logging = ((CloudSession) session).isLoggingSupported();
-                analytics = (session).isAnalyticsSupported();
-                versioning = ((CloudSession) session).isVersioningSupported();
-                encryption = ((CloudSession) session).getSupportedEncryptionAlgorithms().size() > 0;
-                storageclass = ((CloudSession) session).getSupportedStorageClasses().size() > 1;
-                lifecycle = ((CloudSession) session).isLifecycleSupported();
+                logging = session.getFeature(typeof (Logging), _prompt) != null;
+                analytics = session.getFeature(typeof (AnalyticsProvider), _prompt) != null;
+                versioning = session.getFeature(typeof (Versioning), _prompt) != null;
+                lifecycle = session.getFeature(typeof (Lifecycle), _prompt) != null;
+                encryption = session.getFeature(typeof (Encryption), _prompt) != null;
+                storageclass = session.getFeature(typeof (Redundancy), _prompt) != null;
             }
             View.BucketVersioningEnabled = stop && enable && versioning;
             View.BucketMfaEnabled = stop && enable && versioning && View.BucketVersioning;
@@ -1300,8 +1287,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (
                 ObjectUtils.equals(
-                    session.iam(LoginControllerFactory.get(this))
-                           .getUserCredentials(_controller.getSession().analytics().getName()),
+                    ((IdentityConfiguration)
+                     _controller.getSession().getFeature(typeof (IdentityConfiguration), _prompt))
+                        .getUserCredentials(
+                            ((AnalyticsProvider)
+                             _controller.getSession().getFeature(typeof (AnalyticsProvider), _prompt)).getName()),
                     credentials))
             {
                 // No need to create new IAM credentials when same as session credentials
@@ -1357,10 +1347,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 });
 
             Session session = _controller.getSession();
+            DistributionConfiguration cdn =
+                (DistributionConfiguration) session.getFeature(typeof (DistributionConfiguration), _prompt);
             View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                                   session.cdn(LoginControllerFactory.get(_controller)).getName());
+                                                   cdn.getName());
             methods = new List<KeyValuePair<string, Distribution.Method>>();
-            List list = session.cdn(LoginControllerFactory.get(_controller)).getMethods(SelectedPath.getContainer());
+            Path container = containerService.getContainer(SelectedPath);
+            List list = cdn.getMethods(container);
             for (int i = 0; i < list.size(); i++)
             {
                 Distribution.Method method = (Distribution.Method) list.get(i);
@@ -1372,10 +1365,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Select first distribution option
                 View.DistributionDeliveryMethod =
                     (Distribution.Method)
-                    session.cdn(LoginControllerFactory.get(_controller))
-                           .getMethods(SelectedPath.getContainer())
-                           .iterator()
-                           .next();
+                    cdn.getMethods(container).iterator().next();
             }
             else
             {
@@ -1414,7 +1404,8 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             Session session = _controller.getSession();
             Credentials credentials = session.getHost().getCredentials();
-            bool enable = !credentials.isAnonymousLogin() && session.isUnixPermissionsSupported();
+            bool enable = !credentials.isAnonymousLogin() &&
+                          session.getFeature(typeof (UnixPermission), _prompt) != null;
             View.RecursivePermissionsEnabled = stop && enable;
             foreach (Path next in _files)
             {
@@ -1476,18 +1467,23 @@ namespace Ch.Cyberduck.Ui.Controller
         private void InitChecksum()
         {
             DetachGeneralHandlers();
-
             if (NumberOfFiles > 1)
             {
                 View.Checksum = _multipleFilesString;
             }
             else
             {
-                if (ToggleSizeSettings(false))
+                Path file = SelectedPath;
+                if (StringUtils.isBlank(file.attributes().getChecksum()))
                 {
-                    _controller.background(new ChecksumBackgroundAction(_controller, this));
+                    View.Checksum = Locale.localizedString("Unknown");
+                }
+                else
+                {
+                    View.Checksum = file.attributes().getChecksum();
                 }
             }
+            AttachGeneralHandlers();
         }
 
         /// <summary>
@@ -1525,43 +1521,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void UpdateSize(long size)
         {
             View.FileSize = SizeFormatterFactory.get().format(size, true);
-        }
-
-        private class ChecksumBackgroundAction : WorkerBackgroundAction
-        {
-            public ChecksumBackgroundAction(BrowserController browserController, InfoController infoController)
-                : base(
-                    browserController,
-                    new InnerChecksumWorker(infoController, Utils.ConvertToJavaList(infoController._files)))
-            {
-            }
-
-            private class InnerChecksumWorker : ChecksumWorker
-            {
-                private readonly InfoController _infoController;
-
-                public InnerChecksumWorker(InfoController infoController, List files) : base(files)
-                {
-                    _infoController = infoController;
-                }
-
-                public override void cleanup(object obj)
-                {
-                    foreach (Path checksum in _infoController.Files)
-                    {
-                        if (String.IsNullOrEmpty(checksum.attributes().getChecksum()))
-                        {
-                            _infoController.View.Checksum = Locale.localizedString("Unknown");
-                        }
-                        else
-                        {
-                            _infoController.View.Checksum = checksum.attributes().getChecksum();
-                        }
-                    }
-                    _infoController.ToggleSizeSettings(true);
-                    _infoController.AttachGeneralHandlers();
-                }
-            }
         }
 
         public class CustomHeaderEntry : INotifyPropertyChanged
@@ -1742,6 +1701,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class FetchS3BackgroundAction : BrowserBackgroundAction
         {
+            private readonly Path _container;
             private readonly IList<string> _containers = new List<string>();
 
             private readonly InfoController _infoController;
@@ -1760,37 +1720,47 @@ namespace Ch.Cyberduck.Ui.Controller
                 _infoController = infoController;
                 _view = infoController.View;
                 _selected = infoController.SelectedPath;
+                _container = _infoController.containerService.getContainer(_selected);
             }
 
             public override void run()
             {
-                CloudSession s = (CloudSession) BrowserController.getSession();
-                Path container = _selected.getContainer();
-                if (s.isLocationSupported())
+                Session s = BrowserController.getSession();
+                if (s.getFeature(typeof (Location), _infoController._prompt) != null)
                 {
-                    _location = s.getLocation(container);
+                    _location =
+                        ((Location) s.getFeature(typeof (Location), _infoController._prompt)).getLocation(_container);
                 }
-                if (s.isLoggingSupported())
+                if (s.getFeature(typeof (Logging), _infoController._prompt) != null)
                 {
-                    _logging = s.getLogging(container);
-                    AttributedList children = _infoController.SelectedPath.getContainer().getParent().list();
+                    _logging =
+                        ((Logging) s.getFeature(typeof (Logging), _infoController._prompt)).getConfiguration(_container);
+                    AttributedList children =
+                        _infoController._controller.getSession().list(_container.getParent());
                     foreach (AbstractPath c in children)
                     {
                         _containers.Add(c.getName());
                     }
                 }
-                if (s.isVersioningSupported())
+                if (s.getFeature(typeof (Versioning), _infoController._prompt) != null)
                 {
-                    _versioning = s.getVersioning(container);
+                    _versioning =
+                        ((Versioning) s.getFeature(typeof (Versioning), _infoController._prompt)).getConfiguration(
+                            _container);
                 }
-                if (s.isLifecycleSupported())
+                if (s.getFeature(typeof (Lifecycle), _infoController._prompt) != null)
                 {
-                    _lifecycle = s.getLifecycle(container);
+                    _lifecycle =
+                        ((Lifecycle) s.getFeature(typeof (Lifecycle), _infoController._prompt)).getConfiguration(
+                            _container);
                 }
-                if (s.isAnalyticsSupported())
+                if (s.getFeature(typeof (AnalyticsProvider), _infoController._prompt) != null)
                 {
-                    _credentials =
-                        s.iam(LoginControllerFactory.get(_infoController)).getUserCredentials(s.analytics().getName());
+                    _credentials = ((IdentityConfiguration)
+                                    s.getFeature(typeof (IdentityConfiguration), _infoController._prompt))
+                        .getUserCredentials(
+                            ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider), _infoController._prompt))
+                                .getName());
                 }
                 if (_infoController.NumberOfFiles == 1)
                 {
@@ -1800,66 +1770,82 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
+                base.cleanup();
                 try
                 {
-                    CloudSession s = (CloudSession) BrowserController.getSession();
-                    _view.BucketLoggingCheckbox = _logging.isEnabled();
-                    if (_containers.Count > 0)
+                    if (_logging != null)
                     {
-                        _view.PopulateBucketLogging(_containers);
+                        _view.BucketLoggingCheckbox = _logging.isEnabled();
+                        if (_containers.Count > 0)
+                        {
+                            _view.PopulateBucketLogging(_containers);
+                        }
+                        if (_logging.isEnabled())
+                        {
+                            _view.BucketLoggingPopup = _logging.getLoggingTarget();
+                        }
+                        else
+                        {
+                            // Default to write log files to origin bucket
+                            _view.BucketLoggingPopup = _selected.getName();
+                        }
                     }
-                    if (_logging.isEnabled())
-                    {
-                        _view.BucketLoggingPopup = _logging.getLoggingTarget();
-                    }
-                    else
-                    {
-                        // Default to write log files to origin bucket
-                        _view.BucketLoggingPopup = _selected.getName();
-                    }
+
                     if (Utils.IsNotBlank(_location))
                     {
                         _view.BucketLocation = Locale.localizedString(_location, "S3");
                     }
-                    _view.BucketVersioning = _versioning.isEnabled();
-                    _view.BucketMfa = _versioning.isMultifactor();
+
+                    if (_versioning != null)
+                    {
+                        _view.BucketVersioning = _versioning.isEnabled();
+                        _view.BucketMfa = _versioning.isMultifactor();
+                    }
+
                     _view.Encryption = Utils.IsNotBlank(_encryption);
                     if (null != _credentials)
                     {
-                        _view.BucketAnalyticsSetupUrl = s.analytics()
-                                                         .getSetup(s.getHost().getProtocol(),
-                                                                   s.getHost().getProtocol().getScheme(),
-                                                                   _selected.getContainer().getName(), _credentials);
+                        Session s = BrowserController.getSession();
+                        _view.BucketAnalyticsSetupUrl = ((AnalyticsProvider)
+                                                         s.getFeature(typeof (AnalyticsProvider),
+                                                                      _infoController._prompt))
+                            .getSetup(s.getHost().getProtocol(),
+                                      s.getHost().getProtocol().getScheme(),
+                                      _container.getName(), _credentials);
                     }
                     _view.BucketAnalyticsCheckbox = null != _credentials;
-                    _view.LifecycleDeleteCheckbox = null != _lifecycle.getExpiration();
-                    if (_lifecycle.getExpiration() != null)
+
+                    if (_lifecycle != null)
                     {
-                        _view.LifecycleDelete = _lifecycle.getExpiration().toString();
-                        if (null == _view.LifecycleDelete)
+                        _view.LifecycleDeleteCheckbox = null != _lifecycle.getExpiration();
+                        if (_lifecycle.getExpiration() != null)
                         {
-                            _infoController._lifecycleDeletePeriods.Add(
-                                new KeyValuePair<string, string>(
-                                    MessageFormat.format(Locale.localizedString("after {0} Days", "S3"),
-                                                         _lifecycle.getExpiration().toString()),
-                                    _lifecycle.getExpiration().toString()));
-                            _infoController.PopulateLifecycleDeletePeriod();
                             _view.LifecycleDelete = _lifecycle.getExpiration().toString();
+                            if (null == _view.LifecycleDelete)
+                            {
+                                _infoController._lifecycleDeletePeriods.Add(
+                                    new KeyValuePair<string, string>(
+                                        MessageFormat.format(Locale.localizedString("after {0} Days", "S3"),
+                                                             _lifecycle.getExpiration().toString()),
+                                        _lifecycle.getExpiration().toString()));
+                                _infoController.PopulateLifecycleDeletePeriod();
+                                _view.LifecycleDelete = _lifecycle.getExpiration().toString();
+                            }
                         }
-                    }
-                    _view.LifecycleTransitionCheckbox = null != _lifecycle.getTransition();
-                    if (_lifecycle.getTransition() != null)
-                    {
-                        _view.LifecycleTransition = _lifecycle.getTransition().toString();
-                        if (null == _view.LifecycleTransition)
+                        _view.LifecycleTransitionCheckbox = null != _lifecycle.getTransition();
+                        if (_lifecycle.getTransition() != null)
                         {
-                            _infoController._lifecycleTransitionPeriods.Add(
-                                new KeyValuePair<string, string>(
-                                    MessageFormat.format(Locale.localizedString("after {0} Days", "S3"),
-                                                         _lifecycle.getTransition().toString()),
-                                    _lifecycle.getTransition().toString()));
-                            _infoController.PopulateLifecycleTransitionPeriod();
                             _view.LifecycleTransition = _lifecycle.getTransition().toString();
+                            if (null == _view.LifecycleTransition)
+                            {
+                                _infoController._lifecycleTransitionPeriods.Add(
+                                    new KeyValuePair<string, string>(
+                                        MessageFormat.format(Locale.localizedString("after {0} Days", "S3"),
+                                                             _lifecycle.getTransition().toString()),
+                                        _lifecycle.getTransition().toString()));
+                                _infoController.PopulateLifecycleTransitionPeriod();
+                                _view.LifecycleTransition = _lifecycle.getTransition().toString();
+                            }
                         }
                     }
                 }
@@ -1887,26 +1873,26 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void run()
             {
                 Session session = BrowserController.getSession();
-                session.cdn(LoginControllerFactory.get(BrowserController))
-                       .invalidate(session.cdn(LoginControllerFactory.get(BrowserController)).getOrigin(_method,
-                                                                                                        _infoController
-                                                                                                            .SelectedPath
-                                                                                                            .getContainerName
-                                                                                                            ()),
-                                   _method,
-                                   Utils.ConvertToJavaList(_infoController._files), false);
+                DistributionConfiguration cdn =
+                    (DistributionConfiguration)
+                    session.getFeature(typeof (DistributionConfiguration), _infoController._prompt);
+                cdn.invalidate(_infoController.containerService.getContainer(_infoController.SelectedPath),
+                               _method,
+                               Utils.ConvertToJavaList(_infoController._files), false);
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 // Refresh the current distribution status
-                _infoController.DistributioniDeliveryMethodChanged();
+                _infoController.DistributionDeliveryMethodChanged();
             }
 
             public override string getActivity()
             {
                 return String.Format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
-                                     _infoController.SelectedPath.getContainer().getName());
+                                     _infoController.containerService.getContainer(_infoController.SelectedPath)
+                                                    .getName());
             }
         }
 
@@ -1935,21 +1921,24 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                ((S3Session) BrowserController.getSession()).setLifecycle(_selected.getContainer(),
-                                                                          new LifecycleConfiguration(_transitionEnabled
-                                                                                                         ? Integer
-                                                                                                               .valueOf(
-                                                                                                                   _transitionPeriod)
-                                                                                                         : null,
-                                                                                                     _deleteEnabled
-                                                                                                         ? Integer
-                                                                                                               .valueOf(
-                                                                                                                   _deletePeriod)
-                                                                                                         : null));
+                Lifecycle lifecycle =
+                    (Lifecycle) BrowserController.getSession().getFeature(typeof (Lifecycle), _infoController._prompt);
+                lifecycle.setConfiguration(_infoController.containerService.getContainer(_selected),
+                                           new LifecycleConfiguration(_transitionEnabled
+                                                                          ? Integer
+                                                                                .valueOf(
+                                                                                    _transitionPeriod)
+                                                                          : null,
+                                                                      _deleteEnabled
+                                                                          ? Integer
+                                                                                .valueOf(
+                                                                                    _deletePeriod)
+                                                                          : null));
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 _infoController.ToggleS3Settings(true);
                 _infoController.InitS3();
             }
@@ -1960,7 +1949,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public ReadAclBackgroundAction(BrowserController browserController,
                                            InfoController infoController)
                 : base(browserController,
-                       new InnerReadAclWorker(infoController,
+                       new InnerReadAclWorker(browserController, infoController,
                                               Utils.ConvertToJavaList(infoController._files)))
             {
             }
@@ -1969,9 +1958,13 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerReadAclWorker(InfoController infoController,
+                public InnerReadAclWorker(BrowserController browserController,
+                                          InfoController infoController,
                                           List files)
-                    : base(files)
+                    : base(
+                        (AccessControlList)
+                        browserController.getSession().getFeature(typeof (AccessControlList), infoController._prompt),
+                        files)
                 {
                     _infoController = infoController;
                 }
@@ -2019,28 +2012,32 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                Path container = _infoController.SelectedPath.getContainer();
+                Path container = _infoController.containerService.getContainer(_infoController.SelectedPath);
                 Session session = BrowserController.getSession();
-                DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(_infoController));
+                DistributionConfiguration cdn =
+                    (DistributionConfiguration)
+                    session.getFeature(typeof (DistributionConfiguration), _infoController._prompt);
                 _distribution = cdn.read(container, _deliveryMethod);
                 if (cdn.isDefaultRootSupported(_distribution.getMethod()))
                 {
                     // Make sure container items are cached for default root object.
-                    _rootDocuments.addAll(container.list());
+                    _rootDocuments.addAll(session.list(container));
                 }
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 try
                 {
                     _infoController.DetachDistributionHandlers();
                     Session session = BrowserController.getSession();
-                    Path container = _infoController.SelectedPath.getContainer();
-                    DistributionConfiguration cdn = session.cdn(LoginControllerFactory.get(_infoController));
-                    _view.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                                            session.cdn(LoginControllerFactory.get(BrowserController))
-                                                                   .getName(_deliveryMethod));
+                    Path container = _infoController.containerService.getContainer(_infoController.SelectedPath);
+                    DistributionConfiguration cdn =
+                        (DistributionConfiguration)
+                        session.getFeature(typeof (DistributionConfiguration), _infoController._prompt);
+                    _view.DistributionTitle = String.Format(
+                        Locale.localizedString("Enable {0} Distribution", "Status"), cdn.getName(_deliveryMethod));
                     //Path file = _infoController.SelectedPath;
                     _view.Distribution = _distribution.isEnabled();
                     _view.DistributionStatus = _distribution.getStatus();
@@ -2079,17 +2076,21 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (cdn.isAnalyticsSupported(_deliveryMethod))
                     {
-                        Credentials credentials =
-                            session.iam(LoginControllerFactory.get(BrowserController))
-                                   .getUserCredentials(BrowserController.getSession().analytics().getName());
+                        IdentityConfiguration iam =
+                            (IdentityConfiguration)
+                            session.getFeature(typeof (IdentityConfiguration), _infoController._prompt);
+                        AnalyticsProvider analytics =
+                            (AnalyticsProvider) session.getFeature(typeof (AnalyticsProvider), _infoController._prompt);
+
+                        Credentials credentials = iam.getUserCredentials(analytics.getName());
                         _view.DistributionAnalyticsCheckbox = credentials != null;
                         if (credentials != null)
                         {
-                            _view.DistributionAnalyticsSetupUrl = session.analytics().getSetup(cdn.getProtocol(),
-                                                                                               _distribution.getMethod()
-                                                                                                            .getScheme(),
-                                                                                               container.getName(),
-                                                                                               credentials);
+                            _view.DistributionAnalyticsSetupUrl = analytics.getSetup(cdn.getProtocol(),
+                                                                                     _distribution.getMethod()
+                                                                                                  .getScheme(),
+                                                                                     container.getName(),
+                                                                                     credentials);
                         }
                     }
                     _view.DistributionOrigin = _distribution.getOrigin(_infoController.SelectedPath);
@@ -2198,7 +2199,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                 InfoController infoController)
                 : base(
                     controller,
-                    new InnerReadMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files)))
+                    new InnerReadMetadataWorker(controller, infoController,
+                                                Utils.ConvertToJavaList(infoController._files)))
             {
             }
 
@@ -2206,7 +2208,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerReadMetadataWorker(InfoController infoController, List files) : base(files)
+                public InnerReadMetadataWorker(BrowserController browserController, InfoController infoController,
+                                               List files)
+                    : base(
+                        (Headers) browserController.getSession().getFeature(typeof (Headers), infoController._prompt),
+                        files)
                 {
                     _infoController = infoController;
                 }
@@ -2223,7 +2229,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     _infoController.ToggleMetadataSettings(true);
                     _infoController.SetMetadata(metadata);
-                    //todo attachmetadatahandle`r?
+                    //todo attachmetadatahandler?
                 }
             }
         }
@@ -2268,7 +2274,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerCalculateSizeWorker(InfoController infoController, List files) : base(files)
+                public InnerCalculateSizeWorker(InfoController infoController, List files)
+                    : base(infoController._controller.getSession(), files)
                 {
                     _infoController = infoController;
                 }
@@ -2302,20 +2309,24 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void run()
             {
                 Session session = BrowserController.getSession();
+                IdentityConfiguration iam =
+                    (IdentityConfiguration) session.getFeature(typeof (IdentityConfiguration), _infoController._prompt);
+                AnalyticsProvider analytics =
+                    (AnalyticsProvider) session.getFeature(typeof (AnalyticsProvider), _infoController._prompt);
                 if (_bucketAnalyticsCheckBox)
                 {
                     String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                    session.iam(LoginControllerFactory.get(_infoController))
-                           .createUser(session.analytics().getName(), document);
+                    iam.createUser(analytics.getName(), document);
                 }
                 else
                 {
-                    session.iam(LoginControllerFactory.get(_infoController)).deleteUser(session.analytics().getName());
+                    iam.deleteUser(analytics.getName());
                 }
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 _infoController.ToggleS3Settings(true);
                 _infoController.InitS3();
             }
@@ -2337,13 +2348,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                ((CloudSession) BrowserController.getSession()).setLogging(
-                    _infoController.SelectedPath.getContainer(),
-                    new LoggingConfiguration(_bucketLoggingCheckbox, _bucketLoggingPopup));
+                ((Logging) BrowserController.getSession().getFeature(typeof (Logging), _infoController._prompt))
+                    .setConfiguration(_infoController.containerService.getContainer(_infoController.SelectedPath),
+                                      new LoggingConfiguration(_bucketLoggingCheckbox, _bucketLoggingPopup));
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 _infoController.ToggleS3Settings(true);
                 _infoController.InitS3();
             }
@@ -2374,17 +2386,19 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (Path next in _infoController._files)
                 {
-                    ((CloudSession) BrowserController.getSession()).setVersioning(next.getContainer(),
-                                                                                  LoginControllerFactory.get(
-                                                                                      _infoController),
-                                                                                  new VersioningConfiguration(
-                                                                                      _bucketMfa, _bucketVersioning));
+                    ((Versioning)
+                     BrowserController.getSession().getFeature(typeof (Versioning), _infoController._prompt))
+                        .setConfiguration(_infoController.containerService.getContainer(_infoController.SelectedPath),
+                                          _infoController._prompt,
+                                          new VersioningConfiguration(_bucketMfa, _bucketVersioning)
+                        );
                     break;
                 }
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 _infoController.ToggleS3Settings(true);
                 _infoController.InitS3();
             }
@@ -2406,21 +2420,25 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void run()
             {
                 Session session = BrowserController.getSession();
+                IdentityConfiguration iam =
+                    (IdentityConfiguration) session.getFeature(typeof (IdentityConfiguration), _infoController._prompt);
+                AnalyticsProvider analytics =
+                    (AnalyticsProvider) session.getFeature(typeof (AnalyticsProvider), _infoController._prompt);
                 if (_distributionAnalyticsCheckBox)
                 {
                     String document =
                         Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                    session.iam(LoginControllerFactory.get(_infoController))
-                           .createUser(session.analytics().getName(), document);
+                    iam.createUser(analytics.getName(), document);
                 }
                 else
                 {
-                    session.iam(LoginControllerFactory.get(_infoController)).deleteUser(session.analytics().getName());
+                    iam.deleteUser(analytics.getName());
                 }
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 _infoController.ToggleDistributionSettings(true);
                 _infoController.InitDistribution();
             }
@@ -2430,38 +2448,38 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly BrowserController _controller;
             private readonly InfoController _infoController;
-            private readonly String _storageClass;
 
             public SetEncryptionBackgroundAction(BrowserController controller,
                                                  InfoController infoController) : base(controller)
             {
                 _infoController = infoController;
                 _controller = controller;
-                _storageClass = _infoController.View.StorageClass;
             }
 
             public override void run()
             {
+                Encryption feature =
+                    (Encryption) BrowserController.getSession().getFeature(typeof (Encryption), _infoController._prompt);
+
+
+                S3Session session = (S3Session) _controller.getSession();
+                S3CopyFeature copy = new S3CopyFeature(session);
                 foreach (Path next in _infoController._files)
                 {
-                    if (_infoController.View.Encryption)
+                    if (next.attributes().isFile())
                     {
-                        next.attributes().setEncryption(
-                            (String) ((CloudSession) _controller.getSession()).getSupportedEncryptionAlgorithms().get(0));
+                        feature.setEncryption(next,
+                                              _infoController.View.Encryption
+                                                  ? (string) feature.getAlgorithms().iterator().next()
+                                                  : null);
                     }
-                    else
-                    {
-                        next.attributes().setEncryption(null);
-                    }
-                    // Copy item in place to write new attributes
-                    next.copy(next, new TransferStatus());
                 }
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 _infoController.ToggleS3Settings(true);
-                _infoController.InitMetadata();
                 _infoController.InitS3();
             }
 
@@ -2490,16 +2508,20 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return;
                 }
+                Redundancy feature =
+                    (Redundancy) BrowserController.getSession().getFeature(typeof (Redundancy), _infoController._prompt);
                 foreach (Path next in _infoController._files)
                 {
-                    next.attributes().setStorageClass(_storageClass);
-                    // Copy item in place to write new attributes
-                    next.copy(next, new TransferStatus());
+                    if (next.attributes().isFile())
+                    {
+                        feature.setClass(next, _storageClass);
+                    }
                 }
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 _infoController.ToggleS3Settings(true);
                 _infoController.InitS3();
             }
@@ -2554,7 +2576,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public WriteAclBackgroundAction(BrowserController browserController,
                                             InfoController infoController)
                 : base(browserController,
-                       new InnerWriteAclWorker(infoController,
+                       new InnerWriteAclWorker(browserController, infoController,
                                                Utils.ConvertToJavaList(infoController._files),
                                                GetAcl(infoController)))
             {
@@ -2576,10 +2598,14 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWriteAclWorker(InfoController infoController,
+                public InnerWriteAclWorker(BrowserController controller,
+                                           InfoController infoController,
                                            List files,
                                            Acl acl)
-                    : base(files, acl, true)
+                    : base(
+                        (AccessControlList)
+                        controller.getSession().getFeature(typeof (AccessControlList), infoController._prompt), files,
+                        acl, true)
                 {
                     _infoController = infoController;
                 }
@@ -2622,31 +2648,32 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void run()
             {
                 Session session = BrowserController.getSession();
-                String origin = session.cdn(LoginControllerFactory.get(BrowserController))
-                                       .getOrigin(_deliveryMethod, _infoController.SelectedPath.getContainerName());
+                DistributionConfiguration cdn =
+                    (DistributionConfiguration)
+                    session.getFeature(typeof (DistributionConfiguration), _infoController._prompt);
+                Path container = _infoController.containerService.getContainer(_infoController.SelectedPath);
                 if (Utils.IsNotBlank(_cname))
                 {
-                    session.cdn(LoginControllerFactory.get(BrowserController)).write(_distribution,
-                                                                                     origin,
-                                                                                     _deliveryMethod,
-                                                                                     _cname.Split(new[] {' '},
-                                                                                                  StringSplitOptions
-                                                                                                      .RemoveEmptyEntries),
-                                                                                     _logging, _distributionLogging,
-                                                                                     _defaultRoot);
+                    cdn.write(container, _distribution,
+                              _deliveryMethod,
+                              _cname.Split(new[] {' '},
+                                           StringSplitOptions
+                                               .RemoveEmptyEntries),
+                              _logging, _distributionLogging,
+                              _defaultRoot);
                 }
                 else
                 {
-                    session.cdn(LoginControllerFactory.get(BrowserController)).write(_distribution,
-                                                                                     origin,
-                                                                                     _deliveryMethod,
-                                                                                     new string[] {}, _logging,
-                                                                                     _distributionLogging, _defaultRoot);
+                    cdn.write(container, _distribution,
+                              _deliveryMethod,
+                              new string[] {}, _logging,
+                              _distributionLogging, _defaultRoot);
                 }
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 // Refresh the current distribution status
                 _infoController.DistributionDeliveryMethodChanged();
             }
@@ -2673,7 +2700,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
-                    : base(files, metadata)
+                    : base(
+                        (Headers)
+                        infoController._controller.getSession().getFeature(typeof (Headers), infoController._prompt),
+                        files, metadata)
                 {
                     _infoController = infoController;
                 }
@@ -2681,7 +2711,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object obj)
                 {
                     _infoController.ToggleMetadataSettings(true);
-                    _infoController.InitMetadata();
                 }
             }
         }
@@ -2709,7 +2738,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 public InnerWritePermissionWorker(InfoController infoController,
                                                   List files,
                                                   Permission permission,
-                                                  bool recursive) : base(files, permission, recursive)
+                                                  bool recursive)
+                    : base(
+                        infoController._controller.getSession(),
+                        (UnixPermission)
+                        infoController._controller.getSession()
+                                      .getFeature(typeof (UnixPermission), infoController._prompt), files,
+                        permission, recursive)
                 {
                     _infoController = infoController;
                 }

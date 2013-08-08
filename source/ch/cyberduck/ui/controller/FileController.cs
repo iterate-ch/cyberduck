@@ -73,8 +73,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (!string.IsNullOrEmpty(t))
             {
-                Path file = PathFactory.createPath(Session, Workdir,
-                                                   t, AbstractPath.FILE_TYPE);
+                Path file = new Path(Workdir, t, AbstractPath.FILE_TYPE);
                 return BrowserController.Lookup(file.getReference()) == null;
             }
             return false;

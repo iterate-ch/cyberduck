@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,10 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Windows.Forms;
-using ch.cyberduck.core.threading;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using ch.cyberduck.core.threading;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -112,7 +113,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected virtual void Invalidate()
         {
-            ;
+            base.invalidate();
         }
 
         /// <summary>
@@ -156,7 +157,8 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="showCancelButton"></param>
         /// <param name="help"></param>
         /// <returns></returns>
-        public DialogResult WarningBox(string title, string message, string detail, string expanded, string commandButtons, bool showCancelButton, string help)
+        public DialogResult WarningBox(string title, string message, string detail, string expanded,
+                                       string commandButtons, bool showCancelButton, string help)
         {
             return View.CommandBox(title, message, detail, expanded, help, null, commandButtons,
                                    showCancelButton, SysIcons.Warning, SysIcons.Information, delegate { });
@@ -173,7 +175,8 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="showCancelButton"></param>
         /// <param name="mainIcon"></param>
         /// <returns></returns>
-        public DialogResult InfoBox(string title, string message, string detail, string commandButtons, string verificationText, bool showCancelButton)
+        public DialogResult InfoBox(string title, string message, string detail, string commandButtons,
+                                    string verificationText, bool showCancelButton)
         {
             return CommandBox(title, message, detail, commandButtons, showCancelButton,
                               verificationText, SysIcons.Information, null, delegate { });
@@ -191,7 +194,9 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="mainIcon"></param>
         /// <param name="handler"></param>
         /// <returns></returns>
-        public DialogResult CommandBox(string title, string message, string detail, string commandButtons, bool showCancelButton, string verificationText, SysIcons mainIcon, DialogResponseHandler handler)
+        public DialogResult CommandBox(string title, string message, string detail, string commandButtons,
+                                       bool showCancelButton, string verificationText, SysIcons mainIcon,
+                                       DialogResponseHandler handler)
         {
             return CommandBox(title, message, detail, commandButtons, showCancelButton,
                               verificationText, mainIcon, null, handler);
@@ -210,7 +215,9 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="help">Help URL</param>
         /// <param name="handler"></param>
         /// <returns></returns>
-        public DialogResult CommandBox(string title, string message, string detail, string commandButtons, bool showCancelButton, string verificationText, SysIcons mainIcon, string help, DialogResponseHandler handler)
+        public DialogResult CommandBox(string title, string message, string detail, string commandButtons,
+                                       bool showCancelButton, string verificationText, SysIcons mainIcon, string help,
+                                       DialogResponseHandler handler)
         {
             return View.CommandBox(title, message, detail, null, help, verificationText, commandButtons,
                                    showCancelButton,

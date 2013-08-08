@@ -37,7 +37,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
-using ch.cyberduck.ui;
+using ch.cyberduck.ui.comparator;
 using org.apache.commons.io;
 using org.apache.commons.lang;
 using org.apache.log4j;
@@ -379,6 +379,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateRevertFile;
 
 
+        public bool ComboboxPathEnabled
+        {
+            set { pathComboBox.Enabled = value; }
+        }
+
         public bool HiddenFilesVisible
         {
             set { showHiddenFilesMainMenuItem.Checked = value; }
@@ -566,7 +571,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             // Clear the cache in order to avoid strange side effects
             browser.RebuildAll(true);
-            browser.ClearCachedInfo();           
+            browser.ClearCachedInfo();
             browser.SetObjects(model);
 
             //only restore the state for the first time
@@ -654,6 +659,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         public TypedColumn<Path>.TypedAspectGetterDelegate ModelKindGetter
         {
             set { new TypedColumn<Path>(treeColumnKind) {AspectGetter = value}; }
+        }
+
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelExtensionGetter
+        {
+            set { new TypedColumn<Path>(treeColumnExtension) {AspectGetter = value}; }
+        }
+
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelRegionGetter
+        {
+            set { new TypedColumn<Path>(treeColumnRegion) {AspectGetter = value}; }
         }
 
         public MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter
@@ -790,6 +805,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void StartSearch()
         {
             searchTextBox.Focus();
+        }
+
+        public bool SearchEnabled
+        {
+            set { searchTextBox.Enabled = value; }
         }
 
         public IList<Path> VisiblePaths
@@ -986,6 +1006,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (SortOrder order) => new PermissionsComparator(order == SortOrder.Ascending);
             treeColumnKind.ComparatorGetter =
                 (SortOrder order) => new FileTypeComparator(order == SortOrder.Ascending);
+            treeColumnExtension.ComparatorGetter =
+                (SortOrder order) => new ExtensionComparator(order == SortOrder.Ascending);
+            treeColumnRegion.ComparatorGetter =
+                (SortOrder order) => new RegionComparator(order == SortOrder.Ascending);
         }
 
         private void BeforeSorting(object sender, BeforeSortingEventArgs args)
@@ -2765,7 +2789,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             public bool Filter(object modelObject)
             {
-                return _del.accept(((Path) modelObject));
+                return _del.accept((modelObject));
             }
         }
 

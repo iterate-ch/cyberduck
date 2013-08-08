@@ -34,7 +34,8 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    internal abstract class TransferPromptController : WindowController<ITransferPromptView>, TransferPrompt
+    internal abstract class TransferPromptController : WindowController<ITransferPromptView>, TransferPrompt,
+                                                       ProgressListener, TranscriptListener
     {
         private static readonly Logger Log = Logger.getLogger(typeof (TransferPromptController));
         private static readonly string UnknownString = Locale.localizedString("Unknown");
@@ -46,7 +47,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
 
         protected TransferPromptModel TransferPromptModel;
-        private StatusLabelProgressListener _progressListener;
+        //private StatusLabelProgressListener _progressListener;
 
         protected TransferPromptController(WindowController parent, Transfer transfer)
         {
@@ -59,6 +60,16 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         protected abstract string TransferName { get; }
+
+        public void message(string msg)
+        {
+            Invoke(delegate { View.StatusLabel = msg; });
+        }
+
+        public void log(bool request, string message)
+        {
+            //
+        }
 
         public virtual TransferAction prompt()
         {
@@ -74,11 +85,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
             AsyncDelegate wireAction = delegate
                 {
+                    //TODO weg?
+                    /*
                     _progressListener = new StatusLabelProgressListener(this);
                     foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
                     {
                         s.addProgressListener(_progressListener);
-                    }
+                    }*/
 
                     View.ToggleDetailsEvent += View_ToggleDetailsEvent;
                     View.DetailsVisible = Preferences.instance().getBoolean(
@@ -124,10 +137,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected override void Invalidate()
         {
+            //TODO wirklich weg?
+
+            /*
             foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
             {
                 s.removeProgressListener(_progressListener);
-            }
+            }*/
+            base.Invalidate();
         }
 
         public void UpdateStatusLabel()
@@ -280,21 +297,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             AsyncDelegate refreshAction = () => View.RefreshBrowserObject(path);
             Invoke(refreshAction);
-        }
-
-        private class StatusLabelProgressListener : ProgressListener
-        {
-            private readonly TransferPromptController _controller;
-
-            public StatusLabelProgressListener(TransferPromptController controller)
-            {
-                _controller = controller;
-            }
-
-            public void message(string msg)
-            {
-                _controller.Invoke(delegate { _controller.View.StatusLabel = msg; });
-            }
         }
     }
 }

@@ -24,11 +24,11 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class UploadPromptModel : TransferPromptModel
     {
-        private readonly Filter _filter = new UploadPathFilter();
+        private readonly Filter _filter;
 
         public UploadPromptModel(TransferPromptController controller, Transfer transfer) : base(controller, transfer)
         {
-            ;
+            _filter = new UploadPathFilter(transfer);
         }
 
         /// <summary>
@@ -65,25 +65,19 @@ namespace Ch.Cyberduck.Ui.Controller
         internal class UploadPathFilter : PromptFilter
         {
             protected static Logger Log = Logger.getLogger(typeof (UploadPathFilter).FullName);
+            private readonly Transfer _transfer;
+
+            public UploadPathFilter(Transfer transfer)
+            {
+                _transfer = transfer;
+            }
 
             public override bool accept(object ap)
             {
-                Path child = (Path) ap;
-                Log.debug("accept:" + child);
-                if (child.exists())
+                Path file = (Path) ap;
+                if (_transfer.cache().lookup(file.getReference()) != null)
                 {
-                    if (child.attributes().getSize() == -1)
-                    {
-                        child.readSize();
-                    }
-                    if (child.getSession().isReadTimestampSupported())
-                    {
-                        if (child.attributes().getModificationDate() == -1)
-                        {
-                            child.readTimestamp();
-                        }
-                    }
-                    return base.accept(child);
+                    return true;
                 }
                 return false;
             }

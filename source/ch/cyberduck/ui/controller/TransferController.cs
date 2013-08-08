@@ -20,19 +20,18 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Winforms.Threading;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.transfer.synchronisation;
-using java.util;
+using ch.cyberduck.ui.threading;
 using org.apache.log4j;
-using Locale = ch.cyberduck.core.i18n.Locale;
-using Queue = ch.cyberduck.core.transfer.Queue;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -130,6 +129,17 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 invoke(new LogAction(this, request, transcript));
             }
+        }
+
+        public ProgressController GetController(Transfer transfer)
+        {
+            ProgressController progressController;
+            if (!_transferMap.TryGetValue(transfer, out progressController))
+            {
+                progressController = new ProgressController(transfer);
+                _transferMap.Add(transfer, new ProgressController(transfer));
+            }
+            return progressController;
         }
 
         public static bool ApplicationShouldTerminate()
@@ -527,7 +537,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer = GetTransferFromView(progressView);
                 if (!transfer.isRunning())
                 {
-                    StartTransfer(transfer, false, true);
+                    TransferOptions options = new TransferOptions();
+                    options.resumeRequested = false;
+                    options.reloadRequested = true;
+                    StartTransfer(transfer, options);
                 }
             }
         }
@@ -548,7 +561,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer = GetTransferFromView(progressView);
                 if (!transfer.isRunning())
                 {
-                    StartTransfer(transfer, true, false);
+                    TransferOptions options = new TransferOptions();
+                    options.resumeRequested = true;
+                    options.reloadRequested = false;
+                    StartTransfer(transfer, options);
                 }
             }
         }
@@ -559,10 +575,10 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         public void StartTransfer(Transfer transfer)
         {
-            StartTransfer(transfer, false, false);
+            StartTransfer(transfer, new TransferOptions());
         }
 
-        private void StartTransfer(Transfer transfer, bool resumeRequested, bool reloadRequested)
+        private void StartTransfer(Transfer transfer, TransferOptions options)
         {
             if (!TransferCollection.defaultCollection().contains(transfer))
             {
@@ -574,7 +590,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             ProgressController progressController;
             _transferMap.TryGetValue(transfer, out progressController);
-            background(new TransferBackgroundAction(this, progressController, transfer, resumeRequested, reloadRequested));
+            background(new TransferBackgroundAction(this, transfer, options));
         }
 
         public void TaskbarOverlayIcon(Icon icon, string description)
@@ -600,55 +616,34 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class TransferBackgroundAction : AlertRepeatableBackgroundAction
+        private class TransferBackgroundAction : TransferCollectionRepeatableBackgroundAction
         {
             private readonly TransferController _controller;
-            private readonly object _lock = new object();
             private readonly Transfer _transfer;
-            private TransferListener _listener;
 
-            private bool _reload;
-            private bool _resume;
-
-            public TransferBackgroundAction(TransferController controller, ProgressListener progressListener, Transfer transfer, bool resumeRequested,
-                                            bool reloadRequested) : base(controller, progressListener, controller)
+            public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options) :
+                base(
+                controller, new DialogAlertCallback(controller), controller.GetController(transfer), controller,
+                transfer, new LazyTransferPrompt(controller, transfer), options)
             {
                 _transfer = transfer;
                 _controller = controller;
-
-                _resume = resumeRequested;
-                _reload = reloadRequested;
             }
 
-            public override void run()
+            public override void init()
             {
-                TransferOptions options = new TransferOptions();
-                options.reloadRequested = _reload;
-                options.resumeRequested = _resume;
-                _transfer.start(new LazyTransferPrompt(_controller, _transfer), options);
-            }
-
-            public override void finish()
-            {
-                base.finish();
-                ICollection<Session> convertFromJavaList = Utils.ConvertFromJavaList<Session>(_transfer.getSessions());
-                foreach (Session session in convertFromJavaList)
+                if (Preferences.instance().getBoolean("queue.orderFrontOnStart"))
                 {
-                    session.close();
-                    // We have our own session independent of any browser.
-                    session.cache().clear();
+                    _controller.View.BringToFront();
                 }
-                _transfer.removeListener(_listener);
+                base.init();
             }
 
             public override void cleanup()
             {
-                if (_transfer.isComplete() && !_transfer.isCanceled() && _transfer.isReset())
+                base.cleanup();
+                if (_transfer.isComplete() && _transfer.isReset())
                 {
-                    if (Preferences.instance().getBoolean("queue.removeItemWhenComplete"))
-                    {
-                        TransferCollection.defaultCollection().remove(_transfer);
-                    }
                     if (Preferences.instance().getBoolean("queue.orderBackOnStop"))
                     {
                         if (!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0))
@@ -657,44 +652,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                 }
-                TransferCollection.defaultCollection().save();
-            }
-
-            public override List getSessions()
-            {
-                return _transfer.getSessions();
-            }
-
-            public override String getActivity()
-            {
-                return _transfer.getName();
-            }
-
-            public override void pause()
-            {
-                _transfer.fireTransferQueued();
-                // Upon retry do not suggest to overwrite already completed items from the transfer
-                _reload = false;
-                _resume = true;
-                base.pause();
-                _transfer.fireTransferResumed();
-            }
-
-            public override bool isCanceled()
-            {
-                return _transfer.isCanceled();
-            }
-
-            public override void log(bool request, string message)
-            {
-                _controller.log(request, message);
-                base.log(request, message);
-            }
-
-            public override object @lock()
-            {
-                // No synchronization with other tasks
-                return _lock;
             }
 
             private class LazyTransferPrompt : TransferPrompt

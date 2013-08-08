@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -62,11 +62,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         bool ActivityRunning { set; }
         bool ShowActivityEnabled { set; }
+        bool ComboboxPathEnabled { set; }
         bool HiddenFilesVisible { set; }
         bool LogDrawerVisible { get; set; }
 
         Filter FilenameFilter { set; }
         string SearchString { set; get; }
+        bool SearchEnabled { set; }
+
         IList<Path> VisiblePaths { get; }
         bool ToolbarVisible { set; get; }
         TreeListView.CanExpandGetterDelegate ModelCanExpandDelegate { set; }
@@ -83,6 +86,8 @@ namespace Ch.Cyberduck.Ui.Controller
         TypedColumn<Path>.TypedAspectGetterDelegate ModelGroupGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelPermissionsGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelKindGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelExtensionGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelRegionGetter { set; }
 
         MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter { set; }
         event EventHandler<ChangeBrowserViewArgs> ChangeBrowserView;

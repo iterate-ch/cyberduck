@@ -57,17 +57,17 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _workdir = workdir;
                 _filename = filename;
-                _folder = PathFactory.createPath(controller.getSession(), _workdir, _filename,
-                                                 AbstractPath.DIRECTORY_TYPE);
+                _folder = new Path(_workdir, _filename, AbstractPath.DIRECTORY_TYPE);
             }
 
             public override void run()
             {
-                _folder.mkdir();
+                BrowserController.getSession().mkdir(_folder);
             }
 
             public override void cleanup()
             {
+                base.cleanup();
                 if (_filename.StartsWith("."))
                 {
                     BrowserController.ShowHiddenFiles = true;

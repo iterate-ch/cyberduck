@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,70 +19,33 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Ssl;
+using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
+using java.util;
 using org.apache.log4j;
+using Locale = ch.cyberduck.core.i18n.Locale;
 using X509Certificate = java.security.cert.X509Certificate;
 
 namespace Ch.Cyberduck.Core
 {
-    public class Keychain : AbstractKeychain
+    public class Keychain : PasswordStore, CertificateStore
     {
         private static readonly Logger Log = Logger.getLogger(typeof (Keychain).FullName);
 
-        public override string getPassword(Scheme scheme, int port, String hostName, String user)
+        public bool isTrusted(String hostName, List certs)
         {
-            Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
-            host.getCredentials().setUsername(user);
-            return getPassword(host);
-        }
-
-        private string getPassword(Host host)
-        {
-            string password = Preferences.instance().getProperty(host.toURL());
-            if (null == password)
-            {
-                return null;
-            }
-            return DataProtector.Decrypt(password);
-        }
-
-        public override string getPassword(String hostName, String user)
-        {
-            Host host = new Host(hostName);
-            host.getCredentials().setUsername(user);
-            return getPassword(host);
-        }
-
-        public override void addPassword(String hostName, String user, String password)
-        {
-            Host host = new Host(hostName);
-            host.getCredentials().setUsername(user);
-            Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
-        }
-
-        public override void addPassword(Scheme scheme, int port, String hostName, String user, String password)
-        {
-            Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
-            host.getCredentials().setUsername(user);
-            Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
-        }
-
-        public override bool isTrusted(String hostName, X509Certificate[] certs)
-        {
-            X509Certificate2 serverCert = ConvertCertificate(certs[0]);
+            X509Certificate2 serverCert = ConvertCertificate(certs.iterator().next() as X509Certificate);
             X509Chain chain = new X509Chain();
             //todo Online revocation check. Preference.
             chain.ChainPolicy.RevocationMode = X509RevocationMode.Offline; // | X509RevocationMode.Online
             chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 0, 0, 10); // set timeout to 10 seconds
             chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
 
-            for (int index = 1; index < certs.Length; index++)
+            for (int index = 1; index < certs.size(); index++)
             {
-                chain.ChainPolicy.ExtraStore.Add(ConvertCertificate(certs[index]));
+                chain.ChainPolicy.ExtraStore.Add(ConvertCertificate(certs.get(index) as X509Certificate));
             }
             chain.Build(serverCert);
 
@@ -95,7 +58,8 @@ namespace Ch.Cyberduck.Core
 
             string errorFromChainStatus = GetErrorFromChainStatus(chain, hostName);
             bool certError = null != errorFromChainStatus;
-            bool hostnameMismatch = !HostnameVerifier.CheckServerIdentity(certs[0], serverCert, hostName);
+            bool hostnameMismatch =
+                !HostnameVerifier.CheckServerIdentity(certs.iterator().next() as X509Certificate, serverCert, hostName);
 
             // check if host name matches
             if (null == errorFromChainStatus && hostnameMismatch)
@@ -151,6 +115,57 @@ namespace Ch.Cyberduck.Core
                 }
             }
             return true;
+        }
+
+        public bool display(List certificates)
+        {
+            //todo did not find a way to show the chain in the case of self signed certs
+            X509Certificate2 cert = ConvertCertificate(certificates.iterator().next() as X509Certificate);
+            X509Certificate2UI.DisplayCertificate(cert);
+            return true;
+        }
+
+        public X509Certificate choose(string[] obj0, string obj1, string obj2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getPassword(Scheme scheme, int port, String hostName, String user)
+        {
+            Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
+            host.getCredentials().setUsername(user);
+            return getPassword(host);
+        }
+
+        public string getPassword(String hostName, String user)
+        {
+            Host host = new Host(hostName);
+            host.getCredentials().setUsername(user);
+            return getPassword(host);
+        }
+
+        public void addPassword(String hostName, String user, String password)
+        {
+            Host host = new Host(hostName);
+            host.getCredentials().setUsername(user);
+            Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
+        }
+
+        public void addPassword(Scheme scheme, int port, String hostName, String user, String password)
+        {
+            Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
+            host.getCredentials().setUsername(user);
+            Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
+        }
+
+        private string getPassword(Host host)
+        {
+            string password = Preferences.instance().getProperty(host.toURL());
+            if (null == password)
+            {
+                return null;
+            }
+            return DataProtector.Decrypt(password);
         }
 
         private bool CheckForException(string hostname, X509Certificate2 cert)
@@ -232,19 +247,6 @@ namespace Ch.Cyberduck.Core
             return error;
         }
 
-        public override bool displayCertificates(X509Certificate[] certificates)
-        {
-            //todo did not find a way to show the chain in the case of self signed certs
-            X509Certificate2 cert = ConvertCertificate(certificates[0]);
-            X509Certificate2UI.DisplayCertificate(cert);
-            return true;
-        }
-
-        public override X509Certificate chooseCertificate(string[] obj0, string obj1, string obj2)
-        {
-            throw new NotImplementedException();
-        }
-
         public static X509Certificate2 ConvertCertificate(X509Certificate certificate)
         {
             return new X509Certificate2(certificate.getEncoded());
@@ -252,10 +254,19 @@ namespace Ch.Cyberduck.Core
 
         public static void Register()
         {
-            KeychainFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
+            PasswordStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new WindowsPasswordStoreFactory());
+            CertificateStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new WindowsCertificateStoreFactory());
         }
 
-        private class Factory : KeychainFactory
+        private class WindowsCertificateStoreFactory : CertificateStoreFactory
+        {
+            protected override object create()
+            {
+                return new Keychain();
+            }
+        }
+
+        private class WindowsPasswordStoreFactory : PasswordStoreFactory
         {
             protected override object create()
             {

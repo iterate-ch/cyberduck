@@ -29,10 +29,10 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
+using Ch.Cyberduck.Core.Serializer.Impl;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
-using Ch.Cyberduck.Ui.Winforms.Serializer;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using Ch.Cyberduck.core.editor;
 using Ch.Cyberduck.core.local;
@@ -44,14 +44,14 @@ using ch.cyberduck.core.importer;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.ui;
 using ch.cyberduck.ui.growl;
 using org.apache.log4j;
 using org.apache.log4j.xml;
+using Keychain = Ch.Cyberduck.Core.Keychain;
 using Object = java.lang.Object;
 using Path = System.IO.Path;
+using Proxy = Ch.Cyberduck.Core.Proxy;
 using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
-using ThreadPool = ch.cyberduck.core.threading.ThreadPool;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -136,9 +136,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
                     Preferences.instance().save();
-                    // Shutdown thread pools
-                    AbstractController.getTimerPool().shutdownNow();
-                    ThreadPool.instance().shutdown();
                 };
         }
 
@@ -197,7 +194,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TcpReachability.Register();
             GrowlImpl.Register();
             TreePathReference.Register();
-            LoginController.Register();
+            PromptLoginController.Register();
             HostKeyController.Register();
             UserDefaultsDateFormatter.Register();
             if (Preferences.instance().getBoolean("rendezvous.enable"))

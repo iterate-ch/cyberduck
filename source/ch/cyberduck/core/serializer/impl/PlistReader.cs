@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,16 +15,16 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Xml;
 using ch.cyberduck.core;
-using ch.cyberduck.core.local;
 using ch.cyberduck.core.serializer;
 
 namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public abstract class PlistReader<T> : Reader where T : Serializable
     {
-        public Collection readCollection(Local file)
+        public Collection readCollection(ch.cyberduck.core.local.Local file)
         {
             XmlDocument PlistDocument = new XmlDocument {XmlResolver = null};
             PlistDocument.Load(file.getAbsolute());
@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
             return resultCollection;
         }
 
-        public Serializable read(Local file)
+        public Serializable read(ch.cyberduck.core.local.Local file)
         {
             XmlDocument PlistDocument = new XmlDocument {XmlResolver = null};
             PlistDocument.Load(file.getAbsolute());

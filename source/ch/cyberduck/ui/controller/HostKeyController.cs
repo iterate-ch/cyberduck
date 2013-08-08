@@ -19,6 +19,7 @@
 using System;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.sftp;
 using ch.ethz.ssh2;

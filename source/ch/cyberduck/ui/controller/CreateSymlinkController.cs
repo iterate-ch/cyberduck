@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
+using ch.cyberduck.core.features;
 using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -59,16 +60,17 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _workdir = workdir;
                 _symlink = symlink;
-                _link = PathFactory.createPath(controller.getSession(),
-                                               _workdir,
-                                               _symlink, AbstractPath.FILE_TYPE);
+                _link = new Path(_workdir, _symlink, AbstractPath.FILE_TYPE);
                 _target = BrowserController.SelectedPath.getName();
             }
 
             public override void run()
             {
                 // Symlink pointing to existing file
-                _link.symlink(_target);
+                ((Symlink)
+                 BrowserController.getSession()
+                                  .getFeature(typeof (Symlink), LoginControllerFactory.get(BrowserController))).symlink(
+                                      _link, _target);
             }
 
             public override void cleanup()

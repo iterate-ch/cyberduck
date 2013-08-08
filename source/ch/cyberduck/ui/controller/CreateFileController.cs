@@ -62,16 +62,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 _workdir = workdir;
                 _filename = filename;
                 _edit = edit;
-                _file = PathFactory.createPath(controller.getSession(),
-                                               _workdir,
-                                               _filename, AbstractPath.FILE_TYPE);
+                _file = new Path(_workdir, _filename, AbstractPath.FILE_TYPE);
             }
 
             public override void run()
             {
-                if (_file.touch())
+                if (BrowserController.getSession().touch(_file))
                 {
-                    _file.touch();
                     if (_edit)
                     {
                         Editor editor = EditorFactory.instance()
@@ -83,6 +80,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
+                base.cleanup();
                 if (_filename.StartsWith("."))
                 {
                     BrowserController.ShowHiddenFiles = true;

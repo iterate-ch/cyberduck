@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,10 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Collections.Generic;
 using BrightIdeasSoftware;
-using Ch.Cyberduck.Core;
-using ch.cyberduck.core.threading;
-using ch.cyberduck.ui.controller;
+using ch.cyberduck.core.exception;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -29,10 +28,10 @@ namespace Ch.Cyberduck.Ui.Controller
         AspectGetterDelegate ModelHostGetter { set; }
         AspectGetterDelegate ModelDescriptionGetter { set; }
 
-        void SetModel(IEnumerable<BackgroundException> model);
         string Transcript { set; }
         bool TranscriptEnabled { set; }
         bool TranscriptVisible { get; set; }
+        void SetModel(IEnumerable<BackgroundException> model);
 
         event VoidHandler ToggleTranscriptEvent;
     }

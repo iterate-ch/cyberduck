@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,14 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System;
+
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.threading;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
+using ch.cyberduck.core.exception;
+using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -75,6 +74,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             toggleTranscriptLabel.MouseEnter += delegate { toggleTranscriptLabel.ImageIndex = (_expanded ? 1 : 4); };
             toggleTranscriptLabel.MouseLeave += delegate { toggleTranscriptLabel.ImageIndex = (_expanded ? 0 : 3); };
             toggleTranscriptLabel.MouseUp += delegate { toggleTranscriptLabel.ImageIndex = (_expanded ? 1 : 4); };
+        }
+
+        public override string[] BundleNames
+        {
+            get { return new[] {"Error"}; }
         }
 
         public AspectGetterDelegate ModelHostGetter
@@ -135,10 +139,5 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         public event VoidHandler ToggleTranscriptEvent;
-
-        public override string[] BundleNames
-        {
-            get { return new[]{"Error"}; }
-        }
     }
 }

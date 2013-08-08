@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,6 @@
 
 using System.Xml;
 using ch.cyberduck.core;
-using ch.cyberduck.core.local;
 using ch.cyberduck.core.serializer;
 using java.util;
 using Collection = java.util.Collection;
@@ -27,7 +26,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public class PlistWriter : Writer
     {
-        public void write(Collection collection, Local file)
+        public void write(Collection collection, ch.cyberduck.core.local.Local file)
         {
             XmlDocument plistDocument = GetPlistDocument();
             XmlNode plistElement = plistDocument.LastChild;
@@ -43,7 +42,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
             plistDocument.Save(file.getAbsolute());
         }
 
-        public void write(Serializable bookmark, Local file)
+        public void write(Serializable bookmark, ch.cyberduck.core.local.Local file)
         {
             XmlDocument plistDocument = GetPlistDocument();
             XmlNode plistElement = plistDocument.LastChild;

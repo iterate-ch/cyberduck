@@ -18,14 +18,15 @@
 
 using System;
 using System.Collections.Generic;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.date;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.threading;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -78,18 +79,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     yield return (Path) list.get(i);
                 }
-            }
-        }
-
-        public IEnumerable<Path> GetEnumerator()
-        {
-            if (null == _controller.Workdir)
-                yield break;
-
-            AttributedList list = _controller.Workdir.list();
-            for (int i = 0; i < list.size(); i++)
-            {
-                yield return (Path) list.get(i);
             }
         }
 
@@ -160,6 +149,20 @@ namespace Ch.Cyberduck.Ui.Controller
             return descriptor.getKind(path);
         }
 
+        public object GetExtension(Path path)
+        {
+            return path.attributes().isFile()
+                       ? Utils.IsNotBlank(path.getExtension()) ? path.getExtension() : Locale.localizedString("None")
+                       : Locale.localizedString("None");
+        }
+
+        public object GetRegion(Path path)
+        {
+            return Utils.IsNotBlank(path.attributes().getRegion())
+                       ? path.attributes().getRegion()
+                       : Locale.localizedString("Unknown");
+        }
+
         public bool GetActive(Path path)
         {
             return _controller.IsConnected() && BrowserController.HiddenFilter.accept(path);
@@ -188,7 +191,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 try
                 {
-                    AttributedList children = _path.list();
+                    AttributedList children = _controller.getSession().list(_path);
                     _cache.put(_path.getReference(), children);
                 }
                 catch (BackgroundException e)
@@ -213,12 +216,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
+                base.cleanup();
                 lock (_isLoadingListingInBackground)
                 {
                     _isLoadingListingInBackground.Remove(_path);
                     _controller.RefreshObject(_path, true);
                 }
-                base.cleanup();
             }
         }
     }

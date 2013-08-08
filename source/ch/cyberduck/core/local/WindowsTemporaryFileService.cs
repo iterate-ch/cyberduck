@@ -28,11 +28,7 @@ namespace Ch.Cyberduck.core.local
 {
     internal class WindowsTemporaryFileService : TemporaryFileService
     {
-        private WindowsTemporaryFileService()
-        {
-        }
-
-        public override Local get(Path file)
+        public override Local create(string uid, Path file)
         {
             string absolute = file.getParent().getAbsolute();
             if (absolute.Length > 240)
@@ -41,7 +37,7 @@ namespace Ch.Cyberduck.core.local
             }
             Local folder = LocalFactory.createLocal(
                 new File(Preferences.instance().getProperty("tmp.dir"),
-                         file.getHost().getUuid() + Path.DELIMITER + absolute));
+                         uid + Path.DELIMITER + absolute));
             return LocalFactory.createLocal(folder, FilenameUtils.getName(file.unique()));
         }
 

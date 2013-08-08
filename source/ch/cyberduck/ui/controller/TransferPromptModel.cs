@@ -21,13 +21,17 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Winforms;
+using Ch.Cyberduck.Ui.Winforms.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
-using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.ui;
+using ch.cyberduck.ui.comparator;
+using ch.cyberduck.ui.threading;
+using java.util;
 using org.apache.log4j;
+using Locale = ch.cyberduck.core.i18n.Locale;
+
+//using Ch.Cyberduck.ui.winforms.threading;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -70,19 +74,19 @@ namespace Ch.Cyberduck.Ui.Controller
             AttributedList list;
             lock (_isLoadingListingInBackground)
             {
+                if (Transfer.cache().containsKey(path.getReference()))
+                {
+                    list = Transfer.cache().get(path.getReference()).filter(new NullComparator(), Filter());
+                    for (int i = 0; i < list.size(); i++)
+                    {
+                        yield return (Path) list.get(i);
+                    }
+                    yield break;
+                }
                 // Check first if it hasn't been already requested so we don't spawn
                 // a multitude of unecessary threads
                 if (!_isLoadingListingInBackground.Contains(path))
                 {
-                    if (Transfer.cache().containsKey(path.getReference()))
-                    {
-                        list = Transfer.cache().get(path.getReference()).filter(new NullComparator(), Filter());
-                        for (int i = 0; i < list.size(); i++)
-                        {
-                            yield return (Path) list.get(i);
-                        }
-                        yield break;
-                    }
                     _isLoadingListingInBackground.Add(path);
 
                     // Reloading a workdir that is not cached yet would cause the interface to freeze;
@@ -176,7 +180,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return Transfer.isSelected(path);
         }
 
-        private class ChildGetterTransferPromptBackgrounAction : AbstractBackgroundAction
+        private class ChildGetterTransferPromptBackgrounAction : ControllerRepeatableBackgroundAction
         {
             private readonly TransferPromptController _controller;
             private readonly IList<Path> _isLoadingListingInBackground;
@@ -185,6 +189,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public ChildGetterTransferPromptBackgrounAction(TransferPromptController controller, Transfer transfer,
                                                             Path path, IList<Path> isLoadingListingInBackground)
+                : base(controller, new DialogAlertCallback(controller), controller, controller)
             {
                 _controller = controller;
                 _transfer = transfer;
@@ -192,9 +197,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 _isLoadingListingInBackground = isLoadingListingInBackground;
             }
 
-            public override object @lock()
+            public override List getSessions()
             {
-                return _transfer.getSessions().iterator().next();
+                return _transfer.getSessions();
             }
 
             public override void prepare()
@@ -206,7 +211,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                _transfer.children(_path);
+                _transfer.cache().put(_path.getReference(), _transfer.children(_path));
             }
 
             public override string getActivity()
@@ -216,6 +221,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
+                base.cleanup();
                 lock (_isLoadingListingInBackground)
                 {
                     _isLoadingListingInBackground.Remove(_path);

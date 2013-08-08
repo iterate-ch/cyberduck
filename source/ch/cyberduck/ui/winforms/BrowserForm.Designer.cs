@@ -309,6 +309,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnGroup = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
             this.treeColumnPermissions = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
             this.treeColumnKind = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
+            this.treeColumnExtension = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
+            this.treeColumnRegion = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
             this.transcriptBox = new System.Windows.Forms.RichTextBox();
             this.managedBookmarkPanel2 = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.bookmarkListView = new Ch.Cyberduck.Ui.Winforms.Controls.LineSeparatedObjectListView();
@@ -2368,6 +2370,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.AllColumns.Add(this.treeColumnGroup);
             this.browser.AllColumns.Add(this.treeColumnPermissions);
             this.browser.AllColumns.Add(this.treeColumnKind);
+            this.browser.AllColumns.Add(this.treeColumnExtension);
+            this.browser.AllColumns.Add(this.treeColumnRegion);
             this.browser.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.browser.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
             this.browser.CheckBoxes = false;
@@ -2435,8 +2439,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnPermissions.DisplayIndex = 5;
             this.treeColumnPermissions.IsVisible = false;
             this.treeColumnPermissions.Text = "Permissions";
-            this.treeColumnPermissions.IsEditable = false;
-            
+            this.treeColumnPermissions.IsEditable = false;            
             // 
             // treeColumnKind
             // 
@@ -2444,6 +2447,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnKind.IsVisible = false;
             this.treeColumnKind.Text = "Kind";
             this.treeColumnKind.IsEditable = false;
+            // 
+            // treeColumnExtension
+            // 
+            this.treeColumnExtension.DisplayIndex = 6;
+            this.treeColumnExtension.IsVisible = false;
+            this.treeColumnExtension.Text = "Extension";
+            this.treeColumnExtension.IsEditable = false;
+            // 
+            // treeColumnRegion
+            // 
+            this.treeColumnRegion.DisplayIndex = 6;
+            this.treeColumnRegion.IsVisible = false;
+            this.treeColumnRegion.Text = "Extension";
+            this.treeColumnRegion.IsEditable = false;
             // 
             // transcriptBox
             // 
@@ -3240,6 +3257,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         private SortComparatorOLVColumn treeColumnGroup;
         private SortComparatorOLVColumn treeColumnPermissions;
         private SortComparatorOLVColumn treeColumnKind;
+        private SortComparatorOLVColumn treeColumnExtension;
+        private SortComparatorOLVColumn treeColumnRegion;
         private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem activitiyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem transfersToolStripMenuItem;
