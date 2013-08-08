@@ -23,6 +23,7 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Logging;
@@ -57,7 +58,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -72,6 +75,12 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     private S3Session session;
 
     private CloudFrontService client;
+
+    private PathContainerService containerService
+            = new PathContainerService();
+
+    private Map<Path, Distribution> cache
+            = new HashMap<Path, Distribution>();
 
     public CloudFrontDistributionConfiguration(final S3Session session) {
         this.session = session;
@@ -169,6 +178,14 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     @Override
+    public DescriptiveUrlBag get(final Path file) {
+        if(cache.containsKey(containerService.getContainer(file))) {
+            return new DistributionUrlProvider(cache.get(containerService.getContainer(file))).get(file);
+        }
+        return DescriptiveUrlBag.empty();
+    }
+
+    @Override
     public List<Distribution.Method> getMethods(final Path container) {
         return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
     }
@@ -187,7 +204,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                             for(Origin o : d.getConfig().getOrigins()) {
                                 if(o instanceof S3Origin) {
                                     // We currently only support one distribution per bucket
-                                    return convert(client, d, method);
+                                    final Distribution distribution = convert(client, d, method);
+                                    cache.put(container, distribution);
+                                    return distribution;
                                 }
                             }
                         }
@@ -198,7 +217,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                             for(Origin o : d.getConfig().getOrigins()) {
                                 if(o instanceof S3Origin) {
                                     // We currently only support one distribution per bucket
-                                    return convert(client, d, method);
+                                    final Distribution distribution = convert(client, d, method);
+                                    cache.put(container, distribution);
+                                    return distribution;
                                 }
                             }
                         }
@@ -210,7 +231,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                                 if(o instanceof CustomOrigin) {
                                     if(o.getDomainName().equals(getOrigin(container, method))) {
                                         // We currently only support one distribution per bucket
-                                        return convert(client, d, method);
+                                        final Distribution distribution = convert(client, d, method);
+                                        cache.put(container, distribution);
+                                        return distribution;
                                     }
                                 }
                             }
