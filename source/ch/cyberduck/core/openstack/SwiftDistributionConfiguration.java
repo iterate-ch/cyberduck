@@ -24,7 +24,6 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -55,7 +54,7 @@ import ch.iterate.openstack.swift.model.ContainerMetadata;
 /**
  * @version $Id$
  */
-public class SwiftDistributionConfiguration implements DistributionConfiguration, Purge, UrlProvider {
+public class SwiftDistributionConfiguration implements DistributionConfiguration {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
     private SwiftSession session;
@@ -151,32 +150,9 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final LoginController prompt) throws BackgroundException {
-        try {
-            final PathContainerService containerService = new PathContainerService();
-            for(Path file : files) {
-                if(containerService.isContainer(file)) {
-                    session.getClient().purgeCDNContainer(session.getRegion(containerService.getContainer(file)),
-                            container.getName(), null);
-                }
-                else {
-                    session.getClient().purgeCDNObject(session.getRegion(containerService.getContainer(file)),
-                            container.getName(), containerService.getKey(file), null);
-                }
-            }
-        }
-        catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Cannot write CDN configuration", e);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e);
-        }
-    }
-
-    @Override
     public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Purge.class) {
-            return (T) this;
+            return (T) new SwiftDistributionPurgeFeature(session);
         }
         if(type == Index.class) {
             return (T) this;
