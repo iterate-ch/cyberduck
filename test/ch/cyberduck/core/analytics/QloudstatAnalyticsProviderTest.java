@@ -2,7 +2,6 @@ package ch.cyberduck.core.analytics;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
@@ -43,7 +42,7 @@ public class QloudstatAnalyticsProviderTest extends AbstractTestCase {
         QloudstatAnalyticsProvider q = new QloudstatAnalyticsProvider();
         Assert.assertEquals("https://qloudstat.com/configuration/add?setup=cHJvdmlkZXI9Y2xvdWRmcm9udC5hbWF6b25hd3MuY29tLHByb3RvY29sPXJ0bXAsZW5kcG9pbnQ9Y3liZXJkdWNrLXRlc3Rpbmcsa2V5PXFsb3Vkc3RhdCxzZWNyZXQ9c2VjcmV0",
                 q.getSetup(new CloudFrontDistributionConfiguration(
-                                new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname())), new DisabledLoginController()
-                        ).getProtocol(), Scheme.rtmp, "cyberduck-testing", new Credentials("qloudstat", "secret")));
+                        new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()))
+                ).getProtocol(), Scheme.rtmp, "cyberduck-testing", new Credentials("qloudstat", "secret")));
     }
 }

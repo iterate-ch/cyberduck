@@ -50,9 +50,8 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
 
     private S3Session session;
 
-    public WebsiteCloudFrontDistributionConfiguration(final S3Session session,
-                                                      final LoginController prompt) {
-        super(session, prompt);
+    public WebsiteCloudFrontDistributionConfiguration(final S3Session session) {
+        super(session);
         this.session = session;
     }
 
@@ -89,7 +88,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
+    public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
         if(method.equals(Distribution.WEBSITE)) {
             try {
                 final WebsiteConfig configuration = session.getClient().getWebsiteConfig(container.getName());
@@ -112,12 +111,12 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             }
         }
         else {
-            return super.read(container, method);
+            return super.read(container, method, prompt);
         }
     }
 
     @Override
-    public void write(final Path container, final Distribution distribution) throws BackgroundException {
+    public void write(final Path container, final Distribution distribution, final LoginController prompt) throws BackgroundException {
         if(distribution.getMethod().equals(Distribution.WEBSITE)) {
             try {
                 if(distribution.isEnabled()) {
@@ -138,7 +137,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             }
         }
         else {
-            super.write(container, distribution);
+            super.write(container, distribution, prompt);
         }
     }
 
@@ -156,7 +155,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final Distribution.Method method, final LoginController prompt) {
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Index.class) {
             if(method.equals(Distribution.WEBSITE)) {
                 return (T) this;
@@ -165,7 +164,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
         if(type == Cname.class) {
             return (T) this;
         }
-        return super.getFeature(type, method, prompt);
+        return super.getFeature(type, method);
     }
 
     /**

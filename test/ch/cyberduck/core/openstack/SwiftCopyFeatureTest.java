@@ -54,7 +54,7 @@ public class SwiftCopyFeatureTest extends AbstractTestCase {
         new SwiftCopyFeature(session).copy(test, copy);
         assertTrue(session.exists(test));
         assertTrue(session.exists(copy));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy));
+        new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginController());
         session.close();
     }
 }

@@ -73,12 +73,12 @@ public class SFTPSessionTest extends AbstractTestCase {
     public void testFeatures() throws Exception {
         final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch");
         final Session session = new SFTPSession(host);
-        assertNotNull(session.getFeature(Compress.class, null));
-        assertNotNull(session.getFeature(UnixPermission.class, null));
-        assertNotNull(session.getFeature(Timestamp.class, null));
-        assertNotNull(session.getFeature(Touch.class, null));
-        assertNotNull(session.getFeature(Symlink.class, null));
-        assertNotNull(session.getFeature(Command.class, null));
-        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
+        assertNotNull(session.getFeature(Compress.class));
+        assertNotNull(session.getFeature(UnixPermission.class));
+        assertNotNull(session.getFeature(Timestamp.class));
+        assertNotNull(session.getFeature(Touch.class));
+        assertNotNull(session.getFeature(Symlink.class));
+        assertNotNull(session.getFeature(Command.class));
+        assertNotNull(session.getFeature(DistributionConfiguration.class));
     }
 }

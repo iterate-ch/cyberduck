@@ -18,6 +18,7 @@ package ch.cyberduck.core.identity;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
@@ -29,8 +30,9 @@ public interface IdentityConfiguration {
      * Remove user
      *
      * @param username Username
+     * @param prompt   Callback
      */
-    void delete(final String username) throws BackgroundException;
+    void delete(final String username, final LoginController prompt) throws BackgroundException;
 
     /**
      * Verify user exists and find access key and secret key in keychain
@@ -45,6 +47,7 @@ public interface IdentityConfiguration {
      *
      * @param username Username
      * @param policy   Policy language document
+     * @param prompt   Callback
      */
-    void create(String username, String policy) throws BackgroundException;
+    void create(String username, String policy, final LoginController prompt) throws BackgroundException;
 }

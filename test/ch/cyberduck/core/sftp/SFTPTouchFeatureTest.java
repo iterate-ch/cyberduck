@@ -48,7 +48,7 @@ public class SFTPTouchFeatureTest extends AbstractTestCase {
         final AttributedList<Path> list = session.list(home, new DisabledListProgressListener());
         assertTrue(list.contains(test.getReference()));
         assertEquals("644", list.get(test.getReference()).attributes().getPermission().getOctalString());
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
 }

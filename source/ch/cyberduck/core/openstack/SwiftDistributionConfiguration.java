@@ -70,7 +70,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public void write(final Path container, final Distribution configuration) throws BackgroundException {
+    public void write(final Path container, final Distribution configuration, final LoginController prompt) throws BackgroundException {
         try {
             if(StringUtils.isNotBlank(configuration.getIndexDocument())) {
                 session.getClient().updateContainerMetadata(session.getRegion(container),
@@ -106,7 +106,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
+    public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
         try {
             try {
                 final CDNContainer info = session.getClient().getCDNContainerInfo(session.getRegion(container),
@@ -151,7 +151,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final boolean recursive) throws BackgroundException {
+    public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final LoginController prompt) throws BackgroundException {
         try {
             final PathContainerService containerService = new PathContainerService();
             for(Path file : files) {
@@ -174,7 +174,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final Distribution.Method method, final LoginController prompt) {
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Purge.class) {
             return (T) this;
         }

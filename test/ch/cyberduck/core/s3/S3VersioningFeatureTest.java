@@ -81,7 +81,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
         final Versioning feature = new S3VersioningFeature(session);
         feature.setConfiguration(container, new DisabledLoginController(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController());
         session.close();
     }
 

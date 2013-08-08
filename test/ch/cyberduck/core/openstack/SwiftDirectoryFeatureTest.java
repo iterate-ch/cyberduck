@@ -35,7 +35,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftDirectoryFeatureTest extends AbstractTestCase {
 
@@ -50,7 +50,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         final Path container = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new SwiftDirectoryFeature(session).mkdir(container, null);
         assertTrue(session.exists(container));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container));
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController());
         assertFalse(session.exists(container));
     }
 
@@ -66,7 +66,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new SwiftDirectoryFeature(session).mkdir(placeholder, null);
         assertTrue(session.exists(placeholder));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder));
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController());
         assertFalse(session.exists(placeholder));
     }
 }

@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -56,7 +55,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
                     proposal, file.attributes().getType());
         }
         if(!renamed.equals(file)) {
-            session.getFeature(Move.class, new DisabledLoginController()).move(file, renamed);
+            session.getFeature(Move.class).move(file, renamed);
         }
         return super.prepare(session, file, parent);
     }

@@ -35,13 +35,13 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
         }, new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
+        session.getFeature(Touch.class).touch(test);
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = new Acl();
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
         f.setPermission(test, acl);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
 }

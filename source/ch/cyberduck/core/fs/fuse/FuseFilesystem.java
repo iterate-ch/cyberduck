@@ -333,7 +333,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                     }
                     final Path directory = selected.getParent();
                     final Path file = session.list(directory, new DisabledListProgressListener()).get(new NSObjectPathReference(NSString.stringWithString(path)));
-                    final UnixPermission unix = session.getFeature(UnixPermission.class, new DisabledLoginController());
+                    final UnixPermission unix = session.getFeature(UnixPermission.class);
                     if(unix != null) {
                         final NSObject posixNumber = attributes.objectForKey(NSFileManager.NSFilePosixPermissions);
                         if(null != posixNumber) {
@@ -342,7 +342,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                             unix.setUnixPermission(file, permission);
                         }
                     }
-                    final Timestamp timestamp = session.getFeature(Timestamp.class, new DisabledLoginController());
+                    final Timestamp timestamp = session.getFeature(Timestamp.class);
                     if(timestamp != null) {
                         NSObject modificationNumber = attributes.objectForKey(NSFileManager.NSFileModificationDate);
                         if(null != modificationNumber) {
@@ -371,7 +371,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                    final Directory feature = session.getFeature(Directory.class, new DisabledLoginController());
+                    final Directory feature = session.getFeature(Directory.class);
                     feature.mkdir(directory, null);
                     return true;
                 }
@@ -394,7 +394,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path file = new Path(path, Path.DIRECTORY_TYPE);
-                    final Touch feature = session.getFeature(Touch.class, new DisabledLoginController());
+                    final Touch feature = session.getFeature(Touch.class);
                     if(feature.isSupported(file.getParent())) {
                         feature.touch(file);
                         return true;
@@ -420,8 +420,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                    session.getFeature(Delete.class, new DisabledLoginController()).delete(
-                            Collections.singletonList(directory));
+                    session.getFeature(Delete.class).delete(
+                            Collections.singletonList(directory), new DisabledLoginController());
                     return true;
                 }
             });
@@ -443,8 +443,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path file = new Path(path, Path.FILE_TYPE);
-                    session.getFeature(Delete.class, new DisabledLoginController()).delete(
-                            Collections.singletonList(file));
+                    session.getFeature(Delete.class).delete(
+                            Collections.singletonList(file), new DisabledLoginController());
                     return true;
                 }
             });
@@ -466,10 +466,10 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path file = new Path(source, Path.FILE_TYPE);
-                    if(!session.getFeature(Move.class, new DisabledLoginController()).isSupported(file)) {
+                    if(!session.getFeature(Move.class).isSupported(file)) {
                         return false;
                     }
-                    session.getFeature(Move.class, new DisabledLoginController()).move(file, new Path(destination, Path.FILE_TYPE));
+                    session.getFeature(Move.class).move(file, new Path(destination, Path.FILE_TYPE));
                     return true;
                 }
             });

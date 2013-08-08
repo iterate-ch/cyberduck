@@ -270,7 +270,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+    public <T> T getFeature(final Class<T> type) {
         if(type == Touch.class) {
             return (T) new DefaultTouchFeature(this);
         }
@@ -295,6 +295,6 @@ public class FTPSession extends SSLSession<FTPClient> {
         if(type == Command.class) {
             return (T) new FTPCommandFeature(this);
         }
-        return super.getFeature(type, prompt);
+        return super.getFeature(type);
     }
 }

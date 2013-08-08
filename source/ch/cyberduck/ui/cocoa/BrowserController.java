@@ -1230,7 +1230,7 @@ public class BrowserController extends WindowController
                     return;
                 }
                 if(tableColumn.identifier().equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    cell.setEditable(session.getFeature(Move.class, LoginControllerFactory.get(BrowserController.this)).isSupported(path));
+                    cell.setEditable(session.getFeature(Move.class).isSupported(path));
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
                 if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
@@ -1343,7 +1343,7 @@ public class BrowserController extends WindowController
                 final String identifier = tableColumn.identifier();
                 final Path path = browserListModel.children(BrowserController.this.workdir()).get(row.intValue());
                 if(identifier.equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    cell.setEditable(session.getFeature(Move.class, LoginControllerFactory.get(BrowserController.this)).isSupported(path));
+                    cell.setEditable(session.getFeature(Move.class).isSupported(path));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
@@ -2471,7 +2471,7 @@ public class BrowserController extends WindowController
         this.background(new BrowserBackgroundAction(this) {
             @Override
             public Boolean run() throws BackgroundException {
-                final Versioning feature = session.getFeature(Versioning.class, LoginControllerFactory.get(BrowserController.this));
+                final Versioning feature = session.getFeature(Versioning.class);
                 feature.revert(selected);
                 return true;
             }
@@ -2506,7 +2506,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void gotoButtonClicked(final ID sender) {
-        SheetController sheet = new GotoController(this);
+        SheetController sheet = new GotoController(this, session.cache());
         sheet.beginSheet();
     }
 
@@ -2530,7 +2530,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void createFolderButtonClicked(final ID sender) {
-        final Location feature = session.getFeature(Location.class, LoginControllerFactory.get(this));
+        final Location feature = session.getFeature(Location.class);
         if(workdir.isRoot() && feature != null) {
             SheetController sheet = new FolderController(this, feature.getLocations());
             sheet.beginSheet();
@@ -3201,7 +3201,7 @@ public class BrowserController extends WindowController
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     @Override
                     public Boolean run() throws BackgroundException {
-                        final Compress feature = session.getFeature(Compress.class, null);
+                        final Compress feature = session.getFeature(Compress.class);
                         feature.archive(archive, workdir, changed, this);
                         return true;
                     }
@@ -3237,7 +3237,7 @@ public class BrowserController extends WindowController
                     background(new BrowserBackgroundAction(BrowserController.this) {
                         @Override
                         public Boolean run() throws BackgroundException {
-                            final Compress feature = session.getFeature(Compress.class, null);
+                            final Compress feature = session.getFeature(Compress.class);
                             feature.unarchive(archive, s, this);
                             return true;
                         }
@@ -3501,8 +3501,8 @@ public class BrowserController extends WindowController
                 if(session != null) {
                     // Clear the cache on the main thread to make sure the browser model is not in an invalid state
                     session.cache().clear();
+                    PathPasteboardFactory.delete(session);
                 }
-                PathPasteboardFactory.delete(session);
                 session = null;
                 window.setTitle(Preferences.instance().getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
@@ -3807,7 +3807,7 @@ public class BrowserController extends WindowController
             return this.isMounted();
         }
         else if(action.equals(Foundation.selector("sendCustomCommandClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.getFeature(Command.class, LoginControllerFactory.get(this)) != null;
+            return this.isBrowser() && this.isMounted() && session.getFeature(Command.class) != null;
         }
         else if(action.equals(Foundation.selector("gotoButtonClicked:"))) {
             return this.isBrowser() && this.isMounted();
@@ -3819,11 +3819,11 @@ public class BrowserController extends WindowController
             return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
-            final Touch feature = session.getFeature(Touch.class, LoginControllerFactory.get(this));
+            final Touch feature = session.getFeature(Touch.class);
             return this.isBrowser() && this.isMounted() && feature.isSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.getFeature(Symlink.class, LoginControllerFactory.get(this)) != null
+            return this.isBrowser() && this.isMounted() && session.getFeature(Symlink.class) != null
                     && this.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
@@ -3835,7 +3835,7 @@ public class BrowserController extends WindowController
                 if(null == selected) {
                     return false;
                 }
-                return session.getFeature(Move.class, LoginControllerFactory.get(BrowserController.this)).isSupported(selected);
+                return session.getFeature(Move.class).isSupported(selected);
             }
             return false;
         }
@@ -3844,7 +3844,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted() && this.getSelectionCount() == 1) {
-                return session.getFeature(Versioning.class, LoginControllerFactory.get(this)) != null;
+                return session.getFeature(Versioning.class) != null;
             }
             return false;
         }
@@ -3897,7 +3897,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("archiveButtonClicked:")) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                if(session.getFeature(Compress.class, LoginControllerFactory.get(this)) == null) {
+                if(session.getFeature(Compress.class) == null) {
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {
@@ -3914,7 +3914,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("unarchiveButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
-                if(session.getFeature(Compress.class, LoginControllerFactory.get(this)) == null) {
+                if(session.getFeature(Compress.class) == null) {
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {

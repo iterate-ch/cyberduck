@@ -35,7 +35,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVDirectoryFeatureTest extends AbstractTestCase {
 
@@ -51,7 +51,7 @@ public class DAVDirectoryFeatureTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new DAVDirectoryFeature(session).mkdir(test, null);
         assertTrue(session.exists(test));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         assertFalse(session.exists(test));
         session.close();
     }

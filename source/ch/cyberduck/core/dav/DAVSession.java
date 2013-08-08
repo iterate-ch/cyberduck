@@ -130,7 +130,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+    public <T> T getFeature(final Class<T> type) {
         if(type == Touch.class) {
             return (T) new DefaultTouchFeature(this);
         }
@@ -155,6 +155,6 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(type == Copy.class) {
             return (T) new DAVCopyFeature(this);
         }
-        return super.getFeature(type, prompt);
+        return super.getFeature(type);
     }
 }

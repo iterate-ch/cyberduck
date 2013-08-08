@@ -2,7 +2,6 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -88,7 +87,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         files.put(source, target);
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")) {
             @Override
-            public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+            public <T> T getFeature(final Class<T> type) {
                 if(type.equals(Timestamp.class)) {
                     return (T) new Timestamp() {
 

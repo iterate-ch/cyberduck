@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -47,7 +48,7 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
         final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new S3BucketCreateService(session).create(bucket, "US");
         assertTrue(session.exists(bucket));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
         assertFalse(session.exists(bucket));
         session.close();
     }

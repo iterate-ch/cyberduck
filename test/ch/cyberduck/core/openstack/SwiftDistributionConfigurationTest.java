@@ -39,7 +39,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
-        final Distribution test = configuration.read(container, Distribution.DOWNLOAD);
+        final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
         assertNotNull(test);
         assertEquals(Distribution.DOWNLOAD, test.getMethod());
         assertArrayEquals(new String[]{}, test.getCNAMEs());
@@ -68,7 +68,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final Path container = new Path(new Path(String.valueOf(Path.DELIMITER),
                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE), "test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("region-a.geo-1");
-        final Distribution test = configuration.read(container, Distribution.DOWNLOAD);
+        final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
         assertNotNull(test);
         assertEquals(Distribution.DOWNLOAD, test.getMethod());
         assertArrayEquals(new String[]{}, test.getCNAMEs());
@@ -95,6 +95,6 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("region-a.geo-1");
-        configuration.read(container, Distribution.DOWNLOAD);
+        configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
     }
 }

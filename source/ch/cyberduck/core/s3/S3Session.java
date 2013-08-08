@@ -314,7 +314,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+    public <T> T getFeature(final Class<T> type) {
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
         }
@@ -335,7 +335,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
         if(type == Delete.class) {
             if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
-                return (T) new S3MultipleDeleteFeature(this, prompt);
+                return (T) new S3MultipleDeleteFeature(this);
             }
             return (T) new S3DefaultDeleteFeature(this);
         }
@@ -398,18 +398,18 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(type == IdentityConfiguration.class) {
             // Only for AWS
             if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
-                return (T) new AWSIdentityConfiguration(host, prompt);
+                return (T) new AWSIdentityConfiguration(host);
             }
         }
         if(type == DistributionConfiguration.class) {
             if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
-                return (T) new WebsiteCloudFrontDistributionConfiguration(this, prompt);
+                return (T) new WebsiteCloudFrontDistributionConfiguration(this);
             }
             else {
                 // Amazon CloudFront custom origin
-                return super.getFeature(type, prompt);
+                return super.getFeature(type);
             }
         }
-        return super.getFeature(type, prompt);
+        return super.getFeature(type);
     }
 }

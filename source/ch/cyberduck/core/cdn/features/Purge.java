@@ -17,6 +17,7 @@ package ch.cyberduck.core.cdn.features;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -24,7 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Purge {
 
@@ -34,7 +35,7 @@ public interface Purge {
      * @param container Container
      * @param method    Distribution method
      * @param files     Selected files or containers to purge
-     * @param recursive Apply recursively to selected container or placeholder
+     * @param prompt    Callback
      */
-    void invalidate(final Path container, Distribution.Method method, List<Path> files, boolean recursive) throws BackgroundException;
+    void invalidate(final Path container, Distribution.Method method, List<Path> files, final LoginController prompt) throws BackgroundException;
 }

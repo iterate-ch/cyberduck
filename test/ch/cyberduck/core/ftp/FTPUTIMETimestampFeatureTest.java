@@ -65,6 +65,6 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        assertNotNull(session.getFeature(Timestamp.class, null));
+        assertNotNull(session.getFeature(Timestamp.class));
     }
 }

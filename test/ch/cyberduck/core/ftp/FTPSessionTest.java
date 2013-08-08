@@ -86,7 +86,7 @@ public class FTPSessionTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(test);
         assertTrue(session.exists(test));
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test));
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
         assertFalse(session.exists(test));
         session.close();
     }
@@ -186,12 +186,12 @@ public class FTPSessionTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
-        assertNull(session.getFeature(UnixPermission.class, null));
-        assertNull(session.getFeature(Timestamp.class, null));
+        assertNotNull(session.getFeature(DistributionConfiguration.class));
+        assertNull(session.getFeature(UnixPermission.class));
+        assertNull(session.getFeature(Timestamp.class));
         session.open(new DefaultHostKeyController());
-        assertNotNull(session.getFeature(UnixPermission.class, null));
-        assertNotNull(session.getFeature(Timestamp.class, null));
+        assertNotNull(session.getFeature(UnixPermission.class));
+        assertNotNull(session.getFeature(Timestamp.class));
         session.close();
     }
 

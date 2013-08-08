@@ -37,7 +37,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
 
@@ -63,7 +63,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
         final Path test = new Path(new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new S3DirectoryFeature(session).mkdir(test, null);
         assertTrue(session.exists(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
 }

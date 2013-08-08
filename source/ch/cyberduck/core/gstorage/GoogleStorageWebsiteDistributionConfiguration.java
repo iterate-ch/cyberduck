@@ -66,7 +66,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method) throws BackgroundException {
+    public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
         try {
             final WebsiteConfig configuration = session.getClient().getWebsiteConfigImpl(container.getName());
             final Distribution distribution = new Distribution(
@@ -98,7 +98,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public void write(final Path container, final Distribution distribution) throws BackgroundException {
+    public void write(final Path container, final Distribution distribution, final LoginController prompt) throws BackgroundException {
         try {
             if(distribution.isEnabled()) {
                 String suffix = "index.html";
@@ -119,7 +119,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final Distribution.Method method, final LoginController prompt) {
+    public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Index.class) {
             return (T) this;
         }

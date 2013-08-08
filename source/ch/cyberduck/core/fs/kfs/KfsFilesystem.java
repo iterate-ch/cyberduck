@@ -146,7 +146,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         final Path directory = selected.getParent();
                         final Path file = session.list(directory, new DisabledListProgressListener()).get(new NSObjectPathReference(NSString.stringWithString(path)));
                         stat.type = file.attributes().isDirectory() ? KfsLibrary.kfstype_t.KFS_DIR : KfsLibrary.kfstype_t.KFS_REG;
-                        if(session.getFeature(Timestamp.class, new DisabledLoginController()) != null) {
+                        if(session.getFeature(Timestamp.class) != null) {
                             stat.mtime = new KfsLibrary.kfstime(file.attributes().getModificationDate() / 1000, 0);
                             stat.atime = new KfsLibrary.kfstime(file.attributes().getAccessedDate() / 1000, 0);
                             stat.ctime = new KfsLibrary.kfstime(file.attributes().getCreationDate() / 1000, 0);
@@ -157,7 +157,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             stat.ctime = new KfsLibrary.kfstime();
                         }
                         stat.size = file.attributes().getSize();
-                        if(session.getFeature(UnixPermission.class, new DisabledLoginController()) != null) {
+                        if(session.getFeature(UnixPermission.class) != null) {
                             final Permission permission = file.attributes().getPermission();
                             if(permission.getOwnerPermissions()[Permission.READ]) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IRUSR;
@@ -244,7 +244,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         final Path file = new Path(path, Path.FILE_TYPE);
                         final TransferStatus status = new TransferStatus();
                         try {
-                            final InputStream in = session.getFeature(Read.class, new DisabledLoginController()).read(file, status);
+                            final InputStream in = session.getFeature(Read.class).read(file, status);
                             try {
                                 long total = 0;
                                 byte[] chunk = new byte[length.intValue()];
@@ -289,7 +289,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         final Path file = new Path(path, Path.FILE_TYPE);
                         try {
                             final TransferStatus status = new TransferStatus();
-                            final OutputStream out = session.getFeature(Write.class, new DisabledLoginController()).write(file, status);
+                            final OutputStream out = session.getFeature(Write.class).write(file, status);
                             try {
                                 byte[] chunk = new byte[length.intValue()];
                                 buf.read(offset.longValue(), chunk, 0, length.intValue());
@@ -341,7 +341,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfscreate_f:" + path);
                         final Path file = new Path(path, Path.DIRECTORY_TYPE);
-                        final Touch feature = session.getFeature(Touch.class, new DisabledLoginController());
+                        final Touch feature = session.getFeature(Touch.class);
                         if(feature.isSupported(file.getParent())) {
                             feature.touch(file);
                             return true;
@@ -369,8 +369,8 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsremove_f:" + path);
                         final Path file = new Path(path, Path.FILE_TYPE);
-                        session.getFeature(Delete.class, new DisabledLoginController()).delete(
-                                Collections.singletonList(file));
+                        session.getFeature(Delete.class).delete(
+                                Collections.singletonList(file), new DisabledLoginController());
                         return true;
                     }
                 });
@@ -394,10 +394,10 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsrename_f:" + path);
                         final Path file = new Path(path, Path.FILE_TYPE);
-                        if(!session.getFeature(Move.class, new DisabledLoginController()).isSupported(file)) {
+                        if(!session.getFeature(Move.class).isSupported(file)) {
                             return false;
                         }
-                        session.getFeature(Move.class, new DisabledLoginController()).move(file, new Path(destination, Path.FILE_TYPE));
+                        session.getFeature(Move.class).move(file, new Path(destination, Path.FILE_TYPE));
                         return true;
                     }
                 });
@@ -445,7 +445,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsmkdir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                        final Directory feature = session.getFeature(Directory.class, new DisabledLoginController());
+                        final Directory feature = session.getFeature(Directory.class);
                         feature.mkdir(directory, null);
                         return true;
                     }
@@ -470,8 +470,8 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsrmdir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
-                        session.getFeature(Delete.class, new DisabledLoginController()).delete(
-                                Collections.singletonList(directory));
+                        session.getFeature(Delete.class).delete(
+                                Collections.singletonList(directory), new DisabledLoginController());
                         return true;
                     }
                 });

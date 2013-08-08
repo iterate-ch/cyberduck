@@ -81,7 +81,7 @@ public class CopyTransferFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", source.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            final UnixPermission unix = destination.getFeature(UnixPermission.class, null);
+            final UnixPermission unix = destination.getFeature(UnixPermission.class);
             if(unix != null) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     Permission permission = source.attributes().getPermission();
@@ -90,7 +90,7 @@ public class CopyTransferFilter implements TransferPathFilter {
                     }
                 }
             }
-            final Timestamp timestamp = destination.getFeature(Timestamp.class, null);
+            final Timestamp timestamp = destination.getFeature(Timestamp.class);
             if(timestamp != null) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),

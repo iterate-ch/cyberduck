@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -82,7 +81,7 @@ public class UploadTransfer extends Transfer {
             log.debug(String.format("List children for %s", parent));
         }
         if(parent.getLocal().attributes().isSymbolicLink()
-                && new UploadSymlinkResolver(session.getFeature(Symlink.class, null), this.getRoots()).resolve(parent)) {
+                && new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots()).resolve(parent)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Do not list children for symbolic link %s", parent));
             }
@@ -102,7 +101,7 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
-        final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class, null), this.getRoots());
+        final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots());
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new OverwriteFilter(resolver);
         }
@@ -167,7 +166,7 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
-        final Symlink symlink = session.getFeature(Symlink.class, null);
+        final Symlink symlink = session.getFeature(Symlink.class);
         final SymlinkResolver symlinkResolver = new UploadSymlinkResolver(symlink, this.getRoots());
         if(file.getLocal().attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
@@ -188,7 +187,7 @@ public class UploadTransfer extends Transfer {
                         file.getName(), UUID.randomUUID().toString()));
             }
             // Transfer
-            session.getFeature(Upload.class, new DisabledLoginController()).upload(file, bandwidth, new AbstractStreamListener() {
+            session.getFeature(Upload.class).upload(file, bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     addTransferred(bytes);
@@ -196,7 +195,7 @@ public class UploadTransfer extends Transfer {
             }, status);
             if(status.isComplete()) {
                 if(temporary) {
-                    session.getFeature(Move.class, new DisabledLoginController()).move(file, new Path(file.getParent(),
+                    session.getFeature(Move.class).move(file, new Path(file.getParent(),
                             original, file.attributes().getType()));
                     file.setPath(file.getParent(), original);
                 }
@@ -206,7 +205,7 @@ public class UploadTransfer extends Transfer {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                     file.getName()));
             if(!status.isExists()) {
-                session.getFeature(Directory.class, new DisabledLoginController()).mkdir(file, null);
+                session.getFeature(Directory.class).mkdir(file, null);
             }
         }
     }

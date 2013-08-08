@@ -49,13 +49,13 @@ public class DAVCopyFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
+        session.getFeature(Touch.class).touch(test);
         final Path copy = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DAVCopyFeature(session).copy(test, copy);
         assertTrue(session.exists(test));
         assertTrue(session.exists(copy));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginController());
         session.close();
     }
 }

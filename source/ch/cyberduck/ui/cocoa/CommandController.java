@@ -23,7 +23,6 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
@@ -113,7 +112,7 @@ public class CommandController extends SheetController implements TranscriptList
 
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Command feature = session.getFeature(Command.class, LoginControllerFactory.get(parent));
+                    final Command feature = session.getFeature(Command.class);
                     feature.send(command, this);
                     return true;
                 }

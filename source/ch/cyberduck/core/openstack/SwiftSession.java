@@ -162,7 +162,7 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+    public <T> T getFeature(final Class<T> type) {
         if(type == Read.class) {
             return (T) new SwiftReadFeature(this);
         }
@@ -206,6 +206,6 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == DistributionConfiguration.class) {
             return (T) cdn;
         }
-        return super.getFeature(type, prompt);
+        return super.getFeature(type);
     }
 }

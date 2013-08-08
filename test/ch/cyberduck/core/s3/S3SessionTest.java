@@ -24,9 +24,6 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.UUID;
-
 import static org.junit.Assert.*;
 
 /**
@@ -61,31 +58,31 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testFeatures() throws Exception {
         final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
-        assertNotNull(aws.getFeature(Copy.class, null));
-        assertNotNull(aws.getFeature(AclPermission.class, null));
-        assertNotNull(aws.getFeature(Versioning.class, null));
-        assertNotNull(aws.getFeature(AnalyticsProvider.class, null));
-        assertNotNull(aws.getFeature(Lifecycle.class, null));
-        assertNotNull(aws.getFeature(Location.class, null));
-        assertNotNull(aws.getFeature(Encryption.class, null));
-        assertNotNull(aws.getFeature(Redundancy.class, null));
-        assertNotNull(aws.getFeature(Logging.class, null));
-        assertNotNull(aws.getFeature(DistributionConfiguration.class, null));
-        assertNotNull(aws.getFeature(IdentityConfiguration.class, null));
-        assertNotNull(aws.getFeature(IdentityConfiguration.class, null));
-        assertEquals(S3MultipleDeleteFeature.class, aws.getFeature(Delete.class, null).getClass());
+        assertNotNull(aws.getFeature(Copy.class));
+        assertNotNull(aws.getFeature(AclPermission.class));
+        assertNotNull(aws.getFeature(Versioning.class));
+        assertNotNull(aws.getFeature(AnalyticsProvider.class));
+        assertNotNull(aws.getFeature(Lifecycle.class));
+        assertNotNull(aws.getFeature(Location.class));
+        assertNotNull(aws.getFeature(Encryption.class));
+        assertNotNull(aws.getFeature(Redundancy.class));
+        assertNotNull(aws.getFeature(Logging.class));
+        assertNotNull(aws.getFeature(DistributionConfiguration.class));
+        assertNotNull(aws.getFeature(IdentityConfiguration.class));
+        assertNotNull(aws.getFeature(IdentityConfiguration.class));
+        assertEquals(S3MultipleDeleteFeature.class, aws.getFeature(Delete.class).getClass());
         final S3Session o = new S3Session(new Host(Protocol.S3_SSL, "o"));
-        assertNotNull(o.getFeature(Copy.class, null));
-        assertNotNull(o.getFeature(AclPermission.class, null));
-        assertNull(o.getFeature(Versioning.class, null));
-        assertNull(o.getFeature(AnalyticsProvider.class, null));
-        assertNull(o.getFeature(Lifecycle.class, null));
-        assertNull(o.getFeature(Location.class, null));
-        assertNull(o.getFeature(Encryption.class, null));
-        assertNull(o.getFeature(Redundancy.class, null));
-        assertNull(o.getFeature(Logging.class, null));
-        assertNotNull(o.getFeature(DistributionConfiguration.class, null));
-        assertNull(o.getFeature(IdentityConfiguration.class, null));
-        assertEquals(S3DefaultDeleteFeature.class, o.getFeature(Delete.class, null).getClass());
+        assertNotNull(o.getFeature(Copy.class));
+        assertNotNull(o.getFeature(AclPermission.class));
+        assertNull(o.getFeature(Versioning.class));
+        assertNull(o.getFeature(AnalyticsProvider.class));
+        assertNull(o.getFeature(Lifecycle.class));
+        assertNull(o.getFeature(Location.class));
+        assertNull(o.getFeature(Encryption.class));
+        assertNull(o.getFeature(Redundancy.class));
+        assertNull(o.getFeature(Logging.class));
+        assertNotNull(o.getFeature(DistributionConfiguration.class));
+        assertNull(o.getFeature(IdentityConfiguration.class));
+        assertEquals(S3DefaultDeleteFeature.class, o.getFeature(Delete.class).getClass());
     }
 }

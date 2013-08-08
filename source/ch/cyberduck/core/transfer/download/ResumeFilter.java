@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -50,7 +49,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
     @Override
     public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(session, file, parent);
-        if(session.getFeature(Read.class, new DisabledLoginController()).isResumable()) {
+        if(session.getFeature(Read.class).isResumable()) {
             if(file.attributes().isFile()) {
                 if(file.getLocal().exists()) {
                     if(file.getLocal().attributes().getSize() > 0) {

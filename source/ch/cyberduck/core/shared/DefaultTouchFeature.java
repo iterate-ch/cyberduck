@@ -17,7 +17,6 @@ package ch.cyberduck.core.shared;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -47,7 +46,7 @@ public class DefaultTouchFeature implements Touch {
         file.setLocal(temp);
         final TransferStatus status = new TransferStatus();
         try {
-            session.getFeature(Upload.class, new DisabledLoginController()).upload(file,
+            session.getFeature(Upload.class).upload(file,
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                     new AbstractStreamListener(), status);
         }

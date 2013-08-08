@@ -17,6 +17,7 @@ package ch.cyberduck.core.identity;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
@@ -25,12 +26,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 public abstract class AbstractIdentityConfiguration implements IdentityConfiguration {
 
     @Override
-    public void delete(final String username) throws BackgroundException {
+    public void delete(final String username, final LoginController prompt) throws BackgroundException {
         //
     }
 
     @Override
-    public void create(final String username, final String policy) throws BackgroundException {
+    public void create(final String username, final String policy, final LoginController prompt) throws BackgroundException {
         //
     }
 }

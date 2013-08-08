@@ -37,7 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPMoveFeatureTest extends AbstractTestCase {
 
@@ -55,7 +55,7 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         new FTPMoveFeature(session).move(test, target);
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target));
+        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         new FTPMoveFeature(session).move(test, target);
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target));
+        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
     }
 
     @Test(expected = NotfoundException.class)

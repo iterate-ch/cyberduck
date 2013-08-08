@@ -348,6 +348,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @return A list of URLs pointing to the resource.
      */
     public DescriptiveUrlBag getURLs(final Path file) {
+        //add cdn
         return new DefaultUrlProvider(host).get(file);
     }
 
@@ -374,13 +375,13 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      */
     public abstract AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
 
-    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+    public <T> T getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this);
         }
         if(type == DistributionConfiguration.class) {
             // Use login context of current session
-            return (T) new CustomOriginCloudFrontDistributionConfiguration(host, prompt);
+            return (T) new CustomOriginCloudFrontDistributionConfiguration(host);
         }
         return null;
     }

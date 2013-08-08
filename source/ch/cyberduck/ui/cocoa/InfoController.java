@@ -353,7 +353,7 @@ public class InfoController extends ToolbarWindowController {
             this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Redundancy feature = controller.getSession().getFeature(Redundancy.class, prompt);
+                    final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
                     for(Path next : files) {
                         if(next.attributes().isFile()) {
                             feature.setClass(next, sender.selectedItem().representedObject());
@@ -393,7 +393,7 @@ public class InfoController extends ToolbarWindowController {
             this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Encryption feature = controller.getSession().getFeature(Encryption.class, prompt);
+                    final Encryption feature = controller.getSession().getFeature(Encryption.class);
                     for(Path next : files) {
                         if(next.attributes().isFile()) {
                             feature.setEncryption(next, encryptionButton.state() == NSCell.NSOnState ?
@@ -433,7 +433,7 @@ public class InfoController extends ToolbarWindowController {
             this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    controller.getSession().getFeature(Logging.class, prompt).setConfiguration(containerService.getContainer(getSelected()),
+                    controller.getSession().getFeature(Logging.class).setConfiguration(containerService.getContainer(getSelected()),
                             new LoggingConfiguration(
                                     bucketLoggingButton.state() == NSCell.NSOnState,
                                     null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
@@ -488,15 +488,15 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
-                    final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class, prompt);
+                    final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class);
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                        iam.create(controller.getSession().getFeature(AnalyticsProvider.class,
-                                prompt).getName(), document);
+                        iam.create(controller.getSession().getFeature(AnalyticsProvider.class
+                        ).getName(), document, prompt);
                     }
                     else {
-                        iam.delete(controller.getSession().getFeature(AnalyticsProvider.class,
-                                prompt).getName());
+                        iam.delete(controller.getSession().getFeature(AnalyticsProvider.class
+                        ).getName(), prompt);
                     }
                     return true;
                 }
@@ -534,7 +534,7 @@ public class InfoController extends ToolbarWindowController {
             this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    controller.getSession().getFeature(Versioning.class, prompt).setConfiguration(containerService.getContainer(getSelected()), prompt,
+                    controller.getSession().getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()), prompt,
                             new VersioningConfiguration(
                                     bucketVersioningButton.state() == NSCell.NSOnState,
                                     bucketMfaButton.state() == NSCell.NSOnState)
@@ -566,7 +566,7 @@ public class InfoController extends ToolbarWindowController {
             this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    controller.getSession().getFeature(Versioning.class, prompt).setConfiguration(containerService.getContainer(getSelected()),
+                    controller.getSession().getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()),
                             prompt,
                             new VersioningConfiguration(
                                     bucketVersioningButton.state() == NSCell.NSOnState,
@@ -659,7 +659,7 @@ public class InfoController extends ToolbarWindowController {
             this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    controller.getSession().getFeature(Lifecycle.class, prompt).setConfiguration(containerService.getContainer(getSelected()),
+                    controller.getSession().getFeature(Lifecycle.class).setConfiguration(containerService.getContainer(getSelected()),
                             new LifecycleConfiguration(
                                     lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
                                     lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null)
@@ -897,7 +897,7 @@ public class InfoController extends ToolbarWindowController {
     }
 
     public void aclAddButtonClicked(NSMenuItem sender) {
-        final AclPermission feature = controller.getSession().getFeature(AclPermission.class, prompt);
+        final AclPermission feature = controller.getSession().getFeature(AclPermission.class);
         for(Acl.User grantee : feature.getAvailableAclUsers()) {
             if(sender.representedObject().equals(grantee.getPlaceholder())) {
                 this.addAclItem(new Acl.UserAndRole(grantee, new Acl.Role(StringUtils.EMPTY)));
@@ -951,7 +951,7 @@ public class InfoController extends ToolbarWindowController {
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
             this.background(new WorkerBackgroundAction<Void>(controller,
-                    new WriteAclWorker(controller.getSession(), controller.getSession().getFeature(AclPermission.class, prompt),
+                    new WriteAclWorker(controller.getSession(), controller.getSession().getFeature(AclPermission.class),
                             files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
                         @Override
                         public void cleanup(final Void v) {
@@ -1235,7 +1235,7 @@ public class InfoController extends ToolbarWindowController {
                 update.put(header.getName(), header.getValue());
             }
             this.background(new WorkerBackgroundAction<Void>(controller,
-                    new WriteMetadataWorker(controller.getSession(), controller.getSession().getFeature(Headers.class, prompt), files, update) {
+                    new WriteMetadataWorker(controller.getSession(), controller.getSession().getFeature(Headers.class), files, update) {
                         @Override
                         public void cleanup(final Void v) {
                             toggleMetadataSettings(true);
@@ -1396,7 +1396,7 @@ public class InfoController extends ToolbarWindowController {
         NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, itemIdentifier, flag);
         final Session session = controller.getSession();
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
-            if(session.getFeature(DistributionConfiguration.class, prompt) != null) {
+            if(session.getFeature(DistributionConfiguration.class) != null) {
                 // Give icon and label of the given session
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
             }
@@ -1435,21 +1435,21 @@ public class InfoController extends ToolbarWindowController {
                 // Anonymous never has the right to updated permissions
                 return false;
             }
-            return session.getFeature(UnixPermission.class, prompt) != null;
+            return session.getFeature(UnixPermission.class) != null;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_ACL)) {
             if(anonymous) {
                 // Anonymous never has the right to updated permissions
                 return false;
             }
-            return session.getFeature(AclPermission.class, prompt) != null;
+            return session.getFeature(AclPermission.class) != null;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             if(anonymous) {
                 return false;
             }
             // Not enabled if not a cloud session
-            return session.getFeature(DistributionConfiguration.class, prompt) != null;
+            return session.getFeature(DistributionConfiguration.class) != null;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
             if(anonymous) {
@@ -1462,7 +1462,7 @@ public class InfoController extends ToolbarWindowController {
                 return false;
             }
             // Not enabled if not a cloud session
-            return session.getFeature(Headers.class, prompt) != null;
+            return session.getFeature(Headers.class) != null;
         }
         return true;
     }
@@ -1588,10 +1588,10 @@ public class InfoController extends ToolbarWindowController {
     protected List<NSView> getPanels() {
         List<NSView> views = new ArrayList<NSView>();
         views.add(panelGeneral);
-        if(controller.getSession().getFeature(UnixPermission.class, prompt) != null) {
+        if(controller.getSession().getFeature(UnixPermission.class) != null) {
             views.add(panelPermissions);
         }
-        if(controller.getSession().getFeature(AclPermission.class, prompt) != null) {
+        if(controller.getSession().getFeature(AclPermission.class) != null) {
             views.add(panelAcl);
         }
         views.add(panelMetadata);
@@ -1604,10 +1604,10 @@ public class InfoController extends ToolbarWindowController {
     protected List<String> getPanelIdentifiers() {
         List<String> identifiers = new ArrayList<String>();
         identifiers.add(TOOLBAR_ITEM_GENERAL);
-        if(controller.getSession().getFeature(UnixPermission.class, prompt) != null) {
+        if(controller.getSession().getFeature(UnixPermission.class) != null) {
             identifiers.add(TOOLBAR_ITEM_PERMISSIONS);
         }
-        if(controller.getSession().getFeature(AclPermission.class, prompt) != null) {
+        if(controller.getSession().getFeature(AclPermission.class) != null) {
             identifiers.add(TOOLBAR_ITEM_ACL);
         }
         identifiers.add(TOOLBAR_ITEM_METADATA);
@@ -1635,7 +1635,7 @@ public class InfoController extends ToolbarWindowController {
             filenameField.setStringValue(this.getName());
             final Path file = getSelected();
             filenameField.setEnabled(1 == count
-                    && controller.getSession().getFeature(Move.class, prompt).isSupported(file));
+                    && controller.getSession().getFeature(Move.class).isSupported(file));
             // Where
             String path;
             if(file.attributes().isSymbolicLink()) {
@@ -1808,7 +1808,7 @@ public class InfoController extends ToolbarWindowController {
         final Session<?> session = controller.getSession();
         final Path container = containerService.getContainer(getSelected());
 
-        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
+        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                 cdn.getName()));
         distributionDeliveryPopup.removeItemWithTitle(LocaleFactory.localizedString("None"));
@@ -1891,12 +1891,12 @@ public class InfoController extends ToolbarWindowController {
         boolean encryption = false;
         boolean lifecycle = false;
         if(enable) {
-            logging = session.getFeature(Logging.class, prompt) != null;
-            analytics = session.getFeature(AnalyticsProvider.class, prompt) != null;
-            versioning = session.getFeature(Versioning.class, prompt) != null;
-            lifecycle = session.getFeature(Lifecycle.class, prompt) != null;
-            encryption = session.getFeature(Encryption.class, prompt) != null;
-            storageclass = session.getFeature(Redundancy.class, prompt) != null;
+            logging = session.getFeature(Logging.class) != null;
+            analytics = session.getFeature(AnalyticsProvider.class) != null;
+            versioning = session.getFeature(Versioning.class) != null;
+            lifecycle = session.getFeature(Lifecycle.class) != null;
+            encryption = session.getFeature(Encryption.class) != null;
+            storageclass = session.getFeature(Redundancy.class) != null;
         }
         storageClassPopup.setEnabled(stop && enable && storageclass);
         encryptionButton.setEnabled(stop && enable && encryption);
@@ -1905,8 +1905,8 @@ public class InfoController extends ToolbarWindowController {
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
-        if(analytics && ObjectUtils.equals(controller.getSession().getFeature(IdentityConfiguration.class, prompt).getCredentials(
-                controller.getSession().getFeature(AnalyticsProvider.class, prompt).getName()), credentials)) {
+        if(analytics && ObjectUtils.equals(controller.getSession().getFeature(IdentityConfiguration.class).getCredentials(
+                controller.getSession().getFeature(AnalyticsProvider.class).getName()), credentials)) {
             // No need to create new IAM credentials when same as session credentials
             bucketAnalyticsButton.setEnabled(false);
         }
@@ -1949,8 +1949,8 @@ public class InfoController extends ToolbarWindowController {
         final Session<?> session = controller.getSession();
 
         if(this.toggleS3Settings(false)) {
-            if(session.getFeature(Redundancy.class, prompt) != null) {
-                for(String redundancy : session.getFeature(Redundancy.class, prompt).getClasses()) {
+            if(session.getFeature(Redundancy.class) != null) {
+                for(String redundancy : session.getFeature(Redundancy.class).getClasses()) {
                     storageClassPopup.addItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
                     storageClassPopup.lastItem().setRepresentedObject(redundancy);
                 }
@@ -1994,30 +1994,30 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path container = containerService.getContainer(getSelected());
-                    if(session.getFeature(Location.class, prompt) != null) {
-                        location = session.getFeature(Location.class, prompt).getLocation(container);
+                    if(session.getFeature(Location.class) != null) {
+                        location = session.getFeature(Location.class).getLocation(container);
                     }
-                    if(session.getFeature(Logging.class, prompt) != null) {
-                        logging = session.getFeature(Logging.class, prompt).getConfiguration(container);
+                    if(session.getFeature(Logging.class) != null) {
+                        logging = session.getFeature(Logging.class).getConfiguration(container);
                         for(Path c : session.list(containerService.getContainer(getSelected()).getParent(), new DisabledListProgressListener())) {
                             containers.add(c.getName());
                         }
                     }
-                    if(session.getFeature(Versioning.class, prompt) != null) {
-                        versioning = session.getFeature(Versioning.class, prompt).getConfiguration(container);
+                    if(session.getFeature(Versioning.class) != null) {
+                        versioning = session.getFeature(Versioning.class).getConfiguration(container);
                     }
-                    if(session.getFeature(Lifecycle.class, prompt) != null) {
-                        lifecycle = session.getFeature(Lifecycle.class, prompt).getConfiguration(container);
+                    if(session.getFeature(Lifecycle.class) != null) {
+                        lifecycle = session.getFeature(Lifecycle.class).getConfiguration(container);
                     }
-                    if(session.getFeature(AnalyticsProvider.class, prompt) != null) {
-                        if(session.getFeature(IdentityConfiguration.class, prompt) != null) {
-                            credentials = session.getFeature(IdentityConfiguration.class, prompt).getCredentials(
-                                    session.getFeature(AnalyticsProvider.class, prompt).getName());
+                    if(session.getFeature(AnalyticsProvider.class) != null) {
+                        if(session.getFeature(IdentityConfiguration.class) != null) {
+                            credentials = session.getFeature(IdentityConfiguration.class).getCredentials(
+                                    session.getFeature(AnalyticsProvider.class).getName());
                         }
                     }
                     if(numberOfFiles() == 1) {
-                        if(session.getFeature(Encryption.class, prompt) != null) {
-                            encryption = session.getFeature(Encryption.class, prompt).getEncryption(getSelected());
+                        if(session.getFeature(Encryption.class) != null) {
+                            encryption = session.getFeature(Encryption.class).getEncryption(getSelected());
                         }
                     }
                     return true;
@@ -2053,7 +2053,7 @@ public class InfoController extends ToolbarWindowController {
                     encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
                     if(null != credentials) {
                         bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                                session.getFeature(AnalyticsProvider.class, prompt).getSetup(session.getHost().getProtocol(),
+                                session.getFeature(AnalyticsProvider.class).getSetup(session.getHost().getProtocol(),
                                         session.getHost().getProtocol().getScheme(),
                                         containerService.getContainer(getSelected()).getName(), credentials)
                         ));
@@ -2105,7 +2105,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(AclPermission.class, prompt) != null;
+        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(AclPermission.class) != null;
         aclTable.setEnabled(stop && enable);
         aclAddButton.setEnabled(stop && enable);
         boolean selection = aclTable.selectedRowIndexes().count().intValue() > 0;
@@ -2129,7 +2129,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(Headers.class, prompt) != null;
+        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(Headers.class) != null;
         metadataTable.setEnabled(stop && enable);
         metadataAddButton.setEnabled(stop && enable);
         boolean selection = metadataTable.selectedRowIndexes().count().intValue() > 0;
@@ -2150,7 +2150,7 @@ public class InfoController extends ToolbarWindowController {
         this.setMetadata(Collections.<Header>emptyList());
         if(this.toggleMetadataSettings(false)) {
             this.background(new WorkerBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(
-                    controller.getSession().getFeature(Headers.class, prompt), files) {
+                    controller.getSession().getFeature(Headers.class), files) {
                 @Override
                 public void cleanup(final Map<String, String> updated) {
                     List<Header> m = new ArrayList<Header>();
@@ -2172,7 +2172,7 @@ public class InfoController extends ToolbarWindowController {
         aclUrlField.setStringValue(LocaleFactory.localizedString("None"));
         final Session<?> session = controller.getSession();
         if(this.toggleAclSettings(false)) {
-            final AclPermission feature = session.getFeature(AclPermission.class, prompt);
+            final AclPermission feature = session.getFeature(AclPermission.class);
             aclAddButton.removeAllItems();
             this.aclAddButton.addItemWithTitle(StringUtils.EMPTY);
             this.aclAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
@@ -2202,7 +2202,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             this.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new ReadAclWorker(
-                    session.getFeature(AclPermission.class, prompt), files) {
+                    session.getFeature(AclPermission.class), files) {
                 @Override
                 public void cleanup(final List<Acl.UserAndRole> updated) {
                     setAcl(updated);
@@ -2334,7 +2334,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.togglePermissionSettings(false)) {
             this.background(new WorkerBackgroundAction<Void>(controller,
                     new WritePermissionWorker(controller.getSession(),
-                            controller.getSession().getFeature(UnixPermission.class, prompt), files, permission, recursive) {
+                            controller.getSession().getFeature(UnixPermission.class), files, permission, recursive) {
                         @Override
                         public void cleanup(final Void v) {
                             setPermissions(Collections.singletonList(permission));
@@ -2355,7 +2355,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(UnixPermission.class, prompt) != null;
+        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(UnixPermission.class) != null;
         recursiveButton.setEnabled(stop && enable);
         for(Path next : files) {
             if(next.attributes().isFile()) {
@@ -2392,7 +2392,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Session<?> session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
-        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
+        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         boolean enable = !credentials.isAnonymousLogin() && cdn != null;
         final Path container = containerService.getContainer(getSelected());
         if(enable) {
@@ -2408,10 +2408,10 @@ public class InfoController extends ToolbarWindowController {
         Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
         distributionEnableButton.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
-        distributionLoggingButton.setEnabled(stop && enable && cdn.getFeature(Logging.class, method, prompt) != null);
+        distributionLoggingButton.setEnabled(stop && enable && cdn.getFeature(Logging.class, method) != null);
         if(enable) {
-            final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method, prompt);
-            final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method, prompt);
+            final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method);
+            final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method);
             if(null == analyticsFeature || null == identityFeature) {
                 distributionAnalyticsButton.setEnabled(false);
             }
@@ -2428,10 +2428,10 @@ public class InfoController extends ToolbarWindowController {
         else {
             distributionAnalyticsButton.setEnabled(false);
         }
-        distributionLoggingPopup.setEnabled(stop && enable && cdn.getFeature(Logging.class, method, prompt) != null);
-        distributionCnameField.setEnabled(stop && enable && cdn.getFeature(Cname.class, method, prompt) != null);
-        distributionInvalidateObjectsButton.setEnabled(stop && enable && cdn.getFeature(Purge.class, method, prompt) != null);
-        distributionDefaultRootPopup.setEnabled(stop && enable && cdn.getFeature(Index.class, method, prompt) != null);
+        distributionLoggingPopup.setEnabled(stop && enable && cdn.getFeature(Logging.class, method) != null);
+        distributionCnameField.setEnabled(stop && enable && cdn.getFeature(Cname.class, method) != null);
+        distributionInvalidateObjectsButton.setEnabled(stop && enable && cdn.getFeature(Purge.class, method) != null);
+        distributionDefaultRootPopup.setEnabled(stop && enable && cdn.getFeature(Index.class, method) != null);
         if(stop) {
             distributionProgress.stopAnimation(null);
         }
@@ -2450,9 +2450,9 @@ public class InfoController extends ToolbarWindowController {
                     final Session<?> session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = containerService.getContainer(getSelected());
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
-                    final Purge feature = cdn.getFeature(Purge.class, method, prompt);
-                    feature.invalidate(container, method, files, false);
+                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
+                    final Purge feature = cdn.getFeature(Purge.class, method);
+                    feature.invalidate(container, method, files, prompt);
                     return true;
                 }
 
@@ -2489,13 +2489,13 @@ public class InfoController extends ToolbarWindowController {
                     final Session<?> session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = containerService.getContainer(getSelected());
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
+                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                     final Distribution configuration = new Distribution(null, method, distributionEnableButton.state() == NSCell.NSOnState);
                     configuration.setIndexDocument(distributionDefaultRootPopup.selectedItem().representedObject());
                     configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
                     configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
                     configuration.setCNAMEs(StringUtils.split(distributionCnameField.stringValue()));
-                    cdn.write(container, configuration);
+                    cdn.write(container, configuration, prompt);
                     return true;
                 }
 
@@ -2528,9 +2528,9 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
-                    distribution = cdn.read(container, method);
-                    if(cdn.getFeature(Index.class, distribution.getMethod(), prompt) != null) {
+                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
+                    distribution = cdn.read(container, method, prompt);
+                    if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                         // Make sure container items are cached for default root object.
                         rootDocuments.addAll(session.list(container, new DisabledListProgressListener()));
                     }
@@ -2541,7 +2541,7 @@ public class InfoController extends ToolbarWindowController {
                 public void cleanup() {
                     super.cleanup();
                     final Path container = containerService.getContainer(getSelected());
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, prompt);
+                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                     distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                             cdn.getName(distribution.getMethod())));
                     distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
@@ -2566,8 +2566,8 @@ public class InfoController extends ToolbarWindowController {
                     if(null == distributionLoggingPopup.selectedItem()) {
                         distributionLoggingPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
                     }
-                    final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method, prompt);
-                    final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method, prompt);
+                    final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method);
+                    final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method);
                     if(analyticsFeature != null && identityFeature != null) {
                         final Credentials credentials = identityFeature.getCredentials(analyticsFeature.getName());
                         distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
@@ -2614,7 +2614,7 @@ public class InfoController extends ToolbarWindowController {
                             distributionCnameUrlField.setToolTip(LocaleFactory.localizedString("CDN URL"));
                         }
                     }
-                    if(cdn.getFeature(Index.class, distribution.getMethod(), prompt) != null) {
+                    if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                         for(Path next : rootDocuments) {
                             if(next.attributes().isFile()) {
                                 distributionDefaultRootPopup.addItemWithTitle(next.getName());
@@ -2670,10 +2670,10 @@ public class InfoController extends ToolbarWindowController {
                     final Session<?> session = controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                        session.getFeature(IdentityConfiguration.class, prompt).create(session.getFeature(AnalyticsProvider.class, prompt).getName(), document);
+                        session.getFeature(IdentityConfiguration.class).create(session.getFeature(AnalyticsProvider.class).getName(), document, prompt);
                     }
                     else {
-                        session.getFeature(IdentityConfiguration.class, prompt).delete(session.getFeature(AnalyticsProvider.class, prompt).getName());
+                        session.getFeature(IdentityConfiguration.class).delete(session.getFeature(AnalyticsProvider.class).getName(), prompt);
                     }
                     return true;
                 }

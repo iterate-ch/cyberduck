@@ -37,7 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftMoveFeatureTest extends AbstractTestCase {
 
@@ -60,7 +60,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         new SwiftMoveFeature(session).move(test, target);
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target));
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         new SwiftMoveFeature(session).move(test, target);
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target));
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
     }
 
     @Test(expected = NotfoundException.class)

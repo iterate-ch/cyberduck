@@ -36,8 +36,6 @@ import com.amazonaws.services.identitymanagement.model.*;
 public class AWSIdentityConfiguration implements IdentityConfiguration {
     private static Logger log = Logger.getLogger(AWSIdentityConfiguration.class);
 
-    private LoginController prompt;
-
     private Host host;
 
     private UseragentProvider ua = new PreferencesUseragentProvider();
@@ -49,9 +47,8 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
      */
     private static final String prefix = "iam.";
 
-    public AWSIdentityConfiguration(final Host host, final LoginController prompt) {
+    public AWSIdentityConfiguration(final Host host) {
         this.host = host;
-        this.prompt = prompt;
         final int timeout = Preferences.instance().getInteger("connection.timeout.seconds") * 1000;
         final ClientConfiguration configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);
@@ -77,7 +74,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
         );
     }
 
-    private <T> T authenticated(final Callable<T> run) throws BackgroundException {
+    private <T> T authenticated(final Callable<T> run, final LoginController prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions();
         options.anonymous = false;
         options.publickey = false;
@@ -89,7 +86,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
         catch(LoginFailureException failure) {
             prompt.prompt(host.getProtocol(), host.getCredentials(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
-            return this.authenticated(run);
+            return this.authenticated(run, prompt);
         }
         catch(BackgroundException e) {
             throw e;
@@ -100,7 +97,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     }
 
     @Override
-    public void delete(final String username) throws BackgroundException {
+    public void delete(final String username, final LoginController prompt) throws BackgroundException {
         this.authenticated(new Callable<Void>() {
             @Override
             public Void call() throws BackgroundException {
@@ -127,7 +124,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                 }
                 return null;
             }
-        });
+        }, prompt);
     }
 
     @Override
@@ -143,7 +140,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     }
 
     @Override
-    public void create(final String username, final String policy) throws BackgroundException {
+    public void create(final String username, final String policy, final LoginController prompt) throws BackgroundException {
         this.authenticated(new Callable<Void>() {
             @Override
             public Void call() throws BackgroundException {
@@ -168,6 +165,6 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                 }
                 return null;
             }
-        });
+        }, prompt);
     }
 }

@@ -47,7 +47,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         assertEquals(random.getBytes().length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
 
@@ -84,7 +84,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         assertEquals(random.getBytes().length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
 

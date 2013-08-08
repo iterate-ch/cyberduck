@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPDeleteFeatureTest extends AbstractTestCase {
 
@@ -46,6 +46,6 @@ public class SFTPDeleteFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test));
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
     }
 }

@@ -46,7 +46,7 @@ public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
         final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         assertTrue(session.exists(bucket));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
         assertFalse(session.exists(bucket));
     }
 }

@@ -115,12 +115,12 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
 
     @Test
     public void testFeatures() {
-        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(AclPermission.class, null));
-        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(DistributionConfiguration.class, null));
-        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(IdentityConfiguration.class, null));
-        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(Logging.class, null));
-        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(Headers.class, null));
-        assertNull(new GoogleStorageSession(new Host("t")).getFeature(Lifecycle.class, null));
-        assertNull(new GoogleStorageSession(new Host("t")).getFeature(Versioning.class, null));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(AclPermission.class));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(DistributionConfiguration.class));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(IdentityConfiguration.class));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(Logging.class));
+        assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(Headers.class));
+        assertNull(new GoogleStorageSession(new Host("t")).getFeature(Lifecycle.class));
+        assertNull(new GoogleStorageSession(new Host("t")).getFeature(Versioning.class));
     }
 }

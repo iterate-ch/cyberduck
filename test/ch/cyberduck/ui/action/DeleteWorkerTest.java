@@ -29,10 +29,10 @@ public class DeleteWorkerTest extends AbstractTestCase {
     public void testCompile() throws Exception {
         final FTPSession session = new FTPSession(new Host("t")) {
             @Override
-            public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+            public <T> T getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override
-                    public void delete(final List<Path> files) throws BackgroundException {
+                    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
                         assertEquals(new Path("/t/a", Path.FILE_TYPE), files.get(0));
                         assertEquals(new Path("/t/d/b", Path.FILE_TYPE), files.get(1));
                         assertEquals(new Path("/t/d", Path.FILE_TYPE), files.get(2));

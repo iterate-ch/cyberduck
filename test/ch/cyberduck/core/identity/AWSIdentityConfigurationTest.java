@@ -26,16 +26,16 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
         final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
-        final AWSIdentityConfiguration iam = new AWSIdentityConfiguration(host, new DisabledLoginController());
+        final AWSIdentityConfiguration iam = new AWSIdentityConfiguration(host);
         final String username = UUID.randomUUID().toString();
         try {
-            iam.create(username, "{}");
+            iam.create(username, "{}", new DisabledLoginController());
             fail();
         }
         catch(BackgroundException e) {
             assertEquals("Cannot write user configuration", e.getMessage());
             assertEquals(MalformedPolicyDocumentException.class, e.getCause().getClass());
-            iam.delete(username);
+            iam.delete(username, new DisabledLoginController());
         }
         iam.create(username, "{\n" +
                 "  \"Version\": \"2012-10-17\",\n" +
@@ -46,9 +46,9 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
                 "      \"Resource\": \"*\"\n" +
                 "    }\n" +
                 "  ]\n" +
-                "}");
+                "}", new DisabledLoginController());
         assertNotNull(iam.getCredentials(username));
-        iam.delete(username);
+        iam.delete(username, new DisabledLoginController());
         assertNull(iam.getCredentials(username));
     }
 
@@ -57,6 +57,6 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
         final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
                 "key", "secret"
         ));
-        new AWSIdentityConfiguration(host, new DisabledLoginController()).create("u", "{}");
+        new AWSIdentityConfiguration(host).create("u", "{}", new DisabledLoginController());
     }
 }

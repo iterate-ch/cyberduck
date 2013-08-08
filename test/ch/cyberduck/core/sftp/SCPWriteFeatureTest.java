@@ -49,7 +49,7 @@ public class SCPWriteFeatureTest extends AbstractTestCase {
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
 }

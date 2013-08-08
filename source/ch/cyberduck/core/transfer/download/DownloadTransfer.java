@@ -17,7 +17,15 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
@@ -230,7 +238,7 @@ public class DownloadTransfer extends Transfer {
             InputStream in = null;
             OutputStream out = null;
             try {
-                final Read reader = session.getFeature(Read.class, new DisabledLoginController());
+                final Read reader = session.getFeature(Read.class);
                 in = reader.read(file, status);
                 out = file.getLocal().getOutputStream(status.isAppend());
                 new StreamCopier(status).transfer(new ThrottledInputStream(in, throttle), 0, out, listener, -1);

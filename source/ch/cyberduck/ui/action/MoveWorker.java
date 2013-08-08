@@ -17,7 +17,6 @@ package ch.cyberduck.ui.action;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -28,7 +27,7 @@ import java.text.MessageFormat;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class MoveWorker extends Worker<Void> {
 
@@ -43,7 +42,7 @@ public abstract class MoveWorker extends Worker<Void> {
 
     @Override
     public Void run() throws BackgroundException {
-        final Move feature = session.getFeature(Move.class, new DisabledLoginController());
+        final Move feature = session.getFeature(Move.class);
         for(Map.Entry<Path, Path> entry : files.entrySet()) {
             feature.move(entry.getKey(), entry.getValue());
         }

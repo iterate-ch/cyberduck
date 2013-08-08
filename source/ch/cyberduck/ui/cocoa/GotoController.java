@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NullComparator;
@@ -43,6 +44,8 @@ public class GotoController extends AlertController {
     private NSComboBox folderCombobox;
     private ProxyController folderComboboxModel = new FolderComboboxModel();
 
+    private Cache cache;
+
     private class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {
 
         private final Comparator<Path> comparator = new NullComparator<Path>();
@@ -60,18 +63,18 @@ public class GotoController extends AlertController {
             if(!controller.isMounted()) {
                 return new NSInteger(0);
             }
-            return new NSInteger(controller.getSession().cache().get(controller.workdir().getReference()).filter(comparator, filter).size());
+            return new NSInteger(cache.get(controller.workdir().getReference()).filter(comparator, filter).size());
         }
 
         @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
             final BrowserController controller = (BrowserController) parent;
-            return (NSObject) controller.getSession().cache().get(controller.workdir().getReference()).filter(comparator, filter).get(
+            return (NSObject) cache.get(controller.workdir().getReference()).filter(comparator, filter).get(
                     row.intValue()).getReference().unique();
         }
     }
 
-    public GotoController(final WindowController parent) {
+    public GotoController(final WindowController parent, final Cache cache) {
         super(parent, NSAlert.alert(
                 LocaleFactory.localizedString("Go to folder", "Goto"),
                 LocaleFactory.localizedString("Enter the pathname to list:", "Goto"),
@@ -79,6 +82,7 @@ public class GotoController extends AlertController {
                 null,
                 LocaleFactory.localizedString("Cancel", "Goto")
         ));
+        this.cache = cache;
         alert.setIcon(IconCacheFactory.<NSImage>get().folderIcon(64));
         folderCombobox = NSComboBox.textfieldWithFrame(new NSRect(0, 26));
         folderCombobox.setCompletes(true);

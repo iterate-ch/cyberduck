@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -98,7 +97,7 @@ public class FolderController extends FileController {
 
             @Override
             public Boolean run() throws BackgroundException {
-                final Directory feature = c.getSession().getFeature(Directory.class, new DisabledLoginController());
+                final Directory feature = c.getSession().getFeature(Directory.class);
                 if(!regions.isEmpty()) {
                     feature.mkdir(folder, regionPopup.selectedItem().representedObject());
                 }

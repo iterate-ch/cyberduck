@@ -190,7 +190,7 @@ public class CopyTransfer extends Transfer {
                 source.getName(), copy.getName()));
         if(source.attributes().isFile()) {
             if(session.getHost().equals(destination.getHost())) {
-                final Copy feature = session.getFeature(Copy.class, null);
+                final Copy feature = session.getFeature(Copy.class);
                 if(feature != null) {
                     feature.copy(source, copy);
                     addTransferred(source.attributes().getSize());
@@ -217,7 +217,7 @@ public class CopyTransfer extends Transfer {
             if(!status.isExists()) {
                 session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         copy.getName()));
-                destination.getFeature(Directory.class, new DisabledLoginController()).mkdir(copy, null);
+                destination.getFeature(Directory.class).mkdir(copy, null);
             }
         }
     }
@@ -237,8 +237,8 @@ public class CopyTransfer extends Transfer {
         OutputStream out = null;
         try {
             if(file.attributes().isFile()) {
-                new StreamCopier(status).transfer(in = new ThrottledInputStream(session.getFeature(Read.class, new DisabledLoginController()).read(file, status), throttle),
-                        0, out = new ThrottledOutputStream(destination.getFeature(Write.class, new DisabledLoginController()).write(copy, status), throttle),
+                new StreamCopier(status).transfer(in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle),
+                        0, out = new ThrottledOutputStream(destination.getFeature(Write.class).write(copy, status), throttle),
                         listener, -1);
             }
         }

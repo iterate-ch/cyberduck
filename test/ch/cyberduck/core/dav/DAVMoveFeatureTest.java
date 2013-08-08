@@ -37,7 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVMoveFeatureTest extends AbstractTestCase {
 
@@ -56,7 +56,7 @@ public class DAVMoveFeatureTest extends AbstractTestCase {
         new DAVMoveFeature(session).move(test, target);
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class DAVMoveFeatureTest extends AbstractTestCase {
         new DAVMoveFeature(session).move(test, target);
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
     }
 
     @Test(expected = NotfoundException.class)

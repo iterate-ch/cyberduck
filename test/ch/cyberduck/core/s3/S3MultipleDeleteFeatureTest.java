@@ -52,7 +52,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
         for(int i = 0; i < 1010; i++) {
             keys.add(new ObjectKeyAndVersion(UUID.randomUUID().toString()));
         }
-        new S3MultipleDeleteFeature(session, new DisabledLoginController()).delete(container, keys);
+        new S3MultipleDeleteFeature(session).delete(container, keys, new DisabledLoginController());
         session.close();
     }
 }

@@ -106,13 +106,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(status.isComplete()) {
             if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                final UnixPermission unix = session.getFeature(UnixPermission.class, null);
+                final UnixPermission unix = session.getFeature(UnixPermission.class);
                 if(unix != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                             file.getName(), file.attributes().getPermission().getOctalString()));
                     this.permissions(file, unix);
                 }
-                final AclPermission acl = session.getFeature(AclPermission.class, null);
+                final AclPermission acl = session.getFeature(AclPermission.class);
                 if(acl != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                             file.getName(), file.attributes().getPermission().getOctalString()));
@@ -120,7 +120,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
             if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                final Timestamp timestamp = session.getFeature(Timestamp.class, null);
+                final Timestamp timestamp = session.getFeature(Timestamp.class);
                 if(timestamp != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
                             file.getName(), UserDateFormatterFactory.get().getShortFormat(file.getLocal().attributes().getModificationDate())));

@@ -48,7 +48,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final byte[] buffer = new byte[content.length];
         IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
         assertArrayEquals(content, buffer);
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
 

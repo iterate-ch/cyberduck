@@ -39,15 +39,14 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     public void testGetMethods() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         assertEquals(Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING),
-                new CloudFrontDistributionConfiguration(session, new DisabledLoginController()).getMethods(new Path("/bbb", Path.VOLUME_TYPE)));
+                new CloudFrontDistributionConfiguration(session).getMethods(new Path("/bbb", Path.VOLUME_TYPE)));
     }
 
     @Test
     public void testGetName() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(
-                session, new DisabledLoginController()
-        );
+                session);
         assertEquals("Amazon CloudFront", configuration.getName());
         assertEquals("Amazon CloudFront", configuration.getName(Distribution.CUSTOM));
     }
@@ -56,7 +55,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     public void testGetOrigin() throws Exception {
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session, new DisabledLoginController());
+                = new CloudFrontDistributionConfiguration(session);
         assertEquals("bbb.s3.amazonaws.com",
                 configuration.getOrigin(new Path("/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD));
     }
@@ -71,9 +70,9 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session, new DisabledLoginController());
+                = new CloudFrontDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD);
+        final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
         assertEquals("E2N9XG26504TZI", distribution.getId());
     }
 
@@ -82,9 +81,9 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
         final S3Session session = new S3Session(host);
         final DistributionConfiguration configuration
-                = new CloudFrontDistributionConfiguration(session, new DisabledLoginController());
+                = new CloudFrontDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        configuration.read(container, Distribution.DOWNLOAD);
+        configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
     }
 
     @Test
@@ -97,7 +96,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledLoginController()) {
+        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
             @Override
             protected void updateDistribution(final Distribution current, final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
                 set.set(true);
@@ -110,7 +109,8 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
             }
         };
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        configuration.write(container, new Distribution("test.cyberduck.ch.s3.amazonaws.com", Distribution.DOWNLOAD));
+        configuration.write(container, new Distribution("test.cyberduck.ch.s3.amazonaws.com", Distribution.DOWNLOAD),
+                new DisabledLoginController());
         assertTrue(set.get());
     }
 
@@ -124,7 +124,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledLoginController()) {
+        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
             @Override
             protected void updateDistribution(final Distribution current, final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
                 fail();
@@ -137,32 +137,33 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
             }
         };
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        configuration.write(container, new Distribution("test.cyberduck.ch.s3.amazonaws.com", Distribution.STREAMING));
+        configuration.write(container, new Distribution("test.cyberduck.ch.s3.amazonaws.com", Distribution.STREAMING),
+                new DisabledLoginController());
         assertTrue(set.get());
     }
 
     @Test
     public void testProtocol() {
         assertEquals("cloudfront.amazonaws.com", new CloudFrontDistributionConfiguration(
-                new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname())), new DisabledLoginController()
+                new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()))
         ).getProtocol().getDefaultHostname());
     }
 
     @Test
     public void testFeatures() {
         final CloudFrontDistributionConfiguration d = new CloudFrontDistributionConfiguration(
-                new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname())), new DisabledLoginController()
+                new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()))
         );
-        assertNotNull(d.getFeature(Purge.class, Distribution.DOWNLOAD, new DisabledLoginController()));
-        assertNotNull(d.getFeature(Purge.class, Distribution.WEBSITE_CDN, new DisabledLoginController()));
-        assertNull(d.getFeature(Purge.class, Distribution.STREAMING, new DisabledLoginController()));
-        assertNull(d.getFeature(Purge.class, Distribution.WEBSITE, new DisabledLoginController()));
-        assertNotNull(d.getFeature(Index.class, Distribution.DOWNLOAD, new DisabledLoginController()));
-        assertNotNull(d.getFeature(Index.class, Distribution.WEBSITE_CDN, new DisabledLoginController()));
-        assertNull(d.getFeature(Index.class, Distribution.STREAMING, new DisabledLoginController()));
-        assertNull(d.getFeature(Index.class, Distribution.WEBSITE, new DisabledLoginController()));
-        assertNotNull(d.getFeature(Logging.class, Distribution.DOWNLOAD, new DisabledLoginController()));
-        assertNotNull(d.getFeature(Cname.class, Distribution.DOWNLOAD, new DisabledLoginController()));
-        assertNotNull(d.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD, new DisabledLoginController()));
+        assertNotNull(d.getFeature(Purge.class, Distribution.DOWNLOAD));
+        assertNotNull(d.getFeature(Purge.class, Distribution.WEBSITE_CDN));
+        assertNull(d.getFeature(Purge.class, Distribution.STREAMING));
+        assertNull(d.getFeature(Purge.class, Distribution.WEBSITE));
+        assertNotNull(d.getFeature(Index.class, Distribution.DOWNLOAD));
+        assertNotNull(d.getFeature(Index.class, Distribution.WEBSITE_CDN));
+        assertNull(d.getFeature(Index.class, Distribution.STREAMING));
+        assertNull(d.getFeature(Index.class, Distribution.WEBSITE));
+        assertNotNull(d.getFeature(Logging.class, Distribution.DOWNLOAD));
+        assertNotNull(d.getFeature(Cname.class, Distribution.DOWNLOAD));
+        assertNotNull(d.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD));
     }
 }

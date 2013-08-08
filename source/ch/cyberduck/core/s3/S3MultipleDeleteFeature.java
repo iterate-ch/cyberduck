@@ -41,17 +41,15 @@ import java.util.Map;
 public class S3MultipleDeleteFeature implements Delete {
 
     private S3Session session;
-    private LoginController prompt;
 
     private PathContainerService containerService
             = new PathContainerService();
 
-    public S3MultipleDeleteFeature(final S3Session session, final LoginController prompt) {
+    public S3MultipleDeleteFeature(final S3Session session) {
         this.session = session;
-        this.prompt = prompt;
     }
 
-    public void delete(final List<Path> files) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
         final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
         for(Path file : files) {
             if(containerService.isContainer(file)) {
@@ -83,7 +81,7 @@ public class S3MultipleDeleteFeature implements Delete {
             }
         }
         for(Map.Entry<Path, List<ObjectKeyAndVersion>> entry : map.entrySet()) {
-            this.delete(entry.getKey(), entry.getValue());
+            this.delete(entry.getKey(), entry.getValue(), prompt);
         }
         for(Path file : files) {
             if(containerService.isContainer(file)) {
@@ -106,7 +104,7 @@ public class S3MultipleDeleteFeature implements Delete {
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException
      *          Authentication canceled for MFA delete
      */
-    protected void delete(final Path container, final List<ObjectKeyAndVersion> keys)
+    protected void delete(final Path container, final List<ObjectKeyAndVersion> keys, final LoginController prompt)
             throws BackgroundException {
         try {
             if(new S3VersioningFeature(session).getConfiguration(container).isMultifactor()) {

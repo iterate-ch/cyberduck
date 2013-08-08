@@ -37,17 +37,19 @@ public interface DistributionConfiguration {
      * Write distribution configuration for origin.
      *
      * @param configuration Configuration
+     * @param prompt        Callback
      */
-    void write(Path container, Distribution configuration) throws BackgroundException;
+    void write(Path container, Distribution configuration, final LoginController prompt) throws BackgroundException;
 
     /**
      * Read distribution configuration of origin
      *
      * @param container Container
      * @param method    Distribution protocol
+     * @param prompt    Callback
      * @return Distribution Configuration
      */
-    Distribution read(Path container, Distribution.Method method) throws BackgroundException;
+    Distribution read(Path container, Distribution.Method method, final LoginController prompt) throws BackgroundException;
 
     /**
      * List available distribution methods for this CDN.
@@ -75,5 +77,5 @@ public interface DistributionConfiguration {
      */
     String getName(Distribution.Method method);
 
-    <T> T getFeature(Class<T> type, Distribution.Method method, LoginController prompt);
+    <T> T getFeature(Class<T> type, Distribution.Method method);
 }

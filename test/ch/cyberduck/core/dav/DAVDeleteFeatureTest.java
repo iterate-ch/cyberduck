@@ -37,7 +37,7 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
         new DAVDirectoryFeature(session).mkdir(test, null);
         assertTrue(session.exists(test));
         new DefaultTouchFeature(session).touch(new Path(test, UUID.randomUUID().toString(), Path.FILE_TYPE));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test));
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
         assertFalse(session.exists(test));
         session.close();
     }
@@ -52,6 +52,6 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test));
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
     }
 }

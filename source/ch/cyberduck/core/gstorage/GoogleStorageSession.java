@@ -232,7 +232,7 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+    public <T> T getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new S3SingleUploadService(this);
         }
@@ -266,6 +266,6 @@ public class GoogleStorageSession extends S3Session {
         if(type == Redundancy.class) {
             return null;
         }
-        return super.getFeature(type, prompt);
+        return super.getFeature(type);
     }
 }

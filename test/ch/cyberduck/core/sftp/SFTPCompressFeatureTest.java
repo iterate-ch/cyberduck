@@ -28,7 +28,7 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
         final SFTPCompressFeature feature = new SFTPCompressFeature(session);
         for(Archive archive : Archive.getKnownArchives()) {
             final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-            session.getFeature(Touch.class, null).touch(test);
+            session.getFeature(Touch.class).touch(test);
             feature.archive(archive, session.home(), Collections.<Path>singletonList(test), new ProgressListener() {
                 @Override
                 public void message(final String message) {
@@ -36,7 +36,7 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
                 }
             });
             assertTrue(session.exists(archive.getArchive(Collections.<Path>singletonList(test))));
-            new SFTPDeleteFeature(session).delete(Collections.singletonList(test));
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
             assertFalse(session.exists(test));
             feature.unarchive(archive, archive.getArchive(Collections.<Path>singletonList(test)), new ProgressListener() {
                 @Override
@@ -47,8 +47,8 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
             assertTrue(session.exists(test));
             new SFTPDeleteFeature(session).delete(Collections.singletonList(archive.getArchive(
                     Collections.<Path>singletonList(test)
-            )));
-            new SFTPDeleteFeature(session).delete(Collections.singletonList(test));
+            )), new DisabledLoginController());
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
         }
         session.close();
     }

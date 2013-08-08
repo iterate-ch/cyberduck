@@ -63,13 +63,13 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     container.attributes().setRegion(f.getRegion().getRegionId());
                     if(Preferences.instance().getBoolean("openstack.cdn.preload")) {
-                        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, new DisabledLoginController());
+                        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                         threadFactory.newThread(new Runnable() {
                             @Override
                             public void run() {
                                 for(Distribution.Method method : cdn.getMethods(container)) {
                                     try {
-                                        cdn.read(container, method);
+                                        cdn.read(container, method, new DisabledLoginController());
                                     }
                                     catch(BackgroundException e) {
                                         log.warn(String.format("Failure preloading CDN configuration for container %s:%s", container, e.getMessage()));

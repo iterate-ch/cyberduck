@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPDirectoryFeatureTest extends AbstractTestCase {
 
@@ -52,7 +52,7 @@ public class SFTPDirectoryFeatureTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new SFTPDirectoryFeature(session).mkdir(test, null);
         assertTrue(session.exists(test));
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
 }

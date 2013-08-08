@@ -235,7 +235,7 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type, final LoginController prompt) {
+    public <T> T getFeature(final Class<T> type) {
         if(type == Read.class) {
             if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
                 return (T) new SCPReadFeature(this);
@@ -275,6 +275,6 @@ public class SFTPSession extends Session<Connection> {
         if(type == Compress.class) {
             return (T) new SFTPCompressFeature(this);
         }
-        return super.getFeature(type, prompt);
+        return super.getFeature(type);
     }
 }

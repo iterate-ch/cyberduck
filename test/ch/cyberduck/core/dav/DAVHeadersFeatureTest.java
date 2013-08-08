@@ -83,14 +83,14 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
+        session.getFeature(Touch.class).touch(test);
         final String v = UUID.randomUUID().toString();
         new DAVHeadersFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
         final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
 
     }
@@ -112,7 +112,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
 
     }

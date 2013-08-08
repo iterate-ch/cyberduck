@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -69,7 +68,7 @@ public class CreateFileController extends FileController {
             @Override
             public Boolean run() throws BackgroundException {
                 final Session<?> session = c.getSession();
-                final Touch feature = session.getFeature(Touch.class, new DisabledLoginController());
+                final Touch feature = session.getFeature(Touch.class);
                 feature.touch(file);
                 if(edit) {
                     Editor editor = EditorFactory.instance().create(c, session, file);

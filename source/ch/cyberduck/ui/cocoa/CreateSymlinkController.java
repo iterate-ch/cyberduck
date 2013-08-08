@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -71,7 +70,7 @@ public class CreateSymlinkController extends FileController {
             @Override
             public Boolean run() throws BackgroundException {
                 // Symlink pointing to existing file
-                final Symlink feature = session.getFeature(Symlink.class, LoginControllerFactory.get(c));
+                final Symlink feature = session.getFeature(Symlink.class);
                 feature.symlink(link, selected.getName());
                 return true;
             }

@@ -41,7 +41,7 @@ public class S3TouchFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new S3TouchFeature(session).touch(test);
         assertTrue(session.exists(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         assertFalse(session.exists(test));
         session.close();
     }

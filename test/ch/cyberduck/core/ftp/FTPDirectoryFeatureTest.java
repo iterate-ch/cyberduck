@@ -34,7 +34,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPDirectoryFeatureTest extends AbstractTestCase {
 
@@ -51,7 +51,7 @@ public class FTPDirectoryFeatureTest extends AbstractTestCase {
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new FTPDirectoryFeature(session).mkdir(test, null);
         assertTrue(session.exists(test));
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test));
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
         assertFalse(session.exists(test));
         session.close();
     }

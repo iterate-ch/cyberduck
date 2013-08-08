@@ -1,10 +1,8 @@
 package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
@@ -26,7 +24,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
     @Test
     public void testGetMethods() throws Exception {
         assertEquals(Arrays.asList(Distribution.CUSTOM),
-                new CustomOriginCloudFrontDistributionConfiguration(new Host("o"), new DisabledLoginController()).getMethods(
+                new CustomOriginCloudFrontDistributionConfiguration(new Host("o")).getMethods(
                         new Path("/bbb", Path.VOLUME_TYPE)));
     }
 
@@ -37,7 +35,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         h.setWebURL("http://w.example.net");
         final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(h, new DisabledLoginController());
+                = new CustomOriginCloudFrontDistributionConfiguration(h);
         assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM));
         h.setWebURL(null);
         assertEquals("m", configuration.getOrigin(container, Distribution.CUSTOM));
@@ -50,9 +48,9 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         origin.getCdnCredentials().setUsername(properties.getProperty("s3.key"));
         origin.getCdnCredentials().setPassword(properties.getProperty("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledLoginController());
+                = new CustomOriginCloudFrontDistributionConfiguration(origin);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Distribution distribution = configuration.read(container, Distribution.CUSTOM);
+        final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginController());
         assertNull(distribution.getId());
         assertEquals("myhost.localdomain", distribution.getOrigin());
         assertEquals("Unknown", distribution.getStatus());
@@ -63,19 +61,8 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
     public void testReadMissingCredentials() throws Exception {
         final Host bookmark = new Host(Protocol.SFTP, "myhost.localdomain");
         final CustomOriginCloudFrontDistributionConfiguration configuration
-                = new CustomOriginCloudFrontDistributionConfiguration(bookmark, new DisabledLoginController() {
-            @Override
-            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                assertEquals(Protocol.S3_SSL, protocol);
-                assertEquals(bookmark.getCdnCredentials(), credentials);
-                assertEquals(true, options.keychain);
-                assertEquals(false, options.anonymous);
-                assertEquals(false, options.publickey);
-                assertEquals("No login credentials could be found in the Keychain", reason);
-                throw new LoginCanceledException();
-            }
-        });
+                = new CustomOriginCloudFrontDistributionConfiguration(bookmark);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        configuration.read(container, Distribution.CUSTOM);
+        configuration.read(container, Distribution.CUSTOM, new DisabledLoginController());
     }
 }

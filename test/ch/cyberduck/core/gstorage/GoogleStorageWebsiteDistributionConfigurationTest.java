@@ -63,7 +63,8 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
         assertTrue(session.isSecured());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
-        final Distribution website = configuration.read(new Path("test.cyberduck.ch", Path.VOLUME_TYPE), Distribution.WEBSITE);
+        final Distribution website = configuration.read(new Path("test.cyberduck.ch", Path.VOLUME_TYPE), Distribution.WEBSITE,
+                new DisabledLoginController());
         assertTrue(website.isEnabled());
     }
 }

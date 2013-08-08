@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -49,9 +50,9 @@ public class S3CopyFeatureTest extends AbstractTestCase {
         final Path copy = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new S3CopyFeature(session).copy(test, copy);
         assertTrue(session.exists(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         assertTrue(session.exists(copy));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(copy));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginController());
         session.close();
     }
 }

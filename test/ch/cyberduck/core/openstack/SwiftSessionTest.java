@@ -25,15 +25,15 @@ public class SwiftSessionTest extends AbstractTestCase {
     @Test
     public void testFeatures() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com"));
-        assertNull(session.getFeature(Versioning.class, null));
-        assertNotNull(session.getFeature(AnalyticsProvider.class, null));
-        assertNull(session.getFeature(Lifecycle.class, null));
-        assertNotNull(session.getFeature(Copy.class, null));
-        assertNotNull(session.getFeature(Location.class, null));
-        assertNull(session.getFeature(Encryption.class, null));
-        assertNull(session.getFeature(Redundancy.class, null));
-        assertNull(session.getFeature(Logging.class, null));
-        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
+        assertNull(session.getFeature(Versioning.class));
+        assertNotNull(session.getFeature(AnalyticsProvider.class));
+        assertNull(session.getFeature(Lifecycle.class));
+        assertNotNull(session.getFeature(Copy.class));
+        assertNotNull(session.getFeature(Location.class));
+        assertNull(session.getFeature(Encryption.class));
+        assertNull(session.getFeature(Redundancy.class));
+        assertNull(session.getFeature(Logging.class));
+        assertNotNull(session.getFeature(DistributionConfiguration.class));
     }
 
     @Test
@@ -51,9 +51,9 @@ public class SwiftSessionTest extends AbstractTestCase {
         final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         container.attributes().setRegion("DFW");
         assertEquals(DescriptiveUrl.EMPTY, session.getURLs(new Path(container, "d/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.cdn));
-        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class, null);
+        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         assertNotNull(cdn);
-        cdn.read(container, Distribution.DOWNLOAD);
+        cdn.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
         assertEquals("http://2b72124779a6075376a9-dc3ef5db7541ebd1f458742f9170bbe4.r64.cf1.rackcdn.com/d/f",
                 session.getURLs(new Path(container, "d/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.cdn).getUrl());
         session.close();

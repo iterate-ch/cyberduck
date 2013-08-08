@@ -56,8 +56,8 @@ public abstract class DeleteWorker extends Worker<Void> {
         for(Path file : files) {
             recursive.addAll(this.compile(file));
         }
-        final Delete feature = session.getFeature(Delete.class, prompt);
-        feature.delete(recursive);
+        final Delete feature = session.getFeature(Delete.class);
+        feature.delete(recursive, prompt);
         return null;
     }
 

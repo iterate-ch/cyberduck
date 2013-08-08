@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -59,7 +58,7 @@ public class ResumeFilter extends AbstractUploadFilter {
     public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(session, file, parent);
         if(file.attributes().isFile()) {
-            if(session.getFeature(Write.class, new DisabledLoginController()).append(file)) {
+            if(session.getFeature(Write.class).append(file)) {
                 if(parent.isExists()) {
                     if(session.exists(file)) {
                         // Append to existing file

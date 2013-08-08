@@ -19,7 +19,6 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -56,7 +55,7 @@ public class DefaultUploadFeature implements Upload {
             OutputStream out = null;
             try {
                 in = file.getLocal().getInputStream();
-                final Write writer = session.getFeature(Write.class, new DisabledLoginController());
+                final Write writer = session.getFeature(Write.class);
                 out = writer.write(file, status);
                 new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, -1);
             }

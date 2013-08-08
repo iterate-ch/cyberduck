@@ -130,9 +130,9 @@ public class DAVSessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        session.getFeature(Touch.class, new DisabledLoginController()).touch(test);
+        session.getFeature(Touch.class).touch(test);
         assertTrue(session.exists(test));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test));
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         assertFalse(session.exists(test));
         session.close();
     }
@@ -185,10 +185,10 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test
     public void testFeatures() throws Exception {
         final Session session = new DAVSession(new Host("h"));
-        assertNull(session.getFeature(UnixPermission.class, null));
-        assertNull(session.getFeature(Timestamp.class, null));
-        assertNotNull(session.getFeature(Copy.class, null));
-        assertNotNull(session.getFeature(Headers.class, null));
-        assertNotNull(session.getFeature(DistributionConfiguration.class, null));
+        assertNull(session.getFeature(UnixPermission.class));
+        assertNull(session.getFeature(Timestamp.class));
+        assertNotNull(session.getFeature(Copy.class));
+        assertNotNull(session.getFeature(Headers.class));
+        assertNotNull(session.getFeature(DistributionConfiguration.class));
     }
 }
