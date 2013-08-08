@@ -54,6 +54,12 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
     }
 
     @Override
+    public void cancel() {
+        super.cancel();
+        worker.cancel();
+    }
+
+    @Override
     public String getActivity() {
         return worker.getActivity();
     }

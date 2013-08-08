@@ -58,7 +58,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(null == lookup) {
             return AttributedList.emptyList();
         }
-        return super.children(lookup);
+        return super.list(lookup);
     }
 
     /**
@@ -89,7 +89,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         }
         if(controller.isMounted()) {
             if(null == item) {
-                return new NSInteger(this.children(controller.workdir()).size());
+                return new NSInteger(this.list(controller.workdir()).size());
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
             if(event != null) {
@@ -134,7 +134,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(null == path) {
             return null;
         }
-        final AttributedList<Path> children = this.children(path);
+        final AttributedList<Path> children = this.get(path);
         if(index.intValue() >= children.size()) {
             log.warn(String.format("Index %s out of bound for %s", index, item));
             return null;

@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.WatchEditor;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.local.FileDescriptor;
@@ -29,7 +28,7 @@ import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.transfer.copy.CopyTransfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
-import ch.cyberduck.ui.LoginControllerFactory;
+import ch.cyberduck.ui.action.SessionListWorker;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSDraggingSource;
@@ -44,7 +43,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
@@ -59,7 +58,6 @@ import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -84,15 +82,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
-    /**
-     * Container for all paths currently being listed in the background
-     */
-    protected final List<Path> isLoadingListingInBackground
-            = new Collection<Path>();
-
     protected BrowserController controller;
 
-    public BrowserTableDataSource(BrowserController controller) {
+    public BrowserTableDataSource(final BrowserController controller) {
         this.controller = controller;
     }
 
@@ -112,66 +104,34 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     /**
      * Must be efficient; called very frequently by the table view
      *
-     * @param path The directory to fetch the children from
+     * @param directory The directory to fetch the children from
      * @return The cached or newly fetched file listing of the directory
      */
-    protected AttributedList<Path> children(final Path path) {
-        synchronized(isLoadingListingInBackground) {
-            // Check first if it hasn't been already requested so we don't spawn
-            // a multitude of unnecessary threads
-            final Cache cache = controller.getSession().cache();
-            if(cache.isCached(path.getReference())) {
-                return cache.get(path.getReference()).filter(controller.getComparator(), controller.getFileFilter());
-            }
-            if(!isLoadingListingInBackground.contains(path)) {
-                isLoadingListingInBackground.add(path);
-                // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                // Delay until path is cached in the background
-                controller.background(new BrowserBackgroundAction(controller) {
-                    @Override
-                    public Boolean run() throws BackgroundException {
-                        try {
-                            final AttributedList<Path> children = controller.getSession().list(path, new DisabledListProgressListener());
-                            cache.put(path.getReference(), children);
+    protected AttributedList<Path> list(final Path directory) {
+        final Cache cache = controller.getSession().cache();
+        if(!cache.isCached(directory.getReference())) {
+            // Reloading a working directory that is not cached yet would cause the interface to freeze;
+            // Delay until path is cached in the background
+            controller.background(new WorkerBackgroundAction(controller,
+                    new SessionListWorker(controller.getSession(), cache, directory, new DisabledListProgressListener()) {
+                        @Override
+                        public void cleanup(final AttributedList<Path> list) {
+                            tableViewCache.clear();
+                            controller.reloadData(true, true);
                         }
-                        catch(BackgroundException e) {
-                            // Cache empty listing
-                            cache.put(path.getReference(), AttributedList.<Path>emptyList());
-                            if(path.attributes().getPermission().isReadable() && path.attributes().getPermission().isExecutable()) {
-                                throw e;
-                            }
-                            else {
-                                log.warn(String.format("Ignore directory listing failure %s", e.getMessage()));
-                            }
-                        }
-                        return true;
-                    }
-
-                    @Override
-                    public String getActivity() {
-                        return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
-                                path.getName());
-                    }
-
-                    @Override
-                    public void cleanup() {
-                        super.cleanup();
-                        synchronized(isLoadingListingInBackground) {
-                            isLoadingListingInBackground.remove(path);
-                            if(isLoadingListingInBackground.isEmpty()) {
-                                tableViewCache.clear();
-                                controller.reloadData(true, true);
-                            }
-                        }
-                    }
-                });
-            }
-            return cache.get(path.getReference()).filter(controller.getComparator(), controller.getFileFilter());
+                    })
+            );
         }
+        return this.get(directory);
+    }
+
+    protected AttributedList<Path> get(final Path directory) {
+        final Cache cache = controller.getSession().cache();
+        return cache.get(directory.getReference()).filter(controller.getComparator(), controller.getFileFilter());
     }
 
     public int indexOf(NSTableView view, PathReference reference) {
-        return this.children(controller.workdir()).indexOf(reference);
+        return this.list(controller.workdir()).indexOf(reference);
     }
 
     protected void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {
@@ -201,7 +161,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             Preferences.instance().getInteger("browser.model.cache.size")
     );
 
-    protected NSObject objectValueForItem(Path item, String identifier) {
+    protected NSObject objectValueForItem(final Path item, final String identifier) {
         if(null == item) {
             return null;
         }
@@ -578,6 +538,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     // Drag to application icon in dock.
                     WatchEditor editor = new WatchEditor(controller, controller.getSession(), null, p);
                     try {
+                        // download
                         editor.watch();
                     }
                     catch(IOException e) {

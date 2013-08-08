@@ -17,9 +17,11 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
 /**
  * @version $Id$
  */
 public interface ListProgressListener {
-    void chunk(AttributedList<Path> list);
+    void chunk(AttributedList<Path> list) throws ConnectionCanceledException;
 }

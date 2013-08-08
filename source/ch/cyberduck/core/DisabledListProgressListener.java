@@ -17,12 +17,14 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
 /**
  * @version $Id$
  */
 public class DisabledListProgressListener implements ListProgressListener {
     @Override
-    public void chunk(final AttributedList<Path> list) {
+    public void chunk(final AttributedList<Path> list) throws ConnectionCanceledException {
         //
     }
 }

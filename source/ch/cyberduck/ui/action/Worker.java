@@ -24,11 +24,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Id$
  */
 public abstract class Worker<T> {
+
+    private AtomicBoolean canceled
+            = new AtomicBoolean();
 
     protected String toString(List<Path> files) {
         if(files.isEmpty()) {
@@ -46,9 +50,19 @@ public abstract class Worker<T> {
         throw new BackgroundException("Not supported");
     }
 
-    public abstract void cleanup(T result);
+    public void cleanup(T result) {
+        //
+    }
 
     public String getActivity() {
         return LocaleFactory.localizedString("Unknown");
+    }
+
+    public void cancel() {
+        canceled.set(true);
+    }
+
+    public boolean isCanceled() {
+        return canceled.get();
     }
 }

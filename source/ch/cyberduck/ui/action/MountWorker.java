@@ -30,7 +30,7 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public abstract class MountWorker extends Worker<Path> {
+public class MountWorker extends Worker<Path> {
 
     private Session<?> session;
 
@@ -53,13 +53,13 @@ public abstract class MountWorker extends Worker<Path> {
         try {
             final Path home = session.home();
             // Retrieve directory listing of default path
-            cache.put(home.getReference(), session.list(home, listener));
+            cache.put(home.getReference(), new SessionListWorker(session, cache, home, listener).run());
             return home;
         }
         catch(NotfoundException e) {
             // The default path does not exist or is not readable due to possible permission issues. Fallback to default working directory
             final Path workdir = session.workdir();
-            cache.put(workdir.getReference(), session.list(workdir, listener));
+            cache.put(workdir.getReference(), new SessionListWorker(session, cache, workdir, listener).run());
             return workdir;
         }
     }
