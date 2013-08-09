@@ -34,7 +34,7 @@ import java.util.Calendar;
 /**
  * @version $Id$
  */
-public class S3UrlProvider extends DefaultUrlProvider {
+public class S3UrlProvider implements UrlProvider {
 
     private PathContainerService containerService = new PathContainerService();
 
@@ -47,7 +47,6 @@ public class S3UrlProvider extends DefaultUrlProvider {
     }
 
     public S3UrlProvider(final S3Session session, final HostPasswordStore store) {
-        super(session.getHost());
         this.session = session;
         this.store = store;
     }
@@ -76,7 +75,7 @@ public class S3UrlProvider extends DefaultUrlProvider {
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
             }
         }
-        list.addAll(super.toUrl(file));
+        list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
         return list;
     }
 
