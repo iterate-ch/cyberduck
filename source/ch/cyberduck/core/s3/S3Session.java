@@ -70,6 +70,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     private S3AccessControlListFeature acl
             = new S3AccessControlListFeature(this);
 
+    private DistributionConfiguration cdn
+            = new WebsiteCloudFrontDistributionConfiguration(this);
+
     public S3Session(Host h) {
         super(h);
     }
@@ -398,7 +401,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
         if(type == DistributionConfiguration.class) {
             if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
-                return (T) new WebsiteCloudFrontDistributionConfiguration(this);
+                return (T) cdn;
             }
             else {
                 // Amazon CloudFront custom origin
