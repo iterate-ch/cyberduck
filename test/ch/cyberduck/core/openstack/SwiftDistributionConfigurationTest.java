@@ -3,6 +3,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -41,6 +42,8 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
         assertNotNull(test);
         assertEquals(Distribution.DOWNLOAD, test.getMethod());
+        assertEquals("http://2b72124779a6075376a9-dc3ef5db7541ebd1f458742f9170bbe4.r64.cf1.rackcdn.com/d/f",
+                configuration.toUrl(new Path(container, "d/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.cdn).getUrl());
         assertArrayEquals(new String[]{}, test.getCNAMEs());
         assertEquals("index.html", test.getIndexDocument());
         assertNull(test.getErrorDocument());
