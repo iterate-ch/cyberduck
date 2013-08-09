@@ -10,6 +10,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.NotfoundException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -76,6 +77,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         session.close();
     }
 
+    @Ignore
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
         final S3Session session = new S3Session(
