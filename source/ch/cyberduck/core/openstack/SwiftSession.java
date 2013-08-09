@@ -74,6 +74,9 @@ public class SwiftSession extends HttpSession<Client> {
 
     protected Region getRegion(final String location) {
         for(Region region : client.getRegions()) {
+            if(null == region.getRegionId()) {
+                continue;
+            }
             if(region.getRegionId().equals(location)) {
                 return region;
             }
