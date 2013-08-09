@@ -30,13 +30,15 @@ public class SwiftUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        final Region region = session.getRegion(containerService.getContainer(file));
-        list.add(new DescriptiveUrl(
-                URI.create(region.getStorageUrl(containerService.getContainer(file).getName(),
-                        containerService.getKey(file)).toString()), DescriptiveUrl.Type.provider,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                        session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ENGLISH))
-        ));
+        if(file.attributes().isFile()) {
+            final Region region = session.getRegion(containerService.getContainer(file));
+            list.add(new DescriptiveUrl(
+                    URI.create(region.getStorageUrl(containerService.getContainer(file).getName(),
+                            containerService.getKey(file)).toString()), DescriptiveUrl.Type.provider,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                            session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ENGLISH))
+            ));
+        }
         return list;
     }
 }
