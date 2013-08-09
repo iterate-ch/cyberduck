@@ -14,7 +14,7 @@ import java.util.Locale;
 import ch.iterate.openstack.swift.model.Region;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftUrlProvider implements UrlProvider {
 
@@ -30,14 +30,13 @@ public class SwiftUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag get(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        for(Region region : session.getClient().getAuthentication().getRegions()) {
-            list.add(new DescriptiveUrl(
-                    URI.create(region.getStorageUrl(containerService.getContainer(file).getName(),
-                            containerService.getKey(file)).toString()), DescriptiveUrl.Type.provider,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                            session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ENGLISH))
-            ));
-        }
+        final Region region = session.getRegion(containerService.getContainer(file));
+        list.add(new DescriptiveUrl(
+                URI.create(region.getStorageUrl(containerService.getContainer(file).getName(),
+                        containerService.getKey(file)).toString()), DescriptiveUrl.Type.provider,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                        session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ENGLISH))
+        ));
         return list;
     }
 }
