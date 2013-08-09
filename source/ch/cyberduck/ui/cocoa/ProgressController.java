@@ -57,11 +57,6 @@ public class ProgressController extends BundleController implements TransferList
      */
     private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
-    private static final long delay = 0;
-    private static final long period = 500; //in milliseconds
-
-    private TransferListener transferListener;
-
     public ProgressController(final Transfer transfer) {
         this.transfer = transfer;
         this.loadBundle();
