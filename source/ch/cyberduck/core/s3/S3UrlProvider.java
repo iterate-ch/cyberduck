@@ -53,7 +53,7 @@ public class S3UrlProvider extends DefaultUrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag get(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.attributes().isFile()) {
             // Publicly accessible URL of given object
@@ -76,7 +76,7 @@ public class S3UrlProvider extends DefaultUrlProvider {
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
             }
         }
-        list.addAll(super.get(file));
+        list.addAll(super.toUrl(file));
         return list;
     }
 

@@ -18,15 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -221,44 +213,44 @@ public abstract class TransferPromptController extends SheetController
                     localModificationField.setStringValue(StringUtils.EMPTY);
                 }
                 else {
-                    final Path p = browserModel.lookup(new NSObjectPathReference(
+                    final Path file = browserModel.lookup(new NSObjectPathReference(
                             browserView.itemAtRow(browserView.selectedRow())));
                     localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            p.getLocal().getAbsolute(),
+                            file.getLocal().getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
-                    if(p.getLocal().attributes().getSize() == -1) {
+                    if(file.getLocal().attributes().getSize() == -1) {
                         localSizeField.setAttributedStringValue(UNKNOWN_STRING);
                     }
                     else {
                         localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                SizeFormatterFactory.get().format(p.getLocal().attributes().getSize()),
+                                SizeFormatterFactory.get().format(file.getLocal().attributes().getSize()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
-                    if(p.getLocal().attributes().getModificationDate() == -1) {
+                    if(file.getLocal().attributes().getModificationDate() == -1) {
                         localModificationField.setAttributedStringValue(UNKNOWN_STRING);
                     }
                     else {
                         localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                UserDateFormatterFactory.get().getLongFormat(p.getLocal().attributes().getModificationDate()),
+                                UserDateFormatterFactory.get().getLongFormat(file.getLocal().attributes().getModificationDate()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            transfer.getSessions().iterator().next().getURLs(p).find(DescriptiveUrl.Type.provider).getUrl(),
+                            transfer.getSessions().iterator().next().getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
-                    if(p.attributes().getSize() == -1) {
+                    if(file.attributes().getSize() == -1) {
                         remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                     }
                     else {
                         remoteSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                SizeFormatterFactory.get().format(p.attributes().getSize()),
+                                SizeFormatterFactory.get().format(file.attributes().getSize()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
-                    if(p.attributes().getModificationDate() == -1) {
+                    if(file.attributes().getModificationDate() == -1) {
                         remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
                     }
                     else {
                         remoteModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                UserDateFormatterFactory.get().getLongFormat(p.attributes().getModificationDate()),
+                                UserDateFormatterFactory.get().getLongFormat(file.attributes().getModificationDate()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                 }

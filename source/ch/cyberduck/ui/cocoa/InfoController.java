@@ -1711,7 +1711,9 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             this.updateField(webUrlField, LocaleFactory.localizedString("Unknown"));
-            final DescriptiveUrl http = controller.getSession().getURLs(this.getSelected()).find(DescriptiveUrl.Type.http);
+            final Session<?> session = controller.getSession();
+            final Path file = this.getSelected();
+            final DescriptiveUrl http = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.http);
             if(!http.equals(DescriptiveUrl.EMPTY)) {
                 webUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(http));
                 webUrlField.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
@@ -1969,13 +1971,13 @@ public class InfoController extends ToolbarWindowController {
                     storageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
                 }
                 if(file.attributes().isFile()) {
-                    final DescriptiveUrl signed = session.getURLs(file).find(DescriptiveUrl.Type.signed);
+                    final DescriptiveUrl signed = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.signed);
                     if(!signed.equals(DescriptiveUrl.EMPTY)) {
                         s3PublicUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(signed.getUrl()));
                         s3PublicUrlField.setToolTip(signed.getHelp());
                         s3PublicUrlValidityField.setStringValue(signed.getHelp());
                     }
-                    final DescriptiveUrl torrent = session.getURLs(file).find(DescriptiveUrl.Type.torrent);
+                    final DescriptiveUrl torrent = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.torrent);
                     if(!torrent.equals(DescriptiveUrl.EMPTY)) {
                         s3torrentUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(torrent.getUrl()));
                         s3torrentUrlField.setToolTip(torrent.getHelp());
@@ -2193,7 +2195,7 @@ public class InfoController extends ToolbarWindowController {
             else {
                 for(Path file : files) {
                     if(file.attributes().isFile()) {
-                        final DescriptiveUrl authenticated = session.getURLs(file).find(DescriptiveUrl.Type.authenticated);
+                        final DescriptiveUrl authenticated = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.authenticated);
                         if(!authenticated.equals(DescriptiveUrl.EMPTY)) {
                             aclUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(authenticated.getUrl()));
                             aclUrlField.setToolTip(authenticated.getHelp());
@@ -2589,7 +2591,7 @@ public class InfoController extends ToolbarWindowController {
                         distributionCnameUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
                     }
                     else {
-                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).get(file).find(DescriptiveUrl.Type.cdn);
+                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).toUrl(file).find(DescriptiveUrl.Type.cdn);
                         if(!url.equals(DescriptiveUrl.EMPTY)) {
                             distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
                             distributionUrlField.setToolTip(LocaleFactory.localizedString("CDN URL"));
@@ -2607,7 +2609,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     else {
                         distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).get(file).find(DescriptiveUrl.Type.cname);
+                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).toUrl(file).find(DescriptiveUrl.Type.cname);
                         if(!url.equals(DescriptiveUrl.EMPTY)) {
                             // We only support one CNAME URL to be displayed
                             distributionCnameUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url.getUrl()));

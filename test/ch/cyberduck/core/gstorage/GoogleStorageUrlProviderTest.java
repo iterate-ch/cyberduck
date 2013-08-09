@@ -29,7 +29,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GoogleStorageUrlProviderTest extends AbstractTestCase {
 
@@ -39,7 +39,7 @@ public class GoogleStorageUrlProviderTest extends AbstractTestCase {
                 properties.getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertEquals("https://sandbox.google.com/storage/c/f", new GoogleStorageUrlProvider(session).get(
+        assertEquals("https://sandbox.google.com/storage/c/f", new GoogleStorageUrlProvider(session).toUrl(
                 new Path("/c/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.authenticated).getUrl());
     }
 }

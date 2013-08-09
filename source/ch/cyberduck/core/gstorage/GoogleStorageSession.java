@@ -20,14 +20,13 @@ package ch.cyberduck.core.gstorage;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -227,11 +226,6 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public DescriptiveUrlBag getURLs(final Path file) {
-        return new GoogleStorageUrlProvider(this).get(file);
-    }
-
-    @Override
     public <T> T getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new S3SingleUploadService(this);
@@ -265,6 +259,9 @@ public class GoogleStorageSession extends S3Session {
         }
         if(type == Redundancy.class) {
             return null;
+        }
+        if(type == UrlProvider.class) {
+            return (T) new GoogleStorageUrlProvider(this);
         }
         return super.getFeature(type);
     }

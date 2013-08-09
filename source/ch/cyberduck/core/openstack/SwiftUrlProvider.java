@@ -28,7 +28,7 @@ public class SwiftUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag get(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         final Region region = session.getRegion(containerService.getContainer(file));
         list.add(new DescriptiveUrl(

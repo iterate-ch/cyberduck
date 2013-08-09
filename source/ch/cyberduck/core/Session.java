@@ -343,15 +343,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     }
 
     /**
-     * Includes both native protocol and HTTP URLs
-     *
-     * @return A list of URLs pointing to the resource.
-     */
-    public DescriptiveUrlBag getURLs(final Path file) {
-        return new DefaultUrlProvider(host).get(file);
-    }
-
-    /**
      * Check for file existence. The default implementation does a directory listing of the parent folder.
      *
      * @return True if the path is cached.
@@ -381,6 +372,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         if(type == DistributionConfiguration.class) {
             // Use login context of current session
             return (T) new CustomOriginCloudFrontDistributionConfiguration(host);
+        }
+        if(type == UrlProvider.class) {
+            return (T) new DefaultUrlProvider(host);
         }
         return null;
     }

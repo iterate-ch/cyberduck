@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 
@@ -43,9 +45,12 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
 
     @Override
     protected List<DescriptiveUrl> getURLs(Path selected) {
-        return new ArrayList<DescriptiveUrl>(this.getSession().getURLs(selected).filter(
+        final ArrayList<DescriptiveUrl> list = new ArrayList<DescriptiveUrl>();
+        list.addAll(this.getSession().getFeature(UrlProvider.class).toUrl(selected).filter(
                 DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
                 DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated, DescriptiveUrl.Type.torrent));
+        list.addAll(this.getSession().getFeature(DistributionConfiguration.class).toUrl(selected));
+        return list;
     }
 
     @Override

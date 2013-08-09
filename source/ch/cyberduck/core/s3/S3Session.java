@@ -309,11 +309,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public DescriptiveUrlBag getURLs(final Path file) {
-        return new S3UrlProvider(this, PasswordStoreFactory.get()).get(file);
-    }
-
-    @Override
     public <T> T getFeature(final Class<T> type) {
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
@@ -409,6 +404,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 // Amazon CloudFront custom origin
                 return super.getFeature(type);
             }
+        }
+        if(type == UrlProvider.class) {
+            return (T) new S3UrlProvider(this);
         }
         return super.getFeature(type);
     }

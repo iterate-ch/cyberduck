@@ -77,12 +77,12 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public DescriptiveUrlBag get(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file) {
         final Distribution distribution = new Distribution(
                 containerService.getContainer(file).getName(), Distribution.DOWNLOAD);
         distribution.setUrl(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
                 session.getHost().getProtocol().getDefaultHostname()));
-        return new DistributionUrlProvider(distribution).get(file);
+        return new DistributionUrlProvider(distribution).toUrl(file);
     }
 
     @Override

@@ -27,7 +27,7 @@ import java.net.URI;
 import java.text.MessageFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GoogleStorageUrlProvider extends S3UrlProvider {
 
@@ -44,8 +44,8 @@ public class GoogleStorageUrlProvider extends S3UrlProvider {
      * you provide users with a URL that is scoped to the object.
      */
     @Override
-    public DescriptiveUrlBag get(final Path file) {
-        final DescriptiveUrlBag list = super.get(file);
+    public DescriptiveUrlBag toUrl(final Path file) {
+        final DescriptiveUrlBag list = super.toUrl(file);
         if(file.attributes().isFile()) {
             // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
             list.add(new DescriptiveUrl(URI.create(String.format("https://sandbox.google.com/storage%s", file.getAbsolute())), DescriptiveUrl.Type.authenticated,

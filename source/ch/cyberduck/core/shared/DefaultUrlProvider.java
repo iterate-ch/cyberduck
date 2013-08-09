@@ -35,7 +35,7 @@ public class DefaultUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag get(final Path file) {
+    public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.attributes().isVolume()) {
             return list;

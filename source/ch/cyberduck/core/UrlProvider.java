@@ -18,8 +18,8 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface UrlProvider {
-    DescriptiveUrlBag get(Path file);
+    DescriptiveUrlBag toUrl(Path file);
 }

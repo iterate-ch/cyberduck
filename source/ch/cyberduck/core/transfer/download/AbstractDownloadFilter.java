@@ -25,6 +25,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
@@ -125,11 +126,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 if(options.quarantine) {
                     // Set quarantine attributes
                     quarantine.setQuarantine(file.getLocal(), new HostUrlProvider(false).get(session.getHost()),
-                            session.getURLs(file).find(DescriptiveUrl.Type.provider).getUrl());
+                            session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl());
                 }
                 if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
                     // Set quarantine attributes
-                    quarantine.setWhereFrom(file.getLocal(), session.getURLs(file).find(DescriptiveUrl.Type.provider).getUrl());
+                    quarantine.setWhereFrom(file.getLocal(), session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl());
                 }
                 if(options.open) {
                     launcher.open(file.getLocal());

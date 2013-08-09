@@ -2583,10 +2583,10 @@ public class BrowserController extends WindowController
     public void openBrowserButtonClicked(final ID sender) {
         final DescriptiveUrlBag list;
         if(this.getSelectionCount() == 1) {
-            list = session.getURLs(this.getSelectedPath());
+            list = session.getFeature(UrlProvider.class).toUrl(this.getSelectedPath());
         }
         else {
-            list = session.getURLs(this.workdir());
+            list = session.getFeature(UrlProvider.class).toUrl(this.workdir());
         }
         if(!list.isEmpty()) {
             this.openUrl(list.find(DescriptiveUrl.Type.http));
