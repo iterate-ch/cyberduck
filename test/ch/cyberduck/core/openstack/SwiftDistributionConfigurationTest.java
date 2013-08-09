@@ -10,7 +10,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.junit.Test;
 
@@ -83,18 +82,5 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertEquals("https://a248.e.akamai.net/cdn.hpcloudsvc.com/h2c0a3c89b6b2779528b78c25aeab0958/prodaw2", test.getSslUrl());
         assertEquals(1, test.getContainers().size());
         assertEquals("region-a.geo-1.objects.hpcloudsvc.com", test.getOrigin());
-    }
-
-    @Test(expected = ConnectionCanceledException.class)
-    public void testReadDisconnect() throws Exception {
-        final Host host = new Host(Protocol.SWIFT, "region-a.geo-1.identity.hpcloudsvc.com", 35357);
-        host.setCredentials(new Credentials(
-                "key", "secret"
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        container.attributes().setRegion("region-a.geo-1");
-        configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
     }
 }
