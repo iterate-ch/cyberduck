@@ -22,7 +22,6 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -38,11 +37,7 @@ import ch.cyberduck.core.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
-import ch.iterate.openstack.swift.AuthenticationResponse;
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.Region;
@@ -54,9 +49,6 @@ import ch.iterate.openstack.swift.model.Region;
  */
 public class SwiftSession extends HttpSession<Client> {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
-
-    private Map<String, Region> regions
-            = new HashMap<String, Region>();
 
     private PathContainerService containerService
             = new PathContainerService();
@@ -73,28 +65,25 @@ public class SwiftSession extends HttpSession<Client> {
         return new Client(super.connect());
     }
 
-    protected Region getRegion(final Path container) throws BackgroundException {
+    protected Region getRegion(final Path container) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Lookup region for container %s", container));
         }
         return this.getRegion(container.attributes().getRegion());
     }
 
-    protected Region getRegion(final String location)
-            throws ConnectionCanceledException {
-        if(regions.containsKey(location)) {
-            return regions.get(location);
+    protected Region getRegion(final String location) {
+        for(Region region : client.getRegions()) {
+            if(region.getRegionId().equals(location)) {
+                return region;
+            }
         }
         log.warn(String.format("Unknown region %s in authentication context", location));
-        if(regions.containsKey(null)) {
-            final Region region = regions.get(null);
-            log.info(String.format("Use default region %s", region));
-            return region;
+        if(client.getRegions().isEmpty()) {
+            log.warn("No default region in authentication context");
+            return null;
         }
-        if(regions.isEmpty()) {
-            throw new ConnectionCanceledException("No default region in authentication context");
-        }
-        final Region region = regions.values().iterator().next();
+        final Region region = client.getRegions().iterator().next();
         log.warn(String.format("Fallback to first region found %s", region));
         return region;
     }
@@ -102,11 +91,7 @@ public class SwiftSession extends HttpSession<Client> {
     @Override
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         try {
-            final AuthenticationResponse authentication = client.authenticate(
-                    new SwiftAuthenticationService().getRequest(host, prompt));
-            for(Region region : authentication.getRegions()) {
-                regions.put(region.getRegionId(), region);
-            }
+            client.authenticate(new SwiftAuthenticationService().getRequest(host, prompt));
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
@@ -114,19 +99,6 @@ public class SwiftSession extends HttpSession<Client> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-    }
-
-    @Override
-    protected void logout() throws BackgroundException {
-        super.logout();
-        regions.clear();
-    }
-
-    @Override
-    public DescriptiveUrlBag getURLs(final Path file) {
-        final DescriptiveUrlBag list = new SwiftUrlProvider(this).get(file);
-        list.addAll(cdn.get(file));
-        return list;
     }
 
     @Override
@@ -188,17 +160,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftTouchFeature(this);
         }
         if(type == Location.class) {
-            return (T) new Location() {
-                @Override
-                public Set<String> getLocations() {
-                    return regions.keySet();
-                }
-
-                @Override
-                public String getLocation(final Path container) throws BackgroundException {
-                    return container.attributes().getRegion();
-                }
-            };
+            return (T) new SwiftLocationFeature(this);
         }
         if(type == AnalyticsProvider.class) {
             return (T) new QloudstatAnalyticsProvider();
@@ -206,6 +168,10 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == DistributionConfiguration.class) {
             return (T) cdn;
         }
+        if(type == UrlProvider.class) {
+            return (T) new SwiftUrlProvider(this);
+        }
         return super.getFeature(type);
     }
+
 }
