@@ -752,8 +752,10 @@ public class InfoController extends ToolbarWindowController {
     private ListDataSource aclTableModel;
     private AbstractTableDelegate<Acl.UserAndRole> aclTableDelegate;
 
-    public static final String HEADER_ACL_GRANTEE_COLUMN = "GRANTEE";
-    public static final String HEADER_ACL_PERMISSION_COLUMN = "PERMISSION";
+    private enum AclColumns {
+        GRANTEE,
+        PERMISSION,
+    }
 
     private final NSComboBoxCell aclPermissionCellPrototype = NSComboBoxCell.comboBoxCell();
 
@@ -766,7 +768,7 @@ public class InfoController extends ToolbarWindowController {
         this.aclPermissionCellPrototype.setBordered(false);
         this.aclPermissionCellPrototype.setButtonBordered(false);
         this.aclTable.setColumnAutoresizingStyle(NSTableView.NSTableViewUniformColumnAutoresizingStyle);
-        this.aclTable.tableColumnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN).setDataCell(aclPermissionCellPrototype);
+        this.aclTable.tableColumnWithIdentifier(AclColumns.PERMISSION.name()).setDataCell(aclPermissionCellPrototype);
         this.aclTable.setDataSource((aclTableModel = new ListDataSource() {
             @Override
             public NSInteger numberOfRowsInTableView(NSTableView view) {
@@ -779,10 +781,10 @@ public class InfoController extends ToolbarWindowController {
                 if(row.intValue() < acl.size()) {
                     final String identifier = tableColumn.identifier();
                     final Acl.UserAndRole grant = acl.get(row.intValue());
-                    if(identifier.equals(HEADER_ACL_GRANTEE_COLUMN)) {
+                    if(identifier.equals(AclColumns.GRANTEE.name())) {
                         return NSString.stringWithString(grant.getUser().getDisplayName());
                     }
-                    if(identifier.equals(HEADER_ACL_PERMISSION_COLUMN)) {
+                    if(identifier.equals(AclColumns.PERMISSION.name())) {
                         return NSString.stringWithString(grant.getRole().getName());
                     }
                 }
@@ -794,10 +796,10 @@ public class InfoController extends ToolbarWindowController {
                                                                     NSTableColumn c, NSInteger row) {
                 if(row.intValue() < acl.size()) {
                     final Acl.UserAndRole grant = acl.get(row.intValue());
-                    if(c.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
+                    if(c.identifier().equals(AclColumns.GRANTEE.name())) {
                         grant.getUser().setIdentifier(value.toString());
                     }
-                    if(c.identifier().equals(HEADER_ACL_PERMISSION_COLUMN)) {
+                    if(c.identifier().equals(AclColumns.PERMISSION.name())) {
                         grant.getRole().setName(value.toString());
                     }
                     if(StringUtils.isNotBlank(grant.getUser().getIdentifier())
@@ -808,11 +810,11 @@ public class InfoController extends ToolbarWindowController {
             }
         }).id());
         this.aclTable.setDelegate((aclTableDelegate = new AbstractTableDelegate<Acl.UserAndRole>(
-                aclTable.tableColumnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN)
+                aclTable.tableColumnWithIdentifier(AclColumns.GRANTEE.name())
         ) {
             @Override
             public boolean isColumnRowEditable(NSTableColumn column, int row) {
-                if(column.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
+                if(column.identifier().equals(AclColumns.GRANTEE.name())) {
                     final Acl.UserAndRole grant = acl.get(row);
                     if(grant.getUser().isEditable()) {
                         return true;
@@ -820,7 +822,7 @@ public class InfoController extends ToolbarWindowController {
                     // Group Grantee identifier is not editable
                     return false;
                 }
-                if(column.identifier().equals(HEADER_ACL_PERMISSION_COLUMN)) {
+                if(column.identifier().equals(AclColumns.PERMISSION.name())) {
                     final Acl.UserAndRole grant = acl.get(row);
                     if(grant.getRole().isEditable()) {
                         return true;
@@ -838,7 +840,7 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void enterKeyPressed(final ID sender) {
-                aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN), aclTable.selectedRow(), true);
+                aclTable.editRow(aclTable.columnWithIdentifier(AclColumns.GRANTEE.name()), aclTable.selectedRow(), true);
             }
 
             @Override
@@ -869,7 +871,7 @@ public class InfoController extends ToolbarWindowController {
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
                                                                      NSTableColumn c, NSInteger row) {
-                if(c.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
+                if(c.identifier().equals(AclColumns.GRANTEE.name())) {
                     final Acl.UserAndRole grant = acl.get(row.intValue());
                     cell.setPlaceholderString(grant.getUser().getPlaceholder());
                     if(grant.getUser().isEditable()) {
@@ -919,10 +921,10 @@ public class InfoController extends ToolbarWindowController {
         this.setAcl(updated);
         aclTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(index)), false);
         if(update.getUser().isEditable()) {
-            aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN), new NSInteger(index), true);
+            aclTable.editRow(aclTable.columnWithIdentifier(AclColumns.GRANTEE.name()), new NSInteger(index), true);
         }
         else {
-            aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN), new NSInteger(index), true);
+            aclTable.editRow(aclTable.columnWithIdentifier(AclColumns.PERMISSION.name()), new NSInteger(index), true);
         }
     }
 
@@ -970,8 +972,10 @@ public class InfoController extends ToolbarWindowController {
     private ListDataSource metadataTableModel;
     private AbstractTableDelegate<String> metadataTableDelegate;
 
-    public static final String HEADER_METADATA_NAME_COLUMN = "NAME";
-    public static final String HEADER_METADATA_VALUE_COLUMN = "VALUE";
+    private enum MetadataColumns {
+        NAME,
+        VALUE
+    }
 
     /**
      * Custom HTTP headers for REST protocols
@@ -1005,11 +1009,11 @@ public class InfoController extends ToolbarWindowController {
                                                                     NSInteger row) {
                 if(row.intValue() < metadata.size()) {
                     final String identifier = tableColumn.identifier();
-                    if(identifier.equals(HEADER_METADATA_NAME_COLUMN)) {
+                    if(identifier.equals(MetadataColumns.NAME.name())) {
                         final String name = metadata.get(row.intValue()).getName();
                         return NSAttributedString.attributedString(StringUtils.isNotEmpty(name) ? name : StringUtils.EMPTY);
                     }
-                    if(identifier.equals(HEADER_METADATA_VALUE_COLUMN)) {
+                    if(identifier.equals(MetadataColumns.VALUE.name())) {
                         final String value = metadata.get(row.intValue()).getValue();
                         if(StringUtils.isEmpty(value)) {
                             return null;
@@ -1025,10 +1029,10 @@ public class InfoController extends ToolbarWindowController {
                                                                     NSTableColumn c, NSInteger row) {
                 if(row.intValue() < metadata.size()) {
                     Header header = metadata.get(row.intValue());
-                    if(c.identifier().equals(HEADER_METADATA_NAME_COLUMN)) {
+                    if(c.identifier().equals(MetadataColumns.NAME.name())) {
                         header.setName(value.toString());
                     }
-                    if(c.identifier().equals(HEADER_METADATA_VALUE_COLUMN)) {
+                    if(c.identifier().equals(MetadataColumns.VALUE.name())) {
                         header.setValue(value.toString());
                     }
                     if(StringUtils.isNotBlank(header.getName()) && StringUtils.isNotBlank(header.getValue())) {
@@ -1039,7 +1043,7 @@ public class InfoController extends ToolbarWindowController {
             }
         }).id());
         this.metadataTable.setDelegate((metadataTableDelegate = new AbstractTableDelegate<String>(
-                metadataTable.tableColumnWithIdentifier(HEADER_METADATA_NAME_COLUMN)
+                metadataTable.tableColumnWithIdentifier(MetadataColumns.NAME.name())
         ) {
             @Override
             public boolean isColumnRowEditable(NSTableColumn column, int row) {
@@ -1054,7 +1058,7 @@ public class InfoController extends ToolbarWindowController {
             @Override
             public void enterKeyPressed(final ID sender) {
                 metadataTable.editRow(
-                        metadataTable.columnWithIdentifier(HEADER_METADATA_VALUE_COLUMN),
+                        metadataTable.columnWithIdentifier(MetadataColumns.VALUE.name()),
                         metadataTable.selectedRow(), true);
             }
 
@@ -1085,7 +1089,7 @@ public class InfoController extends ToolbarWindowController {
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
                                                                      NSTableColumn c, NSInteger row) {
-                if(c.identifier().equals(HEADER_METADATA_VALUE_COLUMN)) {
+                if(c.identifier().equals(MetadataColumns.VALUE.name())) {
                     final String value = metadata.get(row.intValue()).getValue();
                     if(null == value) {
                         cell.setPlaceholderString(LocaleFactory.localizedString("Multiple files"));
@@ -1204,7 +1208,7 @@ public class InfoController extends ToolbarWindowController {
         this.setMetadata(updated);
         metadataTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
         metadataTable.editRow(
-                selectValue ? metadataTable.columnWithIdentifier(HEADER_METADATA_VALUE_COLUMN) : metadataTable.columnWithIdentifier(HEADER_METADATA_NAME_COLUMN),
+                selectValue ? metadataTable.columnWithIdentifier(MetadataColumns.VALUE.name()) : metadataTable.columnWithIdentifier(MetadataColumns.NAME.name()),
                 new NSInteger(row), true);
     }
 

@@ -69,16 +69,18 @@ import java.util.Map;
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
     private static final Logger log = Logger.getLogger(BrowserTableDataSource.class);
 
-    public static final String ICON_COLUMN = "ICON";
-    public static final String FILENAME_COLUMN = "FILENAME";
-    public static final String SIZE_COLUMN = "SIZE";
-    public static final String MODIFIED_COLUMN = "MODIFIED";
-    public static final String OWNER_COLUMN = "OWNER";
-    public static final String GROUP_COLUMN = "GROUP";
-    public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
-    public static final String KIND_COLUMN = "KIND";
-    public static final String EXTENSION_COLUMN = "EXTENSION";
-    public static final String REGION_COLUMN = "REGION";
+    public enum Columns {
+        ICON,
+        FILENAME,
+        SIZE,
+        MODIFIED,
+        OWNER,
+        GROUP,
+        PERMISSIONS,
+        KIND,
+        EXTENSION,
+        REGION
+    }
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
@@ -138,7 +140,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set new value %s for item %s", value, item));
         }
-        if(identifier.equals(FILENAME_COLUMN)) {
+        if(identifier.equals(Columns.FILENAME.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
                 final Path renamed = new Path(
                         item.getParent(), value.toString(), item.attributes().getType());
@@ -170,52 +172,52 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
-            if(identifier.equals(ICON_COLUMN)) {
+            if(identifier.equals(Columns.ICON.name())) {
                 return tableViewCache.put(item, identifier, this.iconForPath(item));
             }
-            if(identifier.equals(FILENAME_COLUMN)) {
+            if(identifier.equals(Columns.FILENAME.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         item.getDisplayName(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
-            if(identifier.equals(SIZE_COLUMN)) {
+            if(identifier.equals(Columns.SIZE.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         SizeFormatterFactory.get().format(item.attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
-            if(identifier.equals(MODIFIED_COLUMN)) {
+            if(identifier.equals(Columns.MODIFIED.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         UserDateFormatterFactory.get().getShortFormat(item.attributes().getModificationDate(),
                                 Preferences.instance().getBoolean("browser.date.natural")),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
-            if(identifier.equals(OWNER_COLUMN)) {
+            if(identifier.equals(Columns.OWNER.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         StringUtils.isBlank(item.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : item.attributes().getOwner(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
-            if(identifier.equals(GROUP_COLUMN)) {
+            if(identifier.equals(Columns.GROUP.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         StringUtils.isBlank(item.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : item.attributes().getGroup(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
-            if(identifier.equals(PERMISSIONS_COLUMN)) {
+            if(identifier.equals(Columns.PERMISSIONS.name())) {
                 Permission permission = item.attributes().getPermission();
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         permission.toString(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
-            if(identifier.equals(KIND_COLUMN)) {
+            if(identifier.equals(Columns.KIND.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         descriptor.getKind(item),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
-            if(identifier.equals(EXTENSION_COLUMN)) {
+            if(identifier.equals(Columns.EXTENSION.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         item.attributes().isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
-            if(identifier.equals(REGION_COLUMN)) {
+            if(identifier.equals(Columns.REGION.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() : LocaleFactory.localizedString("Unknown"),
                         TableCellAttributes.browserFontLeftAlignment()));

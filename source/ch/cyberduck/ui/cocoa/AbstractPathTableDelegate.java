@@ -61,32 +61,32 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
     public Comparator<Path> getSortingComparator() {
         final boolean ascending = this.isSortedAscending();
         final String identifier = this.selectedColumnIdentifier();
-        if(identifier.equals(BrowserTableDataSource.ICON_COLUMN)
-                || identifier.equals(BrowserTableDataSource.KIND_COLUMN)) {
+        if(identifier.equals(BrowserTableDataSource.Columns.ICON.name())
+                || identifier.equals(BrowserTableDataSource.Columns.KIND.name())) {
             return new FileTypeComparator(ascending);
         }
-        else if(identifier.equals(BrowserTableDataSource.EXTENSION_COLUMN)) {
+        else if(identifier.equals(BrowserTableDataSource.Columns.EXTENSION.name())) {
             return new ExtensionComparator(ascending);
         }
-        else if(identifier.equals(BrowserTableDataSource.FILENAME_COLUMN)) {
+        else if(identifier.equals(BrowserTableDataSource.Columns.FILENAME.name())) {
             return new FilenameComparator(ascending);
         }
-        else if(identifier.equals(BrowserTableDataSource.SIZE_COLUMN)) {
+        else if(identifier.equals(BrowserTableDataSource.Columns.SIZE.name())) {
             return new SizeComparator(ascending);
         }
-        else if(identifier.equals(BrowserTableDataSource.MODIFIED_COLUMN)) {
+        else if(identifier.equals(BrowserTableDataSource.Columns.MODIFIED.name())) {
             return new TimestampComparator(ascending);
         }
-        else if(identifier.equals(BrowserTableDataSource.OWNER_COLUMN)) {
+        else if(identifier.equals(BrowserTableDataSource.Columns.OWNER.name())) {
             return new OwnerComparator(ascending);
         }
-        else if(identifier.equals(BrowserTableDataSource.GROUP_COLUMN)) {
+        else if(identifier.equals(BrowserTableDataSource.Columns.GROUP.name())) {
             return new GroupComparator(ascending);
         }
-        else if(identifier.equals(BrowserTableDataSource.PERMISSIONS_COLUMN)) {
+        else if(identifier.equals(BrowserTableDataSource.Columns.PERMISSIONS.name())) {
             return new PermissionsComparator(ascending);
         }
-        else if(identifier.equals(BrowserTableDataSource.REGION_COLUMN)) {
+        else if(identifier.equals(BrowserTableDataSource.Columns.REGION.name())) {
             return new RegionComparator(ascending);
         }
         log.error(String.format("Unknown column identifier %s", identifier));
