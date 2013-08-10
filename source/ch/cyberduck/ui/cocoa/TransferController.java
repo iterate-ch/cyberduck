@@ -430,8 +430,18 @@ public final class TransferController extends WindowController implements NSTool
     public void setQueueTable(NSTableView view) {
         this.transferTable = view;
         this.transferTable.setRowHeight(new CGFloat(82));
+        {
+            NSTableColumn c = tableColumnsFactory.create(TransferTableDataSource.PROGRESS_COLUMN);
+            c.setMinWidth(80f);
+            c.setWidth(300f);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
+            c.setDataCell(prototype);
+            this.transferTable.addTableColumn(c);
+        }
         this.transferTable.setDataSource((transferTableModel = new TransferTableDataSource()).id());
-        this.transferTable.setDelegate((transferTableDelegate = new AbstractTableDelegate<Transfer>() {
+        this.transferTable.setDelegate((transferTableDelegate = new AbstractTableDelegate<Transfer>(
+                transferTable.tableColumnWithIdentifier(TransferTableDataSource.PROGRESS_COLUMN)
+        ) {
             @Override
             public String tooltip(Transfer t) {
                 return t.getName();
@@ -494,14 +504,6 @@ public final class TransferController extends WindowController implements NSTool
                 NSPasteboard.StringPboardType,
                 NSPasteboard.FilesPromisePboardType));
 
-        {
-            NSTableColumn c = tableColumnsFactory.create(TransferTableDataSource.PROGRESS_COLUMN);
-            c.setMinWidth(80f);
-            c.setWidth(300f);
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(prototype);
-            this.transferTable.addTableColumn(c);
-        }
         this.transferTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
         //selection properties
         this.transferTable.setAllowsMultipleSelection(true);

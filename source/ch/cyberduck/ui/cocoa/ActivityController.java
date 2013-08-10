@@ -131,6 +131,14 @@ public final class ActivityController extends WindowController {
     public void setTable(NSTableView table) {
         this.table = table;
         this.table.setRowHeight(new CGFloat(42));
+        {
+            NSTableColumn c = tableColumnsFactory.create("Default");
+            c.setMinWidth(80f);
+            c.setWidth(300f);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
+            c.setDataCell(prototype);
+            this.table.addTableColumn(c);
+        }
         this.table.setDataSource((model = new ListDataSource() {
             @Override
             public NSInteger numberOfRowsInTableView(NSTableView view) {
@@ -142,7 +150,9 @@ public final class ActivityController extends WindowController {
                 return null;
             }
         }).id());
-        this.table.setDelegate((delegate = new AbstractTableDelegate<TaskController>() {
+        this.table.setDelegate((delegate = new AbstractTableDelegate<TaskController>(
+                table.tableColumnWithIdentifier("Default")
+        ) {
             @Override
             public void enterKeyPressed(final ID sender) {
             }
@@ -183,14 +193,6 @@ public final class ActivityController extends WindowController {
                 Rococoa.cast(cell, ControllerCell.class).setView(tasks.values().toArray(new TaskController[tasks.size()])[row.intValue()].view());
             }
         }).id());
-        {
-            NSTableColumn c = tableColumnsFactory.create("Default");
-            c.setMinWidth(80f);
-            c.setWidth(300f);
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(prototype);
-            this.table.addTableColumn(c);
-        }
         this.table.sizeToFit();
     }
 

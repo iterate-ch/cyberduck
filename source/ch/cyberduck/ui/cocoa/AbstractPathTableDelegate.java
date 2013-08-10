@@ -22,6 +22,7 @@ import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.comparator.ExtensionComparator;
 import ch.cyberduck.ui.comparator.FileTypeComparator;
 import ch.cyberduck.ui.comparator.FilenameComparator;
@@ -41,6 +42,10 @@ import java.util.Comparator;
  */
 public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Path> {
     private static Logger log = Logger.getLogger(AbstractTableDelegate.class);
+
+    protected AbstractPathTableDelegate(final NSTableColumn selectedColumn) {
+        super(selectedColumn);
+    }
 
     /**
      * @return A tooltip string containing the size and modification date of the path

@@ -62,11 +62,13 @@ import java.util.concurrent.TimeUnit;
 public class BookmarkTableDataSource extends ListDataSource {
     private static Logger log = Logger.getLogger(BookmarkTableDataSource.class);
 
-    public static final String ICON_COLUMN = "ICON";
-    public static final String BOOKMARK_COLUMN = "BOOKMARK";
-    public static final String STATUS_COLUMN = "STATUS";
-    // virtual column to implement keyboard selection
-    protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
+    public enum Columns {
+        ICON,
+        BOOKMARK,
+        STATUS,
+        // virtual column to implement keyboard selection
+        TYPEAHEAD;
+    }
 
     protected BrowserController controller;
 
@@ -261,11 +263,11 @@ public class BookmarkTableDataSource extends ListDataSource {
         final Host host = this.getSource().get(row.intValue());
         final NSObject cached = cache.get(host, identifier);
         if(null == cached) {
-            if(identifier.equals(ICON_COLUMN)) {
+            if(identifier.equals(Columns.ICON.name())) {
                 return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(),
                         Preferences.instance().getInteger("bookmark.icon.size"));
             }
-            if(identifier.equals(BOOKMARK_COLUMN)) {
+            if(identifier.equals(Columns.BOOKMARK.name())) {
                 NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>serialize(SerializerFactory.get()));
                 dict.setObjectForKey(new HostUrlProvider().get(host) + PathNormalizer.normalize(host.getDefaultPath()), "URL");
                 String comment = this.getSource().getComment(host);
@@ -274,7 +276,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                 }
                 return cache.put(host, identifier, dict);
             }
-            if(identifier.equals(STATUS_COLUMN)) {
+            if(identifier.equals(Columns.STATUS.name())) {
                 if(controller.hasSession()) {
                     final Session session = controller.getSession();
                     if(host.equals(session.getHost())) {
@@ -289,7 +291,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                 }
                 return null;
             }
-            if(identifier.equals(TYPEAHEAD_COLUMN)) {
+            if(identifier.equals(Columns.TYPEAHEAD.name())) {
                 return cache.put(host, identifier, NSString.stringWithString(host.getNickname()));
             }
             throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));

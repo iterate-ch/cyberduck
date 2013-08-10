@@ -39,9 +39,6 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
 
     private NSTableColumn selectedColumn;
 
-    protected AbstractTableDelegate() {
-    }
-
     protected AbstractTableDelegate(final NSTableColumn selectedColumn) {
         this.selectedColumn = selectedColumn;
     }
@@ -54,9 +51,6 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
      * @return The identifier of the column selected or null
      */
     protected String selectedColumnIdentifier() {
-        if(null == selectedColumn) {
-            return null;
-        }
         // Return previously set custom sorting preference
         return this.selectedColumn.identifier();
     }

@@ -972,6 +972,10 @@ public class BrowserController extends WindowController
     private abstract class AbstractBrowserOutlineViewDelegate<E> extends AbstractBrowserTableDelegate<E>
             implements NSOutlineView.Delegate {
 
+        protected AbstractBrowserOutlineViewDelegate(final NSTableColumn selectedColumn) {
+            super(selectedColumn);
+        }
+
         public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell,
                                                                                      ID rect, NSTableColumn c,
                                                                                      NSObject item, NSPoint mouseLocation) {
@@ -997,6 +1001,10 @@ public class BrowserController extends WindowController
     private abstract class AbstractBrowserListViewDelegate<E> extends AbstractBrowserTableDelegate<E>
             implements NSTableView.Delegate {
 
+        protected AbstractBrowserListViewDelegate(final NSTableColumn selectedColumn) {
+            super(selectedColumn);
+        }
+
         public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
                                                                                   ID rect, NSTableColumn c,
                                                                                   NSInteger row, NSPoint mouseLocation) {
@@ -1021,12 +1029,9 @@ public class BrowserController extends WindowController
     }
 
     private abstract class AbstractBrowserTableDelegate<E> extends AbstractPathTableDelegate {
-        public AbstractBrowserTableDelegate() {
-            BrowserController.this.addListener(new WindowListener() {
-                @Override
-                public void windowWillClose() {
-                }
-            });
+
+        protected AbstractBrowserTableDelegate(final NSTableColumn selectedColumn) {
+            super(selectedColumn);
         }
 
         @Override
@@ -1203,8 +1208,21 @@ public class BrowserController extends WindowController
         browserOutlineView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
                 NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
 
+        {
+            NSTableColumn c = browserOutlineColumnsFactory.create(BrowserTableDataSource.FILENAME_COLUMN);
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
+            c.setMinWidth(new CGFloat(100));
+            c.setWidth(new CGFloat(250));
+            c.setMaxWidth(new CGFloat(1000));
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setDataCell(outlineCellPrototype);
+            browserOutlineView.addTableColumn(c);
+            browserOutlineView.setOutlineTableColumn(c);
+        }
         browserOutlineView.setDataSource((browserOutlineModel = new BrowserOutlineViewModel(this)).id());
-        browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>() {
+        browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>(
+                browserOutlineView.tableColumnWithIdentifier(BrowserTableDataSource.FILENAME_COLUMN)
+        ) {
             @Override
             public void enterKeyPressed(final ID sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
@@ -1292,17 +1310,6 @@ public class BrowserController extends WindowController
             }
 
         }).id());
-        {
-            NSTableColumn c = browserOutlineColumnsFactory.create(BrowserTableDataSource.FILENAME_COLUMN);
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
-            c.setMinWidth(new CGFloat(100));
-            c.setWidth(new CGFloat(250));
-            c.setMaxWidth(new CGFloat(1000));
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
-            c.setDataCell(outlineCellPrototype);
-            this.browserOutlineView.addTableColumn(c);
-            this.browserOutlineView.setOutlineTableColumn(c);
-        }
     }
 
     public void setBrowserListView(NSTableView view) {
@@ -1325,8 +1332,32 @@ public class BrowserController extends WindowController
         browserListView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
                 NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
 
+        {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.ICON_COLUMN);
+            c.headerCell().setStringValue(StringUtils.EMPTY);
+            c.setMinWidth((20));
+            c.setWidth((20));
+            c.setMaxWidth((20));
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
+            c.setDataCell(imageCellPrototype);
+            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            browserListView.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.FILENAME_COLUMN);
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
+            c.setMinWidth((100));
+            c.setWidth((250));
+            c.setMaxWidth((1000));
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setDataCell(filenameCellPrototype);
+            this.browserListView.addTableColumn(c);
+        }
+
         browserListView.setDataSource((browserListModel = new BrowserListViewModel(this)).id());
-        browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>() {
+        browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>(
+                browserListView.tableColumnWithIdentifier(BrowserTableDataSource.FILENAME_COLUMN)
+        ) {
             @Override
             public void enterKeyPressed(final ID sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
@@ -1361,27 +1392,6 @@ public class BrowserController extends WindowController
                 return true;
             }
         }).id());
-        {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.ICON_COLUMN);
-            c.headerCell().setStringValue(StringUtils.EMPTY);
-            c.setMinWidth((20));
-            c.setWidth((20));
-            c.setMaxWidth((20));
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
-            browserListView.addTableColumn(c);
-        }
-        {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.FILENAME_COLUMN);
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
-            c.setMinWidth((100));
-            c.setWidth((250));
-            c.setMaxWidth((1000));
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
-            c.setDataCell(filenameCellPrototype);
-            this.browserListView.addTableColumn(c);
-        }
     }
 
     protected void _updateBrowserAttributes(NSTableView tableView) {
@@ -1403,7 +1413,7 @@ public class BrowserController extends WindowController
     protected void _updateBookmarkCell() {
         final int size = Preferences.instance().getInteger("bookmark.icon.size");
         final double width = size * 1.5;
-        final NSTableColumn c = bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.ICON_COLUMN);
+        final NSTableColumn c = bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Columns.ICON.name());
         c.setMinWidth(width);
         c.setMaxWidth(width);
         c.setWidth(width);
@@ -1522,8 +1532,36 @@ public class BrowserController extends WindowController
         this.bookmarkTable = view;
         this.bookmarkTable.setSelectionHighlightStyle(NSTableView.NSTableViewSelectionHighlightStyleSourceList);
         this.bookmarkTable.setDataSource((this.bookmarkModel = new BookmarkTableDataSource(this)).id());
+        {
+            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Columns.ICON.name());
+            c.headerCell().setStringValue(StringUtils.EMPTY);
+            c.setResizingMask(NSTableColumn.NSTableColumnNoResizing);
+            c.setDataCell(imageCellPrototype);
+            this.bookmarkTable.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Columns.BOOKMARK.name());
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Bookmarks"));
+            c.setMinWidth(150);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
+            c.setDataCell(BookmarkCell.bookmarkCell());
+            this.bookmarkTable.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Columns.STATUS.name());
+            c.headerCell().setStringValue(StringUtils.EMPTY);
+            c.setMinWidth(40);
+            c.setWidth(40);
+            c.setMaxWidth(40);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
+            c.setDataCell(imageCellPrototype);
+            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            this.bookmarkTable.addTableColumn(c);
+        }
         this.bookmarkModel.setSource(BookmarkCollection.defaultCollection());
-        this.bookmarkTable.setDelegate((this.bookmarkTableDelegate = new AbstractTableDelegate<Host>() {
+        this.bookmarkTable.setDelegate((this.bookmarkTableDelegate = new AbstractTableDelegate<Host>(
+                bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Columns.BOOKMARK.name())
+        ) {
             @Override
             public String tooltip(Host bookmark) {
                 return new HostUrlProvider().get(bookmark);
@@ -1633,34 +1671,6 @@ public class BrowserController extends WindowController
                 NSPasteboard.FilesPromisePboardType,
                 "HostPBoardType" //moving bookmarks
         ));
-
-        {
-            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.ICON_COLUMN);
-            c.headerCell().setStringValue(StringUtils.EMPTY);
-            c.setResizingMask(NSTableColumn.NSTableColumnNoResizing);
-            c.setDataCell(imageCellPrototype);
-            this.bookmarkTable.addTableColumn(c);
-        }
-        {
-            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.BOOKMARK_COLUMN);
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Bookmarks"));
-            c.setMinWidth(150);
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(BookmarkCell.bookmarkCell());
-            this.bookmarkTable.addTableColumn(c);
-        }
-        {
-            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.STATUS_COLUMN);
-            c.headerCell().setStringValue(StringUtils.EMPTY);
-            c.setMinWidth(40);
-            c.setWidth(40);
-            c.setMaxWidth(40);
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
-            this.bookmarkTable.addTableColumn(c);
-        }
-
         this._updateBookmarkCell();
 
         final int size = Preferences.instance().getInteger("bookmark.icon.size");

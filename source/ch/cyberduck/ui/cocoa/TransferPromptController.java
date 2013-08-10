@@ -179,8 +179,63 @@ public abstract class TransferPromptController extends SheetController
         this.browserView.setHeaderView(null);
         this.browserView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
                 NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
+        {
+            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.FILENAME_COLUMN);
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
+            c.setMinWidth(100f);
+            c.setWidth(220f);
+            c.setMaxWidth(800f);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setEditable(false);
+            c.setDataCell(outlineCellPrototype);
+            this.browserView.addTableColumn(c);
+            this.browserView.setOutlineTableColumn(c);
+        }
+        {
+            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.SIZE_COLUMN);
+            c.headerCell().setStringValue(StringUtils.EMPTY);
+            c.setMinWidth(50f);
+            c.setWidth(80f);
+            c.setMaxWidth(100f);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setEditable(false);
+            c.setDataCell(textCellPrototype);
+            this.browserView.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.WARNING_COLUMN);
+            c.headerCell().setStringValue(StringUtils.EMPTY);
+            c.setMinWidth(20f);
+            c.setWidth(20f);
+            c.setMaxWidth(20f);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
+            c.setEditable(false);
+            c.setDataCell(imageCellPrototype);
+            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            this.browserView.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.INCLUDE_COLUMN);
+            c.headerCell().setStringValue(StringUtils.EMPTY);
+            c.setMinWidth(20f);
+            c.setWidth(20f);
+            c.setMaxWidth(20f);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
+            c.setEditable(false);
+            final NSButtonCell cell = buttonCellPrototype;
+            cell.setTitle(StringUtils.EMPTY);
+            cell.setControlSize(NSCell.NSSmallControlSize);
+            cell.setButtonType(NSButtonCell.NSSwitchButton);
+            cell.setAllowsMixedState(false);
+            cell.setTarget(this.id());
+            cell.setAlignment(NSText.NSCenterTextAlignment);
+            c.setDataCell(cell);
+            this.browserView.addTableColumn(c);
+        }
         this.browserView.setDataSource(this.browserModel.id());
-        this.browserView.setDelegate((this.browserViewDelegate = new AbstractPathTableDelegate() {
+        this.browserView.setDelegate((this.browserViewDelegate = new AbstractPathTableDelegate(
+                browserView.tableColumnWithIdentifier(TransferPromptModel.FILENAME_COLUMN)
+        ) {
 
             @Override
             public void enterKeyPressed(final ID sender) {
@@ -309,59 +364,6 @@ public abstract class TransferPromptController extends SheetController
         }
         else {
             this.browserView.setGridStyleMask(NSTableView.NSTableViewGridNone);
-        }
-        {
-            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.FILENAME_COLUMN);
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
-            c.setMinWidth(100f);
-            c.setWidth(220f);
-            c.setMaxWidth(800f);
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
-            c.setEditable(false);
-            c.setDataCell(outlineCellPrototype);
-            this.browserView.addTableColumn(c);
-            this.browserView.setOutlineTableColumn(c);
-        }
-        {
-            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.SIZE_COLUMN);
-            c.headerCell().setStringValue(StringUtils.EMPTY);
-            c.setMinWidth(50f);
-            c.setWidth(80f);
-            c.setMaxWidth(100f);
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
-            c.setEditable(false);
-            c.setDataCell(textCellPrototype);
-            this.browserView.addTableColumn(c);
-        }
-        {
-            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.WARNING_COLUMN);
-            c.headerCell().setStringValue(StringUtils.EMPTY);
-            c.setMinWidth(20f);
-            c.setWidth(20f);
-            c.setMaxWidth(20f);
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setEditable(false);
-            c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
-            this.browserView.addTableColumn(c);
-        }
-        {
-            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.INCLUDE_COLUMN);
-            c.headerCell().setStringValue(StringUtils.EMPTY);
-            c.setMinWidth(20f);
-            c.setWidth(20f);
-            c.setMaxWidth(20f);
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setEditable(false);
-            final NSButtonCell cell = buttonCellPrototype;
-            cell.setTitle(StringUtils.EMPTY);
-            cell.setControlSize(NSCell.NSSmallControlSize);
-            cell.setButtonType(NSButtonCell.NSSwitchButton);
-            cell.setAllowsMixedState(false);
-            cell.setTarget(this.id());
-            cell.setAlignment(NSText.NSCenterTextAlignment);
-            c.setDataCell(cell);
-            this.browserView.addTableColumn(c);
         }
         this.browserView.sizeToFit();
     }

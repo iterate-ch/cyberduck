@@ -807,7 +807,9 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
         }).id());
-        this.aclTable.setDelegate((aclTableDelegate = new AbstractTableDelegate<Acl.UserAndRole>() {
+        this.aclTable.setDelegate((aclTableDelegate = new AbstractTableDelegate<Acl.UserAndRole>(
+                aclTable.tableColumnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN)
+        ) {
             @Override
             public boolean isColumnRowEditable(NSTableColumn column, int row) {
                 if(column.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
@@ -1036,7 +1038,9 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
         }).id());
-        this.metadataTable.setDelegate((metadataTableDelegate = new AbstractTableDelegate<String>() {
+        this.metadataTable.setDelegate((metadataTableDelegate = new AbstractTableDelegate<String>(
+                metadataTable.tableColumnWithIdentifier(HEADER_METADATA_NAME_COLUMN)
+        ) {
             @Override
             public boolean isColumnRowEditable(NSTableColumn column, int row) {
                 return true;
