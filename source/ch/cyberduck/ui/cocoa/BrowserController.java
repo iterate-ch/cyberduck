@@ -387,6 +387,7 @@ public class BrowserController extends WindowController
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         if(changed.isEmpty()) {
+            browser.deselectAll(null);
             for(Path path : selected) {
                 this.selectRow(path.getReference(), true, scroll);
                 // Only scroll to the first in the list
