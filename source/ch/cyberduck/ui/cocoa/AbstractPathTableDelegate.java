@@ -20,8 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.ui.browser.PathTooltipService;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.comparator.ExtensionComparator;
 import ch.cyberduck.ui.comparator.FileTypeComparator;
@@ -43,6 +42,8 @@ import java.util.Comparator;
 public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Path> {
     private static Logger log = Logger.getLogger(AbstractTableDelegate.class);
 
+    private PathTooltipService tooltip = new PathTooltipService();
+
     protected AbstractPathTableDelegate(final NSTableColumn selectedColumn) {
         super(selectedColumn);
     }
@@ -51,10 +52,8 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
      * @return A tooltip string containing the size and modification date of the path
      */
     @Override
-    public String tooltip(Path p) {
-        return p.getAbsolute() + "\n"
-                + SizeFormatterFactory.get().format(p.attributes().getSize()) + "\n"
-                + UserDateFormatterFactory.get().getLongFormat(p.attributes().getModificationDate());
+    public String tooltip(Path file) {
+        return tooltip.getTooltip(file);
     }
 
     @Override
