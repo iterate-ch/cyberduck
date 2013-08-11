@@ -13,7 +13,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftLocationFeatureTest extends AbstractTestCase {
 
@@ -29,5 +29,6 @@ public class SwiftLocationFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftLocationFeature(session).getLocations().contains("DFW"));
         assertTrue(new SwiftLocationFeature(session).getLocations().contains("ORD"));
         assertTrue(new SwiftLocationFeature(session).getLocations().contains("SYD"));
+        session.close();
     }
 }
