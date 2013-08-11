@@ -60,8 +60,7 @@ public class SFTPListService implements ListService {
                         file.attributes().setSize(attributes.size);
                     }
                 }
-                String perm = attributes.getOctalPermissions();
-                if(null != perm) {
+                if(null != attributes.permissions) {
                     try {
                         final String octal = Integer.toOctalString(attributes.permissions);
                         file.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
