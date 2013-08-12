@@ -57,7 +57,8 @@ public class MountWorker extends Worker<Path> {
             return home;
         }
         catch(NotfoundException e) {
-            // The default path does not exist or is not readable due to possible permission issues. Fallback to default working directory
+            // The default path does not exist or is not readable due to possible permission issues. Fallback
+            // to default working directory
             final Path workdir = session.workdir();
             cache.put(workdir.getReference(), new SessionListWorker(session, cache, workdir, listener).run());
             return workdir;
