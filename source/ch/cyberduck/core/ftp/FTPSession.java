@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
@@ -273,6 +274,9 @@ public class FTPSession extends SSLSession<FTPClient> {
     public <T> T getFeature(final Class<T> type) {
         if(type == Touch.class) {
             return (T) new DefaultTouchFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new FTPDirectoryFeature(this);
         }
         if(type == Delete.class) {
             return (T) new FTPDeleteFeature(this);
