@@ -43,7 +43,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
         this.selectedColumn = selectedColumn;
     }
 
-    protected void setSelectedColumn(NSTableColumn selectedColumn) {
+    protected void setSelectedColumn(final NSTableColumn selectedColumn) {
         this.selectedColumn = selectedColumn;
     }
 
@@ -52,27 +52,27 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
      */
     protected String selectedColumnIdentifier() {
         // Return previously set custom sorting preference
-        return this.selectedColumn.identifier();
+        return selectedColumn.identifier();
     }
 
     /**
      * @return By default no column is editable. To be overriden in subclasses
      */
-    public boolean isColumnRowEditable(NSTableColumn column, int row) {
+    public boolean isColumnRowEditable(final NSTableColumn column, final int row) {
         return false;
     }
 
     /**
      * @see NSTableView.DataSource
      */
-    public boolean tableView_shouldSelectRow(NSTableView view, NSInteger row) {
+    public boolean tableView_shouldSelectRow(final NSTableView view, final NSInteger row) {
         return true;
     }
 
     /**
      * @see NSTableView.DataSource
      */
-    public boolean outlineView_shouldSelectItem(NSOutlineView view, NSObject item) {
+    public boolean outlineView_shouldSelectItem(final NSOutlineView view, final NSObject item) {
         return true;
     }
 
@@ -86,7 +86,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     /**
      * @see NSTableView.DataSource
      */
-    public boolean outlineView_shouldEditTableColumn_item(NSOutlineView view, NSTableColumn c, NSObject item) {
+    public boolean outlineView_shouldEditTableColumn_item(final NSOutlineView view, final NSTableColumn c, final NSObject item) {
         return this.isColumnRowEditable(c, -1);
     }
 
@@ -97,14 +97,14 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     /**
      * @see NSTableView.DataSource
      */
-    public boolean selectionShouldChangeInTableView(NSTableView view) {
+    public boolean selectionShouldChangeInTableView(final NSTableView view) {
         return this.selectionShouldChange();
     }
 
     /**
      * @see NSOutlineView.DataSource
      */
-    public boolean selectionShouldChangeInOutlineView(NSTableView view) {
+    public boolean selectionShouldChangeInOutlineView(final NSTableView view) {
         return this.selectionShouldChange();
     }
 
@@ -113,38 +113,38 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     /**
      * @see NSOutlineView.Delegate
      */
-    public void outlineView_didClickTableColumn(NSOutlineView view, NSTableColumn tableColumn) {
+    public void outlineView_didClickTableColumn(final NSOutlineView view, final NSTableColumn tableColumn) {
         this.tableColumnClicked(view, tableColumn);
     }
 
     /**
      * @see NSTableView.Delegate
      */
-    public void tableView_didClickTableColumn(NSOutlineView view, NSTableColumn tableColumn) {
+    public void tableView_didClickTableColumn(final NSOutlineView view, final NSTableColumn tableColumn) {
         this.tableColumnClicked(view, tableColumn);
     }
 
     public abstract void tableRowDoubleClicked(final ID sender);
 
-    public void tableViewSelectionDidChange(NSNotification notification) {
+    public void tableViewSelectionDidChange(final NSNotification notification) {
         this.selectionDidChange(notification);
     }
 
-    public void tableViewSelectionIsChanging(NSNotification notification) {
+    public void tableViewSelectionIsChanging(final NSNotification notification) {
         this.selectionIsChanging(notification);
     }
 
-    public void outlineViewSelectionDidChange(NSNotification notification) {
+    public void outlineViewSelectionDidChange(final NSNotification notification) {
         this.selectionDidChange(notification);
     }
 
-    public void outlineViewSelectionIsChanging(NSNotification notification) {
+    public void outlineViewSelectionIsChanging(final NSNotification notification) {
         this.selectionIsChanging(notification);
     }
 
     public abstract void selectionDidChange(NSNotification notification);
 
-    public void selectionIsChanging(NSNotification notification) {
+    public void selectionIsChanging(final NSNotification notification) {
         //
     }
 
