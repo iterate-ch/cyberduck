@@ -1085,7 +1085,6 @@ public class BrowserController extends WindowController
                     c.setFiles(selected);
                 }
             }
-            validateToolbar();
         }
 
         protected abstract Path pathAtRow(int row);
