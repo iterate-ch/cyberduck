@@ -50,8 +50,8 @@ public class PanelAlertCallback extends AbstractAlertCallback {
                       final BackgroundException failure, final StringBuilder log) {
         if(controller.isVisible()) {
             final NSAlert alert = NSAlert.alert(
-                    failure.getMessage(), //title
-                    failure.getDetail(),
+                    null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
+                    null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail(),
                     LocaleFactory.localizedString("Try Again", "Alert"), // default button
                     new NetworkFailureDiagnostics().isNetworkFailure(failure) ? LocaleFactory.localizedString("Network Diagnostics") : null, //other button
                     LocaleFactory.localizedString("Cancel") // alternate button
