@@ -132,9 +132,9 @@ static NSTableColumn *localSelectionColumn;
 	NSRange visibleRows = [self rowsInRect:[self bounds]];
 	int row, endRow;
 	for(row = visibleRows.location, endRow = row + visibleRows.length; row <= endRow; ++row) {
-		id path = [[self dataSource] outlineView:self
-                       objectValueForTableColumn:[CDListView _localSelectionColumn]
-                                             row:row];
+		id path = [[self dataSource] tableView:self
+                     objectValueForTableColumn:[CDListView _localSelectionColumn]
+                                           row:row];
 		if(nil == path) {
 			continue;
 		}
