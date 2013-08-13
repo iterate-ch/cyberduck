@@ -41,12 +41,12 @@ import java.util.List;
  */
 public class BrowserListViewModel extends BrowserTableDataSource implements NSTableView.DataSource {
 
-    public BrowserListViewModel(BrowserController controller) {
+    public BrowserListViewModel(final BrowserController controller) {
         super(controller);
     }
 
     @Override
-    public NSInteger numberOfRowsInTableView(NSTableView view) {
+    public NSInteger numberOfRowsInTableView(final NSTableView view) {
         if(controller.isMounted()) {
             return new NSInteger(this.list(this.controller.workdir()).size());
         }
@@ -54,19 +54,19 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
     }
 
     @Override
-    public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value,
-                                                            NSTableColumn tableColumn, NSInteger row) {
-        super.setObjectValueForItem(this.list(this.controller.workdir()).get(row.intValue()),
-                value, tableColumn.identifier());
+    public void tableView_setObjectValue_forTableColumn_row(final NSTableView view, final NSObject value,
+                                                            final NSTableColumn column, final NSInteger row) {
+        super.setObjectValueForItem(this.get(this.controller.workdir()).get(row.intValue()),
+                value, column.identifier());
     }
 
     @Override
-    public NSObject tableView_objectValueForTableColumn_row(NSTableView view,
-                                                            NSTableColumn tableColumn, NSInteger row) {
+    public NSObject tableView_objectValueForTableColumn_row(final NSTableView view,
+                                                            final NSTableColumn column, final NSInteger row) {
         if(controller.isMounted()) {
-            final List<Path> children = this.list(this.controller.workdir());
+            final List<Path> children = this.get(this.controller.workdir());
             if(row.intValue() < children.size()) {
-                return super.objectValueForItem(children.get(row.intValue()), tableColumn.identifier());
+                return super.objectValueForItem(children.get(row.intValue()), column.identifier());
             }
         }
         return null;
@@ -77,9 +77,9 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
     // ----------------------------------------------------------
 
     @Override
-    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view,
-                                                                               NSDraggingInfo draggingInfo,
-                                                                               NSInteger row, NSUInteger operation) {
+    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(final NSTableView view,
+                                                                               final NSDraggingInfo draggingInfo,
+                                                                               final NSInteger row, final NSUInteger operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
             if(row.intValue() < this.numberOfRowsInTableView(view).intValue()) {
@@ -87,7 +87,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
                 if(-1 == draggingColumn || 0 == draggingColumn || 1 == draggingColumn) {
                     // Allow drags to icon and filename column
                     if(row.intValue() != -1) {
-                        Path p = this.list(this.controller.workdir()).get(row.intValue());
+                        Path p = this.get(this.controller.workdir()).get(row.intValue());
                         if(p.attributes().isDirectory()) {
                             destination = p;
                         }
@@ -103,12 +103,12 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
     }
 
     @Override
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo,
-                                                          NSInteger row, NSUInteger operation) {
+    public boolean tableView_acceptDrop_row_dropOperation(final NSTableView view, final NSDraggingInfo draggingInfo,
+                                                          final NSInteger row, final NSUInteger operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
             if(row.intValue() != -1) {
-                destination = this.list(this.controller.workdir()).get(row.intValue());
+                destination = this.get(this.controller.workdir()).get(row.intValue());
             }
             return super.acceptDrop(view, destination, draggingInfo);
         }
@@ -128,11 +128,11 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
      * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard (data, owner, and so on).
      */
     @Override
-    public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes,
-                                                               NSPasteboard pboard) {
+    public boolean tableView_writeRowsWithIndexes_toPasteboard(final NSTableView view, final NSIndexSet rowIndexes,
+                                                               final NSPasteboard pboard) {
         if(controller.isMounted()) {
             NSMutableArray items = NSMutableArray.array();
-            final AttributedList<Path> children = this.list(this.controller.workdir());
+            final AttributedList<Path> children = this.get(this.controller.workdir());
             for(NSUInteger index = rowIndexes.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = rowIndexes.indexGreaterThanIndex(index)) {
                 items.addObject(NSString.stringWithString(children.get(index.intValue()).getAbsolute()));
             }
@@ -142,8 +142,9 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
     }
 
     @Override
-    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view,
-                                                                                                final NSURL dropDestination, NSIndexSet rowIndexes) {
+    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(final NSTableView view,
+                                                                                                final NSURL dropDestination,
+                                                                                                final NSIndexSet rowIndexes) {
         return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
     }
 }

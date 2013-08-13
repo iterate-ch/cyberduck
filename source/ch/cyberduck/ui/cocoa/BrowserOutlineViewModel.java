@@ -44,21 +44,13 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public class BrowserOutlineViewModel extends BrowserTableDataSource implements NSOutlineView.DataSource {
     private static final Logger log = Logger.getLogger(BrowserOutlineViewModel.class);
 
-    public BrowserOutlineViewModel(BrowserController controller) {
+    public BrowserOutlineViewModel(final BrowserController controller) {
         super(controller);
     }
 
     @Override
-    public int indexOf(NSTableView view, PathReference reference) {
+    public int indexOf(final NSTableView view, final PathReference reference) {
         return ((NSOutlineView) view).rowForItem(((NSObjectPathReference) reference).unique()).intValue();
-    }
-
-    protected AttributedList<Path> children(final NSObjectPathReference path) {
-        final Path lookup = controller.lookup(path);
-        if(null == lookup) {
-            return AttributedList.emptyList();
-        }
-        return super.list(lookup);
     }
 
     /**
@@ -83,7 +75,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
      * @see NSOutlineView.DataSource
      */
     @Override
-    public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
+    public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, final NSObject item) {
         if(log.isDebugEnabled()) {
             log.debug("outlineView_numberOfChildrenOfItem:" + item);
         }
@@ -108,7 +100,11 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                     }
                 }
             }
-            return new NSInteger(this.children(new NSObjectPathReference(item)).size());
+            final Path lookup = controller.lookup(new NSObjectPathReference(item));
+            if(null == lookup) {
+                return new NSInteger(0);
+            }
+            return new NSInteger(this.list(lookup).size());
         }
         return new NSInteger(0);
     }
@@ -120,7 +116,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
      *      return the appropriate child item of the root object
      */
     @Override
-    public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, NSInteger index, NSObject item) {
+    public NSObject outlineView_child_ofItem(final NSOutlineView view, final NSInteger index, final NSObject item) {
         if(log.isDebugEnabled()) {
             log.debug("outlineView_child_ofItem:" + item);
         }
@@ -143,8 +139,8 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     }
 
     @Override
-    public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
-                                                                 final NSTableColumn tableColumn, NSObject item) {
+    public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView view, final NSObject value,
+                                                                 final NSTableColumn tableColumn, final NSObject item) {
         super.setObjectValueForItem(controller.lookup(new NSObjectPathReference(item)), value, tableColumn.identifier());
     }
 
@@ -157,7 +153,9 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     }
 
     @Override
-    public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView view, final NSDraggingInfo draggingInfo, NSObject item, NSInteger row) {
+    public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView view,
+                                                                               final NSDraggingInfo draggingInfo,
+                                                                               final NSObject item, final NSInteger row) {
         if(controller.isMounted()) {
             Path destination = null;
             if(null != item) {
@@ -196,7 +194,8 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     }
 
     @Override
-    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row) {
+    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView view, final NSDraggingInfo info,
+                                                          final NSObject item, final NSInteger row) {
         Path destination = null;
         if(controller.isMounted()) {
             if(null == item) {
@@ -206,16 +205,17 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                 destination = controller.lookup(new NSObjectPathReference(item));
             }
         }
-        return super.acceptDrop(outlineView, destination, info);
+        return super.acceptDrop(view, destination, info);
     }
 
     @Override
-    public NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items) {
+    public NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(final NSURL dropDestination, final NSArray items) {
         return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
     }
 
     @Override
-    public boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard) {
+    public boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items,
+                                                       final NSPasteboard pboard) {
         return super.writeItemsToPasteBoard(outlineView, items, pboard);
     }
 }

@@ -133,7 +133,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     public int indexOf(NSTableView view, PathReference reference) {
-        return this.list(controller.workdir()).indexOf(reference);
+        return this.get(controller.workdir()).indexOf(reference);
     }
 
     protected void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {

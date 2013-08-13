@@ -1003,7 +1003,7 @@ public class BrowserController extends WindowController
         public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
                                                                                   ID rect, NSTableColumn c,
                                                                                   NSInteger row, NSPoint mouseLocation) {
-            return this.tooltip(browserListModel.list(workdir()).get(row.intValue()));
+            return this.tooltip(browserListModel.get(workdir()).get(row.intValue()));
         }
 
         @Override
@@ -1014,7 +1014,7 @@ public class BrowserController extends WindowController
 
         @Override
         protected Path pathAtRow(int row) {
-            final AttributedList<Path> children = browserListModel.list(workdir());
+            final AttributedList<Path> children = browserListModel.get(workdir());
             if(row < children.size()) {
                 return children.get(row);
             }
@@ -1359,7 +1359,7 @@ public class BrowserController extends WindowController
             @Override
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSInteger row) {
                 final String identifier = tableColumn.identifier();
-                final Path path = browserListModel.list(BrowserController.this.workdir()).get(row.intValue());
+                final Path path = browserListModel.get(BrowserController.this.workdir()).get(row.intValue());
                 if(identifier.equals(BrowserTableDataSource.Columns.FILENAME.name())) {
                     cell.setEditable(session.getFeature(Move.class).isSupported(path));
                 }
