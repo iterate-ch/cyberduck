@@ -169,7 +169,6 @@ public class BrowserController extends WindowController
     private NSTableView browserListView;
     private AbstractBrowserTableDelegate<Path> browserListViewDelegate;
 
-
     private NSToolbar toolbar;
 
     private final Navigation navigation = new Navigation();
@@ -218,9 +217,9 @@ public class BrowserController extends WindowController
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
         this.window().setToolbar(toolbar);
-        this.window().makeFirstResponder(this.quickConnectPopup);
-        this._updateBrowserColumns(this.browserListView, browserListViewDelegate);
-        this._updateBrowserColumns(this.browserOutlineView, browserOutlineViewDelegate);
+        this.window().makeFirstResponder(quickConnectPopup);
+        this._updateBrowserColumns(browserListView, browserListViewDelegate);
+        this._updateBrowserColumns(browserOutlineView, browserOutlineViewDelegate);
         if(Preferences.instance().getBoolean("browser.transcript.open")) {
             this.logDrawer.open();
         }
@@ -1496,12 +1495,15 @@ public class BrowserController extends WindowController
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
-        delegate.setSelectedColumn(
-                table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column")));
-        table.setIndicatorImage_inTableColumn((browserListViewDelegate).isSortedAscending() ?
+        NSTableColumn selected = table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column"));
+        if(null == selected) {
+            selected = table.tableColumnWithIdentifier(BrowserTableDataSource.Columns.FILENAME.name());
+        }
+        delegate.setSelectedColumn(selected);
+        table.setIndicatorImage_inTableColumn(this.getSelectedBrowserDelegate().isSortedAscending() ?
                 IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
                 IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
-                table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column")));
+                selected);
         // Sets whether the order and width of this table view’s columns are automatically saved.
         table.setAutosaveTableColumns(true);
         table.sizeToFit();
