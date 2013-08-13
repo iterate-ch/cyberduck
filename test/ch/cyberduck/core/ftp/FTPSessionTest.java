@@ -200,7 +200,7 @@ public class FTPSessionTest extends AbstractTestCase {
         final Host host = new Host(Protocol.FTP, "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
-        final BackgroundException failure = new BackgroundException("f", new FTPException(500, "f"));
+        final BackgroundException failure = new BackgroundException(new FTPException(500, "f"));
         final FTPSession session = new FTPSession(host) {
             @Override
             protected void logout() throws BackgroundException {

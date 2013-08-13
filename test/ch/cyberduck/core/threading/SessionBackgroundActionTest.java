@@ -43,7 +43,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testGetExceptionCanceled() throws Exception {
-        final BackgroundException failure = new BackgroundException(null, null);
+        final BackgroundException failure = new BackgroundException(new RuntimeException());
         SessionBackgroundAction a = new SessionBackgroundAction(new AlertCallback() {
             @Override
             public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
@@ -79,7 +79,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testGetExceptionFailure() throws Exception {
-        final BackgroundException failure = new BackgroundException(null, null);
+        final BackgroundException failure = new BackgroundException(new RuntimeException());
         SessionBackgroundAction a = new SessionBackgroundAction(new AlertCallback() {
             @Override
             public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
@@ -115,7 +115,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testRetrySocket() throws Exception {
-        final BackgroundException failure = new BackgroundException(null, new SocketTimeoutException(""));
+        final BackgroundException failure = new BackgroundException(new SocketTimeoutException(""));
         SessionBackgroundAction a = new SessionBackgroundAction(new AlertCallback() {
             @Override
             public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
