@@ -96,7 +96,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -2528,14 +2527,8 @@ public class BrowserController extends WindowController
     @Action
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = session.getFeature(Location.class);
-        if(workdir.isRoot() && feature != null) {
-            SheetController sheet = new FolderController(this, feature.getLocations());
-            sheet.beginSheet();
-        }
-        else {
-            SheetController sheet = new FolderController(this, new HashSet<String>());
-            sheet.beginSheet();
-        }
+        SheetController sheet = new FolderController(this, feature != null ? feature.getLocations() : Collections.<String>emptySet());
+        sheet.beginSheet();
     }
 
     @Action

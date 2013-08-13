@@ -68,7 +68,7 @@ public class FolderController extends FileController {
 
     @Override
     public void setAccessoryView(final NSView input) {
-        if(!regions.isEmpty()) {
+        if(this.getWorkdir().isRoot() && !regions.isEmpty()) {
             // Override accessory view with location menu added
             this.loadBundle("Folder");
             for(String region : regions) {
