@@ -19,17 +19,9 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -161,12 +153,9 @@ public class GoogleStorageSession extends S3Session {
                         new Date(Preferences.instance().getLong("google.storage.oauth.expiry"))));
             }
             client.setProviderCredentials(oauth);
-            try {
-                new S3BucketListService().list(this);
-            }
-            catch(BackgroundException e) {
-                throw new LoginFailureException(e.getMessage(), e);
-            }
+            // List all buckets and cache
+            this.cache().put(new Path(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference(),
+                    new AttributedList<Path>(new S3BucketListService().list(this)));
         }
         else {
             super.login(keychain, controller);
