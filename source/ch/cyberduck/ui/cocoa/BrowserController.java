@@ -130,8 +130,6 @@ public class BrowserController extends WindowController
 
     private final QuickLook quicklook = QuickLookFactory.get();
 
-    private List<Path> selected = Collections.emptyList();
-
     /**
      * Hide files beginning with '.'
      */
@@ -394,7 +392,6 @@ public class BrowserController extends WindowController
                 scroll = false;
             }
         }
-        this.setSelectedPaths(selected);
         this.setStatus();
     }
 
@@ -415,14 +412,6 @@ public class BrowserController extends WindowController
         if(scroll) {
             browser.scrollRowToVisible(index);
         }
-    }
-
-    private void setSelectedPaths(final List<Path> selected) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set selected paths to %s", selected));
-        }
-        this.selected = selected;
-        this.validateToolbar();
     }
 
     private void updateQuickLookSelection(final List<Path> selected) {
@@ -488,6 +477,18 @@ public class BrowserController extends WindowController
      * @return All selected paths or an empty list if there is no selection
      */
     protected List<Path> getSelectedPaths() {
+        final BrowserTableDataSource model = this.getSelectedBrowserModel();
+        final AbstractBrowserTableDelegate<Path> delegate = this.getSelectedBrowserDelegate();
+        final NSTableView view = this.getSelectedBrowserView();
+        final NSIndexSet iterator = view.selectedRowIndexes();
+        final List<Path> selected = new ArrayList<Path>();
+        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+            final Path file = delegate.pathAtRow(index.intValue());
+            if(null == file) {
+                break;
+            }
+            selected.add(file);
+        }
         return selected;
     }
 
@@ -1079,15 +1080,7 @@ public class BrowserController extends WindowController
 
         @Override
         public void selectionDidChange(NSNotification notification) {
-            final List<Path> selected = new ArrayList<Path>();
-            final NSIndexSet iterator = getSelectedBrowserView().selectedRowIndexes();
-            for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-                final Path file = this.pathAtRow(index.intValue());
-                if(null == file) {
-                    break;
-                }
-                selected.add(file);
-            }
+            final List<Path> selected = getSelectedPaths();
             if(quicklook.isOpen()) {
                 updateQuickLookSelection(selected);
             }
@@ -1098,7 +1091,7 @@ public class BrowserController extends WindowController
                     c.setFiles(selected);
                 }
             }
-            setSelectedPaths(selected);
+            validateToolbar();
         }
 
         protected abstract Path pathAtRow(int row);
