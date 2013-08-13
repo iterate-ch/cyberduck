@@ -57,7 +57,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             if(Preferences.instance().getBoolean(this.getConfiguration())) {
                 // Prevously imported
-                String checksum = Preferences.instance().getProperty(this.getConfiguration() + ".checksum");
+                final String checksum = Preferences.instance().getProperty(String.format("%s.checksum", this.getConfiguration()));
                 log.debug("Saved previous checksum:" + checksum);
                 if(StringUtils.isNotBlank(checksum)) {
                     if(checksum.equals(this.getChecksum())) {
@@ -85,7 +85,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
         }
         else {
             if(log.isInfoEnabled()) {
-                log.info("No bookmarks file:" + file.getAbsolute());
+                log.info(String.format("No bookmarks file at %s", file.getAbsolute()));
             }
         }
         // Flag as imported
@@ -103,7 +103,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     public abstract String getBundleIdentifier();
 
     public String getConfiguration() {
-        return "bookmark.import." + this.getBundleIdentifier();
+        return String.format("bookmark.import.%s", this.getBundleIdentifier());
     }
 
     /**
@@ -134,7 +134,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                 this.getName()));
         bookmark.setComment(comment.toString());
         if(log.isDebugEnabled()) {
-            log.debug("Create new bookmark from import: " + bookmark);
+            log.debug(String.format("Create new bookmark from import %s", bookmark));
         }
         // Save password if any to Keychain
         if(StringUtils.isNotBlank(bookmark.getCredentials().getPassword())) {
