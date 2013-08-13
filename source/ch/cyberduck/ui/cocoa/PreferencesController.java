@@ -338,7 +338,9 @@ public class PreferencesController extends ToolbarWindowController {
         }
         else {
             Preferences.instance().setProperty("editor.bundleIdentifier", sender.selectedItem().representedObject());
-            BrowserController.validateToolbarItems();
+            for(BrowserController controller : MainController.getBrowsers()) {
+                controller.validateToolbar();
+            }
         }
     }
 
@@ -368,7 +370,9 @@ public class PreferencesController extends ToolbarWindowController {
                 }
                 else {
                     Preferences.instance().setProperty("editor.bundleIdentifier", bundle.bundleIdentifier());
-                    BrowserController.validateToolbarItems();
+                    for(BrowserController controller : MainController.getBrowsers()) {
+                        controller.validateToolbar();
+                    }
                 }
             }
         }

@@ -186,12 +186,6 @@ public class BrowserController extends WindowController
         return "Browser";
     }
 
-    public static void validateToolbarItems() {
-        for(BrowserController controller : MainController.getBrowsers()) {
-            controller.validateToolbar();
-        }
-    }
-
     protected void validateToolbar() {
         this.window().toolbar().validateVisibleItems();
     }
