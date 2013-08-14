@@ -18,8 +18,10 @@ package ch.cyberduck.core.identity;
  */
 
 import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.http.HttpStatus;
 
@@ -36,10 +38,13 @@ public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMap
         this.append(buffer, e.getMessage());
         this.append(buffer, e.getErrorCode());
         if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
+            return new AccessDeniedException(buffer.toString(), e);
+        }
+        if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             return new LoginFailureException(buffer.toString(), e);
         }
         if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-            return new LoginFailureException(buffer.toString(), e);
+            return new NotfoundException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }

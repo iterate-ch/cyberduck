@@ -19,6 +19,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -41,7 +42,7 @@ public class DAVExceptionMappingService extends AbstractIOExceptionMappingServic
             return new LoginFailureException(buffer.toString(), e);
         }
         if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
-            return new LoginFailureException(buffer.toString(), e);
+            return new AccessDeniedException(buffer.toString(), e);
         }
         if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             return new NotfoundException(buffer.toString(), e);

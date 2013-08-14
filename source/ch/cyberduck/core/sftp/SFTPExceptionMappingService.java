@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
@@ -57,6 +58,15 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
             }
             if(code == ErrorCodes.SSH_FX_QUOTA_EXCEEDED) {
                 return new QuotaException(buffer.toString(), e);
+            }
+            if(code == ErrorCodes.SSH_FX_NO_SPACE_ON_FILESYSTEM) {
+                return new QuotaException(buffer.toString(), e);
+            }
+            if(code == ErrorCodes.SSH_FX_PERMISSION_DENIED) {
+                return new AccessDeniedException(buffer.toString(), e);
+            }
+            if(code == ErrorCodes.SSH_FX_WRITE_PROTECT) {
+                return new AccessDeniedException(buffer.toString(), e);
             }
         }
         return this.wrap(e, buffer);

@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractIOExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -51,6 +52,21 @@ public class FTPExceptionMappingService extends AbstractIOExceptionMappingServic
             }
             if(((FTPException) e).getCode() == FTPReply.NOT_LOGGED_IN) {
                 return new LoginFailureException(buffer.toString(), e);
+            }
+            if(((FTPException) e).getCode() == FTPReply.FAILED_SECURITY_CHECK) {
+                return new AccessDeniedException(buffer.toString(), e);
+            }
+            if(((FTPException) e).getCode() == FTPReply.DENIED_FOR_POLICY_REASONS) {
+                return new AccessDeniedException(buffer.toString(), e);
+            }
+            if(((FTPException) e).getCode() == FTPReply.NEED_ACCOUNT) {
+                return new AccessDeniedException(buffer.toString(), e);
+            }
+            if(((FTPException) e).getCode() == FTPReply.NEED_ACCOUNT_FOR_STORING_FILES) {
+                return new AccessDeniedException(buffer.toString(), e);
+            }
+            if(((FTPException) e).getCode() == FTPReply.NEED_ACCOUNT_FOR_STORING_FILES) {
+                return new AccessDeniedException(buffer.toString(), e);
             }
             if(((FTPException) e).getCode() == FTPReply.FILE_UNAVAILABLE) {
                 return new NotfoundException(buffer.toString(), e);
