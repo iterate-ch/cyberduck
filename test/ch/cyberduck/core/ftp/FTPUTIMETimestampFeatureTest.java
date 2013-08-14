@@ -53,6 +53,7 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         new FTPUTIMETimestampFeature(session).setTimestamp(test, -1L, modified, -1L);
+        session.close();
     }
 
 
@@ -66,5 +67,6 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertNotNull(session.getFeature(Timestamp.class));
+        session.close();
     }
 }

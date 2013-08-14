@@ -45,6 +45,7 @@ public class FTPDefaultListServiceTest extends AbstractTestCase {
                 FTPListService.Command.list);
         final Path directory = session.workdir();
         assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", Path.FILE_TYPE).getReference()));
+        session.close();
     }
 
     @Test
@@ -60,5 +61,6 @@ public class FTPDefaultListServiceTest extends AbstractTestCase {
                 FTPListService.Command.lista);
         final Path directory = session.workdir();
         assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", Path.FILE_TYPE).getReference()));
+        session.close();
     }
 }

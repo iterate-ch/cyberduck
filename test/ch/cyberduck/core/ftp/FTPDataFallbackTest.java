@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPDataFallbackTest extends AbstractTestCase {
 
@@ -77,6 +77,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
         };
         f.data(path, action);
         assertEquals(1, count.get());
+        session.close();
     }
 
     @Test
@@ -108,5 +109,6 @@ public class FTPDataFallbackTest extends AbstractTestCase {
         };
         f.data(new Path("test", Path.FILE_TYPE), action);
         assertEquals(1, count.get());
+        session.close();
     }
 }

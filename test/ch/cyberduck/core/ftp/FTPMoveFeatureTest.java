@@ -56,6 +56,7 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        session.close();
     }
 
     @Test
@@ -74,6 +75,7 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        session.close();
     }
 
     @Test(expected = NotfoundException.class)
@@ -86,5 +88,6 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new FTPMoveFeature(session).move(test, new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE));
+        session.close();
     }
 }

@@ -50,5 +50,6 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        session.close();
     }
 }

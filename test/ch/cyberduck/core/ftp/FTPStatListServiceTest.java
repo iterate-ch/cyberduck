@@ -44,5 +44,6 @@ public class FTPStatListServiceTest extends AbstractTestCase {
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())));
         final Path directory = session.workdir();
         assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", Path.FILE_TYPE).getReference()));
+        session.close();
     }
 }
