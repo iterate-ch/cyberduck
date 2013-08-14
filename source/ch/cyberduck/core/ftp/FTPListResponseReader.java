@@ -110,7 +110,7 @@ public class FTPListResponseReader {
             children.add(parsed);
         }
         if(!success) {
-            throw new FTPInvalidListException();
+            throw new FTPInvalidListException(children);
         }
         return children;
     }

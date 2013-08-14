@@ -17,10 +17,22 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id$
  */
 public class FTPInvalidListException extends BackgroundException {
+
+    private AttributedList<Path> parsed;
+
+    public FTPInvalidListException(final AttributedList<Path> parsed) {
+        this.parsed = parsed;
+    }
+
+    public AttributedList<Path> getParsed() {
+        return parsed;
+    }
 }

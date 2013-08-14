@@ -114,7 +114,7 @@ public class FTPListService implements ListService {
         }
     }
 
-    private void remove(final Command command) {
+    protected void remove(final Command command) {
         log.warn(String.format("Remove %s from listing strategies", command));
         implementations.remove(command);
     }
@@ -164,10 +164,13 @@ public class FTPListService implements ListService {
                     this.remove(Command.lista);
                 }
             }
-            if(implementations.containsKey(Command.list)) {
+            try {
                 return this.post(file, implementations.get(Command.list).list(file, listener));
             }
-            throw new BackgroundException("No compatible file listing method found");
+            catch(FTPInvalidListException f) {
+                // Empty directory listing
+                return this.post(file, f.getParsed());
+            }
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory failed", e, file);

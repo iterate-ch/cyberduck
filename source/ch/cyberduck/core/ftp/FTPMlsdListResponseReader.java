@@ -140,7 +140,7 @@ public class FTPMlsdListResponseReader {
             }
         }
         if(!success) {
-            throw new FTPInvalidListException();
+            throw new FTPInvalidListException(children);
         }
         return children;
     }
