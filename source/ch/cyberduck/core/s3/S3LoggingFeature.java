@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
@@ -45,7 +46,7 @@ public class S3LoggingFeature implements Logging {
     public LoggingConfiguration getConfiguration(final Path container) throws BackgroundException {
         if(session.getHost().getCredentials().isAnonymousLogin()) {
             log.info("Anonymous cannot access logging status");
-            return new LoggingConfiguration(false);
+            return LoggingConfiguration.empty();
         }
         try {
             final StorageBucketLoggingStatus status
@@ -54,7 +55,13 @@ public class S3LoggingFeature implements Logging {
                     status.getTargetBucketName());
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+            try {
+                throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+            }
+            catch(AccessDeniedException l) {
+                log.warn(String.format("Missing permission to read logging configuration for %s %s", container, e.getMessage()));
+                return LoggingConfiguration.empty();
+            }
         }
     }
 

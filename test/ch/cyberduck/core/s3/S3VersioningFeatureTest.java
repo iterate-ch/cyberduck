@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
 
@@ -85,13 +84,15 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
         session.close();
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test
     public void testForbidden() throws Exception {
         final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
-        new S3VersioningFeature(session).getConfiguration(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE));
+        assertEquals(VersioningConfiguration.empty(),
+                new S3VersioningFeature(session).getConfiguration(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE)));
+        session.close();
     }
 }

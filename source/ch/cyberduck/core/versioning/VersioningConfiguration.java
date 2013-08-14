@@ -5,6 +5,10 @@ package ch.cyberduck.core.versioning;
  */
 public class VersioningConfiguration {
 
+    public static VersioningConfiguration empty() {
+        return new VersioningConfiguration();
+    }
+
     private boolean enabled;
 
     /**

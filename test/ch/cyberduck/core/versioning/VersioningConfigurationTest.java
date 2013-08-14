@@ -6,13 +6,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class VersioningConfigurationTest {
 
     @Test
     public void testEquals() throws Exception {
-        assertEquals(new VersioningConfiguration(), new VersioningConfiguration());
+        assertEquals(VersioningConfiguration.empty(), new VersioningConfiguration());
         assertEquals(new VersioningConfiguration(true), new VersioningConfiguration(true));
         assertEquals(new VersioningConfiguration(false), new VersioningConfiguration(false));
         assertFalse(new VersioningConfiguration(true).equals(new VersioningConfiguration(false)));

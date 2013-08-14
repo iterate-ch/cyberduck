@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractIOExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -41,7 +42,7 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
             // S3 protocol message
             this.append(buffer, e.getErrorMessage());
             if(HttpStatus.SC_FORBIDDEN == e.getResponseCode()) {
-                return new LoginFailureException(buffer.toString(), e);
+                return new AccessDeniedException(buffer.toString(), e);
             }
             if(HttpStatus.SC_NOT_FOUND == e.getResponseCode()) {
                 return new NotfoundException(buffer.toString(), e);

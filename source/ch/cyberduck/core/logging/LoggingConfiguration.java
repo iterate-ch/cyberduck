@@ -22,6 +22,10 @@ package ch.cyberduck.core.logging;
  */
 public class LoggingConfiguration {
 
+    public static LoggingConfiguration empty() {
+        return new LoggingConfiguration();
+    }
+
     private boolean enabled;
     private String loggingTarget;
 

@@ -6,13 +6,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LoggingConfigurationTest {
 
     @Test
     public void testEquals() throws Exception {
-        assertEquals(new LoggingConfiguration(), new LoggingConfiguration());
+        assertEquals(LoggingConfiguration.empty(), new LoggingConfiguration());
         assertEquals(new LoggingConfiguration(true), new LoggingConfiguration(true));
         assertEquals(new LoggingConfiguration(false), new LoggingConfiguration(false));
         assertFalse(new LoggingConfiguration(true).equals(new LoggingConfiguration(false)));

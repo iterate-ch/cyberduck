@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
@@ -116,7 +117,13 @@ public class S3VersioningFeature implements Versioning {
                     status.isMultiFactorAuthDeleteRequired());
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+            try {
+                throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+            }
+            catch(AccessDeniedException l) {
+                log.warn(String.format("Missing permission to read versioning configuration for %s %s", container, e.getMessage()));
+                return VersioningConfiguration.empty();
+            }
         }
     }
 

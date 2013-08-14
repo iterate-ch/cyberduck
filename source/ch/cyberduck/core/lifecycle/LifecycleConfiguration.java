@@ -22,6 +22,10 @@ package ch.cyberduck.core.lifecycle;
  */
 public class LifecycleConfiguration {
 
+    public static LifecycleConfiguration empty() {
+        return new LifecycleConfiguration();
+    }
+
     private Integer transition;
     private Integer expiration;
 

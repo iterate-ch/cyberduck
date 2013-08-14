@@ -26,7 +26,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -87,14 +86,7 @@ public class S3ObjectListService implements ListService {
             children.addAll(this.listObjects(container,
                     file, prefix, String.valueOf(Path.DELIMITER), listener));
             if(Preferences.instance().getBoolean("s3.revisions.enable")) {
-                boolean versioning = false;
-                try {
-                    versioning = new S3VersioningFeature(session).getConfiguration(container).isEnabled();
-                }
-                catch(LoginFailureException e) {
-                    log.warn(String.format("Missing permission to read versioning configuration for %s %s", container, e.getMessage()));
-                }
-                if(versioning) {
+                if(new S3VersioningFeature(session).getConfiguration(container).isEnabled()) {
                     String priorLastKey = null;
                     String priorLastVersionId = null;
                     do {

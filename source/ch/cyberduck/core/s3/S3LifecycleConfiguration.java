@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
@@ -70,7 +71,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
     public LifecycleConfiguration getConfiguration(final Path container) throws BackgroundException {
         if(session.getHost().getCredentials().isAnonymousLogin()) {
             log.info("Anonymous cannot access logging status");
-            return new LifecycleConfiguration();
+            return LifecycleConfiguration.empty();
         }
         try {
             final LifecycleConfig status = session.getClient().getLifecycleConfig(container.getName());
@@ -87,10 +88,16 @@ public class S3LifecycleConfiguration implements Lifecycle {
                 }
                 return new LifecycleConfiguration(transition, expiration);
             }
-            return new LifecycleConfiguration();
+            return LifecycleConfiguration.empty();
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map(e);
+            try {
+                throw new ServiceExceptionMappingService().map(e);
+            }
+            catch(AccessDeniedException l) {
+                log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", container, e.getMessage()));
+                return LifecycleConfiguration.empty();
+            }
         }
     }
 
