@@ -22,6 +22,7 @@ package ch.cyberduck.core.gstorage;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -33,7 +34,6 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
@@ -154,8 +154,14 @@ public class GoogleStorageSession extends S3Session {
             }
             client.setProviderCredentials(oauth);
             // List all buckets and cache
-            this.cache().put(new Path(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference(),
-                    new AttributedList<Path>(new S3BucketListService().list(this)));
+            try {
+                // List all buckets and cache
+                final Path root = new Path(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+                this.cache().put(root.getReference(), this.list(root, new DisabledListProgressListener()));
+            }
+            catch(BackgroundException e) {
+                throw new LoginFailureException(e.getMessage(), e);
+            }
         }
         else {
             super.login(keychain, controller);

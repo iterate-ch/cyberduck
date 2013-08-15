@@ -25,6 +25,7 @@ import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.identity.AWSIdentityConfiguration;
@@ -295,9 +296,14 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
-        // List all buckets and cache
-        this.cache().put(new Path(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference(),
-                new AttributedList<Path>(new S3BucketListService().list(this)));
+        try {
+            // List all buckets and cache
+            final Path root = new Path(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+            this.cache().put(root.getReference(), this.list(root, new DisabledListProgressListener()));
+        }
+        catch(BackgroundException e) {
+            throw new LoginFailureException(e.getMessage(), e);
+        }
     }
 
     @Override

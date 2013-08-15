@@ -11,6 +11,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -53,6 +54,16 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(session.workdir());
         session.close();
         assertFalse(session.isConnected());
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testLoginFailure() throws Exception {
+        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), "s"
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
     @Test
