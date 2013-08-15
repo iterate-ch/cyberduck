@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -37,7 +38,7 @@ public class DAVExceptionMappingServiceTest extends AbstractTestCase {
     public void testMap() throws Exception {
         Assert.assertEquals(LoginFailureException.class,
                 new DAVExceptionMappingService().map(new SardineException("m", 401, "r")).getClass());
-        assertEquals(LoginFailureException.class,
+        assertEquals(AccessDeniedException.class,
                 new DAVExceptionMappingService().map(new SardineException("m", 403, "r")).getClass());
         assertEquals(NotfoundException.class,
                 new DAVExceptionMappingService().map(new SardineException("m", 404, "r")).getClass());
