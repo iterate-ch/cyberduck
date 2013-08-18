@@ -168,11 +168,11 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
 
     @Override
     public boolean isSortedAscending() {
-        if(null == this.sortAscending) {
+        if(null == sortAscending) {
             //return default value
             return Preferences.instance().getBoolean("browser.sort.ascending");
         }
-        return this.sortAscending;
+        return sortAscending;
     }
 
     public boolean tableView_shouldTypeSelectForEvent_withCurrentSearchString(
