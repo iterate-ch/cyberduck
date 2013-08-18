@@ -20,12 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.transfer.NullTransferFilter;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferFilter;
@@ -41,7 +41,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;

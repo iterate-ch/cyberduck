@@ -21,7 +21,7 @@ package ch.cyberduck.ui.comparator;
 
 import ch.cyberduck.core.Path;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.Collator;
 import java.util.Locale;

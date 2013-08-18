@@ -20,7 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -27,7 +27,7 @@ import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 

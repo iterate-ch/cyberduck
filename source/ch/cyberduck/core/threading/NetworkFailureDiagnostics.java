@@ -19,7 +19,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NoHttpResponseException;
 
 import javax.net.ssl.SSLException;
@@ -28,7 +28,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NetworkFailureDiagnostics {
 

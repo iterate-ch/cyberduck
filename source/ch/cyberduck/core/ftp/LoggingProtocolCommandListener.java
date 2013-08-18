@@ -18,7 +18,7 @@ package ch.cyberduck.core.ftp;
  * dkocher@cyberduck.ch
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.FTPCmd;

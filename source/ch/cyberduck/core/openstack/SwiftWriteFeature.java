@@ -26,7 +26,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
@@ -106,8 +106,8 @@ public class SwiftWriteFeature implements Write {
     }
 
     /**
-     * @return No Content-Range support
      * @param file
+     * @return No Content-Range support
      */
     @Override
     public boolean append(final Path file) {

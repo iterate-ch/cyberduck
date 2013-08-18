@@ -21,10 +21,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PathTooltipService {
 

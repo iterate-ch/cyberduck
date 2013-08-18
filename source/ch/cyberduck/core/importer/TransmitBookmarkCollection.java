@@ -32,7 +32,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSKeyedUnarchiver;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;

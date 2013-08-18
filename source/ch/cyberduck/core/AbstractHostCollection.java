@@ -20,8 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.text.NaturalOrderComparator;
 
-import org.apache.commons.lang.CharUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

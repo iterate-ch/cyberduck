@@ -18,7 +18,7 @@ import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
 import java.io.OutputStream;

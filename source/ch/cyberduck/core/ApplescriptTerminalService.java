@@ -5,13 +5,13 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ApplescriptTerminalService implements TerminalService {
     private static final Logger log = Logger.getLogger(ApplescriptTerminalService.class);

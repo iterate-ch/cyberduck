@@ -1905,7 +1905,7 @@ lib/cglib-2.2.2.jar -text
 lib/commons-codec-1.6.jar -text
 lib/commons-collections-3.2.1.jar -text
 lib/commons-io-2.2.jar -text
-lib/commons-lang-2.6.jar -text
+lib/commons-lang3-3.1.jar -text svneol=unset#application/zip
 lib/commons-logging-1.1.1.jar -text
 lib/commons-net-3.3-ftp.jar -text
 lib/dns_sd.jar -text

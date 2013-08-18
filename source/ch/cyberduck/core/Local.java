@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;

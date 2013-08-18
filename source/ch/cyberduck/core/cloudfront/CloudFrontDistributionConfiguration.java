@@ -36,7 +36,7 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontService;

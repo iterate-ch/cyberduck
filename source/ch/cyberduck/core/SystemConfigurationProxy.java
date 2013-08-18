@@ -20,7 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.library.Native;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.log4j.Logger;
 

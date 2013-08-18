@@ -20,7 +20,7 @@ package ch.cyberduck.core.ftp.parser;
 
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**

@@ -32,7 +32,7 @@ import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;
 
 /**

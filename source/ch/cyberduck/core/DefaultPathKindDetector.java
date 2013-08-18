@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @version $Id$

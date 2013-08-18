@@ -28,7 +28,7 @@ import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSText;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 
 /**

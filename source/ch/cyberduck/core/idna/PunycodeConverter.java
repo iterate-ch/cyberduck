@@ -19,14 +19,14 @@ package ch.cyberduck.core.idna;
 
 import ch.cyberduck.core.Preferences;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.ibm.icu.text.IDNA;
 import com.ibm.icu.text.StringPrepParseException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PunycodeConverter {
     private static final Logger log = Logger.getLogger(PunycodeConverter.class);

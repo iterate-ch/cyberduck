@@ -33,7 +33,7 @@ import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;

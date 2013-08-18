@@ -23,12 +23,12 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3DirectoryFeature implements Directory {
 

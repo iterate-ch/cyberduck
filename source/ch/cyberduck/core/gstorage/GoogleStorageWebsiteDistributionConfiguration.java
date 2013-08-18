@@ -34,7 +34,7 @@ import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.GSWebsiteConfig;
 import org.jets3t.service.model.WebsiteConfig;

@@ -19,10 +19,10 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.idna.PunycodeConverter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class HostUrlProvider {
 
