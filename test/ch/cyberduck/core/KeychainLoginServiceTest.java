@@ -1,7 +1,9 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPSession;
 
 import org.junit.Test;
@@ -17,7 +19,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testMessages() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/dav/basic");
@@ -47,7 +49,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testCancel() throws Exception {
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginController(), new DisabledPasswordStore());
-        l.login(new FTPSession(new Host(Protocol.FTP, "h")), new ProgressListener() {
+        l.login(new FTPSession(new Host(new FTPProtocol(), "h")), new ProgressListener() {
             @Override
             public void message(final String message) {
                 //
@@ -57,7 +59,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectionWarning() throws Exception {
-        final Host host = new Host(Protocol.FTP, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch", new Credentials(
                 "u", "p"
         ));
         final AtomicBoolean warned = new AtomicBoolean(false);

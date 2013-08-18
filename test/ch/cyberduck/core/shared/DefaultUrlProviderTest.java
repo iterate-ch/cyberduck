@@ -5,10 +5,11 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
 
     @Test
     public void testDav() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 "u", "p"
         ));
         host.setDefaultPath("/my/documentroot");
@@ -36,7 +37,7 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
 
     @Test
     public void testSftp() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 "u", "p"
         ));
         host.setDefaultPath("/my/documentroot");

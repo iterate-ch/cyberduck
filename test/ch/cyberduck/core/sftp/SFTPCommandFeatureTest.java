@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.TranscriptListener;
 
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class SFTPCommandFeatureTest extends AbstractTestCase {
 
     @Test
     public void testSend() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);

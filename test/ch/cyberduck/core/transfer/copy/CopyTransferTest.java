@@ -18,9 +18,20 @@ package ch.cyberduck.core.transfer.copy;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -43,14 +54,14 @@ public class CopyTransferTest extends AbstractTestCase {
     @Test
     public void testSerialize() throws Exception {
         final Path test = new Path("t", Path.FILE_TYPE);
-        CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(Protocol.SFTP, "t")),
-                new FTPSession(new Host(Protocol.FTP, "t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
+        CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(new SFTPProtocol(), "t")),
+                new FTPSession(new Host(new FTPProtocol(), "t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
         TransferStatus saved = new TransferStatus();
         saved.setLength(4L);
         saved.setCurrent(3L);
         t.save(test, saved);
         final CopyTransfer serialized = new CopyTransfer(t.serialize(SerializerFactory.get()),
-                new SFTPSession(new Host(Protocol.SFTP, "t")));
+                new SFTPSession(new Host(new SFTPProtocol(), "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.files, serialized.files);
@@ -62,14 +73,14 @@ public class CopyTransferTest extends AbstractTestCase {
     @Test
     public void testAction() throws Exception {
         final Path test = new Path("t", Path.FILE_TYPE);
-        CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(Protocol.SFTP, "t")),
-                new FTPSession(new Host(Protocol.FTP, "t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
+        CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(new SFTPProtocol(), "t")),
+                new FTPSession(new Host(new FTPProtocol(), "t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
         assertEquals(TransferAction.ACTION_OVERWRITE, t.action(false, true));
     }
 
     @Test
     public void testDuplicate() throws Exception {
-        final SFTPSession session = new SFTPSession(new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+        final SFTPSession session = new SFTPSession(new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         )));
         session.open(new DefaultHostKeyController());
@@ -97,13 +108,13 @@ public class CopyTransferTest extends AbstractTestCase {
 
     @Test
     public void testCopyBetweenHosts() throws Exception {
-        final SFTPSession session = new SFTPSession(new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+        final SFTPSession session = new SFTPSession(new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
 
-        final FTPSession destination = new FTPSession(new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+        final FTPSession destination = new FTPSession(new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         )));
         destination.open(new DefaultHostKeyController());

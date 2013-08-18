@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 
 import org.junit.Test;
 
@@ -41,7 +40,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCreateContainer() throws Exception {
-        final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
@@ -56,7 +55,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCreatePlaceholder() throws Exception {
-        final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);

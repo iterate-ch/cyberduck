@@ -30,7 +30,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
 
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname(), new Credentials(
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
@@ -54,7 +54,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testConnectInvalidRefreshToken() throws Exception {
-        final Host host = new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname(), new Credentials(
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
@@ -77,7 +77,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectMissingKey() throws Exception {
-        final Host host = new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname(), new Credentials(
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
@@ -96,7 +96,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
-        final Host host = new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname(), new Credentials(
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 "a", "s"
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);

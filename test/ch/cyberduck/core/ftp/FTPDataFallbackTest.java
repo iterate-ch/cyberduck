@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -43,7 +42,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
 
     @Test
     public void testFallbackDataConnectionSocketTimeout() throws Exception {
-        final Host host = new Host(Protocol.FTP, "mirror.switch.ch", new Credentials(
+        final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setFTPConnectMode(FTPConnectMode.PORT);
@@ -82,7 +81,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
 
     @Test
     public void testFallbackDataConnection500Error() throws Exception {
-        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         host.setFTPConnectMode(FTPConnectMode.PORT);

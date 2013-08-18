@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.features.Touch;
 
 import org.junit.Test;
@@ -41,7 +40,7 @@ public class DAVCopyFeatureTest extends AbstractTestCase {
 
     @Test
     public void testCopy() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");

@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
@@ -26,7 +25,7 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testDeleteDirectory() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
@@ -44,7 +43,7 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");

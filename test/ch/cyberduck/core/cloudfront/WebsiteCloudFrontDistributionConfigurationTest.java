@@ -6,13 +6,13 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.junit.Test;
@@ -38,13 +38,13 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
     @Test
     public void testGetProtocol() throws Exception {
         final WebsiteCloudFrontDistributionConfiguration configuration
-                = new WebsiteCloudFrontDistributionConfiguration(new S3Session(new Host(Protocol.S3_SSL, "g")));
-        assertEquals(Protocol.S3_SSL, configuration.getProtocol());
+                = new WebsiteCloudFrontDistributionConfiguration(new S3Session(new Host(new S3Protocol(), "g")));
+        assertEquals(new S3Protocol(), configuration.getProtocol());
     }
 
     @Test
     public void testGetName() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(
                 session
         );
@@ -57,7 +57,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
 
     @Test
     public void testGetOrigin() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(
                 session
         );
@@ -76,7 +76,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
 
     @Test
     public void testReadNoWebsiteConfiguration() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         host.setCredentials(new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
@@ -93,7 +93,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
     @Test
     public void testFeatures() {
         final CloudFrontDistributionConfiguration d = new WebsiteCloudFrontDistributionConfiguration(
-                new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()))
+                new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
         );
         assertNotNull(d.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Purge.class, Distribution.WEBSITE_CDN));

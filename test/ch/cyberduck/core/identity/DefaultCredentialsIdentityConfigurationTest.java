@@ -2,7 +2,7 @@ package ch.cyberduck.core.identity;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.dav.DAVProtocol;
 
 import org.junit.Test;
 
@@ -16,7 +16,7 @@ public class DefaultCredentialsIdentityConfigurationTest {
     @Test
     public void testGetUserCredentials() throws Exception {
         final Credentials credentials = new Credentials("u", "p");
-        assertEquals(credentials, new DefaultCredentialsIdentityConfiguration(new Host(Protocol.WEBDAV,
+        assertEquals(credentials, new DefaultCredentialsIdentityConfiguration(new Host(new DAVProtocol(),
                 "h", credentials)).getCredentials("a"));
     }
 }

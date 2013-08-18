@@ -1,5 +1,13 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.dav.DAVProtocol;
+import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.openstack.CloudfilesProtocol;
+import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.sftp.SFTPProtocol;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -11,24 +19,24 @@ public class ProtocolFactoryTest extends AbstractTestCase {
 
     @Test
     public void testRegister() throws Exception {
-        assertFalse(ProtocolFactory.getKnownProtocols().isEmpty());
+        assertFalse(ProtocolFactory.getRegistered().isEmpty());
     }
 
     @Test
     public void testForName() throws Exception {
-        assertEquals(Protocol.FTP, ProtocolFactory.forName("ftp"));
-        assertEquals(Protocol.SFTP, ProtocolFactory.forName("sftp"));
-        assertEquals(Protocol.SWIFT, ProtocolFactory.forName("swift"));
-        assertEquals(Protocol.SFTP, ProtocolFactory.forName(String.valueOf(Protocol.SFTP.hashCode())));
+        assertEquals(new FTPProtocol(), ProtocolFactory.forName("ftp"));
+        assertEquals(new SFTPProtocol(), ProtocolFactory.forName("sftp"));
+        assertEquals(new SwiftProtocol(), ProtocolFactory.forName("swift"));
+        assertEquals(new SFTPProtocol(), ProtocolFactory.forName(String.valueOf(new SFTPProtocol().hashCode())));
         assertEquals(null, ProtocolFactory.forName(String.valueOf("unknown")));
     }
 
     @Test
     public void testForScheme() throws Exception {
-        assertEquals(Protocol.WEBDAV, ProtocolFactory.forScheme("http"));
-        assertEquals(Protocol.WEBDAV_SSL, ProtocolFactory.forScheme("https"));
-        assertEquals(Protocol.FTP, ProtocolFactory.forScheme("ftp"));
-        assertEquals(Protocol.FTP_TLS, ProtocolFactory.forScheme("ftps"));
+        assertEquals(new DAVProtocol(), ProtocolFactory.forScheme("http"));
+        assertEquals(new DAVSSLProtocol(), ProtocolFactory.forScheme("https"));
+        assertEquals(new FTPProtocol(), ProtocolFactory.forScheme("ftp"));
+        assertEquals(new FTPTLSProtocol(), ProtocolFactory.forScheme("ftps"));
     }
 
     @Test
@@ -42,7 +50,7 @@ public class ProtocolFactoryTest extends AbstractTestCase {
 
     @Test
     public void testDeprecated() throws Exception {
-        assertEquals(Protocol.CLOUDFILES, ProtocolFactory.forName("cf"));
+        assertEquals(new CloudfilesProtocol(), ProtocolFactory.forName("cf"));
     }
 
 }

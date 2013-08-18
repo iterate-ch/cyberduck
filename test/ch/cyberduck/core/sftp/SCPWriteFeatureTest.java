@@ -8,7 +8,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -28,7 +27,7 @@ public class SCPWriteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testWrite() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);

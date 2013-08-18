@@ -1,5 +1,14 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.dav.DAVProtocol;
+import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
+import ch.cyberduck.core.openstack.CloudfilesProtocol;
+import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.sftp.SFTPProtocol;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -11,24 +20,24 @@ public class ProtocolTest extends AbstractTestCase {
 
     @Test
     public void testEquals() {
-        assertNotSame(Protocol.FTP, Protocol.FTP_TLS);
-        assertEquals(Protocol.FTP, Protocol.FTP);
+        assertNotSame(new FTPProtocol(), new FTPTLSProtocol());
+        assertEquals(new FTPProtocol(), new FTPProtocol());
     }
 
     @Test
     public void testConfigurable() {
-        assertTrue(Protocol.S3_SSL.isHostnameConfigurable());
-        assertTrue(Protocol.SWIFT.isHostnameConfigurable());
-        assertTrue(Protocol.FTP.isHostnameConfigurable());
-        assertTrue(Protocol.SFTP.isHostnameConfigurable());
-        assertTrue(Protocol.WEBDAV.isHostnameConfigurable());
-        assertFalse(Protocol.CLOUDFILES.isHostnameConfigurable());
-        assertFalse(Protocol.GOOGLESTORAGE_SSL.isHostnameConfigurable());
+        assertTrue(new S3Protocol().isHostnameConfigurable());
+        assertTrue(new SwiftProtocol().isHostnameConfigurable());
+        assertTrue(new FTPProtocol().isHostnameConfigurable());
+        assertTrue(new SFTPProtocol().isHostnameConfigurable());
+        assertTrue(new DAVProtocol().isHostnameConfigurable());
+        assertFalse(new CloudfilesProtocol().isHostnameConfigurable());
+        assertFalse(new GoogleStorageProtocol().isHostnameConfigurable());
     }
 
     @Test
     public void testIcons() {
-        for(Protocol p : ProtocolFactory.getKnownProtocols()) {
+        for(Protocol p : ProtocolFactory.getRegistered()) {
             assertNotNull(p.disk());
             assertNotNull(p.icon());
             assertNotNull(p.getDefaultPort());

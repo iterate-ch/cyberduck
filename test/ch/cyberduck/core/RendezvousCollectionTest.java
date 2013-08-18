@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.sftp.SFTPProtocol;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -16,7 +18,7 @@ public class RendezvousCollectionTest extends AbstractTestCase {
         assertFalse(c.allowsDelete());
         assertFalse(c.allowsEdit());
         final Rendezvous rendezvous = RendezvousFactory.instance();
-        final Host h = new Host(Protocol.SFTP, "h");
+        final Host h = new Host(new SFTPProtocol(), "h");
         ((AbstractRendezvous) rendezvous).add("h_sftp", h);
         assertEquals(1, c.size());
         assertEquals(h, c.get(0));

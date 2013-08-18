@@ -1,6 +1,9 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
 
@@ -16,7 +19,7 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
         LoginController c = new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(Protocol.FTP, protocol);
+                assertEquals(new FTPProtocol(), protocol);
                 assertEquals("t", title);
                 assertEquals("r", reason);
                 assertTrue(options.keychain);
@@ -29,7 +32,7 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
         options.keychain = true;
         options.publickey = true;
         options.anonymous = false;
-        c.prompt(Protocol.FTP, new Credentials(), "t", "r", options);
+        c.prompt(new FTPProtocol(), new Credentials(), "t", "r", options);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -37,7 +40,7 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
         LoginController c = new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(Protocol.SFTP, protocol);
+                assertEquals(new SFTPProtocol(), protocol);
                 assertEquals("t", title);
                 assertEquals("r", reason);
                 assertTrue(options.keychain);
@@ -50,7 +53,7 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
         options.keychain = true;
         options.publickey = true;
         options.anonymous = false;
-        c.prompt(Protocol.SFTP, new Credentials(), "t", "r", options);
+        c.prompt(new SFTPProtocol(), new Credentials(), "t", "r", options);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -59,7 +62,7 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
         LoginController c = new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals(Protocol.WEBDAV, protocol);
+                assertEquals(new DAVProtocol(), protocol);
                 assertEquals(user, credentials);
                 assertEquals("r", reason);
                 assertEquals("t", title);
@@ -69,6 +72,6 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
                 throw new LoginCanceledException();
             }
         };
-        c.prompt(Protocol.WEBDAV, user, "t", "r", new LoginOptions(Protocol.WEBDAV));
+        c.prompt(new DAVProtocol(), user, "t", "r", new LoginOptions(new DAVProtocol()));
     }
 }

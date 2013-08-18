@@ -86,7 +86,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
 
     @Test
     public void testForbidden() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org", new Credentials(
+        final Host host = new Host(new S3Protocol(), "dist.springframework.org", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);

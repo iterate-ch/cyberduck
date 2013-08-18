@@ -25,7 +25,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV_SSL, "svn.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
@@ -45,7 +45,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
     public void testSsl() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV_SSL, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
@@ -62,7 +62,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testRedirect301() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-perm");
@@ -74,7 +74,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testRedirect302() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-tmp");
@@ -85,7 +85,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testRedirect303() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-other");
@@ -98,7 +98,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
     public void testRedirectGone() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-gone");
@@ -109,7 +109,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test
     public void testLoginBasicAuth() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
@@ -122,7 +122,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test
     public void testTouch() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
@@ -139,7 +139,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test
     public void testListAnonymous() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/dav/anon");
@@ -151,7 +151,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailureBasicAuth() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 "u", "p"
         ));
         host.setDefaultPath("/dav/basic");
@@ -163,7 +163,7 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailureDigestAuth() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
                 "u", "p"
         ));
         host.setDefaultPath("/dav/digest");

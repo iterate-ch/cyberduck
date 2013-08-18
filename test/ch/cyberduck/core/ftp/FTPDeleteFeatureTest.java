@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
@@ -39,7 +38,7 @@ public class FTPDeleteFeatureTest extends AbstractTestCase {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
-        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);

@@ -31,7 +31,7 @@ public class DAVListServiceTest extends AbstractTestCase {
 
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV_SSL, "svn.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
@@ -46,7 +46,7 @@ public class DAVListServiceTest extends AbstractTestCase {
 
     @Test
     public void testList() throws Exception {
-        final Host host = new Host(Protocol.WEBDAV_SSL, "svn.cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);

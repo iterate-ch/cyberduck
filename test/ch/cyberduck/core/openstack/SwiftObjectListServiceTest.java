@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
@@ -42,7 +41,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
     @Test
     public void testList() throws Exception {
         final SwiftSession session = new SwiftSession(
-                new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com",
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
@@ -73,7 +72,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final SwiftSession session = new SwiftSession(
-                new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com",
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));

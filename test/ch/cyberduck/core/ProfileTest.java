@@ -1,5 +1,9 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.openstack.CloudfilesProtocol;
+import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.s3.S3Protocol;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -15,9 +19,9 @@ public class ProfileTest extends AbstractTestCase {
                 LocalFactory.createLocal("profiles/Eucalyptus Walrus S3.cyberduckprofile")
         );
         assertEquals(Protocol.Type.s3, profile.getType());
-        assertEquals(Protocol.S3_SSL, profile.getProtocol());
-        assertNotSame(Protocol.S3_SSL.getDefaultHostname(), profile.getDefaultHostname());
-        assertEquals(Protocol.S3_SSL.getScheme(), profile.getScheme());
+        assertEquals(new S3Protocol(), profile.getProtocol());
+        assertNotSame(new S3Protocol().getDefaultHostname(), profile.getDefaultHostname());
+        assertEquals(new S3Protocol().getScheme(), profile.getScheme());
         assertEquals("eucalyptus", profile.getProvider());
 
     }
@@ -28,12 +32,12 @@ public class ProfileTest extends AbstractTestCase {
                 LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile")
         );
         assertEquals(Protocol.Type.swift, profile.getType());
-        assertEquals(Protocol.SWIFT, profile.getProtocol());
-        assertNotSame(Protocol.CLOUDFILES.getDefaultHostname(), profile.getDefaultHostname());
+        assertEquals(new SwiftProtocol(), profile.getProtocol());
+        assertNotSame(new CloudfilesProtocol().getDefaultHostname(), profile.getDefaultHostname());
         assertEquals(Scheme.https, profile.getScheme());
         assertNotNull(profile.disk());
         assertEquals(profile.disk(), profile.disk());
-        assertFalse(profile.disk().equals(Protocol.SWIFT.disk()));
+        assertFalse(profile.disk().equals(new SwiftProtocol().disk()));
         assertNotNull(profile.getProvider());
     }
 }

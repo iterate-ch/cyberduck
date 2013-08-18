@@ -1,11 +1,16 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.dav.DAVProtocol;
+import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.sftp.SFTPProtocol;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class HostParserTest extends AbstractTestCase {
 
@@ -21,7 +26,7 @@ public class HostParserTest extends AbstractTestCase {
             String url = "sftp://user:pass@hostname/path/to/file";
             Host h = HostParser.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
-            assertTrue(h.getProtocol().equals(Protocol.SFTP));
+            assertTrue(h.getProtocol().equals(new SFTPProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNotNull(h.getCredentials().getPassword());
@@ -32,7 +37,7 @@ public class HostParserTest extends AbstractTestCase {
             String url = "ftp://user:pass@hostname/path/to/file";
             Host h = HostParser.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
-            assertTrue(h.getProtocol().equals(Protocol.FTP));
+            assertTrue(h.getProtocol().equals(new FTPProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNotNull(h.getCredentials().getPassword());
@@ -43,7 +48,7 @@ public class HostParserTest extends AbstractTestCase {
             String url = "ftps://user:pass@hostname/path/to/file";
             Host h = HostParser.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
-            assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
+            assertTrue(h.getProtocol().equals(new FTPTLSProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNotNull(h.getCredentials().getPassword());
@@ -54,7 +59,7 @@ public class HostParserTest extends AbstractTestCase {
             String url = "http://www.testrumpus.com/";
             Host h = HostParser.parse(url);
             assertTrue(h.getHostname().equals("www.testrumpus.com"));
-            assertTrue(h.getProtocol().equals(Protocol.WEBDAV));
+            assertTrue(h.getProtocol().equals(new DAVProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getDefaultPath().equals("/"));
         }
@@ -67,7 +72,7 @@ public class HostParserTest extends AbstractTestCase {
             String url = "sftp://user:pass@hostname:999/path/to/file";
             Host h = HostParser.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
-            assertTrue(h.getProtocol().equals(Protocol.SFTP));
+            assertTrue(h.getProtocol().equals(new SFTPProtocol()));
             assertTrue(h.getPort() == 999);
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -79,7 +84,7 @@ public class HostParserTest extends AbstractTestCase {
             String url = "ftp://user:pass@hostname:999/path/to/file";
             Host h = HostParser.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
-            assertTrue(h.getProtocol().equals(Protocol.FTP));
+            assertTrue(h.getProtocol().equals(new FTPProtocol()));
             assertTrue(h.getPort() == 999);
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -91,7 +96,7 @@ public class HostParserTest extends AbstractTestCase {
             String url = "ftps://user:pass@hostname:999/path/to/file";
             Host h = HostParser.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
-            assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
+            assertTrue(h.getProtocol().equals(new FTPTLSProtocol()));
             assertTrue(h.getPort() == 999);
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -107,7 +112,7 @@ public class HostParserTest extends AbstractTestCase {
             String url = "sftp://user@hostname/path/to/file";
             Host h = HostParser.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
-            assertTrue(h.getProtocol().equals(Protocol.SFTP));
+            assertTrue(h.getProtocol().equals(new SFTPProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNull(h.getCredentials().getPassword());
@@ -117,7 +122,7 @@ public class HostParserTest extends AbstractTestCase {
             String url = "ftp://user@hostname/path/to/file";
             Host h = HostParser.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
-            assertTrue(h.getProtocol().equals(Protocol.FTP));
+            assertTrue(h.getProtocol().equals(new FTPProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNull(h.getCredentials().getPassword());
@@ -127,7 +132,7 @@ public class HostParserTest extends AbstractTestCase {
             String url = "ftps://user@hostname/path/to/file";
             Host h = HostParser.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
-            assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
+            assertTrue(h.getProtocol().equals(new FTPTLSProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNull(h.getCredentials().getPassword());

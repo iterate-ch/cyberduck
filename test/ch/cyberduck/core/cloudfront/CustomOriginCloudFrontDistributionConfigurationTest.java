@@ -4,10 +4,11 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         final Host h = new Host("m");
         final Path container = new Path("/", Path.VOLUME_TYPE);
         h.setWebURL("http://w.example.net");
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(h);
         assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM));
@@ -59,7 +60,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
 
     @Test(expected = LoginCanceledException.class)
     public void testReadMissingCredentials() throws Exception {
-        final Host bookmark = new Host(Protocol.SFTP, "myhost.localdomain");
+        final Host bookmark = new Host(new SFTPProtocol(), "myhost.localdomain");
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(bookmark);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);

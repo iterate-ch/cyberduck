@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 
 import org.junit.Test;
 
@@ -43,7 +42,7 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
     @Test
     public void testReadContainer() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -69,7 +68,7 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
     @Test
     public void testReadKey() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -92,7 +91,7 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
     @Test
     public void testWrite() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));

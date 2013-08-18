@@ -6,7 +6,6 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -29,7 +28,7 @@ public class SFTPSessionTest extends AbstractTestCase {
 
     @Test
     public void testLoginPassword() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
@@ -49,7 +48,7 @@ public class SFTPSessionTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
     public void testWorkdir() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
@@ -59,7 +58,7 @@ public class SFTPSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testLoginCancel() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 "u", "p"
         ));
         final SFTPSession session = new SFTPSession(host);
@@ -71,7 +70,7 @@ public class SFTPSessionTest extends AbstractTestCase {
 
     @Test
     public void testFeatures() throws Exception {
-        final Host host = new Host(Protocol.SFTP, "test.cyberduck.ch");
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final Session session = new SFTPSession(host);
         assertNotNull(session.getFeature(Compress.class));
         assertNotNull(session.getFeature(UnixPermission.class));

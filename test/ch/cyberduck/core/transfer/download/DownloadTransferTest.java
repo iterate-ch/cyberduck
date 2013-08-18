@@ -3,7 +3,9 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -37,7 +39,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         saved.setLength(4L);
         saved.setCurrent(3L);
         t.save(test, saved);
-        final DownloadTransfer serialized = new DownloadTransfer(t.serialize(SerializerFactory.get()), new SFTPSession(new Host(Protocol.SFTP, "t")));
+        final DownloadTransfer serialized = new DownloadTransfer(t.serialize(SerializerFactory.get()), new SFTPSession(new Host(new SFTPProtocol(), "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
@@ -66,7 +68,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }, new TransferOptions());
         assertTrue(t.isComplete());
-        final DownloadTransfer serialized = new DownloadTransfer(t.serialize(SerializerFactory.get()), new SFTPSession(new Host(Protocol.SFTP, "t")));
+        final DownloadTransfer serialized = new DownloadTransfer(t.serialize(SerializerFactory.get()), new SFTPSession(new Host(new SFTPProtocol(), "t")));
         assertNotSame(t, serialized);
         assertTrue(serialized.isComplete());
     }
@@ -187,7 +189,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareDownloadOverrideFilter() throws Exception {
-        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
@@ -210,7 +212,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareDownloadResumeFilter() throws Exception {
-        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);

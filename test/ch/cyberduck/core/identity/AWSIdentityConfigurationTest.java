@@ -4,9 +4,9 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.s3.S3Protocol;
 
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testCreateUser() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final AWSIdentityConfiguration iam = new AWSIdentityConfiguration(host);
@@ -54,7 +54,7 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testCreateUserAuthenticationFailure() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 "key", "secret"
         ));
         new AWSIdentityConfiguration(host).create("u", "{}", new DisabledLoginController());

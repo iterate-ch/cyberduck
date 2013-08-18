@@ -34,7 +34,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     @Test
     public void testList() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -59,7 +59,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     @Test
     public void tetsEmptyPlaceholder() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -74,7 +74,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -87,7 +87,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
 
     @Test
     public void testListCnameAnonymous() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org", new Credentials(
+        final Host host = new Host(new S3Protocol(), "dist.springframework.org", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
@@ -104,7 +104,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
 
     @Test
     public void testListBuckenameAnonymous() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org.s3.amazonaws.com", new Credentials(
+        final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
@@ -121,7 +121,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
 
     @Test
     public void testListDefaultPath() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, "dist.springframework.org.s3.amazonaws.com", new Credentials(
+        final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/dist.springframework.org/release");

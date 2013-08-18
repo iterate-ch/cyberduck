@@ -21,7 +21,6 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -42,7 +41,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     public void test3243() throws Exception {
         FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
-        final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
+        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path("/SunnyD", Path.DIRECTORY_TYPE);
         assertEquals("SunnyD", path.getName());
         assertEquals("/SunnyD", path.getAbsolute());
@@ -56,7 +55,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     public void testParseSymbolicLink() throws Exception {
         FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
-        final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
+        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path("/", Path.DIRECTORY_TYPE);
         assertEquals("/", path.getName());
         assertEquals("/", path.getAbsolute());
@@ -73,7 +72,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     public void test3763() throws Exception {
         FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
-        final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
+        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path("/www", Path.DIRECTORY_TYPE);
         assertEquals("www", path.getName());
         assertEquals("/www", path.getAbsolute());
@@ -85,7 +84,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     @Test
     @Ignore
     public void testParseHardlinkCountBadFormat() throws Exception {
-        final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
+        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
                 "/store/public/brain", Path.DIRECTORY_TYPE);
 
@@ -103,7 +102,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
 
     @Test
     public void testParseAbsolutePaths() throws Exception {
-        final FTPSession s = new FTPSession(new Host(Protocol.FTP, "localhost"));
+        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
                 "/data/FTP_pub", Path.DIRECTORY_TYPE);
 

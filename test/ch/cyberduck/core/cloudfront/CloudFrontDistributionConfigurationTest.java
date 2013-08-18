@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Cname;
@@ -17,6 +16,7 @@ import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.jets3t.service.CloudFrontService;
@@ -37,14 +37,14 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testGetMethods() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertEquals(Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING),
                 new CloudFrontDistributionConfiguration(session).getMethods(new Path("/bbb", Path.VOLUME_TYPE)));
     }
 
     @Test
     public void testGetName() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(
                 session);
         assertEquals("Amazon CloudFront", configuration.getName());
@@ -53,7 +53,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testGetOrigin() throws Exception {
-        final S3Session session = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
         assertEquals("bbb.s3.amazonaws.com",
@@ -62,7 +62,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testRead() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         host.setCredentials(new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
@@ -78,7 +78,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testReadLoginFailure() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         final S3Session session = new S3Session(host);
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
@@ -89,7 +89,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testWriteExists() throws Exception {
         final AtomicBoolean set = new AtomicBoolean();
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         host.setCredentials(new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
@@ -117,7 +117,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testWriteNew() throws Exception {
         final AtomicBoolean set = new AtomicBoolean();
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname());
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         host.setCredentials(new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
@@ -145,14 +145,14 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testProtocol() {
         assertEquals("cloudfront.amazonaws.com", new CloudFrontDistributionConfiguration(
-                new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()))
+                new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
         ).getProtocol().getDefaultHostname());
     }
 
     @Test
     public void testFeatures() {
         final CloudFrontDistributionConfiguration d = new CloudFrontDistributionConfiguration(
-                new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()))
+                new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
         );
         assertNotNull(d.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Purge.class, Distribution.WEBSITE_CDN));

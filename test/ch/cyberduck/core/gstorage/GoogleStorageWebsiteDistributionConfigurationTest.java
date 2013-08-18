@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -27,7 +26,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
     public void testGetMethods() throws Exception {
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
-                new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname())));
+                new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
         assertEquals(Arrays.asList(Distribution.WEBSITE), configuration.getMethods(new Path("test.cyberduck.ch", Path.VOLUME_TYPE)));
     }
 
@@ -35,13 +34,13 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
     public void testGetProtocol() throws Exception {
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
-                new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname())));
-        assertEquals(Protocol.GOOGLESTORAGE_SSL, configuration.getProtocol());
+                new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
+        assertEquals(new GoogleStorageProtocol(), configuration.getProtocol());
     }
 
     @Test
     public void testRead() throws Exception {
-        final Host host = new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname(), new Credentials(
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);

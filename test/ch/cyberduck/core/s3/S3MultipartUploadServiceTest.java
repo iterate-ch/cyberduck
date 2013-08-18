@@ -8,7 +8,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -34,7 +33,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
     @Test
     public void testUploadSinglePart() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -59,7 +58,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -76,7 +75,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
     public void testMultipleParts() throws Exception {
         // 5L * 1024L * 1024L
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));

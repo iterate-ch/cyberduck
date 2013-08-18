@@ -31,7 +31,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
 
     @Test(expected = BackgroundException.class)
     public void testListNotSupported() throws Exception {
-        final Host host = new Host(Protocol.FTP_TLS, "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
@@ -45,7 +45,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
 
     @Test
     public void testList() throws Exception {
-        final Host host = new Host(Protocol.FTP, "ftp.crushftp.com", new Credentials(
+        final Host host = new Host(new FTPProtocol(), "ftp.crushftp.com", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final FTPSession session = new FTPSession(host);

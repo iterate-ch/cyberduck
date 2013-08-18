@@ -1,5 +1,6 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -60,7 +61,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 };
             }
         });
-        final DAVSession session = new DAVSession(new Host(Protocol.WEBDAV_SSL, "54.228.253.92", new Credentials("user", "p")));
+        final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "54.228.253.92", new Credentials("user", "p")));
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(),
                 new ProgressListener() {

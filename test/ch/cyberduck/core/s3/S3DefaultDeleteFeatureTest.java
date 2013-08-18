@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Ignore;
@@ -27,7 +26,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
     @Test
     public void testDeleteFile() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -45,7 +44,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
     @Test
     public void testDeletePlaceholder() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -63,7 +62,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
     @Test
     public void testDeleteContainer() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -81,7 +80,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));

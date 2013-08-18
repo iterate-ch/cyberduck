@@ -1,6 +1,14 @@
 package ch.cyberduck.core.gstorage;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 
@@ -16,7 +24,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
 
     @Test
     public void testWrite() throws Exception {
-        final Host host = new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname(), new Credentials(
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);

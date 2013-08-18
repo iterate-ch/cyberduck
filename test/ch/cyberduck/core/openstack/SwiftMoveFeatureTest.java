@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
@@ -44,7 +43,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
     @Test
     public void testMove() throws Exception {
         final SwiftSession session = new SwiftSession(
-                new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com",
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
@@ -66,7 +65,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
     @Test
     public void testMoveOverride() throws Exception {
         final SwiftSession session = new SwiftSession(
-                new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com",
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
@@ -89,7 +88,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
         final SwiftSession session = new SwiftSession(
-                new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com",
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));

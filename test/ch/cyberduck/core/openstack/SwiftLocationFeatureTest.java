@@ -6,7 +6,6 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Protocol;
 
 import org.junit.Test;
 
@@ -20,7 +19,7 @@ public class SwiftLocationFeatureTest extends AbstractTestCase {
     @Test
     public void testGetLocations() throws Exception {
         final SwiftSession session = new SwiftSession(
-                new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com",
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));

@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -34,7 +33,7 @@ public class S3SessionTest extends AbstractTestCase {
 
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
@@ -58,7 +57,7 @@ public class S3SessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
-        final Host host = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), new Credentials(
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), "s"
         ));
         final S3Session session = new S3Session(host);
@@ -68,7 +67,7 @@ public class S3SessionTest extends AbstractTestCase {
 
     @Test
     public void testFeatures() throws Exception {
-        final S3Session aws = new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname()));
+        final S3Session aws = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertNotNull(aws.getFeature(Copy.class));
         assertNotNull(aws.getFeature(AclPermission.class));
         assertNotNull(aws.getFeature(Versioning.class));
@@ -82,7 +81,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(aws.getFeature(IdentityConfiguration.class));
         assertNotNull(aws.getFeature(IdentityConfiguration.class));
         assertEquals(S3MultipleDeleteFeature.class, aws.getFeature(Delete.class).getClass());
-        final S3Session o = new S3Session(new Host(Protocol.S3_SSL, "o"));
+        final S3Session o = new S3Session(new Host(new S3Protocol(), "o"));
         assertNotNull(o.getFeature(Copy.class));
         assertNotNull(o.getFeature(AclPermission.class));
         assertNull(o.getFeature(Versioning.class));

@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.dav.DAVProtocol;
+import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.junit.Test;
@@ -32,7 +34,7 @@ public class HostTest extends AbstractTestCase {
 
     @Test
     public void testDictionary() {
-        final Host h = new Host(Protocol.WEBDAV, "h", 66);
+        final Host h = new Host(new DAVProtocol(), "h", 66);
         assertEquals(h, new Host(h.serialize(SerializerFactory.get())));
     }
 
@@ -43,7 +45,7 @@ public class HostTest extends AbstractTestCase {
         dict.setStringForKey("unknown provider", "Provider");
         dict.setStringForKey("h", "Hostname");
         final Host host = new Host(dict.getSerialized());
-        assertEquals(Protocol.SWIFT, host.getProtocol());
+        assertEquals(new SwiftProtocol(), host.getProtocol());
     }
 
     @Test

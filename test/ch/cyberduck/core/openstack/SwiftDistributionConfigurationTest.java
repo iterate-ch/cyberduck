@@ -8,7 +8,6 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 
@@ -23,7 +22,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testGetName() throws Exception {
-        final SwiftSession session = new SwiftSession(new Host(Protocol.SWIFT, "h"));
+        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "h"));
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         assertEquals("Akamai", configuration.getName());
         assertEquals("Akamai", configuration.getName(Distribution.DOWNLOAD));
@@ -31,7 +30,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testReadRackspace() throws Exception {
-        final SwiftSession session = new SwiftSession(new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
+        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
         session.open(new DefaultHostKeyController());
@@ -59,7 +58,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testReadHpcloud() throws Exception {
-        final Host host = new Host(Protocol.SWIFT, "region-a.geo-1.identity.hpcloudsvc.com", 35357);
+        final Host host = new Host(new SwiftProtocol(), "region-a.geo-1.identity.hpcloudsvc.com", 35357);
         host.setCredentials(new Credentials(
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));

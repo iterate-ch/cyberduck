@@ -22,7 +22,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class S3LifecycleConfigurationTest extends AbstractTestCase {
     @Test
     public void testGetConfiguration() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
@@ -55,7 +54,7 @@ public class S3LifecycleConfigurationTest extends AbstractTestCase {
     @Test
     public void testGetConfigurationAccessDenied() throws Exception {
         final S3Session session = new S3Session(
-                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));

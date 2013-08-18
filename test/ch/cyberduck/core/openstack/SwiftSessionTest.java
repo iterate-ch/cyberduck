@@ -23,7 +23,7 @@ public class SwiftSessionTest extends AbstractTestCase {
 
     @Test
     public void testFeatures() throws Exception {
-        final SwiftSession session = new SwiftSession(new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com"));
+        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com"));
         assertNull(session.getFeature(Versioning.class));
         assertNotNull(session.getFeature(AnalyticsProvider.class));
         assertNull(session.getFeature(Lifecycle.class));
@@ -37,7 +37,7 @@ public class SwiftSessionTest extends AbstractTestCase {
 
     @Test
     public void testConnectRackspace() throws Exception {
-        final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
@@ -78,7 +78,7 @@ public class SwiftSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
-        final Host host = new Host(Protocol.SWIFT, "identity.api.rackspacecloud.com", new Credentials(
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 "a", "s"
         ));
         final SwiftSession session = new SwiftSession(host);
@@ -96,7 +96,7 @@ public class SwiftSessionTest extends AbstractTestCase {
 
     @Test
     public void testConnectHp() throws Exception {
-        final Host host = new Host(Protocol.SWIFT, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
+        final Host host = new Host(new SwiftProtocol(), "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
