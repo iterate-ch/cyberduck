@@ -59,8 +59,10 @@ public class SFTPWriteFeature implements Write {
             }
             final OutputStream out = new SFTPOutputStream(handle);
             if(status.isAppend()) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skipping %d bytes", status.getCurrent()));
+                }
                 long skipped = ((SFTPOutputStream) out).skip(status.getCurrent());
-                log.info(String.format("Skipping %d bytes", skipped));
                 if(skipped < status.getCurrent()) {
                     throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
                 }

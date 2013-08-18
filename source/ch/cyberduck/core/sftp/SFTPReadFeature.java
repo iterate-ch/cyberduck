@@ -51,7 +51,9 @@ public class SFTPReadFeature implements Read {
             final SFTPv3FileHandle handle = session.sftp().openFileRO(file.getAbsolute());
             in = new SFTPInputStream(handle);
             if(status.isAppend()) {
-                log.info(String.format("Skipping %d bytes", status.getCurrent()));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skipping %d bytes", status.getCurrent()));
+                }
                 final long skipped = in.skip(status.getCurrent());
                 if(skipped < status.getCurrent()) {
                     throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
