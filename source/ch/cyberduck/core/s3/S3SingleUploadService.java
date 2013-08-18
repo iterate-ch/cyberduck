@@ -88,10 +88,9 @@ public class S3SingleUploadService implements Upload {
                 in = new DigestInputStream(file.getLocal().getInputStream(), digest);
             }
             final StorageObject object = this.createObjectDetails(file);
-            out = this.write(file, object, status.getLength() - status.getCurrent(),
-                    Collections.<String, String>emptyMap());
+            out = this.write(file, object, status.getLength(), Collections.<String, String>emptyMap());
             try {
-                new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, -1);
+                new StreamCopier(status).transfer(in, 0, new ThrottledOutputStream(out, throttle), listener);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
