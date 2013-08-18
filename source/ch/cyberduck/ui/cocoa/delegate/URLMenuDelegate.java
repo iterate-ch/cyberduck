@@ -43,7 +43,6 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -85,7 +84,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        List<Path> selected = this.getSelected();
+        final List<Path> selected = this.getSelected();
         if(0 == index.intValue()) {
             this.setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
         }
@@ -100,68 +99,66 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             item.setImage(null);
         }
         else {
-            final StringBuilder builder = new StringBuilder();
-            for(Iterator<Path> iter = selected.iterator(); iter.hasNext(); ) {
-                List<DescriptiveUrl> urls = this.getURLs(iter.next());
-                DescriptiveUrl url = urls.get(index.intValue() / 2);
-                builder.append(url.getUrl());
-                if(iter.hasNext()) {
-                    builder.append("\n");
-                }
-            }
-            String s = builder.toString();
             boolean label = index.intValue() % 2 == 0;
             if(label) {
+                // Dummy menu item to preview URL only
                 item.setEnabled(true);
                 item.setTarget(this.id());
                 item.setAction(Foundation.selector("menuItemClicked:"));
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
                 Iterator<Path> iter = selected.iterator();
-                DescriptiveUrl url = this.getURLs(iter.next()).get(index.intValue() / 2);
-                item.setRepresentedObject(s);
+                final DescriptiveUrl url = this.getURLs(iter.next()).get(index.intValue() / 2);
+                item.setRepresentedObject(url.getUrl());
                 item.setTitle(url.getHelp());
             }
             else {
-                // Dummy menu item to preview URL only
-                if(StringUtils.isNotBlank(s)) {
-                    item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(s, URL_FONT_ATTRIBUTES));
-                }
-                else {
-                    item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(LocaleFactory.localizedString("Unknown"), URL_FONT_ATTRIBUTES));
-                }
+                final List<DescriptiveUrl> target = this.getURLs(index, selected);
+                item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
+                        StringUtils.join(target, '\n'), URL_FONT_ATTRIBUTES));
             }
         }
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
-    @Action
-    public void menuActionSelected(final NSMenu sender) {
-        if(log.isDebugEnabled()) {
-            log.debug("menuActionSelected:" + sender);
+    private List<DescriptiveUrl> getURLs(final NSInteger index, final List<Path> selected) {
+        List<DescriptiveUrl> list = new ArrayList<DescriptiveUrl>();
+        for(final Path file : selected) {
+            final List<DescriptiveUrl> urls = this.getURLs(file);
+            final DescriptiveUrl url = urls.get(index.intValue() / 2);
+            list.add(url);
         }
-        List<String> selected = new ArrayList<String>();
-        for(Path path : this.getSelected()) {
-            selected.add(this.getURLs(path).iterator().next().getUrl());
+        return list;
+    }
+
+    @Action
+    public void menuActionSelected(final NSMenu menu) {
+        if(log.isDebugEnabled()) {
+            log.debug("menuActionSelected:" + menu);
+        }
+        List<DescriptiveUrl> selected = new ArrayList<DescriptiveUrl>();
+        for(Path file : this.getSelected()) {
+            selected.add(this.getURLs(file).iterator().next());
         }
         this.handle(selected);
     }
 
     @Action
-    public void menuItemClicked(final NSMenuItem sender) {
+    public void menuItemClicked(final NSMenuItem item) {
         if(log.isDebugEnabled()) {
-            log.debug("menuItemClicked:" + sender);
+            log.debug("menuItemClicked:" + item);
         }
-        this.handle(Arrays.asList(StringUtils.split(sender.representedObject(), "\n")));
+        this.handle(this.getURLs(item.menu().indexOfItem(item), this.getSelected()));
     }
 
     /**
      * @param selected URLs of selected files.
      */
-    public abstract void handle(final List<String> selected);
+    public abstract void handle(final List<DescriptiveUrl> selected);
 
     @Override
-    public boolean validateMenuItem(NSMenuItem item) {
-        if(this.getSelected().isEmpty()) {
+    public boolean validateMenuItem(final NSMenuItem item) {
+        final List<Path> selected = this.getSelected();
+        if(selected.isEmpty()) {
             return false;
         }
         final Selector action = item.action();
