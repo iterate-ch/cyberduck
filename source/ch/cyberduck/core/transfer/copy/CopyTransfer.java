@@ -239,7 +239,7 @@ public class CopyTransfer extends Transfer {
             if(file.attributes().isFile()) {
                 new StreamCopier(status).transfer(in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle),
                         0, out = new ThrottledOutputStream(destination.getFeature(Write.class).write(copy, status), throttle),
-                        listener, -1);
+                        listener);
             }
         }
         catch(IOException e) {

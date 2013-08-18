@@ -57,7 +57,7 @@ public class DefaultUploadFeature implements Upload {
                 in = file.getLocal().getInputStream();
                 final Write writer = session.getFeature(Write.class);
                 out = writer.write(file, status);
-                new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, -1);
+                new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener);
             }
             finally {
                 IOUtils.closeQuietly(in);
