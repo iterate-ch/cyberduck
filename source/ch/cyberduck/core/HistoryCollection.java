@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -45,7 +47,8 @@ public class HistoryCollection extends AbstractFolderHostCollection {
 
     @Override
     public Local getFile(final Host bookmark) {
-        return LocalFactory.createLocal(folder, String.format("%s.duck", bookmark.getNickname(true)));
+        return LocalFactory.createLocal(folder, String.format("%s.duck",
+                StringUtils.replace(bookmark.getNickname(), "/", ":")));
     }
 
     @Override

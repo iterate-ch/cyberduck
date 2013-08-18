@@ -67,7 +67,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         BOOKMARK,
         STATUS,
         // virtual column to implement keyboard selection
-        TYPEAHEAD;
+        TYPEAHEAD
     }
 
     protected BrowserController controller;
@@ -574,9 +574,10 @@ public class BookmarkTableDataSource extends ListDataSource {
         final NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != dropDestination) {
             final HostPasteboard pasteboard = HostPasteboard.getPasteboard();
-            for(Host promisedDragBookmark : pasteboard) {
-                final Local file = LocalFactory.createLocal(dropDestination.path(), promisedDragBookmark.getNickname(true) + ".duck");
-                HostWriterFactory.get().write(promisedDragBookmark, file);
+            for(Host bookmark : pasteboard) {
+                final Local file = LocalFactory.createLocal(dropDestination.path(),
+                        String.format("%s.duck", StringUtils.replace(bookmark.getNickname(), "/", ":")));
+                HostWriterFactory.get().write(bookmark, file);
                 // Adding the filename that is promised to be created at the dropDestination
                 promisedDragNames.addObject(NSString.stringWithString(file.getName()));
             }

@@ -434,15 +434,8 @@ public final class Host implements Serializable {
      * @return The user-given name of this bookmark
      */
     public String getNickname() {
-        return this.getNickname(false);
-    }
-
-    public String getNickname(boolean escape) {
         if(StringUtils.isEmpty(nickname)) {
             return this.getDefaultNickname();
-        }
-        if(escape) {
-            return StringUtils.replace(nickname, "/", ":");
         }
         return nickname;
     }
