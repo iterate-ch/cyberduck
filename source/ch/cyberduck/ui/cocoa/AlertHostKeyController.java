@@ -30,7 +30,6 @@ import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 
@@ -168,18 +167,6 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
         }
         return c.returnCode() == SheetCallback.DEFAULT_OPTION;
 
-    }
-
-    @Override
-    public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                          final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
-        final NSAutoreleasePool pool = NSAutoreleasePool.push();
-        try {
-            return super.verify(hostname, port, serverHostKeyAlgorithm, serverHostKey);
-        }
-        finally {
-            pool.drain();
-        }
     }
 
     @Override
