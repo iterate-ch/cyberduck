@@ -60,7 +60,15 @@ import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSRange;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
@@ -3128,47 +3136,17 @@ public class BrowserController extends WindowController
 
     @Action
     public void openTerminalButtonClicked(final ID sender) {
-        final Host host = session.getHost();
-        final boolean identity = host.getCredentials().isPublicKeyAuthentication();
-        String workdir = null;
+        Path workdir = null;
         if(this.getSelectionCount() == 1) {
             Path selected = this.getSelectedPath();
             if(selected.attributes().isDirectory()) {
-                workdir = selected.getAbsolute();
+                workdir = selected;
             }
         }
         if(null == workdir) {
-            workdir = this.workdir().getAbsolute();
+            workdir = this.workdir();
         }
-        final String app = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                Preferences.instance().getProperty("terminal.bundle.identifier"));
-        if(StringUtils.isEmpty(app)) {
-            log.error(String.format("Application with bundle identifier %s is not installed",
-                    Preferences.instance().getProperty("terminal.bundle.identifier")));
-            return;
-        }
-        String ssh = MessageFormat.format(Preferences.instance().getProperty("terminal.command.ssh"),
-                identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : StringUtils.EMPTY,
-                host.getCredentials().getUsername(),
-                host.getHostname(),
-                String.valueOf(host.getPort()), workdir);
-        log.info("SSH Command:" + ssh);
-        // Escape
-        ssh = StringUtils.replace(ssh, "\\", "\\\\");
-        // Escape all " for do script command
-        ssh = StringUtils.replace(ssh, "\"", "\\\"");
-        log.info("Escaped SSH Command for Applescript:" + ssh);
-        String command
-                = "tell application \"" + LocalFactory.createLocal(app).getDisplayName() + "\""
-                + "\n"
-                + "activate"
-                + "\n"
-                + MessageFormat.format(Preferences.instance().getProperty("terminal.command"), ssh)
-                + "\n"
-                + "end tell";
-        log.info("Excecuting AppleScript:" + command);
-        final NSAppleScript as = NSAppleScript.createWithSource(command);
-        as.executeAndReturnError(null);
+        new ApplescriptTerminalService().open(session.getHost(), workdir);
     }
 
     @Action
