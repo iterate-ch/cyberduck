@@ -38,10 +38,10 @@ import ch.cyberduck.core.serializer.impl.PlistWriter;
 import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.sparkle.Updater;
+import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.quicklook.DeprecatedQuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.growl.GrowlNative;
@@ -69,9 +69,7 @@ public final class MainApplication {
                         t.getName(), e.getMessage()), e);
             }
         });
-
-        final NSAutoreleasePool pool = NSAutoreleasePool.push();
-
+        final ActionOperationBatcher autorelease = new AutoreleaseActionOperationBatcher();
         try {
             // This method also makes a connection to the window server and completes other initialization.
             // Your program should invoke this method as one of the first statements in main();
@@ -154,7 +152,7 @@ public final class MainApplication {
             app.run();
         }
         finally {
-            pool.drain();
+            autorelease.operate();
         }
     }
 }
