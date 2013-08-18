@@ -30,6 +30,8 @@ import ch.cyberduck.core.serializer.impl.PlistSerializer;
 import ch.cyberduck.core.serializer.impl.PlistWriter;
 import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.TransferPlistReader;
+import ch.cyberduck.core.threading.ActionOperationBatcher;
+import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
@@ -67,11 +69,11 @@ public class AbstractTestCase {
         BasicConfigurator.configure();
     }
 
-    private NSAutoreleasePool pool;
+    private ActionOperationBatcher pool;
 
     @Before
     public void pool() {
-        pool = NSAutoreleasePool.push();
+        pool = ActionOperationBatcherFactory.get();
     }
 
     protected static Properties properties = System.getProperties();
@@ -120,7 +122,7 @@ public class AbstractTestCase {
 
     @After
     public void post() {
-        pool.drain();
+        pool.operate();
     }
 
 
