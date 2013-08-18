@@ -17,11 +17,11 @@ package ch.cyberduck.ui.resources;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.ui.cocoa.application.NSGraphics;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
@@ -40,7 +40,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class NSImageIconCache extends AbstractIconCache<NSImage> {
-    private static Logger log = Logger.getLogger(NSImageIconCache.class);
+    private static final Logger log = Logger.getLogger(NSImageIconCache.class);
 
     public static void register() {
         IconCacheFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
