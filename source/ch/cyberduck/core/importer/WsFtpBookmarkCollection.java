@@ -24,7 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -99,7 +99,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                         current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
                         current.getCredentials().setUsername(
                                 Preferences.instance().getProperty("connection.login.anon.name"));
-                        current.setProtocol(Protocol.FTP);
+                        current.setProtocol(ProtocolFactory.FTP);
                         Pattern pattern = Pattern.compile("\\[(.*)\\]");
                         Matcher matcher = pattern.matcher(line);
                         if(matcher.matches()) {
@@ -144,10 +144,10 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             try {
                 switch(Integer.parseInt(value)) {
                     case 4:
-                        current.setProtocol(Protocol.SFTP);
+                        current.setProtocol(ProtocolFactory.SFTP);
                         break;
                     case 5:
-                        current.setProtocol(Protocol.FTP_TLS);
+                        current.setProtocol(ProtocolFactory.FTP_TLS);
                         break;
                 }
             }

@@ -23,7 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -118,21 +118,21 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
             try {
                 switch(Integer.parseInt(protocol)) {
                     case 0:
-                        host.setProtocol(Protocol.FTP);
+                        host.setProtocol(ProtocolFactory.FTP);
                         break;
                     case 1:
-                        host.setProtocol(Protocol.SFTP);
+                        host.setProtocol(ProtocolFactory.SFTP);
                         break;
                     case 3:
-                        host.setProtocol(Protocol.S3_SSL);
+                        host.setProtocol(ProtocolFactory.S3_SSL);
                         break;
                     case 2:
                     case 4:
-                        if(host.getPort() == Protocol.WEBDAV_SSL.getDefaultPort()) {
-                            host.setProtocol(Protocol.WEBDAV_SSL);
+                        if(host.getPort() == ProtocolFactory.WEBDAV_SSL.getDefaultPort()) {
+                            host.setProtocol(ProtocolFactory.WEBDAV_SSL);
                         }
                         else {
-                            host.setProtocol(Protocol.WEBDAV);
+                            host.setProtocol(ProtocolFactory.WEBDAV);
                         }
                         break;
                 }

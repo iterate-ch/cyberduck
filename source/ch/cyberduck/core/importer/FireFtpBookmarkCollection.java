@@ -24,7 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.commons.io.IOUtils;
@@ -120,7 +120,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
         final Host current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
         current.getCredentials().setUsername(
                 Preferences.instance().getProperty("connection.login.anon.name"));
-        current.setProtocol(Protocol.FTP);
+        current.setProtocol(ProtocolFactory.FTP);
         for(String attribute : entry.split(", ")) {
             Scanner scanner = new Scanner(attribute);
             scanner.useDelimiter(":");
@@ -185,10 +185,10 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             }
             else if("security".equals(name)) {
                 if("authtls".equals(value)) {
-                    current.setProtocol(Protocol.FTP_TLS);
+                    current.setProtocol(ProtocolFactory.FTP_TLS);
                 }
                 if("sftp".equals(value)) {
-                    current.setProtocol(Protocol.SFTP);
+                    current.setProtocol(ProtocolFactory.SFTP);
                 }
             }
         }

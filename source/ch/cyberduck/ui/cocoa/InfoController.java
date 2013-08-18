@@ -1410,7 +1410,7 @@ public class InfoController extends ToolbarWindowController {
             }
             else {
                 // CloudFront is the default for custom distributions
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(Protocol.S3_SSL.disk(), 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(ProtocolFactory.S3_SSL.disk(), 32));
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
@@ -1421,8 +1421,8 @@ public class InfoController extends ToolbarWindowController {
             }
             else {
                 // Currently these settings are only available for Amazon S3
-                item.setLabel(Protocol.S3_SSL.getName());
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(Protocol.S3_SSL.disk(), 32));
+                item.setLabel(ProtocolFactory.S3_SSL.getName());
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(ProtocolFactory.S3_SSL.disk(), 32));
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {

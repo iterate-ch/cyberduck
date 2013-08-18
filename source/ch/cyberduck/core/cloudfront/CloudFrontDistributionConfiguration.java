@@ -262,7 +262,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                             final String loggingTarget;
                             if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
                                 loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingTarget(),
-                                        false, Protocol.S3_SSL.getDefaultHostname());
+                                        false, ProtocolFactory.S3_SSL.getDefaultHostname());
                             }
                             else {
                                 loggingTarget = getOrigin(container, distribution.getMethod());
@@ -541,11 +541,11 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(null == distributionConfig.getLoggingStatus()) {
             // Default logging target to origin itself
             loggingTarget = ServiceUtils.findBucketNameInHostname(d.getConfig().getOrigin().getDomainName(),
-                    Protocol.S3_SSL.getDefaultHostname());
+                    ProtocolFactory.S3_SSL.getDefaultHostname());
         }
         else {
             loggingTarget = ServiceUtils.findBucketNameInHostname(distributionConfig.getLoggingStatus().getBucket(),
-                    Protocol.S3_SSL.getDefaultHostname());
+                    ProtocolFactory.S3_SSL.getDefaultHostname());
         }
         final Distribution distribution = new Distribution(d.getConfig().getOrigin().getDomainName(),
                 method,

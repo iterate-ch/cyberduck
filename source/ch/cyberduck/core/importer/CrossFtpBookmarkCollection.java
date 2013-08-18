@@ -20,10 +20,10 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -80,22 +80,22 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
                 try {
                     switch(Integer.valueOf(protocol)) {
                         case 1:
-                            current.setProtocol(Protocol.FTP);
+                            current.setProtocol(ProtocolFactory.FTP);
                             break;
                         case 2:
                         case 3:
                         case 4:
-                            current.setProtocol(Protocol.FTP_TLS);
+                            current.setProtocol(ProtocolFactory.FTP_TLS);
                             break;
                         case 6:
-                            current.setProtocol(Protocol.WEBDAV);
+                            current.setProtocol(ProtocolFactory.WEBDAV);
                             break;
                         case 7:
-                            current.setProtocol(Protocol.WEBDAV_SSL);
+                            current.setProtocol(ProtocolFactory.WEBDAV_SSL);
                             break;
                         case 8:
                         case 9:
-                            current.setProtocol(Protocol.S3_SSL);
+                            current.setProtocol(ProtocolFactory.S3_SSL);
                             break;
                     }
                 }

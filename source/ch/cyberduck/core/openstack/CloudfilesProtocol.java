@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 
 import java.util.Arrays;
@@ -62,7 +63,7 @@ public final class CloudfilesProtocol extends AbstractProtocol {
 
     @Override
     public String disk() {
-        return SWIFT.disk();
+        return ProtocolFactory.SWIFT.disk();
     }
 
     @Override

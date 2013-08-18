@@ -81,28 +81,6 @@ public abstract class AbstractRendezvous implements Rendezvous {
     private Set<RendezvousListener> listeners =
             Collections.synchronizedSet(new HashSet<RendezvousListener>());
 
-    private RendezvousListener notifier = new RendezvousListener() {
-        @Override
-        public void serviceResolved(final String identifier, final Host host) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Service resolved with identifier %s with %s", identifier, host));
-            }
-            for(RendezvousListener listener : listeners) {
-                listener.serviceResolved(identifier, host);
-            }
-        }
-
-        @Override
-        public void serviceLost(final String servicename) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Service with name %s lost", servicename));
-            }
-            for(RendezvousListener listener : listeners) {
-                listener.serviceLost(servicename);
-            }
-        }
-    };
-
     /**
      * Register a listener to be notified
      *
@@ -159,7 +137,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * @return A nicely formatted informative string
      */
     @Override
-    public String getDisplayedName(String identifier) {
+    public String getDisplayedName(final String identifier) {
         Host host = services.get(identifier);
         if(null == host) {
             return LocaleFactory.localizedString("Unknown");
@@ -167,7 +145,8 @@ public abstract class AbstractRendezvous implements Rendezvous {
         return host.getNickname();
     }
 
-    protected void add(String fullname, String hostname, int port, String user, String password, String path) {
+    protected void add(final String fullname, final String hostname, final int port,
+                       final String user, final String password, final String path) {
         final Protocol protocol = this.getProtocol(fullname);
         if(null == protocol) {
             log.warn(String.format("Unknown service type for %s", fullname));
@@ -191,16 +170,16 @@ public abstract class AbstractRendezvous implements Rendezvous {
      */
     protected Protocol getProtocol(final String fullname) {
         if(fullname.contains(SERVICE_TYPE_SFTP)) {
-            return Protocol.SFTP;
+            return ProtocolFactory.SFTP;
         }
         if(fullname.contains(SERVICE_TYPE_FTP)) {
-            return Protocol.FTP;
+            return ProtocolFactory.FTP;
         }
         if(fullname.contains(SERVICE_TYPE_WEBDAV)) {
-            return Protocol.WEBDAV;
+            return ProtocolFactory.WEBDAV;
         }
         if(fullname.contains(SERVICE_TYPE_WEBDAV_TLS)) {
-            return Protocol.WEBDAV_SSL;
+            return ProtocolFactory.WEBDAV_SSL;
         }
         log.warn(String.format("Cannot find service type in %s", fullname));
         return null;
@@ -210,22 +189,32 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * @param fullname Service name
      * @param host     Bookmark
      */
-    protected void add(String fullname, Host host) {
+    protected void add(final String fullname, final Host host) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Add resolved host %s for full name %s", host, fullname));
         }
-        if(null == this.services.put(fullname, host)) {
-            this.notifier.serviceResolved(fullname, host);
+        if(null == services.put(fullname, host)) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Service resolved with identifier %s with %s", fullname, host));
+            }
+            for(RendezvousListener listener : listeners) {
+                listener.serviceResolved(fullname, host);
+            }
         }
     }
 
-    protected void remove(String identifier) {
+    protected void remove(final String identifier) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Remove host with identifier %s", identifier));
         }
         if(null == services.remove(identifier)) {
             return;
         }
-        notifier.serviceLost(identifier);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Service with name %s lost", identifier));
+        }
+        for(RendezvousListener listener : listeners) {
+            listener.serviceLost(identifier);
+        }
     }
 }

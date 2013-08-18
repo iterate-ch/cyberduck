@@ -1653,11 +1653,11 @@ public class PreferencesController extends ToolbarWindowController {
         this.sshTransfersCombobox.setTarget(this.id());
         this.sshTransfersCombobox.setAction(Foundation.selector("sshTransfersComboboxClicked:"));
         this.sshTransfersCombobox.removeAllItems();
-        this.sshTransfersCombobox.addItemsWithTitles(NSArray.arrayWithObjects(Protocol.SFTP.getDescription(), LocaleFactory.localizedString("SCP (Secure Copy)")));
-        this.sshTransfersCombobox.itemWithTitle(Protocol.SFTP.getDescription()).setRepresentedObject(Scheme.sftp.name());
+        this.sshTransfersCombobox.addItemsWithTitles(NSArray.arrayWithObjects(ProtocolFactory.SFTP.getDescription(), LocaleFactory.localizedString("SCP (Secure Copy)")));
+        this.sshTransfersCombobox.itemWithTitle(ProtocolFactory.SFTP.getDescription()).setRepresentedObject(Scheme.sftp.name());
         this.sshTransfersCombobox.itemWithTitle(LocaleFactory.localizedString("SCP (Secure Copy)")).setRepresentedObject(Scheme.scp.name());
         if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.sftp.name())) {
-            this.sshTransfersCombobox.selectItemWithTitle(Protocol.SFTP.getDescription());
+            this.sshTransfersCombobox.selectItemWithTitle(ProtocolFactory.SFTP.getDescription());
         }
         else if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
             this.sshTransfersCombobox.selectItemWithTitle(LocaleFactory.localizedString("SCP (Secure Copy)"));
@@ -1873,7 +1873,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation = b;
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
-        for(String location : Protocol.S3_SSL.getRegions()) {
+        for(String location : ProtocolFactory.S3_SSL.getRegions()) {
             this.defaultBucketLocation.addItemWithTitle(LocaleFactory.localizedString(location, "S3"));
             this.defaultBucketLocation.lastItem().setRepresentedObject(location);
         }

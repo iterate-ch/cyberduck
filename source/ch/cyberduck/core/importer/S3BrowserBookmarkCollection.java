@@ -23,7 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -69,7 +69,7 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
                 String line;
                 while((line = in.readLine()) != null) {
                     if(line.startsWith("[account_")) {
-                        current = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), Protocol.S3_SSL.getDefaultPort());
+                        current = new Host(ProtocolFactory.S3_SSL, ProtocolFactory.S3_SSL.getDefaultHostname(), ProtocolFactory.S3_SSL.getDefaultPort());
                     }
                     else if(StringUtils.isBlank(line)) {
                         this.add(current);

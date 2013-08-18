@@ -21,11 +21,11 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.log4j.Logger;
 import org.w3c.util.DateParser;
@@ -104,14 +104,14 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                 try {
                     switch(Integer.parseInt(elementText)) {
                         case 1:
-                            current.setProtocol(Protocol.FTP);
+                            current.setProtocol(ProtocolFactory.FTP);
                             break;
                         case 2:
                         case 3:
-                            current.setProtocol(Protocol.FTP_TLS);
+                            current.setProtocol(ProtocolFactory.FTP_TLS);
                             break;
                         case 4:
-                            current.setProtocol(Protocol.SFTP);
+                            current.setProtocol(ProtocolFactory.SFTP);
                             break;
                     }
                 }

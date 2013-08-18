@@ -23,6 +23,7 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -154,6 +155,6 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
 
     @Override
     public Protocol getProtocol() {
-        return Protocol.GOOGLESTORAGE_SSL;
+        return ProtocolFactory.GOOGLESTORAGE_SSL;
     }
 }

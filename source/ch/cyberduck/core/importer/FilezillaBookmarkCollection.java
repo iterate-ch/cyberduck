@@ -20,12 +20,12 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -85,14 +85,14 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                 try {
                     switch(Integer.parseInt(elementText)) {
                         case 0:
-                            current.setProtocol(Protocol.FTP);
+                            current.setProtocol(ProtocolFactory.FTP);
                             break;
                         case 3:
                         case 4:
-                            current.setProtocol(Protocol.FTP_TLS);
+                            current.setProtocol(ProtocolFactory.FTP_TLS);
                             break;
                         case 1:
-                            current.setProtocol(Protocol.SFTP);
+                            current.setProtocol(ProtocolFactory.SFTP);
                             break;
                     }
                 }

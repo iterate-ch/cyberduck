@@ -20,7 +20,7 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -41,7 +41,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
-        super(new S3Session(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), origin.getCdnCredentials())));
+        super(new S3Session(new Host(ProtocolFactory.S3_SSL, ProtocolFactory.S3_SSL.getDefaultHostname(), origin.getCdnCredentials())));
         this.origin = origin;
     }
 

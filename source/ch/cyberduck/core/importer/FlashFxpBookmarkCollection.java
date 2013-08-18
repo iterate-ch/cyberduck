@@ -22,7 +22,7 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -58,7 +58,7 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
                         current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
                         current.getCredentials().setUsername(
                                 Preferences.instance().getProperty("connection.login.anon.name"));
-                        current.setProtocol(Protocol.FTP);
+                        current.setProtocol(ProtocolFactory.FTP);
                         Pattern pattern = Pattern.compile("\\[(.*)\\]");
                         Matcher matcher = pattern.matcher(line);
                         if(matcher.matches()) {

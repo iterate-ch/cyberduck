@@ -18,16 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
-import ch.cyberduck.core.openstack.CloudfilesProtocol;
-import ch.cyberduck.core.openstack.SwiftProtocol;
-import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Set;
@@ -36,16 +26,6 @@ import java.util.Set;
  * @version $Id$
  */
 public interface Protocol {
-
-    public static final Protocol FTP = new FTPProtocol();
-    public static final Protocol FTP_TLS = new FTPTLSProtocol();
-    public static final Protocol SFTP = new SFTPProtocol();
-    public static final Protocol S3_SSL = new S3Protocol();
-    public static final Protocol WEBDAV = new DAVProtocol();
-    public static final Protocol WEBDAV_SSL = new DAVSSLProtocol();
-    public static final Protocol CLOUDFILES = new CloudfilesProtocol();
-    public static final Protocol SWIFT = new SwiftProtocol();
-    public static final Protocol GOOGLESTORAGE_SSL = new GoogleStorageProtocol();
 
     Session createSession(Host host);
 

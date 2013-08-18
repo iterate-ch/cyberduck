@@ -19,12 +19,21 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.dav.DAVProtocol;
+import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
+import ch.cyberduck.core.openstack.CloudfilesProtocol;
+import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.sftp.SFTPProtocol;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +43,16 @@ import java.util.Set;
  */
 public final class ProtocolFactory {
     private static final Logger log = Logger.getLogger(ProtocolFactory.class);
+
+    public static final Protocol FTP = new FTPProtocol();
+    public static final Protocol FTP_TLS = new FTPTLSProtocol();
+    public static final Protocol SFTP = new SFTPProtocol();
+    public static final Protocol S3_SSL = new S3Protocol();
+    public static final Protocol WEBDAV = new DAVProtocol();
+    public static final Protocol WEBDAV_SSL = new DAVSSLProtocol();
+    public static final Protocol CLOUDFILES = new CloudfilesProtocol();
+    public static final Protocol SWIFT = new SwiftProtocol();
+    public static final Protocol GOOGLESTORAGE_SSL = new GoogleStorageProtocol();
 
     /**
      * Ordered list of supported protocols.
@@ -47,15 +66,15 @@ public final class ProtocolFactory {
 
     public static void register() {
         // Order determines list in connection dropdown
-        register(Protocol.FTP);
-        register(Protocol.FTP_TLS);
-        register(Protocol.SFTP);
-        register(Protocol.WEBDAV);
-        register(Protocol.WEBDAV_SSL);
-        register(Protocol.SWIFT);
-        register(Protocol.CLOUDFILES);
-        register(Protocol.S3_SSL);
-        register(Protocol.GOOGLESTORAGE_SSL);
+        register(FTP);
+        register(FTP_TLS);
+        register(FTP);
+        register(WEBDAV);
+        register(WEBDAV_SSL);
+        register(SWIFT);
+        register(CLOUDFILES);
+        register(S3_SSL);
+        register(GOOGLESTORAGE_SSL);
         // Order determines list in connection dropdown
         final Local bundled = LocalFactory.createLocal(Preferences.instance().getProperty("application.profiles.path"));
         if(bundled.exists()) {
@@ -99,35 +118,16 @@ public final class ProtocolFactory {
     }
 
     public static void register(Protocol p) {
-        protocols.add(p);
+        if(p.isEnabled()) {
+            protocols.add(p);
+        }
     }
 
     /**
-     * @return List of enabled protocols
-     */
-    public static List<Protocol> getKnownProtocols() {
-        return getKnownProtocols(true);
-    }
-
-    /**
-     * @param filter Filter disabled protocols
      * @return List of protocols
      */
-    public static List<Protocol> getKnownProtocols(final boolean filter) {
-        List<Protocol> list = new ArrayList<Protocol>(protocols);
-        if(filter) {
-            // Remove protocols not enabled
-            for(Iterator<Protocol> iter = list.iterator(); iter.hasNext(); ) {
-                final Protocol protocol = iter.next();
-                if(!protocol.isEnabled()) {
-                    iter.remove();
-                }
-            }
-        }
-        if(list.isEmpty()) {
-            throw new FactoryException("No protocols configured");
-        }
-        return list;
+    public static List<Protocol> getKnownProtocols() {
+        return new ArrayList<Protocol>(protocols);
     }
 
     /**
@@ -135,7 +135,7 @@ public final class ProtocolFactory {
      * @return The standard protocol for this port number
      */
     public static Protocol getDefaultProtocol(final int port) {
-        for(Protocol protocol : getKnownProtocols(false)) {
+        for(Protocol protocol : getKnownProtocols()) {
             if(protocol.getDefaultPort() == port) {
                 return protocol;
             }
@@ -149,12 +149,12 @@ public final class ProtocolFactory {
      * @return Matching protocol or null if no match
      */
     public static Protocol forName(final String identifier) {
-        for(Protocol protocol : getKnownProtocols(false)) {
+        for(Protocol protocol : getKnownProtocols()) {
             if(protocol.getProvider().equals(identifier)) {
                 return protocol;
             }
         }
-        for(Protocol protocol : getKnownProtocols(false)) {
+        for(Protocol protocol : getKnownProtocols()) {
             if(String.valueOf(protocol.hashCode()).equals(identifier)) {
                 return protocol;
             }
@@ -168,7 +168,7 @@ public final class ProtocolFactory {
      * @return Standard protocol for this scheme. This is ambigous
      */
     public static Protocol forScheme(final String scheme) {
-        for(Protocol protocol : getKnownProtocols(false)) {
+        for(Protocol protocol : getKnownProtocols()) {
             for(int k = 0; k < protocol.getSchemes().length; k++) {
                 if(protocol.getSchemes()[k].equals(scheme)) {
                     return protocol;
@@ -185,7 +185,7 @@ public final class ProtocolFactory {
      */
     public static boolean isURL(final String str) {
         if(StringUtils.isNotBlank(str)) {
-            for(Protocol protocol : getKnownProtocols(false)) {
+            for(Protocol protocol : getKnownProtocols()) {
                 for(String scheme : protocol.getSchemes()) {
                     if(str.startsWith(scheme + "://")) {
                         return true;

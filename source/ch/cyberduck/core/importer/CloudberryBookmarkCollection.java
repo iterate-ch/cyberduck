@@ -21,7 +21,7 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -52,13 +52,13 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
             if(name.equals("Settings")) {
                 String type = attrs.getValue("xsi:type");
                 if("GoogleSettings".equals(type)) {
-                    current = new Host(Protocol.GOOGLESTORAGE_SSL, Protocol.GOOGLESTORAGE_SSL.getDefaultHostname(), Protocol.GOOGLESTORAGE_SSL.getDefaultPort());
+                    current = new Host(ProtocolFactory.GOOGLESTORAGE_SSL, ProtocolFactory.GOOGLESTORAGE_SSL.getDefaultHostname(), ProtocolFactory.GOOGLESTORAGE_SSL.getDefaultPort());
                 }
                 else if("S3Settings".equals(type)) {
-                    current = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), Protocol.S3_SSL.getDefaultPort());
+                    current = new Host(ProtocolFactory.S3_SSL, ProtocolFactory.S3_SSL.getDefaultHostname(), ProtocolFactory.S3_SSL.getDefaultPort());
                 }
                 else if("DunkelSettings".equals(type)) {
-                    current = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), Protocol.S3_SSL.getDefaultPort());
+                    current = new Host(ProtocolFactory.S3_SSL, ProtocolFactory.S3_SSL.getDefaultHostname(), ProtocolFactory.S3_SSL.getDefaultPort());
                 }
                 else {
                     log.warn("Unsupported connection type:" + type);

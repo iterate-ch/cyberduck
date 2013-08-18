@@ -20,10 +20,11 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -109,25 +110,25 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         }
         Protocol protocol;
         if("FTP".equals(protocolstring)) {
-            protocol = Protocol.FTP;
+            protocol = ProtocolFactory.FTP;
         }
         else if("SFTP".equals(protocolstring)) {
-            protocol = Protocol.SFTP;
+            protocol = ProtocolFactory.SFTP;
         }
         else if("FTPTLS".equals(protocolstring)) {
-            protocol = Protocol.FTP_TLS;
+            protocol = ProtocolFactory.FTP_TLS;
         }
         else if("FTPSSL".equals(protocolstring)) {
-            protocol = Protocol.FTP_TLS;
+            protocol = ProtocolFactory.FTP_TLS;
         }
         else if("S3".equals(protocolstring)) {
-            protocol = Protocol.S3_SSL;
+            protocol = ProtocolFactory.S3_SSL;
         }
         else if("WebDAV".equals(protocolstring)) {
-            protocol = Protocol.WEBDAV;
+            protocol = ProtocolFactory.WEBDAV;
         }
         else if("WebDAVS".equals(protocolstring)) {
-            protocol = Protocol.WEBDAV_SSL;
+            protocol = ProtocolFactory.WEBDAV_SSL;
         }
         else {
             log.warn("Unknown protocol:" + protocolstring);
