@@ -32,6 +32,8 @@ import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
+import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -4202,18 +4204,13 @@ public class BrowserController extends WindowController
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_TERMINAL)) {
-            String app = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                    Preferences.instance().getProperty("terminal.bundle.identifier"));
-            if(StringUtils.isEmpty(app)) {
-                log.error(String.format("Application with bundle identifier %s is not installed",
-                        Preferences.instance().getProperty("terminal.bundle.identifier")));
-            }
-            else {
-                final Local terminal = LocalFactory.createLocal(app);
-                item.setLabel(terminal.getDisplayName());
-                item.setPaletteLabel(terminal.getDisplayName());
-                item.setImage(IconCacheFactory.<NSImage>get().fileIcon(terminal, 32));
-            }
+            final ApplicationFinder finder = ApplicationFinderFactory.get();
+            final Application application
+                    = finder.getDescription(Preferences.instance().getProperty("terminal.bundle.identifier"));
+
+            item.setLabel(application.getName());
+            item.setPaletteLabel(application.getName());
+            item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(application, 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openTerminalButtonClicked:"));
             return item;
