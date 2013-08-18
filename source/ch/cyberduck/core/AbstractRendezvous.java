@@ -20,6 +20,7 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.concurrent.TimedSemaphore;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -29,6 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractRendezvous implements Rendezvous {
     private static Logger log = Logger.getLogger(AbstractRendezvous.class);
@@ -80,6 +82,8 @@ public abstract class AbstractRendezvous implements Rendezvous {
 
     private Set<RendezvousListener> listeners =
             Collections.synchronizedSet(new HashSet<RendezvousListener>());
+
+    private RendezvousListener notifier = new LimitedRendezvousListener();
 
     /**
      * Register a listener to be notified
@@ -194,12 +198,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
             log.debug(String.format("Add resolved host %s for full name %s", host, fullname));
         }
         if(null == services.put(fullname, host)) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Service resolved with identifier %s with %s", fullname, host));
-            }
-            for(RendezvousListener listener : listeners) {
-                listener.serviceResolved(fullname, host);
-            }
+            notifier.serviceResolved(fullname, host);
         }
     }
 
@@ -210,11 +209,51 @@ public abstract class AbstractRendezvous implements Rendezvous {
         if(null == services.remove(identifier)) {
             return;
         }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Service with name %s lost", identifier));
+        notifier.serviceLost(identifier);
+    }
+
+    private final class LimitedRendezvousListener implements RendezvousListener {
+        /**
+         * Rate limit for notifications
+         */
+        private TimedSemaphore limit
+                = new TimedSemaphore(1L, TimeUnit.MINUTES, Preferences.instance().getInteger("rendezvous.notification.limit"));
+
+        @Override
+        public void serviceResolved(final String identifier, final Host host) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Service resolved with identifier %s with %s", identifier, host));
+            }
+            if(this.acquire()) {
+                for(RendezvousListener listener : listeners) {
+                    listener.serviceResolved(identifier, host);
+                }
+            }
         }
-        for(RendezvousListener listener : listeners) {
-            listener.serviceLost(identifier);
+
+        @Override
+        public void serviceLost(final String servicename) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Service with name %s lost", servicename));
+            }
+            if(this.acquire()) {
+                for(RendezvousListener listener : listeners) {
+                    listener.serviceLost(servicename);
+                }
+            }
+        }
+
+        private boolean acquire() {
+            if(limit.getAvailablePermits() > 0) {
+                try {
+                    limit.acquire();
+                    return true;
+                }
+                catch(InterruptedException e) {
+                    log.warn(String.format("Failure acquiring lock %s", e.getMessage()));
+                }
+            }
+            return false;
         }
     }
 }

@@ -193,6 +193,7 @@ public abstract class Preferences {
 
         defaults.put("rendezvous.enable", String.valueOf(true));
         defaults.put("rendezvous.loopback.supress", String.valueOf(true));
+        defaults.put("rendezvous.notification.limit", String.valueOf(30));
 
         defaults.put("growl.enable", String.valueOf(true));
 
