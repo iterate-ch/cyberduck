@@ -25,7 +25,8 @@ import com.apple.dnssd.DNSSDService;
 import com.apple.dnssd.ResolveListener;
 import com.apple.dnssd.TXTRecord;
 
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
+import ch.cyberduck.core.threading.ActionOperationBatcher;
+import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 
 import org.apache.log4j.Logger;
 
@@ -108,7 +109,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
         if(log.isDebugEnabled()) {
             log.debug(String.format("Service lost for %s", serviceName));
         }
-        final NSAutoreleasePool pool = NSAutoreleasePool.push();
+        final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
         try {
             final String identifier = DNSSD.constructFullName(serviceName, regType, domain);
             this.remove(identifier);
@@ -117,7 +118,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
             log.error(String.format("Failure removing service %s: %s", serviceName, e.getMessage()), e);
         }
         finally {
-            pool.drain();
+            autorelease.operate();
         }
     }
 
@@ -133,7 +134,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resolved service with name %s to %s", fullname, hostname));
         }
-        final NSAutoreleasePool pool = NSAutoreleasePool.push();
+        final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
         try {
             String user = null;
             String password = null;
@@ -156,7 +157,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
             // Note: When the desired results have been returned, the client MUST terminate
             // the resolve by calling DNSSDService.stop().
             resolver.stop();
-            pool.drain();
+            autorelease.operate();
         }
     }
 }
