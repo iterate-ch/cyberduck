@@ -167,7 +167,7 @@ public class S3ObjectListService implements ListService {
             final String[] prefixes = chunk.getCommonPrefixes();
             for(String common : prefixes) {
                 if(common.equals(String.valueOf(Path.DELIMITER))) {
-                    log.warn("Skipping prefix " + common);
+                    log.warn(String.format("Skipping prefix %s", common));
                     continue;
                 }
                 final String key = PathNormalizer.normalize(common);
