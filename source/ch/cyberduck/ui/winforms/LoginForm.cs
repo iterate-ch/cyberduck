@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@ using System.Drawing;
 using System.Media;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -31,7 +31,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
-            openFileDialog.Title = Locale.localizedString("Select the private key in PEM or PuTTY format", "Credentials");
+            openFileDialog.Title = LocaleFactory.localizedString("Select the private key in PEM or PuTTY format",
+                                                                 "Credentials");
             labelMessageLink.Font = DefaultFontBold;
 
             //todo localization
@@ -39,14 +40,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             openFileDialog.FilterIndex = 1;
 
             FormClosing += delegate(object sender, FormClosingEventArgs args)
-                               {
-                                   bool cancel = DialogResult != DialogResult.Cancel && !ValidateInput();
-                                   if (cancel)
-                                   {
-                                       args.Cancel = true;
-                                       SystemSounds.Beep.Play();
-                                   }
-                               };
+                {
+                    bool cancel = DialogResult != DialogResult.Cancel && !ValidateInput();
+                    if (cancel)
+                    {
+                        args.Cancel = true;
+                        SystemSounds.Beep.Play();
+                    }
+                };
         }
 
         public string Title

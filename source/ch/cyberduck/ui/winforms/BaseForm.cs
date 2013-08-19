@@ -26,7 +26,7 @@ using BrightIdeasSoftware;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -318,7 +318,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 return null;
             }
-            return "<A HREF=\"" + help + "\">" + Locale.localizedString("Help", "Main") + "</A>";
+            return "<A HREF=\"" + help + "\">" + LocaleFactory.localizedString("Help", "Main") + "</A>";
         }
 
         private void OnApplicationIdle(object sender, EventArgs e)
@@ -512,7 +512,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             foreach (string bundle in bundles)
             {
-                string cand = Locale.localizedString(toLocalize, bundle);
+                string cand = LocaleFactory.localizedString(toLocalize, bundle);
                 if (!toLocalize.Equals(cand)) return cand;
             }
             return toLocalize;

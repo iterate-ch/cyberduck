@@ -26,7 +26,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public class PlistWriter : Writer
     {
-        public void write(Collection collection, ch.cyberduck.core.local.Local file)
+        public void write(Collection collection, ch.cyberduck.core.Local file)
         {
             XmlDocument plistDocument = GetPlistDocument();
             XmlNode plistElement = plistDocument.LastChild;
@@ -36,18 +36,18 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
             for (Iterator i = collection.iterator(); i.hasNext();)
             {
                 Serializable s = (Serializable) i.next();
-                XmlNode impNode = plistDocument.ImportNode((XmlNode) s.getAsDictionary(), true);
+                XmlNode impNode = plistDocument.ImportNode((XmlNode) s.serialize(SerializerFactory.get()), true);
                 arrayElement.AppendChild(impNode);
             }
             plistDocument.Save(file.getAbsolute());
         }
 
-        public void write(Serializable bookmark, ch.cyberduck.core.local.Local file)
+        public void write(Serializable bookmark, ch.cyberduck.core.Local file)
         {
             XmlDocument plistDocument = GetPlistDocument();
             XmlNode plistElement = plistDocument.LastChild;
 
-            XmlNode impNode = plistDocument.ImportNode((XmlNode) bookmark.getAsDictionary(), true);
+            XmlNode impNode = plistDocument.ImportNode((XmlNode) bookmark.serialize(SerializerFactory.get()), true);
             plistElement.AppendChild(impNode);
 
             plistDocument.Save(file.getAbsolute());

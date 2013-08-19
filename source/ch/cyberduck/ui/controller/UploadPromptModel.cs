@@ -18,27 +18,13 @@
 
 using ch.cyberduck.core;
 using ch.cyberduck.core.transfer;
-using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     internal class UploadPromptModel : TransferPromptModel
     {
-        private readonly Filter _filter;
-
         public UploadPromptModel(TransferPromptController controller, Transfer transfer) : base(controller, transfer)
         {
-            _filter = new UploadPathFilter(transfer);
-        }
-
-        /// <summary>
-        /// Filtering what files are displayed. Used to
-        /// decide which files to include in the prompt dialog
-        /// </summary>
-        /// <returns></returns>
-        public override Filter Filter()
-        {
-            return _filter;
         }
 
         public override object GetSize(Path path)
@@ -60,27 +46,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             return null;
-        }
-
-        internal class UploadPathFilter : PromptFilter
-        {
-            protected static Logger Log = Logger.getLogger(typeof (UploadPathFilter).FullName);
-            private readonly Transfer _transfer;
-
-            public UploadPathFilter(Transfer transfer)
-            {
-                _transfer = transfer;
-            }
-
-            public override bool accept(object ap)
-            {
-                Path file = (Path) ap;
-                if (_transfer.cache().lookup(file.getReference()) != null)
-                {
-                    return true;
-                }
-                return false;
-            }
         }
     }
 }

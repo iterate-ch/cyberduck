@@ -23,21 +23,21 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class TreePathReference : PathReference
     {
-        private readonly AbstractPath _path;
+        private readonly Path _path;
 
-        public TreePathReference(AbstractPath path)
+        public TreePathReference(Path path)
         {
             _path = path;
+        }
+
+        public object unique()
+        {
+            return new DefaultPathReference(_path).unique();
         }
 
         public static void Register()
         {
             PathReferenceFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        public override object unique()
-        {
-            return _path.unique();
         }
 
         private class Factory : PathReferenceFactory

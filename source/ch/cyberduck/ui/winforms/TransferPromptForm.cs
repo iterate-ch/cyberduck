@@ -82,7 +82,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             treeColumnName.FillsFreeSpace = true;
 
-            toggleDetailsLabel.Text = String.Format("        {0}", Locale.localizedString("Details"));
+            toggleDetailsLabel.Text = String.Format("        {0}", LocaleFactory.localizedString("Details"));
             toggleDetailsLabel.Click += delegate { ToggleDetailsEvent(); };
             toggleDetailsLabel.MouseDown += delegate { toggleDetailsLabel.ImageIndex = (_expanded ? 2 : 5); };
             toggleDetailsLabel.MouseEnter += delegate { toggleDetailsLabel.ImageIndex = (_expanded ? 1 : 4); };

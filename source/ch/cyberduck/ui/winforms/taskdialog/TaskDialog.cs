@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
 {
@@ -228,8 +228,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                 vtd.UseCommandLinksNoIcon = false;
                 vtd.VerificationText = VerificationText;
                 vtd.VerificationFlagChecked = false;
-                vtd.ExpandedControlText = Locale.localizedString("More Options", "Bookmark");
-                vtd.CollapsedControlText = Locale.localizedString("More Options", "Bookmark");
+                vtd.ExpandedControlText = LocaleFactory.localizedString("More Options", "Bookmark");
+                vtd.CollapsedControlText = LocaleFactory.localizedString("More Options", "Bookmark");
                 vtd.Callback =
                     delegate(VistaActiveTaskDialog taskDialog, VistaTaskDialogNotificationArgs args, object callbackData)
                         {

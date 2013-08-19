@@ -20,7 +20,6 @@ using System;
 using System.IO;
 using System.Text;
 using ch.cyberduck.core;
-using ch.cyberduck.core.local;
 using org.apache.commons.io;
 using org.apache.log4j;
 using File = java.io.File;
@@ -28,7 +27,7 @@ using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    public class LocalImpl : ch.cyberduck.core.local.Local
+    public class LocalImpl : ch.cyberduck.core.Local
     {
         protected const int ErrorAccessDenied = 5;
         protected const int ErrorFileNotFound = 2;
@@ -40,7 +39,7 @@ namespace Ch.Cyberduck.Core.Local
         {
         }
 
-        public LocalImpl(ch.cyberduck.core.local.Local parent, string name)
+        public LocalImpl(ch.cyberduck.core.Local parent, string name)
             : base(parent.getAbsolute() + '\\' + name)
         {
             ;
@@ -159,22 +158,22 @@ namespace Ch.Cyberduck.Core.Local
 
         private class Factory : LocalFactory
         {
-            protected override ch.cyberduck.core.local.Local create(ch.cyberduck.core.local.Local parent, string name)
+            protected override ch.cyberduck.core.Local create(ch.cyberduck.core.Local parent, string name)
             {
                 return new LocalImpl(parent, name);
             }
 
-            protected override ch.cyberduck.core.local.Local create(string parent, string name)
+            protected override ch.cyberduck.core.Local create(string parent, string name)
             {
                 return new LocalImpl(parent, name);
             }
 
-            protected override ch.cyberduck.core.local.Local create(string path)
+            protected override ch.cyberduck.core.Local create(string path)
             {
                 return new LocalImpl(path);
             }
 
-            protected override ch.cyberduck.core.local.Local create(File path)
+            protected override ch.cyberduck.core.Local create(File path)
             {
                 return new LocalImpl(path);
             }

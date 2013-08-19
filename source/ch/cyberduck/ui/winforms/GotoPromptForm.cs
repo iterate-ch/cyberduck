@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -28,11 +28,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
-            Text = Locale.localizedString("Go to folder", "Goto");
+            Text = LocaleFactory.localizedString("Go to folder", "Goto");
             pictureBox.Padding = new Padding(0, 0, 0, 5);
 
-            label.Text = Locale.localizedString("Enter the pathname to list:", "Goto");
-            okButton.Text = Locale.localizedString("Go", "Goto");
+            label.Text = LocaleFactory.localizedString("Enter the pathname to list:", "Goto");
+            okButton.Text = LocaleFactory.localizedString("Go", "Goto");
         }
     }
 }

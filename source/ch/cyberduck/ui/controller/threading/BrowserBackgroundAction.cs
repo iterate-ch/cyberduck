@@ -16,9 +16,7 @@
 // yves@cyberduck.ch
 // 
 
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core;
-using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
 using java.util;
 
@@ -37,7 +35,12 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
 
         public override List getSessions()
         {
-            return Collections.singletonList(BrowserController.getSession());
+            Session session = BrowserController.getSession();
+            if (null == session)
+            {
+                return Collections.emptyList();
+            }
+            return Collections.singletonList(session);
         }
 
         public override void log(bool request, string message)
@@ -51,50 +54,35 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
 
         public override void prepare()
         {
+            //TODO in java kein Invoke?
             AsyncController.AsyncDelegate mainAction = delegate
                 {
                     BrowserController.View.StartActivityAnimation();
-                    BrowserController.SetStatus(getActivity());
+                    // TODO braucht es das? in java nicht vorhanden
+                    //BrowserController.SetStatus(getActivity());
                 };
             BrowserController.Invoke(mainAction);
             base.prepare();
         }
 
-        public override void cancel()
-        {
-            if (isRunning())
-            {
-                List sessions = getSessions();
-                foreach (var s in Utils.ConvertFromJavaList<Session>(sessions))
-                {
-                    try
-                    {
-                        s.interrupt();
-                    }
-                    catch (BackgroundException e)
-                    {
-                        error(e);
-                    }
-                }
-            }
-            base.cancel();
-        }
-
         public override void finish()
         {
-            base.finish();
+            //TODO in java kein Invoke?
             AsyncController.AsyncDelegate mainAction = delegate
                 {
                     BrowserController.View.StopActivityAnimation();
-                    BrowserController.SetStatus();
+                    // TODO braucht es das? in java nicht vorhanden
+                    //BrowserController.SetStatus();
                 };
             BrowserController.Invoke(mainAction);
+            base.finish();
         }
 
         public override void init()
         {
             // Add to the registry so it will be displayed in the activity window.
             _registry.add(this);
+            base.init();
         }
 
         public override void cleanup()

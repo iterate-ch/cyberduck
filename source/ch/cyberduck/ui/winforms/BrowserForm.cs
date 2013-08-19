@@ -35,7 +35,6 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using TheCodeKing.ActiveButtons.Controls;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
 using ch.cyberduck.ui.comparator;
 using org.apache.commons.io;
@@ -77,14 +76,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             MenuCollectionListener historyMenuCollectionListener = new MenuCollectionListener(this, historyMainMenuItem,
                                                                                               HistoryCollection.
                                                                                                   defaultCollection(),
-                                                                                              Locale.localizedString(
-                                                                                                  "No recently connected servers available"));
+                                                                                              LocaleFactory
+                                                                                                  .localizedString(
+                                                                                                      "No recently connected servers available"));
             HistoryCollection.defaultCollection().addListener(historyMenuCollectionListener);
             MenuCollectionListener bonjourMenuCollectionListener = new MenuCollectionListener(this, bonjourMainMenuItem,
                                                                                               RendezvousCollection.
                                                                                                   defaultCollection(),
-                                                                                              Locale.localizedString(
-                                                                                                  "No Bonjour services available"));
+                                                                                              LocaleFactory
+                                                                                                  .localizedString(
+                                                                                                      "No Bonjour services available"));
             RendezvousCollection.defaultCollection().addListener(bonjourMenuCollectionListener);
 
             if (!DesignMode)
@@ -126,7 +127,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.CellEditStarting += (sender, args) => args.Cancel = !ValidateRenameFile();
             SetupComparators();
 
-            searchTextBox.PlaceHolderText = Locale.localizedString("Search…", "Main");
+            searchTextBox.PlaceHolderText = LocaleFactory.localizedString("Search…", "Main");
 
             securityToolStripStatusLabel.Visible = false;
 
@@ -179,10 +180,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             editBookmarkToolStripButton.Tag = ResourcesBundle.editPressed;
             deleteBookmarkToolStripButton.Tag = ResourcesBundle.removePressed;
 
-            browserToolStripButton.ToolTipText = Locale.localizedString("Browser", "Preferences");
-            bookmarksToolStripButton.ToolTipText = Locale.localizedString("Bookmarks", "Preferences");
-            historyToolStripButton.ToolTipText = Locale.localizedString("History");
-            bonjourToolStripButton.ToolTipText = Locale.localizedString("Bonjour", "Browser");
+            browserToolStripButton.ToolTipText = LocaleFactory.localizedString("Browser", "Preferences");
+            bookmarksToolStripButton.ToolTipText = LocaleFactory.localizedString("Bookmarks", "Preferences");
+            historyToolStripButton.ToolTipText = LocaleFactory.localizedString("History");
+            bonjourToolStripButton.ToolTipText = LocaleFactory.localizedString("Bonjour", "Browser");
 
             keyMainMenuItem.Text = LicenseFactory.find().ToString();
             keyMainMenuItem.Enabled = false;
@@ -190,10 +191,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             //Terminal app menu entries
             String command = Preferences.instance().getProperty("terminal.command.ssh");
             String file = StringUtils.capitalize(FilenameUtils.getBaseName(System.IO.Path.GetFileName(command)));
-            openInTerminalMainMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
-            openInTerminalToolStripMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
+            openInTerminalMainMenuItem.Text = String.Format(LocaleFactory.localizedString("Open in {0}"), file);
+            openInTerminalToolStripMenuItem.Text = String.Format(LocaleFactory.localizedString("Open in {0}"), file);
             ;
-            openInTerminalToolbarMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
+            openInTerminalToolbarMenuItem.Text = String.Format(LocaleFactory.localizedString("Open in {0}"), file);
             openInTerminalToolStripButton.Image = IconCache.Instance.IconForFilename(command, IconCache.IconSize.Large);
 
             ConfigureToolbar();
@@ -447,8 +448,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 dialog.Path = root;
             }
-            string selectText = Locale.localizedString("Choose");
-            string canelText = Locale.localizedString("Cancel");
+            string selectText = LocaleFactory.localizedString("Choose");
+            string canelText = LocaleFactory.localizedString("Cancel");
 
             dialog.FileNameLabel = selectText + ":";
             dialog.SelectLabel = "&" + selectText;
@@ -459,7 +460,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             catch (Exception e)
             {
-                MessageBox(Locale.localizedString("Error"), null, e.Message, TaskDialogButtons.OK, SysIcons.Error);
+                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, TaskDialogButtons.OK, SysIcons.Error);
                 Log.error("Exception while upload selection", e);
             }
             string[] paths = dialog.SelectedPaths;
@@ -541,12 +542,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                     if (value && disconnectStripButton.Image != ResourcesBundle.stop)
                     {
                         disconnectStripButton.Image = ResourcesBundle.stop;
-                        disconnectStripButton.Text = Locale.localizedString("Stop");
+                        disconnectStripButton.Text = LocaleFactory.localizedString("Stop");
                     }
                     else if (!value && disconnectStripButton.Image != ResourcesBundle.eject)
                     {
                         disconnectStripButton.Image = ResourcesBundle.eject;
-                        disconnectStripButton.Text = Locale.localizedString("Disconnect");
+                        disconnectStripButton.Text = LocaleFactory.localizedString("Disconnect");
                     }
                     _lastActivityRunning = value;
                 }
@@ -941,8 +942,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 toolBar.Visible = value;
                 //todo localize
-                toggleToolbarToolStripMenuItem.Text = Locale.localizedString(value ? "Hide Toolbar" : "Show Toolbar");
-                toggleToolbarMainMenuItem.Text = Locale.localizedString(value ? "Hide Toolbar" : "Show Toolbar");
+                toggleToolbarToolStripMenuItem.Text =
+                    LocaleFactory.localizedString(value ? "Hide Toolbar" : "Show Toolbar");
+                toggleToolbarMainMenuItem.Text = LocaleFactory.localizedString(value ? "Hide Toolbar" : "Show Toolbar");
             }
             get { return toolBar.Visible; }
         }
@@ -984,7 +986,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             IActiveMenu menu = ActiveMenu.GetInstance(this);
             ActiveButton button = new ActiveButton();
-            button.Text = " " + Locale.localizedString("Get a donation key!", "License") + " ";
+            button.Text = " " + LocaleFactory.localizedString("Get a donation key!", "License") + " ";
             button.Click +=
                 delegate { Utils.StartProcess(Preferences.instance().getProperty("website.donate")); };
             menu.Items.Add(button);
@@ -1034,7 +1036,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             //Add default entry
             {
-                MenuItem item = mainItem.MenuItems.Add(Locale.localizedString("Default"));
+                MenuItem item = mainItem.MenuItems.Add(LocaleFactory.localizedString("Default"));
                 item.Click += delegate { EditEvent(null); };
                 //todo refactor! no direct IconCache access.
                 vistaMenu1.SetImage(item, IconCache.ResizeImage(editToolStripSplitButton.Image, new Size(16, 16)));
@@ -1084,7 +1086,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             if (editorMenuStrip.Items.Count == 0)
             {
                 //Add default entry
-                ToolStripItem item = new ToolStripMenuItem(Locale.localizedString("Default"));
+                ToolStripItem item = new ToolStripMenuItem(LocaleFactory.localizedString("Default"));
                 item.Image = editToolStripSplitButton.Image;
                 item.Click += (o, args) => EditEvent(null);
                 editorMenuStrip.Items.Add(item);
@@ -2362,7 +2364,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
                 // separator and clear item
                 items.Add(new ToolStripSeparator());
-                ToolStripItem clear = new ToolStripMenuItem(Locale.localizedString("Clear Menu"));
+                ToolStripItem clear = new ToolStripMenuItem(LocaleFactory.localizedString("Clear Menu"));
                 clear.Click += (o, args) => ClearHistory();
                 items.Add(clear);
 
@@ -2372,7 +2374,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             else
             {
                 ToolStripItem noitem =
-                    new ToolStripMenuItem(Locale.localizedString("No recently connected servers available"));
+                    new ToolStripMenuItem(LocaleFactory.localizedString("No recently connected servers available"));
                 noitem.Enabled = false;
                 historyMenuStrip.Items.Add(noitem);
             }
@@ -2411,7 +2413,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             foreach (ToolStripMenuItem item in columnContextMenu.Items)
             {
                 ToolStripMenuItem item1 = item;
-                MenuItem nItem = new MenuItem(Locale.localizedString(item.Text), delegate { item1.PerformClick(); });
+                MenuItem nItem = new MenuItem(LocaleFactory.localizedString(item.Text),
+                                              delegate { item1.PerformClick(); });
                 //forward click event
                 nItem.Checked = item.Checked;
                 columnMainMenuItem.MenuItems.Add(nItem);
@@ -3050,7 +3053,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     //TODO
                     // separator and clear item
 //                    items.Add(new MenuItem("-"));
-//                    MenuItem clear = new MenuItem(Locale.localizedString("Clear Menu"));
+//                    MenuItem clear = new MenuItem(LocaleFactory.localizedString("Clear Menu"));
 //                    clear.Click += (o, args) => _form.ClearHistory();
 //                    items.Add(clear);
 

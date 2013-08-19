@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.core.local
             Local folder = LocalFactory.createLocal(
                 new File(Preferences.instance().getProperty("tmp.dir"),
                          uid + Path.DELIMITER + absolute));
-            return LocalFactory.createLocal(folder, FilenameUtils.getName(file.unique()));
+            return LocalFactory.createLocal(folder, FilenameUtils.getName(new DefaultPathReference(file).unique()));
         }
 
         private static string CalculateMD5Hash(string input)

@@ -29,7 +29,6 @@ using ch.cyberduck.ui.comparator;
 using ch.cyberduck.ui.threading;
 using java.util;
 using org.apache.log4j;
-using Locale = ch.cyberduck.core.i18n.Locale;
 
 //using Ch.Cyberduck.ui.winforms.threading;
 
@@ -40,7 +39,7 @@ namespace Ch.Cyberduck.Ui.Controller
         protected static Logger log = Logger.getLogger(typeof (TransferPromptModel).FullName);
         protected readonly Transfer Transfer;
 
-        private readonly string UNKNOWN = Locale.localizedString("Unknown");
+        private readonly string UNKNOWN = LocaleFactory.localizedString("Unknown");
         private readonly TransferPromptController _controller;
 
         /*
@@ -56,7 +55,10 @@ namespace Ch.Cyberduck.Ui.Controller
             Transfer = transfer;
         }
 
-        public abstract Filter Filter();
+        public Filter Filter()
+        {
+            return new PromptFilter();
+        }
 
         public virtual void Add(Path p)
         {
@@ -180,7 +182,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return Transfer.isSelected(path);
         }
 
-        private class ChildGetterTransferPromptBackgrounAction : ControllerRepeatableBackgroundAction
+        private class ChildGetterTransferPromptBackgrounAction : ControllerBackgroundAction
         {
             private readonly TransferPromptController _controller;
             private readonly IList<Path> _isLoadingListingInBackground;
@@ -209,14 +211,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 base.prepare();
             }
 
-            public override void run()
+            public override object run()
             {
                 _transfer.cache().put(_path.getReference(), _transfer.children(_path));
+                return true;
             }
 
             public override string getActivity()
             {
-                return String.Format(Locale.localizedString("Listing directory {0}", "Status"), _path.getName());
+                return String.Format(LocaleFactory.localizedString("Listing directory {0}", "Status"), _path.getName());
             }
 
             public override void cleanup()

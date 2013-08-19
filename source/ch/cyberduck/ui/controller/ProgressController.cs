@@ -18,37 +18,29 @@
 
 using System;
 using System.Collections.Generic;
-using Ch.Cyberduck.Core;
+using System.Text;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
-using ch.cyberduck.core.date;
-using ch.cyberduck.core.io;
+using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.transfer.copy;
 using ch.cyberduck.core.transfer.download;
 using ch.cyberduck.core.transfer.synchronisation;
 using ch.cyberduck.core.transfer.upload;
-using java.lang;
 using java.util;
-using java.util.concurrent;
-using org.apache.log4j;
-using Locale = ch.cyberduck.core.i18n.Locale;
-using String = System.String;
-using StringBuilder = System.Text.StringBuilder;
 using TransferStatus = Ch.Cyberduck.Ui.Winforms.Controls.TransferStatus;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class ProgressController : WindowController<IProgressView>, ProgressListener
+    public class ProgressController : WindowController<IProgressView>, TransferListener, ProgressListener
     {
-        /// <summary>
-        /// Keeping track of the current transfer rate
-        /// </summary>        
-        private readonly TransferSpeedometer _meter;
-
+        /**
+         * Formatter for file size
+        */
+        private readonly SizeFormatter _sizeFormatter = SizeFormatterFactory.get();
         private readonly Transfer _transfer;
 
         /// <summary>
@@ -60,7 +52,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             _transfer = transfer;
             View = ObjectFactory.GetInstance<IProgressView>();
-            _meter = new TransferSpeedometer(transfer);
             Init();
         }
 
@@ -88,6 +79,64 @@ namespace Ch.Cyberduck.Ui.Controller
             View.MessageText = b.ToString();
         }
 
+        public void start(Transfer t)
+        {
+            AsyncDelegate d = delegate
+                {
+                    View.TransferStatus = TransferStatus.InProgress;
+                    View.ProgressIndeterminate = true;
+                    Progress(String.Empty);
+                    View.StatusText = String.Empty;
+                };
+            invoke(new SimpleDefaultMainAction(this, d));
+        }
+
+        public void stop(Transfer t)
+        {
+            AsyncDelegate d = delegate
+                {
+                    View.ProgressIndeterminate = true;
+                    message(String.Empty);
+                    Progress(String.Format(LocaleFactory.localizedString("{0} of {1}"),
+                                           _sizeFormatter.format(_transfer.getTransferred()),
+                                           _sizeFormatter.format(_transfer.getSize())));
+                    View.StatusText =
+                        LocaleFactory.localizedString(LocaleFactory.localizedString(_transfer.isComplete()
+                                                                                        ? String.Format("{0} complete",
+                                                                                                        _transfer
+                                                                                                            .getType()
+                                                                                                            .name()
+                                                                                                            .ToUpper())
+                                                                                        : "Transfer incomplete",
+                                                                                    "Status"), "Status");
+                };
+            invoke(new SimpleDefaultMainAction(this, d));
+        }
+
+        public void progress(TransferProgress tp)
+        {
+            double transferred = _transfer.getTransferred();
+            double size = _transfer.getSize();
+            if (transferred > 0 && size > 0)
+            {
+                View.ProgressIndeterminate = false;
+                // normalize double to int if size is too big
+                if (size > int.MaxValue)
+                {
+                    View.ProgressMaximum = int.MaxValue;
+                    View.ProgressValue =
+                        Convert.ToInt32(int.MaxValue*transferred/size);
+                }
+                else
+                {
+                    View.ProgressMaximum = Convert.ToInt32(size);
+                    View.ProgressValue = Convert.ToInt32(transferred);
+                }
+            }
+            //UpdateOverallProgress();
+        }
+
+        /* TODO wie zu implementieren?
         private void UpdateOverallProgress()
         {
             if (Utils.IsVistaOrLater)
@@ -105,19 +154,32 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
         }
+        */
 
         private void Init()
         {
+            Progress(String.Format(LocaleFactory.localizedString("{0} of {1}"),
+                                   _sizeFormatter.format(_transfer.getTransferred()),
+                                   _sizeFormatter.format(_transfer.getSize())));
+
             SetIcon();
-            SetProgressText();
             SetMessageText();
-            SetStatusText();
             SetRootPaths();
             SetTransferStatus();
 
-            ICollection<Session> sessions =
-                Utils.ConvertFromJavaList<Session>(_transfer.getSessions());
-            _transfer.addListener(new TransferAdapter(this));
+            View.StatusText = LocaleFactory.localizedString(LocaleFactory.localizedString(_transfer.isComplete()
+                                                                                              ? String.Format(
+                                                                                                  "{0} complete",
+                                                                                                  _transfer.getType()
+                                                                                                           .name()
+                                                                                                           .ToUpper())
+                                                                                              : "Transfer incomplete",
+                                                                                          "Status"), "Status");
+        }
+
+        private void Progress(String message)
+        {
+            invoke(new SimpleDefaultMainAction(this, () => View.ProgressText = message));
         }
 
         private void SetRootPaths()
@@ -166,129 +228,6 @@ namespace Ch.Cyberduck.Ui.Controller
             else if (_transfer is SyncTransfer)
             {
                 View.TransferDirection = TransferDirection.Sync;
-            }
-        }
-
-        private void SetStatusText()
-        {
-            View.StatusText = _transfer.isRunning()
-                                  ? String.Empty
-                                  : Locale.localizedString(_transfer.getStatus(), "Status");
-        }
-
-        private void SetProgressText()
-        {
-            View.ProgressText = _meter.getProgress();
-        }
-
-        private class TransferAdapter : ch.cyberduck.core.transfer.TransferAdapter
-        {
-            private const long Delay = 0;
-            private const long Period = 500; //in milliseconds
-            private static readonly Logger Log = Logger.getLogger(typeof (TransferAdapter).FullName);
-            private readonly ProgressController _controller;
-            private readonly IProgressView _view;
-
-            /// <summary>
-            /// Timer to update the progress indicator
-            /// </summary>
-            private ScheduledFuture _progressTimer;
-
-            public TransferAdapter(ProgressController controller)
-            {
-                _controller = controller;
-                _view = controller.View;
-            }
-
-            public override void transferWillStart()
-            {
-                AsyncDelegate d = delegate
-                    {
-                        _view.TransferStatus = TransferStatus.InProgress;
-                        _view.ProgressIndeterminate = true;
-                        _controller.SetProgressText();
-                        _controller.SetStatusText();
-                    };
-                _controller.invoke(new SimpleDefaultMainAction(_controller, d));
-            }
-
-            public override void transferDidEnd()
-            {
-                AsyncDelegate d = delegate
-                    {
-                        _view.TransferStatus = TransferStatus.Complete;
-                        _controller._messageText = null;
-                        _controller.SetMessageText();
-                        _controller.SetProgressText();
-                        _controller.SetStatusText();
-                        _view.TransferStatus = _controller._transfer.isComplete()
-                                                   ? TransferStatus.Complete
-                                                   : TransferStatus.Incomplete;
-                        _controller.UpdateOverallProgress();
-                    };
-                _controller.invoke(new SimpleDefaultMainAction(_controller, d));
-            }
-
-            public override void willTransferPath(Path path)
-            {
-                _controller._meter.reset();
-                _progressTimer = _controller.timerPool.scheduleAtFixedRate(new ProgressTimerRunnable(_controller),
-                                                                           Delay, Period, TimeUnit.MILLISECONDS);
-            }
-
-            public override void didTransferPath(Path path)
-            {
-                bool canceled = false;
-                while (!canceled)
-                {
-                    canceled = _progressTimer.cancel(false);
-                }
-                _controller._meter.reset();
-            }
-
-            public override void bandwidthChanged(BandwidthThrottle bandwidth)
-            {
-                _controller._meter.reset();
-            }
-
-            private class ProgressTimerRunnable : Runnable
-            {
-                private readonly ProgressController _controller;
-
-                public ProgressTimerRunnable(ProgressController controller)
-                {
-                    _controller = controller;
-                }
-
-                public void run()
-                {
-                    AsyncDelegate d = delegate
-                        {
-                            _controller.SetProgressText();
-                            double transferred = _controller._transfer.getTransferred();
-                            double size = _controller._transfer.getSize();
-                            if (transferred > 0 && size > 0)
-                            {
-                                _controller.View.ProgressIndeterminate = false;
-                                // normalize double to int if size is too big
-                                if (size > int.MaxValue)
-                                {
-                                    _controller.View.ProgressMaximum = int.MaxValue;
-                                    _controller.View.ProgressValue =
-                                        Convert.ToInt32(int.MaxValue*transferred/size);
-                                }
-                                else
-                                {
-                                    _controller.View.ProgressMaximum = Convert.ToInt32(size);
-                                    _controller.View.ProgressValue = Convert.ToInt32(transferred);
-                                }
-                            }
-
-                            //Update overall progress
-                            _controller.UpdateOverallProgress();
-                        };
-                    _controller.Invoke(new SimpleDefaultMainAction(_controller, d));
-                }
             }
         }
     }

@@ -24,7 +24,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public abstract class PlistReader<T> : Reader where T : Serializable
     {
-        public Collection readCollection(ch.cyberduck.core.local.Local file)
+        public Collection readCollection(ch.cyberduck.core.Local file)
         {
             XmlDocument PlistDocument = new XmlDocument {XmlResolver = null};
             PlistDocument.Load(file.getAbsolute());
@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
             return resultCollection;
         }
 
-        public Serializable read(ch.cyberduck.core.local.Local file)
+        public Serializable read(ch.cyberduck.core.Local file)
         {
             XmlDocument PlistDocument = new XmlDocument {XmlResolver = null};
             PlistDocument.Load(file.getAbsolute());

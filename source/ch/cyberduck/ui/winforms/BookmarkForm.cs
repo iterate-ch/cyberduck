@@ -40,10 +40,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             protocol.ICImageList = IconCache.Instance.GetProtocolIcons();
 
-            toggleOptionsLabel.Text = "        " + Locale.localizedString("More Options", "Bookmark");
+            toggleOptionsLabel.Text = "        " + LocaleFactory.localizedString("More Options", "Bookmark");
             toggleOptionsLabel.ImageIndex = (_expanded ? 1 : 4);
 
-            openFileDialog.Title = Locale.localizedString("Select the private key in PEM or PuTTY format", "Credentials");
+            openFileDialog.Title = LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials");
 
             //todo localization
             openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";

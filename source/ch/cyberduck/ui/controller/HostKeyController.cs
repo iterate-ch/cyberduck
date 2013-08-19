@@ -20,8 +20,8 @@ using System;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.sftp;
+using ch.cyberduck.ui;
 using ch.ethz.ssh2;
 using org.apache.log4j;
 
@@ -50,32 +50,33 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             AsyncController.AsyncDelegate d = delegate
                 {
-                    _parent.CommandBox(String.Format(Locale.localizedString("Unknown host key for {0}."), hostname),
-                                       String.Format(Locale.localizedString("Unknown host key for {0}."), hostname),
-                                       String.Format(
-                                           Locale.localizedString(
-                                               "The host is currently unknown to the system. The host key fingerprint is {0}."),
-                                           KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
-                                       String.Format("{0}|{1}", Locale.localizedString("Allow"),
-                                                     Locale.localizedString("Deny")),
-                                       false,
-                                       isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null,
-                                       SysIcons.Question,
-                                       Preferences.instance().getProperty("website.help") + "/" +
-                                       Protocol.SFTP.getIdentifier(),
-                                       delegate(int option, bool verificationChecked)
-                                           {
-                                               switch (option)
-                                               {
-                                                   case 0:
-                                                       allow(hostname, serverHostKeyAlgorithm, serverHostKey,
-                                                             verificationChecked);
-                                                       break;
-                                                   case 1:
-                                                       Log.warn("Cannot continue without a valid host key");
-                                                       throw new ConnectionCanceledException();
-                                               }
-                                           });
+                    _parent.CommandBox(
+                        String.Format(LocaleFactory.localizedString("Unknown host key for {0}."), hostname),
+                        String.Format(LocaleFactory.localizedString("Unknown host key for {0}."), hostname),
+                        String.Format(
+                            LocaleFactory.localizedString(
+                                "The host is currently unknown to the system. The host key fingerprint is {0}."),
+                            KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
+                        String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
+                                      LocaleFactory.localizedString("Deny")),
+                        false,
+                        isHostKeyDatabaseWritable() ? LocaleFactory.localizedString("Always") : null,
+                        SysIcons.Question,
+                        Preferences.instance().getProperty("website.help") + "/" +
+                        Scheme.sftp.name(),
+                        delegate(int option, bool verificationChecked)
+                            {
+                                switch (option)
+                                {
+                                    case 0:
+                                        allow(hostname, serverHostKeyAlgorithm, serverHostKey,
+                                              verificationChecked);
+                                        break;
+                                    case 1:
+                                        Log.warn("Cannot continue without a valid host key");
+                                        throw new ConnectionCanceledException();
+                                }
+                            });
                 };
             _parent.Invoke(d, true);
             return true;
@@ -86,31 +87,32 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             AsyncController.AsyncDelegate d = delegate
                 {
-                    _parent.CommandBox(String.Format(Locale.localizedString("Host key mismatch for {0}"), hostname),
-                                       String.Format(Locale.localizedString("Host key mismatch for {0}"), hostname),
-                                       String.Format(Locale.localizedString("The host key supplied is {0}."),
-                                                     KnownHosts.createHexFingerprint(serverHostKeyAlgorithm,
-                                                                                     serverHostKey)),
-                                       String.Format("{0}|{1}", Locale.localizedString("Allow"),
-                                                     Locale.localizedString("Deny")),
-                                       false,
-                                       isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null,
-                                       SysIcons.Warning,
-                                       Preferences.instance().getProperty("website.help") + "/" +
-                                       Protocol.SFTP.getIdentifier(),
-                                       delegate(int option, bool verificationChecked)
-                                           {
-                                               switch (option)
-                                               {
-                                                   case 0:
-                                                       allow(hostname, serverHostKeyAlgorithm, serverHostKey,
-                                                             verificationChecked);
-                                                       break;
-                                                   case 1:
-                                                       Log.warn("Cannot continue without a valid host key");
-                                                       throw new ConnectionCanceledException();
-                                               }
-                                           });
+                    _parent.CommandBox(
+                        String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
+                        String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
+                        String.Format(LocaleFactory.localizedString("The host key supplied is {0}."),
+                                      KnownHosts.createHexFingerprint(serverHostKeyAlgorithm,
+                                                                      serverHostKey)),
+                        String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
+                                      LocaleFactory.localizedString("Deny")),
+                        false,
+                        isHostKeyDatabaseWritable() ? LocaleFactory.localizedString("Always") : null,
+                        SysIcons.Warning,
+                        Preferences.instance().getProperty("website.help") + "/" +
+                        Scheme.sftp.name(),
+                        delegate(int option, bool verificationChecked)
+                            {
+                                switch (option)
+                                {
+                                    case 0:
+                                        allow(hostname, serverHostKeyAlgorithm, serverHostKey,
+                                              verificationChecked);
+                                        break;
+                                    case 1:
+                                        Log.warn("Cannot continue without a valid host key");
+                                        throw new ConnectionCanceledException();
+                                }
+                            });
                 };
             _parent.Invoke(d, true);
             return true;

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,10 +15,11 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -28,25 +29,25 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
-            Text = Locale.localizedString("Create new file", "File");
+            Text = LocaleFactory.localizedString("Create new file", "File");
             Button cancelBtn = new Button
-                                   {
-                                       AutoSize = true,
-                                       Size = new Size(75, okButton.Size.Height),
-                                       TabIndex = 5,
-                                       Text = Locale.localizedString("Cancel"),
-                                       UseVisualStyleBackColor = true,
-                                       Anchor = AnchorStyles.Bottom | AnchorStyles.Left
-                                   };
+                {
+                    AutoSize = true,
+                    Size = new Size(75, okButton.Size.Height),
+                    TabIndex = 5,
+                    Text = LocaleFactory.localizedString("Cancel"),
+                    UseVisualStyleBackColor = true,
+                    Anchor = AnchorStyles.Bottom | AnchorStyles.Left
+                };
             tableLayoutPanel.Controls.Add(cancelBtn, 1, 2);
 
             pictureBox.Padding = new Padding(0, 0, 0, 5);
-            label.Text = Locale.localizedString("Enter the name for the new file:", "File");
-            okButton.Text = Locale.localizedString("Create", "File");
+            label.Text = LocaleFactory.localizedString("Enter the name for the new file:", "File");
+            okButton.Text = LocaleFactory.localizedString("Create", "File");
 
             // cancelButton is the 'Edit' button now
             cancelButton.DialogResult = DialogResult.Yes;
-            cancelButton.Text = Locale.localizedString("Edit", "File");
+            cancelButton.Text = LocaleFactory.localizedString("Edit", "File");
 
             CancelButton = cancelBtn;
         }

@@ -61,13 +61,13 @@ namespace Ch.Cyberduck.Core
                 outfile.Write(report.ToString());
             }
             TaskDialog prompt = new TaskDialog();
-            DialogResult result = prompt.ShowCommandBox(Locale.localizedString("Do you want to report the last crash?", "Crash"),
-                                                        Locale.localizedString("Do you want to report the last crash?", "Crash"),
-                                                        Locale.localizedString(
+            DialogResult result = prompt.ShowCommandBox(LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
+                                                        LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
+                                                        LocaleFactory.localizedString(
                                                             "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.", "Crash").Replace("%@", Preferences.instance().getProperty("application.name")),
                                                         String.Format("{0}|{1}",
-                                                                      Locale.localizedString("Send", "Crash"),
-                                                                      Locale.localizedString("Don't Send", "Crash")),
+                                                                      LocaleFactory.localizedString("Send", "Crash"),
+                                                                      LocaleFactory.localizedString("Don't Send", "Crash")),
                                                         false, SysIcons.Error);
             if (DialogResult.OK == result)
             {

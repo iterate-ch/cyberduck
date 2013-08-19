@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,13 +15,14 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections;
+using Ch.Cyberduck.Ui.Controller.Threading;
+using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.threading;
-using Ch.Cyberduck.Ui.Controller.Threading;
 using org.apache.log4j;
-using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -59,10 +60,10 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ModelTitleGetter =
                 delegate(object rowObject) { return ((AbstractBackgroundAction) rowObject).toString(); };
             View.ModelDescriptionGetter = delegate(object rowObject)
-                                              {
-                                                  return
-                                                      ((BackgroundAction) rowObject).getActivity();
-                                              };
+                {
+                    return
+                        ((BackgroundAction) rowObject).getActivity();
+                };
             View.ModelIsRunningGetter =
                 delegate(object rowObject) { return ((BackgroundAction) rowObject).isRunning(); };
             View.StopActionEvent += View_StopActionEvent;
@@ -84,6 +85,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     // collection has been modified by another thread, continue
                 }
             }
+            tasks.Reverse();
             View.SetModel(tasks);
         }
 

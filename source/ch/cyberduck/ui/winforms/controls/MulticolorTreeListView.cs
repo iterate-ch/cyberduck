@@ -76,7 +76,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             foreach (ToolStripMenuItem item in m.Items)
             {
                 ToolStripMenuItem item1 = item;
-                MenuItem nItem = new MenuItem(Locale.localizedString(item.Text, "Localizable"),
+                MenuItem nItem = new MenuItem(LocaleFactory.localizedString(item.Text, "Localizable"),
                                               delegate { item1.PerformClick(); }); //forward click event
                 nItem.Checked = item.Checked;
                 cm.MenuItems.Add(nItem);

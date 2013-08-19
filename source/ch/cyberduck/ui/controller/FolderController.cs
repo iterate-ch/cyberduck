@@ -21,7 +21,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.features;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -60,9 +60,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 _folder = new Path(_workdir, _filename, AbstractPath.DIRECTORY_TYPE);
             }
 
-            public override void run()
+            public override object run()
             {
-                BrowserController.getSession().mkdir(_folder);
+                Directory feature = (Directory) BrowserController.getSession().getFeature(typeof (Directory));
+                feature.mkdir(_folder, null);
+                return true;
             }
 
             public override void cleanup()
@@ -77,7 +79,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override string getActivity()
             {
-                return String.Format(Locale.localizedString("Making directory {0}", "Status"), _folder.getName());
+                return String.Format(LocaleFactory.localizedString("Making directory {0}", "Status"), _folder.getName());
             }
         }
     }

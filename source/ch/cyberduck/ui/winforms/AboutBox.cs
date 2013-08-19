@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             logoPictureBox.Image = IconCache.Instance.IconForName("cyberduck", 128);
             labelProductName.Text = AssemblyProduct;
             labelVersion.Text = String.Format("Version {0}", Preferences.instance().getProperty("application.version"));
-            labelCopyright.Text = Locale.localizedString("NSHumanReadableCopyright", "InfoPlist");
+            labelCopyright.Text = LocaleFactory.localizedString("NSHumanReadableCopyright", "InfoPlist");
 
             Font bigBoldFont = new Font(Font.FontFamily, Font.Size + 4, FontStyle.Bold);
             labelProductName.Font = bigBoldFont;

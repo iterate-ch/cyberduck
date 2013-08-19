@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Ch.Cyberduck.Ui.Controller;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using org.apache.commons.io;
 
@@ -41,14 +41,14 @@ namespace Ch.Cyberduck.Core.Local
                 kind = this.kind(filename);
                 if (Utils.IsBlank(kind))
                 {
-                    return Locale.localizedString("Unknown");
+                    return LocaleFactory.localizedString("Unknown");
                 }
                 return kind;
             }
             kind = this.kind(FilenameUtils.getExtension(filename));
             if (Utils.IsBlank(kind))
             {
-                return Locale.localizedString("Unknown");
+                return LocaleFactory.localizedString("Unknown");
             }
             return kind;
         }

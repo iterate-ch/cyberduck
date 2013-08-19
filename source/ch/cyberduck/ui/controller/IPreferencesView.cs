@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -224,7 +224,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateDuplicateUploadActions(List<string> actions);
         void PopulateChmodDownloadTypes(List<string> types);
         void PopulateChmodUploadTypes(List<string> types);
-        void PopulateSshTransfers(List<string> transfers);
+        void PopulateSshTransfers(IList<KeyValuePair<string, string>> transfers);
         void PopulateDefaultBucketLocations(IList<KeyValuePair<string, string>> locations);
         void PopulateDefaultStorageClasses(IList<KeyValuePair<string, string>> classes);
         void PopulateDefaultEncryption(IList<KeyValuePair<string, string>> algorithms);

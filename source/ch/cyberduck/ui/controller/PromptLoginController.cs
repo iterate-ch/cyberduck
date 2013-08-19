@@ -23,8 +23,7 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.local;
+using ch.cyberduck.ui;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -49,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Controller
             set { _view = value; }
         }
 
-        public void warn(String title, String message, String continueButton, String disconnectButton,
+        public void warn(Protocol protocol, String title, String message, String continueButton, String disconnectButton,
                          String preference)
         {
             AsyncController.AsyncDelegate d = delegate
@@ -61,12 +60,12 @@ namespace Ch.Cyberduck.Ui.Controller
                                                       continueButton,
                                                       disconnectButton),
                                         false,
-                                        Locale.localizedString("Don't show again",
-                                                               "Credentials"),
+                                        LocaleFactory.localizedString("Don't show again",
+                                                                      "Credentials"),
                                         SysIcons.Question,
                                         Preferences.instance().getProperty(
                                             "website.help") + "/" +
-                                        Protocol.FTP.getIdentifier(),
+                                        protocol.getScheme().name(),
                                         delegate(int option,
                                                  Boolean verificationChecked)
                                             {
@@ -98,8 +97,8 @@ namespace Ch.Cyberduck.Ui.Controller
             _credentials = credentials;
             _options = options;
 
-            _view.Title = Locale.localizedString(title, "Credentials");
-            _view.Message = Locale.localizedString(reason, "Credentials");
+            _view.Title = LocaleFactory.localizedString(title, "Credentials");
+            _view.Message = LocaleFactory.localizedString(reason, "Credentials");
             _view.Username = credentials.getUsername();
             _view.UsernameLabel = protocol.getUsernamePlaceholder() + ":";
             _view.PasswordLabel = protocol.getPasswordPlaceholder() + ":";
@@ -243,7 +242,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 _view.PkCheckboxState = false;
-                View.PkLabel = Locale.localizedString("No Private Key selected", "Credentials");
+                View.PkLabel = LocaleFactory.localizedString("No Private Key selected", "Credentials");
             }
         }
 

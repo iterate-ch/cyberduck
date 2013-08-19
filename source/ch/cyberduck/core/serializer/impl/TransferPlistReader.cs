@@ -19,7 +19,6 @@
 using System;
 using System.Xml;
 using ch.cyberduck.core;
-using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.transfer.copy;
 using ch.cyberduck.core.transfer.download;
@@ -56,16 +55,24 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
             if (null != kindKeyNode)
             {
                 int kind = int.Parse(kindKeyNode.NextSibling.InnerText);
-                switch (kind)
+
+
+                Transfer.Type type = Transfer.Type.values()[kind];
+                if (type == Transfer.Type.download)
                 {
-                    case Transfer.KIND_DOWNLOAD:
-                        return new DownloadTransfer(dictNode, session);
-                    case Transfer.KIND_UPLOAD:
-                        return new UploadTransfer(dictNode, session);
-                    case Transfer.KIND_SYNC:
-                        return new SyncTransfer(dictNode, session);
-                    case Transfer.KIND_COPY:
-                        return new CopyTransfer(dictNode, session);
+                    return new DownloadTransfer(dictNode, session);
+                }
+                if (type == Transfer.Type.upload)
+                {
+                    return new UploadTransfer(dictNode, session);
+                }
+                if (type == Transfer.Type.synchronisation)
+                {
+                    return new SyncTransfer(dictNode, session);
+                }
+                if (type == Transfer.Type.copy)
+                {
+                    return new CopyTransfer(dictNode, session);
                 }
                 Log.error("Unknown transfer:" + kind);
             }

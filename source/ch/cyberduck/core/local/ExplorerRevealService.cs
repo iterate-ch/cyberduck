@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -22,14 +22,15 @@ namespace Ch.Cyberduck.Core.Local
 {
     public sealed class ExplorerRevealService : RevealService
     {
-        public bool reveal(ch.cyberduck.core.local.Local l)
+        public bool reveal(ch.cyberduck.core.Local l)
         {
             if (l.exists())
             {
                 //select first file downloaded. We could just open the containing folder alternatively.
-                ApplicationLauncherFactory.get().open(new Application("explorer.exe", null),
-                                                      "/select, " + l.getAbsolute());
+                return ApplicationLauncherFactory.get().open(new Application("explorer.exe", null),
+                                                             "/select, " + l.getAbsolute());
             }
+            return false;
         }
 
         public static void Register()

@@ -25,17 +25,17 @@ namespace Ch.Cyberduck.Core.Local
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WindowsApplicationLauncher).Name);
 
-        public void bounce(ch.cyberduck.core.local.Local local)
+        public void bounce(ch.cyberduck.core.Local local)
         {
             ;
         }
 
-        public bool open(ch.cyberduck.core.local.Local local)
+        public bool open(ch.cyberduck.core.Local local)
         {
             return Utils.StartProcess(local.getAbsolute());
         }
 
-        public bool open(ch.cyberduck.core.local.Local local, Application application)
+        public bool open(ch.cyberduck.core.Local local, Application application)
         {
             return open(application, local.getAbsolute());
         }

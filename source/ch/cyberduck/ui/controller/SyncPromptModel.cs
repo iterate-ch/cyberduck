@@ -25,21 +25,8 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class SyncPromptModel : TransferPromptModel
     {
-        private readonly Filter _filter;
-
         public SyncPromptModel(TransferPromptController controller, Transfer transfer) : base(controller, transfer)
         {
-            _filter = new PromptFilter();
-        }
-
-        /// <summary>
-        /// Filtering what files are displayed. Used to
-        /// decide which files to include in the prompt dialog
-        /// </summary>
-        /// <returns></returns>
-        public override Filter Filter()
-        {
-            return _filter;
         }
 
         public override void Add(Path path)

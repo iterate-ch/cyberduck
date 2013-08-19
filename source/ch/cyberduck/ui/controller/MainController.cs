@@ -39,11 +39,7 @@ using Ch.Cyberduck.core.local;
 using Microsoft.VisualBasic.ApplicationServices;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.importer;
-using ch.cyberduck.core.local;
-using ch.cyberduck.core.serializer;
-using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui.growl;
 using org.apache.log4j;
 using org.apache.log4j.xml;
@@ -260,12 +256,12 @@ namespace Ch.Cyberduck.Ui.Controller
                                     Preferences.instance().getProperty("application.support.path"), f.getName()));
                             if (DialogResult.OK == _bc.InfoBox(
                                 license.ToString(),
-                                Locale.localizedString(
+                                LocaleFactory.localizedString(
                                     "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
                                     "License"),
-                                Locale.localizedString(
+                                LocaleFactory.localizedString(
                                     "Your donation key has been copied to the Application Support folder.", "License"),
-                                String.Format("{0}", Locale.localizedString("Continue", "License")),
+                                String.Format("{0}", LocaleFactory.localizedString("Continue", "License")),
                                 null, false))
                             {
                                 ;
@@ -274,11 +270,12 @@ namespace Ch.Cyberduck.Ui.Controller
                         else
                         {
                             if (DialogResult.OK == _bc.WarningBox(
-                                Locale.localizedString("Not a valid donation key", "License"),
-                                Locale.localizedString("Not a valid donation key", "License"),
-                                Locale.localizedString("This donation key does not appear to be valid.", "License"),
+                                LocaleFactory.localizedString("Not a valid donation key", "License"),
+                                LocaleFactory.localizedString("Not a valid donation key", "License"),
+                                LocaleFactory.localizedString("This donation key does not appear to be valid.",
+                                                              "License"),
                                 null,
-                                String.Format("{0}", Locale.localizedString("Continue", "License")),
+                                String.Format("{0}", LocaleFactory.localizedString("Continue", "License")),
                                 false, Preferences.instance().getProperty("website.help") + "/faq"))
                             {
                                 ;
@@ -294,7 +291,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         if (profile.isEnabled())
                         {
-                            profile.register();
+                            ProtocolFactory.register(profile);
                             Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                             NewBrowser().AddBookmark(host);
                             // Register in application support
@@ -412,16 +409,17 @@ namespace Ch.Cyberduck.Ui.Controller
                     || !URLSchemeHandlerConfiguration.Instance.IsDefaultApplicationForSftp())
                 {
                     _bc.CommandBox(
-                        Locale.localizedString("Default Protocol Handler", "Preferences"),
-                        Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?",
-                                               "Configuration"),
-                        Locale.localizedString(
+                        LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
+                        LocaleFactory.localizedString(
+                            "Set Cyberduck as default application for FTP and SFTP locations?",
+                            "Configuration"),
+                        LocaleFactory.localizedString(
                             "As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.",
                             "Configuration"),
                         String.Format("{0}|{1}",
-                                      Locale.localizedString("Change", "Configuration"),
-                                      Locale.localizedString("Cancel", "Configuration")),
-                        false, Locale.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
+                                      LocaleFactory.localizedString("Change", "Configuration"),
+                                      LocaleFactory.localizedString("Cancel", "Configuration")),
+                        false, LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
                         delegate(int option, bool verificationChecked)
                             {
                                 if (verificationChecked)
@@ -471,19 +469,21 @@ namespace Ch.Cyberduck.Ui.Controller
                                        if (!c.isEmpty())
                                        {
                                            ThirdpartyBookmarkCollection c1 = c;
-                                           _bc.CommandBox(Locale.localizedString("Import", "Configuration"),
+                                           _bc.CommandBox(LocaleFactory.localizedString("Import", "Configuration"),
                                                           String.Format(
-                                                              Locale.localizedString("Import {0} Bookmarks",
-                                                                                     "Configuration"), c.getName()),
+                                                              LocaleFactory.localizedString("Import {0} Bookmarks",
+                                                                                            "Configuration"),
+                                                              c.getName()),
                                                           String.Format(
-                                                              Locale.localizedString(
+                                                              LocaleFactory.localizedString(
                                                                   "{0} bookmarks found. Do you want to add these to your bookmarks?",
                                                                   "Configuration"), c.size()),
                                                           String.Format("{0}",
-                                                                        Locale.localizedString("Import",
-                                                                                               "Configuration")),
+                                                                        LocaleFactory.localizedString("Import",
+                                                                                                      "Configuration")),
                                                           true,
-                                                          Locale.localizedString("Don't ask again", "Configuration"),
+                                                          LocaleFactory.localizedString("Don't ask again",
+                                                                                        "Configuration"),
                                                           SysIcons.Question,
                                                           delegate(int option, bool verificationChecked)
                                                               {
@@ -673,8 +673,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (controller.IsMounted())
                     {
                         // The workspace should be saved. Serialize all open browser sessions
-                        Host serialized = new Host(controller.getSession().getHost().getAsDictionary());
-                        serialized.setWorkdir(controller.Workdir.getAbsolute());
+                        Host serialized = new Host(controller.getSession().getHost().serialize(SerializerFactory.get()));
+                        serialized.setWorkdir(controller.Workdir);
                         Application._sessions.add(serialized);
                     }
                 }
@@ -690,15 +690,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
                     {
-                        controller.CommandBox(Locale.localizedString("Quit"),
-                                              Locale.localizedString(
+                        controller.CommandBox(LocaleFactory.localizedString("Quit"),
+                                              LocaleFactory.localizedString(
                                                   "You are connected to at least one remote site. Do you want to review open browsers?"),
                                               null,
                                               String.Format("{0}|{1}",
-                                                            Locale.localizedString("Review…"),
-                                                            Locale.localizedString("Quit Anyway")),
+                                                            LocaleFactory.localizedString("Review…"),
+                                                            LocaleFactory.localizedString("Quit Anyway")),
                                               true,
-                                              Locale.localizedString("Don't ask again", "Configuration"),
+                                              LocaleFactory.localizedString("Don't ask again", "Configuration"),
                                               SysIcons.Warning, delegate(int option, bool verificationChecked)
                                                   {
                                                       if (verificationChecked)

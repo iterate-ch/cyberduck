@@ -27,14 +27,12 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
 using java.lang;
 using org.apache.log4j;
 using Exception = System.Exception;
 using Object = java.lang.Object;
-using Process = System.Diagnostics.Process;
 using String = System.String;
 using TimeZone = java.util.TimeZone;
 
@@ -45,14 +43,16 @@ namespace Ch.Cyberduck.Ui.Controller
         private const String TimezoneIdPrefixes =
             "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
-        private static readonly String Auto = Locale.localizedString("Auto");
-        private static readonly String ConnectmodeActive = Locale.localizedString("Active");
-        private static readonly String ConnectmodePassive = Locale.localizedString("Passive");
-        private static readonly string Default = Locale.localizedString("Default");
+        private static readonly String Auto = LocaleFactory.localizedString("Auto");
+        private static readonly String ConnectmodeActive = LocaleFactory.localizedString("Active");
+        private static readonly String ConnectmodePassive = LocaleFactory.localizedString("Passive");
+        private static readonly string Default = LocaleFactory.localizedString("Default");
         private static readonly Logger Log = Logger.getLogger(typeof (BookmarkController).FullName);
 
-        private static readonly string TransferBrowserconnection = Locale.localizedString("Use browser connection");
-        private static readonly string TransferNewconnection = Locale.localizedString("Open new connection");
+        private static readonly string TransferBrowserconnection =
+            LocaleFactory.localizedString("Use browser connection");
+
+        private static readonly string TransferNewconnection = LocaleFactory.localizedString("Open new connection");
 
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
@@ -266,7 +266,7 @@ namespace Ch.Cyberduck.Ui.Controller
             String input = View.Hostname;
             if (ProtocolFactory.isURL(input))
             {
-                Host parsed = Host.parse(input);
+                Host parsed = HostParser.parse(input);
                 _host.setProtocol(parsed.getProtocol());
                 _host.setPort(parsed.getPort());
                 _host.setHostname(parsed.getHostname());
@@ -331,10 +331,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 // Prefill with default hostname
                 _host.setHostname(selected.getDefaultHostname());
-            }
-            if (!selected.isWebUrlConfigurable())
-            {
-                _host.setWebURL(null);
             }
             _host.setProtocol(selected);
             ItemChanged();
@@ -410,7 +406,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenUrl()
         {
-            Utils.StartProcess(_host.toURL());
+            Utils.StartProcess(new HostUrlProvider().get(_host));
         }
 
         private void View_OpenDownloadFolderEvent()
@@ -501,11 +497,11 @@ namespace Ch.Cyberduck.Ui.Controller
             string url;
             if (Utils.IsNotBlank(_host.getDefaultPath()))
             {
-                url = _host.toURL() + PathNormalizer.normalize(_host.getDefaultPath());
+                url = new HostUrlProvider().get(_host) + PathNormalizer.normalize(_host.getDefaultPath());
             }
             else
             {
-                url = _host.toURL();
+                url = new HostUrlProvider().get(_host);
             }
             View.URL = url;
             View.Port = _host.getPort().ToString();
@@ -530,8 +526,8 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             View.EncodingFieldEnabled = _host.getProtocol().isEncodingConfigurable();
-            View.ConnectModeFieldEnabled = _host.getProtocol().isConnectModeConfigurable();
-            if (_host.getProtocol().isConnectModeConfigurable())
+            View.ConnectModeFieldEnabled = _host.getProtocol().getType() == Protocol.Type.ftp;
+            if (_host.getProtocol().getType() == Protocol.Type.ftp)
             {
                 if (null == _host.getFTPConnectMode())
                 {
@@ -546,7 +542,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.SelectedConnectMode = ConnectmodeActive;
                 }
             }
-            View.PkCheckboxEnabled = _host.getProtocol().equals(Protocol.SFTP);
+            View.PkCheckboxEnabled = _host.getProtocol().getType() == Protocol.Type.ssh;
             if (_host.getCredentials().isPublicKeyAuthentication())
             {
                 View.PkCheckboxState = true;
@@ -555,9 +551,8 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 View.PkCheckboxState = false;
-                View.PkLabel = Locale.localizedString("No Private Key selected");
+                View.PkLabel = LocaleFactory.localizedString("No Private Key selected");
             }
-            View.WebUrlFieldEnabled = _host.getProtocol().isWebUrlConfigurable();
             View.WebUrlButtonToolTip = _host.getWebURL();
             View.WebURL = _host.getWebURL();
             View.Notes = _host.getComment();
@@ -619,7 +614,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _host = host;
             }
 
-            public override void run()
+            public override object run()
             {
                 //try to find the favicon in the root folder
                 try
@@ -632,6 +627,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     //catch silently
                 }
+                return true;
             }
 
             public override void cleanup()
@@ -664,9 +660,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 _host = host;
             }
 
-            public override void run()
+            public override object run()
             {
                 _reachable = ReachabilityFactory.get().isReachable(_host);
+                return true;
             }
 
             public override void cleanup()

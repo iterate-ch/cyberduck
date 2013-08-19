@@ -23,8 +23,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using ch.cyberduck.core;
 using ch.cyberduck.core.cdn;
-using ch.cyberduck.core.i18n;
 using java.lang;
 using String = System.String;
 
@@ -204,7 +204,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             set
             {
                 filenameTextbox.Text = value;
-                Text = String.Format("{0} - {1}", Locale.localizedString("Info", "Info"), value);
+                Text = String.Format("{0} - {1}", LocaleFactory.localizedString("Info", "Info"), value);
             }
         }
 

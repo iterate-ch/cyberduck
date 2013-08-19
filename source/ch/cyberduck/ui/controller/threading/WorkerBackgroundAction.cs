@@ -34,9 +34,9 @@ namespace ch.cyberduck.ui.controller.threading
             _worker = worker;
         }
 
-        public override void run()
+        public override object run()
         {
-            _result = _worker.run();
+            return _worker.run();
         }
 
         public override void cleanup()

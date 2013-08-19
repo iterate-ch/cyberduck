@@ -17,8 +17,8 @@
 // 
 
 using System;
+using ch.cyberduck.core;
 using ch.cyberduck.core.date;
-using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             if (-1 == millis)
             {
-                return Locale.localizedString("Unknown");
+                return LocaleFactory.localizedString("Unknown");
             }
             return GetLongFormat(new DateTime(millis*TimeSpan.TicksPerMillisecond));
         }
@@ -42,7 +42,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             if (-1 == millis)
             {
-                return Locale.localizedString("Unknown");
+                return LocaleFactory.localizedString("Unknown");
             }
 
             return GetShortFormat(new DateTime(millis*TimeSpan.TicksPerMillisecond));

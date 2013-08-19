@@ -16,23 +16,21 @@
 // yves@cyberduck.ch
 // 
 
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
+using ch.cyberduck.core.ftp;
+using ch.cyberduck.core.s3;
+using ch.cyberduck.core.sftp;
 
-namespace Ch.Cyberduck.Ui.Winforms
+namespace Ch.Cyberduck.Core
 {
-    public partial class DuplicateFilePromptForm : PromptForm, IDuplicateFilePromptView
+    internal sealed class Protocols
     {
-        public DuplicateFilePromptForm()
+        public static readonly Protocol FTP = new FTPProtocol();
+        public static readonly Protocol S3_SSL = new S3Protocol();
+        public static readonly Protocol SFTP = new SFTPProtocol();
+
+        private Protocols()
         {
-            InitializeComponent();
-
-            Text = LocaleFactory.localizedString("Duplicate File", "Duplicate");
-
-            pictureBox.Width = 32;
-            label.Text = LocaleFactory.localizedString("Enter the name for the new file:", "Duplicate");
-            okButton.Text = LocaleFactory.localizedString("Duplicate", "Duplicate");
-            cancelButton.Text = LocaleFactory.localizedString("Cancel", "Duplicate");
         }
     }
 }

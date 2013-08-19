@@ -20,7 +20,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             if (!DesignMode)
             {
                 ContextMenuStrip contextMenu = new ContextMenuStrip();
-                ToolStripItem addItem = contextMenu.Items.Add(Locale.localizedString("Copy URL", "Browser"));
+                ToolStripItem addItem = contextMenu.Items.Add(LocaleFactory.localizedString("Copy URL", "Browser"));
                 addItem.Click += (sender, args) => Clipboard.SetText(Text);
                 ContextMenuStrip = contextMenu;
             }

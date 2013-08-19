@@ -24,6 +24,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
+using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using java.nio.charset;
 using java.util;

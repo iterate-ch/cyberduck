@@ -23,9 +23,8 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using StructureMap;
 using ch.cyberduck.core;
-using ch.cyberduck.core.date;
+using ch.cyberduck.core.features;
 using ch.cyberduck.core.formatter;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.transfer.download;
 using ch.cyberduck.core.transfer.synchronisation;
@@ -38,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                        ProgressListener, TranscriptListener
     {
         private static readonly Logger Log = Logger.getLogger(typeof (TransferPromptController));
-        private static readonly string UnknownString = Locale.localizedString("Unknown");
+        private static readonly string UnknownString = LocaleFactory.localizedString("Unknown");
 
         protected readonly Transfer Transfer;
         private readonly WindowController _parent;
@@ -54,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View = ObjectFactory.GetInstance<ITransferPromptView>();
             _parent = parent;
             Transfer = transfer;
-            View.Title = Locale.localizedString(TransferName);
+            View.Title = LocaleFactory.localizedString(TransferName);
 
             PopulateActions();
         }
@@ -149,7 +148,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void UpdateStatusLabel()
         {
-            View.StatusLabel = String.Format(Locale.localizedString("{0} Files"), View.NumberOfFiles);
+            View.StatusLabel = String.Format(LocaleFactory.localizedString("{0} Files"), View.NumberOfFiles);
         }
 
         private void View_ToggleDetailsEvent()
@@ -189,8 +188,10 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                    .attributes()
                                                                                    .getModificationDate()));
                     }
-
-                    View.RemoteFileUrl = ((Session) Transfer.getSessions().iterator().next()).toURL(selected);
+                    View.RemoteFileUrl =
+                        ((UrlProvider)
+                         ((Session) Transfer.getSessions().iterator().next()).getFeature(typeof (UrlProvider))).toUrl(
+                             selected).find(DescriptiveUrl.Type.provider).getUrl();
                     if (selected.attributes().getSize() == -1)
                     {
                         View.RemoteFileSize = UnknownString;
@@ -240,10 +241,7 @@ namespace Ch.Cyberduck.Ui.Controller
         protected virtual void PopulateActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-            if (Transfer.isResumable())
-            {
-                actions.Add(TransferAction.ACTION_RESUME, TransferAction.ACTION_RESUME.getLocalizableString());
-            }
+            actions.Add(TransferAction.ACTION_RESUME, TransferAction.ACTION_RESUME.getLocalizableString());
             actions.Add(TransferAction.ACTION_OVERWRITE, TransferAction.ACTION_OVERWRITE.getLocalizableString());
             actions.Add(TransferAction.ACTION_RENAME, TransferAction.ACTION_RENAME.getLocalizableString());
             actions.Add(TransferAction.ACTION_SKIP, TransferAction.ACTION_SKIP.getLocalizableString());
@@ -251,7 +249,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool renameSupported = true;
             foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
             {
-                if (!s.isRenameSupported(Transfer.getRoot()))
+                if (!((Move) s.getFeature(typeof (Move))).isSupported(Transfer.getRoot()))
                 {
                     renameSupported = false;
                     break;

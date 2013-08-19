@@ -20,7 +20,6 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
 using java.lang;
 using String = System.String;
@@ -30,31 +29,28 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
     public class DialogAlertCallback : AlertCallback
     {
         private readonly WindowController _controller;
-        private RepeatableBackgroundAction _action;
+        private SessionBackgroundAction _action;
 
         public DialogAlertCallback(WindowController controller)
         {
             _controller = controller;
         }
 
-        public void alert(RepeatableBackgroundAction rba, BackgroundException failure, StringBuilder log)
+        public void alert(SessionBackgroundAction rba, BackgroundException failure, StringBuilder log)
         {
             _action = rba;
             _controller.Invoke(delegate
                 {
-                    string footer = Preferences.instance().getProperty("website.help");
-                    if (null != failure.getPath())
-                    {
-                        footer = Preferences.instance().getProperty("website.help") + "/" +
-                                 ((Session) _action.getSessions().iterator().next()).getHost().getProtocol().
-                                                                                     getProvider();
-                    }
+                    String provider =
+                        ((Session) rba.getSessions().iterator().next()).getHost().getProtocol().getProvider();
+                    string footer = String.Format("{0}/{1}", Preferences.instance().getProperty("website.help"),
+                                                  provider);
                     DialogResult result =
-                        _controller.WarningBox(failure.getReadableTitle(),
+                        _controller.WarningBox(LocaleFactory.localizedString("Error"),
                                                failure.getMessage(),
                                                failure.getDetail(),
                                                log.length() > 0 ? log.toString() : null,
-                                               String.Format("{0}", Locale.localizedString("Try Again", "Alert")),
+                                               String.Format("{0}", LocaleFactory.localizedString("Try Again", "Alert")),
                                                true, footer);
                     Callback(result);
                 }, true);

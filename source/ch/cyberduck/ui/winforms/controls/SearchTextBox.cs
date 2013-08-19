@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,14 +15,15 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Security.Permissions;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Winforms.Controls.Design;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -35,8 +36,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     [DefaultProperty("Text")]
     public partial class SearchTextBox : Control
     {
-        private string DefaultInactiveText = Locale.localizedString("Search");
         private const int DefaultTimerInterval = 500;
+        private readonly string DefaultInactiveText = LocaleFactory.localizedString("Search");
         private readonly Timer _timer;
 
         private bool _active;
@@ -68,7 +69,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
             InitializeComponent();
 
-            searchImage.Image = ResourcesBundle.search_inactive;            
+            searchImage.Image = ResourcesBundle.search_inactive;
 
             //Load properties
             BackColor = InactiveBackColor;

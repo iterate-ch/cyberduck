@@ -22,10 +22,8 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
-using ch.cyberduck.core.date;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.formatter;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -34,7 +32,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private readonly BrowserController _controller;
         private readonly List<AbstractPath> _isLoadingListingInBackground = new List<AbstractPath>();
-        private readonly string _unknown = Locale.localizedString("Unknown");
+        private readonly string _unknown = LocaleFactory.localizedString("Unknown");
         private readonly FileDescriptor descriptor = FileDescriptorFactory.get();
 
         public TreeBrowserModel(BrowserController controller)
@@ -126,12 +124,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetOwner(Path path)
         {
-            return path.attributes().getOwner();
+            return Utils.IsBlank(path.attributes().getOwner())
+                       ? LocaleFactory.localizedString("Unknown")
+                       : path.attributes().getOwner();
         }
 
         public object GetGroup(Path path)
         {
-            return path.attributes().getGroup();
+            return Utils.IsBlank(path.attributes().getGroup())
+                       ? LocaleFactory.localizedString("Unknown")
+                       : path.attributes().getGroup();
         }
 
         public object GetPermission(Path path)
@@ -152,15 +154,17 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetExtension(Path path)
         {
             return path.attributes().isFile()
-                       ? Utils.IsNotBlank(path.getExtension()) ? path.getExtension() : Locale.localizedString("None")
-                       : Locale.localizedString("None");
+                       ? Utils.IsNotBlank(path.getExtension())
+                             ? path.getExtension()
+                             : LocaleFactory.localizedString("None")
+                       : LocaleFactory.localizedString("None");
         }
 
         public object GetRegion(Path path)
         {
             return Utils.IsNotBlank(path.attributes().getRegion())
                        ? path.attributes().getRegion()
-                       : Locale.localizedString("Unknown");
+                       : LocaleFactory.localizedString("Unknown");
         }
 
         public bool GetActive(Path path)
@@ -187,15 +191,16 @@ namespace Ch.Cyberduck.Ui.Controller
                 _isLoadingListingInBackground = isLoadingListingInBackground;
             }
 
-            public override void run()
+            public override object run()
             {
                 try
                 {
-                    AttributedList children = _controller.getSession().list(_path);
+                    AttributedList children = _controller.getSession().list(_path, new DisabledListProgressListener());
                     _cache.put(_path.getReference(), children);
                 }
                 catch (BackgroundException e)
                 {
+                    // Temporary empty listing
                     _cache.put(_path.getReference(), AttributedList.emptyList());
                     if (_path.attributes().getPermission().isReadable()
                         && _path.attributes().getPermission().isExecutable())
@@ -207,11 +212,12 @@ namespace Ch.Cyberduck.Ui.Controller
                         // Ignore directory listing failure
                     }
                 }
+                return true;
             }
 
             public override string getActivity()
             {
-                return String.Format(Locale.localizedString("Listing directory {0}", "Status"), _path.getName());
+                return String.Format(LocaleFactory.localizedString("Listing directory {0}", "Status"), _path.getName());
             }
 
             public override void cleanup()

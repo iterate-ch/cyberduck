@@ -25,7 +25,6 @@ using Ch.Cyberduck.Ui.Winforms.Threading;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.transfer;
@@ -150,11 +149,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 Preferences.instance().setProperty("queue.openByDefault", _instance.Visible);
                 if (TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)
                 {
-                    DialogResult result = _instance.QuestionBox(Locale.localizedString("Transfer in progress"),
-                                                                Locale.localizedString(
+                    DialogResult result = _instance.QuestionBox(LocaleFactory.localizedString("Transfer in progress"),
+                                                                LocaleFactory.localizedString(
                                                                     "There are files currently being transferred. Quit anyway?"),
                                                                 null,
-                                                                String.Format("{0}", Locale.localizedString("Exit")),
+                                                                String.Format("{0}",
+                                                                              LocaleFactory.localizedString("Exit")),
                                                                 true //Cancel
                         );
                     if (DialogResult.OK == result)
@@ -165,7 +165,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             Transfer transfer = (Transfer) TransferCollection.defaultCollection().get(i);
                             if (transfer.isRunning())
                             {
-                                transfer.interrupt();
+                                transfer.cancel();
                             }
                         }
                         return true;
@@ -307,7 +307,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateReloadEvent()
         {
-            return ValidateToolbarItem(transfer => (transfer.isReloadable() && !transfer.isRunning()));
+            return ValidateToolbarItem(transfer => (transfer.getType().isReloadable() && !transfer.isRunning()));
         }
 
         /// <summary>
@@ -336,7 +336,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         return false;
                     }
-                    return transfer.isResumable() && !transfer.isComplete();
+                    return !transfer.isComplete();
                 });
         }
 
@@ -344,7 +344,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
-                                                     Locale.localizedString("Unlimited Bandwidth", "Preferences")));
+                                                     LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
             foreach (
                 String option in
                     Preferences.instance().getProperty("queue.bandwidth.options").Split(new[] {','},
@@ -360,8 +360,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_QueueSizeChangedEvent()
         {
-            Preferences.instance().setProperty("queue.maxtransfers", View.QueueSize);
-            Queue.instance().resize();
+            Preferences.instance().setProperty("queue.maxtransfers", View.QueueSize); //TODO in java nicht vorhanden
+            QueueFactory.get().resize(Preferences.instance().getInteger("queue.maxtransfers"));
         }
 
         private void View_BandwidthChangedEvent()
@@ -416,7 +416,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (1 == selectedTransfers.Count)
             {
                 Transfer transfer = GetTransferFromView(selectedTransfers[0]);
-                if (transfer.numberOfRoots() == 1)
+                if (transfer.getRoots().size() == 1)
                 {
                     if (transfer.getLocal() != null)
                     {
@@ -446,7 +446,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (1 == selectedTransfers.Count)
             {
                 Transfer transfer = GetTransferFromView(selectedTransfers[0]);
-                if (transfer.numberOfRoots() == 1)
+                if (transfer.getRoots().size() == 1)
                 {
                     View.Url = transfer.getRemote();
                     //Workaround to prevent NullReferenceException
@@ -458,8 +458,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    View.Url = Locale.localizedString("Multiple files");
-                    View.Local = Locale.localizedString("Multiple files");
+                    View.Url = LocaleFactory.localizedString("Multiple files");
+                    View.Local = LocaleFactory.localizedString("Multiple files");
                 }
             }
             else
@@ -519,13 +519,9 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (IProgressView progressView in View.SelectedTransfers)
             {
                 Transfer transfer = GetTransferFromView(progressView);
-
-                AsyncDelegate run = transfer.cancel;
-                AsyncDelegate cleanup = delegate { ; };
-
                 if (transfer.isRunning())
                 {
-                    Background(run, cleanup);
+                    transfer.cancel();
                 }
             }
         }
@@ -578,19 +574,23 @@ namespace Ch.Cyberduck.Ui.Controller
             StartTransfer(transfer, new TransferOptions());
         }
 
-        private void StartTransfer(Transfer transfer, TransferOptions options)
+        public void StartTransfer(Transfer transfer, TransferOptions options)
+        {
+            StartTransfer(transfer, options, new NoopTransferCallback());
+        }
+
+        public void StartTransfer(Transfer transfer, TransferOptions options, TransferCallback callback)
         {
             if (!TransferCollection.defaultCollection().contains(transfer))
             {
                 TransferCollection.defaultCollection().add(transfer);
             }
-            if (Preferences.instance().getBoolean("queue.orderFrontOnStart"))
+            else
             {
-                View.Show();
+                ProgressController progressController;
+                _transferMap.TryGetValue(transfer, out progressController);
+                background(new TransferBackgroundAction(this, transfer, options, callback));
             }
-            ProgressController progressController;
-            _transferMap.TryGetValue(transfer, out progressController);
-            background(new TransferBackgroundAction(this, transfer, options));
         }
 
         public void TaskbarOverlayIcon(Icon icon, string description)
@@ -616,27 +616,49 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class TransferBackgroundAction : TransferCollectionRepeatableBackgroundAction
+        private class NoopTransferCallback : TransferCallback
         {
+            public void complete(Transfer t)
+            {
+                ;
+            }
+        }
+
+        private class TransferBackgroundAction : TransferCollectionBackgroundAction
+        {
+            private readonly TransferCallback _callback;
             private readonly TransferController _controller;
             private readonly Transfer _transfer;
 
-            public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options) :
-                base(
-                controller, new DialogAlertCallback(controller), controller.GetController(transfer), controller,
-                transfer, new LazyTransferPrompt(controller, transfer), options)
+            public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
+                                            TransferCallback callback) :
+                                                base(
+                                                controller, new DialogAlertCallback(controller),
+                                                controller.GetController(transfer), controller.GetController(transfer),
+                                                controller,
+                                                transfer, new LazyTransferPrompt(controller, transfer), options)
             {
                 _transfer = transfer;
+                _callback = callback;
                 _controller = controller;
             }
 
             public override void init()
             {
+                base.init();
                 if (Preferences.instance().getBoolean("queue.orderFrontOnStart"))
                 {
                     _controller.View.BringToFront();
                 }
-                base.init();
+            }
+
+            public override void finish()
+            {
+                base.finish();
+                if (_transfer.isComplete())
+                {
+                    _callback.complete(_transfer);
+                }
             }
 
             public override void cleanup()

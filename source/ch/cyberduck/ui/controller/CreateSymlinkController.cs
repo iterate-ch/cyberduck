@@ -22,7 +22,6 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
-using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -64,13 +63,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 _target = BrowserController.SelectedPath.getName();
             }
 
-            public override void run()
+            public override object run()
             {
                 // Symlink pointing to existing file
-                ((Symlink)
-                 BrowserController.getSession()
-                                  .getFeature(typeof (Symlink), LoginControllerFactory.get(BrowserController))).symlink(
-                                      _link, _target);
+                ((Symlink) BrowserController.getSession().getFeature(typeof (Symlink))).symlink(_link, _target);
+                return true;
             }
 
             public override void cleanup()
@@ -84,7 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override string getActivity()
             {
-                return String.Format(Locale.localizedString("Uploading {0}", "Status"), _symlink);
+                return String.Format(LocaleFactory.localizedString("Uploading {0}", "Status"), _symlink);
             }
         }
     }

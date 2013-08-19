@@ -25,7 +25,6 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
 using java.util;
 using org.apache.log4j;
-using Locale = ch.cyberduck.core.i18n.Locale;
 using X509Certificate = java.security.cert.X509Certificate;
 
 namespace Ch.Cyberduck.Core
@@ -64,7 +63,7 @@ namespace Ch.Cyberduck.Core
             // check if host name matches
             if (null == errorFromChainStatus && hostnameMismatch)
             {
-                errorFromChainStatus = Locale.localizedString(
+                errorFromChainStatus = LocaleFactory.localizedString(
                     "The certificate for this server is invalid. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
                     "Keychain").Replace("%@", hostName);
             }
@@ -75,16 +74,16 @@ namespace Ch.Cyberduck.Core
                 {
                     TaskDialog d = new TaskDialog();
                     DialogResult r =
-                        d.ShowCommandBox(Locale.localizedString("This certificate is not valid", "Keychain"),
-                                         Locale.localizedString("This certificate is not valid", "Keychain"),
+                        d.ShowCommandBox(LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
+                                         LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
                                          errorFromChainStatus,
                                          null,
                                          null,
-                                         Locale.localizedString("Always Trust", "Keychain"),
+                                         LocaleFactory.localizedString("Always Trust", "Keychain"),
                                          String.Format("{0}|{1}|{2}",
-                                                       Locale.localizedString("Continue", "Credentials"),
-                                                       Locale.localizedString("Disconnect"),
-                                                       Locale.localizedString("Show Certificate", "Keychain")),
+                                                       LocaleFactory.localizedString("Continue", "Credentials"),
+                                                       LocaleFactory.localizedString("Disconnect"),
+                                                       LocaleFactory.localizedString("Show Certificate", "Keychain")),
                                          false,
                                          SysIcons.Warning, SysIcons.Information);
                     if (r == DialogResult.OK)
@@ -148,19 +147,19 @@ namespace Ch.Cyberduck.Core
         {
             Host host = new Host(hostName);
             host.getCredentials().setUsername(user);
-            Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
+            Preferences.instance().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
         }
 
         public void addPassword(Scheme scheme, int port, String hostName, String user, String password)
         {
             Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
             host.getCredentials().setUsername(user);
-            Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
+            Preferences.instance().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
         }
 
         private string getPassword(Host host)
         {
-            string password = Preferences.instance().getProperty(host.toURL());
+            string password = Preferences.instance().getProperty(new HostUrlProvider().get(host));
             if (null == password)
             {
                 return null;
@@ -209,7 +208,7 @@ namespace Ch.Cyberduck.Core
                             if (DateTime.Compare(DateTime.Now, element.Certificate.NotAfter) > 0)
                             {
                                 //certificate is expired, CSSM_CERT_STATUS_EXPIRED
-                                error = Locale.localizedString(
+                                error = LocaleFactory.localizedString(
                                     "The certificate for this server has expired. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
                                     "Keychain").Replace("%@", hostName);
                                 return error;
@@ -217,7 +216,7 @@ namespace Ch.Cyberduck.Core
                             if (DateTime.Compare(DateTime.Now, element.Certificate.NotBefore) > 0)
                             {
                                 //certificate is not valid yet, CSSM_CERT_STATUS_NOT_VALID_YET
-                                error = Locale.localizedString(
+                                error = LocaleFactory.localizedString(
                                     "The certificate for this server is not yet valid. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
                                     "Keychain").Replace("%@", hostName);
                                 return error;
@@ -228,7 +227,7 @@ namespace Ch.Cyberduck.Core
                             if (chain.ChainElements.Count == 1)
                             {
                                 // untrusted self-signed, !CSSM_CERT_STATUS_IS_IN_ANCHORS && CSSM_CERT_STATUS_IS_ROOT
-                                error = Locale.localizedString(
+                                error = LocaleFactory.localizedString(
                                     "The certificate for this server was signed by an unknown certifying authority. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
                                     "Keychain").Replace("%@", hostName);
                                 return error;
@@ -237,7 +236,7 @@ namespace Ch.Cyberduck.Core
 
                         //all other errors we map to !CSSM_CERT_STATUS_IS_IN_ANCHORS
                         Log.debug("Certificate error" + status.StatusInformation);
-                        error = Locale.localizedString(
+                        error = LocaleFactory.localizedString(
                             "The certificate for this server is invalid. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
                             "Keychain").Replace("%@", hostName);
                         return error;

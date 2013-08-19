@@ -22,7 +22,7 @@ using ch.cyberduck.ui.threading;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
-    public abstract class AlertRepeatableBackgroundAction : ControllerRepeatableBackgroundAction
+    public abstract class AlertRepeatableBackgroundAction : ControllerBackgroundAction
     {
         private readonly WindowController _controller;
 

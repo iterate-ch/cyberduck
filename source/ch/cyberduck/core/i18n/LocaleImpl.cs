@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,6 +36,25 @@ namespace Ch.Cyberduck.Core.I18n
             new Dictionary<string, Dictionary<string, string>>();
 
         private readonly string _language = Preferences.instance().getProperty("application.language");
+
+        public string localize(string key, string table)
+        {
+            Dictionary<string, string> bundle;
+
+            if (!_cache.TryGetValue(table, out bundle))
+            {
+                ReadBundleIntoCache(table);
+                //try again
+                if (!_cache.TryGetValue(table, out bundle))
+                {
+                    Log.warn(string.Format("Key '{0}' in bundle '{1}' not found", key, table));
+                    return key;
+                }
+            }
+
+            string value;
+            return bundle.TryGetValue(key, out value) ? value : key;
+        }
 
         private void ReadBundleIntoCache(string bundle)
         {
@@ -74,25 +94,6 @@ namespace Ch.Cyberduck.Core.I18n
             {
                 Log.error(String.Format("Bundle {0} not found", bundle));
             }
-        }
-
-        public override string localize(string key, string table)
-        {
-            Dictionary<string, string> bundle;
-
-            if (!_cache.TryGetValue(table, out bundle))
-            {
-                ReadBundleIntoCache(table);
-                //try again
-                if (!_cache.TryGetValue(table, out bundle))
-                {
-                    Log.warn(string.Format("Key '{0}' in bundle '{1}' not found", key, table));
-                    return key;
-                }
-            }
-
-            string value;
-            return bundle.TryGetValue(key, out value) ? value : key;
         }
 
         public static void Register()

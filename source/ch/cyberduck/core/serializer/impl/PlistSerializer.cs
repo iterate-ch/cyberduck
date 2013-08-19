@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -13,11 +13,11 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@langisch.ch
+// yves@cyberduck.ch
 // 
+
 using System.Xml;
 using ch.cyberduck.core;
-using ch.cyberduck.core.serializer;
 using java.util;
 
 namespace Ch.Cyberduck.Core.Serializer.Impl
@@ -42,7 +42,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
             keyElement.AppendChild(keyTextNode);
             _lastNode.AppendChild(keyElement);
 
-            XmlNode node = (XmlNode) value.getAsDictionary();
+            XmlNode node = (XmlNode) value.serialize(SerializerFactory.get());
             XmlNode dict = node.SelectSingleNode("//dict");
             //XmlNode dict = node.LastChild.FirstChild;
             XmlNode importNode = _xmlDoc.ImportNode(dict, true);
@@ -63,7 +63,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
             for (int i = 0; i < value.size(); i++)
             {
                 Serializable serNode = (Serializable) value.get(i);
-                XmlNode node = (XmlNode) serNode.getAsDictionary();
+                XmlNode node = (XmlNode) serNode.serialize(SerializerFactory.get());
                 //XmlNode dict = node.LastChild.FirstChild;
                 //XmlNode importNode = _xmlDoc.ImportNode(dict, true);
                 XmlNode importNode = _xmlDoc.ImportNode(node, true);

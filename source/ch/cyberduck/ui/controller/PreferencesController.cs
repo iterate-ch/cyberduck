@@ -32,23 +32,22 @@ using java.util;
 using java.util.regex;
 using org.apache.log4j;
 using org.jets3t.service.model;
-using Locale = ch.cyberduck.core.i18n.Locale;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     internal class PreferencesController : WindowController<IPreferencesView>, CollectionListener
     {
-        private static readonly string ForFiles = Locale.localizedString("for Files", "Preferences");
-        private static readonly string ForFolders = Locale.localizedString("for Folders", "Preferences");
+        private static readonly string ForFiles = LocaleFactory.localizedString("for Files", "Preferences");
+        private static readonly string ForFolders = LocaleFactory.localizedString("for Folders", "Preferences");
         private static readonly Logger Log = Logger.getLogger(typeof (PreferencesController).FullName);
 
         private static readonly KeyValueIconTriple<Host, string> NoneBookmark =
-            new KeyValueIconTriple<Host, string>(null, Locale.localizedString("None"), null);
+            new KeyValueIconTriple<Host, string>(null, LocaleFactory.localizedString("None"), null);
 
         private static readonly String NullString = "null";
 
-        private static readonly string UseBrowserSession = Locale.localizedString("Use browser connection");
-        private static readonly string UseQueueSession = Locale.localizedString("Open new connection");
+        private static readonly string UseBrowserSession = LocaleFactory.localizedString("Use browser connection");
+        private static readonly string UseQueueSession = LocaleFactory.localizedString("Open new connection");
         private static PreferencesController _instance;
 
         private bool _downloadRegexInvalid;
@@ -359,14 +358,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_SshTransferChangedEvent()
         {
-            if (View.SshTransfer.Equals(Protocol.SFTP.getDescription()))
-            {
-                Preferences.instance().setProperty("ssh.transfer", Protocol.SFTP.getIdentifier());
-            }
-            if (View.SshTransfer.Equals(Protocol.SCP.getDescription()))
-            {
-                Preferences.instance().setProperty("ssh.transfer", Protocol.SCP.getIdentifier());
-            }
+            Preferences.instance().setProperty("ssh.transfer", View.SshTransfer);
         }
 
         private void View_UploadSkipRegexDefaultEvent()
@@ -965,20 +957,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UploadSkipRegexEnabled = View.UploadSkip;
 
             PopulateSshTransfers();
-            if (
-                Preferences.instance().getProperty("ssh.transfer").Equals(
-                    Protocol.SFTP.
-                             getIdentifier()))
-            {
-                View.SshTransfer = Protocol.SFTP.getDescription();
-            }
-            else if (
-                Preferences.instance().getProperty("ssh.transfer").Equals(
-                    Protocol.SCP.
-                             getIdentifier()))
-            {
-                View.SshTransfer = Protocol.SCP.getDescription();
-            }
+            View.SshTransfer = Preferences.instance().getProperty("ssh.transfer");
 
             PopulateDefaultDownloadThrottleList();
             PopulateDefaultUploadThrottleList();
@@ -1052,8 +1031,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultEncryption()
         {
             IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
-            algorithms.Add(new KeyValuePair<string, string>(NullString, Locale.localizedString("None")));
-            algorithms.Add(new KeyValuePair<string, string>("AES256", Locale.localizedString("AES256", "S3")));
+            algorithms.Add(new KeyValuePair<string, string>(NullString, LocaleFactory.localizedString("None")));
+            algorithms.Add(new KeyValuePair<string, string>("AES256", LocaleFactory.localizedString("AES256", "S3")));
             View.PopulateDefaultEncryption(algorithms);
         }
 
@@ -1062,13 +1041,13 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<string, string>> feeds = new List<KeyValuePair<string, string>>();
             feeds.Add(new KeyValuePair<string, string>(
                           "release",
-                          Locale.localizedString("Release")));
+                          LocaleFactory.localizedString("Release")));
             feeds.Add(new KeyValuePair<string, string>(
                           "beta",
-                          Locale.localizedString("Beta")));
+                          LocaleFactory.localizedString("Beta")));
             feeds.Add(new KeyValuePair<string, string>(
                           "nightly",
-                          Locale.localizedString("Snapshot Builds")));
+                          LocaleFactory.localizedString("Snapshot Builds")));
             View.PopulateUpdateFeeds(feeds);
         }
 
@@ -1077,7 +1056,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<string, string>> locales = new List<KeyValuePair<string, string>>();
 
             List appLocales = Preferences.instance().applicationLocales();
-            locales.Add(new KeyValuePair<string, string>("default", Locale.localizedString("Default")));
+            locales.Add(new KeyValuePair<string, string>("default", LocaleFactory.localizedString("Default")));
             for (int i = 0; i < appLocales.size(); i++)
             {
                 string locale = (string) appLocales.get(i);
@@ -1133,7 +1112,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
-                                                     Locale.localizedString("Unlimited Bandwidth", "Preferences")));
+                                                     LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
             foreach (
                 String option in
                     Preferences.instance().getProperty("queue.bandwidth.options").Split(new[] {','},
@@ -1151,7 +1130,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
-                                                     Locale.localizedString("Unlimited Bandwidth", "Preferences")));
+                                                     LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
             foreach (
                 String option in
                     Preferences.instance().getProperty("queue.bandwidth.options").Split(new[] {','},
@@ -1168,13 +1147,13 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultBucketLocations()
         {
             IList<KeyValuePair<string, string>> defaultBucketLocations = new List<KeyValuePair<string, string>>();
-            Set locations = Protocol.S3_SSL.getLocations();
+            Set locations = Protocols.S3_SSL.getRegions();
             Iterator iter = locations.iterator();
             while (iter.hasNext())
             {
                 string location = (string) iter.next();
                 defaultBucketLocations.Add(new KeyValuePair<string, string>(location,
-                                                                            Locale.localizedString(location, "S3")));
+                                                                            LocaleFactory.localizedString(location, "S3")));
             }
             View.PopulateDefaultBucketLocations(defaultBucketLocations);
         }
@@ -1183,11 +1162,12 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_STANDARD,
-                                                                Locale.localizedString(S3Object.STORAGE_CLASS_STANDARD,
-                                                                                       "S3")));
+                                                                LocaleFactory.localizedString(
+                                                                    S3Object.STORAGE_CLASS_STANDARD,
+                                                                    "S3")));
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-                                                                Locale.localizedString(
-                                                                    Locale.localizedString(
+                                                                LocaleFactory.localizedString(
+                                                                    LocaleFactory.localizedString(
                                                                         S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"),
                                                                     "S3")));
             View.PopulateDefaultStorageClasses(storageClasses);
@@ -1195,9 +1175,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void PopulateSshTransfers()
         {
-            List<string> sshTransfers = new List<string>();
-            sshTransfers.Add(Protocol.SFTP.getDescription());
-            sshTransfers.Add(Protocol.SCP.getDescription());
+            IList<KeyValuePair<string, string>> sshTransfers = new List<KeyValuePair<string, string>>();
+            sshTransfers.Add(new KeyValuePair<string, string>(Scheme.sftp.name(), Protocols.SFTP.getDescription()));
+            sshTransfers.Add(new KeyValuePair<string, string>(Scheme.scp.name(),
+                                                              LocaleFactory.localizedString("SCP (Secure Copy)")));
             View.PopulateSshTransfers(sshTransfers);
         }
 
@@ -1362,7 +1343,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             editors.Add(new KeyValueIconTriple<Application, string>(new Application(null, null),
-                                                                    Locale.localizedString("Choose") + "…",
+                                                                    LocaleFactory.localizedString("Choose") + "…",
                                                                     String.Empty));
             View.PopulateEditors(editors);
             if (defaultEditor != null)

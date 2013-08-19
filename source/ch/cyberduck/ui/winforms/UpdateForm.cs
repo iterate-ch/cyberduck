@@ -53,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             pictureBox.Image = IconCache.Instance.IconForName("cyberduck", 64);
             newVersionAvailableLabel.Text =
-                Locale.localizedString("A new version of %@ is available!", "Sparkle").Replace("%@",
+                LocaleFactory.localizedString("A new version of %@ is available!", "Sparkle").Replace("%@",
                                                                                                Preferences.instance().
                                                                                                            getProperty(
                                                                                                                "application.name"));
@@ -139,7 +139,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     }
 
                     laterButton.Visible = true;
-                    installButton.Text = Locale.localizedString("Install and Relaunch",
+                    installButton.Text = LocaleFactory.localizedString("Install and Relaunch",
                                                                 "Sparkle");
                     if (Utils.IsVistaOrLater)
                     {
@@ -152,7 +152,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     string currentVersion =
                         Preferences.instance().getProperty("application.version");
 
-                    versionLabel.Text = Locale.localizedString(
+                    versionLabel.Text = LocaleFactory.localizedString(
                         "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?",
                         "Sparkle")
                                               .Replace("%1$@",
@@ -187,7 +187,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             updater.BeforeDownloading += (sender, args) =>
                 {
                     UpdateStatusLabel(
-                        Locale.localizedString("Downloading update...", "Sparkle"), false);
+                        LocaleFactory.localizedString("Downloading update...", "Sparkle"), false);
                     progressBar.Style = ProgressBarStyle.Continuous;
                     progressBar.Value = 0;
                     progressBar.Visible = true;
@@ -196,13 +196,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             updater.UpToDate += delegate
                 {
                     progressBar.Visible = false;
-                    UpdateStatusLabel(Locale.localizedString("You're up to date!", "Sparkle"), false);
+                    UpdateStatusLabel(LocaleFactory.localizedString("You're up to date!", "Sparkle"), false);
                 };
 
             updater.ReadyToBeInstalled += delegate
                 {
                     progressBar.Visible = false;
-                    statusLabel.Text = Locale.localizedString("Installing update...",
+                    statusLabel.Text = LocaleFactory.localizedString("Installing update...",
                                                               "Sparkle");
                     updater.InstallNow();
                 };
@@ -214,7 +214,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         SetButtonShield(installButton, false);
                     }
                     laterButton.Visible = false;
-                    installButton.Text = Locale.localizedString("OK", "Sparkle");
+                    installButton.Text = LocaleFactory.localizedString("OK", "Sparkle");
                     progressBar.Style = ProgressBarStyle.Marquee;
                     progressBar.Visible = true;
                 };
@@ -226,12 +226,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 progressBar.Visible = false;
                 laterButton.Visible = false;
-                installButton.Text = Locale.localizedString("Cancel");
+                installButton.Text = LocaleFactory.localizedString("Cancel");
             }
             statusLabel.Visible = true;
             statusLabel.ForeColor = error ? Color.Red : Color.FromKnownColor(KnownColor.ControlText);
             statusLabel.Text = error
-                                   ? Locale.localizedString(
+                                   ? LocaleFactory.localizedString(
                                        "An error occurred during installation. Please try again later." + " ", "Sparkle")
                                      + status
                                    : status;

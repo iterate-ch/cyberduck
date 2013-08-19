@@ -26,21 +26,9 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof (DownloadPromptModel).Name);
 
-        private readonly Filter _filter = new DownloadPathFilter();
-
         public DownloadPromptModel(TransferPromptController controller, Transfer transfer) : base(controller, transfer)
         {
             ;
-        }
-
-        /// <summary>
-        /// Filtering what files are displayed. Used to
-        /// decide which files to include in the prompt dialog
-        /// </summary>
-        /// <returns></returns>
-        public override Filter Filter()
-        {
-            return _filter;
         }
 
         public override object GetSize(Path path)
@@ -62,33 +50,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             return null;
-        }
-    }
-
-    internal class DownloadPathFilter : PromptFilter
-    {
-        protected static Logger Log = Logger.getLogger(typeof (DownloadPathFilter).FullName);
-
-        public override bool accept(object ap)
-        {
-            Path path = (Path) ap;
-            if (path.getLocal().exists())
-            {
-                if (path.attributes().isFile())
-                {
-                    if (path.getLocal().attributes().getSize() == 0)
-                    {
-                        if (Log.isDebugEnabled())
-                        {
-                            Log.debug(string.Format("Skip prompt for zero sized file {0}", path.getName()));
-                        }
-                        // Do not prompt for zero sized files
-                        return false;
-                    }
-                }
-                return base.accept(path);
-            }
-            return false;
         }
     }
 }

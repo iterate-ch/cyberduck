@@ -41,7 +41,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public void Show()
         {
             int uses = Preferences.instance().getInteger("uses");
-            View.Title = Locale.localizedString("Please Donate", "Donate") + " (" + uses + ")";
+            View.Title = LocaleFactory.localizedString("Please Donate", "Donate") + " (" + uses + ")";
             View.NeverShowDonation =
                 Assembly.GetExecutingAssembly().GetName().Version.ToString().Equals(
                     Preferences.instance().getProperty("donate.reminder"));

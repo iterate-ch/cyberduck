@@ -16,12 +16,14 @@
 // yves@cyberduck.ch
 // 
 
+using System;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.threading;
+using java.util.concurrent;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Editor
@@ -37,63 +39,85 @@ namespace Ch.Cyberduck.Core.Editor
             _controller = controller;
         }
 
-        protected override void open(BackgroundAction download)
+        protected override void open(Callable download)
         {
-            _controller.background(new OpenBackgroundAction(_controller, download));
+            _controller.background(new OpenBackgroundAction(_controller, this, download));
         }
 
-        protected override void save(BackgroundAction upload)
+        protected override void save(Callable upload)
         {
-            _controller.background(new SaveBackgroundAction(_controller, upload));
+            _controller.background(new SaveBackgroundAction(_controller, this, upload));
         }
 
         private class OpenBackgroundAction : BrowserBackgroundAction
         {
-            private readonly BackgroundAction _download;
+            private readonly Callable _download;
+            private readonly AbstractEditor _editor;
 
-            public OpenBackgroundAction(BrowserController controller, BackgroundAction download) : base(controller)
+            public OpenBackgroundAction(BrowserController controller, AbstractEditor editor, Callable download)
+                : base(controller)
             {
+                _editor = editor;
                 _download = download;
             }
 
-            public override void run()
+            public override object run()
             {
-                _download.run();
+                try
+                {
+                    _download.call();
+                }
+                catch (BackgroundException backgroundException)
+                {
+                    throw backgroundException;
+                }
+                catch (Exception e)
+                {
+                    throw new BackgroundException(e.Message);
+                }
+                return true;
             }
 
             public override string getActivity()
             {
-                return _download.getActivity();
-            }
-
-            public override void cleanup()
-            {
-                _download.cleanup();
+                return string.Format(LocaleFactory.localizedString("Downloading {0}", "Status"),
+                                     _editor.getEdited().getName());
             }
         }
 
         private class SaveBackgroundAction : BrowserBackgroundAction
         {
-            private readonly BackgroundAction _upload;
+            private readonly AbstractEditor _editor;
+            private readonly Callable _upload;
 
-            public SaveBackgroundAction(BrowserController controller, BackgroundAction upload) : base(controller)
+            public SaveBackgroundAction(BrowserController controller, AbstractEditor editor, Callable upload)
+                : base(controller)
             {
+                _editor = editor;
                 _upload = upload;
             }
 
-            public override void run()
+            public override object run()
             {
-                _upload.run();
+                try
+                {
+                    _upload.call();
+                }
+                catch (BackgroundException backgroundException)
+                {
+                    throw backgroundException;
+                }
+                catch (Exception e)
+                {
+                    throw new BackgroundException(e.Message);
+                }
+                return true;
             }
 
             public override string getActivity()
             {
-                return _upload.getActivity();
-            }
-
-            public override void cleanup()
-            {
-                _upload.cleanup();
+                return string.Format(LocaleFactory.localizedString("Uploading {0}", "Status"),
+                                     _editor.getEdited().getName());
             }
         }
     }

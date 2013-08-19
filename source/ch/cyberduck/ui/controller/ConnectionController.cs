@@ -24,8 +24,6 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
-using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
 using java.lang;
 using org.apache.log4j;
@@ -36,13 +34,13 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class ConnectionController : WindowController<IConnectionView>
     {
-        private static readonly String ConnectmodeActive = Locale.localizedString("Active");
-        private static readonly String ConnectmodePassive = Locale.localizedString("Passive");
+        private static readonly String ConnectmodeActive = LocaleFactory.localizedString("Active");
+        private static readonly String ConnectmodePassive = LocaleFactory.localizedString("Passive");
 
         private static readonly IDictionary<WindowController, ConnectionController> Controllers =
             new Dictionary<WindowController, ConnectionController>();
 
-        private static readonly string Default = Locale.localizedString("Default");
+        private static readonly string Default = LocaleFactory.localizedString("Default");
         private static readonly Logger Log = Logger.getLogger(typeof (ConnectionController).FullName);
 
         private readonly Object _syncRootReachability = new Object();
@@ -77,7 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.Hostname,
                     Integer.parseInt(View.Port),
                     View.Path);
-                if (protocol.isConnectModeConfigurable())
+                if (protocol.getType() == Protocol.Type.ftp)
                 {
                     if (View.SelectedConnectMode.Equals(Default))
                     {
@@ -96,7 +94,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 credentials.setUsername(View.Username);
                 credentials.setPassword(View.Password);
                 credentials.setSaved(View.SavePasswordChecked);
-                if (protocol.equals(Protocol.SFTP))
+                if (protocol.getType() == Protocol.Type.ssh)
                 {
                     if (View.PkCheckboxState)
                     {
@@ -153,7 +151,7 @@ namespace Ch.Cyberduck.Ui.Controller
             InitEncodings();
 
             View.Username = Preferences.instance().getProperty("connection.login.name");
-            View.PkLabel = Locale.localizedString("No private key selected");
+            View.PkLabel = LocaleFactory.localizedString("No private key selected");
             View.SavePasswordChecked = Preferences.instance().getBoolean(
                 "connection.login.useKeychain") && Preferences.instance().getBoolean("connection.login.addKeychain");
             View.AnonymousChecked = false;
@@ -184,7 +182,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.PkLabel = Locale.localizedString("No private key selected");
+                View.PkLabel = LocaleFactory.localizedString("No private key selected");
             }
         }
 
@@ -218,7 +216,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPublicKeyCheckboxEvent()
         {
-            string s = Locale.localizedString("No private key selected");
+            string s = LocaleFactory.localizedString("No private key selected");
             if (View.PkCheckboxState)
             {
                 string selectedKeyFile = UserPreferences.HomeFolder;
@@ -250,7 +248,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (ProtocolFactory.isURL(View.Hostname))
             {
-                Host parsed = Host.parse(View.Hostname);
+                Host parsed = HostParser.parse(View.Hostname);
                 HostChanged(parsed);
             }
             else
@@ -374,7 +372,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.UsernameLabel = protocol.getUsernamePlaceholder() + ":";
             View.PasswordLabel = protocol.getPasswordPlaceholder() + ":";
-            View.ConnectModeFieldEnabled = protocol.isConnectModeConfigurable();
+            View.ConnectModeFieldEnabled = protocol.getType() == Protocol.Type.ftp;
             if (!protocol.isEncodingConfigurable())
             {
                 View.SelectedEncoding = Default;
@@ -408,7 +406,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private void UpdateIdentity()
         {
-            View.PkCheckboxEnabled = View.SelectedProtocol == Protocol.SFTP;
+            View.PkCheckboxEnabled = View.SelectedProtocol.Equals(Protocols.SFTP);
             if (Utils.IsNotBlank(View.Hostname))
             {
                 Credentials credentials = new Credentials();
@@ -422,7 +420,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 else
                 {
                     View.PkCheckboxState = false;
-                    View.PkLabel = Locale.localizedString("No private key selected");
+                    View.PkLabel = LocaleFactory.localizedString("No private key selected");
                 }
                 if (Utils.IsNotBlank(credentials.getUsername()))
                 {
@@ -480,16 +478,17 @@ namespace Ch.Cyberduck.Ui.Controller
                 _hostname = hostname;
             }
 
-            public override void run()
+            public override object run()
             {
                 if (!String.IsNullOrEmpty(_hostname))
                 {
-                    ReachabilityFactory.get().isReachable(new Host(_hostname));
+                    _reachable = ReachabilityFactory.get().isReachable(new Host(_hostname));
                 }
                 else
                 {
                     _reachable = false;
                 }
+                return _reachable;
             }
 
             public override void cleanup()

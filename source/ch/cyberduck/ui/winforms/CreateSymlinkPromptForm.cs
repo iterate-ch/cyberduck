@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 using System;
 using Ch.Cyberduck.Ui.Controller;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -27,7 +27,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public CreateSymlinkPromptForm()
         {
             InitializeComponent();
-            Text = Locale.localizedString("Create new symbolic link", "File");
+            Text = LocaleFactory.localizedString("Create new symbolic link", "File");
         }
 
         public string LinkForFile
@@ -35,8 +35,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             set
             {
                 label.Text =
-                    String.Format(Locale.localizedString("Enter the name for the new symbolic link for {0}:", "File"),
-                                  value);
+                    String.Format(
+                        LocaleFactory.localizedString("Enter the name for the new symbolic link for {0}:", "File"),
+                        value);
             }
         }
     }

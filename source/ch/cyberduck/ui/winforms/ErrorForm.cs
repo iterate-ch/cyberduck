@@ -21,8 +21,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Ui.Controller;
+using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -46,7 +46,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             detailTextBox.Font = new Font(FontFamily.GenericMonospace, 8);
 
-            toggleTranscriptLabel.Text = "        " + Locale.localizedString("Toggle Transcript");
+            toggleTranscriptLabel.Text = "        " + LocaleFactory.localizedString("Toggle Transcript");
             toggleTranscriptLabel.ImageIndex = (_expanded ? 1 : 4);
 
             // configure error listview

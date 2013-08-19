@@ -23,7 +23,6 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
 using Application = ch.cyberduck.core.local.Application;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -60,7 +59,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             connectBookmarkCombobox.ICImageList = IconCache.Instance.GetProtocolIcons();
             defaultProtocolCombobox.ICImageList = IconCache.Instance.GetProtocolIcons();
 
-            showDownloadFolderDialogButton.Text = Locale.localizedString("Choose") + "…";
+            showDownloadFolderDialogButton.Text = LocaleFactory.localizedString("Choose") + "…";
 
             #region Font Settings
 
@@ -586,8 +585,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string SshTransfer
         {
-            get { return sshTransfersCombobox.Text; }
-            set { sshTransfersCombobox.Text = value; }
+            get { return (string) sshTransfersCombobox.SelectedValue; }
+            set { sshTransfersCombobox.SelectedValue = value; }
         }
 
         public string DefaultBucketLocation
@@ -866,9 +865,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             chmodUploadTypeCombobox.DataSource = types;
         }
 
-        public void PopulateSshTransfers(List<string> transfers)
+        public void PopulateSshTransfers(IList<KeyValuePair<string, string>> transfers)
         {
             sshTransfersCombobox.DataSource = transfers;
+            sshTransfersCombobox.DataSource = "Key";
+            sshTransfersCombobox.DataSource = "Value";
         }
 
         public void PopulateDefaultBucketLocations(IList<KeyValuePair<string, string>> locations)

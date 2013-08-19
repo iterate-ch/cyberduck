@@ -22,7 +22,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.features;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -65,17 +65,18 @@ namespace Ch.Cyberduck.Ui.Controller
                 _file = new Path(_workdir, _filename, AbstractPath.FILE_TYPE);
             }
 
-            public override void run()
+            public override object run()
             {
-                if (BrowserController.getSession().touch(_file))
+                Session session = BrowserController.getSession();
+                Touch feature = (Touch) session.getFeature(typeof (Touch));
+                feature.touch(_file);
+                if (_edit)
                 {
-                    if (_edit)
-                    {
-                        Editor editor = EditorFactory.instance()
-                                                     .create(BrowserController, BrowserController.getSession(), _file);
-                        editor.open();
-                    }
+                    Editor editor = EditorFactory.instance()
+                                                 .create(BrowserController, BrowserController.getSession(), _file);
+                    editor.open();
                 }
+                return true;
             }
 
             public override void cleanup()
@@ -90,7 +91,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override string getActivity()
             {
-                return String.Format(Locale.localizedString("Uploading {0}", "Status"), _file.getName());
+                return String.Format(LocaleFactory.localizedString("Uploading {0}", "Status"), _file.getName());
             }
         }
     }
