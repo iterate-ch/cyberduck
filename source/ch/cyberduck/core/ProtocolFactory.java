@@ -68,7 +68,7 @@ public final class ProtocolFactory {
         // Order determines list in connection dropdown
         register(FTP);
         register(FTP_TLS);
-        register(FTP);
+        register(SFTP);
         register(WEBDAV);
         register(WEBDAV_SSL);
         register(SWIFT);
