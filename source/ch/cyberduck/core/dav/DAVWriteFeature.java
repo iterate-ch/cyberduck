@@ -51,10 +51,8 @@ public class DAVWriteFeature implements Write {
     public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         final Map<String, String> headers = new HashMap<String, String>();
         if(status.isAppend()) {
-            headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
-                    + status.getCurrent()
-                    + "-" + (status.getLength() - 1)
-                    + "/" + status.getLength()
+            headers.put(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d",
+                    status.getCurrent(), status.getLength() - 1, status.getLength())
             );
         }
         if(Preferences.instance().getBoolean("webdav.expect-continue")) {
