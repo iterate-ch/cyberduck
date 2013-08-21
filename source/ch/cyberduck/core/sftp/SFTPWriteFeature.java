@@ -54,6 +54,9 @@ public class SFTPWriteFeature implements Write {
                         SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
             }
             else {
+                if(status.isExists()) {
+                    session.sftp().rm(file.getAbsolute());
+                }
                 handle = session.sftp().openFile(file.getAbsolute(),
                         SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
             }
