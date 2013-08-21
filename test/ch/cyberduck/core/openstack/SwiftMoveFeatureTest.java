@@ -51,9 +51,11 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        test.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(test);
         assertTrue(session.exists(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        target.attributes().setRegion("DFW");
         new SwiftMoveFeature(session).move(test, target);
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));

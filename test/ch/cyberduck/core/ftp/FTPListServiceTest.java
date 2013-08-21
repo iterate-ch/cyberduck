@@ -48,7 +48,8 @@ public class FTPListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final ListService list = new FTPListService(session, null, TimeZone.getDefault());
         final Path directory = session.workdir();
-        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", Path.DIRECTORY_TYPE).getReference()));
+        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(
+                new Path(directory, "test", Path.FILE_TYPE).getReference()));
         session.close();
     }
 

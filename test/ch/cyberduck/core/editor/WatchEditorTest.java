@@ -63,7 +63,7 @@ public class WatchEditorTest extends AbstractTestCase {
         assertEquals(new Application("com.apple.TextEdit", null), editor.getApplication());
         assertEquals("t", editor.getEdited().getName());
         final Local local = editor.getEdited().getLocal();
-        assertEquals("t-1", local.getName());
+        assertEquals("t-11", local.getName());
         assertEquals("f2", local.getParent().getName());
         assertEquals("f1", local.getParent().getParent().getName());
     }

@@ -35,8 +35,8 @@ public class DeleteWorkerTest extends AbstractTestCase {
                     public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
                         assertEquals(new Path("/t/a", Path.FILE_TYPE), files.get(0));
                         assertEquals(new Path("/t/d/b", Path.FILE_TYPE), files.get(1));
-                        assertEquals(new Path("/t/d", Path.FILE_TYPE), files.get(2));
-                        assertEquals(new Path("/t", Path.FILE_TYPE), files.get(3));
+                        assertEquals(new Path("/t/d", Path.DIRECTORY_TYPE), files.get(2));
+                        assertEquals(new Path("/t", Path.DIRECTORY_TYPE), files.get(3));
                     }
                 };
             }

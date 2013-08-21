@@ -40,7 +40,7 @@ public class DownloadSymlinkResolverTest extends AbstractTestCase {
         files.add(new Path("/a", Path.DIRECTORY_TYPE));
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(files);
         Path p = new Path("/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
-        p.setSymlinkTarget(new Path("/a", Path.FILE_TYPE));
+        p.setSymlinkTarget(new Path("/a", Path.DIRECTORY_TYPE));
         assertTrue(resolver.resolve(p));
     }
 
