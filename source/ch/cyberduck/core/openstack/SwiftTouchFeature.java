@@ -6,7 +6,9 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * @version $Id$
@@ -24,10 +26,18 @@ public class SwiftTouchFeature implements Touch {
     @Override
     public void touch(final Path file) throws BackgroundException {
         try {
-            session.getClient().createPath(session.getRegion(containerService.getContainer(file)),
-                    containerService.getContainer(file).getName(),
-                    containerService.getKey(file)
-            );
+            if(file.attributes().isDirectory()) {
+                session.getClient().storeObject(session.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(),
+                        new ByteArrayInputStream(new byte[]{}), "application/directory", containerService.getKey(file),
+                        new HashMap<String, String>());
+            }
+            else {
+                session.getClient().storeObject(session.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(),
+                        new ByteArrayInputStream(new byte[]{}), "application/octet-stream", containerService.getKey(file),
+                        new HashMap<String, String>());
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
