@@ -36,7 +36,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         container.attributes().setRegion("DFW");
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
         assertNotNull(test);

@@ -171,8 +171,9 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        if(cache.containsKey(containerService.getContainer(file))) {
-            return new DistributionUrlProvider(cache.get(containerService.getContainer(file))).toUrl(file);
+        final Path container = containerService.getContainer(file);
+        if(cache.containsKey(container)) {
+            return new DistributionUrlProvider(cache.get(container)).toUrl(file);
         }
         return DescriptiveUrlBag.empty();
     }
