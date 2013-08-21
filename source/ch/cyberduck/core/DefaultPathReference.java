@@ -20,7 +20,7 @@ public class DefaultPathReference implements PathReference<String> {
      */
     @Override
     public String unique() {
-        String qualifier = StringUtils.EMPTY;
+        String qualifier = String.valueOf(path.attributes().getType());
         if(StringUtils.isNotBlank(path.attributes().getRegion())) {
             qualifier += path.attributes().getRegion();
         }

@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -29,7 +30,9 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -80,5 +83,34 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("notfound.cyberduck.ch", Path.VOLUME_TYPE);
         new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
+    }
+
+    @Test
+    public void testPlaceholderSameObject() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("DFW");
+        final String basename = UUID.randomUUID().toString();
+        final String childname = String.format("%s/%s", basename, UUID.randomUUID().toString());
+        final Path base = new Path(container, basename, Path.FILE_TYPE);
+        base.attributes().setRegion("DFW");
+        new SwiftTouchFeature(session).touch(base);
+        final Path child = new Path(container, childname, Path.FILE_TYPE);
+        child.attributes().setRegion("DFW");
+        new SwiftTouchFeature(session).touch(child);
+        final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
+        assertTrue(list.contains(base));
+        assertEquals(Path.FILE_TYPE, list.get(base.getReference()).attributes().getType());
+        final Path placeholder = new Path(container, basename, Path.DIRECTORY_TYPE);
+        placeholder.attributes().setRegion("DFW");
+        assertTrue(list.contains(placeholder));
+        assertEquals(Path.DIRECTORY_TYPE, list.get(placeholder.getReference()).attributes().getType());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginController());
     }
 }
