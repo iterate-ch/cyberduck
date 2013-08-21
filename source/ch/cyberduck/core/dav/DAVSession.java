@@ -68,6 +68,9 @@ public class DAVSession extends HttpSession<DAVClient> {
                 // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
                 client.enablePreemptiveAuthentication(this.getHost().getHostname());
             }
+            else {
+                client.disablePreemptiveAuthentication();
+            }
         }
         try {
             try {
@@ -96,7 +99,10 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public boolean alert() throws BackgroundException {
-        return Preferences.instance().getBoolean("webdav.basic.preemptive");
+        if(super.alert()) {
+            return Preferences.instance().getBoolean("webdav.basic.preemptive");
+        }
+        return false;
     }
 
     @Override

@@ -49,6 +49,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
+        assertFalse(session.alert());
         session.open(new DefaultHostKeyController());
         try {
             session.login(new DisabledPasswordStore(), new DisabledLoginController());
@@ -156,6 +157,17 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
+        session.addTranscriptListener(new TranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                if(request) {
+                    if(message.contains("Authorization: Digest")) {
+                        fail(message);
+                    }
+                }
+            }
+        });
+        assertTrue(session.alert());
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         session.close();
@@ -168,6 +180,17 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/digest");
         final DAVSession session = new DAVSession(host);
+        session.addTranscriptListener(new TranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                if(request) {
+                    if(message.contains("Authorization: Basic")) {
+                        fail(message);
+                    }
+                }
+            }
+        });
+        Preferences.instance().setProperty("webdav.basic.preemptive", false);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController() {
             @Override
