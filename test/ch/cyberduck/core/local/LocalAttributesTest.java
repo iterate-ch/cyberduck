@@ -64,44 +64,19 @@ public class LocalAttributesTest extends AbstractTestCase {
     @Test
     public void testGetOwner() throws Exception {
         LocalAttributes a = new LocalAttributes(UUID.randomUUID().toString());
-        assertEquals("Unknown", a.getOwner());
+        assertNull(a.getOwner());
     }
 
     @Test
     public void testGetGroup() throws Exception {
         LocalAttributes a = new LocalAttributes(UUID.randomUUID().toString());
-        assertEquals("Unknown", a.getGroup());
+        assertNull(a.getGroup());
     }
 
     @Test
     public void testIsBundle() throws Exception {
         LocalAttributes a = new LocalAttributes(UUID.randomUUID().toString());
         assertFalse(a.isBundle());
-    }
-
-    @Test
-    public void testGetModificationDate() throws Exception {
-
-    }
-
-    @Test
-    public void testGetType() throws Exception {
-
-    }
-
-    @Test
-    public void testIsVolume() throws Exception {
-
-    }
-
-    @Test
-    public void testIsDirectory() throws Exception {
-
-    }
-
-    @Test
-    public void testIsFile() throws Exception {
-
     }
 
     @Test
