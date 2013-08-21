@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.junit.Test;
 
@@ -52,10 +51,9 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        test.attributes().setRegion("DFW");
-        new DefaultTouchFeature(session).touch(test);
+        new SwiftTouchFeature(session).touch(test);
+        assertTrue(session.exists(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        target.attributes().setRegion("DFW");
         new SwiftMoveFeature(session).move(test, target);
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));
@@ -75,10 +73,10 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         test.attributes().setRegion("DFW");
-        new DefaultTouchFeature(session).touch(test);
+        new SwiftTouchFeature(session).touch(test);
         final Path target = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         target.attributes().setRegion("DFW");
-        new DefaultTouchFeature(session).touch(target);
+        new SwiftTouchFeature(session).touch(target);
         new SwiftMoveFeature(session).move(test, target);
         assertFalse(session.exists(test));
         assertTrue(session.exists(target));
