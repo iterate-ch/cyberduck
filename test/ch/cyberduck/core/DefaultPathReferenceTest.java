@@ -22,19 +22,19 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultPathReferenceTest extends AbstractTestCase {
 
     @Test
     public void testUnique() throws Exception {
         final Path t = new Path("/", Path.DIRECTORY_TYPE);
-        assertEquals("/", new DefaultPathReference(t).unique());
+        assertEquals("/-2", new DefaultPathReference(t).unique());
         t.attributes().setVersionId("1");
-        assertEquals("/-1", new DefaultPathReference(t).unique());
+        assertEquals("/-21", new DefaultPathReference(t).unique());
         t.attributes().setRegion("r");
-        assertEquals("/-r1", new DefaultPathReference(t).unique());
+        assertEquals("/-2r1", new DefaultPathReference(t).unique());
         t.attributes().setVersionId(null);
-        assertEquals("/-r", new DefaultPathReference(t).unique());
+        assertEquals("/-2r", new DefaultPathReference(t).unique());
     }
 }
