@@ -11,7 +11,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FinderLocalAttributesTest extends AbstractTestCase {
 
@@ -62,14 +62,20 @@ public class FinderLocalAttributesTest extends AbstractTestCase {
 
     @Test
     public void testGetOwner() throws Exception {
-        FinderLocalAttributes a = new FinderLocalAttributes(UUID.randomUUID().toString());
-        assertEquals("Unknown", a.getOwner());
+        final File f = new File(UUID.randomUUID().toString());
+        f.createNewFile();
+        FinderLocalAttributes a = new FinderLocalAttributes(f.getAbsolutePath());
+        assertNotNull(a.getOwner());
+        f.delete();
     }
 
     @Test
     public void testGetGroup() throws Exception {
-        FinderLocalAttributes a = new FinderLocalAttributes(UUID.randomUUID().toString());
-        assertEquals("Unknown", a.getGroup());
+        final File f = new File(UUID.randomUUID().toString());
+        f.createNewFile();
+        FinderLocalAttributes a = new FinderLocalAttributes(f.getAbsolutePath());
+        assertNotNull(a.getGroup());
+        f.delete();
     }
 
     @Test

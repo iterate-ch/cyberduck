@@ -145,6 +145,16 @@ public class LocalAttributes extends Attributes {
         }
     }
 
+    @Override
+    public String getOwner() {
+        return null;
+    }
+
+    @Override
+    public String getGroup() {
+        return null;
+    }
+
     /**
      * Calculate the MD5 sum as Hex-encoded string
      *

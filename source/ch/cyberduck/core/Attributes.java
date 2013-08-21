@@ -82,13 +82,9 @@ public abstract class Attributes {
      */
     public abstract boolean isSymbolicLink();
 
-    public String getOwner() {
-        return LocaleFactory.localizedString("Unknown");
-    }
+    public abstract String getOwner();
 
-    public String getGroup() {
-        return LocaleFactory.localizedString("Unknown");
-    }
+    public abstract String getGroup();
 
     public abstract String getChecksum();
 
