@@ -150,6 +150,16 @@ public class DAVSessionTest extends AbstractTestCase {
         session.close();
     }
 
+    @Test
+    public void testAlert() throws Exception {
+        Preferences.instance().setProperty("webdav.basic.preemptive", true);
+        assertTrue(new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
+        assertFalse(new DAVSession(new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
+        Preferences.instance().setProperty("webdav.basic.preemptive", false);
+        assertFalse(new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
+        assertFalse(new DAVSession(new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
+    }
+
     @Test(expected = LoginFailureException.class)
     public void testLoginFailureBasicAuth() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
@@ -167,7 +177,6 @@ public class DAVSessionTest extends AbstractTestCase {
                 }
             }
         });
-        assertTrue(session.alert());
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         session.close();
