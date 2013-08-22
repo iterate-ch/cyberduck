@@ -47,8 +47,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                                   provider);
                     DialogResult result =
                         _controller.WarningBox(LocaleFactory.localizedString("Error"),
-                                               failure.getMessage(),
-                                               failure.getDetail(),
+                                               failure.getMessage() ?? LocaleFactory.localizedString("Unknown"),
+                                               failure.getDetail() ?? LocaleFactory.localizedString("Unknown"),
                                                log.length() > 0 ? log.toString() : null,
                                                String.Format("{0}", LocaleFactory.localizedString("Try Again", "Alert")),
                                                true, footer);
