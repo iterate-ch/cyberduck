@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.QuotaException;
 
 import org.apache.http.HttpStatus;
 
@@ -46,6 +47,15 @@ public class DAVExceptionMappingService extends AbstractIOExceptionMappingServic
         }
         if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             return new NotfoundException(buffer.toString(), e);
+        }
+        if(e.getStatusCode() == HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE) {
+            return new QuotaException(buffer.toString(), e);
+        }
+        if(e.getStatusCode() == HttpStatus.SC_INSUFFICIENT_STORAGE) {
+            return new QuotaException(buffer.toString(), e);
+        }
+        if(e.getStatusCode() == HttpStatus.SC_PAYMENT_REQUIRED) {
+            return new QuotaException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
