@@ -406,7 +406,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private void UpdateIdentity()
         {
-            View.PkCheckboxEnabled = View.SelectedProtocol.Equals(Protocols.SFTP);
+            View.PkCheckboxEnabled = View.SelectedProtocol.Equals(ProtocolFactory.SFTP);
             if (Utils.IsNotBlank(View.Hostname))
             {
                 Credentials credentials = new Credentials();

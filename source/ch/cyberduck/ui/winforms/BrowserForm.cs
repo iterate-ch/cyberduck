@@ -38,7 +38,7 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
 using ch.cyberduck.ui.comparator;
 using org.apache.commons.io;
-using org.apache.commons.lang;
+using org.apache.commons.lang3;
 using org.apache.log4j;
 using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;

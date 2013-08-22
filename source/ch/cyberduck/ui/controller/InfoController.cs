@@ -44,7 +44,7 @@ using ch.cyberduck.ui.controller.threading;
 using java.lang;
 using java.text;
 using java.util;
-using org.apache.commons.lang;
+using org.apache.commons.lang3;
 using org.apache.log4j;
 using Logging = ch.cyberduck.core.features.Logging;
 using Object = System.Object;
@@ -196,8 +196,8 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 // Currently these settings are only available for Amazon S3
-                View.ToolbarS3Label = Protocols.S3_SSL.getName();
-                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[Protocols.S3_SSL.getProvider()];
+                View.ToolbarS3Label = ProtocolFactory.S3_SSL.getName();
+                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[ProtocolFactory.S3_SSL.getProvider()];
             }
 
             //ACL or permission view
@@ -217,7 +217,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.ToolbarDistributionEnabled = false;
                 View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
-                    Protocols.S3_SSL.getProvider()];
+                    ProtocolFactory.S3_SSL.getProvider()];
             }
             else
             {
@@ -231,7 +231,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 else
                 {
                     View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
-                        Protocols.S3_SSL.getProvider()];
+                        ProtocolFactory.S3_SSL.getProvider()];
                 }
             }
 

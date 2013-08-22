@@ -1147,7 +1147,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultBucketLocations()
         {
             IList<KeyValuePair<string, string>> defaultBucketLocations = new List<KeyValuePair<string, string>>();
-            Set locations = Protocols.S3_SSL.getRegions();
+            Set locations = ProtocolFactory.S3_SSL.getRegions();
             Iterator iter = locations.iterator();
             while (iter.hasNext())
             {
@@ -1176,7 +1176,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateSshTransfers()
         {
             IList<KeyValuePair<string, string>> sshTransfers = new List<KeyValuePair<string, string>>();
-            sshTransfers.Add(new KeyValuePair<string, string>(Scheme.sftp.name(), Protocols.SFTP.getDescription()));
+            sshTransfers.Add(new KeyValuePair<string, string>(Scheme.sftp.name(), ProtocolFactory.SFTP.getDescription()));
             sshTransfers.Add(new KeyValuePair<string, string>(Scheme.scp.name(),
                                                               LocaleFactory.localizedString("SCP (Secure Copy)")));
             View.PopulateSshTransfers(sshTransfers);
