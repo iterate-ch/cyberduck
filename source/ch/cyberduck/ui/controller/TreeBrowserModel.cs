@@ -25,6 +25,8 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.local;
+using ch.cyberduck.ui.action;
+using ch.cyberduck.ui.controller.threading;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -47,14 +49,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public IEnumerable<Path> ChildrenGetter(object p)
         {
-            Path path = (Path) p;
+            Path directory = (Path) p;
             AttributedList list;
             lock (_isLoadingListingInBackground)
             {
                 Cache cache = _controller.getSession().cache();
-                if (cache.isCached(path.getReference()))
+                if (cache.isCached(directory.getReference()))
                 {
-                    list = cache.get(path.getReference())
+                    list = cache.get(directory.getReference())
                                 .filter(_controller.FilenameComparator, _controller.FilenameFilter);
                     for (int i = 0; i < list.size(); i++)
                     {
@@ -62,17 +64,17 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     yield break;
                 }
-                if (!_isLoadingListingInBackground.Contains(path))
+                if (!_isLoadingListingInBackground.Contains(directory))
                 {
-                    _isLoadingListingInBackground.Add(path);
+                    _isLoadingListingInBackground.Add(directory);
                     // Reloading a workdir that is not cached yet would cause the interface to freeze;
                     // Delay until path is cached in the background
                     // switch to blocking children fetching
                     //path.childs();
-                    _controller.Background(new ChildGetterBrowserBackgrounAction(_controller, cache, path,
-                                                                                 _isLoadingListingInBackground));
+                    _controller.background(new ListAction(_controller, directory));
                 }
-                list = cache.get(path.getReference()).filter(_controller.FilenameComparator, _controller.FilenameFilter);
+                list = cache.get(directory.getReference())
+                            .filter(_controller.FilenameComparator, _controller.FilenameFilter);
                 for (int i = 0; i < list.size(); i++)
                 {
                     yield return (Path) list.get(i);
@@ -227,6 +229,33 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     _isLoadingListingInBackground.Remove(_path);
                     _controller.RefreshObject(_path, true);
+                }
+            }
+        }
+
+        private class ListAction : WorkerBackgroundAction
+        {
+            public ListAction(BrowserController controller, Path directory)
+                : base(controller, new InnerListWorker(controller, directory))
+            {
+            }
+
+            private class InnerListWorker : SessionListWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Path _directory;
+
+                public InnerListWorker(BrowserController controller, Path directory)
+                    : base(
+                        controller.getSession(), controller.getSession().cache(), directory,
+                        new DisabledListProgressListener())
+                {
+                    _directory = directory;
+                }
+
+                public override void cleanup(object result)
+                {
+                    _controller.RefreshObject(_directory, true);
                 }
             }
         }
