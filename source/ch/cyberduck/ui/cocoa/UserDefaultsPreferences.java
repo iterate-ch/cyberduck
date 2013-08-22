@@ -75,7 +75,7 @@ public class UserDefaultsPreferences extends Preferences {
     @Override
     public String getDefault(final String property) {
         // Lookup in the default map
-        String value = super.getDefault(property);
+        final String value = super.getDefault(property);
         if(null == value) {
             // Missing in default. Lookup in Info.plist
             NSObject plist = NSBundle.mainBundle().infoDictionary().objectForKey(property);
@@ -91,7 +91,7 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public String getProperty(final String property) {
-        NSObject value = store.objectForKey(property);
+        final NSObject value = store.objectForKey(property);
         if(null == value) {
             return this.getDefault(property);
         }
@@ -116,7 +116,7 @@ public class UserDefaultsPreferences extends Preferences {
     }
 
     @Override
-    public void setProperty(String property, List<String> value) {
+    public void setProperty(final String property, final List<String> value) {
         // Sets the value of the default identified by defaultName in the standard application domain.
         // Setting a default has no effect on the value returned by the objectForKey method if
         // the same key exists in a domain that precedes the application domain in the search list.
@@ -258,7 +258,7 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public String locale() {
-        NSObject value = store.objectForKey("AppleLanguages");
+        final NSObject value = store.objectForKey("AppleLanguages");
         if(null == value) {
             return super.locale();
         }
@@ -288,11 +288,11 @@ public class UserDefaultsPreferences extends Preferences {
      * @param list List of properties
      * @return Collection
      */
-    private List<String> toList(NSArray list) {
+    private List<String> toList(final NSArray list) {
         if(null == list) {
             return Collections.emptyList();
         }
-        List<String> localizations = new ArrayList<String>();
+        final List<String> localizations = new ArrayList<String>();
         NSEnumerator ordered = list.objectEnumerator();
         NSObject next;
         while(((next = ordered.nextObject()) != null)) {
