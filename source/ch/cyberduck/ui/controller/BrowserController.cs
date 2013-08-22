@@ -32,7 +32,6 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
-using ch.cyberduck.core.local;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
@@ -480,38 +479,20 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_OpenInTerminal()
         {
             Host host = getSession().getHost();
-            bool identity = host.getCredentials().isPublicKeyAuthentication();
-
-            String workdir = null;
+            Path workdir = null;
             if (SelectedPaths.Count == 1)
             {
                 Path selected = SelectedPath;
                 if (selected.attributes().isDirectory())
                 {
-                    workdir = selected.getAbsolute();
+                    workdir = selected;
                 }
             }
             if (null == workdir)
             {
-                workdir = Workdir.getAbsolute();
+                workdir = Workdir;
             }
-
-            string tempFile = System.IO.Path.GetTempFileName();
-            TextWriter tw = new StreamWriter(tempFile);
-            tw.WriteLine(String.Format("cd {0} && exec $SHELL", workdir));
-            tw.Close();
-
-            String ssh = String.Format(Preferences.instance().getProperty("terminal.command.ssh.args"),
-                                       identity
-                                           ? "-i " + host.getCredentials().getIdentity().getAbsolute()
-                                           : String.Empty,
-                                       host.getCredentials().getUsername(),
-                                       host.getHostname(),
-                                       Convert.ToString(host.getPort()), tempFile);
-
-
-            ApplicationLauncherFactory.get().open(
-                new Application(Preferences.instance().getProperty("terminal.command.ssh"), null), ssh);
+            new SshTerminalService().open(host, workdir);
         }
 
         private void View_SetComparator(BrowserComparator comparator)
