@@ -35,6 +35,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -46,6 +47,7 @@ import com.github.sardine.impl.methods.HttpPropFind;
  * @version $Id$
  */
 public class DAVSession extends HttpSession<DAVClient> {
+    private static final Logger log = Logger.getLogger(DAVSession.class);
 
     public DAVSession(Host h) {
         super(h);
@@ -81,8 +83,21 @@ public class DAVSession extends HttpSession<DAVClient> {
                         || e.getStatusCode() == HttpStatus.SC_NOT_FOUND
                         || e.getStatusCode() == HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE
                         || e.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
+                    log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
+                            host, e.getResponsePhrase()));
                     // Possibly only HEAD requests are not allowed
                     client.execute(new HttpPropFind(new DAVPathEncoder().encode(this.home())), new VoidResponseHandler());
+                }
+                else if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
+                    if(Preferences.instance().getBoolean("webdav.basic.preemptive")) {
+                        log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
+                                host, e.getResponsePhrase()));
+                        client.disablePreemptiveAuthentication();
+                        client.execute(new HttpHead(new DAVPathEncoder().encode(this.home())), new VoidResponseHandler());
+                    }
+                    else {
+                        throw new DAVExceptionMappingService().map(e);
+                    }
                 }
                 else {
                     throw new DAVExceptionMappingService().map(e);

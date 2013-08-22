@@ -205,6 +205,24 @@ public class DAVSessionTest extends AbstractTestCase {
         });
     }
 
+    @Test(expected = LoginFailureException.class)
+    public void testLoginErrorBasicFallback() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "prod.lattusdemo.com", new Credentials(
+                "u", "p"
+        ));
+        host.setDefaultPath("/namespace");
+        final DAVSession session = new DAVSession(host);
+        Preferences.instance().setProperty("webdav.basic.preemptive", true);
+        session.open(new DefaultHostKeyController());
+        try {
+            session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        }
+        catch(LoginFailureException e) {
+            assertEquals("Unauthorized.", e.getDetail());
+            throw e;
+        }
+    }
+
     @Test
     public void testFeatures() throws Exception {
         final Session session = new DAVSession(new Host("h"));
