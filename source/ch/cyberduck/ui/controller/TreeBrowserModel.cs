@@ -51,34 +51,20 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Path directory = (Path) p;
             AttributedList list;
-            lock (_isLoadingListingInBackground)
+            Cache cache = _controller.getSession().cache();
+            if (!cache.isCached(directory.getReference()))
             {
-                Cache cache = _controller.getSession().cache();
-                if (cache.isCached(directory.getReference()))
-                {
-                    list = cache.get(directory.getReference())
-                                .filter(_controller.FilenameComparator, _controller.FilenameFilter);
-                    for (int i = 0; i < list.size(); i++)
-                    {
-                        yield return (Path) list.get(i);
-                    }
-                    yield break;
-                }
-                if (!_isLoadingListingInBackground.Contains(directory))
-                {
-                    _isLoadingListingInBackground.Add(directory);
-                    // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                    // Delay until path is cached in the background
-                    // switch to blocking children fetching
-                    //path.childs();
-                    _controller.background(new ListAction(_controller, directory));
-                }
-                list = cache.get(directory.getReference())
-                            .filter(_controller.FilenameComparator, _controller.FilenameFilter);
-                for (int i = 0; i < list.size(); i++)
-                {
-                    yield return (Path) list.get(i);
-                }
+                // Reloading a workdir that is not cached yet would cause the interface to freeze;
+                // Delay until path is cached in the background
+                // switch to blocking children fetching
+                //path.childs();
+                _controller.background(new ListAction(_controller, directory));
+            }
+            list = cache.get(directory.getReference())
+                        .filter(_controller.FilenameComparator, _controller.FilenameFilter);
+            for (int i = 0; i < list.size(); i++)
+            {
+                yield return (Path) list.get(i);
             }
         }
 
@@ -250,12 +236,13 @@ namespace Ch.Cyberduck.Ui.Controller
                         controller.getSession(), controller.getSession().cache(), directory,
                         new DisabledListProgressListener())
                 {
+                    _controller = controller;
                     _directory = directory;
                 }
 
                 public override void cleanup(object result)
                 {
-                    _controller.RefreshObject(_directory, true);
+                    _controller.ReloadData(true);
                 }
             }
         }

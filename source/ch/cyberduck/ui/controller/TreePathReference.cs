@@ -23,16 +23,38 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class TreePathReference : PathReference
     {
+        private readonly int _hashCode;
         private readonly Path _path;
+        private readonly PathReference _reference;
 
         public TreePathReference(Path path)
         {
             _path = path;
+            _reference = new DefaultPathReference(_path);
+            _hashCode = _reference.unique().GetHashCode();
         }
 
         public object unique()
         {
-            return new DefaultPathReference(_path).unique();
+            return _reference.unique();
+        }
+
+        public override int GetHashCode()
+        {
+            return _hashCode;
+        }
+
+        public override bool Equals(object other)
+        {
+            if (null == other)
+            {
+                return false;
+            }
+            if (other is PathReference)
+            {
+                return _reference.unique().GetHashCode() == ((PathReference) other).unique().GetHashCode();
+            }
+            return false;
         }
 
         public static void Register()

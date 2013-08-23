@@ -2532,7 +2532,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     // The browser has no session, we are allowed to proceed
                     // Initialize the browser with the new session attaching all listeners
                     Session session = Init(host);
-                    background(new MountAction(this, host));
+                    background(new MountAction(this, session, host));
                 };
             Unmount(callbackDelegate);
         }
@@ -3241,8 +3241,9 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Host _host;
 
             public MountAction(BrowserController controller,
+                               Session session,
                                Host host)
-                : base(controller, new InnerMountWorker(controller, host))
+                : base(controller, new InnerMountWorker(controller, session, host))
             {
                 _host = host;
             }
@@ -3257,12 +3258,14 @@ namespace Ch.Cyberduck.Ui.Controller
             private class InnerMountWorker : MountWorker
             {
                 private readonly BrowserController _controller;
+                private readonly Session _session;
                 private readonly Host _host;
 
-                public InnerMountWorker(BrowserController controller, Host host)
-                    : base(controller._session, controller._session.cache(), new DisabledListProgressListener())
+                public InnerMountWorker(BrowserController controller, Session session, Host host)
+                    : base(session, session.cache(), new DisabledListProgressListener())
                 {
                     _controller = controller;
+                    _session = session;
                     _host = host;
                 }
 
@@ -3277,14 +3280,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         // Set the working directory
                         _controller.SetWorkdir(workdir);
-                        _controller.View.RefreshBookmark(_controller.getSession().getHost());
+                        _controller.View.RefreshBookmark(_session.getHost());
                         if (_controller.IsMounted())
                         {
                             _controller.ToggleView(BrowserView.File); //TODO ist neu noch anders -> selectBrowser
                             _controller.View.WindowTitle = _host.getNickname();
-                            _controller.View.SecureConnection = _controller._session is SSLSession;
-                            _controller.View.CertBasedConnection =
-                                _controller._session is SSLSession;
+                            _controller.View.SecureConnection = _session is SSLSession;
+                            _controller.View.CertBasedConnection = _session is SSLSession;
                             _controller.View.SecureConnectionVisible = true;
                         }
                     }
