@@ -83,7 +83,6 @@ namespace Ch.Cyberduck.Ui.Controller
          * No file filter.
          */
         private Session _session;
-        private bool _sessionShouldBeConnected;
         private bool _showHiddenFiles;
         private String dropFolder; // holds the drop folder of the current drag operation
 
@@ -371,11 +370,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             get { return _comparator; }
             set { _comparator = value; }
-        }
-
-        public bool SessionShouldBeConnected
-        {
-            set { _sessionShouldBeConnected = value; }
         }
 
         public void collectionLoaded()
@@ -2564,10 +2558,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                if (_sessionShouldBeConnected)
-                {
-                    return _session.isConnected();
-                }
+                return _session.isConnected();
             }
             return false;
         }
@@ -3258,8 +3249,8 @@ namespace Ch.Cyberduck.Ui.Controller
             private class InnerMountWorker : MountWorker
             {
                 private readonly BrowserController _controller;
-                private readonly Session _session;
                 private readonly Host _host;
+                private readonly Session _session;
 
                 public InnerMountWorker(BrowserController controller, Session session, Host host)
                     : base(session, session.cache(), new DisabledListProgressListener())
