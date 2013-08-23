@@ -19,10 +19,8 @@
 using System;
 using System.Collections.Generic;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
-using ch.cyberduck.core.exception;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.local;
 using ch.cyberduck.ui.action;
@@ -160,65 +158,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return _controller.IsConnected() && BrowserController.HiddenFilter.accept(path);
         }
 
-        private class ChildGetterBrowserBackgrounAction : BrowserBackgroundAction
-        {
-            private readonly Cache _cache;
-            private readonly BrowserController _controller;
-            private readonly List<AbstractPath> _isLoadingListingInBackground;
-            private readonly Path _path;
-
-            public ChildGetterBrowserBackgrounAction(BrowserController controller,
-                                                     Cache cache,
-                                                     Path path,
-                                                     List<AbstractPath> isLoadingListingInBackground)
-                : base(controller)
-            {
-                _controller = controller;
-                _cache = cache;
-                _path = path;
-                _isLoadingListingInBackground = isLoadingListingInBackground;
-            }
-
-            public override object run()
-            {
-                try
-                {
-                    AttributedList children = _controller.getSession().list(_path, new DisabledListProgressListener());
-                    _cache.put(_path.getReference(), children);
-                }
-                catch (BackgroundException e)
-                {
-                    // Temporary empty listing
-                    _cache.put(_path.getReference(), AttributedList.emptyList());
-                    if (_path.attributes().getPermission().isReadable()
-                        && _path.attributes().getPermission().isExecutable())
-                    {
-                        throw e;
-                    }
-                    else
-                    {
-                        // Ignore directory listing failure
-                    }
-                }
-                return true;
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Listing directory {0}", "Status"), _path.getName());
-            }
-
-            public override void cleanup()
-            {
-                base.cleanup();
-                lock (_isLoadingListingInBackground)
-                {
-                    _isLoadingListingInBackground.Remove(_path);
-                    _controller.RefreshObject(_path, true);
-                }
-            }
-        }
-
         private class ListAction : WorkerBackgroundAction
         {
             public ListAction(BrowserController controller, Path directory)
@@ -229,7 +168,6 @@ namespace Ch.Cyberduck.Ui.Controller
             private class InnerListWorker : SessionListWorker
             {
                 private readonly BrowserController _controller;
-                private readonly Path _directory;
 
                 public InnerListWorker(BrowserController controller, Path directory)
                     : base(
@@ -237,7 +175,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         new DisabledListProgressListener())
                 {
                     _controller = controller;
-                    _directory = directory;
                 }
 
                 public override void cleanup(object result)
