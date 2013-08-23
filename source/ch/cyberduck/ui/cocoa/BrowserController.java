@@ -3791,8 +3791,7 @@ public class BrowserController extends WindowController
             return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
-            final Touch feature = session.getFeature(Touch.class);
-            return this.isBrowser() && this.isMounted() && feature.isSupported(this.workdir());
+            return this.isBrowser() && this.isMounted() && session.getFeature(Touch.class).isSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
             return this.isBrowser() && this.isMounted() && session.getFeature(Symlink.class) != null
