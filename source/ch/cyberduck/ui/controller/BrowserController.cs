@@ -1805,8 +1805,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateNewFile()
         {
-            Touch feature = (Touch) _session.getFeature(typeof (Touch));
-            return IsMounted() && feature.isSupported(Workdir);
+            return IsMounted() && ((Touch) _session.getFeature(typeof (Touch))).isSupported(Workdir);
         }
 
         private void View_NewDownload()
