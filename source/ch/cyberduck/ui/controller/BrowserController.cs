@@ -2684,7 +2684,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         _session.cache().clear();
                     }
                     _session = null;
-                    View.RefreshBookmark(getSession().getHost());
                     View.WindowTitle = Preferences.instance().getProperty("application.name");
                     disconnected();
                 };
