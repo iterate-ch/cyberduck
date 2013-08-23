@@ -29,7 +29,7 @@ using X509Certificate = java.security.cert.X509Certificate;
 
 namespace Ch.Cyberduck.Core
 {
-    public class Keychain : PasswordStore, CertificateStore
+    public class Keychain : HostPasswordStore, CertificateStore
     {
         private static readonly Logger Log = Logger.getLogger(typeof (Keychain).FullName);
 
@@ -129,28 +129,28 @@ namespace Ch.Cyberduck.Core
             throw new NotImplementedException();
         }
 
-        public string getPassword(Scheme scheme, int port, String hostName, String user)
+        public override string getPassword(Scheme scheme, int port, String hostName, String user)
         {
             Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
             host.getCredentials().setUsername(user);
             return getPassword(host);
         }
 
-        public string getPassword(String hostName, String user)
+        public override string getPassword(String hostName, String user)
         {
             Host host = new Host(hostName);
             host.getCredentials().setUsername(user);
             return getPassword(host);
         }
 
-        public void addPassword(String hostName, String user, String password)
+        public override void addPassword(String hostName, String user, String password)
         {
             Host host = new Host(hostName);
             host.getCredentials().setUsername(user);
             Preferences.instance().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
         }
 
-        public void addPassword(Scheme scheme, int port, String hostName, String user, String password)
+        public override void addPassword(Scheme scheme, int port, String hostName, String user, String password)
         {
             Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
             host.getCredentials().setUsername(user);
