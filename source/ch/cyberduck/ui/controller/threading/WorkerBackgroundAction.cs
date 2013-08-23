@@ -20,11 +20,14 @@ using System;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.ui.action;
+using org.apache.log4j;
 
 namespace ch.cyberduck.ui.controller.threading
 {
     internal class WorkerBackgroundAction : BrowserBackgroundAction
     {
+        private static readonly Logger Log = Logger.getLogger(typeof (WorkerBackgroundAction).Name);
+
         private readonly Worker _worker;
         private Object _result;
 
@@ -36,11 +39,17 @@ namespace ch.cyberduck.ui.controller.threading
 
         public override object run()
         {
-            return _worker.run();
+            _result = _worker.run();
+            return true;
         }
 
         public override void cleanup()
         {
+            base.cleanup();
+            if (null == _result)
+            {
+                Log.warn(String.Format("Null result for worker {0}", this));
+            }
             _worker.cleanup(_result);
         }
 
