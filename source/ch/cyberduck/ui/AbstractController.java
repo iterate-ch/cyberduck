@@ -125,6 +125,7 @@ public abstract class AbstractController implements Controller {
 
     protected void invalidate() {
         singleExecutor.shutdown();
+        concurrentExecutor.shutdown();
     }
 
     private final class BackgroundCallable<T> implements Callable<T> {
