@@ -60,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly Logger Logger = Logger.getLogger(typeof (MainController).FullName);
         public static readonly string StartupLanguage;
         private static readonly IList<BrowserController> _browsers = new List<BrowserController>();
-        private static MainController application;
+        private static MainController _application;
 
         /// <summary>
         /// Saved browsers
@@ -137,7 +137,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         internal static MainController Application
         {
-            get { return application ?? (application = new MainController()); }
+            get { return _application ?? (_application = new MainController()); }
         }
 
         public Form ActiveMainForm
@@ -777,7 +777,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (0 == Browsers.Count)
                     {
                         // Close/Dispose all non-browser forms (e.g. Transfers) to allow shutdown
-                        FormCollection forms = application.OpenForms;
+                        FormCollection forms = _application.OpenForms;
                         for (int i = forms.Count - 1; i >= 0; i--)
                         {
                             forms[i].Dispose();
@@ -786,14 +786,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        application.MainForm = Browsers[0].View as Form;
+                        _application.MainForm = Browsers[0].View as Form;
                     }
                 };
             if (show)
             {
                 controller.View.Show();
             }
-            application.MainForm = controller.View as Form;
+            _application.MainForm = controller.View as Form;
             Browsers.Add(controller);
             return controller;
         }
