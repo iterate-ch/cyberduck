@@ -76,7 +76,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 b.Append(_messageText);
             }
-            View.MessageText = b.ToString();
+            AsyncDelegate d = () => View.MessageText = b.ToString();
+            invoke(new SimpleDefaultMainAction(this, d));
         }
 
         public void start(Transfer t)
@@ -115,24 +116,28 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void progress(TransferProgress tp)
         {
-            double transferred = _transfer.getTransferred();
-            double size = _transfer.getSize();
-            if (transferred > 0 && size > 0)
-            {
-                View.ProgressIndeterminate = false;
-                // normalize double to int if size is too big
-                if (size > int.MaxValue)
+            AsyncDelegate d = delegate
                 {
-                    View.ProgressMaximum = int.MaxValue;
-                    View.ProgressValue =
-                        Convert.ToInt32(int.MaxValue*transferred/size);
-                }
-                else
-                {
-                    View.ProgressMaximum = Convert.ToInt32(size);
-                    View.ProgressValue = Convert.ToInt32(transferred);
-                }
-            }
+                    double transferred = _transfer.getTransferred();
+                    double size = _transfer.getSize();
+                    if (transferred > 0 && size > 0)
+                    {
+                        View.ProgressIndeterminate = false;
+                        // normalize double to int if size is too big
+                        if (size > int.MaxValue)
+                        {
+                            View.ProgressMaximum = int.MaxValue;
+                            View.ProgressValue =
+                                Convert.ToInt32(int.MaxValue*transferred/size);
+                        }
+                        else
+                        {
+                            View.ProgressMaximum = Convert.ToInt32(size);
+                            View.ProgressValue = Convert.ToInt32(transferred);
+                        }
+                    }
+                };
+            invoke(new SimpleDefaultMainAction(this, d));
             //UpdateOverallProgress();
         }
 

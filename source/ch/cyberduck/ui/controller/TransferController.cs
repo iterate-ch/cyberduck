@@ -585,12 +585,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 TransferCollection.defaultCollection().add(transfer);
             }
-            else
-            {
-                ProgressController progressController;
-                _transferMap.TryGetValue(transfer, out progressController);
-                background(new TransferBackgroundAction(this, transfer, options, callback));
-            }
+            ProgressController progressController;
+            _transferMap.TryGetValue(transfer, out progressController);
+            background(new TransferBackgroundAction(this, transfer, options, callback));
         }
 
         public void TaskbarOverlayIcon(Icon icon, string description)
