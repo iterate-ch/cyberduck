@@ -284,6 +284,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         // the multi-threaded service for upload and download operations.
         configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
         configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
+        configuration.setProperty("httpclient.retry-max", String.valueOf(0));
         return configuration;
     }
 
