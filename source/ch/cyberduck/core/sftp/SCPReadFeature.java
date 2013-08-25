@@ -53,7 +53,7 @@ public class SCPReadFeature implements Read {
     }
 
     @Override
-    public boolean isResumable() {
+    public boolean append(final Path file) {
         return false;
     }
 }

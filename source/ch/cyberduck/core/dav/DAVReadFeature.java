@@ -61,7 +61,7 @@ public class DAVReadFeature implements Read {
     }
 
     @Override
-    public boolean isResumable() {
+    public boolean append(final Path file) {
         return true;
     }
 }

@@ -35,5 +35,5 @@ public interface Read {
      */
     InputStream read(Path file, TransferStatus status) throws BackgroundException;
 
-    boolean isResumable();
+    boolean append(final Path file);
 }
