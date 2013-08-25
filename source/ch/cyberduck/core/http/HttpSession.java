@@ -307,7 +307,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             };
         }
         catch(InterruptedException e) {
-            log.error("Error waiting for output stream:" + e.getMessage());
+            log.error("Error waiting for output stream");
             throw new BackgroundException(e);
         }
     }
