@@ -157,7 +157,6 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                                 if(log.isInfoEnabled()) {
                                     log.info(String.format("Skip completed part number %d", partNumber));
                                 }
-                                listener.bytesSent(c.getSize());
                                 skip = true;
                                 break;
                             }
