@@ -645,6 +645,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 base.init();
                 if (Preferences.instance().getBoolean("queue.orderFrontOnStart"))
                 {
+                    _controller.View.Show();
                     _controller.View.BringToFront();
                 }
             }
