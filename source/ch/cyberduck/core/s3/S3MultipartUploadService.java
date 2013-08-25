@@ -87,9 +87,6 @@ public class S3MultipartUploadService extends S3SingleUploadService {
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         try {
-            final S3TouchFeature touch = new S3TouchFeature(session);
-            // Placeholder
-            touch.touch(file);
             MultipartUpload multipart = null;
             if(status.isAppend()) {
                 // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
@@ -112,19 +109,23 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                 }
             }
             if(null == multipart) {
-                log.info("No pending multipart upload found");
+                if(log.isInfoEnabled()) {
+                    log.info("No pending multipart upload found");
+                }
+                final S3TouchFeature touch = new S3TouchFeature(session);
+                // Placeholder
+                touch.touch(file);
                 final StorageObject object = this.createObjectDetails(file);
                 // Initiate multipart upload with metadata
                 Map<String, Object> metadata = object.getModifiableMetadata();
                 if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
-                    metadata.put(session.getClient().getRestHeaderPrefix() + "storage-class",
+                    metadata.put(String.format("%sstorage-class", session.getClient().getRestHeaderPrefix()),
                             Preferences.instance().getProperty("s3.storage.class"));
                 }
                 if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
-                    metadata.put(session.getClient().getRestHeaderPrefix() + "server-side-encryption",
+                    metadata.put(String.format("%sserver-side-encryption", session.getClient().getRestHeaderPrefix()),
                             Preferences.instance().getProperty("s3.encryption.algorithm"));
                 }
-
                 multipart = session.getClient().multipartStartUpload(
                         containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
             }
@@ -145,10 +146,14 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                 for(int partNumber = 1; remaining > 0; partNumber++) {
                     boolean skip = false;
                     if(status.isAppend()) {
-                        log.info(String.format("Determine if part %d can be skipped", partNumber));
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Determine if part number %d can be skipped", partNumber));
+                        }
                         for(MultipartPart c : completed) {
                             if(c.getPartNumber().equals(partNumber)) {
-                                log.info("Skip completed part number " + partNumber);
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Skip completed part number %d", partNumber));
+                                }
                                 listener.bytesSent(c.getSize());
                                 skip = true;
                                 break;
@@ -171,11 +176,11 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                         completed.add(future.get());
                     }
                     catch(InterruptedException e) {
-                        log.error("Part upload failed:" + e.getMessage());
+                        log.error("Part upload failed with interrupt failure");
                         throw new ConnectionCanceledException(e);
                     }
                     catch(ExecutionException e) {
-                        log.warn("Part upload failed:" + e.getMessage());
+                        log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
                         if(e.getCause() instanceof ServiceException) {
                             throw (ServiceException) e.getCause();
                         }
@@ -185,10 +190,8 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                         throw new ConnectionCanceledException(e);
                     }
                 }
-                if(status.isComplete()) {
-                    // Combining all the given parts into the final object.
-                    session.getClient().multipartCompleteUpload(multipart, completed);
-                }
+                // Combining all the given parts into the final object.
+                session.getClient().multipartCompleteUpload(multipart, completed);
             }
             finally {
                 // Cancel future tasks
@@ -207,7 +210,9 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                                              final BandwidthThrottle throttle, final StreamListener listener,
                                              final TransferStatus status, final MultipartUpload multipart,
                                              final int partNumber, final long offset, final long length) throws BackgroundException {
-        log.info(String.format("Submit part %d to queue", partNumber));
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
+        }
         return pool.execute(new Callable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
@@ -230,6 +235,9 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                     IOUtils.closeQuietly(out);
                 }
                 final StorageObject part = out.getResponse();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Received response for part number %d", partNumber));
+                }
                 // Populate part with response data that is accessible via the object's metadata
                 return new MultipartPart(partNumber, part.getLastModifiedDate(),
                         part.getETag(), part.getContentLength());
