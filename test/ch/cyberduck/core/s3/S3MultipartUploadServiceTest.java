@@ -19,12 +19,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -140,10 +140,14 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        final byte[] buffer = new byte[random.length];
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus());
+        IOUtils.readFully(in, buffer);
+        IOUtils.closeQuietly(in);
+        assertArrayEquals(random, buffer);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
-
 
     @Test
     public void testAppendNoPartCompleted() throws Exception {
@@ -186,6 +190,11 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(session.exists(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        final byte[] buffer = new byte[random.length];
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus());
+        IOUtils.readFully(in, buffer);
+        IOUtils.closeQuietly(in);
+        assertArrayEquals(random, buffer);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
