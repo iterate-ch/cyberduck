@@ -110,12 +110,14 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                                             .ToUpper())
                                                                                         : "Transfer incomplete",
                                                                                     "Status"), "Status");
+                    View.TransferStatus = t.isComplete() ? TransferStatus.Complete : TransferStatus.Incomplete;
                 };
             invoke(new SimpleDefaultMainAction(this, d));
         }
 
         public void progress(TransferProgress tp)
         {
+            Progress(tp.getProgress());
             AsyncDelegate d = delegate
                 {
                     double transferred = _transfer.getTransferred();
@@ -136,12 +138,16 @@ namespace Ch.Cyberduck.Ui.Controller
                             View.ProgressValue = Convert.ToInt32(transferred);
                         }
                     }
+                    else
+                    {
+                        View.ProgressIndeterminate = true;
+                    }
                 };
             invoke(new SimpleDefaultMainAction(this, d));
             //UpdateOverallProgress();
         }
 
-        /* TODO wie zu implementieren?
+/*         TODO wie zu implementieren?
         private void UpdateOverallProgress()
         {
             if (Utils.IsVistaOrLater)
@@ -159,7 +165,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
         }
-        */
+   */
 
         private void Init()
         {
