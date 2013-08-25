@@ -54,6 +54,7 @@ public class NamedThreadFactory implements ThreadFactory {
                 }
             }
         });
+        thread.setDaemon(true);
         thread.setName(String.format("%s-%d", name, threadNumber.getAndIncrement()));
         thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
