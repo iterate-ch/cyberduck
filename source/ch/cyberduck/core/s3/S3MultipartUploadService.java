@@ -34,6 +34,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.jets3t.service.MultipartUploadChunk;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
@@ -92,21 +93,23 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                 // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
                 // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
                 // not yet been completed or aborted.
-                final List<MultipartUpload> uploads = session.getClient().multipartListUploads(
-                        containerService.getContainer(file).getName());
-                for(MultipartUpload upload : uploads) {
-                    if(!upload.getBucketName().equals(containerService.getContainer(file).getName())) {
-                        continue;
+                String nextUploadIdMarker = null;
+                String nextKeyMarker = null;
+                do {
+                    final MultipartUploadChunk chunk = session.getClient().multipartListUploadsChunked(
+                            containerService.getContainer(file).getName(), containerService.getKey(file),
+                            null, nextKeyMarker, nextUploadIdMarker, null, true);
+                    for(MultipartUpload upload : chunk.getUploads()) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Resume multipart upload %s", upload.getUploadId()));
+                        }
+                        multipart = upload;
+                        break;
                     }
-                    if(!upload.getObjectKey().equals(containerService.getKey(file))) {
-                        continue;
-                    }
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Resume multipart upload %s", upload.getUploadId()));
-                    }
-                    multipart = upload;
-                    break;
+                    nextKeyMarker = chunk.getPriorLastKey();
+                    nextUploadIdMarker = chunk.getPriorLastIdMarker();
                 }
+                while(nextUploadIdMarker != null);
             }
             if(null == multipart) {
                 if(log.isInfoEnabled()) {
