@@ -99,7 +99,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
         final String lock = sleep.lock();
         try {
             timerPool = new ScheduledThreadPool();
-            progressTimer = timerPool.schedule(new Runnable() {
+            progressTimer = timerPool.repeat(new Runnable() {
                 @Override
                 public void run() {
                     final TransferProgress status = meter.getStatus();
