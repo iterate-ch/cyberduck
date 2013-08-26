@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NamedThreadFactory implements ThreadFactory {
     private static final Logger log = Logger.getLogger(NamedThreadFactory.class);
 
-    final AtomicInteger threadNumber = new AtomicInteger(1);
+    private final AtomicInteger threadNumber = new AtomicInteger(1);
 
     private String name;
 
