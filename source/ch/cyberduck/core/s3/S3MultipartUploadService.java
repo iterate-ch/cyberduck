@@ -183,13 +183,10 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                     }
                     catch(ExecutionException e) {
                         log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                        if(e.getCause() instanceof ServiceException) {
-                            throw (ServiceException) e.getCause();
+                        if(e.getCause() instanceof BackgroundException) {
+                            throw (BackgroundException) e.getCause();
                         }
-                        if(e.getCause() instanceof IOException) {
-                            throw (IOException) e.getCause();
-                        }
-                        throw new ConnectionCanceledException(e);
+                        throw new BackgroundException(e);
                     }
                 }
                 // Combining all the given parts into the final object.
@@ -202,9 +199,6 @@ public class S3MultipartUploadService extends S3SingleUploadService {
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Upload failed", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
         }
     }
 
