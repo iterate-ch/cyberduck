@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
@@ -53,7 +54,7 @@ import java.util.concurrent.Future;
 /**
  * @version $Id$
  */
-public class S3MultipartUploadService extends S3SingleUploadService {
+public class S3MultipartUploadService implements Upload {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
 
     /**
@@ -79,7 +80,6 @@ public class S3MultipartUploadService extends S3SingleUploadService {
     private Long partsize;
 
     public S3MultipartUploadService(final S3Session session, final Long partsize) {
-        super(session);
         this.session = session;
         this.partsize = partsize;
     }
@@ -118,7 +118,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                 final S3TouchFeature touch = new S3TouchFeature(session);
                 // Placeholder
                 touch.touch(file);
-                final StorageObject object = this.createObjectDetails(file);
+                final StorageObject object = new S3SingleUploadService(session).createObjectDetails(file);
                 // Initiate multipart upload with metadata
                 Map<String, Object> metadata = object.getModifiableMetadata();
                 if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
@@ -220,7 +220,7 @@ public class S3MultipartUploadService extends S3SingleUploadService {
                 ResponseOutputStream<StorageObject> out = null;
                 try {
                     in = file.getLocal().getInputStream();
-                    out = write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
+                    out = new S3SingleUploadService(session).write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
                     new StreamCopier(status).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
                 }
                 catch(IOException e) {
