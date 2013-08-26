@@ -91,9 +91,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     }
 
     public AbstractHttpClient connect() {
-        if(null != route) {
-            return route;
-        }
         final HttpParams params = this.parameters();
         final SchemeRegistry registry = new SchemeRegistry();
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the default port and the socket
