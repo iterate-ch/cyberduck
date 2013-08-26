@@ -31,7 +31,8 @@ import java.util.Enumeration;
 public class MappingMimeTypeService implements MimeTypeService {
     private static final Logger log = Logger.getLogger(MappingMimeTypeService.class);
 
-    private Mimetypes types = Mimetypes.getInstance();
+    private static final Mimetypes types
+            = Mimetypes.getInstance();
 
     public MappingMimeTypeService() {
         this.load();
