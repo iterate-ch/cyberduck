@@ -83,6 +83,9 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     protected AbstractHttpClient route;
 
+    private final ThreadFactory factory
+            = new NamedThreadFactory("http");
+
     protected HttpSession(final Host h) {
         super(h);
     }
@@ -207,7 +210,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     @Override
     protected void logout() throws BackgroundException {
         route.getConnectionManager().shutdown();
-        route = null;
     }
 
     @Override
@@ -228,8 +230,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             return response;
         }
     }
-
-    private final ThreadFactory factory = new NamedThreadFactory("http");
 
     /**
      * @param command Callable writing entity to stream and returning checksum
