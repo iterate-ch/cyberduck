@@ -19,8 +19,8 @@ package ch.cyberduck.core.identity;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.identity.AmazonServiceExceptionMappingService;
 
 import org.junit.Test;
 
@@ -36,7 +36,14 @@ public class AmazonServiceExceptionMappingServiceTest extends AbstractTestCase {
     @Test
     public void testLoginFailure() throws Exception {
         final AmazonServiceException f = new AmazonServiceException("message", null);
-        f.setStatusCode(403);
+        f.setStatusCode(401);
         assertTrue(new AmazonServiceExceptionMappingService().map(f) instanceof LoginFailureException);
+    }
+
+    @Test
+    public void testAccessFailure() throws Exception {
+        final AmazonServiceException f = new AmazonServiceException("message", null);
+        f.setStatusCode(403);
+        assertTrue(new AmazonServiceExceptionMappingService().map(f) instanceof AccessDeniedException);
     }
 }
