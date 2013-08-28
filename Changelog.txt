@@ -25,6 +25,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Subsequent edit fails (#7248)
 - [Bugfix] Omit absolute paths in archives (ZIP, TAR) (#6644)
 - [Bugfix] Connect mode fallback failures (FTP) (#5385)
+- [Bugfix] Directory placeholder not displayed if same name as object (OpenStack) (#6988)
+- [Bugfix] Cannot set custom keyboard shortcut (#7045)
 
 4.3.1 [http://trac.cyberduck.ch/milestone/4.3.1]
 - [Bugfix] Modification date shown as 01.01.1970 (Windows) (#7177)

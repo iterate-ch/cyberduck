@@ -16,3 +16,4 @@
 - [Bugfix] Subsequent edit fails (#7248)
 - [Bugfix] Omit absolute paths in archives (ZIP, TAR) (#6644)
 - [Bugfix] Connect mode fallback failures (FTP) (#5385)
+- [Bugfix] Directory placeholder not displayed if same name as object (OpenStack) (#6988)
