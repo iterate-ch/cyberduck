@@ -19,7 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.http.Header;
 import org.apache.http.ProtocolVersion;
@@ -41,8 +41,8 @@ public class SwiftExceptionMappingServiceTest extends AbstractTestCase {
     public void testLoginFailure() throws Exception {
         final GenericException f = new GenericException(
                 "message", new Header[]{}, new BasicStatusLine(new ProtocolVersion("http", 1, 1), 403, "Forbidden"));
-        assertTrue(new SwiftExceptionMappingService().map(f) instanceof LoginFailureException);
-        assertEquals("Login failed", new SwiftExceptionMappingService().map(f).getMessage());
+        assertTrue(new SwiftExceptionMappingService().map(f) instanceof AccessDeniedException);
+        assertEquals("Access denied", new SwiftExceptionMappingService().map(f).getMessage());
         assertEquals("message. 403 Forbidden.", new SwiftExceptionMappingService().map(f).getDetail());
     }
 

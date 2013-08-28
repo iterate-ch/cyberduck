@@ -23,7 +23,8 @@ import ch.cyberduck.core.LocaleFactory;
 /**
  * @version $Id$
  */
-public class AccessDeniedException extends LoginFailureException {
+public class AccessDeniedException extends BackgroundException {
+    private static final long serialVersionUID = 1479727475235108160L;
 
     public AccessDeniedException(final String detail, final Exception cause) {
         super(LocaleFactory.localizedString("Access denied", "Credentials"), detail, cause);
