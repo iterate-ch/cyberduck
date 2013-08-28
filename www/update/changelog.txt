@@ -15,3 +15,4 @@
 - [Bugfix] Interoperability issues (WebDAV) (#7227)
 - [Bugfix] Subsequent edit fails (#7248)
 - [Bugfix] Omit absolute paths in archives (ZIP, TAR) (#6644)
+- [Bugfix] Connect mode fallback failures (FTP) (#5385)
