@@ -18,12 +18,14 @@ package ch.cyberduck.core.exception;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AccessDeniedException extends LoginFailureException {
 
     public AccessDeniedException(final String detail, final Exception cause) {
-        super(detail, cause);
+        super(LocaleFactory.localizedString("Access denied", "Credentials"), detail, cause);
     }
 }

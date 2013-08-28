@@ -33,4 +33,8 @@ public class LoginFailureException extends BackgroundException {
     public LoginFailureException(final String detail, final Exception cause) {
         super(LocaleFactory.localizedString("Login failed", "Credentials"), detail, cause);
     }
+
+    public LoginFailureException(final String message, final String detail, final Exception cause) {
+        super(message, detail, cause);
+    }
 }
