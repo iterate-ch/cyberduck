@@ -46,9 +46,22 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
                 return new InteroperabilityException(buffer.toString(), e);
             }
             if(HttpStatus.SC_FORBIDDEN == e.getResponseCode()) {
-                if(e.getErrorCode().equals("InvalidAccessKeyId") // Invalid Access ID
-                        || e.getErrorCode().equals("InvalidSecurity") // The provided security credentials are not valid.
-                        || e.getErrorCode().equals("SignatureDoesNotMatch")) { // Invalid Secret Key
+                if(e.getErrorCode().equals("SignatureDoesNotMatch")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
+                if(e.getErrorCode().equals("InvalidAccessKeyId")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
+                if(e.getErrorCode().equals("InvalidClientTokenId")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
+                if(e.getErrorCode().equals("InvalidSecurity")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
+                if(e.getErrorCode().equals("MissingClientTokenId")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
+                if(e.getErrorCode().equals("MissingAuthenticationToken")) {
                     return new LoginFailureException(buffer.toString(), e);
                 }
                 return new AccessDeniedException(buffer.toString(), e);

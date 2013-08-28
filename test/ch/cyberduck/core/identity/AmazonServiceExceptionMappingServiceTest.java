@@ -44,6 +44,9 @@ public class AmazonServiceExceptionMappingServiceTest extends AbstractTestCase {
     public void testAccessFailure() throws Exception {
         final AmazonServiceException f = new AmazonServiceException("message", null);
         f.setStatusCode(403);
+        f.setErrorCode("AccessDenied");
         assertTrue(new AmazonServiceExceptionMappingService().map(f) instanceof AccessDeniedException);
+        f.setErrorCode("SignatureDoesNotMatch");
+        assertTrue(new AmazonServiceExceptionMappingService().map(f) instanceof LoginFailureException);
     }
 }

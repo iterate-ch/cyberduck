@@ -20,8 +20,10 @@ package ch.cyberduck.core.identity;
 import ch.cyberduck.core.AbstractIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.QuotaException;
 
 import org.apache.http.HttpStatus;
 
@@ -38,6 +40,24 @@ public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMap
         this.append(buffer, e.getMessage());
         this.append(buffer, e.getErrorCode());
         if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
+            if(e.getErrorCode().equals("SignatureDoesNotMatch")) {
+                return new LoginFailureException(buffer.toString(), e);
+            }
+            if(e.getErrorCode().equals("InvalidAccessKeyId")) {
+                return new LoginFailureException(buffer.toString(), e);
+            }
+            if(e.getErrorCode().equals("InvalidClientTokenId")) {
+                return new LoginFailureException(buffer.toString(), e);
+            }
+            if(e.getErrorCode().equals("InvalidSecurity")) {
+                return new LoginFailureException(buffer.toString(), e);
+            }
+            if(e.getErrorCode().equals("MissingClientTokenId")) {
+                return new LoginFailureException(buffer.toString(), e);
+            }
+            if(e.getErrorCode().equals("MissingAuthenticationToken")) {
+                return new LoginFailureException(buffer.toString(), e);
+            }
             return new AccessDeniedException(buffer.toString(), e);
         }
         if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
@@ -45,6 +65,12 @@ public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMap
         }
         if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             return new NotfoundException(buffer.toString(), e);
+        }
+        if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
+            if(e.getErrorCode().equals("Throttling")) {
+                return new QuotaException(buffer.toString(), e);
+            }
+            return new InteroperabilityException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
