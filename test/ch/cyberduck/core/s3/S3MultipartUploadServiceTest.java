@@ -8,7 +8,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -129,7 +129,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                 }
             }, status);
         }
-        catch(ConnectionCanceledException e) {
+        catch(BackgroundException e) {
             // Expected
         }
         status.setAppend(true);
@@ -179,7 +179,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                 }
             }, status);
         }
-        catch(ConnectionCanceledException e) {
+        catch(BackgroundException e) {
             // Expected
         }
         status.setAppend(true);
