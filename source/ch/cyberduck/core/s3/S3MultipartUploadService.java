@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.MultipartUploadChunk;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.MultipartCompleted;
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.StorageObject;
@@ -129,13 +130,20 @@ public class S3MultipartUploadService implements Upload {
                     metadata.put(String.format("%sserver-side-encryption", session.getClient().getRestHeaderPrefix()),
                             Preferences.instance().getProperty("s3.encryption.algorithm"));
                 }
+                // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(
                         containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Multipart upload started for %s with ID %s",
+                            multipart.getObjectKey(), multipart.getUploadId()));
+                }
             }
 
             final List<MultipartPart> completed;
             if(status.isAppend()) {
-                log.info(String.format("List completed parts of %s", multipart.getUploadId()));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("List completed parts of %s", multipart.getUploadId()));
+                }
                 // This operation lists the parts that have been uploaded for a specific multipart upload.
                 completed = session.getClient().multipartListParts(multipart);
             }
@@ -189,8 +197,14 @@ public class S3MultipartUploadService implements Upload {
                         throw new BackgroundException(e);
                     }
                 }
-                // Combining all the given parts into the final object.
-                session.getClient().multipartCompleteUpload(multipart, completed);
+                // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
+                // could take several minutes to complete. Because a request could fail after the initial 200 OK response
+                // has been sent, it is important that you check the response body to determine whether the request succeeded.
+                final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Completed multipart upload for %s with checksum %s",
+                            complete.getObjectKey(), complete.getEtag()));
+                }
             }
             finally {
                 // Cancel future tasks
