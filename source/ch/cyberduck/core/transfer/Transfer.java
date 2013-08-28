@@ -265,8 +265,7 @@ public abstract class Transfer implements Serializable {
      * @return Download target folder
      */
     public String getLocal() {
-        final Local local = this.getRoot().getLocal();
-        return local.getParent().toURL();
+        return this.getRoot().getLocal().toURL();
     }
 
     /**
