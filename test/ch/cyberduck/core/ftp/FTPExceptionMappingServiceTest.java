@@ -1,9 +1,9 @@
 package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class FTPExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testFile() throws Exception {
-        assertTrue(new FTPExceptionMappingService().map(new FTPException(550, "")) instanceof AccessDeniedException);
+        assertTrue(new FTPExceptionMappingService().map(new FTPException(550, "")) instanceof NotfoundException);
     }
 
     @Test

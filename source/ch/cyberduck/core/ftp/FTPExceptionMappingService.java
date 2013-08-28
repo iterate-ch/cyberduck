@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
@@ -69,7 +70,7 @@ public class FTPExceptionMappingService extends AbstractIOExceptionMappingServic
             }
             if(((FTPException) e).getCode() == FTPReply.FILE_UNAVAILABLE) {
                 // Requested action not taken. File unavailable (e.g., file not found, no access)
-                return new AccessDeniedException(buffer.toString(), e);
+                return new NotfoundException(buffer.toString(), e);
             }
         }
         return new DefaultIOExceptionMappingService().map(e);
