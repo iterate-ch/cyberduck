@@ -21,6 +21,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.AbstractIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
@@ -56,6 +57,9 @@ public class DAVExceptionMappingService extends AbstractIOExceptionMappingServic
         }
         if(e.getStatusCode() == HttpStatus.SC_PAYMENT_REQUIRED) {
             return new QuotaException(buffer.toString(), e);
+        }
+        if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
+            return new InteroperabilityException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
