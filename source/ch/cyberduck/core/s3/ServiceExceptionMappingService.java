@@ -22,6 +22,7 @@ import ch.cyberduck.core.AbstractIOExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -41,20 +42,23 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
         if(e.isParsedFromXmlMessage()) {
             // S3 protocol message
             this.append(buffer, e.getErrorMessage());
+            if(HttpStatus.SC_BAD_REQUEST == e.getResponseCode()) {
+                return new InteroperabilityException(buffer.toString(), e);
+            }
             if(HttpStatus.SC_FORBIDDEN == e.getResponseCode()) {
+                if(e.getErrorCode().equals("InvalidAccessKeyId") // Invalid Access ID
+                        || e.getErrorCode().equals("InvalidSecurity") // The provided security credentials are not valid.
+                        || e.getErrorCode().equals("SignatureDoesNotMatch")) { // Invalid Secret Key
+                    return new LoginFailureException(buffer.toString(), e);
+                }
                 return new AccessDeniedException(buffer.toString(), e);
             }
             if(HttpStatus.SC_NOT_FOUND == e.getResponseCode()) {
                 return new NotfoundException(buffer.toString(), e);
             }
-            else if(HttpStatus.SC_UNAUTHORIZED == e.getResponseCode()) {
+            if(HttpStatus.SC_UNAUTHORIZED == e.getResponseCode()) {
+                // Actually never returned by S3 but always 403
                 return new LoginFailureException(buffer.toString(), e);
-            }
-            else if(e.getErrorCode() != null) {
-                if(e.getErrorCode().equals("InvalidAccessKeyId") // Invalid Access ID
-                        || e.getErrorCode().equals("SignatureDoesNotMatch")) { // Invalid Secret Key
-                    return new LoginFailureException(buffer.toString(), e);
-                }
             }
             return this.wrap(e, buffer);
         }

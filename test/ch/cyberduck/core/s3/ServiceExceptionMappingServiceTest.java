@@ -21,6 +21,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.jets3t.service.ServiceException;
@@ -45,10 +46,22 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
     }
 
     @Test
-    public void testPermissionFailure() throws Exception {
+    public void testLoginFailure403() throws Exception {
         final ServiceException f = new ServiceException("m", "<null/>");
         f.setResponseCode(403);
+        f.setErrorCode("AccessDenied");
         assertTrue(new ServiceExceptionMappingService().map(f) instanceof AccessDeniedException);
+        f.setErrorCode("InvalidAccessKeyId");
+        assertTrue(new ServiceExceptionMappingService().map(f) instanceof LoginFailureException);
+        f.setErrorCode("SignatureDoesNotMatch");
+        assertTrue(new ServiceExceptionMappingService().map(f) instanceof LoginFailureException);
+    }
+
+    @Test
+    public void testBadRequest() {
+        final ServiceException f = new ServiceException("m", "<null/>");
+        f.setResponseCode(400);
+        assertTrue(new ServiceExceptionMappingService().map(f) instanceof InteroperabilityException);
     }
 
     @Test
