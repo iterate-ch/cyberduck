@@ -1,13 +1,6 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.AbstractStreamListener;
@@ -48,10 +41,13 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         IOUtils.write(random, test.getLocal().getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength((long) random.getBytes().length);
+        Preferences.instance().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
         m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
         assertTrue(session.exists(test));
-        assertEquals(random.getBytes().length, session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        final PathAttributes attributes = session.list(container,
+                new DisabledListProgressListener()).get(test.getReference()).attributes();
+        assertEquals(random.getBytes().length, attributes.getSize());
+        assertEquals("REDUCED_REDUNDANCY", attributes.getStorageClass());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
