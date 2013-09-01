@@ -49,7 +49,7 @@ public class FTPReadFeature implements Read {
             }
             if(status.isAppend()) {
                 // Where a server process supports RESTart in STREAM mode
-                if(!session.getClient().hasFeature("REST STREAM")) {
+                if(!session.getClient().hasFeature("REST", "STREAM")) {
                     status.setAppend(false);
                 }
                 else {

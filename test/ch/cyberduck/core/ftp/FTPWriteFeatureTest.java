@@ -43,11 +43,22 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         assertTrue(session.exists(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        final byte[] buffer = new byte[content.length];
-        final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus());
-        IOUtils.readFully(in, buffer);
-        IOUtils.closeQuietly(in);
-        assertArrayEquals(content, buffer);
+        {
+            final byte[] buffer = new byte[content.length];
+            final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length));
+            IOUtils.readFully(in, buffer);
+            IOUtils.closeQuietly(in);
+            assertArrayEquals(content, buffer);
+        }
+        {
+            final byte[] buffer = new byte[content.length - 1];
+            final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).current(1L));
+            IOUtils.readFully(in, buffer);
+            IOUtils.closeQuietly(in);
+            final byte[] reference = new byte[content.length - 1];
+            System.arraycopy(content, 1, reference, 0, content.length - 1);
+            assertArrayEquals(reference, buffer);
+        }
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
