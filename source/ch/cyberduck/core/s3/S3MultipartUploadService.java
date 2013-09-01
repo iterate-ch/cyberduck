@@ -33,13 +33,13 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.MultipartUploadChunk;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartCompleted;
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
+import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
 import java.io.IOException;
@@ -110,7 +110,7 @@ public class S3MultipartUploadService implements Upload {
                     nextKeyMarker = chunk.getPriorLastKey();
                     nextUploadIdMarker = chunk.getPriorLastIdMarker();
                 }
-                while(nextUploadIdMarker != null);
+                while(nextUploadIdMarker != null && multipart == null);
             }
             if(null == multipart) {
                 if(log.isInfoEnabled()) {
@@ -119,20 +119,10 @@ public class S3MultipartUploadService implements Upload {
                 final S3TouchFeature touch = new S3TouchFeature(session);
                 // Placeholder
                 touch.touch(file);
-                final StorageObject object = new S3SingleUploadService(session).createObjectDetails(file);
-                // Initiate multipart upload with metadata
-                Map<String, Object> metadata = object.getModifiableMetadata();
-                if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
-                    metadata.put(String.format("%sstorage-class", session.getClient().getRestHeaderPrefix()),
-                            Preferences.instance().getProperty("s3.storage.class"));
-                }
-                if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
-                    metadata.put(String.format("%sserver-side-encryption", session.getClient().getRestHeaderPrefix()),
-                            Preferences.instance().getProperty("s3.encryption.algorithm"));
-                }
+                final S3Object object = new S3SingleUploadService(session).createObjectDetails(file);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(
-                        containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
+                        containerService.getContainer(file).getName(), object);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Multipart upload started for %s with ID %s",
                             multipart.getObjectKey(), multipart.getUploadId()));
