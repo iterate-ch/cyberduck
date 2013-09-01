@@ -140,8 +140,8 @@ public class S3SingleUploadService implements Upload {
         return session.write(file, command);
     }
 
-    protected StorageObject createObjectDetails(final Path file) throws BackgroundException {
-        final StorageObject object = new StorageObject(containerService.getKey(file));
+    protected S3Object createObjectDetails(final Path file) throws BackgroundException {
+        final S3Object object = new S3Object(containerService.getKey(file));
         object.setContentType(new MappingMimeTypeService().getMime(file.getName()));
         if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
             object.setMd5Hash(ServiceUtils.fromHex(file.getLocal().attributes().getChecksum()));
