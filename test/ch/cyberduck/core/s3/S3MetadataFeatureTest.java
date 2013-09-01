@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 
+import org.jets3t.service.Constants;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -69,6 +70,9 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertTrue(metadata.containsKey("test"));
         assertEquals("Cyberduck", metadata.get("test"));
+        assertFalse(metadata.containsKey(Constants.KEY_FOR_USER_METADATA));
+        assertFalse(metadata.containsKey(Constants.KEY_FOR_SERVICE_METADATA));
+        assertFalse(metadata.containsKey(Constants.KEY_FOR_COMPLETE_METADATA));
         session.close();
     }
 

@@ -47,8 +47,8 @@ public class S3MetadataFeature implements Headers {
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
             final StorageObject target = new S3ObjectDetailService(session).getDetails(file);
-            HashMap<String, String> metadata = new HashMap<String, String>();
-            Map<String, Object> source = target.getModifiableMetadata();
+            final HashMap<String, String> metadata = new HashMap<String, String>();
+            final Map<String, Object> source = target.getModifiableMetadata();
             for(Map.Entry<String, Object> entry : source.entrySet()) {
                 metadata.put(entry.getKey(), entry.getValue().toString());
             }
