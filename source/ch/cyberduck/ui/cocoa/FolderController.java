@@ -68,7 +68,7 @@ public class FolderController extends FileController {
 
     @Override
     public void setAccessoryView(final NSView input) {
-        if(this.getWorkdir().isRoot() && !regions.isEmpty()) {
+        if(this.hasLocation()) {
             // Override accessory view with location menu added
             this.loadBundle("Folder");
             for(String region : regions) {
@@ -80,6 +80,10 @@ public class FolderController extends FileController {
         else {
             super.setAccessoryView(input);
         }
+    }
+
+    private boolean hasLocation() {
+        return this.getWorkdir().isRoot() && !regions.isEmpty();
     }
 
     @Override
@@ -98,7 +102,7 @@ public class FolderController extends FileController {
             @Override
             public Boolean run() throws BackgroundException {
                 final Directory feature = c.getSession().getFeature(Directory.class);
-                if(!regions.isEmpty()) {
+                if(hasLocation()) {
                     feature.mkdir(folder, regionPopup.selectedItem().representedObject());
                 }
                 else {
