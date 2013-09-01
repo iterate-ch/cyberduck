@@ -107,6 +107,11 @@ public class TransferStatus {
         this.setCurrent(current + transferred);
     }
 
+    public TransferStatus current(final long transferred) {
+        this.current = transferred;
+        return this;
+    }
+
     public long getLength() {
         return length;
     }
@@ -166,6 +171,11 @@ public class TransferStatus {
 
     public boolean isAppend() {
         return append;
+    }
+
+    public TransferStatus append(final boolean append) {
+        this.append = append;
+        return this;
     }
 
     @Override
