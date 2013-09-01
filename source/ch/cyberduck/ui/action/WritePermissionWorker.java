@@ -72,8 +72,6 @@ public abstract class WritePermissionWorker extends Worker<Void> {
     }
 
     protected void write(final Path file) throws BackgroundException {
-        session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                file.getName(), permission));
         if(recursive && file.attributes().isFile()) {
             // Do not write executable bit for files if not already set when recursively updating directory.
             // See #1787
@@ -88,12 +86,16 @@ public abstract class WritePermissionWorker extends Worker<Void> {
                 modified.getOtherPermissions()[Permission.EXECUTE] = false;
             }
             if(!modified.equals(file.attributes().getPermission())) {
+                session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                        file.getName(), modified));
                 feature.setUnixPermission(file, modified);
                 file.attributes().setPermission(modified);
             }
         }
         else {
             if(!permission.equals(file.attributes().getPermission())) {
+                session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                        file.getName(), permission));
                 feature.setUnixPermission(file, permission);
                 file.attributes().setPermission(permission);
             }

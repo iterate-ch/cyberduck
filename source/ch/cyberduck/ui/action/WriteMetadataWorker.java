@@ -62,8 +62,6 @@ public abstract class WriteMetadataWorker extends Worker<Void> {
     public Void run() throws BackgroundException {
         for(Path file : files) {
             if(!metadata.equals(file.attributes().getMetadata())) {
-                session.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                        file.getName()));
                 for(Map.Entry<String, String> entry : metadata.entrySet()) {
                     // Prune metadata from entries which are unique to a single file. For example md5-hash.
                     if(StringUtils.isBlank(entry.getValue())) {
@@ -71,6 +69,8 @@ public abstract class WriteMetadataWorker extends Worker<Void> {
                         metadata.put(entry.getKey(), file.attributes().getMetadata().get(entry.getKey()));
                     }
                 }
+                session.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
+                        file.getName()));
                 feature.setMetadata(file, metadata);
                 file.attributes().setMetadata(metadata);
             }

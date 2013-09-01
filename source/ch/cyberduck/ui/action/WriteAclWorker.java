@@ -78,8 +78,8 @@ public abstract class WriteAclWorker extends Worker<Void> {
             feature.setPermission(file, acl);
             file.attributes().setAcl(acl);
         }
-        if(file.attributes().isDirectory()) {
-            if(recursive) {
+        if(recursive) {
+            if(file.attributes().isDirectory()) {
                 for(Path child : session.list(file, new DisabledListProgressListener())) {
                     this.write(child);
                 }
