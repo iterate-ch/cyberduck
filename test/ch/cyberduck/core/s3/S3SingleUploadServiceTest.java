@@ -1,14 +1,6 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageSession;
@@ -52,10 +44,13 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         final TransferStatus status = new TransferStatus();
         status.setLength(random.getBytes().length);
+        Preferences.instance().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
         m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
         assertTrue(session.exists(test));
-        assertEquals(random.getBytes().length, session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        final PathAttributes attributes = session.list(container,
+                new DisabledListProgressListener()).get(test.getReference()).attributes();
+        assertEquals(random.getBytes().length, attributes.getSize());
+        assertEquals("REDUCED_REDUNDANCY", attributes.getStorageClass());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
@@ -91,8 +86,9 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         status.setLength(random.getBytes().length);
         m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
         assertTrue(session.exists(test));
-        assertEquals(random.getBytes().length, session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        final PathAttributes attributes = session.list(container,
+                new DisabledListProgressListener()).get(test.getReference()).attributes();
+        assertEquals(random.getBytes().length, attributes.getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
