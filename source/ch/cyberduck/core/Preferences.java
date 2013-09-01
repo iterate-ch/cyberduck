@@ -378,7 +378,7 @@ public abstract class Preferences {
         defaults.put("queue.download.reload.fileExists", TransferAction.ACTION_CALLBACK.name());
         defaults.put("queue.upload.reload.fileExists", TransferAction.ACTION_CALLBACK.name());
 
-        defaults.put("queue.upload.changePermissions", String.valueOf(true));
+        defaults.put("queue.upload.changePermissions", String.valueOf(false));
         defaults.put("queue.upload.permissions.useDefault", String.valueOf(false));
         defaults.put("queue.upload.permissions.file.default", String.valueOf(644));
         defaults.put("queue.upload.permissions.folder.default", String.valueOf(755));
@@ -558,9 +558,9 @@ public abstract class Preferences {
         defaults.put("s3.upload.metadata.md5", String.valueOf(false));
         defaults.put("s3.upload.multipart.concurency", String.valueOf(5));
         /**
-         * Threshold in bytes. Only use multipart uploads for files more than 5GB
+         * Threshold in bytes. Only use multipart uploads for files more than 10MB
          */
-        defaults.put("s3.upload.multipart.threshold", String.valueOf(1L * 1024L * 1024L * 1024L));
+        defaults.put("s3.upload.multipart.threshold", String.valueOf(10L * 1024L * 1024L));
         defaults.put("s3.upload.multipart.size", String.valueOf(5L * 1024L * 1024L));
 
         /**
