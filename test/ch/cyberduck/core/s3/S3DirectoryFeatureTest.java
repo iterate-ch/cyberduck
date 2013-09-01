@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 public class S3DirectoryFeatureTest extends AbstractTestCase {
 
     @Test
-    public void testMakeDirectory() throws Exception {
+    public void testMakeBucket() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
@@ -46,6 +46,22 @@ public class S3DirectoryFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        new S3DirectoryFeature(session).mkdir(test, null);
+        assertTrue(session.exists(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        session.close();
+    }
+
+    @Test
+    public void testMakePlaceholder() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new S3DirectoryFeature(session).mkdir(test, null);
         assertTrue(session.exists(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
