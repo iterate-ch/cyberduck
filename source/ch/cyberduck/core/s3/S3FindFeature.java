@@ -23,7 +23,7 @@ public class S3FindFeature implements Find {
     @Override
     public boolean find(final Path file) throws BackgroundException {
         try {
-            if(file.attributes().isDirectory()) {
+            if(file.attributes().isDirectory() && !file.attributes().isVolume()) {
                 return session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),
                         containerService.getKey(file) + Path.DELIMITER);
             }
