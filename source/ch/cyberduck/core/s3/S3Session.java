@@ -418,6 +418,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(type == UrlProvider.class) {
             return (T) new S3UrlProvider(this);
         }
+        if(type == Find.class) {
+            return (T) new S3FindFeature(this);
+        }
         return super.getFeature(type);
     }
 }
