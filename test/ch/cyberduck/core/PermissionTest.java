@@ -31,21 +31,21 @@ public class PermissionTest extends AbstractTestCase {
     @Test
     public void testGetAsDictionary() throws Exception {
         {
-            Permission p = new Permission("rwxrwxrwx");
+            Permission p = new Permission(777);
             assertEquals(p, new Permission(p.serialize(SerializerFactory.get())));
             assertTrue(p.isReadable());
             assertTrue(p.isWritable());
             assertTrue(p.isExecutable());
         }
         {
-            Permission p = new Permission("rwx------");
+            Permission p = new Permission(700);
             assertEquals(p, new Permission(p.serialize(SerializerFactory.get())));
             assertTrue(p.isReadable());
             assertTrue(p.isWritable());
             assertTrue(p.isExecutable());
         }
         {
-            Permission p = new Permission("r--------");
+            Permission p = new Permission(400);
             assertEquals(p, new Permission(p.serialize(SerializerFactory.get())));
             assertTrue(p.isReadable());
             assertFalse(p.isWritable());
