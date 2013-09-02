@@ -80,8 +80,11 @@ public class S3MultipleDeleteFeature implements Delete {
                 map.put(container, keys);
             }
         }
+        // Iterate over all containers and delete list of keys
         for(Map.Entry<Path, List<ObjectKeyAndVersion>> entry : map.entrySet()) {
-            this.delete(entry.getKey(), entry.getValue(), prompt);
+            final Path container = entry.getKey();
+            final List<ObjectKeyAndVersion> keys = entry.getValue();
+            this.delete(container, keys, prompt);
         }
         for(Path file : files) {
             if(containerService.isContainer(file)) {
@@ -128,5 +131,4 @@ public class S3MultipleDeleteFeature implements Delete {
             throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, container);
         }
     }
-
 }
