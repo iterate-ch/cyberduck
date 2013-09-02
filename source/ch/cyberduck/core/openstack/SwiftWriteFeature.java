@@ -106,7 +106,7 @@ public class SwiftWriteFeature implements Write {
     }
 
     /**
-     * @param file
+     * @param file File
      * @return No Content-Range support
      */
     @Override
