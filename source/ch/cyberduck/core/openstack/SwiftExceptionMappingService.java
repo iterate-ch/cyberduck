@@ -15,7 +15,7 @@ package ch.cyberduck.core.openstack;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.AbstractIOExceptionMappingService;
