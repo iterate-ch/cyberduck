@@ -41,7 +41,7 @@ public class S3ThresholdUploadService implements Upload {
     public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         if(status.getLength() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
-            new S3MultipartUploadService(session, Preferences.instance().getLong("s3.upload.multipart.size")).upload(file, throttle, listener, status);
+            new S3MultipartUploadService(session).upload(file, throttle, listener, status);
         }
         else {
             new S3SingleUploadService(session).upload(file, throttle, listener, status);
