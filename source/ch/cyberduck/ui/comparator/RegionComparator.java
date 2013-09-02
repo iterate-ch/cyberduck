@@ -21,6 +21,8 @@ package ch.cyberduck.ui.comparator;
 
 import ch.cyberduck.core.Path;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @version $Id$
  */
@@ -32,7 +34,10 @@ public class RegionComparator extends BrowserComparator {
     }
 
     @Override
-    protected int compareFirst(Path p1, Path p2) {
+    protected int compareFirst(final Path p1, final Path p2) {
+        if(StringUtils.isBlank(p1.attributes().getRegion()) || StringUtils.isBlank(p2.attributes().getRegion())) {
+            return 0;
+        }
         if(ascending) {
             return p1.attributes().getRegion().compareToIgnoreCase(p2.attributes().getRegion());
         }

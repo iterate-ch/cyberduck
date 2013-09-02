@@ -32,7 +32,7 @@ public class SizeComparator extends BrowserComparator {
     }
 
     @Override
-    protected int compareFirst(Path p1, Path p2) {
+    protected int compareFirst(final Path p1, final Path p2) {
         if(p1.attributes().getSize() > p2.attributes().getSize()) {
             return ascending ? 1 : -1;
         }

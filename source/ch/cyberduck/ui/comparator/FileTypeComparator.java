@@ -41,7 +41,7 @@ public class FileTypeComparator extends BrowserComparator {
     }
 
     @Override
-    protected int compareFirst(Path p1, Path p2) {
+    protected int compareFirst(final Path p1, final Path p2) {
         if((p1.attributes().isDirectory() && p2.attributes().isDirectory())
                 || p1.attributes().isFile() && p2.attributes().isFile()) {
             if(ascending) {

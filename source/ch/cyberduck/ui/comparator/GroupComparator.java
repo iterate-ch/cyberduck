@@ -34,7 +34,7 @@ public class GroupComparator extends BrowserComparator {
     }
 
     @Override
-    protected int compareFirst(Path p1, Path p2) {
+    protected int compareFirst(final Path p1, final Path p2) {
         if(StringUtils.isBlank(p1.attributes().getGroup()) || StringUtils.isBlank(p2.attributes().getGroup())) {
             return 0;
         }

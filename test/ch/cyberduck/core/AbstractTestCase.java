@@ -22,6 +22,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
+import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
@@ -111,6 +112,7 @@ public class AbstractTestCase {
         DisabledCertificateStore.register();
         DisabledPasswordStore.register();
         TemporaryFileService.register();
+        LaunchServicesFileDescriptor.register();
     }
 
     @Before

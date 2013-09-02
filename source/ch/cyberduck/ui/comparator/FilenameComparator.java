@@ -37,7 +37,7 @@ public class FilenameComparator extends BrowserComparator {
     }
 
     @Override
-    protected int compareFirst(Path p1, Path p2) {
+    protected int compareFirst(final Path p1, final Path p2) {
         if(ascending) {
             return impl.compare(p1.getName(), p2.getName());
         }
