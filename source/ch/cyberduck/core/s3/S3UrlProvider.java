@@ -69,9 +69,8 @@ public class S3UrlProvider implements UrlProvider {
                 // Torrent
                 final S3Service service = new RestS3Service(
                         new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword()));
-                list.add(new DescriptiveUrl(URI.create(service.createTorrentUrl(
-                        containerService.getContainer(file).getName(),
-                        containerService.getKey(file))), DescriptiveUrl.Type.torrent,
+                list.add(new DescriptiveUrl(URI.create(service.createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
+                        DescriptiveUrl.Type.torrent,
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
             }
         }
