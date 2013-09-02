@@ -8,7 +8,7 @@ import ch.cyberduck.core.features.Find;
 import org.jets3t.service.ServiceException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3FindFeature implements Find {
 
@@ -23,6 +23,10 @@ public class S3FindFeature implements Find {
     @Override
     public boolean find(final Path file) throws BackgroundException {
         try {
+            if(file.attributes().isDirectory()) {
+                return session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),
+                        containerService.getKey(file) + Path.DELIMITER);
+            }
             return session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),
                     containerService.getKey(file));
         }
