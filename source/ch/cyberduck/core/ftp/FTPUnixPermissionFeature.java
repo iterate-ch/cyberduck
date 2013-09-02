@@ -41,17 +41,9 @@ public class FTPUnixPermissionFeature implements UnixPermission {
     }
 
     private void sendCommand(final Path file, final String owner, final String command) throws IOException {
-        if(file.attributes().isFile() && !file.attributes().isSymbolicLink()) {
-            if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
-                throw new FTPException(session.getClient().getReplyCode(),
-                        session.getClient().getReplyString());
-            }
-        }
-        else if(file.attributes().isDirectory()) {
-            if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
-                throw new FTPException(session.getClient().getReplyCode(),
-                        session.getClient().getReplyString());
-            }
+        if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
+            throw new FTPException(session.getClient().getReplyCode(),
+                    session.getClient().getReplyString());
         }
     }
 
@@ -86,17 +78,9 @@ public class FTPUnixPermissionFeature implements UnixPermission {
             throw new FTPExceptionMappingService().map("Cannot change permissions", failure, file);
         }
         try {
-            if(file.attributes().isFile() && !file.attributes().isSymbolicLink()) {
-                if(!session.getClient().sendSiteCommand(String.format("CHMOD %s %s", permission.getOctalString(), file.getAbsolute()))) {
-                    throw failure = new FTPException(session.getClient().getReplyCode(),
-                            session.getClient().getReplyString());
-                }
-            }
-            else if(file.attributes().isDirectory()) {
-                if(!session.getClient().sendSiteCommand(String.format("CHMOD %s %s", permission.getOctalString(), file.getAbsolute()))) {
-                    throw failure = new FTPException(session.getClient().getReplyCode(),
-                            session.getClient().getReplyString());
-                }
+            if(!session.getClient().sendSiteCommand(String.format("CHMOD %s %s", permission.getOctalString(), file.getAbsolute()))) {
+                throw failure = new FTPException(session.getClient().getReplyCode(),
+                        session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
