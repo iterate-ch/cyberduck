@@ -34,6 +34,7 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -97,6 +98,9 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             distribution.setUrl(String.format("%s://%s.%s", method.getScheme(), container.getName(), "storage.googleapis.com"));
             distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
             distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
+            final LoggingConfiguration logging = new GoogleStorageLoggingFeature(session).getConfiguration(container);
+            distribution.setLogging(logging.isEnabled());
+            distribution.setLoggingContainer(logging.getLoggingTarget());
             return distribution;
         }
         catch(ServiceException e) {
@@ -122,6 +126,9 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
                 }
                 // Enable website endpoint
                 session.getClient().setWebsiteConfigImpl(container.getName(), new GSWebsiteConfig(suffix));
+                new GoogleStorageLoggingFeature(session).setConfiguration(container, new LoggingConfiguration(
+                        distribution.isEnabled(), distribution.getLoggingTarget()
+                ));
             }
             else {
                 // Disable website endpoint
