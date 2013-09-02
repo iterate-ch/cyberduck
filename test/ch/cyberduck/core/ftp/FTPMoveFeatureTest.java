@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.junit.Test;
@@ -52,8 +53,8 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         new DefaultTouchFeature(session).touch(test);
         final Path target = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new FTPMoveFeature(session).move(test, target);
-        assertFalse(session.exists(test));
-        assertTrue(session.exists(target));
+        assertFalse(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(target));
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
         session.close();
     }
@@ -71,8 +72,8 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         final Path target = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(target);
         new FTPMoveFeature(session).move(test, target);
-        assertFalse(session.exists(test));
-        assertTrue(session.exists(target));
+        assertFalse(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(target));
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
         session.close();
     }

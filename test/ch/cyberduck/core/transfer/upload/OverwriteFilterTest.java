@@ -2,7 +2,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
@@ -106,8 +106,16 @@ public class OverwriteFilterTest extends AbstractTestCase {
         file.setLocal(new NullLocal(null, "a"));
         assertFalse(f.prepare(new NullSession(new Host("h")) {
             @Override
-            public boolean exists(final Path path) throws BackgroundException {
-                return true;
+            public <T> T getFeature(final Class<T> type) {
+                if(type == Find.class) {
+                    return (T) new Find() {
+                        @Override
+                        public boolean find(final Path file) throws BackgroundException {
+                            return false;
+                        }
+                    };
+                }
+                return super.getFeature(type);
             }
         }, file, new ch.cyberduck.core.transfer.TransferStatus()).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());

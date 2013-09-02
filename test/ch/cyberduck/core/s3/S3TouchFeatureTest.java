@@ -39,9 +39,9 @@ public class S3TouchFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new S3TouchFeature(session).touch(test);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
-        assertFalse(session.exists(test));
+        assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
 }

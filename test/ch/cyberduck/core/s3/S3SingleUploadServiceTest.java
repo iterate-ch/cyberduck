@@ -46,7 +46,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         status.setLength(random.getBytes().length);
         Preferences.instance().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
         m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());
@@ -85,7 +85,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.getBytes().length);
         m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());

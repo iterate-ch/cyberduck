@@ -48,9 +48,9 @@ public class S3CopyFeatureTest extends AbstractTestCase {
         new S3TouchFeature(session).touch(test);
         final Path copy = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new S3CopyFeature(session).copy(test, copy);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
-        assertTrue(session.exists(copy));
+        assertTrue(new S3FindFeature(session).find(copy));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginController());
         session.close();
     }

@@ -7,6 +7,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -40,8 +41,16 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
         assertFalse(f.accept(new NullSession(new Host("h")) {
             @Override
-            public boolean exists(final Path path) throws BackgroundException {
-                return true;
+            public <T> T getFeature(final Class<T> type) {
+                if(type == Find.class) {
+                    return (T) new Find() {
+                        @Override
+                        public boolean find(final Path file) throws BackgroundException {
+                            return true;
+                        }
+                    };
+                }
+                return super.getFeature(type);
             }
         }, source, new TransferStatus().exists(true)));
     }

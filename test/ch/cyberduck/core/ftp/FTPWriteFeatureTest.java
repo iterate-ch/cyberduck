@@ -9,6 +9,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -42,7 +43,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
-        assertTrue(session.exists(test));
+        assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         {
             final byte[] buffer = new byte[content.length];

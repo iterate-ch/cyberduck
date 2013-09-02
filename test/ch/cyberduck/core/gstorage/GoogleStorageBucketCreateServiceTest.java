@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 
 import org.junit.Test;
@@ -44,8 +45,8 @@ public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
         }, new DisabledLoginController());
         final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
-        assertTrue(session.exists(bucket));
+        assertTrue(session.getFeature(Find.class).find(bucket));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
-        assertFalse(session.exists(bucket));
+        assertFalse(session.getFeature(Find.class).find(bucket));
     }
 }

@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Find;
 
 import org.junit.Test;
 
@@ -49,9 +50,9 @@ public class DAVDirectoryFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new DAVDirectoryFeature(session).mkdir(test, null);
-        assertTrue(session.exists(test));
+        assertTrue(session.getFeature(Find.class).find(test));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
-        assertFalse(session.exists(test));
+        assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
 }

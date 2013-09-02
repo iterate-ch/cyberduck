@@ -25,6 +25,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
@@ -122,7 +123,7 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path upload : this.getRoots()) {
-                if(session.exists(upload)) {
+                if(session.getFeature(Find.class).find(upload)) {
                     if(upload.attributes().isDirectory()) {
                         if(this.children(upload).isEmpty()) {
                             // Do not prompt for existing empty directories

@@ -61,7 +61,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         }
                     };
                 }
-                return null;
+                return super.getFeature(type);
             }
 
             @Override

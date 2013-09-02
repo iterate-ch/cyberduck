@@ -43,16 +43,16 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
                     //
                 }
             });
-            assertTrue(session.exists(archive.getArchive(Collections.<Path>singletonList(test))));
+            assertTrue(new SFTPFindFeature(session).find(archive.getArchive(Collections.<Path>singletonList(test))));
             new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
-            assertFalse(session.exists(test));
+            assertFalse(new SFTPFindFeature(session).find(test));
             feature.unarchive(archive, archive.getArchive(Collections.<Path>singletonList(test)), new ProgressListener() {
                 @Override
                 public void message(final String message) {
                     //
                 }
             });
-            assertTrue(session.exists(test));
+            assertTrue(new SFTPFindFeature(session).find(test));
             new SFTPDeleteFeature(session).delete(Collections.singletonList(archive.getArchive(
                     Collections.<Path>singletonList(test)
             )), new DisabledLoginController());

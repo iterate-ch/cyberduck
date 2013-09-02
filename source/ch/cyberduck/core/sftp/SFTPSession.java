@@ -22,7 +22,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.*;
 
 import org.apache.log4j.Logger;
@@ -32,7 +31,6 @@ import java.io.IOException;
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.ConnectionMonitor;
 import ch.ethz.ssh2.PacketListener;
-import ch.ethz.ssh2.SFTPException;
 import ch.ethz.ssh2.SFTPv3Client;
 import ch.ethz.ssh2.ServerHostKeyVerifier;
 
@@ -202,24 +200,6 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public boolean exists(final Path path) throws BackgroundException {
-        try {
-            try {
-                return this.sftp().canonicalPath(path.getAbsolute()) != null;
-            }
-            catch(SFTPException e) {
-                throw new SFTPExceptionMappingService().map(e);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
-        }
-        catch(NotfoundException e) {
-            return false;
-        }
-    }
-
-    @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         return new SFTPListService(this).list(file, listener);
     }
@@ -264,6 +244,9 @@ public class SFTPSession extends Session<Connection> {
         }
         if(type == Compress.class) {
             return (T) new SFTPCompressFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new SFTPFindFeature(this);
         }
         return super.getFeature(type);
     }

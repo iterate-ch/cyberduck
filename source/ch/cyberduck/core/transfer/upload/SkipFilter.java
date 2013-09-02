@@ -20,6 +20,7 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -36,9 +37,9 @@ public class SkipFilter extends AbstractUploadFilter {
      * Skip files that already exist on the server.
      */
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         if(parent.isExists()) {
-            if(session.exists(file)) {
+            if(session.getFeature(Find.class).find(file)) {
                 return false;
             }
         }

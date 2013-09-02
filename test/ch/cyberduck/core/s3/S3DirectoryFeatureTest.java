@@ -47,7 +47,7 @@ public class S3DirectoryFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new S3DirectoryFeature(session).mkdir(test, null);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
@@ -63,7 +63,7 @@ public class S3DirectoryFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new S3DirectoryFeature(session).mkdir(test, null);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }

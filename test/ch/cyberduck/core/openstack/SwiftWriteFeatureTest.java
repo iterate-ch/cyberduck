@@ -21,7 +21,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftWriteFeatureTest extends AbstractTestCase {
 
@@ -44,7 +44,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
-        assertTrue(session.exists(test));
+        assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());

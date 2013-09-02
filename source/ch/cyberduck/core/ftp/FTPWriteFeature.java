@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -87,6 +88,6 @@ public class FTPWriteFeature implements Write {
 
     @Override
     public boolean append(final Path file) throws BackgroundException {
-        return session.exists(file);
+        return session.getFeature(Find.class).find(file);
     }
 }

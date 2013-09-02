@@ -17,7 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3MoveFeatureTest extends AbstractTestCase {
 
@@ -33,10 +33,10 @@ public class S3MoveFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new S3TouchFeature(session).touch(test);
         final Path renamed = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         new S3MoveFeature(session).move(test, renamed);
-        assertFalse(session.exists(test));
-        assertTrue(session.exists(renamed));
+        assertFalse(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(renamed), new DisabledLoginController());
         session.close();
     }

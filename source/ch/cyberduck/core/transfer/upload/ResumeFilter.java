@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -39,10 +40,10 @@ public class ResumeFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
-                if(session.exists(file)) {
+                if(session.getFeature(Find.class).find(file)) {
                     final long size = this.getSize(session, file);
                     if(size >= file.getLocal().attributes().getSize()) {
                         // No need to resume completed transfers

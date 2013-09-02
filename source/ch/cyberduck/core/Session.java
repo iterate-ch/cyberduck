@@ -21,8 +21,9 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -343,23 +344,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     }
 
     /**
-     * Check for file existence. The default implementation does a directory listing of the parent folder.
-     *
-     * @return True if the path is cached.
-     */
-    public boolean exists(final Path path) throws BackgroundException {
-        if(path.isRoot()) {
-            return true;
-        }
-        try {
-            return this.list(path.getParent(), new DisabledListProgressListener()).contains(path.getReference());
-        }
-        catch(NotfoundException e) {
-            return false;
-        }
-    }
-
-    /**
      * @param file     Directory
      * @param listener Callback
      */
@@ -375,6 +359,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         }
         if(type == UrlProvider.class) {
             return (T) new DefaultUrlProvider(host);
+        }
+        if(type == Find.class) {
+            return (T) new DefaultFindFeature(this);
         }
         return null;
     }

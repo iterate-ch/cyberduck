@@ -22,6 +22,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -46,7 +47,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     @Override
     public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         Path renamed = file;
-        while(session.exists(renamed)) {
+        while(session.getFeature(Find.class).find(renamed)) {
             String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
                     FilenameUtils.getBaseName(file.getName()),
                     UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),

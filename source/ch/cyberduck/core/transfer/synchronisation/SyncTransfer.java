@@ -27,6 +27,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
@@ -161,7 +162,7 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Children for %s", parent));
         }
         final Set<Path> children = new HashSet<Path>();
-        if(session.exists(parent)) {
+        if(session.getFeature(Find.class).find(parent)) {
             children.addAll(_delegateDownload.children(parent));
         }
         if(parent.getLocal().exists()) {

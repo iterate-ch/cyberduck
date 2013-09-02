@@ -27,7 +27,7 @@ public class SFTPMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed) throws BackgroundException {
         try {
-            if(session.exists(renamed)) {
+            if(new SFTPFindFeature(session).find(renamed)) {
                 new SFTPDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginController());
             }
             session.sftp().mv(file.getAbsolute(), renamed.getAbsolute());

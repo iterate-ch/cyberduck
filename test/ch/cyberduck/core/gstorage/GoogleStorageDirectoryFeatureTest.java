@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 
@@ -61,7 +62,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
         }, new DisabledLoginController());
         final Path test = new Path(new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new S3DirectoryFeature(session).mkdir(test, null);
-        assertTrue(session.exists(test));
+        assertTrue(session.getFeature(Find.class).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }

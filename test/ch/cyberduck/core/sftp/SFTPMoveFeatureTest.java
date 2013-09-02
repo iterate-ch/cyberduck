@@ -52,8 +52,8 @@ public class SFTPMoveFeatureTest extends AbstractTestCase {
         new DefaultTouchFeature(session).touch(test);
         final Path target = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new SFTPMoveFeature(session).move(test, target);
-        assertFalse(session.exists(test));
-        assertTrue(session.exists(target));
+        assertFalse(new SFTPFindFeature(session).find(test));
+        assertTrue(new SFTPFindFeature(session).find(target));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
     }
 
@@ -70,8 +70,8 @@ public class SFTPMoveFeatureTest extends AbstractTestCase {
         final Path target = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(target);
         new SFTPMoveFeature(session).move(test, target);
-        assertFalse(session.exists(test));
-        assertTrue(session.exists(target));
+        assertFalse(new SFTPFindFeature(session).find(test));
+        assertTrue(new SFTPFindFeature(session).find(target));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
     }
 

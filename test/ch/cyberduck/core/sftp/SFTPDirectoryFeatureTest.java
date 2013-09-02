@@ -50,7 +50,7 @@ public class SFTPDirectoryFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new SFTPDirectoryFeature(session).mkdir(test, null);
-        assertTrue(session.exists(test));
+        assertTrue(new SFTPFindFeature(session).find(test));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }

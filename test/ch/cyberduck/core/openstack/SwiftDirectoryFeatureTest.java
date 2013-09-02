@@ -48,9 +48,9 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new SwiftDirectoryFeature(session).mkdir(container, null);
-        assertTrue(session.exists(container));
+        assertTrue(new SwiftFindFeature(session).find(container));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController());
-        assertFalse(session.exists(container));
+        assertFalse(new SwiftFindFeature(session).find(container));
     }
 
     @Test
@@ -64,8 +64,8 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new SwiftDirectoryFeature(session).mkdir(placeholder, null);
-        assertTrue(session.exists(placeholder));
+        assertTrue(new SwiftFindFeature(session).find(placeholder));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController());
-        assertFalse(session.exists(placeholder));
+        assertFalse(new SwiftFindFeature(session).find(placeholder));
     }
 }

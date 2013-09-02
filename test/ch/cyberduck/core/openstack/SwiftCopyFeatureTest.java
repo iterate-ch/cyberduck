@@ -51,8 +51,8 @@ public class SwiftCopyFeatureTest extends AbstractTestCase {
         new SwiftTouchFeature(session).touch(test);
         final Path copy = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new SwiftCopyFeature(session).copy(test, copy);
-        assertTrue(session.exists(test));
-        assertTrue(session.exists(copy));
+        assertTrue(new SwiftFindFeature(session).find(test));
+        assertTrue(new SwiftFindFeature(session).find(copy));
         new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginController());
         session.close();
     }

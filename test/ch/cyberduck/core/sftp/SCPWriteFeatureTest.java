@@ -41,7 +41,7 @@ public class SCPWriteFeatureTest extends AbstractTestCase {
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
-        assertTrue(session.exists(test));
+        assertTrue(new SFTPFindFeature(session).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SCPReadFeature(session).read(test, new TransferStatus());

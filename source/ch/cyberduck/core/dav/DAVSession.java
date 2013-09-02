@@ -21,10 +21,10 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
@@ -121,31 +121,6 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public boolean exists(final Path path) throws BackgroundException {
-        if(super.exists(path)) {
-            return true;
-        }
-        try {
-            if(path.attributes().isDirectory()) {
-                // Parent directory may not be accessible. Issue #5662
-                try {
-                    return this.getClient().exists(new DAVPathEncoder().encode(path));
-                }
-                catch(SardineException e) {
-                    throw new DAVExceptionMappingService().map("Cannot read file attributes", e, path);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e, path);
-                }
-            }
-        }
-        catch(NotfoundException e) {
-            return false;
-        }
-        return false;
-    }
-
-    @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         return new DAVListService(this).list(file, listener);
     }
@@ -175,6 +150,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(type == Copy.class) {
             return (T) new DAVCopyFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new DAVFindFeature(this);
         }
         return super.getFeature(type);
     }

@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.junit.Test;
@@ -34,10 +35,10 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new DAVDirectoryFeature(session).mkdir(test, null);
-        assertTrue(session.exists(test));
+        assertTrue(session.getFeature(Find.class).find(test));
         new DefaultTouchFeature(session).touch(new Path(test, UUID.randomUUID().toString(), Path.FILE_TYPE));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
-        assertFalse(session.exists(test));
+        assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
 

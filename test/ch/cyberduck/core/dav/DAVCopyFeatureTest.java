@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
 
 import org.junit.Test;
@@ -51,8 +52,8 @@ public class DAVCopyFeatureTest extends AbstractTestCase {
         session.getFeature(Touch.class).touch(test);
         final Path copy = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DAVCopyFeature(session).copy(test, copy);
-        assertTrue(session.exists(test));
-        assertTrue(session.exists(copy));
+        assertTrue(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(copy));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginController());
         session.close();

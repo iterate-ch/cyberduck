@@ -43,7 +43,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         status.setLength((long) random.getBytes().length);
         Preferences.instance().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
         m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());
@@ -88,7 +88,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
@@ -129,11 +129,11 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
             // Expected
         }
         status.setAppend(true);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         assertEquals(0L, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         new S3MultipartUploadService(session, 10485760L).upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         final byte[] buffer = new byte[random.length];
@@ -180,7 +180,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         }
         status.setAppend(true);
         new S3MultipartUploadService(session, 10485760L).upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         final byte[] buffer = new byte[random.length];

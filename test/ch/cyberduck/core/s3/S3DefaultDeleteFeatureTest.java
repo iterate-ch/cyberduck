@@ -35,9 +35,9 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new S3TouchFeature(session).touch(test);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
-        assertFalse(session.exists(test));
+        assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
 
@@ -53,9 +53,9 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new S3DirectoryFeature(session).mkdir(test, null);
-        assertTrue(session.exists(test));
+        assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
-        assertFalse(session.exists(test));
+        assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
 
@@ -70,9 +70,9 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         new S3DirectoryFeature(session).mkdir(container, null);
-        assertTrue(session.exists(container));
+        assertTrue(new S3FindFeature(session).find(container));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
-        assertFalse(session.exists(container));
+        assertFalse(new S3FindFeature(session).find(container));
         session.close();
     }
 

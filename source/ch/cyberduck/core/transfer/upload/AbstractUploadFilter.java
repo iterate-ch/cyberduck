@@ -28,6 +28,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -52,7 +53,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
         if(!file.getLocal().exists()) {
             // Local file is no more here
             return false;
@@ -90,7 +91,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             // Parent directory exists. Check child.
             if(file.attributes().isDirectory()) {
                 // Do not attempt to create a directory that already exists
-                if(session.exists(file)) {
+                if(session.getFeature(Find.class).find(file)) {
                     status.setExists(true);
                 }
             }

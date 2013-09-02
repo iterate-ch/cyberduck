@@ -3,12 +3,13 @@ package ch.cyberduck.core.synchronization;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.Local;
 
 import org.junit.Test;
 
@@ -26,8 +27,16 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
     public void testCompare() throws Exception {
         ComparisonService s = new CombinedComparisionService(new FTPSession(new Host("t")) {
             @Override
-            public boolean exists(final Path path) throws BackgroundException {
-                return true;
+            public <T> T getFeature(final Class<T> type) {
+                if(type == Find.class) {
+                    return (T) new Find() {
+                        @Override
+                        public boolean find(final Path file) throws BackgroundException {
+                            return false;
+                        }
+                    };
+                }
+                return super.getFeature(type);
             }
         });
         assertEquals(Comparison.EQUAL, s.compare(new Path("t", Path.FILE_TYPE) {

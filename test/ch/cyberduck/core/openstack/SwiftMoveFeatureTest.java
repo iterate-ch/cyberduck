@@ -53,12 +53,12 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         test.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(test);
-        assertTrue(session.exists(test));
+        assertTrue(new SwiftFindFeature(session).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         target.attributes().setRegion("DFW");
         new SwiftMoveFeature(session).move(test, target);
-        assertFalse(session.exists(test));
-        assertTrue(session.exists(target));
+        assertFalse(new SwiftFindFeature(session).find(test));
+        assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
     }
 
@@ -80,8 +80,8 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         target.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(target);
         new SwiftMoveFeature(session).move(test, target);
-        assertFalse(session.exists(test));
-        assertTrue(session.exists(target));
+        assertFalse(new SwiftFindFeature(session).find(test));
+        assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
     }
 

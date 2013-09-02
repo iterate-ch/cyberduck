@@ -43,7 +43,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
-        assertTrue(session.exists(test));
+        assertTrue(new SFTPFindFeature(session).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         {
             final byte[] buffer = new byte[content.length];
@@ -75,10 +75,10 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path target = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new SFTPTouchFeature(session).touch(target);
-        assertTrue(session.exists(target));
+        assertTrue(new SFTPFindFeature(session).find(target));
         final Path symlink = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new SFTPSymlinkFeature(session).symlink(symlink, target.getName());
-        assertTrue(session.exists(symlink));
+        assertTrue(new SFTPFindFeature(session).find(symlink));
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);

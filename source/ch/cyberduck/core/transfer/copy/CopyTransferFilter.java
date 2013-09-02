@@ -25,6 +25,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -52,12 +53,12 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Session session, final Path source, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Session<?> session, final Path source, final TransferStatus parent) throws BackgroundException {
         if(source.attributes().isDirectory()) {
             if(parent.isExists()) {
                 final Path destination = files.get(source);
                 // Do not attempt to create a directory that already exists
-                if(session.exists(destination)) {
+                if(session.getFeature(Find.class).find(destination)) {
                     return false;
                 }
             }

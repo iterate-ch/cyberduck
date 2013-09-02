@@ -18,21 +18,20 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -50,9 +49,6 @@ import ch.iterate.openstack.swift.model.Region;
  */
 public class SwiftSession extends HttpSession<Client> {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
-
-    private PathContainerService containerService
-            = new PathContainerService();
 
     private SwiftDistributionConfiguration cdn
             = new SwiftDistributionConfiguration(this);
@@ -106,28 +102,6 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public boolean exists(final Path file) throws BackgroundException {
-        try {
-            if(containerService.isContainer(file)) {
-                try {
-                    return this.getClient().containerExists(this.getRegion(containerService.getContainer(file)),
-                            file.getName());
-                }
-                catch(GenericException e) {
-                    throw new SwiftExceptionMappingService().map("Cannot read file attributes", e, file);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, file);
-                }
-            }
-            return super.exists(file);
-        }
-        catch(NotfoundException e) {
-            return false;
-        }
-    }
-
-    @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return new AttributedList<Path>(new SwiftContainerListService().list(this));
@@ -174,6 +148,9 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == UrlProvider.class) {
             return (T) new SwiftUrlProvider(this);
+        }
+        if(type == Find.class) {
+            return (T) new SwiftFindFeature(this);
         }
         return super.getFeature(type);
     }
