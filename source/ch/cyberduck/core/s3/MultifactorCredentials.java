@@ -23,9 +23,9 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-class MultifactorCredentials extends Credentials {
+public class MultifactorCredentials extends Credentials {
 
     public MultifactorCredentials() {
         super(Preferences.instance().getProperty("s3.mfa.serialnumber"), null, false);
