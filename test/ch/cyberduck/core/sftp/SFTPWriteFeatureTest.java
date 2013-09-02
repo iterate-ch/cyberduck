@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -102,5 +103,17 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         assertFalse(new SFTPListService(session).list(session.workdir(), new DisabledListProgressListener()).get(
                 symlink.getReference()).attributes().isSymbolicLink());
         new SFTPDeleteFeature(session).delete(Arrays.asList(target, symlink), new DisabledLoginController());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testWriteNotFound() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(session.home().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), Path.FILE_TYPE);
+        new SFTPWriteFeature(session).write(test, new TransferStatus());
     }
 }
