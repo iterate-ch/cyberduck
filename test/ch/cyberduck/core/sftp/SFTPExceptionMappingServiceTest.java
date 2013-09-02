@@ -20,7 +20,6 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -35,6 +34,7 @@ public class SFTPExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testMapReadFailure() throws Exception {
-        Assert.assertEquals(SocketException.class, new SFTPExceptionMappingService().map(new IOException("Unexpected end of sftp stream.")).getCause().getClass());
+        assertEquals(SocketException.class,
+                new SFTPExceptionMappingService().map(new IOException("Unexpected end of sftp stream.")).getCause().getClass());
     }
 }
