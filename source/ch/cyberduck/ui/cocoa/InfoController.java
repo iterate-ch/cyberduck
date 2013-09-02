@@ -25,6 +25,7 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.Cname;
+import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
@@ -2418,7 +2419,7 @@ public class InfoController extends ToolbarWindowController {
         Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
         distributionEnableButton.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
-        distributionLoggingButton.setEnabled(stop && enable && cdn.getFeature(Logging.class, method) != null);
+        distributionLoggingButton.setEnabled(stop && enable && cdn.getFeature(DistributionLogging.class, method) != null);
         if(enable) {
             final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method);
             final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method);
@@ -2438,7 +2439,7 @@ public class InfoController extends ToolbarWindowController {
         else {
             distributionAnalyticsButton.setEnabled(false);
         }
-        distributionLoggingPopup.setEnabled(stop && enable && cdn.getFeature(Logging.class, method) != null);
+        distributionLoggingPopup.setEnabled(stop && enable && cdn.getFeature(DistributionLogging.class, method) != null);
         distributionCnameField.setEnabled(stop && enable && cdn.getFeature(Cname.class, method) != null);
         distributionInvalidateObjectsButton.setEnabled(stop && enable && cdn.getFeature(Purge.class, method) != null);
         distributionDefaultRootPopup.setEnabled(stop && enable && cdn.getFeature(Index.class, method) != null);
