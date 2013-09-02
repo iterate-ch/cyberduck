@@ -94,28 +94,30 @@ public class SwiftAuthenticationService {
         else if(context.contains("2.0")) {
             // Prompt for tenant
             final String user;
-            final String tenant;
+            String tenant = null;
             if(StringUtils.contains(credentials.getUsername(), ':')) {
                 tenant = StringUtils.split(credentials.getUsername(), ':')[0];
                 user = StringUtils.split(credentials.getUsername(), ':')[1];
             }
             else {
                 user = credentials.getUsername();
-                final Credentials tenantCredentials = new Credentials() {
-                    @Override
-                    public String getUsernamePlaceholder() {
-                        return LocaleFactory.localizedString("Tenant", "Mosso");
-                    }
-                };
+                final Credentials tenantCredentials = new TenantCredentials();
                 final LoginOptions options = new LoginOptions();
                 options.user = false;
                 options.password = false;
-                prompt.prompt(host.getProtocol(), tenantCredentials,
-                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        LocaleFactory.localizedString("Tenant or project identifier", "Mosso"), options);
-                tenant = tenantCredentials.getUsername();
-                // Save tenant in username
-                credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
+                try {
+                    prompt.prompt(host.getProtocol(), tenantCredentials,
+                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                            LocaleFactory.localizedString("Tenant or project identifier", "Mosso"), options);
+                    if(StringUtils.isNotBlank(tenantCredentials.getUsername())) {
+                        tenant = tenantCredentials.getUsername();
+                        // Save tenant in username
+                        credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
+                    }
+                }
+                catch(LoginCanceledException e) {
+                    // No tenant provided. Continue anyway.
+                }
             }
             if(host.getHostname().endsWith("identity.hpcloudsvc.com")) {
                 return new Authentication20AccessKeySecretKeyRequest(
