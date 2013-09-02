@@ -32,7 +32,7 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
                     return (T) new Find() {
                         @Override
                         public boolean find(final Path file) throws BackgroundException {
-                            return false;
+                            return true;
                         }
                     };
                 }
