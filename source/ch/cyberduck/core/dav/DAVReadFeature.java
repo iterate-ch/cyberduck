@@ -48,6 +48,9 @@ public class DAVReadFeature implements Read {
         Map<String, String> headers = new HashMap<String, String>();
         if(status.isAppend()) {
             headers.put(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-");
+            // Disable compression
+            headers.put(HttpHeaders.ACCEPT, "identity");
+            session.getClient().disableCompression();
         }
         try {
             return session.getClient().get(new DAVPathEncoder().encode(file), headers);

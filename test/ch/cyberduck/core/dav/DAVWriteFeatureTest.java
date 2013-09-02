@@ -14,6 +14,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.UUID;
@@ -44,9 +45,20 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         assertTrue(session.exists(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        final byte[] buffer = new byte[content.length];
-        IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
-        assertArrayEquals(content, buffer);
+        {
+            final byte[] buffer = new byte[content.length];
+            IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
+            assertArrayEquals(content, buffer);
+        }
+        {
+            final byte[] buffer = new byte[content.length - 1];
+            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).current(1L));
+            IOUtils.readFully(in, buffer);
+            IOUtils.closeQuietly(in);
+            final byte[] reference = new byte[content.length - 1];
+            System.arraycopy(content, 1, reference, 0, content.length - 1);
+            assertArrayEquals(reference, buffer);
+        }
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
