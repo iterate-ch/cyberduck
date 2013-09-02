@@ -39,5 +39,5 @@ public interface Write {
      * @param file File
      * @return True if can append to existing file
      */
-    boolean append(Path file);
+    boolean append(Path file) throws BackgroundException;
 }

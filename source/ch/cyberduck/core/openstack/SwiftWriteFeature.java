@@ -111,7 +111,7 @@ public class SwiftWriteFeature implements Write {
      * @return No Content-Range support
      */
     @Override
-    public boolean append(final Path file) {
+    public boolean append(final Path file) throws BackgroundException {
         return false;
     }
 }

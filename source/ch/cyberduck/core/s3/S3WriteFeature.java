@@ -48,7 +48,10 @@ public class S3WriteFeature implements Write {
      * @return No Content-Range support
      */
     @Override
-    public boolean append(final Path file) {
-        return file.getLocal().attributes().getSize() > Preferences.instance().getLong("s3.upload.multipart.threshold");
+    public boolean append(final Path file) throws BackgroundException {
+        if(file.getLocal().attributes().getSize() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
+            return new S3MultipartUploadService(session).find(file) != null;
+        }
+        return false;
     }
 }
