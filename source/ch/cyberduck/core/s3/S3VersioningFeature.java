@@ -162,19 +162,8 @@ public class S3VersioningFeature implements Versioning {
      *          Prompt dismissed
      */
     protected Credentials getToken(final LoginController controller) throws ConnectionCanceledException {
-        final Credentials credentials = new Credentials(
-                Preferences.instance().getProperty("s3.mfa.serialnumber"), null, false) {
-            @Override
-            public String getUsernamePlaceholder() {
-                return LocaleFactory.localizedString("MFA Serial Number", "S3");
-            }
-
-            @Override
-            public String getPasswordPlaceholder() {
-                return LocaleFactory.localizedString("MFA Authentication Code", "S3");
-            }
-        };
-        // Prompt for MFA credentials.
+        final Credentials credentials = new MultifactorCredentials();
+        // Prompt for multi factor authentication credentials.
         controller.prompt(session.getHost().getProtocol(), credentials,
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                 LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions());
@@ -182,5 +171,4 @@ public class S3VersioningFeature implements Versioning {
         Preferences.instance().setProperty("s3.mfa.serialnumber", credentials.getUsername());
         return credentials;
     }
-
 }
