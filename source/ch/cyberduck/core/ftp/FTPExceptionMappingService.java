@@ -68,6 +68,9 @@ public class FTPExceptionMappingService extends AbstractIOExceptionMappingServic
             if(((FTPException) e).getCode() == FTPReply.NEED_ACCOUNT_FOR_STORING_FILES) {
                 return new AccessDeniedException(buffer.toString(), e);
             }
+            if(((FTPException) e).getCode() == FTPReply.FILE_NAME_NOT_ALLOWED) {
+                return new AccessDeniedException(buffer.toString(), e);
+            }
             if(((FTPException) e).getCode() == FTPReply.FILE_UNAVAILABLE) {
                 // Requested action not taken. File unavailable (e.g., file not found, no access)
                 return new NotfoundException(buffer.toString(), e);
