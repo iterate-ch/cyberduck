@@ -129,9 +129,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
             // Expected
         }
         status.setAppend(true);
-        assertTrue(new S3FindFeature(session).find(test));
-        assertEquals(0L, session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        assertFalse(new S3FindFeature(session).find(test));
         new S3MultipartUploadService(session, 10485760L).upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
