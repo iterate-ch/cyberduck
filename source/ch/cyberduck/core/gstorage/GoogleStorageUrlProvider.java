@@ -22,6 +22,7 @@ import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.s3.S3UrlProvider;
 
 import java.net.URI;
@@ -30,10 +31,12 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public class GoogleStorageUrlProvider extends S3UrlProvider {
+public class GoogleStorageUrlProvider implements UrlProvider {
+
+    private GoogleStorageSession session;
 
     public GoogleStorageUrlProvider(final GoogleStorageSession session) {
-        super(session);
+        this.session = session;
     }
 
     /**
@@ -46,7 +49,7 @@ public class GoogleStorageUrlProvider extends S3UrlProvider {
      */
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        final DescriptiveUrlBag list = super.toUrl(file);
+        final DescriptiveUrlBag list = new S3UrlProvider(session).toUrl(file);
         if(file.attributes().isFile()) {
             // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
             list.add(new DescriptiveUrl(URI.create(String.format("https://storage.cloud.google.com%s",
