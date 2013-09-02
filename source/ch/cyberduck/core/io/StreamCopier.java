@@ -32,7 +32,7 @@ import java.io.OutputStream;
 /**
  * @version $Id$
  */
-public class StreamCopier {
+public final class StreamCopier {
     private static final Logger log = Logger.getLogger(StreamCopier.class);
 
     private TransferStatus status;

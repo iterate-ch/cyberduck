@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
  *
  * @version $Id$
  */
-public class TransferStatus {
+public final class TransferStatus {
     private static final Logger log = Logger.getLogger(TransferStatus.class);
 
     public static final long KILO = 1024; //2^10
