@@ -27,8 +27,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.UUID;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -50,11 +54,12 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path home = session.home();
         final long modified = System.currentTimeMillis();
-        final Path test = new Path(home, "test", Path.FILE_TYPE);
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        new DefaultTouchFeature(session).touch(test);
         new FTPUTIMETimestampFeature(session).setTimestamp(test, -1L, modified, -1L);
+        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
-
 
     @Test
     public void testFeature() throws Exception {
