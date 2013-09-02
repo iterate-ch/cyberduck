@@ -55,7 +55,7 @@ import ch.iterate.openstack.swift.model.ContainerMetadata;
 /**
  * @version $Id$
  */
-public class SwiftDistributionConfiguration implements DistributionConfiguration {
+public class SwiftDistributionConfiguration implements DistributionConfiguration, Index, Logging {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
     private SwiftSession session;

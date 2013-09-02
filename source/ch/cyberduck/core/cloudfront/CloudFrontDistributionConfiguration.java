@@ -69,7 +69,8 @@ import java.util.concurrent.Callable;
  *
  * @version $Id$
  */
-public class CloudFrontDistributionConfiguration implements DistributionConfiguration, Purge {
+public class CloudFrontDistributionConfiguration
+        implements DistributionConfiguration, Purge, Index, Logging, Cname {
     private static Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
     private S3Session session;
