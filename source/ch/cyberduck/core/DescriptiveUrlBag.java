@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
  * @version $Id$
  */
 public class DescriptiveUrlBag extends LinkedHashSet<DescriptiveUrl> {
+    private static final long serialVersionUID = 6056908616987839368L;
 
     public DescriptiveUrlBag() {
         //
@@ -35,6 +36,14 @@ public class DescriptiveUrlBag extends LinkedHashSet<DescriptiveUrl> {
 
     public static DescriptiveUrlBag empty() {
         return new DescriptiveUrlBag();
+    }
+
+    @Override
+    public boolean add(final DescriptiveUrl url) {
+        if(url.equals(DescriptiveUrl.EMPTY)) {
+            return false;
+        }
+        return super.add(url);
     }
 
     /**
