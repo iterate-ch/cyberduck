@@ -49,7 +49,7 @@ public class GoogleStorageUrlProvider extends S3UrlProvider {
         final DescriptiveUrlBag list = super.toUrl(file);
         if(file.attributes().isFile()) {
             // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
-            list.add(new DescriptiveUrl(URI.create(String.format("https://sandbox.google.com/storage%s",
+            list.add(new DescriptiveUrl(URI.create(String.format("https://storage.cloud.google.com%s",
                     URIEncoder.encode(file.getAbsolute()))), DescriptiveUrl.Type.authenticated,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Authenticated"))));
         }
