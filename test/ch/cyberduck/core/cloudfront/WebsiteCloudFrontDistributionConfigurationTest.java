@@ -89,7 +89,6 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
         assertEquals("The specified bucket does not have a website configuration", distribution.getStatus());
     }
 
-
     @Test
     public void testFeatures() {
         final CloudFrontDistributionConfiguration d = new WebsiteCloudFrontDistributionConfiguration(
