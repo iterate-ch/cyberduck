@@ -10,8 +10,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Cname;
+import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
-import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -162,7 +162,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         assertNotNull(d.getFeature(Index.class, Distribution.WEBSITE_CDN));
         assertNull(d.getFeature(Index.class, Distribution.STREAMING));
         assertNull(d.getFeature(Index.class, Distribution.WEBSITE));
-        assertNotNull(d.getFeature(Logging.class, Distribution.DOWNLOAD));
+        assertNotNull(d.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Cname.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD));
     }

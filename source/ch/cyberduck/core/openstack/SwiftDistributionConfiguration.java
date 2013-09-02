@@ -30,8 +30,8 @@ import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
+import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
-import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
@@ -55,7 +55,7 @@ import ch.iterate.openstack.swift.model.ContainerMetadata;
 /**
  * @version $Id$
  */
-public class SwiftDistributionConfiguration implements DistributionConfiguration, Index, Logging {
+public class SwiftDistributionConfiguration implements DistributionConfiguration, Index, DistributionLogging {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
     private SwiftSession session;
@@ -158,7 +158,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
         if(type == Index.class) {
             return (T) this;
         }
-        if(type == Logging.class) {
+        if(type == DistributionLogging.class) {
             return (T) this;
         }
         if(type == IdentityConfiguration.class) {

@@ -19,7 +19,7 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.cdn.features.Logging;
+import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3LoggingFeature;
@@ -35,7 +35,7 @@ import org.jets3t.service.model.GSBucketLoggingStatus;
 /**
  * @version $Id$
  */
-public class GoogleStorageLoggingFeature extends S3LoggingFeature implements Logging {
+public class GoogleStorageLoggingFeature extends S3LoggingFeature implements DistributionLogging {
 
     final GoogleStorageSession session;
 

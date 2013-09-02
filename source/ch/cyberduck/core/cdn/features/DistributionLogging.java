@@ -18,7 +18,7 @@ package ch.cyberduck.core.cdn.features;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public interface Logging {
+public interface DistributionLogging {
 }

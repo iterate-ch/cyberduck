@@ -25,8 +25,8 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.Cname;
+import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
-import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -70,7 +70,7 @@ import java.util.concurrent.Callable;
  * @version $Id$
  */
 public class CloudFrontDistributionConfiguration
-        implements DistributionConfiguration, Purge, Index, Logging, Cname {
+        implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
     private static Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
     private S3Session session;
@@ -259,7 +259,7 @@ public class CloudFrontDistributionConfiguration
                     // Configure CDN
                     LoggingStatus loggingStatus = null;
                     if(distribution.isLogging()) {
-                        if(getFeature(Logging.class, distribution.getMethod()) != null) {
+                        if(getFeature(DistributionLogging.class, distribution.getMethod()) != null) {
                             final String loggingTarget;
                             if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
                                 loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingTarget(),
@@ -313,7 +313,7 @@ public class CloudFrontDistributionConfiguration
                 return (T) this;
             }
         }
-        if(type == Logging.class) {
+        if(type == DistributionLogging.class) {
             if(method.equals(Distribution.DOWNLOAD)
                     || method.equals(Distribution.STREAMING)
                     || method.equals(Distribution.CUSTOM)) {
@@ -567,7 +567,7 @@ public class CloudFrontDistributionConfiguration
         if(this.getFeature(Purge.class, method) != null) {
             distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
         }
-        if(this.getFeature(Logging.class, method) != null) {
+        if(this.getFeature(DistributionLogging.class, method) != null) {
             distribution.setContainers(new S3BucketListService().list(session));
         }
         return distribution;

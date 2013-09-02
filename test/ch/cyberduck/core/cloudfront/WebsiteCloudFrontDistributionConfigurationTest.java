@@ -8,8 +8,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
+import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
-import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -102,7 +102,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
         assertNotNull(d.getFeature(Index.class, Distribution.WEBSITE_CDN));
         assertNotNull(d.getFeature(Index.class, Distribution.WEBSITE));
         assertNull(d.getFeature(Index.class, Distribution.STREAMING));
-        assertNotNull(d.getFeature(Logging.class, Distribution.DOWNLOAD));
+        assertNotNull(d.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Cname.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Cname.class, Distribution.WEBSITE));
         assertNotNull(d.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD));
