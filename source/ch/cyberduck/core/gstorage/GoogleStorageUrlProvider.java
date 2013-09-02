@@ -21,6 +21,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.s3.S3UrlProvider;
 
 import java.net.URI;
@@ -48,7 +49,8 @@ public class GoogleStorageUrlProvider extends S3UrlProvider {
         final DescriptiveUrlBag list = super.toUrl(file);
         if(file.attributes().isFile()) {
             // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
-            list.add(new DescriptiveUrl(URI.create(String.format("https://sandbox.google.com/storage%s", file.getAbsolute())), DescriptiveUrl.Type.authenticated,
+            list.add(new DescriptiveUrl(URI.create(String.format("https://sandbox.google.com/storage%s",
+                    URIEncoder.encode(file.getAbsolute()))), DescriptiveUrl.Type.authenticated,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Authenticated"))));
         }
         return list;

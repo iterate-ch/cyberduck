@@ -41,4 +41,14 @@ public class GoogleStorageUrlProviderTest extends AbstractTestCase {
         assertEquals("https://sandbox.google.com/storage/c/f", new GoogleStorageUrlProvider(session).toUrl(
                 new Path("/c/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.authenticated).getUrl());
     }
+
+    @Test
+    public void testGetEncoded() throws Exception {
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("google.projectid"), null
+        ));
+        final GoogleStorageSession session = new GoogleStorageSession(host);
+        assertEquals("https://sandbox.google.com/storage/container/Screen%20Shot%202013-07-18%20at%2023.55.10.png", new GoogleStorageUrlProvider(session).toUrl(
+                new Path("/container/Screen Shot 2013-07-18 at 23.55.10.png", Path.FILE_TYPE)).find(DescriptiveUrl.Type.authenticated).getUrl());
+    }
 }
