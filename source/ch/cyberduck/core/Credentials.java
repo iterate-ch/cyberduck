@@ -77,7 +77,7 @@ public class Credentials {
      * @return The login identification
      */
     public String getUsername() {
-        return this.user;
+        return user;
     }
 
     public void setUsername(String user) {
