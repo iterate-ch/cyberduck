@@ -65,7 +65,7 @@ public class Credentials {
     /**
      * @param user     The username to use or null if anonymous
      * @param password The password to use or null if anonymous
-     * @param save     if the credential should be added to the keychain uppon successful login
+     * @param save     if the credential should be added to the keychain upon successful login
      */
     public Credentials(String user, String password, boolean save) {
         this.keychained = save;
