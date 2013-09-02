@@ -145,7 +145,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         @Override
         public String toString() {
-            return this.getUser().toString() + ":" + this.getRole().toString();
+            return String.format("%s:%s", this.getUser().toString(), this.getRole().toString());
         }
 
         @Override
@@ -254,7 +254,6 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
             this.displayName = displayName;
         }
 
-
         @Override
         public String getPlaceholder() {
             return LocaleFactory.localizedString("Canonical User ID", "S3");
@@ -275,7 +274,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         @Override
         public String toString() {
             if(StringUtils.isNotBlank(displayName)) {
-                return displayName + " (" + this.getIdentifier() + ")";
+                return String.format("%s (%s)", displayName, this.getIdentifier());
             }
             return super.toString();
         }

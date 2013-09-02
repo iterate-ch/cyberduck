@@ -153,7 +153,7 @@ public class S3AccessControlListFeature implements AclPermission {
                         Permission.parsePermission(userAndRole.getRole().getName()));
             }
             else {
-                log.warn("Unsupported user:" + userAndRole.getUser());
+                log.warn(String.format("Unsupported user %s", userAndRole.getUser()));
             }
         }
         if(log.isDebugEnabled()) {

@@ -65,11 +65,15 @@ public class GoogleStorageAccessControlListFeature extends S3AccessControlListFe
             else if(userAndRole.getUser() instanceof Acl.GroupUser) {
                 if(userAndRole.getUser().getIdentifier().equals(new AllUsersGrantee().getIdentifier())
                         || userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                    // This special scope identifier represents anyone who is on the Internet, with or without a Google
+                    // account. The special scope identifier for all users is AllUsers.
                     list.grantPermission(new AllUsersGrantee(),
                             Permission.parsePermission(userAndRole.getRole().getName()));
                 }
                 else if(userAndRole.getUser().getIdentifier().equals(new AllAuthenticatedUsersGrantee().getIdentifier())
                         || userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.AUTHENTICATED)) {
+                    // This special scope identifier represents anyone who is authenticated with a Google account. The special scope identifier
+                    // for all Google account holders is AllAuthenticatedUsers.
                     list.grantPermission(new AllAuthenticatedUsersGrantee(),
                             Permission.parsePermission(userAndRole.getRole().getName()));
                 }
