@@ -5,8 +5,10 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.junit.Test;
@@ -70,9 +72,26 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testGetDefault2NoTenant() throws Exception {
         final SwiftAuthenticationService s = new SwiftAuthenticationService("/v2.0/tokens");
+        final Credentials credentials = new Credentials("u", "P");
         assertEquals(Client.AuthVersion.v20,
-                s.getRequest(new Host(new SwiftProtocol(), "region-b.geo-1.identity.hpcloudsvc.com", new Credentials("u", "P")),
+                s.getRequest(new Host(new SwiftProtocol(), "region-b.geo-1.identity.hpcloudsvc.com", credentials),
                         new DisabledLoginController()).getVersion());
+    }
+
+    @Test
+    public void testGetDefault2EmptyTenant() throws Exception {
+        final SwiftAuthenticationService s = new SwiftAuthenticationService("/v2.0/tokens");
+        final Credentials credentials = new Credentials("u", "P");
+        assertEquals(Client.AuthVersion.v20,
+                s.getRequest(new Host(new SwiftProtocol(), "region-b.geo-1.identity.hpcloudsvc.com", credentials),
+                        new DisabledLoginController() {
+                            @Override
+                            public void prompt(final Protocol protocol, final Credentials credentials,
+                                               final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                                credentials.setUsername("");
+                            }
+                        }).getVersion());
+        assertEquals(":u", credentials.getUsername());
     }
 
     @Test
