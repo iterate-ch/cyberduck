@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
@@ -102,7 +103,13 @@ public class S3AccessControlListFeature implements AclPermission {
         }
         try {
             final Path container = containerService.getContainer(file);
-            acl.setOwner(new Acl.CanonicalUser(container.attributes().getOwner()));
+            if(StringUtils.isNotBlank(container.attributes().getOwner())) {
+                acl.setOwner(new Acl.CanonicalUser(container.attributes().getOwner()));
+            }
+            else {
+                // Read owner from bucket
+                acl.setOwner(this.getPermission(container).getOwner());
+            }
             if(containerService.isContainer(file)) {
                 session.getClient().putBucketAcl(container.getName(), this.convert(acl));
             }

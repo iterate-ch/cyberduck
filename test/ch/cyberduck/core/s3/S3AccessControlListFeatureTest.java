@@ -98,7 +98,6 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        container.attributes().setOwner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6");
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new S3TouchFeature(session).touch(test);
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
