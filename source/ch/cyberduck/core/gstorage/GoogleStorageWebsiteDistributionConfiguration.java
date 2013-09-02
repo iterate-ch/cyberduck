@@ -32,6 +32,8 @@ import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Logging;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +47,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class GoogleStorageWebsiteDistributionConfiguration implements DistributionConfiguration {
+public class GoogleStorageWebsiteDistributionConfiguration implements DistributionConfiguration, Index {
 
     private GoogleStorageSession session;
 
@@ -82,7 +84,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
         final Distribution distribution = new Distribution(
                 containerService.getContainer(file).getName(), Distribution.DOWNLOAD);
         distribution.setUrl(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
-                session.getHost().getProtocol().getDefaultHostname()));
+                "storage.googleapis.com"));
         return new DistributionUrlProvider(distribution).toUrl(file);
     }
 
@@ -91,8 +93,8 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
         try {
             final WebsiteConfig configuration = session.getClient().getWebsiteConfigImpl(container.getName());
             final Distribution distribution = new Distribution(
-                    container.getName(), method, configuration.isWebsiteConfigActive());
-            distribution.setUrl(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()));
+                    String.format("%s.%s", container.getName(), "storage.googleapis.com"), method, configuration.isWebsiteConfigActive());
+            distribution.setUrl(String.format("%s://%s.%s", method.getScheme(), container.getName(), "storage.googleapis.com"));
             distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
             distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
             return distribution;
@@ -137,18 +139,13 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             return (T) this;
         }
         if(type == Logging.class) {
-            if(method.equals(Distribution.DOWNLOAD)
-                    || method.equals(Distribution.STREAMING)
-                    || method.equals(Distribution.CUSTOM)) {
-                return (T) this;
-            }
+            return (T) new GoogleStorageLoggingFeature(session);
         }
         if(type == AnalyticsProvider.class) {
-            if(method.equals(Distribution.DOWNLOAD)
-                    || method.equals(Distribution.STREAMING)
-                    || method.equals(Distribution.CUSTOM)) {
-                return (T) new QloudstatAnalyticsProvider();
-            }
+            return (T) new QloudstatAnalyticsProvider();
+        }
+        if(type == IdentityConfiguration.class) {
+            return (T) new DefaultCredentialsIdentityConfiguration(session.getHost());
         }
         return null;
     }
