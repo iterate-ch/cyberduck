@@ -177,6 +177,9 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             }
             else {
                 image = NSImage.imageNamed(name);
+                if(null == image) {
+                    image = NSImage.imageWithContentsOfFile(String.format("img/%s", name));
+                }
             }
             if(null == image) {
                 log.warn(String.format("No icon named %s", name));
