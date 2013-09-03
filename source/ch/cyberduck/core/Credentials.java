@@ -199,4 +199,12 @@ public class Credentials {
         result = 31 * result + (password != null ? password.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Credentials{");
+        sb.append("user='").append(user).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

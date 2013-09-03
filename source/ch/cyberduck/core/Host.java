@@ -680,4 +680,14 @@ public final class Host implements Serializable {
         return this.getUuid().hashCode();
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Host{");
+        sb.append("credentials=").append(credentials);
+        sb.append(", hostname='").append(hostname).append('\'');
+        sb.append(", port=").append(port);
+        sb.append(", protocol=").append(protocol);
+        sb.append('}');
+        return sb.toString();
+    }
 }
