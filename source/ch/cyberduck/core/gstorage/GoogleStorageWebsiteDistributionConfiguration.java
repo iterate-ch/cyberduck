@@ -127,7 +127,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
                 // Enable website endpoint
                 session.getClient().setWebsiteConfigImpl(container.getName(), new GSWebsiteConfig(suffix));
                 new GoogleStorageLoggingFeature(session).setConfiguration(container, new LoggingConfiguration(
-                        distribution.isEnabled(), distribution.getLoggingTarget()
+                        distribution.isEnabled(), distribution.getLoggingContainer()
                 ));
             }
             else {

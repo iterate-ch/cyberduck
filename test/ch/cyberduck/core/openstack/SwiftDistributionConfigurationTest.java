@@ -52,7 +52,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertTrue(test.isLogging());
         assertEquals("test.cyberduck.ch", test.getId());
         assertEquals(1, test.getContainers().size());
-        assertEquals(".CDN_ACCESS_LOGS", test.getLoggingTarget());
+        assertEquals(".CDN_ACCESS_LOGS", test.getLoggingContainer());
         assertEquals("storage101.dfw1.clouddrive.com", test.getOrigin());
     }
 

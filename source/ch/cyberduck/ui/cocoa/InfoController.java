@@ -2551,7 +2551,8 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     super.cleanup();
-                    final Path container = containerService.getContainer(getSelected());
+                    final Path file = getSelected();
+                    final Path container = containerService.getContainer(file);
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                     distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                             cdn.getName(distribution.getMethod())));
@@ -2565,9 +2566,9 @@ public class InfoController extends ToolbarWindowController {
                         distributionLoggingPopup.addItemWithTitle(c.getName());
                         distributionLoggingPopup.lastItem().setRepresentedObject(c.getName());
                     }
-                    if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
+                    if(StringUtils.isNotBlank(distribution.getLoggingContainer())) {
                         // Select configured logging container if any
-                        distributionLoggingPopup.selectItemWithTitle(distribution.getLoggingTarget());
+                        distributionLoggingPopup.selectItemWithTitle(distribution.getLoggingContainer());
                     }
                     else {
                         if(distributionLoggingPopup.itemWithTitle(container.getName()) != null) {
@@ -2588,11 +2589,8 @@ public class InfoController extends ToolbarWindowController {
                                             distribution.getMethod().getScheme(), container.getName(), credentials)));
                         }
                     }
-
                     distributionOriginField.setAttributedStringValue(
-                            HyperlinkAttributedStringFactory.create(distribution.getOrigin(getSelected())));
-
-                    final Path file = getSelected();
+                            HyperlinkAttributedStringFactory.create(distribution.getOrigin(file)));
                     // Concatenate URLs
                     if(numberOfFiles() > 1) {
                         distributionUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");

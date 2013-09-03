@@ -261,8 +261,8 @@ public class CloudFrontDistributionConfiguration
                     if(distribution.isLogging()) {
                         if(getFeature(DistributionLogging.class, distribution.getMethod()) != null) {
                             final String loggingTarget;
-                            if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
-                                loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingTarget(),
+                            if(StringUtils.isNotBlank(distribution.getLoggingContainer())) {
+                                loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
                                         false, ProtocolFactory.S3_SSL.getDefaultHostname());
                             }
                             else {

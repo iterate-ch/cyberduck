@@ -342,18 +342,14 @@ public class Distribution {
         this.logging = logging;
     }
 
-    public String getLoggingContainer() {
-        return loggingContainer;
-    }
-
-    public void setLoggingContainer(final String loggingContainer) {
-        this.loggingContainer = loggingContainer;
+    public void setLoggingContainer(final String container) {
+        this.loggingContainer = container;
     }
 
     /**
      * @return The container where log files are stored
      */
-    public String getLoggingTarget() {
+    public String getLoggingContainer() {
         return loggingContainer;
     }
 
