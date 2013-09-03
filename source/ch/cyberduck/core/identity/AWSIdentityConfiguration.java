@@ -74,7 +74,11 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
         );
     }
 
-    private <T> T authenticated(final Callable<T> run, final LoginController prompt) throws BackgroundException {
+    private static interface Authenticated<T> extends Callable<T> {
+        T call() throws BackgroundException;
+    }
+
+    private <T> T authenticated(final Authenticated<T> run, final LoginController prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions();
         options.anonymous = false;
         options.publickey = false;
@@ -88,17 +92,11 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                     LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
             return this.authenticated(run, prompt);
         }
-        catch(BackgroundException e) {
-            throw e;
-        }
-        catch(Exception e) {
-            throw new BackgroundException(e);
-        }
     }
 
     @Override
     public void delete(final String username, final LoginController prompt) throws BackgroundException {
-        this.authenticated(new Callable<Void>() {
+        this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {
                 Preferences.instance().deleteProperty(String.format("%s%s", prefix, username));
@@ -141,7 +139,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
 
     @Override
     public void create(final String username, final String policy, final LoginController prompt) throws BackgroundException {
-        this.authenticated(new Callable<Void>() {
+        this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {
                 try {

@@ -147,7 +147,11 @@ public class CloudFrontDistributionConfiguration
         };
     }
 
-    private <T> T authenticated(final Callable<T> run, final LoginController prompt) throws BackgroundException {
+    private static interface Authenticated<T> extends Callable<T> {
+        T call() throws BackgroundException;
+    }
+
+    private <T> T authenticated(final Authenticated<T> run, final LoginController prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions();
         options.anonymous = false;
         options.publickey = false;
@@ -160,12 +164,6 @@ public class CloudFrontDistributionConfiguration
             prompt.prompt(session.getHost().getProtocol(), session.getHost().getCredentials(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
             return this.authenticated(run, prompt);
-        }
-        catch(BackgroundException e) {
-            throw e;
-        }
-        catch(Exception e) {
-            throw new BackgroundException(e);
         }
     }
 
@@ -193,7 +191,7 @@ public class CloudFrontDistributionConfiguration
 
     @Override
     public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
-        return this.authenticated(new Callable<Distribution>() {
+        return this.authenticated(new Authenticated<Distribution>() {
             @Override
             public Distribution call() throws BackgroundException {
                 try {
@@ -252,7 +250,7 @@ public class CloudFrontDistributionConfiguration
 
     @Override
     public void write(final Path container, final Distribution distribution, final LoginController prompt) throws BackgroundException {
-        this.authenticated(new Callable<Void>() {
+        this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {
                 try {
