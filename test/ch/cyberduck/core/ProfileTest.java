@@ -33,10 +33,17 @@ public class ProfileTest extends AbstractTestCase {
         );
         assertEquals(Protocol.Type.swift, profile.getType());
         assertEquals(new SwiftProtocol(), profile.getProtocol());
+        assertEquals("swift", profile.getIdentifier());
         assertNotSame(new CloudfilesProtocol().getDefaultHostname(), profile.getDefaultHostname());
         assertEquals(Scheme.https, profile.getScheme());
         assertNotNull(profile.disk());
         assertEquals(profile.disk(), profile.disk());
+        assertEquals(profile.icon(), profile.disk());
+        assertEquals("Tenant ID:Access Key", profile.getUsernamePlaceholder());
+        assertEquals("Secret Key", profile.getPasswordPlaceholder());
+        assertEquals(35357, profile.getDefaultPort());
+        assertEquals("region-b.geo-1.identity.hpcloudsvc.com", profile.getDefaultHostname());
+        assertEquals("/v2.0/tokens", profile.getContext());
         assertFalse(profile.disk().equals(new SwiftProtocol().disk()));
         assertNotNull(profile.getProvider());
     }
