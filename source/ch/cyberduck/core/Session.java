@@ -239,8 +239,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
      */
     public Path workdir() throws BackgroundException {
-        return new Path(String.valueOf(Path.DELIMITER),
-                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        return new Path(String.valueOf(Path.DELIMITER), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
     }
 
     /**
