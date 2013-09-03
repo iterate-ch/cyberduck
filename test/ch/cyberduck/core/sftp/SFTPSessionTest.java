@@ -9,7 +9,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
@@ -67,18 +66,6 @@ public class SFTPSessionTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         assertNotNull(session.open(new DefaultHostKeyController()));
         session.workdir();
-    }
-
-    @Test(expected = LoginCanceledException.class)
-    public void testLoginCancel() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                "u", "p"
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
     @Test
