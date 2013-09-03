@@ -101,13 +101,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        try {
-            session.login(new DisabledPasswordStore(), new DisabledLoginController());
-            fail();
-        }
-        catch(LoginFailureException e) {
-            throw e;
-        }
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
     }
 
     @Test(expected = NotfoundException.class)
