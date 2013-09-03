@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 
 import org.apache.log4j.Logger;
@@ -110,22 +111,19 @@ public class SFTPSession extends Session<Connection> {
                         LocaleFactory.localizedString("Partial authentication success", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials") + ".", new LoginOptions());
                 if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
-                    prompt.prompt(host.getProtocol(), host.getCredentials(),
-                            LocaleFactory.localizedString("Login failed", "Credentials"),
-                            LocaleFactory.localizedString("Login with username and password", "Credentials"),
-                            new LoginOptions(host.getProtocol()));
+                    throw new LoginFailureException(LocaleFactory.localizedString("Login with username and password", "Credentials"));
                 }
             }
             if(client.isAuthenticationComplete()) {
                 try {
                     sftp = new SFTPv3Client(client, new PacketListener() {
                         @Override
-                        public void read(String packet) {
+                        public void read(final String packet) {
                             SFTPSession.this.log(false, packet);
                         }
 
                         @Override
-                        public void write(String packet) {
+                        public void write(final String packet) {
                             SFTPSession.this.log(true, packet);
                         }
                     });
@@ -136,10 +134,7 @@ public class SFTPSession extends Session<Connection> {
                 }
             }
             else {
-                prompt.prompt(host.getProtocol(), host.getCredentials(),
-                        LocaleFactory.localizedString("Login failed", "Credentials"),
-                        LocaleFactory.localizedString("Login with username and password", "Credentials"),
-                        new LoginOptions(host.getProtocol()));
+                throw new LoginFailureException(LocaleFactory.localizedString("Login with username and password", "Credentials"));
             }
         }
         catch(IOException e) {
