@@ -50,8 +50,7 @@ public class SwiftDirectoryFeature implements Directory {
             }
             else {
                 // Create virtual directory. Use region of parent container.
-                session.getClient().createPath(session.getRegion(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
+                new SwiftTouchFeature(session).touch(file);
             }
         }
         catch(GenericException e) {
