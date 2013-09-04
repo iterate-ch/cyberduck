@@ -34,8 +34,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -70,6 +69,8 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
+        assertNull(session.getFeature(Timestamp.class));
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.getFeature(Timestamp.class));
         session.close();
     }

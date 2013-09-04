@@ -156,25 +156,6 @@ public class FTPSession extends SSLSession<FTPClient> {
             this.configure(client);
             client.connect(new PunycodeConverter().convert(host.getHostname()), host.getPort());
             client.setTcpNoDelay(false);
-            final TimeZone zone = host.getTimezone();
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Reset parser to timezone %s", zone));
-            }
-            String system = null; //Unknown
-            try {
-                system = client.getSystemType();
-            }
-            catch(IOException e) {
-                log.warn(String.format("SYST command failed %s", e.getMessage()));
-            }
-            listService = new FTPListService(this, system, zone);
-            if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
-                timestamp = new FTPMFMTTimestampFeature(this);
-            }
-            else {
-                timestamp = new FTPUTIMETimestampFeature(this);
-            }
-            permission = new FTPUnixPermissionFeature(this);
             return client;
         }
         catch(IOException e) {
@@ -240,6 +221,25 @@ public class FTPSession extends SSLSession<FTPClient> {
                         }
                     }
                 }
+                final TimeZone zone = host.getTimezone();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Reset parser to timezone %s", zone));
+                }
+                String system = null; //Unknown
+                try {
+                    system = client.getSystemType();
+                }
+                catch(IOException e) {
+                    log.warn(String.format("SYST command failed %s", e.getMessage()));
+                }
+                listService = new FTPListService(this, system, zone);
+                if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
+                    timestamp = new FTPMFMTTimestampFeature(this);
+                }
+                else {
+                    timestamp = new FTPUTIMETimestampFeature(this);
+                }
+                permission = new FTPUnixPermissionFeature(this);
             }
             else {
                 throw new LoginFailureException(client.getReplyString());

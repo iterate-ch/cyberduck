@@ -185,6 +185,9 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNull(session.getFeature(UnixPermission.class));
         assertNull(session.getFeature(Timestamp.class));
         session.open(new DefaultHostKeyController());
+        assertNull(session.getFeature(UnixPermission.class));
+        assertNull(session.getFeature(Timestamp.class));
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.getFeature(UnixPermission.class));
         assertNotNull(session.getFeature(Timestamp.class));
         session.close();
