@@ -2104,10 +2104,10 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                     _view.PopulateDistributionLogging(buckets);
-                    if (Utils.IsNotBlank(_distribution.getLoggingTarget()))
+                    if (Utils.IsNotBlank(_distribution.getLoggingContainer()))
                     {
                         // Select configured logging container if any
-                        _view.DistributionLoggingPopup = _distribution.getLoggingTarget();
+                        _view.DistributionLoggingPopup = _distribution.getLoggingContainer();
                     }
                     else
                     {
