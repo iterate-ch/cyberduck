@@ -26,5 +26,8 @@ public class NSObjectPathReferenceTest extends AbstractTestCase {
         assertEquals(new NSObjectPathReference(NSString.stringWithString("/b-1")), new NSObjectPathReference(
                 new Path("/b", Path.FILE_TYPE)
         ));
+        assertEquals(new NSObjectPathReference(NSString.stringWithString("/d-6")), new NSObjectPathReference(
+                new Path("/d", Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE)
+        ));
     }
 }
