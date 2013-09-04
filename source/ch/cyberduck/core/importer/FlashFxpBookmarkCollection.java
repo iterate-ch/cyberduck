@@ -87,7 +87,7 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
                         }
                         String value = scanner.next();
                         if("ip".equals(name)) {
-                            current.setHostname(value);
+                            current.setHostname(StringUtils.substringBefore(value, "\u0001"));
                         }
                         else if("port".equals(name)) {
                             try {
