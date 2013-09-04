@@ -163,7 +163,8 @@ public class NSImageIconCacheTest extends AbstractTestCase {
                 = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
         final NSImageIconCache cache = new NSImageIconCache();
         NSImage icon = cache.fileIcon(f, 16);
-        assertNull(icon);
+        assertNotNull(icon);
+//        assertEquals(icon, cache.iconNamed("notfound.tiff"));
         assertTrue(f.touch());
         icon = cache.fileIcon(f, 16);
         assertNotNull(icon);
@@ -171,6 +172,5 @@ public class NSImageIconCacheTest extends AbstractTestCase {
         assertFalse(icon.isTemplate());
 //        assertEquals(4, icon.representations().count().intValue());
         f.delete();
-        assertNull(cache.fileIcon(f, 16));
     }
 }
