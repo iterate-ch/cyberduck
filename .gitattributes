@@ -2663,7 +2663,6 @@ source/ch/cyberduck/ui/controller/UploadPromptController.cs -text
 source/ch/cyberduck/ui/controller/UploadPromptModel.cs -text
 source/ch/cyberduck/ui/controller/UserPreferences.cs -text
 source/ch/cyberduck/ui/controller/WindowController.cs -text
-source/ch/cyberduck/ui/controller/threading/AlertRepeatableBackgroundAction.cs -text
 source/ch/cyberduck/ui/controller/threading/BrowserBackgroundAction.cs -text
 source/ch/cyberduck/ui/controller/threading/SimpleDefaultMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/SimpleWindowMainAction.cs -text

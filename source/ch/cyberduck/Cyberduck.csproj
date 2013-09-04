@@ -446,7 +446,6 @@
     </Compile>
     <Compile Include="ui\controller\SettingsDictionary.cs" />
     <Compile Include="core\TcpReachability.cs" />
-    <Compile Include="ui\controller\threading\AlertRepeatableBackgroundAction.cs" />
     <Compile Include="ui\controller\threading\BrowserBackgroundAction.cs" />
     <Compile Include="ui\controller\threading\SimpleDefaultMainAction.cs" />
     <Compile Include="ui\controller\threading\SimpleWindowMainAction.cs" />

@@ -16,17 +16,20 @@
 // yves@cyberduck.ch
 // 
 
+using Ch.Cyberduck.Ui.Winforms.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.ui.threading;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
-    public abstract class BrowserBackgroundAction : AlertRepeatableBackgroundAction
+    public abstract class BrowserBackgroundAction : ControllerBackgroundAction
     {
         private readonly BackgroundActionRegistry _registry = BackgroundActionRegistry.global();
 
-        protected BrowserBackgroundAction(BrowserController controller) : base(controller, controller, controller)
+        protected BrowserBackgroundAction(BrowserController controller)
+            : base(controller, new DialogAlertCallback(controller), controller, controller)
         {
             BrowserController = controller;
         }
@@ -41,15 +44,6 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
                 return Collections.emptyList();
             }
             return Collections.singletonList(session);
-        }
-
-        public override void log(bool request, string message)
-        {
-            if (Preferences.instance().getBoolean("browser.transcript.open"))
-            {
-                AsyncController.AsyncDelegate mainAction = delegate { BrowserController.log(request, message); };
-                BrowserController.Invoke(mainAction);
-            }
         }
 
         public override void prepare()
