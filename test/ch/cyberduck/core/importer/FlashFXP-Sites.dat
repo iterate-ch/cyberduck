@@ -1,0 +1,37 @@
+[Default Sites Software Archives NCSA]
+Created=36922.5216924306
+IP=ftp.ncsa.uiuc.edu
+Port=21
+Notes=The National Center for Supercomputer Applications
+Options=300333300003
+anonymous=1
+
+[Default Sites Commercial Sites Intel]
+Created=36922.5237859491
+IP=ftp.intel.com
+Port=21
+Notes=Intel files and support.
+Options=300333300003
+anonymous=1
+
+[Default Sites Game Sites Sierra On-Line, Inc.]
+Created=36922.5246148032
+IP=ftp.sierra.comftp1.sierra.com
+Port=21
+Options=300333300003300110300001000
+anonymous=1
+Path=/pub/
+
+[langisch.ch]
+created=41200.8572239352
+SftpCipherList=18=c5=c17=c6=c16=c7=c19=c0=c20=c1=c28=c13=c15=u26=u23=u30=u8=u2=u25=u9=u22=u3=u21=u24=u4=u10=u29=u27=u12=u11=u14=u
+SftpMACList=0=c2=c5=c7=c1=c3=c6=c8=c9=c10=c11=c12=c13=c4=u
+IP=langisch.ch
+user=yla
+pass=5DBD6C93CA45375DABB8
+port=22
+DSL=25
+USL=25
+options=3030333000033001103000010003333000001012000133103
+TZ=-1
+ID=97DED96D
