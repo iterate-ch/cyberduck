@@ -104,12 +104,6 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     protected void configure(final FTPClient client) throws IOException {
         client.setControlEncoding(this.getEncoding());
-        client.addProtocolCommandListener(new LoggingProtocolCommandListener() {
-            @Override
-            public void log(boolean request, String event) {
-                FTPSession.this.log(request, event);
-            }
-        });
         client.setConnectTimeout(this.timeout());
         client.setDefaultTimeout(this.timeout());
         client.setDataTimeout(this.timeout());
@@ -152,6 +146,12 @@ public class FTPSession extends SSLSession<FTPClient> {
                 = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
 
         final FTPClient client = new FTPClient(f, f.getSSLContext());
+        client.addProtocolCommandListener(new LoggingProtocolCommandListener() {
+            @Override
+            public void log(boolean request, String event) {
+                FTPSession.this.log(request, event);
+            }
+        });
         try {
             this.configure(client);
             client.connect(new PunycodeConverter().convert(host.getHostname()), host.getPort());
