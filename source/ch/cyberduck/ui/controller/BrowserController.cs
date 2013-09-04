@@ -2544,7 +2544,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SelectedEncoding = _session.getEncoding();
             View.ClearTranscript();
             _navigation.clear();
-            _session.addTranscriptListener(this);
             return _session;
         }
 
