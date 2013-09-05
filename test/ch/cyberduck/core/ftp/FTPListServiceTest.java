@@ -17,20 +17,13 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.*;
 
 import org.junit.Test;
 
 import java.util.TimeZone;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -82,6 +75,24 @@ public class FTPListServiceTest extends AbstractTestCase {
         list.remove(FTPListService.Command.lista);
         list.remove(FTPListService.Command.mlsd);
         assertTrue(list.list(new Path(session.workdir(), "test.d", Path.DIRECTORY_TYPE), new DisabledListProgressListener()).isEmpty());
+        session.close();
+    }
+
+    @Test
+    public void testPostProcessing() throws Exception {
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
+        final AttributedList<Path> list = new AttributedList<Path>();
+        list.add(new Path("/test.d", Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE));
+        assertTrue(list.contains(new Path("/test.d", Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE).getReference()));
+        service.post(new Path("/", Path.DIRECTORY_TYPE), list);
+        assertFalse(list.contains(new Path("/test.d", Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE).getReference()));
+        assertTrue(list.contains(new Path("/test.d", Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE).getReference()));
         session.close();
     }
 }
