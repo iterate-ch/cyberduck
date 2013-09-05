@@ -27,7 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3DirectoryFeature;
+import ch.cyberduck.core.s3.S3FindFeature;
 
 import org.junit.Test;
 
@@ -40,6 +40,32 @@ import static org.junit.Assert.assertTrue;
  * @version $Id$
  */
 public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
+
+    @Test
+    public void testMakeBucket() throws Exception {
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("google.projectid"), null
+        ));
+        final GoogleStorageSession session = new GoogleStorageSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore() {
+            @Override
+            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                if(user.equals("Google OAuth2 Access Token")) {
+                    return properties.getProperty("google.accesstoken");
+                }
+                if(user.equals("Google OAuth2 Refresh Token")) {
+                    return properties.getProperty("google.refreshtoken");
+                }
+                return null;
+            }
+        }, new DisabledLoginController());
+        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        new GoogleStorageDirectoryFeature(session).mkdir(test, null);
+        assertTrue(new S3FindFeature(session).find(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        session.close();
+    }
 
     @Test
     public void testMakeDirectory() throws Exception {
@@ -61,7 +87,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
             }
         }, new DisabledLoginController());
         final Path test = new Path(new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
-        new S3DirectoryFeature(session).mkdir(test, null);
+        new GoogleStorageDirectoryFeature(session).mkdir(test, null);
         assertTrue(session.getFeature(Find.class).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
