@@ -40,10 +40,9 @@ public abstract class ReadSizeWorker extends Worker<Long> {
         this.files = files;
     }
 
-    private long total;
-
     @Override
     public Long run() throws BackgroundException {
+        long total = 0L;
         for(Path next : files) {
             if(-1 == next.attributes().getSize()) {
                 continue;
