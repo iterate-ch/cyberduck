@@ -87,23 +87,18 @@ public class SFTPListService implements ListService {
                 if(attributes.isSymlink()) {
                     try {
                         final String target = session.sftp().readLink(file.getAbsolute());
-                        final int type;
-                        final Path symlink;
                         if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                            symlink = new Path(target, file.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                            file.setSymlinkTarget(new Path(target, Path.FILE_TYPE));
                         }
                         else {
-                            symlink = new Path(directory, target, file.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
+                            file.setSymlinkTarget(new Path(directory, target, Path.FILE_TYPE));
                         }
-                        file.setSymlinkTarget(symlink);
-                        final SFTPv3FileAttributes targetAttributes = session.sftp().stat(symlink.getAbsolute());
-                        if(targetAttributes.isDirectory()) {
-                            type = Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE;
+                        if(session.sftp().stat(file.getSymlinkTarget().getAbsolute()).isDirectory()) {
+                            file.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                         }
                         else {
-                            type = Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE;
+                            file.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                         }
-                        file.attributes().setType(type);
                     }
                     catch(SFTPException e) {
                         if(new SFTPExceptionMappingService().map(e) instanceof NotfoundException) {
