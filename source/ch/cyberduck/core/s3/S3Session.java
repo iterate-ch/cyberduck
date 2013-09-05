@@ -298,13 +298,21 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         try {
-            // List all buckets and cache
-            final Path root = new Path(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
-            this.cache().put(root.getReference(), this.list(root, new DisabledListProgressListener()));
+            final Path home = this.home();
+            this.cache().put(home.getReference(), this.list(home, new DisabledListProgressListener()));
         }
         catch(BackgroundException e) {
             throw new LoginFailureException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public Path home() throws BackgroundException {
+        final Path home = super.home();
+        if(containerService.isContainer(home)) {
+            home.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        }
+        return home;
     }
 
     @Override
