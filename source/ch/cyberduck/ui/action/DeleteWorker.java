@@ -64,13 +64,16 @@ public abstract class DeleteWorker extends Worker<Void> {
     protected List<Path> compile(final Path file) throws BackgroundException {
         // Compile recursive list
         final List<Path> recursive = new ArrayList<Path>();
-        if(file.attributes().isDirectory()) {
+        if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
+            recursive.add(file);
+        }
+        else if(file.attributes().isDirectory()) {
             for(Path child : session.list(file, new DisabledListProgressListener())) {
                 recursive.addAll(this.compile(child));
             }
+            // Add parent after children
+            recursive.add(file);
         }
-        // Add parent after children
-        recursive.add(file);
         return recursive;
     }
 

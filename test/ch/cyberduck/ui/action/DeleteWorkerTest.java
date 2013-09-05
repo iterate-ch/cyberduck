@@ -66,4 +66,33 @@ public class DeleteWorkerTest extends AbstractTestCase {
         };
         worker.run();
     }
+
+    @Test
+    public void testSymlink() throws Exception {
+        final FTPSession session = new FTPSession(new Host("t")) {
+            @Override
+            public <T> T getFeature(final Class<T> type) {
+                return (T) new Delete() {
+                    @Override
+                    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+                        assertEquals(new Path("/s", Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE), files.get(0));
+                    }
+                };
+            }
+
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+                fail();
+                return null;
+            }
+        };
+        final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginController(),
+                Collections.singletonList(new Path("/s", Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE))) {
+            @Override
+            public void cleanup(final Void result) {
+                //
+            }
+        };
+        worker.run();
+    }
 }
