@@ -58,16 +58,13 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
      */
     @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
-        if(log.isDebugEnabled()) {
-            log.debug("outlineViewIsItemExpandable:" + item);
+        if(log.isTraceEnabled()) {
+            log.trace("outlineViewIsItemExpandable:" + item);
         }
         if(null == item) {
             return false;
         }
         final Path path = controller.lookup(new NSObjectPathReference(item));
-        if(null == path) {
-            return false;
-        }
         return path.attributes().isDirectory();
     }
 
@@ -76,8 +73,8 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
      */
     @Override
     public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, final NSObject item) {
-        if(log.isDebugEnabled()) {
-            log.debug("outlineView_numberOfChildrenOfItem:" + item);
+        if(log.isTraceEnabled()) {
+            log.trace("outlineView_numberOfChildrenOfItem:" + item);
         }
         if(controller.isMounted()) {
             if(null == item) {
@@ -85,7 +82,9 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
             if(event != null) {
-                log.debug("Event:" + event.type());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Current application event is %d", event.type()));
+                }
                 if(NSEvent.NSLeftMouseDragged == event.type()) {
                     final int draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null)).intValue();
                     if(draggingColumn != 0) {
@@ -101,9 +100,6 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                 }
             }
             final Path lookup = controller.lookup(new NSObjectPathReference(item));
-            if(null == lookup) {
-                return new NSInteger(0);
-            }
             return new NSInteger(this.list(lookup).size());
         }
         return new NSInteger(0);
@@ -117,8 +113,8 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
      */
     @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView view, final NSInteger index, final NSObject item) {
-        if(log.isDebugEnabled()) {
-            log.debug("outlineView_child_ofItem:" + item);
+        if(log.isTraceEnabled()) {
+            log.trace("outlineView_child_ofItem:" + item);
         }
         final Path path;
         if(null == item) {
@@ -126,9 +122,6 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         }
         else {
             path = controller.lookup(new NSObjectPathReference(item));
-        }
-        if(null == path) {
-            return null;
         }
         final AttributedList<Path> children = this.get(path);
         if(index.intValue() >= children.size()) {
