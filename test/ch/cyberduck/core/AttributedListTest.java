@@ -21,6 +21,15 @@ public class AttributedListTest extends AbstractTestCase {
     }
 
     @Test
+    public void testRemove() throws Exception {
+        AttributedList<Path> list = new AttributedList<Path>();
+        assertTrue(list.add(new Path("/a", Path.DIRECTORY_TYPE)));
+        assertTrue(list.contains(new NSObjectPathReference(NSString.stringWithString("/a-2"))));
+        list.remove(0);
+        assertFalse(list.contains(new NSObjectPathReference(NSString.stringWithString("/a-2"))));
+    }
+
+    @Test
     public void testFilter() throws Exception {
         AttributedList<Path> list = new AttributedList<Path>();
         final Path a = new Path("/a", Path.DIRECTORY_TYPE);

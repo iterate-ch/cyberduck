@@ -96,16 +96,23 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         return super.addAll(c);
     }
 
-    public E get(PathReference reference) {
+    public E get(final PathReference reference) {
         return references.get(reference);
     }
 
-    public boolean contains(PathReference reference) {
+    public boolean contains(final PathReference reference) {
         return references.containsKey(reference);
     }
 
-    public int indexOf(PathReference reference) {
+    public int indexOf(final PathReference reference) {
         return super.indexOf(references.get(reference));
+    }
+
+    @Override
+    public E remove(final int index) {
+        final E removed = super.remove(index);
+        references.remove(removed.getReference());
+        return removed;
     }
 
     /**
