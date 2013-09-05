@@ -131,9 +131,7 @@ public class FTPSession extends SSLSession<FTPClient> {
      */
     protected boolean isTLSSupported() throws BackgroundException {
         try {
-            return client.hasFeature("AUTH", "TLS")
-                    && client.hasFeature("PBSZ")
-                    && client.hasFeature("PROT");
+            return client.hasFeature("AUTH", "TLS") && client.hasFeature("PBSZ") && client.hasFeature("PROT");
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
