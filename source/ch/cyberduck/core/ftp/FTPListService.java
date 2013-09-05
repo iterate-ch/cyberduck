@@ -177,15 +177,16 @@ public class FTPListService implements ListService {
         }
     }
 
-    private AttributedList<Path> post(final Path file, final AttributedList<Path> list) throws BackgroundException {
+    protected AttributedList<Path> post(final Path file, final AttributedList<Path> list) throws BackgroundException {
         try {
             for(Path child : list) {
                 if(child.attributes().isSymbolicLink()) {
+                    list.remove(list.indexOf(child.getReference()));
                     if(session.getClient().changeWorkingDirectory(child.getAbsolute())) {
                         child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                     }
                     else {
-                        // Try if CWD to symbolic link target succeeds
+                        // Try if change working directory to symbolic link target succeeds
                         if(session.getClient().changeWorkingDirectory(child.getSymlinkTarget().getAbsolute())) {
                             // Workdir change succeeded
                             child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
@@ -194,6 +195,7 @@ public class FTPListService implements ListService {
                             child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                         }
                     }
+                    list.add(child);
                 }
             }
             return list;
