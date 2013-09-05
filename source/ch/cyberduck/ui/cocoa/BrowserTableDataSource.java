@@ -359,7 +359,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
                     else {
-                        log.warn("Protocol not supported for URL:" + elements.objectAtIndex(new NSUInteger(i)).toString());
+                        log.warn(String.format("Protocol not supported for URL %s", elements.objectAtIndex(new NSUInteger(i)).toString()));
                     }
                 }
             }
@@ -398,7 +398,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     return NSDraggingInfo.NSDragOperationNone;
                 }
             }
-            log.debug("Operation Mask:" + info.draggingSourceOperationMask().intValue());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Drag operation mas is %d", info.draggingSourceOperationMask().intValue()));
+            }
             this.setDropRowAndDropOperation(view, destination, row);
             final List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
             for(PathPasteboard pasteboard : pasteboards) {
@@ -436,7 +438,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     public boolean writeItemsToPasteBoard(NSTableView view, NSArray items, NSPasteboard pboard) {
-        log.debug("writeItemsToPasteBoard");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Write items to pasteboard %s", pboard));
+        }
         if(controller.isMounted()) {
             if(items.count().intValue() > 0) {
                 // The fileTypes argument is the list of fileTypes being promised.
@@ -447,9 +451,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 final PathPasteboard pasteboard = controller.getPasteboard();
                 for(int i = 0; i < items.count().intValue(); i++) {
                     final Path path = controller.lookup(new NSObjectPathReference(items.objectAtIndex(new NSUInteger(i))));
-                    if(null == path) {
-                        continue;
-                    }
                     if(path.attributes().isFile()) {
                         if(StringUtils.isNotEmpty(path.getExtension())) {
                             fileTypes.addObject(NSString.stringWithString(path.getExtension()));
@@ -482,7 +483,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     @Override
     public void draggedImage_beganAt(NSImage image, NSPoint point) {
-        log.trace("draggedImage_beganAt:" + point);
+        if(log.isTraceEnabled()) {
+            log.trace("draggedImage_beganAt:" + point);
+        }
     }
 
     /**
@@ -490,7 +493,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      */
     @Override
     public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
-        log.trace("draggedImage_endedAt_operation:" + operation);
+        if(log.isTraceEnabled()) {
+            log.trace("draggedImage_endedAt_operation:" + operation);
+        }
         final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             controller.deletePaths(pasteboard);
@@ -500,7 +505,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     @Override
     public void draggedImage_movedTo(NSImage image, NSPoint point) {
-        log.trace("draggedImage_movedTo:" + point);
+        if(log.isTraceEnabled()) {
+            log.trace("draggedImage_movedTo:" + point);
+        }
     }
 
     /**
@@ -512,7 +519,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      */
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL url) {
-        log.debug("namesOfPromisedFilesDroppedAtDestination:" + url);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Return names of promised files dropped at %s", url));
+        }
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != url) {
             final Local destination = LocalFactory.createLocal(url.path());
