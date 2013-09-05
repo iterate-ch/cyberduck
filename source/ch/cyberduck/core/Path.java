@@ -254,11 +254,7 @@ public class Path extends AbstractPath implements Serializable {
      * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
      */
     public Path getSymlinkTarget() {
-        final PathAttributes attributes = this.attributes();
-        if(attributes.isSymbolicLink()) {
-            return symlink;
-        }
-        return null;
+        return symlink;
     }
 
     /**
