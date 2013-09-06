@@ -42,7 +42,6 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         assertEquals("m", configuration.getOrigin(container, Distribution.CUSTOM));
     }
 
-
     @Test
     public void testRead() throws Exception {
         final Host origin = new Host("myhost.localdomain");

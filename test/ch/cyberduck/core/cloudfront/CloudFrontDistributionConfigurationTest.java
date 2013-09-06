@@ -61,7 +61,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     }
 
     @Test
-    public void testRead() throws Exception {
+    public void testReadDownload() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         host.setCredentials(new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
@@ -74,6 +74,33 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
         assertEquals("E2N9XG26504TZI", distribution.getId());
+        assertEquals(Distribution.DOWNLOAD, distribution.getMethod());
+        assertEquals("Deployed", distribution.getStatus());
+        assertEquals("test.cyberduck.ch.s3.amazonaws.com", distribution.getOrigin());
+        assertEquals("http://d8s2h7wj83mnt.cloudfront.net", distribution.getUrl());
+        assertEquals(null, distribution.getIndexDocument());
+        assertEquals(null, distribution.getErrorDocument());
+        assertEquals("E1G1TCL9X2DSET", distribution.getEtag());
+    }
+
+    @Test
+    public void testReadStreaming() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
+        host.setCredentials(new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final DistributionConfiguration configuration
+                = new CloudFrontDistributionConfiguration(session);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Distribution distribution = configuration.read(container, Distribution.STREAMING, new DisabledLoginController());
+        assertEquals("EB86EC8N0TBBE", distribution.getId());
+        assertEquals("test.cyberduck.ch.s3.amazonaws.com", distribution.getOrigin());
+        assertEquals("rtmp://s2o9ssk5sk7hj5.cloudfront.net/cfx/st", distribution.getUrl());
+        assertEquals(null, distribution.getIndexDocument());
+        assertEquals(null, distribution.getErrorDocument());
     }
 
     @Test(expected = LoginCanceledException.class)
