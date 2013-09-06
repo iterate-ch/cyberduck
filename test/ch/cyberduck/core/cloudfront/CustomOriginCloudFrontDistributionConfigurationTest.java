@@ -52,7 +52,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         final Path container = new Path("unknown.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginController());
         assertNull(distribution.getId());
-        assertEquals("test.cyberduck.ch", distribution.getOrigin());
+        assertEquals("myhost.localdomain", distribution.getOrigin());
         assertEquals("Unknown", distribution.getStatus());
         assertEquals(null, distribution.getId());
     }
