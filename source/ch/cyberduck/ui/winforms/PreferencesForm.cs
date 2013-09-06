@@ -868,8 +868,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void PopulateSshTransfers(IList<KeyValuePair<string, string>> transfers)
         {
             sshTransfersCombobox.DataSource = transfers;
-            sshTransfersCombobox.DataSource = "Key";
-            sshTransfersCombobox.DataSource = "Value";
+            sshTransfersCombobox.ValueMember = "Key";
+            sshTransfersCombobox.DisplayMember = "Value";
         }
 
         public void PopulateDefaultBucketLocations(IList<KeyValuePair<string, string>> locations)
