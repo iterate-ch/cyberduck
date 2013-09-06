@@ -71,15 +71,14 @@ public class ResumeFilter extends AbstractUploadFilter {
         return status;
     }
 
-    private long getSize(final Session<?> session, final Path file) throws BackgroundException {
-        final AttributedList<Path> list;
-        if(cache.containsKey(file.getReference())) {
-            list = cache.get(file.getReference());
+    private Long getSize(final Session<?> session, final Path file) throws BackgroundException {
+        if(!cache.containsKey(file.getReference())) {
+            cache.put(file.getReference(), session.list(file.getParent(), new DisabledListProgressListener()));
         }
-        else {
-            list = session.list(file.getParent(), new DisabledListProgressListener());
-            cache.put(file.getReference(), list);
+        final AttributedList<Path> list = cache.get(file.getReference());
+        if(list.contains(file.getReference())) {
+            return list.get(file.getReference()).attributes().getSize();
         }
-        return list.get(file.getReference()).attributes().getSize();
+        return 0L;
     }
 }
