@@ -43,18 +43,34 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
     }
 
     @Test
-    public void testRead() throws Exception {
+    public void testReadNoConfiguredDistributionForOrigin() throws Exception {
         final Host origin = new Host("myhost.localdomain");
+        origin.getCdnCredentials().setUsername(properties.getProperty("s3.key"));
+        origin.getCdnCredentials().setPassword(properties.getProperty("s3.secret"));
+        final CustomOriginCloudFrontDistributionConfiguration configuration
+                = new CustomOriginCloudFrontDistributionConfiguration(origin);
+        final Path container = new Path("unknown.cyberduck.ch", Path.VOLUME_TYPE);
+        final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginController());
+        assertNull(distribution.getId());
+        assertEquals("test.cyberduck.ch", distribution.getOrigin());
+        assertEquals("Unknown", distribution.getStatus());
+        assertEquals(null, distribution.getId());
+    }
+
+    @Test
+    public void testRead() throws Exception {
+        final Host origin = new Host("test.cyberduck.ch");
         origin.getCdnCredentials().setUsername(properties.getProperty("s3.key"));
         origin.getCdnCredentials().setPassword(properties.getProperty("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(origin);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginController());
-        assertNull(distribution.getId());
-        assertEquals("myhost.localdomain", distribution.getOrigin());
-        assertEquals("Unknown", distribution.getStatus());
-        assertEquals(null, distribution.getId());
+        assertEquals("E230LC0UG2YLKV", distribution.getId());
+        assertEquals(Distribution.CUSTOM, distribution.getMethod());
+        assertEquals("http://d1f6cbdjcbzyiu.cloudfront.net", distribution.getUrl());
+        assertEquals(null, distribution.getIndexDocument());
+        assertEquals(null, distribution.getErrorDocument());
     }
 
     @Test(expected = LoginCanceledException.class)

@@ -73,7 +73,7 @@ public class CloudFrontDistributionConfiguration
         implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
     private static Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
-    private S3Session session;
+    protected S3Session session;
 
     private CloudFrontService client;
 
@@ -561,7 +561,9 @@ public class CloudFrontDistributionConfiguration
         distribution.setCNAMEs(distributionConfig.getCNAMEs());
         distribution.setLogging(distributionConfig.getLoggingStatus().isEnabled());
         distribution.setLoggingContainer(loggingTarget);
-        distribution.setIndexDocument(distributionConfig.getDefaultRootObject());
+        if(StringUtils.isNotBlank(distributionConfig.getDefaultRootObject())) {
+            distribution.setIndexDocument(distributionConfig.getDefaultRootObject());
+        }
         if(this.getFeature(Purge.class, method) != null) {
             distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
         }

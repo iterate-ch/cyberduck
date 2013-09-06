@@ -18,10 +18,13 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.log4j.Logger;
@@ -30,6 +33,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * @version $Id$
@@ -42,8 +46,40 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new S3Session(new Host(ProtocolFactory.S3_SSL, ProtocolFactory.S3_SSL.getDefaultHostname(), origin.getCdnCredentials())));
-        //todo connect s3 session
         this.origin = origin;
+    }
+
+    private static interface Connected<T> extends Callable<T> {
+        T call() throws BackgroundException;
+    }
+
+    private <T> T connected(final Connected<T> run, final LoginController prompt) throws BackgroundException {
+        if(!session.isConnected()) {
+            session.open(new DefaultHostKeyController());
+        }
+        return run.call();
+    }
+
+
+    @Override
+    public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
+        return this.connected(new Connected<Distribution>() {
+            @Override
+            public Distribution call() throws BackgroundException {
+                return CustomOriginCloudFrontDistributionConfiguration.super.read(container, method, prompt);
+            }
+        }, prompt);
+    }
+
+    @Override
+    public void write(final Path container, final Distribution distribution, final LoginController prompt) throws BackgroundException {
+        this.connected(new Connected<Void>() {
+            @Override
+            public Void call() throws BackgroundException {
+                CustomOriginCloudFrontDistributionConfiguration.super.write(container, distribution, prompt);
+                return null;
+            }
+        }, prompt);
     }
 
     @Override
