@@ -36,15 +36,13 @@ static id instance;
 
 @end
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_register(
-                                                                     JNIEnv *env, 
-                                                                     jobject this)
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_setup(JNIEnv *env,
+                                                                    jobject this)
 {
     [[Growl defaultInstance] registerGrowl];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notify(
-                                                                     JNIEnv *env, 
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notify(JNIEnv *env,
                                                                      jobject this,
                                                                      jstring title,
                                                                      jstring description)
@@ -53,8 +51,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notify(
                          withDescription:JNFJavaToNSString(env, description)];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notifyWithImage(
-                                                                              JNIEnv *env, 
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notifyWithImage(JNIEnv *env,
                                                                               jobject this,
                                                                               jstring title,
                                                                               jstring description,

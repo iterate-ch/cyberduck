@@ -15,7 +15,7 @@ extern "C" {
 	 * Method:    register
 	 * Signature: ()V
 	 */
-	JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_register
+	JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_setup
 		(JNIEnv *, jobject);
 	
 	/*
