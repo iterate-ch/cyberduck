@@ -314,11 +314,11 @@ public abstract class Local extends AbstractPath {
             // Any other path is a child
             return true;
         }
-        if(ObjectUtils.equals(getParent(this.getAbsolute(), this.getPathDelimiter()), getParent(directory.getAbsolute(), this.getPathDelimiter()))) {
+        if(ObjectUtils.equals(PathNormalizer.parent(this.getAbsolute(), this.getPathDelimiter()), PathNormalizer.parent(directory.getAbsolute(), this.getPathDelimiter()))) {
             // Cannot be a child if the same parent
             return false;
         }
-        for(String parent = getParent(this.getAbsolute(), this.getPathDelimiter()); !parent.equals(String.valueOf(this.getPathDelimiter())); parent = getParent(parent, this.getPathDelimiter())) {
+        for(String parent = PathNormalizer.parent(this.getAbsolute(), this.getPathDelimiter()); !parent.equals(String.valueOf(this.getPathDelimiter())); parent = PathNormalizer.parent(parent, this.getPathDelimiter())) {
             if(parent.equals(directory.getAbsolute())) {
                 return true;
             }

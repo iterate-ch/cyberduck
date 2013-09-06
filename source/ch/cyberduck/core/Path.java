@@ -136,7 +136,7 @@ public class Path extends AbstractPath implements Serializable {
             this._setPath(null, PathNormalizer.name(absolute));
         }
         else {
-            final Path parent = new Path(Path.getParent(PathNormalizer.normalize(absolute, true), Path.DELIMITER),
+            final Path parent = new Path(PathNormalizer.parent(PathNormalizer.normalize(absolute, true), Path.DELIMITER),
                     Path.DIRECTORY_TYPE);
             if(parent.isRoot()) {
                 parent.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);

@@ -28,4 +28,11 @@ public class PathNormalizerTest extends AbstractTestCase {
         assertEquals("p", PathNormalizer.name("p"));
         assertEquals("n", PathNormalizer.name("p/n"));
     }
+
+    @Test
+    public void testParent() throws Exception {
+        assertEquals("/", PathNormalizer.parent("/p", '/'));
+        assertEquals("/p", PathNormalizer.parent("/p/n", '/'));
+        assertEquals(null, PathNormalizer.parent("/", '/'));
+    }
 }

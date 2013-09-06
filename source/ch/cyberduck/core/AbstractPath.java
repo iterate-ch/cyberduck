@@ -61,24 +61,6 @@ public abstract class AbstractPath {
         return this.getAbsolute().equals(String.valueOf(this.getPathDelimiter()));
     }
 
-    public static String getParent(final String absolute, final char delimiter) {
-        if(absolute.equals(String.valueOf(delimiter))) {
-            return null;
-        }
-        int index = absolute.length() - 1;
-        if(absolute.charAt(index) == delimiter) {
-            if(index > 0) {
-                index--;
-            }
-        }
-        int cut = absolute.lastIndexOf(delimiter, index);
-        if(cut > 0) {
-            return absolute.substring(0, cut);
-        }
-        //if (index == 0) parent is root
-        return String.valueOf(delimiter);
-    }
-
     public abstract String getAbsolute();
 
     public abstract String getName();
