@@ -163,7 +163,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
                 return null;
             }
         };
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test2.cyberduck.ch", Path.VOLUME_TYPE);
         configuration.write(container, new Distribution("test2.cyberduck.ch.s3.amazonaws.com", Distribution.STREAMING),
                 new DisabledLoginController());
         assertTrue(set.get());
