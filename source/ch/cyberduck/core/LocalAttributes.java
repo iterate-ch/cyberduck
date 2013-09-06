@@ -79,6 +79,13 @@ public class LocalAttributes extends Attributes {
         return new LocalPermission();
     }
 
+    /**
+     * @return True if package directory structure represented as a single file for the user.
+     */
+    public boolean isBundle() {
+        return false;
+    }
+
     @Override
     public boolean isVolume() {
         return null == new File(path).getParent();

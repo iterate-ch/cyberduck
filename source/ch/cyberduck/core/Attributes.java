@@ -53,14 +53,6 @@ public abstract class Attributes {
      */
     public abstract boolean isDirectory();
 
-    /**
-     * @return True if package directory structure represented as a
-     *         single file for the user.
-     */
-    public boolean isBundle() {
-        return false;
-    }
-
     public abstract boolean isVolume();
 
     /**
