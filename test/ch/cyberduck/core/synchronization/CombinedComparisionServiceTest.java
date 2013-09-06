@@ -89,7 +89,7 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
 
                             @Override
                             public long getModificationDate() {
-                                return Calendar.getInstance().getTimeInMillis();
+                                return Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
                             }
                         };
                     }
