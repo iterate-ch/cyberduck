@@ -18,6 +18,7 @@ public class RendezvousCollectionTest extends AbstractTestCase {
         assertFalse(c.allowsDelete());
         assertFalse(c.allowsEdit());
         final Rendezvous rendezvous = RendezvousFactory.instance();
+        rendezvous.init();
         final Host h = new Host(new SFTPProtocol(), "h");
         ((AbstractRendezvous) rendezvous).add("h_sftp", h);
         assertEquals(1, c.size());
