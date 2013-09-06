@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
@@ -44,7 +45,7 @@ public class SFTPDeleteFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
     }
 }

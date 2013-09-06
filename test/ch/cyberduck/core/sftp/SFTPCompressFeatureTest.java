@@ -10,6 +10,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
@@ -35,9 +36,9 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final SFTPCompressFeature feature = new SFTPCompressFeature(session);
         for(Archive archive : Archive.getKnownArchives()) {
-            final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+            final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
             session.getFeature(Touch.class).touch(test);
-            feature.archive(archive, session.home(), Collections.<Path>singletonList(test), new ProgressListener() {
+            feature.archive(archive, new DefaultHomeFinderService(session).find(), Collections.<Path>singletonList(test), new ProgressListener() {
                 @Override
                 public void message(final String message) {
                     //

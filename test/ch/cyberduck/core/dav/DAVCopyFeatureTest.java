@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
@@ -48,9 +49,9 @@ public class DAVCopyFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         session.getFeature(Touch.class).touch(test);
-        final Path copy = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path copy = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DAVCopyFeature(session).copy(test, copy);
         assertTrue(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(copy));

@@ -10,6 +10,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -73,7 +74,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), Path.FILE_TYPE);
         new FTPWriteFeature(session).write(test, new TransferStatus());
     }
 }

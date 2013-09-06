@@ -28,6 +28,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
@@ -60,7 +61,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
                 return null;
             }
         }, new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new GoogleStorageDirectoryFeature(session).mkdir(test, null);
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());

@@ -11,6 +11,7 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
@@ -131,7 +132,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         session.getFeature(Touch.class).touch(test);
         assertTrue(session.getFeature(Find.class).find(test));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
@@ -147,7 +148,7 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/dav/anon");
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
-        assertNotNull(session.list(session.home(), new DisabledListProgressListener()));
+        assertNotNull(session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()));
         session.close();
     }
 

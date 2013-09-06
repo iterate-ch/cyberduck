@@ -27,7 +27,6 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -202,37 +201,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
             return host.getProtocol().isSecure();
         }
         return false;
-    }
-
-    /**
-     * @return Home directory
-     */
-    public Path home() throws BackgroundException {
-        if(host.getWorkdir() != null) {
-            return host.getWorkdir();
-        }
-        else if(StringUtils.isNotBlank(host.getDefaultPath())) {
-            if(host.getDefaultPath().startsWith(String.valueOf(Path.DELIMITER))) {
-                // Mount absolute path
-                return new Path(host.getDefaultPath(),
-                        host.getDefaultPath().equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
-            }
-            else {
-                final Path workdir = this.workdir();
-                if(host.getDefaultPath().startsWith(Path.HOME)) {
-                    // Relative path to the home directory
-                    return new Path(workdir, host.getDefaultPath().substring(1), Path.DIRECTORY_TYPE);
-                }
-                else {
-                    // Relative path
-                    return new Path(workdir, host.getDefaultPath(), Path.DIRECTORY_TYPE);
-                }
-            }
-        }
-        else {
-            // No default path configured
-            return this.workdir();
-        }
     }
 
     /**

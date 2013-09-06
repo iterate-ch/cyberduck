@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
@@ -81,7 +82,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         session.getFeature(Touch.class).touch(test);
         final String v = UUID.randomUUID().toString();
         new DAVHeadersFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
@@ -103,7 +104,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new DAVDirectoryFeature(session).mkdir(test, null);
         final String v = UUID.randomUUID().toString();
         new DAVHeadersFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));

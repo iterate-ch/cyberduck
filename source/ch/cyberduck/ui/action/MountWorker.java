@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import java.text.MessageFormat;
 
@@ -51,7 +52,7 @@ public class MountWorker extends Worker<Path> {
     @Override
     public Path run() throws BackgroundException {
         try {
-            final Path home = session.home();
+            final Path home = new DefaultHomeFinderService(session).find();
             // Retrieve directory listing of default path
             cache.put(home.getReference(), new SessionListWorker(session, cache, home, listener).run());
             return home;

@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.junit.Test;
@@ -50,9 +51,9 @@ public class DAVMoveFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(test);
-        final Path target = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DAVMoveFeature(session).move(test, target);
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
@@ -68,9 +69,9 @@ public class DAVMoveFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(test);
-        final Path target = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(target);
         new DAVMoveFeature(session).move(test, target);
         assertFalse(session.getFeature(Find.class).find(test));
@@ -87,7 +88,7 @@ public class DAVMoveFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new DAVMoveFeature(session).move(test, new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        new DAVMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE));
     }
 }

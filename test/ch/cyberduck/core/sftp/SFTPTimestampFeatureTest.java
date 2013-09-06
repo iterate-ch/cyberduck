@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
@@ -45,7 +46,7 @@ public class SFTPTimestampFeatureTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path home = session.home();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, -1L, modified, -1L);

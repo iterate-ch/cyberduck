@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
@@ -127,9 +128,9 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         host.setDefaultPath("/dist.springframework.org/release");
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
-        assertEquals(new Path("/dist.springframework.org/release", Path.DIRECTORY_TYPE), session.home());
+        assertEquals(new Path("/dist.springframework.org/release", Path.DIRECTORY_TYPE), new DefaultHomeFinderService(session).find());
         final AttributedList<Path> list
-                = new S3ObjectListService(session).list(session.home(), new DisabledListProgressListener());
+                = new S3ObjectListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("/dist.springframework.org/release/SWF", Path.DIRECTORY_TYPE).getReference()));
         session.close();

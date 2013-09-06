@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.http.HttpStatus;
@@ -76,7 +77,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         try {
             try {
-                client.execute(new HttpHead(new DAVPathEncoder().encode(this.home())), new VoidResponseHandler());
+                client.execute(new HttpHead(new DAVPathEncoder().encode(new DefaultHomeFinderService(this).find())), new VoidResponseHandler());
             }
             catch(SardineException e) {
                 if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN
@@ -86,14 +87,14 @@ public class DAVSession extends HttpSession<DAVClient> {
                     log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
                             host, e.getResponsePhrase()));
                     // Possibly only HEAD requests are not allowed
-                    client.execute(new HttpPropFind(new DAVPathEncoder().encode(this.home())), new VoidResponseHandler());
+                    client.execute(new HttpPropFind(new DAVPathEncoder().encode(new DefaultHomeFinderService(this).find())), new VoidResponseHandler());
                 }
                 else if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
                     if(Preferences.instance().getBoolean("webdav.basic.preemptive")) {
                         log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
                                 host, e.getResponsePhrase()));
                         client.disablePreemptiveAuthentication();
-                        client.execute(new HttpHead(new DAVPathEncoder().encode(this.home())), new VoidResponseHandler());
+                        client.execute(new HttpHead(new DAVPathEncoder().encode(new DefaultHomeFinderService(this).find())), new VoidResponseHandler());
                     }
                     else {
                         throw new DAVExceptionMappingService().map(e);

@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
@@ -46,7 +47,7 @@ public class SFTPListServiceTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path home = session.home();
+        final Path home = new DefaultHomeFinderService(session).find();
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(new Path(home, "test", Path.FILE_TYPE).getReference()));
         assertTrue(list.contains(new Path(home, "test.directory", Path.FILE_TYPE).getReference()));

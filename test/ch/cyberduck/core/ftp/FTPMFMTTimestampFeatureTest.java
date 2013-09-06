@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.junit.Test;
@@ -50,9 +51,9 @@ public class FTPMFMTTimestampFeatureTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path home = session.home();
+        final Path home = new DefaultHomeFinderService(session).find();
         final long modified = System.currentTimeMillis();
-        final Path test = new Path(session.home(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(test);
         new FTPMFMTTimestampFeature(session).setTimestamp(test, -1L, modified, -1L);
         assertEquals(modified, session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getModificationDate());
