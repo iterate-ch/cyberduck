@@ -93,16 +93,6 @@ public abstract class AbstractPath {
     public abstract String getName();
 
     /**
-     * Subclasses may override to return a user friendly representation of the name denoting this path.
-     *
-     * @return Name of the file
-     * @see #getName()
-     */
-    public String getDisplayName() {
-        return this.getName();
-    }
-
-    /**
      * @return the extension if any or null otherwise
      */
     public String getExtension() {

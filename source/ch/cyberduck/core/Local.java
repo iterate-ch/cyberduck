@@ -176,6 +176,16 @@ public abstract class Local extends AbstractPath {
     }
 
     /**
+     * Subclasses may override to return a user friendly representation of the name denoting this path.
+     *
+     * @return Name of the file
+     * @see #getName()
+     */
+    public String getDisplayName() {
+        return this.getName();
+    }
+
+    /**
      * @return The last path component.
      */
     @Override

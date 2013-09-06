@@ -2649,7 +2649,7 @@ public class BrowserController extends WindowController
         downloadAsPanel.setNameFieldLabel(LocaleFactory.localizedString("Download As:"));
         downloadAsPanel.setPrompt(LocaleFactory.localizedString("Download"));
         downloadAsPanel.setCanCreateDirectories(true);
-        downloadAsPanel.beginSheetForDirectory(null, this.getSelectedPath().getDisplayName(), this.window, this.id(),
+        downloadAsPanel.beginSheetForDirectory(null, this.getSelectedPath().getName(), this.window, this.id(),
                 Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"),
                 null);
     }

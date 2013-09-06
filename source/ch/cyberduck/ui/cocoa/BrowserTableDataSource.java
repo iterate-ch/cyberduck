@@ -177,7 +177,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             if(identifier.equals(Columns.FILENAME.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        item.getDisplayName(),
+                        item.getName(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(Columns.SIZE.name())) {
