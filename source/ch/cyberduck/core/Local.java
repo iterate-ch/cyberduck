@@ -301,7 +301,7 @@ public abstract class Local extends AbstractPath {
      * @param directory Parent directory
      * @return True if this is a child in the path hierarchy of the argument passed
      */
-    public boolean isChild(final AbstractPath directory) {
+    public boolean isChild(final Local directory) {
         if(directory.attributes().isFile()) {
             // If a file we don't have any children at all
             return false;
