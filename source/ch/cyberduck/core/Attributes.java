@@ -24,14 +24,6 @@ package ch.cyberduck.core;
 public abstract class Attributes {
 
     /**
-     * @return File type
-     * @see #isDirectory()
-     * @see #isFile()
-     * @see #isSymbolicLink()
-     */
-    public abstract int getType();
-
-    /**
      * @return The length of the file
      */
     public abstract long getSize();

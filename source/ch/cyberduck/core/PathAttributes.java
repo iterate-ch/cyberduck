@@ -249,7 +249,6 @@ public class PathAttributes extends Attributes implements Serializable {
         this.type = type;
     }
 
-    @Override
     public int getType() {
         return type;
     }

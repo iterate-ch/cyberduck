@@ -62,21 +62,6 @@ public class LocalAttributes extends Attributes {
         return this.getModificationDate();
     }
 
-    /**
-     * This is only returning the correct result if the file already exists.
-     *
-     * @return File type
-     * @see Local#exists()
-     */
-    @Override
-    public int getType() {
-        final int t = this.isFile() ? AbstractPath.FILE_TYPE : AbstractPath.DIRECTORY_TYPE;
-        if(this.isSymbolicLink()) {
-            return t | AbstractPath.SYMBOLIC_LINK_TYPE;
-        }
-        return t;
-    }
-
     @Override
     public long getSize() {
         if(this.isDirectory()) {
