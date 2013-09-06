@@ -21,6 +21,7 @@ package ch.cyberduck.core.cloudfront;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
@@ -122,7 +123,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 if(distribution.isEnabled()) {
                     String suffix = "index.html";
                     if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
-                        suffix = Path.getName(distribution.getIndexDocument());
+                        suffix = PathNormalizer.name(distribution.getIndexDocument());
                     }
                     // Enable website endpoint
                     session.getClient().setWebsiteConfig(container.getName(), new S3WebsiteConfig(suffix));

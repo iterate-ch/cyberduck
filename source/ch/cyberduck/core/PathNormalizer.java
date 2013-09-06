@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ibm.icu.text.Normalizer;
@@ -28,6 +29,14 @@ public final class PathNormalizer {
 
     private PathNormalizer() {
         //
+    }
+
+    public static String name(final String path) {
+        final String normalized = normalize(path, true);
+        if(String.valueOf(Path.DELIMITER).equals(normalized)) {
+            return path;
+        }
+        return FilenameUtils.getName(normalized);
     }
 
     public static String normalize(final String path) {

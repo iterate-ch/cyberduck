@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
@@ -54,7 +55,7 @@ public class FTPMlsdListResponseReader {
                 continue;
             }
             for(String name : file.keySet()) {
-                final Path parsed = new Path(parent, Path.getName(name), Path.FILE_TYPE);
+                final Path parsed = new Path(parent, PathNormalizer.name(name), Path.FILE_TYPE);
                 // size       -- Size in octets
                 // modify     -- Last modification time
                 // create     -- Creation time

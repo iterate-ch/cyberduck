@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
@@ -127,7 +128,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             if(distribution.isEnabled()) {
                 String suffix = "index.html";
                 if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
-                    suffix = Path.getName(distribution.getIndexDocument());
+                    suffix = PathNormalizer.name(distribution.getIndexDocument());
                 }
                 // Enable website endpoint
                 session.getClient().setWebsiteConfigImpl(container.getName(), new GSWebsiteConfig(suffix));

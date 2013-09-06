@@ -42,6 +42,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new S3Session(new Host(ProtocolFactory.S3_SSL, ProtocolFactory.S3_SSL.getDefaultHostname(), origin.getCdnCredentials())));
+        //todo connect s3 session
         this.origin = origin;
     }
 

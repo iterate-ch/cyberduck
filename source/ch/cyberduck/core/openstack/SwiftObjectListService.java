@@ -65,8 +65,7 @@ public class SwiftObjectListService implements ListService {
                 list = session.getClient().listObjectsStartingWith(session.getRegion(container), container.getName(),
                         containerService.isContainer(file) ? StringUtils.EMPTY : containerService.getKey(file) + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
-                    final Path child = new Path(file,
-                            Path.getName(PathNormalizer.normalize(object.getName())),
+                    final Path child = new Path(file, PathNormalizer.name(object.getName()),
                             "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                     child.attributes().setOwner(child.attributes().getOwner());
                     child.attributes().setRegion(container.attributes().getRegion());

@@ -132,7 +132,7 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, Path.DIRECTORY_TYPE).equals(parent)) {
                     continue;
                 }
-                final Path p = new Path(parent, Path.getName(key), Path.FILE_TYPE);
+                final Path p = new Path(parent, PathNormalizer.name(key), Path.FILE_TYPE);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 p.attributes().setRegion(bucket.attributes().getRegion());
@@ -174,7 +174,7 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, Path.DIRECTORY_TYPE).equals(parent)) {
                     continue;
                 }
-                final Path p = new Path(parent, Path.getName(key), Path.DIRECTORY_TYPE);
+                final Path p = new Path(parent, PathNormalizer.name(key), Path.DIRECTORY_TYPE);
                 if(children.contains(p.getReference())) {
                     // There is already a placeholder object
                     continue;
@@ -209,7 +209,7 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, Path.DIRECTORY_TYPE).equals(parent)) {
                     continue;
                 }
-                final Path p = new Path(parent, Path.getName(key), Path.FILE_TYPE);
+                final Path p = new Path(parent, PathNormalizer.name(key), Path.FILE_TYPE);
                 // Versioning is enabled if non null.
                 p.attributes().setVersionId(marker.getVersionId());
                 p.attributes().setRevision(++i);

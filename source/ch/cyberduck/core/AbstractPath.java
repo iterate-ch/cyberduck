@@ -80,14 +80,6 @@ public abstract class AbstractPath {
         return String.valueOf(delimiter);
     }
 
-    public static String getName(final String path) {
-        //StringUtils.removeStart(absolute, this.getAbsolute() + Path.DELIMITER);
-        if(String.valueOf(Path.DELIMITER).equals(path)) {
-            return path;
-        }
-        return FilenameUtils.getName(path);
-    }
-
     public abstract String getAbsolute();
 
     public abstract String getName();

@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
 
 import org.apache.commons.net.ftp.FTPFile;
@@ -68,8 +69,7 @@ public class FTPListResponseReader {
                 }
                 continue;
             }
-            final Path parsed = new Path(parent,
-                    Path.getName(name), f.getType() == FTPFile.DIRECTORY_TYPE ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+            final Path parsed = new Path(parent, PathNormalizer.name(name), f.getType() == FTPFile.DIRECTORY_TYPE ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
                     parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);

@@ -133,7 +133,7 @@ public class Path extends AbstractPath implements Serializable {
 
     private void setPath(final String absolute) {
         if(absolute.equals(String.valueOf(Path.DELIMITER))) {
-            this._setPath((Path) null, Path.getName(PathNormalizer.normalize(absolute, true)));
+            this._setPath(null, PathNormalizer.name(absolute));
         }
         else {
             final Path parent = new Path(Path.getParent(PathNormalizer.normalize(absolute, true), Path.DELIMITER),
@@ -141,8 +141,7 @@ public class Path extends AbstractPath implements Serializable {
             if(parent.isRoot()) {
                 parent.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
             }
-            this._setPath(parent,
-                    Path.getName(PathNormalizer.normalize(absolute, true)));
+            this._setPath(parent, PathNormalizer.name(absolute));
         }
     }
 
