@@ -67,7 +67,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private IList<KeyValuePair<string, string>> _lifecycleTransitionPeriods;
         private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
 
-        private PathContainerService containerService;
+        private PathContainerService containerService = new PathContainerService();
 
         private InfoController(BrowserController controller, IList<Path> files)
         {
