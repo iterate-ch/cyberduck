@@ -56,14 +56,5 @@ public abstract class RendezvousFactory extends Factory<Rendezvous> {
     }
 
     private static final class DisabledRendezvous extends AbstractRendezvous {
-        @Override
-        public void init() {
-            //
-        }
-
-        @Override
-        public void quit() {
-            //
-        }
     }
 }

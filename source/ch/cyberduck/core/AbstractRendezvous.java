@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractRendezvous implements Rendezvous {
-    private static Logger log = Logger.getLogger(AbstractRendezvous.class);
+    private static final Logger log = Logger.getLogger(AbstractRendezvous.class);
 
     /**
      * sftp-ssh
@@ -83,7 +83,17 @@ public abstract class AbstractRendezvous implements Rendezvous {
     private Set<RendezvousListener> listeners =
             Collections.synchronizedSet(new HashSet<RendezvousListener>());
 
-    private RendezvousListener notifier = new LimitedRendezvousListener();
+    private LimitedRendezvousListener notifier;
+
+    @Override
+    public void init() {
+        notifier = new LimitedRendezvousListener();
+    }
+
+    @Override
+    public void quit() {
+        notifier.quit();
+    }
 
     /**
      * Register a listener to be notified
@@ -128,7 +138,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * @return A nicely formatted informative string
      */
     @Override
-    public String getDisplayedName(int index) {
+    public String getDisplayedName(final int index) {
         if(index < this.numberOfServices()) {
             Host host = services.values().toArray(new Host[services.size()])[index];
             return host.getNickname();
@@ -218,6 +228,10 @@ public abstract class AbstractRendezvous implements Rendezvous {
          */
         private TimedSemaphore limit
                 = new TimedSemaphore(1L, TimeUnit.MINUTES, Preferences.instance().getInteger("rendezvous.notification.limit"));
+
+        public void quit() {
+            limit.shutdown();
+        }
 
         @Override
         public void serviceResolved(final String identifier, final Host host) {

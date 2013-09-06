@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Id$
  */
 public final class RendezvousResponder extends AbstractRendezvous implements BrowseListener, ResolveListener {
-    private static Logger log = Logger.getLogger(RendezvousResponder.class);
+    private static final Logger log = Logger.getLogger(RendezvousResponder.class);
 
     private Map<String, DNSSDService> browsers;
 
@@ -61,12 +61,13 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
         if(log.isDebugEnabled()) {
             log.debug("Initialize responder by browsing DNSSD");
         }
+        super.init();
         try {
             for(String protocol : this.getServiceTypes()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Adding service listener for %s", protocol));
                 }
-                this.browsers.put(protocol, DNSSD.browse(protocol, this));
+                browsers.put(protocol, DNSSD.browse(protocol, this));
             }
         }
         catch(DNSSDException e) {
@@ -81,17 +82,18 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
             if(log.isInfoEnabled()) {
                 log.info(String.format("Removing service listener for %s", protocol));
             }
-            final DNSSDService service = this.browsers.get(protocol);
+            final DNSSDService service = browsers.get(protocol);
             if(null == service) {
                 continue;
             }
             service.stop();
         }
+        super.quit();
     }
 
     @Override
-    public void serviceFound(DNSSDService browser, int flags, int ifIndex, String serviceName,
-                             String regType, String domain) {
+    public void serviceFound(final DNSSDService browser, final int flags, final int ifIndex, final String serviceName,
+                             final String regType, final String domain) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Browser found service at %s not yet resolved", serviceName));
         }
@@ -104,8 +106,8 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
     }
 
     @Override
-    public void serviceLost(DNSSDService browser, int flags, int ifIndex, String serviceName,
-                            String regType, String domain) {
+    public void serviceLost(final DNSSDService browser, final int flags, final int ifIndex, final String serviceName,
+                            final String regType, final String domain) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Service lost for %s", serviceName));
         }
@@ -123,14 +125,14 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
     }
 
     @Override
-    public void operationFailed(DNSSDService resolver, int errorCode) {
+    public void operationFailed(final DNSSDService resolver, final int errorCode) {
         log.warn(String.format("Operation failed with error code %d", errorCode));
         resolver.stop();
     }
 
     @Override
-    public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
-                                final String fullname, final String hostname, int port, TXTRecord txtRecord) {
+    public void serviceResolved(final DNSSDService resolver, final int flags, final int ifIndex,
+                                final String fullname, final String hostname, final int port, final TXTRecord txtRecord) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resolved service with name %s to %s", fullname, hostname));
         }

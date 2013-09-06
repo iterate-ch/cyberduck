@@ -34,6 +34,7 @@ namespace Ch.Cyberduck.Core
 
         public override void init()
         {
+            base.init();
             _eventManager = new DNSSDEventManager();
             _eventManager.ServiceFound += ServiceFound;
             _eventManager.ServiceLost += ServiceLost;
@@ -52,7 +53,6 @@ namespace Ch.Cyberduck.Core
             {
                 return;
             }
-
             _eventManager.ServiceFound -= ServiceFound;
             _eventManager.ServiceLost -= ServiceLost;
             _eventManager.ServiceResolved -= ServiceResolved;
@@ -72,6 +72,7 @@ namespace Ch.Cyberduck.Core
             {
                 _service.Stop();
             }
+            base.quit();
         }
 
         //
