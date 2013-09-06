@@ -19,6 +19,8 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,6 +32,7 @@ import java.util.concurrent.ThreadFactory;
  * @version $Id$
  */
 public class ThreadPool {
+    private static final Logger log = Logger.getLogger(ThreadPool.class);
 
     private final ThreadFactory threadFactory
             = new NamedThreadFactory("background");
@@ -53,6 +56,9 @@ public class ThreadPool {
     }
 
     public void shutdown() {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Shutdown pool %s", pool));
+        }
         pool.shutdownNow();
     }
 

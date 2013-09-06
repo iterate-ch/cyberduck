@@ -17,6 +17,8 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @version $Id$
  */
 public class ScheduledThreadPool {
+    private static final Logger log = Logger.getLogger(ScheduledThreadPool.class);
 
     private final ThreadFactory threadFactory
             = new NamedThreadFactory("timer");
@@ -49,6 +52,9 @@ public class ScheduledThreadPool {
     }
 
     public void shutdown() {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Shutdown pool %s", pool));
+        }
         pool.shutdownNow();
     }
 }
