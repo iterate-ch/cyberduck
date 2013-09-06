@@ -50,4 +50,12 @@ public class RendezvousResponderTest extends AbstractTestCase {
         }
         r.quit();
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void testShutdown() throws Exception {
+        final RendezvousResponder r = new RendezvousResponder();
+        r.init();
+        r.quit();
+        r.add("t-name", new Host("h"));
+    }
 }
