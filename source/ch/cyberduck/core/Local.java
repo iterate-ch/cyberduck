@@ -75,7 +75,7 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public char getPathDelimiter() {
+    public char getDelimiter() {
         return '/';
     }
 
@@ -194,7 +194,7 @@ public abstract class Local extends AbstractPath {
     }
 
     public Local getVolume() {
-        return LocalFactory.createLocal(new File(String.valueOf(this.getPathDelimiter())));
+        return LocalFactory.createLocal(new File(String.valueOf(this.getDelimiter())));
     }
 
     public Local getParent() {
@@ -314,11 +314,11 @@ public abstract class Local extends AbstractPath {
             // Any other path is a child
             return true;
         }
-        if(ObjectUtils.equals(PathNormalizer.parent(this.getAbsolute(), this.getPathDelimiter()), PathNormalizer.parent(directory.getAbsolute(), this.getPathDelimiter()))) {
+        if(ObjectUtils.equals(PathNormalizer.parent(this.getAbsolute(), this.getDelimiter()), PathNormalizer.parent(directory.getAbsolute(), this.getDelimiter()))) {
             // Cannot be a child if the same parent
             return false;
         }
-        for(String parent = PathNormalizer.parent(this.getAbsolute(), this.getPathDelimiter()); !parent.equals(String.valueOf(this.getPathDelimiter())); parent = PathNormalizer.parent(parent, this.getPathDelimiter())) {
+        for(String parent = PathNormalizer.parent(this.getAbsolute(), this.getDelimiter()); !parent.equals(String.valueOf(this.getDelimiter())); parent = PathNormalizer.parent(parent, this.getDelimiter())) {
             if(parent.equals(directory.getAbsolute())) {
                 return true;
             }

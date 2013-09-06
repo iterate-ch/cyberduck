@@ -174,7 +174,7 @@ public class Path extends AbstractPath implements Serializable {
     }
 
     @Override
-    public char getPathDelimiter() {
+    public char getDelimiter() {
         return String.valueOf(DELIMITER).charAt(0);
     }
 

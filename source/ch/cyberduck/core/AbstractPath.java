@@ -51,14 +51,14 @@ public abstract class AbstractPath {
      */
     public abstract PathReference getReference();
 
-    public abstract char getPathDelimiter();
+    public abstract char getDelimiter();
 
     /**
      * @return true if this paths points to '/'
-     * @see #getPathDelimiter()
+     * @see #getDelimiter()
      */
     public boolean isRoot() {
-        return this.getAbsolute().equals(String.valueOf(this.getPathDelimiter()));
+        return this.getAbsolute().equals(String.valueOf(this.getDelimiter()));
     }
 
     public abstract String getAbsolute();
