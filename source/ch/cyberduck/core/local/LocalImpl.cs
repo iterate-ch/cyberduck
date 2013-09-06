@@ -59,7 +59,7 @@ namespace Ch.Cyberduck.Core.Local
         }
 
 
-        public override char getPathDelimiter()
+        public override char getDelimiter()
         {
             return '\\';
         }
