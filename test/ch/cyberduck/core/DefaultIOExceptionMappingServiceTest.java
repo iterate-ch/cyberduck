@@ -51,9 +51,9 @@ public class DefaultIOExceptionMappingServiceTest extends AbstractTestCase {
     }
 
     @Test
-    public void testplaceholder() throws Exception {
+    public void testPlaceholder() throws Exception {
         final BackgroundException e = new DefaultIOExceptionMappingService().map("{0} message", new SocketException("s"),
                 new Path("/n", AbstractPath.VOLUME_TYPE));
-        assertEquals("n message", e.getMessage());
+        assertEquals("n message (n)", e.getMessage());
     }
 }
