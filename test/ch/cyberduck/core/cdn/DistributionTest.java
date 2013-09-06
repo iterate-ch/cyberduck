@@ -2,6 +2,7 @@ package ch.cyberduck.core.cdn;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
@@ -35,5 +36,25 @@ public class DistributionTest extends AbstractTestCase {
     @Test(expected = FactoryException.class)
     public void testMethodInvalid() throws Exception {
         Distribution.Method.forName("i");
+    }
+
+    @Test
+    public void testOriginBucket() throws Exception {
+        assertEquals("test.cyberduck.ch.s3.amazonaws.com",
+                new Distribution("test.cyberduck.ch.s3.amazonaws.com", Distribution.DOWNLOAD).getOrigin());
+        assertEquals("http://test.cyberduck.ch.s3.amazonaws.com/f",
+                new Distribution("test.cyberduck.ch.s3.amazonaws.com", Distribution.DOWNLOAD).getOrigin(
+                        new Path("/test.cyberduck.ch/f", Path.FILE_TYPE)
+                ));
+    }
+
+    @Test
+    public void testOriginCustom() throws Exception {
+        assertEquals("test.cyberduck.ch",
+                new Distribution("test.cyberduck.ch", Distribution.DOWNLOAD).getOrigin());
+        assertEquals("http://test.cyberduck.ch/f",
+                new Distribution("test.cyberduck.ch", Distribution.CUSTOM).getOrigin(
+                        new Path("/f", Path.FILE_TYPE)
+                ));
     }
 }

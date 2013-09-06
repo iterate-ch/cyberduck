@@ -300,9 +300,15 @@ public class Distribution {
      * @return Origin URL of specific file.
      */
     public String getOrigin(final Path file) {
-        StringBuilder url = new StringBuilder().append(String.format("%s://%s", method.getScheme(), origin));
-        if(!new PathContainerService().isContainer(file)) {
-            url.append(Path.DELIMITER).append(URIEncoder.encode(new PathContainerService().getKey(file)));
+        final StringBuilder url = new StringBuilder().append(String.format("%s://%s", method.getScheme(), origin));
+        if(this.getMethod().equals(CUSTOM)) {
+            url.append(Path.DELIMITER).append(URIEncoder.encode(file.getAbsolute()));
+        }
+        else {
+            final PathContainerService service = new PathContainerService();
+            if(!service.isContainer(file)) {
+                url.append(Path.DELIMITER).append(URIEncoder.encode(service.getKey(file)));
+            }
         }
         return URI.create(url.toString()).normalize().toString();
     }
