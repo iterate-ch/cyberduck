@@ -98,7 +98,8 @@ public class Resolver {
                 signal.await();
             }
             catch(InterruptedException e) {
-                log.error(String.format("Error awaiting lock for resolver: %s", e.getMessage()), e);
+                log.error(String.format("Error awaiting lock for resolver %s", e.getMessage()), e);
+                throw new ResolveCanceledException();
             }
         }
         if(!this.isResolved()) {
