@@ -115,7 +115,7 @@ public class FinderLocal extends Local {
     public Local getVolume() {
         for(Local parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
             if(parent.getParent().getAbsolute().equals("/Volumes")) {
-                return (Local) parent;
+                return parent;
             }
         }
         return super.getVolume();

@@ -46,8 +46,7 @@ public abstract class AbstractPath {
      * if you need a different strategy to compare hashcode and equality for caching
      * in a model.
      *
-     * @return Reference to the path to be used in table models an file listing
-     *         cache.
+     * @return Reference to the path to be used in table models an file listing cache.
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
     public abstract PathReference getReference();
