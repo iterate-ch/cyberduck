@@ -98,7 +98,8 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
             exit.await();
         }
         catch(InterruptedException e) {
-            log.error("Error waiting for exit signal:" + e.getMessage());
+            log.error(String.format("Error waiting for exit signal %s", e.getMessage()));
+            throw new IOException();
         }
         // Entity written to server
         consumed = true;
