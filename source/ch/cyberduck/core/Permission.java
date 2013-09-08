@@ -381,6 +381,9 @@ public class Permission implements Serializable {
         if(this == o) {
             return true;
         }
+        if(!(o instanceof Permission)) {
+            return false;
+        }
         final Permission that = (Permission) o;
         if(setgid != that.setgid) {
             return false;
