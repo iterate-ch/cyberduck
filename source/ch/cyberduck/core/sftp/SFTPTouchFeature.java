@@ -44,7 +44,7 @@ public class SFTPTouchFeature implements Touch {
             try {
                 final SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                 final Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                attr.permissions = Integer.parseInt(permission.getOctalString(), 8);
+                attr.permissions = Integer.parseInt(permission.getMode(), 8);
                 session.sftp().createFile(file.getAbsolute(), attr);
 
                 // Even if specified above when creating the file handle, we still need to update the

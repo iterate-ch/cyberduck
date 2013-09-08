@@ -167,15 +167,15 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
         private void createAndSetSpecifiedPermission() {
             Permission newPermission = this.createSpecifiedPermission();
             if(newPermission != null) {
-                file.setPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION, newPermission.getOwnerPermissions()[Permission.READ]);
-                file.setPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION, newPermission.getOwnerPermissions()[Permission.WRITE]);
-                file.setPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION, newPermission.getOwnerPermissions()[Permission.EXECUTE]);
-                file.setPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION, newPermission.getOwnerPermissions()[Permission.READ]);
-                file.setPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION, newPermission.getOwnerPermissions()[Permission.WRITE]);
-                file.setPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION, newPermission.getOwnerPermissions()[Permission.EXECUTE]);
-                file.setPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION, newPermission.getOwnerPermissions()[Permission.READ]);
-                file.setPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION, newPermission.getOwnerPermissions()[Permission.WRITE]);
-                file.setPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION, newPermission.getOwnerPermissions()[Permission.EXECUTE]);
+                file.setPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION, newPermission.getUser().implies(Permission.Action.read));
+                file.setPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION, newPermission.getUser().implies(Permission.Action.write));
+                file.setPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION, newPermission.getUser().implies(Permission.Action.execute));
+                file.setPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION, newPermission.getUser().implies(Permission.Action.read));
+                file.setPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION, newPermission.getUser().implies(Permission.Action.write));
+                file.setPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION, newPermission.getUser().implies(Permission.Action.execute));
+                file.setPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION, newPermission.getUser().implies(Permission.Action.read));
+                file.setPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION, newPermission.getUser().implies(Permission.Action.write));
+                file.setPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION, newPermission.getUser().implies(Permission.Action.execute));
             }
         }
 

@@ -17,15 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
@@ -33,6 +25,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -48,10 +41,13 @@ public class FTPStatListServiceTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final ListService list = new FTPStatListService(session,
+        final ListService service = new FTPStatListService(session,
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())));
         final Path directory = session.workdir();
-        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", Path.FILE_TYPE).getReference()));
+        final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
+        assertTrue(list.contains(new Path(directory, "test", Path.FILE_TYPE).getReference()));
+        assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
+                list.get(new Path(directory, "test", Path.FILE_TYPE).getReference()).attributes().getPermission());
         session.close();
     }
 }

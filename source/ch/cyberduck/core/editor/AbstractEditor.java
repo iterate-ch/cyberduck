@@ -18,12 +18,12 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -190,8 +190,7 @@ public abstract class AbstractEditor implements Editor {
                 checksum = local.attributes().getChecksum();
                 final Permission permissions = local.attributes().getPermission();
                 // Update local permissions to make sure the file is readable and writable for editing.
-                permissions.getOwnerPermissions()[Permission.READ] = true;
-                permissions.getOwnerPermissions()[Permission.WRITE] = true;
+                permissions.setUser(permissions.getUser().or(Permission.Action.read).or(Permission.Action.write));
                 local.writeUnixPermission(permissions);
                 try {
                     edit();

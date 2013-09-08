@@ -304,7 +304,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                             NSFileManager.NSFileModificationDate);
                     attributes.setObjectForKey(NSDate.dateWithTimeIntervalSince1970(file.attributes().getCreationDate() / 1000d),
                             NSFileManager.NSFileCreationDate);
-                    attributes.setObjectForKey(NSNumber.numberWithInt(Integer.valueOf(file.attributes().getPermission().getOctalString(), 8)),
+                    attributes.setObjectForKey(NSNumber.numberWithInt(Integer.valueOf(file.attributes().getPermission().getMode(), 8)),
                             NSFileManager.NSFilePosixPermissions);
 
                     return attributes;

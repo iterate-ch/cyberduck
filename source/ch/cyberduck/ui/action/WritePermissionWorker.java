@@ -1,8 +1,7 @@
 package ch.cyberduck.ui.action;
 
 /*
- * Copyright (c) 2002-2010 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +15,7 @@ package ch.cyberduck.ui.action;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -73,31 +72,24 @@ public abstract class WritePermissionWorker extends Worker<Void> {
 
     protected void write(final Path file) throws BackgroundException {
         if(recursive && file.attributes().isFile()) {
-            // Do not write executable bit for files if not already set when recursively updating directory.
-            // See #1787
-            final Permission modified = new Permission(permission);
-            if(!file.attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
-                modified.getOwnerPermissions()[Permission.EXECUTE] = false;
+            // Do not write executable bit for files if not already set when recursively updating directory. See #1787
+            final Permission modified = new Permission(permission.getMode());
+            if(!file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
+                modified.setUser(modified.getUser().and(Permission.Action.execute.not()));
             }
-            if(!file.attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
-                modified.getGroupPermissions()[Permission.EXECUTE] = false;
+            if(!file.attributes().getPermission().getGroup().implies(Permission.Action.execute)) {
+                modified.setGroup(modified.getGroup().and(Permission.Action.execute.not()));
             }
-            if(!file.attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
-                modified.getOtherPermissions()[Permission.EXECUTE] = false;
+            if(!file.attributes().getPermission().getOther().implies(Permission.Action.execute)) {
+                modified.setOther((modified.getOther().and(Permission.Action.execute.not())));
             }
             if(!modified.equals(file.attributes().getPermission())) {
-                session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                        file.getName(), modified));
-                feature.setUnixPermission(file, modified);
-                file.attributes().setPermission(modified);
+                this.write(file, modified);
             }
         }
         else {
             if(!permission.equals(file.attributes().getPermission())) {
-                session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                        file.getName(), permission));
-                feature.setUnixPermission(file, permission);
-                file.attributes().setPermission(permission);
+                this.write(file, permission);
             }
         }
         if(recursive) {
@@ -107,6 +99,16 @@ public abstract class WritePermissionWorker extends Worker<Void> {
                 }
             }
         }
+    }
+
+    private void write(final Path file, final Permission permission) throws BackgroundException {
+        final Permission merged = new Permission(permission.getUser(), permission.getGroup(), permission.getOther(),
+                file.attributes().getPermission().isSticky(), file.attributes().getPermission().isSetuid(),
+                file.attributes().getPermission().isSetgid());
+        session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                file.getName(), merged));
+        feature.setUnixPermission(file, merged);
+        file.attributes().setPermission(merged);
     }
 
     @Override

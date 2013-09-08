@@ -1,29 +1,27 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.log4j.Logger;
-
-import java.util.Arrays;
 
 /**
  * Encapsulating UNIX file permissions.
@@ -33,39 +31,66 @@ import java.util.Arrays;
 public class Permission implements Serializable {
     private static final Logger log = Logger.getLogger(Permission.class);
 
-    private static final int EMPTY_MASK = 0;
+    public enum Action {
+        // POSIX style
+        none("---"),
+        execute("--x"),
+        write("-w-"),
+        write_execute("-wx"),
+        read("r--"),
+        read_execute("r-x"),
+        read_write("rw-"),
+        all("rwx");
 
-    public static final Permission EMPTY = new Permission() {
-        @Override
-        public boolean isExecutable() {
-            return true;
+        /**
+         * Retain reference to value array.
+         */
+        private final static Action[] values = values();
+
+        /**
+         * Symbolic representation
+         */
+        public final String symbolic;
+
+        private Action(final String symbol) {
+            symbolic = symbol;
         }
 
-        @Override
-        public boolean isReadable() {
-            return true;
+        /**
+         * Return true if this action implies that action.
+         *
+         * @param that action
+         */
+        public boolean implies(final Action that) {
+            if(that != null) {
+                return (ordinal() & that.ordinal()) == that.ordinal();
+            }
+            return false;
         }
 
-        @Override
-        public boolean isWritable() {
-            return true;
+        /**
+         * AND operation.
+         */
+        public Action and(final Action that) {
+            return values[ordinal() & that.ordinal()];
         }
 
-        @Override
-        public boolean[] getOwnerPermissions() {
-            return new boolean[]{false, false, false};
+        /**
+         * OR operation.
+         */
+        public Action or(final Action that) {
+            return values[ordinal() | that.ordinal()];
         }
 
-        @Override
-        public boolean[] getGroupPermissions() {
-            return new boolean[]{false, false, false};
+        /**
+         * NOT operation.
+         */
+        public Action not() {
+            return values[7 - ordinal()];
         }
+    }
 
-        @Override
-        public boolean[] getOtherPermissions() {
-            return new boolean[]{false, false, false};
-        }
-
+    public static final Permission EMPTY = new Permission(Action.none, Action.none, Action.none) {
         @Override
         public String toString() {
             return LocaleFactory.localizedString("--");
@@ -76,101 +101,57 @@ public class Permission implements Serializable {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         final String maskObj = dict.stringForKey("Mask");
         if(maskObj != null) {
-            this.init(maskObj);
+            this.fromSymbol(maskObj);
         }
     }
 
     @Override
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(this.getMask(), "Mask");
+        dict.setStringForKey(this.getSymbol(), "Mask");
         return dict.getSerialized();
     }
 
-    /**
-     * Index of OWNER bit
-     */
-    public static final int OWNER = 0;
-    /**
-     * Index of GROUP bit
-     */
-    public static final int GROUP = 1;
-    /**
-     * Index of OTHER bit
-     */
-    public static final int OTHER = 2;
+    private Action user;
+    private Action group;
+    private Action other;
 
     /**
-     * Index of READ bit
+     * set user ID upon execution
      */
-    public static final int READ = 0;
-    /**
-     * Index of WRITE bit
-     */
-    public static final int WRITE = 1;
-    /**
-     * Index of EXECUTE bit
-     */
-    public static final int EXECUTE = 2;
-
-    // {read, write, execute}
-    // --- = 0; {false, false, false}
-    // --x = 1; {false, false, true}
-    // -w- = 2; {false, true, false}
-    // -wx = 3; {false, true, true}
-    // r-- = 4; {true, false, false}
-    // r-x = 5; {true, false, true}
-    // rw- = 6; {true, true, false}
-    // rwx = 7; {true, true, true}
-    private boolean[] owner = new boolean[3];
-    private boolean[] group = new boolean[3];
-    private boolean[] other = new boolean[3];
-
     private boolean setuid;
+    /**
+     * set group ID upon execution
+     */
     private boolean setgid;
     private boolean sticky;
 
     public Permission() {
-        this(Permission.EMPTY_MASK);
+        this.set(Action.none, Action.none, Action.none, false, false, false);
     }
 
-    public Permission(final Permission p) {
-        this.init(p.getMask());
-    }
-
-    /**
-     * @param symbolic the access string to parse the permissions from.
-     *                 Must be something between --------- and rwxrwxrwx
-     */
-    public Permission(final String symbolic) {
-        this.init(symbolic);
-    }
-
-    private void init(final String symbolic) {
-        if(symbolic.length() != 9) {
-            log.error(String.format("Invalid mask %s", symbolic));
-            throw new NumberFormatException("Must be a nine digit string");
+    public Permission(final String mode) {
+        try {
+            this.fromInteger(Integer.parseInt(mode, 8));
         }
-        this.owner = this.getOwnerPermissions(symbolic);
-        this.group = this.getGroupPermissions(symbolic);
-        this.other = this.getOtherPermissions(symbolic);
+        catch(NumberFormatException e) {
+            this.fromSymbol(mode);
+        }
     }
 
     /**
-     * @param p A 3*3 boolean array representing read, write and execute permissions
-     *          by owner, group and others. (1,1) is the owner's read permission
+     * Construct by the given {@link Action}.
+     *
+     * @param u user action
+     * @param g group action
+     * @param o other action
      */
-    public Permission(final boolean[][] p) {
-        this.owner[READ] = p[OWNER][READ];
-        this.owner[WRITE] = p[OWNER][WRITE];
-        this.owner[EXECUTE] = p[OWNER][EXECUTE];
+    public Permission(final Action u, final Action g, final Action o) {
+        this.set(u, g, o, false, false, false);
+    }
 
-        this.group[READ] = p[GROUP][READ];
-        this.group[WRITE] = p[GROUP][WRITE];
-        this.group[EXECUTE] = p[GROUP][EXECUTE];
-
-        this.other[READ] = p[OTHER][READ];
-        this.other[WRITE] = p[OTHER][WRITE];
-        this.other[EXECUTE] = p[OTHER][EXECUTE];
+    public Permission(final Action u, final Action g, final Action o,
+                      final boolean stickybit, final boolean setuid, final boolean setgid) {
+        this.set(u, g, o, stickybit, setuid, setgid);
     }
 
     /**
@@ -191,102 +172,108 @@ public class Permission implements Serializable {
      * 0004    Allow read by others.
      * 0002    Allow write by others.
      * 0001    For files, allow execution by others.  For directories allow others to search in the directory.
-     * <p/>
-     * For example, the absolute mode that permits read, write and execute by the owner, read and execute by group members, read and execute by others, and
-     * no set-uid or set-gid behaviour is 755 (400+200+100+040+010+004+001).
      *
-     * @param number The permissions as a 4 digit octal number
+     * @param mode Mode
+     * @see #toInteger()
      */
-    public Permission(final int number) {
-        String octal = String.valueOf(number);
-        StringBuilder sb = new StringBuilder();
-        int leadingZeros = 4 - octal.length();
-        while(leadingZeros > 0) {
-            sb.append(String.valueOf(0));
-            leadingZeros--;
+    public Permission(final Integer mode) {
+        try {
+            this.fromInteger(Integer.valueOf(Integer.toString(mode), 8));
         }
-        sb.append(octal);
-        octal = sb.toString();
-        if(log.isDebugEnabled()) {
-            log.debug("Permission:" + octal);
+        catch(NumberFormatException e) {
+            log.warn(String.format("Failure parsing %s", mode));
+            this.set(Permission.EMPTY);
         }
-        switch(Integer.parseInt(octal.substring(1, 2))) {
-            case (0):
-                this.owner = new boolean[]{false, false, false};
-                break;
-            case (1):
-                this.owner = new boolean[]{false, false, true};
-                break;
-            case (2):
-                this.owner = new boolean[]{false, true, false};
-                break;
-            case (3):
-                this.owner = new boolean[]{false, true, true};
-                break;
-            case (4):
-                this.owner = new boolean[]{true, false, false};
-                break;
-            case (5):
-                this.owner = new boolean[]{true, false, true};
-                break;
-            case (6):
-                this.owner = new boolean[]{true, true, false};
-                break;
-            case (7):
-                this.owner = new boolean[]{true, true, true};
-                break;
+    }
+
+    /**
+     * Copy constructor
+     *
+     * @param other other permission
+     */
+    public Permission(final Permission other) {
+        this.set(other.user, other.group, other.other,
+                other.sticky, other.setuid, other.setgid);
+    }
+
+    private void set(final Permission other) {
+        this.set(other.user, other.group, other.other,
+                other.sticky, other.setuid, other.setgid);
+    }
+
+    private void set(final Action u, final Action g, final Action o,
+                     final boolean s, final boolean setuid, final boolean setgid) {
+        this.user = u;
+        this.group = g;
+        this.other = o;
+        this.sticky = s;
+        this.setuid = setuid;
+        this.setgid = setgid;
+    }
+
+    private void fromInteger(int n) {
+        Action[] v = Action.values();
+        set(
+                v[(n >>> 6) & 7],
+                v[(n >>> 3) & 7],
+                v[n & 7],
+                ((n >>> 9) & 1) == 1,
+                ((n >>> 9) & 4) == 4,
+                ((n >>> 9) & 2) == 2
+        );
+    }
+
+    /**
+     * Encode the object to a integer.
+     */
+    private int toInteger() {
+        return (sticky ? 1 << 9 : 0) |
+                user.ordinal() << 6 |
+                group.ordinal() << 3 |
+                other.ordinal();
+    }
+
+    /**
+     * @param symbol The perm symbols represent the portions of the mode bits as follows:
+     *               <p/>
+     *               r       The read bits.
+     *               s       The set-user-ID-on-execution and set-group-ID-on-execution bits.
+     *               t       The sticky bit.
+     *               w       The write bits.
+     *               x       The execute/search bits.
+     *               X       The execute/search bits if the file is a directory or any of the execute/search bits are set in the original (unmodified) mode.  Operations with the perm symbol ``X'' are only
+     *               meaningful in conjunction with the op symbol ``+'', and are ignored in all other cases.
+     *               u       The user permission bits in the original mode of the file.
+     *               g       The group permission bits in the original mode of the file.
+     *               o       The other permission bits in the original mode of the file.
+     */
+    public void fromSymbol(final String symbol) {
+        try {
+            int n = 0;
+            for(int i = 0; i < symbol.length(); i++) {
+                n = n << 1;
+                char c = symbol.charAt(i);
+                n += (c == '-' || c == 'T' || c == 'S') ? 0 : 1;
+            }
+            // Add sticky bit value if set. The sticky bit is represented by the letter t in the final
+            // character-place. If the sticky-bit is set on a file or directory without the execution bit set for the others category
+            // (non-user-owner and non-group-owner), it is indicated with a capital T
+            if(symbol.charAt(8) == 't' || symbol.charAt(8) == 'T') {
+                n += 1000;
+            }
+            if(symbol.charAt(2) == 's' || symbol.charAt(2) == 'S') {
+                //setuid
+                n += 4000;
+            }
+            if(symbol.charAt(5) == 's' || symbol.charAt(5) == 'S') {
+                //setgid
+                n += 2000;
+            }
+            this.fromInteger(n);
         }
-        switch(Integer.parseInt(octal.substring(2, 3))) {
-            case (0):
-                this.group = new boolean[]{false, false, false};
-                break;
-            case (1):
-                this.group = new boolean[]{false, false, true};
-                break;
-            case (2):
-                this.group = new boolean[]{false, true, false};
-                break;
-            case (3):
-                this.group = new boolean[]{false, true, true};
-                break;
-            case (4):
-                this.group = new boolean[]{true, false, false};
-                break;
-            case (5):
-                this.group = new boolean[]{true, false, true};
-                break;
-            case (6):
-                this.group = new boolean[]{true, true, false};
-                break;
-            case (7):
-                this.group = new boolean[]{true, true, true};
-                break;
-        }
-        switch(Integer.parseInt(octal.substring(3, 4))) {
-            case (0):
-                this.other = new boolean[]{false, false, false};
-                break;
-            case (1):
-                this.other = new boolean[]{false, false, true};
-                break;
-            case (2):
-                this.other = new boolean[]{false, true, false};
-                break;
-            case (3):
-                this.other = new boolean[]{false, true, true};
-                break;
-            case (4):
-                this.other = new boolean[]{true, false, false};
-                break;
-            case (5):
-                this.other = new boolean[]{true, false, true};
-                break;
-            case (6):
-                this.other = new boolean[]{true, true, false};
-                break;
-            case (7):
-                this.other = new boolean[]{true, true, true};
-                break;
+        catch(StringIndexOutOfBoundsException e) {
+            log.warn(String.format("Failure parsing %s", symbol));
+            this.set(Permission.EMPTY);
         }
     }
 
@@ -294,24 +281,36 @@ public class Permission implements Serializable {
      * @return a thee-dimensional boolean array representing read, write
      *         and execute permissions (in that order) of the file owner.
      */
-    public boolean[] getOwnerPermissions() {
-        return owner;
+    public Action getUser() {
+        return user;
+    }
+
+    public void setUser(final Action user) {
+        this.user = user;
     }
 
     /**
      * @return a thee-dimensional boolean array representing read, write
      *         and execute permissions (in that order) of the group
      */
-    public boolean[] getGroupPermissions() {
+    public Action getGroup() {
         return group;
+    }
+
+    public void setGroup(final Action group) {
+        this.group = group;
     }
 
     /**
      * @return a thee-dimensional boolean array representing read, write
      *         and execute permissions (in that order) of any user
      */
-    public boolean[] getOtherPermissions() {
+    public Action getOther() {
         return other;
+    }
+
+    public void setOther(final Action other) {
+        this.other = other;
     }
 
     public boolean isSetuid() {
@@ -326,25 +325,23 @@ public class Permission implements Serializable {
         return sticky;
     }
 
-    private boolean[] getOwnerPermissions(String s) {
-        return new boolean[]{
-                s.charAt(0) == 'r',
-                s.charAt(1) == 'w',
-                s.charAt(2) == 'x' || s.charAt(2) == 's' || s.charAt(2) == 'S' || s.charAt(2) == 't' || s.charAt(2) == 'T' || s.charAt(2) == 'L'};
+    public String getSymbol() {
+        String str = user.symbolic + group.symbolic + other.symbolic;
+        if(sticky) {
+            StringBuilder str2 = new StringBuilder(str);
+            str2.replace(str2.length() - 1, str2.length(),
+                    other.implies(Action.execute) ? "t" : "T");
+            str = str2.toString();
+        }
+
+        return str;
     }
 
-    private boolean[] getGroupPermissions(String s) {
-        return new boolean[]{
-                s.charAt(3) == 'r',
-                s.charAt(4) == 'w',
-                s.charAt(5) == 'x' || s.charAt(5) == 's' || s.charAt(5) == 'S' || s.charAt(5) == 't' || s.charAt(5) == 'T' || s.charAt(5) == 'L'};
-    }
-
-    private boolean[] getOtherPermissions(String s) {
-        return new boolean[]{
-                s.charAt(6) == 'r',
-                s.charAt(7) == 'w',
-                s.charAt(8) == 'x' || s.charAt(8) == 's' || s.charAt(8) == 'S' || s.charAt(8) == 't' || s.charAt(8) == 'T' || s.charAt(8) == 'L'};
+    /**
+     * @return The unix equivalent octal access code like 0777
+     */
+    public String getMode() {
+        return Integer.toString(toInteger(), 8);
     }
 
     /**
@@ -352,113 +349,61 @@ public class Permission implements Serializable {
      */
     @Override
     public String toString() {
-        return this.getMask() + " (" + this.getOctalString() + ")";
-    }
-
-    /**
-     * @return The unix access permissions
-     */
-    public String getMask() {
-        String u = this.getSymbolicMode(this.getOwnerPermissions());
-        String g = this.getSymbolicMode(this.getGroupPermissions());
-        String o = this.getSymbolicMode(this.getOtherPermissions());
-        return u + g + o;
-    }
-
-    /**
-     * @return The unix equivalent octal access code like 777
-     */
-    public String getOctalString() {
-        String u = String.valueOf(this.getNumber(this.getOwnerPermissions()));
-        String g = String.valueOf(this.getNumber(this.getGroupPermissions()));
-        String o = String.valueOf(this.getNumber(this.getOtherPermissions()));
-        return u + g + o;
-    }
-
-    /**
-     * @param permissions Array of permissions
-     * @return 0 = no permissions whatsoever; this person cannot read, write, or execute the file
-     *         1 = execute only
-     *         2 = write only
-     *         3 = write and execute (1+2)
-     *         4 = read only
-     *         5 = read and execute (4+1)
-     *         6 = read and write (4+2)
-     *         7 = read and write and execute (4+2+1)
-     */
-    private int getNumber(boolean[] permissions) {
-        if(Arrays.equals(permissions, new boolean[]{false, false, false})) {
-            return 0;
-        }
-        if(Arrays.equals(permissions, new boolean[]{false, false, true})) {
-            return 1;
-        }
-        if(Arrays.equals(permissions, new boolean[]{false, true, false})) {
-            return 2;
-        }
-        if(Arrays.equals(permissions, new boolean[]{false, true, true})) {
-            return 3;
-        }
-        if(Arrays.equals(permissions, new boolean[]{true, false, false})) {
-            return 4;
-        }
-        if(Arrays.equals(permissions, new boolean[]{true, false, true})) {
-            return 5;
-        }
-        if(Arrays.equals(permissions, new boolean[]{true, true, false})) {
-            return 6;
-        }
-        if(Arrays.equals(permissions, new boolean[]{true, true, true})) {
-            return 7;
-        }
-        return -1;
-    }
-
-    private String getSymbolicMode(boolean[] permissions) {
-        String read = permissions[READ] ? "r" : "-";
-        String write = permissions[WRITE] ? "w" : "-";
-        String execute = permissions[EXECUTE] ? "x" : "-";
-        return read + write + execute;
+        return String.format("%s (%s)", this.getSymbol(), this.getMode());
     }
 
     public boolean isExecutable() {
-        return this.getOwnerPermissions()[Permission.EXECUTE]
-                || this.getGroupPermissions()[Permission.EXECUTE]
-                || this.getOtherPermissions()[Permission.EXECUTE];
+        return this.getUser().implies(Action.execute)
+                || this.getGroup().implies(Action.execute)
+                || this.getOther().implies(Action.execute);
     }
 
     /**
      * @return true if readable for user, group and world
      */
     public boolean isReadable() {
-        return this.getOwnerPermissions()[Permission.READ]
-                || this.getGroupPermissions()[Permission.READ]
-                || this.getOtherPermissions()[Permission.READ];
+        return this.getUser().implies(Action.read)
+                || this.getGroup().implies(Action.read)
+                || this.getOther().implies(Action.read);
     }
 
     /**
      * @return true if writable for user, group and world
      */
     public boolean isWritable() {
-        return this.getOwnerPermissions()[Permission.WRITE]
-                || this.getGroupPermissions()[Permission.WRITE]
-                || this.getOtherPermissions()[Permission.WRITE];
+        return this.getUser().implies(Action.write)
+                || this.getGroup().implies(Action.write)
+                || this.getOther().implies(Action.write);
     }
 
     @Override
-    public int hashCode() {
-        return Integer.parseInt(this.getOctalString());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if(null == o) {
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        final Permission that = (Permission) o;
+        if(setgid != that.setgid) {
             return false;
         }
-        if(o instanceof Permission) {
-            Permission other = (Permission) o;
-            return Integer.valueOf(this.getOctalString()).equals(Integer.valueOf(other.getOctalString()));
+        if(setuid != that.setuid) {
+            return false;
         }
-        return false;
+        if(sticky != that.sticky) {
+            return false;
+        }
+        if(group != that.group) {
+            return false;
+        }
+        if(other != that.other) {
+            return false;
+        }
+        if(user != that.user) {
+            return false;
+        }
+        return true;
+    }
+
+    public int hashCode() {
+        return toInteger();
     }
 }

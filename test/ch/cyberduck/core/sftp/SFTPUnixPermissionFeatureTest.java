@@ -94,8 +94,13 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         final Path test = new Path(home, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new SFTPTouchFeature(session).touch(test);
         new SFTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
-        assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getPermission().getOctalString());
+        assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getPermission().getMode());
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
+    }
+
+    @Test
+    public void testRetainStickyBit() throws Exception {
+
     }
 }

@@ -219,7 +219,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
 
         final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
         assertEquals(1, children.size());
-        assertEquals("664", children.get(0).attributes().getPermission().getOctalString());
+        assertEquals("664", children.get(0).attributes().getPermission().getMode());
     }
 
     @Test
@@ -233,7 +233,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
 
         final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, path, Arrays.asList(replies));
         assertEquals(1, children.size());
-        assertEquals("775", children.get(0).attributes().getPermission().getOctalString());
+        assertEquals("775", children.get(0).attributes().getPermission().getMode());
     }
 
     @Test

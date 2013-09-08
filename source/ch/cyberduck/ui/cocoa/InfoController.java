@@ -1747,20 +1747,20 @@ public class InfoController extends ToolbarWindowController {
         }
     }
 
-    private void setPermissions(List<Permission> permissions) {
+    private void setPermissions(final List<Permission> permissions) {
         boolean overwrite = true;
         for(Permission permission : permissions) {
-            updateCheckbox(ownerr, overwrite, permission.getOwnerPermissions()[Permission.READ]);
-            updateCheckbox(ownerw, overwrite, permission.getOwnerPermissions()[Permission.WRITE]);
-            updateCheckbox(ownerx, overwrite, permission.getOwnerPermissions()[Permission.EXECUTE]);
+            updateCheckbox(ownerr, overwrite, permission.getUser().implies(Permission.Action.read));
+            updateCheckbox(ownerw, overwrite, permission.getUser().implies(Permission.Action.write));
+            updateCheckbox(ownerx, overwrite, permission.getUser().implies(Permission.Action.execute));
 
-            updateCheckbox(groupr, overwrite, permission.getGroupPermissions()[Permission.READ]);
-            updateCheckbox(groupw, overwrite, permission.getGroupPermissions()[Permission.WRITE]);
-            updateCheckbox(groupx, overwrite, permission.getGroupPermissions()[Permission.EXECUTE]);
+            updateCheckbox(groupr, overwrite, permission.getGroup().implies(Permission.Action.read));
+            updateCheckbox(groupw, overwrite, permission.getGroup().implies(Permission.Action.write));
+            updateCheckbox(groupx, overwrite, permission.getGroup().implies(Permission.Action.execute));
 
-            updateCheckbox(otherr, overwrite, permission.getOtherPermissions()[Permission.READ]);
-            updateCheckbox(otherw, overwrite, permission.getOtherPermissions()[Permission.WRITE]);
-            updateCheckbox(otherx, overwrite, permission.getOtherPermissions()[Permission.EXECUTE]);
+            updateCheckbox(otherr, overwrite, permission.getOther().implies(Permission.Action.read));
+            updateCheckbox(otherw, overwrite, permission.getOther().implies(Permission.Action.write));
+            updateCheckbox(otherx, overwrite, permission.getOther().implies(Permission.Action.execute));
 
             // For more than one file selected, take into account permissions of previous file
             overwrite = false;
@@ -1772,7 +1772,7 @@ public class InfoController extends ToolbarWindowController {
         else {
             for(Permission permission : permissions) {
                 permissionsField.setStringValue(permission.toString());
-                octalField.setStringValue(permission.getOctalString());
+                octalField.setStringValue(permission.getMode());
             }
         }
     }
@@ -2309,7 +2309,7 @@ public class InfoController extends ToolbarWindowController {
         if(sender.state() == NSCell.NSMixedState) {
             sender.setState(NSCell.NSOnState);
         }
-        Permission p = this.getPermissionFromCheckboxes();
+        final Permission p = this.getPermissionFromCheckboxes();
         this.setPermissions(Collections.singletonList(p));
         this.changePermissions(p, false);
     }
@@ -2320,21 +2320,37 @@ public class InfoController extends ToolbarWindowController {
      * @return Never null.
      */
     private Permission getPermissionFromCheckboxes() {
-        boolean[][] p = new boolean[3][3];
-
-        p[Permission.OWNER][Permission.READ] = (ownerr.state() == NSCell.NSOnState);
-        p[Permission.OWNER][Permission.WRITE] = (ownerw.state() == NSCell.NSOnState);
-        p[Permission.OWNER][Permission.EXECUTE] = (ownerx.state() == NSCell.NSOnState);
-
-        p[Permission.GROUP][Permission.READ] = (groupr.state() == NSCell.NSOnState);
-        p[Permission.GROUP][Permission.WRITE] = (groupw.state() == NSCell.NSOnState);
-        p[Permission.GROUP][Permission.EXECUTE] = (groupx.state() == NSCell.NSOnState);
-
-        p[Permission.OTHER][Permission.READ] = (otherr.state() == NSCell.NSOnState);
-        p[Permission.OTHER][Permission.WRITE] = (otherw.state() == NSCell.NSOnState);
-        p[Permission.OTHER][Permission.EXECUTE] = (otherx.state() == NSCell.NSOnState);
-
-        return new Permission(p);
+        Permission.Action u = Permission.Action.none;
+        if(ownerr.state() == NSCell.NSOnState) {
+            u = u.or(Permission.Action.read);
+        }
+        if(ownerw.state() == NSCell.NSOnState) {
+            u = u.or(Permission.Action.write);
+        }
+        if(ownerx.state() == NSCell.NSOnState) {
+            u = u.or(Permission.Action.execute);
+        }
+        Permission.Action g = Permission.Action.none;
+        if(groupr.state() == NSCell.NSOnState) {
+            g = g.or(Permission.Action.read);
+        }
+        if(groupw.state() == NSCell.NSOnState) {
+            g = g.or(Permission.Action.write);
+        }
+        if(groupx.state() == NSCell.NSOnState) {
+            g = g.or(Permission.Action.execute);
+        }
+        Permission.Action o = Permission.Action.none;
+        if(otherr.state() == NSCell.NSOnState) {
+            o = o.or(Permission.Action.read);
+        }
+        if(otherw.state() == NSCell.NSOnState) {
+            o = o.or(Permission.Action.write);
+        }
+        if(otherx.state() == NSCell.NSOnState) {
+            o = o.or(Permission.Action.execute);
+        }
+        return new Permission(u, g, o);
     }
 
     /**

@@ -159,31 +159,31 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         stat.size = file.attributes().getSize();
                         if(session.getFeature(UnixPermission.class) != null) {
                             final Permission permission = file.attributes().getPermission();
-                            if(permission.getOwnerPermissions()[Permission.READ]) {
+                            if(permission.getUser().implies(Permission.Action.read)) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IRUSR;
                             }
-                            if(permission.getOwnerPermissions()[Permission.WRITE]) {
+                            if(permission.getUser().implies(Permission.Action.write)) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IWUSR;
                             }
-                            if(permission.getOwnerPermissions()[Permission.EXECUTE]) {
+                            if(permission.getUser().implies(Permission.Action.execute)) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IXUSR;
                             }
-                            if(permission.getGroupPermissions()[Permission.READ]) {
+                            if(permission.getGroup().implies(Permission.Action.read)) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IRGRP;
                             }
-                            if(permission.getGroupPermissions()[Permission.WRITE]) {
+                            if(permission.getGroup().implies(Permission.Action.write)) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IWGRP;
                             }
-                            if(permission.getGroupPermissions()[Permission.EXECUTE]) {
+                            if(permission.getGroup().implies(Permission.Action.execute)) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IXGRP;
                             }
-                            if(permission.getOtherPermissions()[Permission.READ]) {
+                            if(permission.getOther().implies(Permission.Action.read)) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IROTH;
                             }
-                            if(permission.getOtherPermissions()[Permission.WRITE]) {
+                            if(permission.getOther().implies(Permission.Action.write)) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IWOTH;
                             }
-                            if(permission.getOtherPermissions()[Permission.EXECUTE]) {
+                            if(permission.getOther().implies(Permission.Action.execute)) {
                                 stat.mode |= KfsLibrary.kfsmode_t.KFS_IXOTH;
                             }
                         }

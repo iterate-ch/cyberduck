@@ -76,10 +76,49 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
             }
         }, Arrays.<Path>asList(path), permission, true
         ) {
+        };
+        worker.run();
+    }
+
+    @Test
+    public void testRetainStickyBit() throws Exception {
+        final Permission permission = new Permission(744);
+        final Path path = new Path("a", Path.DIRECTORY_TYPE);
+        path.attributes().setPermission(new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none,
+                true, false, false));
+        final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
             @Override
-            public void cleanup(Void result) {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                final AttributedList<Path> children = new AttributedList<Path>();
+                children.add(new Path("b", Path.FILE_TYPE));
+                return children;
+            }
+        }, new UnixPermission() {
+            @Override
+            public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
                 throw new UnsupportedOperationException();
             }
+
+            @Override
+            public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                if(file.getName().equals("a")) {
+                    assertEquals(new Permission(1744), permission);
+                    assertEquals(permission, permission);
+                }
+                else if(file.getName().equals("b")) {
+                    assertEquals(new Permission(644), permission);
+                }
+                else {
+                    fail();
+                }
+            }
+        }, Arrays.<Path>asList(path), permission, true
+        ) {
         };
         worker.run();
     }

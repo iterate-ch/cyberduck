@@ -61,16 +61,7 @@ public class SFTPListService implements ListService {
                     }
                 }
                 if(null != attributes.permissions) {
-                    try {
-                        final String octal = Integer.toOctalString(attributes.permissions);
-                        file.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
-                    }
-                    catch(IndexOutOfBoundsException e) {
-                        log.warn(String.format("Failure parsing mode %s", e.getMessage()));
-                    }
-                    catch(NumberFormatException e) {
-                        log.warn(String.format("Failure parsing mode %s", e.getMessage()));
-                    }
+                    file.attributes().setPermission(new Permission(Integer.toString(attributes.permissions, 8)));
                 }
                 if(null != attributes.uid) {
                     file.attributes().setOwner(attributes.uid.toString());

@@ -180,7 +180,7 @@ public class FinderLocal extends Local {
         synchronized(workspace) {
             boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                     NSDictionary.dictionaryWithObjectsForKeys(
-                            NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(permission.getOctalString(), 8))),
+                            NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(permission.getMode(), 8))),
                             NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
                     this.getAbsolute(), null);
             if(!success) {

@@ -110,13 +110,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 final UnixPermission unix = session.getFeature(UnixPermission.class);
                 if(unix != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                            file.getName(), file.attributes().getPermission().getOctalString()));
+                            file.getName(), file.attributes().getPermission().getMode()));
                     this.permissions(file, unix);
                 }
                 final AclPermission acl = session.getFeature(AclPermission.class);
                 if(acl != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                            file.getName(), file.attributes().getPermission().getOctalString()));
+                            file.getName(), file.attributes().getPermission().getMode()));
                     this.acl(file, acl);
                 }
             }
@@ -189,10 +189,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             permission = file.getLocal().attributes().getPermission();
         }
         final Acl acl = new Acl();
-        if(permission.getOtherPermissions()[Permission.READ]) {
+        if(permission.getOther().implies(Permission.Action.read)) {
             acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
         }
-        if(permission.getGroupPermissions()[Permission.READ]) {
+        if(permission.getGroup().implies(Permission.Action.read)) {
             acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
         }
         if(!Acl.EMPTY.equals(acl)) {

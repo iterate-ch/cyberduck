@@ -573,21 +573,21 @@ public class PreferencesController extends ToolbarWindowController {
             log.error("No selected item for:" + sender);
             return;
         }
-        boolean[] ownerPerm = p.getOwnerPermissions();
-        boolean[] groupPerm = p.getGroupPermissions();
-        boolean[] otherPerm = p.getOtherPermissions();
+        Permission.Action ownerPerm = p.getUser();
+        Permission.Action groupPerm = p.getGroup();
+        Permission.Action otherPerm = p.getOther();
 
-        uownerr.setState(ownerPerm[Permission.READ] ? NSCell.NSOnState : NSCell.NSOffState);
-        uownerw.setState(ownerPerm[Permission.WRITE] ? NSCell.NSOnState : NSCell.NSOffState);
-        uownerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.NSOnState : NSCell.NSOffState);
+        uownerr.setState(ownerPerm.implies(Permission.Action.read) ? NSCell.NSOnState : NSCell.NSOffState);
+        uownerw.setState(ownerPerm.implies(Permission.Action.write) ? NSCell.NSOnState : NSCell.NSOffState);
+        uownerx.setState(ownerPerm.implies(Permission.Action.execute) ? NSCell.NSOnState : NSCell.NSOffState);
 
-        ugroupr.setState(groupPerm[Permission.READ] ? NSCell.NSOnState : NSCell.NSOffState);
-        ugroupw.setState(groupPerm[Permission.WRITE] ? NSCell.NSOnState : NSCell.NSOffState);
-        ugroupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.NSOnState : NSCell.NSOffState);
+        ugroupr.setState(groupPerm.implies(Permission.Action.read) ? NSCell.NSOnState : NSCell.NSOffState);
+        ugroupw.setState(groupPerm.implies(Permission.Action.write) ? NSCell.NSOnState : NSCell.NSOffState);
+        ugroupx.setState(groupPerm.implies(Permission.Action.execute) ? NSCell.NSOnState : NSCell.NSOffState);
 
-        uotherr.setState(otherPerm[Permission.READ] ? NSCell.NSOnState : NSCell.NSOffState);
-        uotherw.setState(otherPerm[Permission.WRITE] ? NSCell.NSOnState : NSCell.NSOffState);
-        uotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.NSOnState : NSCell.NSOffState);
+        uotherr.setState(otherPerm.implies(Permission.Action.read) ? NSCell.NSOnState : NSCell.NSOffState);
+        uotherw.setState(otherPerm.implies(Permission.Action.write) ? NSCell.NSOnState : NSCell.NSOffState);
+        uotherx.setState(otherPerm.implies(Permission.Action.execute) ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Outlet
@@ -613,21 +613,21 @@ public class PreferencesController extends ToolbarWindowController {
             log.error("No selected item for:" + sender);
             return;
         }
-        boolean[] ownerPerm = p.getOwnerPermissions();
-        boolean[] groupPerm = p.getGroupPermissions();
-        boolean[] otherPerm = p.getOtherPermissions();
+        Permission.Action ownerPerm = p.getUser();
+        Permission.Action groupPerm = p.getGroup();
+        Permission.Action otherPerm = p.getOther();
 
-        downerr.setState(ownerPerm[Permission.READ] ? NSCell.NSOnState : NSCell.NSOffState);
-        downerw.setState(ownerPerm[Permission.WRITE] ? NSCell.NSOnState : NSCell.NSOffState);
-        downerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.NSOnState : NSCell.NSOffState);
+        downerr.setState(ownerPerm.implies(Permission.Action.read) ? NSCell.NSOnState : NSCell.NSOffState);
+        downerw.setState(ownerPerm.implies(Permission.Action.write) ? NSCell.NSOnState : NSCell.NSOffState);
+        downerx.setState(ownerPerm.implies(Permission.Action.execute) ? NSCell.NSOnState : NSCell.NSOffState);
 
-        dgroupr.setState(groupPerm[Permission.READ] ? NSCell.NSOnState : NSCell.NSOffState);
-        dgroupw.setState(groupPerm[Permission.WRITE] ? NSCell.NSOnState : NSCell.NSOffState);
-        dgroupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.NSOnState : NSCell.NSOffState);
+        dgroupr.setState(groupPerm.implies(Permission.Action.read) ? NSCell.NSOnState : NSCell.NSOffState);
+        dgroupw.setState(groupPerm.implies(Permission.Action.write) ? NSCell.NSOnState : NSCell.NSOffState);
+        dgroupx.setState(groupPerm.implies(Permission.Action.execute) ? NSCell.NSOnState : NSCell.NSOffState);
 
-        dotherr.setState(otherPerm[Permission.READ] ? NSCell.NSOnState : NSCell.NSOffState);
-        dotherw.setState(otherPerm[Permission.WRITE] ? NSCell.NSOnState : NSCell.NSOffState);
-        dotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.NSOnState : NSCell.NSOffState);
+        dotherr.setState(otherPerm.implies(Permission.Action.read) ? NSCell.NSOnState : NSCell.NSOffState);
+        dotherw.setState(otherPerm.implies(Permission.Action.write) ? NSCell.NSOnState : NSCell.NSOffState);
+        dotherx.setState(otherPerm.implies(Permission.Action.execute) ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Outlet
@@ -850,26 +850,42 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     public void defaultPermissionsDownloadChanged(final ID sender) {
-        boolean[][] p = new boolean[3][3];
-
-        p[Permission.OWNER][Permission.READ] = (downerr.state() == NSCell.NSOnState);
-        p[Permission.OWNER][Permission.WRITE] = (downerw.state() == NSCell.NSOnState);
-        p[Permission.OWNER][Permission.EXECUTE] = (downerx.state() == NSCell.NSOnState);
-
-        p[Permission.GROUP][Permission.READ] = (dgroupr.state() == NSCell.NSOnState);
-        p[Permission.GROUP][Permission.WRITE] = (dgroupw.state() == NSCell.NSOnState);
-        p[Permission.GROUP][Permission.EXECUTE] = (dgroupx.state() == NSCell.NSOnState);
-
-        p[Permission.OTHER][Permission.READ] = (dotherr.state() == NSCell.NSOnState);
-        p[Permission.OTHER][Permission.WRITE] = (dotherw.state() == NSCell.NSOnState);
-        p[Permission.OTHER][Permission.EXECUTE] = (dotherx.state() == NSCell.NSOnState);
-
-        Permission permission = new Permission(p);
+        Permission.Action u = Permission.Action.none;
+        if(downerr.state() == NSCell.NSOnState) {
+            u = u.or(Permission.Action.read);
+        }
+        if(downerw.state() == NSCell.NSOnState) {
+            u = u.or(Permission.Action.write);
+        }
+        if(downerx.state() == NSCell.NSOnState) {
+            u = u.or(Permission.Action.execute);
+        }
+        Permission.Action g = Permission.Action.none;
+        if(dgroupr.state() == NSCell.NSOnState) {
+            g = g.or(Permission.Action.read);
+        }
+        if(dgroupw.state() == NSCell.NSOnState) {
+            g = g.or(Permission.Action.write);
+        }
+        if(dgroupx.state() == NSCell.NSOnState) {
+            g = g.or(Permission.Action.execute);
+        }
+        Permission.Action o = Permission.Action.none;
+        if(dotherr.state() == NSCell.NSOnState) {
+            o = o.or(Permission.Action.read);
+        }
+        if(dotherw.state() == NSCell.NSOnState) {
+            o = o.or(Permission.Action.write);
+        }
+        if(dotherx.state() == NSCell.NSOnState) {
+            o = o.or(Permission.Action.execute);
+        }
+        final Permission permission = new Permission(u, g, o);
         if(chmodDownloadTypePopup.selectedItem().tag() == 0) {
-            Preferences.instance().setProperty("queue.download.permissions.file.default", permission.getOctalString());
+            Preferences.instance().setProperty("queue.download.permissions.file.default", permission.getMode());
         }
         if(chmodDownloadTypePopup.selectedItem().tag() == 1) {
-            Preferences.instance().setProperty("queue.download.permissions.folder.default", permission.getOctalString());
+            Preferences.instance().setProperty("queue.download.permissions.folder.default", permission.getMode());
         }
     }
 
@@ -930,26 +946,42 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void defaultPermissionsUploadChanged(final NSButton sender) {
-        boolean[][] p = new boolean[3][3];
-
-        p[Permission.OWNER][Permission.READ] = (uownerr.state() == NSCell.NSOnState);
-        p[Permission.OWNER][Permission.WRITE] = (uownerw.state() == NSCell.NSOnState);
-        p[Permission.OWNER][Permission.EXECUTE] = (uownerx.state() == NSCell.NSOnState);
-
-        p[Permission.GROUP][Permission.READ] = (ugroupr.state() == NSCell.NSOnState);
-        p[Permission.GROUP][Permission.WRITE] = (ugroupw.state() == NSCell.NSOnState);
-        p[Permission.GROUP][Permission.EXECUTE] = (ugroupx.state() == NSCell.NSOnState);
-
-        p[Permission.OTHER][Permission.READ] = (uotherr.state() == NSCell.NSOnState);
-        p[Permission.OTHER][Permission.WRITE] = (uotherw.state() == NSCell.NSOnState);
-        p[Permission.OTHER][Permission.EXECUTE] = (uotherx.state() == NSCell.NSOnState);
-
-        Permission permission = new Permission(p);
+        Permission.Action u = Permission.Action.none;
+        if(uownerr.state() == NSCell.NSOnState) {
+            u = u.or(Permission.Action.read);
+        }
+        if(uownerw.state() == NSCell.NSOnState) {
+            u = u.or(Permission.Action.write);
+        }
+        if(uownerx.state() == NSCell.NSOnState) {
+            u = u.or(Permission.Action.execute);
+        }
+        Permission.Action g = Permission.Action.none;
+        if(ugroupr.state() == NSCell.NSOnState) {
+            g = g.or(Permission.Action.read);
+        }
+        if(ugroupw.state() == NSCell.NSOnState) {
+            g = g.or(Permission.Action.write);
+        }
+        if(ugroupx.state() == NSCell.NSOnState) {
+            g = g.or(Permission.Action.execute);
+        }
+        Permission.Action o = Permission.Action.none;
+        if(uotherr.state() == NSCell.NSOnState) {
+            o = o.or(Permission.Action.read);
+        }
+        if(uotherw.state() == NSCell.NSOnState) {
+            o = o.or(Permission.Action.write);
+        }
+        if(uotherx.state() == NSCell.NSOnState) {
+            o = o.or(Permission.Action.execute);
+        }
+        final Permission permission = new Permission(u, g, o);
         if(chmodUploadTypePopup.selectedItem().tag() == 0) {
-            Preferences.instance().setProperty("queue.upload.permissions.file.default", permission.getOctalString());
+            Preferences.instance().setProperty("queue.upload.permissions.file.default", permission.getMode());
         }
         if(chmodUploadTypePopup.selectedItem().tag() == 1) {
-            Preferences.instance().setProperty("queue.upload.permissions.folder.default", permission.getOctalString());
+            Preferences.instance().setProperty("queue.upload.permissions.folder.default", permission.getMode());
         }
     }
 

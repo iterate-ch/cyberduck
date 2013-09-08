@@ -23,8 +23,7 @@ import org.junit.Test;
 
 import java.util.TimeZone;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -39,10 +38,13 @@ public class FTPListServiceTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final ListService list = new FTPListService(session, null, TimeZone.getDefault());
+        final ListService service = new FTPListService(session, null, TimeZone.getDefault());
         final Path directory = session.workdir();
-        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(
+        final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
+        assertTrue(list.contains(
                 new Path(directory, "test", Path.FILE_TYPE).getReference()));
+        assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
+                list.get(new Path(directory, "test", Path.FILE_TYPE).getReference()).attributes().getPermission());
         session.close();
     }
 

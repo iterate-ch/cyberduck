@@ -176,14 +176,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(!Permission.EMPTY.equals(permission)) {
             if(file.attributes().isDirectory()) {
                 // Make sure we can read & write files to directory created.
-                permission.getOwnerPermissions()[Permission.READ] = true;
-                permission.getOwnerPermissions()[Permission.WRITE] = true;
-                permission.getOwnerPermissions()[Permission.EXECUTE] = true;
+                permission.setUser(permission.getUser().or(Permission.Action.read).or(Permission.Action.write).or(Permission.Action.execute));
             }
             if(file.attributes().isFile()) {
                 // Make sure the owner can always read and write.
-                permission.getOwnerPermissions()[Permission.READ] = true;
-                permission.getOwnerPermissions()[Permission.WRITE] = true;
+                permission.setUser(permission.getUser().or(Permission.Action.read).or(Permission.Action.write));
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Updating permissions of %s to %s", file.getLocal(), permission));

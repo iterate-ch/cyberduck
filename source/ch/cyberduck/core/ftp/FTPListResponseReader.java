@@ -87,22 +87,37 @@ public class FTPListResponseReader {
             }
             parsed.attributes().setOwner(f.getUser());
             parsed.attributes().setGroup(f.getGroup());
-            parsed.attributes().setPermission(new Permission(
-                    new boolean[][]{
-                            {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
-                                    f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
-                                    f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                            },
-                            {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
-                                    f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION),
-                                    f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                            },
-                            {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
-                                    f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION),
-                                    f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                            }
-                    }
-            ));
+            Permission.Action u = Permission.Action.none;
+            if(f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION)) {
+                u = u.or(Permission.Action.read);
+            }
+            if(f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION)) {
+                u = u.or(Permission.Action.write);
+            }
+            if(f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)) {
+                u = u.or(Permission.Action.execute);
+            }
+            Permission.Action g = Permission.Action.none;
+            if(f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION)) {
+                g = g.or(Permission.Action.read);
+            }
+            if(f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION)) {
+                g = g.or(Permission.Action.write);
+            }
+            if(f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)) {
+                g = g.or(Permission.Action.execute);
+            }
+            Permission.Action o = Permission.Action.none;
+            if(f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION)) {
+                o = o.or(Permission.Action.read);
+            }
+            if(f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION)) {
+                o = o.or(Permission.Action.write);
+            }
+            if(f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)) {
+                o = o.or(Permission.Action.execute);
+            }
+            parsed.attributes().setPermission(new Permission(u, g, o));
             final Calendar timestamp = f.getTimestamp();
             if(timestamp != null) {
                 parsed.attributes().setModificationDate(timestamp.getTimeInMillis());

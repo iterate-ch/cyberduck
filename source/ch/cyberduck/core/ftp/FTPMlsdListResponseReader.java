@@ -121,12 +121,7 @@ public class FTPMlsdListResponseReader {
                         parsed.attributes().setGroup(facts.get("unix.group"));
                     }
                     if(facts.containsKey("unix.mode")) {
-                        try {
-                            parsed.attributes().setPermission(new Permission(Integer.parseInt(facts.get("unix.mode"))));
-                        }
-                        catch(NumberFormatException e) {
-                            log.error(String.format("Failed to parse fact %s", facts.get("unix.mode")));
-                        }
+                        parsed.attributes().setPermission(new Permission(facts.get("unix.mode")));
                     }
                     if(facts.containsKey("modify")) {
                         // Time values are always represented in UTC

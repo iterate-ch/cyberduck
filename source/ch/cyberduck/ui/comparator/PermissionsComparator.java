@@ -33,8 +33,8 @@ public class PermissionsComparator extends BrowserComparator {
 
     @Override
     protected int compareFirst(final Path p1, final Path p2) {
-        Integer perm1 = Integer.valueOf(p1.attributes().getPermission().getOctalString());
-        Integer perm2 = Integer.valueOf(p2.attributes().getPermission().getOctalString());
+        Integer perm1 = Integer.valueOf(p1.attributes().getPermission().getMode());
+        Integer perm2 = Integer.valueOf(p2.attributes().getPermission().getMode());
         if(perm1 > perm2) {
             return ascending ? 1 : -1;
         }
