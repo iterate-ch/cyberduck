@@ -55,6 +55,7 @@ public class S3EncryptionFeature implements Encryption {
             // Copy item in place to write new attributes
             copy.copy(file, file, file.attributes().getStorageClass(), algorithm,
                     new S3AccessControlListFeature(session).getPermission(file));
+            file.attributes().setEncryption(algorithm);
         }
     }
 }

@@ -33,4 +33,6 @@ public interface Redundancy {
     List<String> getClasses();
 
     void setClass(Path file, String redundancy) throws BackgroundException;
+
+    String getClass(Path file) throws BackgroundException;
 }
