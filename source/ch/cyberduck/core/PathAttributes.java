@@ -174,7 +174,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * @param size the size of file in bytes.
      */
-    public void setSize(long size) {
+    public void setSize(final long size) {
         this.size = size;
     }
 
@@ -191,7 +191,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return modified;
     }
 
-    public void setModificationDate(long millis) {
+    public void setModificationDate(final long millis) {
         if(millis < 0) {
             return;
         }
@@ -203,7 +203,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return created;
     }
 
-    public void setCreationDate(long millis) {
+    public void setCreationDate(final long millis) {
         if(millis < 0) {
             return;
         }
@@ -215,7 +215,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return accessed;
     }
 
-    public void setAccessedDate(long millis) {
+    public void setAccessedDate(final long millis) {
         if(millis < 0) {
             return;
         }
@@ -225,7 +225,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * @param p UNIX permissions
      */
-    public void setPermission(Permission p) {
+    public void setPermission(final Permission p) {
         this.permission = p;
     }
 
@@ -241,11 +241,11 @@ public class PathAttributes extends Attributes implements Serializable {
         return acl;
     }
 
-    public void setAcl(Acl acl) {
+    public void setAcl(final Acl acl) {
         this.acl = acl;
     }
 
-    public void setType(int type) {
+    public void setType(final int type) {
         this.type = type;
     }
 
@@ -274,7 +274,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return (type & Path.SYMBOLIC_LINK_TYPE) == Path.SYMBOLIC_LINK_TYPE;
     }
 
-    public void setOwner(String o) {
+    public void setOwner(final String o) {
         this.owner = o;
     }
 
@@ -283,7 +283,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return owner;
     }
 
-    public void setGroup(String g) {
+    public void setGroup(final String g) {
         this.group = g;
     }
 
@@ -297,7 +297,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return checksum;
     }
 
-    public void setChecksum(String checksum) {
+    public void setChecksum(final String checksum) {
         this.checksum = checksum;
     }
 
@@ -305,7 +305,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return etag;
     }
 
-    public void setETag(String etag) {
+    public void setETag(final String etag) {
         this.etag = etag;
     }
 
@@ -319,7 +319,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * @param storageClass Storage redundancy identifier.
      */
-    public void setStorageClass(String storageClass) {
+    public void setStorageClass(final String storageClass) {
         this.storageClass = storageClass;
     }
 
@@ -327,7 +327,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return encryption;
     }
 
-    public void setEncryption(String encryption) {
+    public void setEncryption(final String encryption) {
         this.encryption = encryption;
     }
 
@@ -344,11 +344,11 @@ public class PathAttributes extends Attributes implements Serializable {
      *
      * @param versionId Revision
      */
-    public void setVersionId(String versionId) {
+    public void setVersionId(final String versionId) {
         this.versionId = versionId;
     }
 
-    public void setRevision(long revision) {
+    public void setRevision(final long revision) {
         this.revision = revision;
     }
 
@@ -375,7 +375,7 @@ public class PathAttributes extends Attributes implements Serializable {
      *
      * @param duplicate Flag
      */
-    public void setDuplicate(boolean duplicate) {
+    public void setDuplicate(final boolean duplicate) {
         this.duplicate = duplicate;
     }
 
@@ -383,7 +383,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return metadata;
     }
 
-    public void setMetadata(Map<String, String> metadata) {
+    public void setMetadata(final Map<String, String> metadata) {
         this.metadata = metadata;
     }
 
@@ -392,7 +392,7 @@ public class PathAttributes extends Attributes implements Serializable {
         return placeholder;
     }
 
-    public void setPlaceholder(boolean placeholder) {
+    public void setPlaceholder(final boolean placeholder) {
         this.placeholder = placeholder;
     }
 
