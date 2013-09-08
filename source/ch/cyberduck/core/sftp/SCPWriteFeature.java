@@ -47,7 +47,7 @@ public class SCPWriteFeature implements Write {
             client.setCharset(session.getEncoding());
             return client.put(file.getName(), status.getLength(),
                     file.getParent().getAbsolute(),
-                    new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default")).getMode());
+                    String.format("0%s", new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default")).getMode()));
 
         }
         catch(IOException e) {
