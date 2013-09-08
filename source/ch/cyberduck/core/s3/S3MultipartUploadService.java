@@ -111,14 +111,9 @@ public class S3MultipartUploadService implements Upload {
                             multipart.getObjectKey(), multipart.getUploadId()));
                 }
             }
-
             final List<MultipartPart> completed;
             if(status.isAppend()) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("List completed parts of %s", multipart.getUploadId()));
-                }
-                // This operation lists the parts that have been uploaded for a specific multipart upload.
-                completed = session.getClient().multipartListParts(multipart);
+                completed = this.list(multipart);
             }
             else {
                 completed = new ArrayList<MultipartPart>();
@@ -186,6 +181,19 @@ public class S3MultipartUploadService implements Upload {
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Upload failed", e, file);
+        }
+    }
+
+    protected List<MultipartPart> list(final MultipartUpload multipart) throws BackgroundException {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("List completed parts of %s", multipart.getUploadId()));
+        }
+        // This operation lists the parts that have been uploaded for a specific multipart upload.
+        try {
+            return session.getClient().multipartListParts(multipart);
+        }
+        catch(S3ServiceException e) {
+            throw new ServiceExceptionMappingService().map("Upload failed", e);
         }
     }
 
