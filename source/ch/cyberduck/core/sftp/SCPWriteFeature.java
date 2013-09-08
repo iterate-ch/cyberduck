@@ -57,6 +57,6 @@ public class SCPWriteFeature implements Write {
 
     @Override
     public boolean append(final Path file) throws BackgroundException {
-        return new SFTPFindFeature(session).find(file);
+        return false;
     }
 }
