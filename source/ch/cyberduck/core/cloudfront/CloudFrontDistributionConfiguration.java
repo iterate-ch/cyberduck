@@ -347,15 +347,19 @@ public class CloudFrontDistributionConfiguration
         try {
             final long reference = System.currentTimeMillis();
             final Distribution d = this.read(container, method, prompt);
-            if(null == d) {
-                log.error(String.format("No cached distribution for origin %s", this.getOrigin(container, method)));
+            final List<String> keys = new ArrayList<String>();
+            for(Path file : files) {
+                if(new PathContainerService().isContainer(file)) {
+                    keys.add(String.valueOf(Path.DELIMITER));
+                }
+                else {
+                    keys.add(new PathContainerService().getKey(file));
+                }
+            }
+            if(keys.isEmpty()) {
+                log.warn("No keys selected for invalidation");
             }
             else {
-                List<String> keys = this.getInvalidationKeys(files, false);
-                if(keys.isEmpty()) {
-                    log.warn("No keys selected for invalidation");
-                    return;
-                }
                 client.invalidateObjects(d.getId(),
                         keys.toArray(new String[keys.size()]), // objects
                         new Date(reference).toString() // Comment
@@ -365,29 +369,6 @@ public class CloudFrontDistributionConfiguration
         catch(CloudFrontServiceException e) {
             throw new CloudFrontServiceExceptionMappingService().map("Cannot write CDN configuration", e);
         }
-    }
-
-    /**
-     * @param files     Files to purge
-     * @param recursive Recursivly for folders
-     * @return Key to files
-     */
-    protected List<String> getInvalidationKeys(final List<Path> files, final boolean recursive) throws BackgroundException {
-        List<String> keys = new ArrayList<String>();
-        for(Path file : files) {
-            if(new PathContainerService().isContainer(file)) {
-                keys.add(String.valueOf(Path.DELIMITER));
-            }
-            else {
-                keys.add(new PathContainerService().getKey(file));
-            }
-            if(file.attributes().isDirectory()) {
-                if(recursive) {
-                    keys.addAll(this.getInvalidationKeys(session.list(file, new DisabledListProgressListener()), recursive));
-                }
-            }
-        }
-        return keys;
     }
 
     /**
@@ -452,8 +433,7 @@ public class CloudFrontDistributionConfiguration
             final StreamingDistributionConfig config = new StreamingDistributionConfig(
                     new S3Origin[]{new S3Origin(originId, origin, null)},
                     reference, distribution.getCNAMEs(), null, distribution.isEnabled(), logging, null);
-            return client.createDistribution(config
-            );
+            return client.createDistribution(config);
         }
         if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
             DistributionConfig config = new DistributionConfig(
