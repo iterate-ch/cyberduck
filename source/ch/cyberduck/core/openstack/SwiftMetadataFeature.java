@@ -28,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -52,19 +51,18 @@ public class SwiftMetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
-            if(file.attributes().isFile()) {
-                final ObjectMetadata meta
-                        = session.getClient().getObjectMetaData(session.getRegion(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
-                return meta.getMetaData();
-            }
-            else if(containerService.isContainer(file)) {
+            if(containerService.isContainer(file)) {
                 final ContainerMetadata meta
                         = session.getClient().getContainerMetaData(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName());
                 return meta.getMetaData();
             }
-            return Collections.emptyMap();
+            else {
+                final ObjectMetadata meta
+                        = session.getClient().getObjectMetaData(session.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
+                return meta.getMetaData();
+            }
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot read file attributes", e, file);
@@ -78,14 +76,7 @@ public class SwiftMetadataFeature implements Headers {
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         try {
-            if(file.attributes().isFile()) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Write metadata %s for file %s", metadata, file));
-                }
-                session.getClient().updateObjectMetadata(session.getRegion(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
-            }
-            else if(containerService.isContainer(file)) {
+            if(containerService.isContainer(file)) {
                 for(Map.Entry<String, String> entry : file.attributes().getMetadata().entrySet()) {
                     // Choose metadata values to remove
                     if(!metadata.containsKey(entry.getKey())) {
@@ -98,6 +89,13 @@ public class SwiftMetadataFeature implements Headers {
                 }
                 session.getClient().updateContainerMetadata(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), metadata);
+            }
+            else {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Write metadata %s for file %s", metadata, file));
+                }
+                session.getClient().updateObjectMetadata(session.getRegion(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
             }
         }
         catch(GenericException e) {
