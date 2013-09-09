@@ -64,6 +64,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new SwiftDirectoryFeature(session).mkdir(placeholder, null);
+        Thread.sleep(2000L);
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
