@@ -38,8 +38,8 @@ public abstract class AbstractIOExceptionMappingService<T extends Exception> imp
     public BackgroundException map(final String message, final T failure, final Path file) {
         final BackgroundException exception = this.map(failure);
         exception.setMessage(String.format("%s (%s)",
-                MessageFormat.format(StringUtils.chomp(LocaleFactory.localizedString(message, "Error")), file.getAbsolute()),
-                file.getName()));
+                MessageFormat.format(StringUtils.chomp(LocaleFactory.localizedString(message, "Error")), file.getName()),
+                file.getAbsolute()));
         return exception;
     }
 
