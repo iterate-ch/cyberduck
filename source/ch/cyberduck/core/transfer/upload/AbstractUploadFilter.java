@@ -48,12 +48,15 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private SymlinkResolver symlinkResolver;
 
-    public AbstractUploadFilter(final SymlinkResolver symlinkResolver) {
+    private Session<?> session;
+
+    public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         this.symlinkResolver = symlinkResolver;
+        this.session = session;
     }
 
     @Override
-    public boolean accept(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(!file.getLocal().exists()) {
             // Local file is no more here
             return false;
@@ -69,7 +72,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(file.attributes().isFile()) {
             if(file.getLocal().attributes().isSymbolicLink()) {
@@ -100,7 +103,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public void complete(final Session<?> session, final Path file, final TransferOptions options,
+    public void complete(final Path file, final TransferOptions options,
                          final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));

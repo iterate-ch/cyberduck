@@ -26,25 +26,16 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
     @Test
     public void testAccept() throws Exception {
-        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
+        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path t = new Path("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal("/Downloads", "n"));
-        assertTrue(f.accept(new NullSession(new Host("h")), t, new TransferStatus()));
+        assertTrue(f.accept(t, new TransferStatus()));
     }
 
     @Test
     public void testPrepare() throws Exception {
-        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
-        final Path p = new Path("t", Path.FILE_TYPE) {
-
-            @Override
-            public Path getParent() {
-                return new Path("p", Path.DIRECTORY_TYPE);
-            }
-        };
-        p.setLocal(new NullLocal("/Downloads", "n"));
         final AtomicBoolean c = new AtomicBoolean();
-        f.prepare(new NullSession(new Host("h")) {
+        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type == Move.class) {
@@ -70,7 +61,15 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 l.add(new Path("t", Path.FILE_TYPE));
                 return l;
             }
-        }, p, new ch.cyberduck.core.transfer.TransferStatus());
+        });
+        final Path p = new Path("t", Path.FILE_TYPE) {
+            @Override
+            public Path getParent() {
+                return new Path("p", Path.DIRECTORY_TYPE);
+            }
+        };
+        p.setLocal(new NullLocal("/Downloads", "n"));
+        f.prepare(p, new ch.cyberduck.core.transfer.TransferStatus());
         assertTrue(c.get());
     }
 }

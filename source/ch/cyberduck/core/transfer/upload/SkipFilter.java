@@ -29,20 +29,23 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
  */
 public class SkipFilter extends AbstractUploadFilter {
 
-    public SkipFilter(final SymlinkResolver symlinkResolver) {
-        super(symlinkResolver);
+    private Session<?> session;
+
+    public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+        super(symlinkResolver, session);
+        this.session = session;
     }
 
     /**
      * Skip files that already exist on the server.
      */
     @Override
-    public boolean accept(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(parent.isExists()) {
             if(session.getFeature(Find.class).find(file)) {
                 return false;
             }
         }
-        return super.accept(session, file, parent);
+        return super.accept(file, parent);
     }
 }

@@ -271,10 +271,8 @@ public class UploadTransferTest extends AbstractTestCase {
         local.touch();
         final Transfer transfer = new UploadTransfer(session, test);
         transfer.prepare(test, new TransferStatus().exists(true),
-                new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())));
-        final TransferStatus directory = new TransferStatus();
-        directory.setExists(true);
-        assertEquals(directory, transfer.getStatus(test));
+                new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList()), session));
+        assertEquals(new TransferStatus().exists(true), transfer.getStatus(test));
         final TransferStatus expected = new TransferStatus();
         assertEquals(expected, transfer.getStatus(new Path("/transfer/" + name, Path.FILE_TYPE)));
     }
@@ -298,7 +296,7 @@ public class UploadTransferTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         final Transfer transfer = new UploadTransfer(session, test);
         transfer.prepare(test, new TransferStatus().exists(true),
-                new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList())));
+                new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList()), session));
         assertEquals(new TransferStatus().exists(true), transfer.getStatus(test));
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(true);

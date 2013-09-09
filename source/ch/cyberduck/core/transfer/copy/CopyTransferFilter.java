@@ -43,17 +43,17 @@ import java.util.Map;
 public class CopyTransferFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(CopyTransferFilter.class);
 
-    private Session<?> destination;
+    private Session<?> session;
 
     private final Map<Path, Path> files;
 
-    public CopyTransferFilter(final Session destination, final Map<Path, Path> files) {
-        this.destination = destination;
+    public CopyTransferFilter(final Session session, final Map<Path, Path> files) {
+        this.session = session;
         this.files = files;
     }
 
     @Override
-    public boolean accept(final Session<?> session, final Path source, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path source, final TransferStatus parent) throws BackgroundException {
         if(source.attributes().isDirectory()) {
             if(parent.isExists()) {
                 final Path destination = files.get(source);
@@ -67,7 +67,7 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session session, final Path source, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path source, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(source.attributes().isFile()) {
             status.setLength(source.attributes().getSize());
@@ -76,13 +76,13 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public void complete(final Session<?> session, final Path source, final TransferOptions options,
+    public void complete(final Path source, final TransferOptions options,
                          final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", source.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            final UnixPermission unix = destination.getFeature(UnixPermission.class);
+            final UnixPermission unix = session.getFeature(UnixPermission.class);
             if(unix != null) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     Permission permission = source.attributes().getPermission();
@@ -91,7 +91,7 @@ public class CopyTransferFilter implements TransferPathFilter {
                     }
                 }
             }
-            final Timestamp timestamp = destination.getFeature(Timestamp.class);
+            final Timestamp timestamp = session.getFeature(Timestamp.class);
             if(timestamp != null) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),

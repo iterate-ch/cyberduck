@@ -28,15 +28,15 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
  */
 public class SkipFilter extends AbstractDownloadFilter {
 
-    public SkipFilter(final SymlinkResolver symlinkResolver) {
-        super(symlinkResolver);
+    public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+        super(symlinkResolver, session);
     }
 
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.getLocal().exists()) {
             return false;
         }
-        return super.accept(session, file, parent);
+        return super.accept(file, parent);
     }
 }

@@ -395,7 +395,7 @@ public abstract class Transfer implements Serializable {
         if(file.attributes().isFile()) {
             // Post process of file.
             try {
-                filter.complete(session, file, options, status, session);
+                filter.complete(file, options, status, session);
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Ignore failure in completion filter for %s", file));
@@ -409,7 +409,7 @@ public abstract class Transfer implements Serializable {
             }
             // Post process of directory.
             try {
-                filter.complete(session, file, options, status, session);
+                filter.complete(file, options, status, session);
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Ignore failure in completion filter for %s", file));
@@ -442,12 +442,12 @@ public abstract class Transfer implements Serializable {
         }
         if(this.isSelected(file)) {
             // Only prepare the path it will be actually transferred
-            if(filter.accept(session, file, parent)) {
+            if(filter.accept(file, parent)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Accepted in %s transfer", file));
                 }
                 session.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
-                final TransferStatus status = filter.prepare(session, file, parent);
+                final TransferStatus status = filter.prepare(file, parent);
                 if(file.attributes().isDirectory()) {
                     // Call recursively for all children
                     final AttributedList<Path> children = this.children(file);

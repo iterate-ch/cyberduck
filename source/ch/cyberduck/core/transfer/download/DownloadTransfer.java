@@ -116,22 +116,22 @@ public class DownloadTransfer extends Transfer {
         }
         final SymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return new OverwriteFilter(resolver);
+            return new OverwriteFilter(resolver, session);
         }
         if(action.equals(TransferAction.ACTION_RESUME)) {
-            return new ResumeFilter(resolver);
+            return new ResumeFilter(resolver, session);
         }
         if(action.equals(TransferAction.ACTION_RENAME)) {
-            return new RenameFilter(resolver);
+            return new RenameFilter(resolver, session);
         }
         if(action.equals(TransferAction.ACTION_RENAME_EXISTING)) {
-            return new RenameExistingFilter(resolver);
+            return new RenameExistingFilter(resolver, session);
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
-            return new SkipFilter(resolver);
+            return new SkipFilter(resolver, session);
         }
         if(action.equals(TransferAction.ACTION_COMPARISON)) {
-            return new CompareFilter(resolver);
+            return new CompareFilter(resolver, session);
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path download : this.getRoots()) {

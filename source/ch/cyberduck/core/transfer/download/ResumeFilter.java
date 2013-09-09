@@ -29,12 +29,15 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
  */
 public class ResumeFilter extends AbstractDownloadFilter {
 
-    public ResumeFilter(final SymlinkResolver symlinkResolver) {
-        super(symlinkResolver);
+    private Session<?> session;
+
+    public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+        super(symlinkResolver, session);
+        this.session = session;
     }
 
     @Override
-    public boolean accept(final Session session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isFile()) {
             if(file.getLocal().exists()) {
                 if(file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
@@ -43,12 +46,12 @@ public class ResumeFilter extends AbstractDownloadFilter {
                 }
             }
         }
-        return super.accept(session, file, parent);
+        return super.accept(file, parent);
     }
 
     @Override
-    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(session, file, parent);
+    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
+        final TransferStatus status = super.prepare(file, parent);
         if(session.getFeature(Read.class).append(file)) {
             if(file.attributes().isFile()) {
                 if(file.getLocal().exists()) {

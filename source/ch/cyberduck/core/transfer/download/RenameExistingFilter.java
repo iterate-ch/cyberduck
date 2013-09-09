@@ -37,16 +37,16 @@ import java.text.MessageFormat;
  */
 public class RenameExistingFilter extends AbstractDownloadFilter {
 
-    public RenameExistingFilter(final SymlinkResolver symlinkResolver) {
-        super(symlinkResolver);
+    public RenameExistingFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+        super(symlinkResolver, session);
     }
 
     /**
      * Rename existing file on disk if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(session, file, parent);
+    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
+        final TransferStatus status = super.prepare(file, parent);
         if(file.getLocal().exists()) {
             Local renamed = file.getLocal();
             while(renamed.exists()) {

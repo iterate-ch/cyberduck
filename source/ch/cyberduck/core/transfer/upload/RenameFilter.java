@@ -34,13 +34,16 @@ import org.apache.log4j.Logger;
 public class RenameFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(RenameFilter.class);
 
-    public RenameFilter(final SymlinkResolver symlinkResolver) {
-        super(symlinkResolver);
+    private Session<?> session;
+
+    public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+        super(symlinkResolver, session);
+        this.session = session;
     }
 
     @Override
-    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(session, file, parent);
+    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
+        final TransferStatus status = super.prepare(file, parent);
         if(parent.isExists()) {
             final Path parentPath = file.getParent();
             final String filename = file.getName();

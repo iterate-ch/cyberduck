@@ -57,12 +57,15 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private final IconService icon
             = IconServiceFactory.get();
 
-    public AbstractDownloadFilter(final SymlinkResolver symlinkResolver) {
+    private Session<?> session;
+
+    protected AbstractDownloadFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         this.symlinkResolver = symlinkResolver;
+        this.session = session;
     }
 
     @Override
-    public boolean accept(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isSymbolicLink()) {
             if(!symlinkResolver.resolve(file)) {
                 return symlinkResolver.include(file);
@@ -76,7 +79,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(file.attributes().isFile()) {
             if(file.attributes().isSymbolicLink()) {
@@ -111,7 +114,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
      * Update timestamp and permission
      */
     @Override
-    public void complete(final Session<?> session, final Path file,
+    public void complete(final Path file,
                          final TransferOptions options, final TransferStatus status,
                          final ProgressListener listener) {
         if(log.isDebugEnabled()) {

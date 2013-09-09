@@ -20,6 +20,7 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Size;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultFileSizeFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,17 +31,36 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
  */
 public class ResumeFilter extends AbstractUploadFilter {
 
-    public ResumeFilter(final SymlinkResolver symlinkResolver) {
-        super(symlinkResolver);
+    private Session<?> session;
+
+    private Size size;
+
+    public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+        super(symlinkResolver, session);
+        this.session = session;
+        this.size = new DefaultFileSizeFeature(session);
     }
 
     @Override
-    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(session, file, parent);
+    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
+        if(file.attributes().isFile()) {
+            if(parent.isExists()) {
+                if(size.getSize(file) >= file.getLocal().attributes().getSize()) {
+                    // No need to resume completed transfers
+                    return false;
+                }
+            }
+        }
+        return super.accept(file, parent);
+    }
+
+    @Override
+    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
+        final TransferStatus status = super.prepare(file, parent);
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
                 final Write write = session.getFeature(Write.class);
-                final Write.Append append = write.append(file, new DefaultFileSizeFeature(session));
+                final Write.Append append = write.append(file, size);
                 if(append.append) {
                     // Append to existing file
                     status.setAppend(true);

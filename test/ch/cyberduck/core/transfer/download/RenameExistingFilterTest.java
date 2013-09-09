@@ -30,7 +30,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepare() throws Exception {
-        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
+        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path p = new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
@@ -47,12 +47,12 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 };
             }
         };
-        f.prepare(new NullSession(new Host("h")), p, new ch.cyberduck.core.transfer.TransferStatus());
+        f.prepare(p, new ch.cyberduck.core.transfer.TransferStatus());
     }
 
     @Test
     public void testPrepareRename() throws Exception {
-        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
+        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path p = new Path("t", Path.FILE_TYPE) {
             final NullLocal local = new NullLocal(null, "t") {
                 @Override
@@ -71,7 +71,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 return local;
             }
         };
-        f.prepare(new NullSession(new Host("h")), p, new ch.cyberduck.core.transfer.TransferStatus());
+        f.prepare(p, new ch.cyberduck.core.transfer.TransferStatus());
         assertEquals("t", p.getLocal().getName());
     }
 }

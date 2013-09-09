@@ -2,10 +2,10 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
@@ -28,17 +28,17 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test
     public void testAccept() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
+        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path p = new Path("a", Path.FILE_TYPE);
         p.setLocal(new NullLocal(null, "a"));
         p.attributes().setSize(8L);
-        assertTrue(f.accept(new NullSession(new Host("h")), p, new TransferStatus()));
+        assertTrue(f.accept(p, new TransferStatus()));
     }
 
     @Test
     public void testAcceptDirectory() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
-        assertTrue(f.accept(new NullSession(new Host("h")), new Path("a", Path.DIRECTORY_TYPE) {
+        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        assertTrue(f.accept(new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal("/", "a") {
@@ -49,7 +49,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 };
             }
         }, new TransferStatus()));
-        assertTrue(f.accept(new NullSession(new Host("h")), new Path("a", Path.DIRECTORY_TYPE) {
+        assertTrue(f.accept(new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal("/", "a") {
@@ -64,11 +64,11 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepare() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
+        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path p = new Path("a", Path.FILE_TYPE);
         p.setLocal(new NullLocal(null, "a"));
         p.attributes().setSize(8L);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), p, new TransferStatus());
+        final TransferStatus status = f.prepare(p, new TransferStatus());
         assertEquals(8L, status.getLength(), 0L);
     }
 }

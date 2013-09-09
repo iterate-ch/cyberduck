@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 /**
@@ -24,7 +25,7 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
  */
 public class OverwriteFilter extends AbstractDownloadFilter {
 
-    public OverwriteFilter(final SymlinkResolver symlinkResolver) {
-        super(symlinkResolver);
+    public OverwriteFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+        super(symlinkResolver, session);
     }
 }

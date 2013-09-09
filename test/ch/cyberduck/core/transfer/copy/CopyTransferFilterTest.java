@@ -30,7 +30,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         final Path source = new Path("a", Path.DIRECTORY_TYPE);
         files.put(source, new Path("a", Path.DIRECTORY_TYPE));
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
-        assertTrue(f.accept(new NullSession(new Host("h")), source, new TransferStatus()));
+        assertTrue(f.accept(source, new TransferStatus()));
     }
 
     @Test
@@ -38,8 +38,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         final Path source = new Path("a", Path.DIRECTORY_TYPE);
         files.put(source, new Path("a", Path.DIRECTORY_TYPE));
-        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
-        assertFalse(f.accept(new NullSession(new Host("h")) {
+        CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("h")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type == Find.class) {
@@ -52,7 +51,8 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                 }
                 return super.getFeature(type);
             }
-        }, source, new TransferStatus().exists(true)));
+        }, files);
+        assertFalse(f.accept(source, new TransferStatus().exists(true)));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         source.attributes().setSize(1L);
         files.put(source, new Path("a", Path.FILE_TYPE));
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source, new TransferStatus());
+        final TransferStatus status = f.prepare(source, new TransferStatus());
         assertEquals(1L, status.getLength());
     }
 
@@ -78,7 +78,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         };
         files.put(source, target);
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("target")), files);
-        final TransferStatus status = f.prepare(new NullSession(new Host("h")), source, new TransferStatus());
+        final TransferStatus status = f.prepare(source, new TransferStatus());
         assertEquals(0L, status.getLength());
     }
 
@@ -133,11 +133,11 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final NullSession session = new NullSession(new Host("h"));
         status.setLength(1L);
-        f.complete(session, source, new TransferOptions(), status, session);
+        f.complete(source, new TransferOptions(), status, session);
         assertFalse(permissionWrite[0]);
         assertFalse(timestampWrite[0]);
         status.setCurrent(1L);
-        f.complete(session, source, new TransferOptions(), status, session);
+        f.complete(source, new TransferOptions(), status, session);
         assertTrue(permissionWrite[0]);
         assertTrue(timestampWrite[0]);
     }

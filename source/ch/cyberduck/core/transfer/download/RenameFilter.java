@@ -34,12 +34,12 @@ import org.apache.log4j.Logger;
 public class RenameFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(RenameFilter.class);
 
-    public RenameFilter(final SymlinkResolver symlinkResolver) {
-        super(symlinkResolver);
+    public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+        super(symlinkResolver, session);
     }
 
     @Override
-    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.getLocal().exists()) {
             final String parentPath = file.getLocal().getParent().getAbsolute();
             final String filename = file.getName();
@@ -56,6 +56,6 @@ public class RenameFilter extends AbstractDownloadFilter {
                 log.info(String.format("Changed local name from %s to %s", filename, file.getLocal().getName()));
             }
         }
-        return super.prepare(session, file, parent);
+        return super.prepare(file, parent);
     }
 }

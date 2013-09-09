@@ -339,19 +339,19 @@ public class SyncTransfer extends Transfer {
         }
 
         @Override
-        public TransferStatus prepare(final Session session, final Path p, final TransferStatus parent) throws BackgroundException {
+        public TransferStatus prepare(final Path p, final TransferStatus parent) throws BackgroundException {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(Comparison.REMOTE_NEWER)) {
-                return _delegateFilterDownload.prepare(session, p, new TransferStatus());
+                return _delegateFilterDownload.prepare(p, new TransferStatus());
             }
             if(compare.equals(Comparison.LOCAL_NEWER)) {
-                return _delegateFilterUpload.prepare(session, p, new TransferStatus());
+                return _delegateFilterUpload.prepare(p, new TransferStatus());
             }
             return new TransferStatus();
         }
 
         @Override
-        public boolean accept(final Session session, final Path p, final TransferStatus parent) throws BackgroundException {
+        public boolean accept(final Path p, final TransferStatus parent) throws BackgroundException {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(Comparison.EQUAL)) {
                 return false;
@@ -361,26 +361,26 @@ public class SyncTransfer extends Transfer {
                     return false;
                 }
                 // Ask the download delegate for inclusion
-                return _delegateFilterDownload.accept(session, p, parent);
+                return _delegateFilterDownload.accept(p, parent);
             }
             else if(compare.equals(Comparison.LOCAL_NEWER)) {
                 if(getTransferAction().equals(ACTION_DOWNLOAD)) {
                     return false;
                 }
                 // Ask the upload delegate for inclusion
-                return _delegateFilterUpload.accept(session, p, parent);
+                return _delegateFilterUpload.accept(p, parent);
             }
             return false;
         }
 
         @Override
-        public void complete(final Session session, final Path p, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+        public void complete(final Path p, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(Comparison.REMOTE_NEWER)) {
-                _delegateFilterDownload.complete(session, p, options, status, listener);
+                _delegateFilterDownload.complete(p, options, status, listener);
             }
             else if(compare.equals(Comparison.LOCAL_NEWER)) {
-                _delegateFilterUpload.complete(session, p, options, status, listener);
+                _delegateFilterUpload.complete(p, options, status, listener);
             }
             comparisons.remove(p.getReference());
             cache.remove(p.getReference());

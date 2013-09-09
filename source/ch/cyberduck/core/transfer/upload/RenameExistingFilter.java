@@ -37,15 +37,18 @@ import java.text.MessageFormat;
  */
 public class RenameExistingFilter extends AbstractUploadFilter {
 
-    public RenameExistingFilter(final SymlinkResolver symlinkResolver) {
-        super(symlinkResolver);
+    private Session<?> session;
+
+    public RenameExistingFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+        super(symlinkResolver, session);
+        this.session = session;
     }
 
     /**
      * Rename existing file on server if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
         Path renamed = file;
         while(session.getFeature(Find.class).find(renamed)) {
             String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
@@ -58,6 +61,6 @@ public class RenameExistingFilter extends AbstractUploadFilter {
         if(!renamed.equals(file)) {
             session.getFeature(Move.class).move(file, renamed);
         }
-        return super.prepare(session, file, parent);
+        return super.prepare(file, parent);
     }
 }
