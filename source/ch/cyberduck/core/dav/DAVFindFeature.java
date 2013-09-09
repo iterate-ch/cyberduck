@@ -12,7 +12,7 @@ import java.io.IOException;
 import com.github.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVFindFeature implements Find {
 
@@ -27,9 +27,9 @@ public class DAVFindFeature implements Find {
         if(new DefaultFindFeature(session).find(file)) {
             return true;
         }
-        try {
-            if(file.attributes().isDirectory()) {
-                // Parent directory may not be accessible. Issue #5662
+        if(file.attributes().isDirectory()) {
+            // Parent directory may not be accessible. Issue #5662
+            try {
                 try {
                     return session.getClient().exists(new DAVPathEncoder().encode(file));
                 }
@@ -40,9 +40,9 @@ public class DAVFindFeature implements Find {
                     throw new DefaultIOExceptionMappingService().map(e, file);
                 }
             }
-        }
-        catch(NotfoundException e) {
-            return false;
+            catch(NotfoundException e) {
+                return false;
+            }
         }
         return false;
     }

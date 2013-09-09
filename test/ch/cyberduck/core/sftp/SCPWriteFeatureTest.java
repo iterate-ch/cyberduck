@@ -51,4 +51,9 @@ public class SCPWriteFeatureTest extends AbstractTestCase {
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
+
+    @Test
+    public void testAppend() throws Exception {
+        assertFalse(new SCPWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), null).append);
+    }
 }

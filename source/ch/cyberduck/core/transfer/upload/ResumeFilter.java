@@ -17,14 +17,11 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.shared.DefaultFileSizeFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -33,26 +30,8 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
  */
 public class ResumeFilter extends AbstractUploadFilter {
 
-    private Cache cache = new Cache(100);
-
     public ResumeFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
-    }
-
-    @Override
-    public boolean accept(final Session<?> session, final Path file, final TransferStatus parent) throws BackgroundException {
-        if(file.attributes().isFile()) {
-            if(parent.isExists()) {
-                if(session.getFeature(Find.class).find(file)) {
-                    final long size = this.getSize(session, file);
-                    if(size >= file.getLocal().attributes().getSize()) {
-                        // No need to resume completed transfers
-                        return false;
-                    }
-                }
-            }
-        }
-        return super.accept(session, file, parent);
     }
 
     @Override
@@ -60,25 +39,15 @@ public class ResumeFilter extends AbstractUploadFilter {
         final TransferStatus status = super.prepare(session, file, parent);
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
-                if(session.getFeature(Write.class).append(file)) {
+                final Write write = session.getFeature(Write.class);
+                final Write.Append append = write.append(file, new DefaultFileSizeFeature(session));
+                if(append.append) {
                     // Append to existing file
                     status.setAppend(true);
-                    final long size = this.getSize(session, file);
-                    status.setCurrent(size);
+                    status.setCurrent(append.size);
                 }
             }
         }
         return status;
-    }
-
-    private Long getSize(final Session<?> session, final Path file) throws BackgroundException {
-        if(!cache.containsKey(file.getReference())) {
-            cache.put(file.getReference(), session.list(file.getParent(), new DisabledListProgressListener()));
-        }
-        final AttributedList<Path> list = cache.get(file.getReference());
-        if(list.contains(file.getReference())) {
-            return list.get(file.getReference()).attributes().getSize();
-        }
-        return 0L;
     }
 }

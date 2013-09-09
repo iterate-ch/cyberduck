@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Size;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
@@ -91,7 +92,10 @@ public class DAVWriteFeature implements Write {
     }
 
     @Override
-    public boolean append(final Path file) throws BackgroundException {
-        return new DAVFindFeature(session).find(file);
+    public Append append(final Path file, final Size feature) throws BackgroundException {
+        if(new DAVFindFeature(session).find(file)) {
+            return new Append(feature.getSize(file));
+        }
+        return new Append();
     }
 }

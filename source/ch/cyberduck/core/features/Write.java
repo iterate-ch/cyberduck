@@ -36,8 +36,23 @@ public interface Write {
     OutputStream write(Path file, TransferStatus status) throws BackgroundException;
 
     /**
-     * @param file File
+     * @param file    File
+     * @param feature Size feature
      * @return True if can append to existing file
      */
-    boolean append(Path file) throws BackgroundException;
+    Append append(Path file, final Size feature) throws BackgroundException;
+
+    public static final class Append {
+        public boolean append;
+        public Long size = 0L;
+
+        public Append() {
+            //
+        }
+
+        public Append(final Long size) {
+            this.append = true;
+            this.size = size;
+        }
+    }
 }

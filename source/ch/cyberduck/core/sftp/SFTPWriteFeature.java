@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Size;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -82,7 +83,10 @@ public class SFTPWriteFeature implements Write {
     }
 
     @Override
-    public boolean append(final Path file) throws BackgroundException {
-        return new SFTPFindFeature(session).find(file);
+    public Append append(final Path file, final Size feature) throws BackgroundException {
+        if(new SFTPFindFeature(session).find(file)) {
+            return new Append(feature.getSize(file));
+        }
+        return new Append();
     }
 }

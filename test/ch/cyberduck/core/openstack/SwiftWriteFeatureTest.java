@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.shared.DefaultFileSizeFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -44,8 +45,10 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
+        Thread.sleep(2000L);
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        assertEquals(0L, new SwiftWriteFeature(session).append(test, new DefaultFileSizeFeature(session)).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
@@ -57,6 +60,6 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testAppend() throws Exception {
-        assertFalse(new SwiftWriteFeature(null).append(new Path("/p", Path.FILE_TYPE)));
+        assertFalse(new SwiftWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), null).append);
     }
 }
