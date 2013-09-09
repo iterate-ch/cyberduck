@@ -25,7 +25,7 @@ import ch.cyberduck.core.LocaleFactory;
 public class QuotaException extends BackgroundException {
     private static final long serialVersionUID = -4529261484333237702L;
 
-    public QuotaException(final String detail, final Exception cause) {
+    public QuotaException(final String detail, final Throwable cause) {
         super(LocaleFactory.localizedString("Insufficient disk space", "Error"), detail, cause);
     }
 }
