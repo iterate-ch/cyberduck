@@ -134,4 +134,15 @@ public class PermissionTest extends AbstractTestCase {
         assertEquals(Permission.EMPTY, new Permission());
         assertEquals(Permission.EMPTY, new Permission(0));
     }
+
+    @Test
+    public void testImplies() {
+        assertTrue(new Permission("r--------").getUser().implies(Permission.Action.read));
+        assertTrue(new Permission("r--------").isReadable());
+        assertFalse(new Permission("r--------").isWritable());
+        assertTrue(new Permission("-w-------").getUser().implies(Permission.Action.write));
+        assertTrue(new Permission("-w-------").isWritable());
+        assertTrue(new Permission("--x------").getUser().implies(Permission.Action.execute));
+        assertTrue(new Permission("--x------").isExecutable());
+    }
 }
