@@ -390,12 +390,6 @@ public abstract class Transfer implements Serializable {
             }
             return;
         }
-        if(status.isComplete()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skip file %s with status %s", file, status));
-            }
-            return;
-        }
         // Transfer
         this.transfer(file, options, status);
         if(file.attributes().isFile()) {
