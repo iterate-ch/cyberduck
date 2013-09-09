@@ -264,7 +264,12 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure for endpoint %s", host));
         }
-        configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
+        if(host.getHostname().endsWith(host.getProtocol().getDefaultHostname())) {
+            configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
+        }
+        else {
+            configuration.setProperty("s3service.s3-endpoint", host.getHostname());
+        }
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
             configuration.setProperty("s3service.s3-endpoint-virtual-path",

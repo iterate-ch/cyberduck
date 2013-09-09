@@ -1,15 +1,9 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
@@ -23,6 +17,9 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -77,6 +74,37 @@ public class S3SessionTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testCustomHostname() throws Exception {
+        final Host host = new Host(new S3Protocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("s3.key"), "s"
+        ));
+        final AtomicBoolean set = new AtomicBoolean();
+        final S3Session session = new S3Session(host);
+        session.addTranscriptListener(new TranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                if(request) {
+                    if(message.contains("Host:")) {
+                        assertEquals("Host: test.cyberduck.ch:443", message);
+                        set.set(true);
+                    }
+                }
+            }
+        });
+        session.open(new HostKeyController() {
+            @Override
+            public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey)
+                    throws IOException, ConnectionCanceledException {
+                assertEquals("test.cyberduck.ch", hostname);
+                return true;
+            }
+        });
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertTrue(set.get());
+        session.close();
     }
 
     @Test
