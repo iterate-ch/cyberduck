@@ -92,6 +92,21 @@ public class Permission implements Serializable {
 
     public static final Permission EMPTY = new Permission(Action.none, Action.none, Action.none) {
         @Override
+        public boolean isExecutable() {
+            return true;
+        }
+
+        @Override
+        public boolean isReadable() {
+            return true;
+        }
+
+        @Override
+        public boolean isWritable() {
+            return true;
+        }
+
+        @Override
         public String toString() {
             return LocaleFactory.localizedString("--");
         }
