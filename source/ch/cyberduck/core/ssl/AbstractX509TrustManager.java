@@ -42,9 +42,9 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
             = new HashSet<X509Certificate>();
 
     protected void accept(final List<X509Certificate> certs) {
-        if(log.isDebugEnabled()) {
+        if(log.isTraceEnabled()) {
             for(X509Certificate cert : certs) {
-                log.debug("Certificate trusted:" + cert.toString());
+                log.trace("Certificate trusted:" + cert.toString());
             }
         }
         accepted.addAll(certs);
