@@ -3,6 +3,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
@@ -19,6 +20,7 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -74,6 +76,22 @@ public class S3SessionTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
+    }
+
+    @Test(expected = BackgroundException.class)
+    public void testCustomHostnameUnknown() throws Exception {
+        final Host host = new Host(new S3Protocol(), "testu.cyberduck.ch", new Credentials(
+                properties.getProperty("s3.key"), "s"
+        ));
+        final S3Session session = new S3Session(host);
+        try {
+            session.open(new DefaultHostKeyController());
+            session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        }
+        catch(BackgroundException e) {
+            assertTrue(e.getCause() instanceof UnknownHostException);
+            throw e;
+        }
     }
 
     @Test(expected = LoginFailureException.class)

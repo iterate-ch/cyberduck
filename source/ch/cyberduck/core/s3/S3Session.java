@@ -307,7 +307,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             this.cache().put(home.getReference(), this.list(home, new DisabledListProgressListener()));
         }
         catch(BackgroundException e) {
-            throw new LoginFailureException(e.getMessage(), e);
+            throw new LoginFailureException(e.getMessage(), e.getCause());
         }
     }
 
