@@ -95,6 +95,7 @@ public class SwiftMetadataFeatureTest extends AbstractTestCase {
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("X-Object-Meta-Test"));
         assertEquals(v, metadata.get("X-Object-Meta-Test"));
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
         session.close();
     }
 }
