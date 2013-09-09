@@ -75,8 +75,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testChildren() throws Exception {
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
-        };
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE);
         root.setLocal(new NullLocal(null, "l"));
         Transfer t = new DownloadTransfer(new NullSession(new Host("t")) {
             @Override
@@ -105,8 +104,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testPrepareOverride() throws Exception {
         final Path child = new Path("/t/c", Path.FILE_TYPE);
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
-        };
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE);
         root.setLocal(new NullLocal(null, "l") {
             @Override
             public boolean exists() {
