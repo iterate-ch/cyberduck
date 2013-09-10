@@ -5,8 +5,7 @@ import org.junit.Test;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -57,5 +56,15 @@ public class RendezvousResponderTest extends AbstractTestCase {
         r.init();
         r.quit();
         r.add("t-name", new Host("h"));
+    }
+
+    @Test
+    public void testGetProtocol() throws Exception {
+        final AbstractRendezvous r = new RendezvousResponder();
+        assertEquals(ProtocolFactory.FTP, r.getProtocol("andaman._ftp._tcp.local."));
+        assertEquals(ProtocolFactory.SFTP, r.getProtocol("yuksom._sftp-ssh._tcp."));
+        assertEquals(ProtocolFactory.WEBDAV, r.getProtocol("yuksom._webdav._tcp"));
+        assertEquals(ProtocolFactory.WEBDAV_SSL, r.getProtocol("andaman._webdavs._tcp"));
+        assertNull(r.getProtocol("andaman._g._tcp"));
     }
 }

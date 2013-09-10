@@ -42,7 +42,8 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * Protocol description: draft-ietf-secsh-filexfer-13.txt
      * Defined TXT keys: u=<username> p=<password> path=<path>
      */
-    protected static final String SERVICE_TYPE_SFTP = "_sftp-ssh._tcp.";
+    private static final String SERVICE_TYPE_SFTP = "_sftp-ssh._tcp.";
+
     /**
      * ftp
      * File Transfer
@@ -52,7 +53,8 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * Protocol description: RFC 959
      * Defined TXT keys: u=<username> p=<password> path=<path>
      */
-    protected static final String SERVICE_TYPE_FTP = "_ftp._tcp.";
+    private static final String SERVICE_TYPE_FTP = "_ftp._tcp.";
+
     /**
      * webdav
      * World Wide Web Distributed Authoring and Versioning (WebDAV)
@@ -60,7 +62,8 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * Protocol description: RFC 2518
      * Defined TXT keys: u=<username> p=<password> path=<path>
      */
-    protected static final String SERVICE_TYPE_WEBDAV = "_webdav._tcp";
+    private static final String SERVICE_TYPE_WEBDAV = "_webdav._tcp";
+
     /**
      * webdavs
      * WebDAV over SSL/TLS
@@ -68,14 +71,12 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * Protocol description: RFC 2518
      * Defined TXT keys: u=<username> p=<password> path=<path>
      */
-    protected static final String SERVICE_TYPE_WEBDAV_TLS = "_webdavs._tcp";
-
-    private final String[] serviceTypes = new String[]{
-            SERVICE_TYPE_SFTP, SERVICE_TYPE_FTP, SERVICE_TYPE_WEBDAV, SERVICE_TYPE_WEBDAV_TLS
-    };
+    private static final String SERVICE_TYPE_WEBDAV_TLS = "_webdavs._tcp";
 
     public String[] getServiceTypes() {
-        return serviceTypes;
+        return new String[]{
+                SERVICE_TYPE_SFTP, SERVICE_TYPE_FTP, SERVICE_TYPE_WEBDAV, SERVICE_TYPE_WEBDAV_TLS
+        };
     }
 
     private Map<String, Host> services = new ConcurrentHashMap<String, Host>();
