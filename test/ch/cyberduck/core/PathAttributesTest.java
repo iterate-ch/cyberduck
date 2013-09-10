@@ -56,4 +56,15 @@ public class PathAttributesTest extends AbstractTestCase {
         assertEquals(attributes, new PathAttributes(attributes.serialize(SerializerFactory.get())));
         assertEquals(attributes.hashCode(), new PathAttributes(attributes.serialize(SerializerFactory.get())).hashCode());
     }
+
+    @Test
+    public void testEquals() throws Exception {
+        assertTrue(new PathAttributes(Path.FILE_TYPE).equals(new PathAttributes(Path.FILE_TYPE)));
+        assertFalse(new PathAttributes(Path.FILE_TYPE).equals(new PathAttributes(Path.DIRECTORY_TYPE)));
+        final PathAttributes r1 = new PathAttributes(Path.FILE_TYPE);
+        r1.setRegion("r1");
+        final PathAttributes r2 = new PathAttributes(Path.FILE_TYPE);
+        r2.setRegion("r2");
+        assertFalse(r1.equals(r2));
+    }
 }
