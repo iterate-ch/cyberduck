@@ -38,6 +38,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
@@ -52,6 +53,10 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     public DAVSession(Host h) {
         super(h);
+    }
+
+    public DAVSession(final Host host, final X509TrustManager manager) {
+        super(host, manager);
     }
 
     @Override

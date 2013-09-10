@@ -36,6 +36,7 @@ import ch.cyberduck.core.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
 import ch.iterate.openstack.swift.Client;
@@ -55,6 +56,10 @@ public class SwiftSession extends HttpSession<Client> {
 
     public SwiftSession(Host h) {
         super(h);
+    }
+
+    public SwiftSession(final Host host, final X509TrustManager manager) {
+        super(host, manager);
     }
 
     @Override

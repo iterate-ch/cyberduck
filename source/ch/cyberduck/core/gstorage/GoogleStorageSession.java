@@ -54,6 +54,7 @@ import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.oauth.OAuthConstants;
 import org.jets3t.service.utils.oauth.OAuthUtils;
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -72,6 +73,10 @@ public class GoogleStorageSession extends S3Session {
 
     public GoogleStorageSession(Host h) {
         super(h);
+    }
+
+    public GoogleStorageSession(final Host host, final X509TrustManager manager) {
+        super(host, manager);
     }
 
     @Override

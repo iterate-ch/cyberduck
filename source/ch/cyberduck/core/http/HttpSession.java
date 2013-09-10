@@ -64,6 +64,7 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocket;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.cert.X509Certificate;
@@ -88,6 +89,10 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     protected HttpSession(final Host h) {
         super(h);
+    }
+
+    protected HttpSession(final Host host, final X509TrustManager manager) {
+        super(host, manager);
     }
 
     public AbstractHttpClient connect() {

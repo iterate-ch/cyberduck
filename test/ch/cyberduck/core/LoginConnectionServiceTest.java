@@ -5,6 +5,8 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
+import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.junit.Test;
 
@@ -50,18 +52,20 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testHandshakeFailure() throws Exception {
-        CertificateStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new CertificateStoreFactory() {
-            @Override
-            protected CertificateStore create() {
-                return new DisabledCertificateStore() {
+        final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "54.228.253.92", new Credentials("user", "p")),
+                new CertificateStoreX509TrustManager(new TrustManagerHostnameCallback() {
+                    @Override
+                    public String getTarget() {
+                        return "54.228.253.92";
+                    }
+                }, new DisabledCertificateStore() {
                     @Override
                     public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
                         return false;
                     }
-                };
-            }
-        });
-        final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "54.228.253.92", new Credentials("user", "p")));
+                }
+                )
+        );
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(),
                 new ProgressListener() {

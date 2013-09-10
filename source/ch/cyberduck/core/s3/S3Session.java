@@ -55,6 +55,7 @@ import org.jets3t.service.security.OAuth2Tokens;
 import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.RestUtils;
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -76,6 +77,10 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     public S3Session(Host h) {
         super(h);
+    }
+
+    public S3Session(final Host host, final X509TrustManager manager) {
+        super(host, manager);
     }
 
     /**
