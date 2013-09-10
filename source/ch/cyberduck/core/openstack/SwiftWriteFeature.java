@@ -101,7 +101,7 @@ public class SwiftWriteFeature implements Write {
 
             @Override
             public long getContentLength() {
-                return status.getLength() - status.getCurrent();
+                return status.getLength();
             }
         };
         return session.write(file, command);
