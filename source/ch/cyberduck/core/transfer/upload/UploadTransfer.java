@@ -26,7 +26,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.filter.UploadRegexFilter;
@@ -47,7 +46,6 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @version $Id$
@@ -186,12 +184,6 @@ public class UploadTransfer extends Transfer {
         else if(file.attributes().isFile()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
-            String original = file.getName();
-            final boolean temporary = Preferences.instance().getBoolean("queue.upload.file.temporary");
-            if(temporary) {
-                file.setPath(file.getParent(), MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
-                        file.getName(), UUID.randomUUID().toString()));
-            }
             // Transfer
             writer.upload(file, bandwidth, new AbstractStreamListener() {
                 @Override
@@ -199,13 +191,6 @@ public class UploadTransfer extends Transfer {
                     addTransferred(bytes);
                 }
             }, status);
-            if(status.isComplete()) {
-                if(temporary) {
-                    session.getFeature(Move.class).move(file, new Path(file.getParent(),
-                            original, file.attributes().getType()));
-                    file.setPath(file.getParent(), original);
-                }
-            }
         }
         else if(file.attributes().isDirectory()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),

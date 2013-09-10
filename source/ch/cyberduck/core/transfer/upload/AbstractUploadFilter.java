@@ -29,6 +29,7 @@ import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -39,6 +40,9 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @version $Id$
@@ -49,6 +53,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     private SymlinkResolver symlinkResolver;
 
     private Session<?> session;
+
+    protected Map<Path, String> temporary
+            = new HashMap<Path, String>();
 
     public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         this.symlinkResolver = symlinkResolver;
@@ -88,6 +95,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             else {
                 // Read file size from filesystem
                 status.setLength(file.getLocal().attributes().getSize());
+            }
+            if(Preferences.instance().getBoolean("queue.upload.file.temporary")) {
+                final String original = file.getName();
+                file.setPath(file.getParent(), MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
+                        file.getName(), UUID.randomUUID().toString()));
+                temporary.put(file, original);
             }
         }
         if(parent.isExists()) {
@@ -131,6 +144,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     this.timestamp(file, timestamp);
 
                 }
+            }
+            if(Preferences.instance().getBoolean("queue.upload.file.temporary")) {
+                session.getFeature(Move.class).move(file, new Path(file.getParent(), temporary.get(file), Path.FILE_TYPE));
+                file.setPath(file.getParent(), temporary.get(file));
             }
         }
     }

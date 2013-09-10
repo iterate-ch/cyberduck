@@ -69,7 +69,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
             }
         };
         p.setLocal(new NullLocal("/Downloads", "n"));
-        f.prepare(p, new ch.cyberduck.core.transfer.TransferStatus());
+        f.prepare(p, new TransferStatus().exists(true));
         assertTrue(c.get());
     }
 }
