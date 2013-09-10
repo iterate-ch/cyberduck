@@ -50,6 +50,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
             }
         }, new DisabledLoginController());
         assertTrue(session.isSecured());
+        session.close();
     }
 
     @Test(expected = LoginFailureException.class)

@@ -48,5 +48,6 @@ public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
         assertTrue(session.getFeature(Find.class).find(bucket));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
         assertFalse(session.getFeature(Find.class).find(bucket));
+        session.close();
     }
 }
