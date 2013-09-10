@@ -111,6 +111,8 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
             final Acl acl = new Acl();
             acl.addAll(new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers"), new Acl.Role(Acl.Role.READ));
             acl.addAll(new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AuthenticatedUsers"), new Acl.Role(Acl.Role.READ));
+            // Check for owner added with full control
+            acl.addAll(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL));
             assertEquals(acl, f.getPermission(test));
         }
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());

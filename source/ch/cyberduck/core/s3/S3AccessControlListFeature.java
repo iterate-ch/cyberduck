@@ -133,6 +133,7 @@ public class S3AccessControlListFeature implements AclPermission {
     protected AccessControlList convert(final Acl acl) {
         final AccessControlList list = new AccessControlList();
         list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
+        list.grantPermission(new CanonicalGrantee(acl.getOwner().getIdentifier()), Permission.PERMISSION_FULL_CONTROL);
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
                 continue;
