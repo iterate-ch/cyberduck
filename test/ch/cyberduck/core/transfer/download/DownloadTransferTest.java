@@ -182,7 +182,8 @@ public class DownloadTransferTest extends AbstractTestCase {
     public void testCancel() throws Exception {
         final Path parent = new Path("t", Path.FILE_TYPE);
         Transfer t = new DownloadTransfer(new NullSession(new Host("t")), parent);
-        // test cancel while in progress
+        t.cancel();
+        assertTrue(t.isCanceled());
     }
 
     @Test
