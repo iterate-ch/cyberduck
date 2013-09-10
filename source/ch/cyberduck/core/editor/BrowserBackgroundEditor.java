@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.concurrent.Callable;
 
 /**
  * @version $Id$
@@ -61,24 +60,16 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * Open the file in the parent directory
      */
     @Override
-    public void open(final Callable<Transfer> download) {
+    public void open(final TransferCallable download) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Open %s in %s", edited.getLocal().getAbsolute(), this.getApplication()));
         }
         controller.background(new BrowserBackgroundAction((BrowserController) controller) {
             @Override
             public Boolean run() throws BackgroundException {
-                try {
-                    final Transfer transfer = download.call();
-                    growl.notify(transfer.isComplete() ?
-                            String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
-                }
-                catch(BackgroundException e) {
-                    throw e;
-                }
-                catch(Exception e) {
-                    throw new BackgroundException(e.getMessage(), e);
-                }
+                final Transfer transfer = download.call();
+                growl.notify(transfer.isComplete() ?
+                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
                 return true;
             }
 
@@ -94,24 +85,16 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * Upload the edited file to the server
      */
     @Override
-    public void save(final Callable<Transfer> upload) {
+    public void save(final TransferCallable upload) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), edited.getLocal().getAbsolute()));
         }
         controller.background(new BrowserBackgroundAction((BrowserController) controller) {
             @Override
             public Boolean run() throws BackgroundException {
-                try {
-                    final Transfer transfer = upload.call();
-                    growl.notify(transfer.isComplete() ?
-                            String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
-                }
-                catch(BackgroundException e) {
-                    throw e;
-                }
-                catch(Exception e) {
-                    throw new BackgroundException(e.getMessage(), e);
-                }
+                final Transfer transfer = upload.call();
+                growl.notify(transfer.isComplete() ?
+                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
                 return true;
             }
 

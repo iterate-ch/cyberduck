@@ -82,12 +82,12 @@ public abstract class AbstractEditor implements Editor {
     /**
      * @param background Download transfer
      */
-    protected abstract void open(Callable<Transfer> background);
+    protected abstract void open(TransferCallable background);
 
     /**
      * @param background Upload transfer
      */
-    protected abstract void save(Callable<Transfer> background);
+    protected abstract void save(TransferCallable background);
 
     public Path getEdited() {
         return edited;
@@ -136,7 +136,7 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void open() {
-        final Callable<Transfer> background = new EditBackgroundAction();
+        final TransferCallable background = new EditBackgroundAction();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Download file for edit %s", edited.getLocal().getAbsolute()));
         }
@@ -162,7 +162,7 @@ public abstract class AbstractEditor implements Editor {
         else {
             // Store current checksum
             checksum = edited.getLocal().attributes().getChecksum();
-            final Callable<Transfer> background = new SaveBackgroundAction();
+            final TransferCallable background = new SaveBackgroundAction();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", edited.getLocal().getAbsolute()));
             }
@@ -170,7 +170,12 @@ public abstract class AbstractEditor implements Editor {
         }
     }
 
-    private final class EditBackgroundAction implements Callable<Transfer> {
+    public static interface TransferCallable extends Callable<Transfer> {
+        @Override
+        Transfer call() throws BackgroundException;
+    }
+
+    private final class EditBackgroundAction implements TransferCallable {
         @Override
         public Transfer call() throws BackgroundException {
             // Delete any existing file which might be used by a watch editor already
@@ -203,7 +208,7 @@ public abstract class AbstractEditor implements Editor {
         }
     }
 
-    private final class SaveBackgroundAction implements Callable<Transfer> {
+    private final class SaveBackgroundAction implements TransferCallable {
         @Override
         public Transfer call() throws BackgroundException {
             final Transfer upload = new UploadTransfer(session, edited) {
