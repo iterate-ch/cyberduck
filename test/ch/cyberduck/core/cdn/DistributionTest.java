@@ -17,6 +17,9 @@ public class DistributionTest extends AbstractTestCase {
     public void testEquals() throws Exception {
         assertEquals(new Distribution("o", Distribution.DOWNLOAD), new Distribution("o", Distribution.DOWNLOAD));
         assertFalse(new Distribution("o", Distribution.DOWNLOAD).equals(new Distribution("o", Distribution.STREAMING)));
+        assertFalse(new Distribution("o", Distribution.DOWNLOAD).equals(new Distribution("o", Distribution.CUSTOM)));
+        assertFalse(new Distribution("o", Distribution.DOWNLOAD).equals(new Distribution("o", Distribution.WEBSITE)));
+        assertFalse(new Distribution("o", Distribution.DOWNLOAD).equals(new Distribution("o", Distribution.WEBSITE_CDN)));
     }
 
     @Test
@@ -31,6 +34,11 @@ public class DistributionTest extends AbstractTestCase {
     @Test
     public void testDeployed() throws Exception {
         assertTrue(new Distribution("o", Distribution.DOWNLOAD, true).isDeployed());
+    }
+
+    @Test
+    public void testCnames() throws Exception {
+        assertNotNull(new Distribution("o", Distribution.DOWNLOAD, false).getCNAMEs());
     }
 
     @Test(expected = FactoryException.class)
