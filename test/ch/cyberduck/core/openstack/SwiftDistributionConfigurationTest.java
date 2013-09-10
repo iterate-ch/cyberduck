@@ -8,10 +8,19 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cdn.features.Cname;
+import ch.cyberduck.core.cdn.features.DistributionLogging;
+import ch.cyberduck.core.cdn.features.Index;
+import ch.cyberduck.core.cdn.features.Purge;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -26,6 +35,18 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         assertEquals("Akamai", configuration.getName());
         assertEquals("Akamai", configuration.getName(Distribution.DOWNLOAD));
+    }
+
+    @Test
+    public void testFeatures() throws Exception {
+        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "h"));
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
+        assertNotNull(configuration.getFeature(Purge.class, Distribution.DOWNLOAD));
+        assertNotNull(configuration.getFeature(Index.class, Distribution.DOWNLOAD));
+        assertNotNull(configuration.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
+        assertNotNull(configuration.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD));
+        assertNotNull(configuration.getFeature(AnalyticsProvider.class, Distribution.DOWNLOAD));
+        assertNull(configuration.getFeature(Cname.class, Distribution.DOWNLOAD));
     }
 
     @Test
@@ -54,6 +75,23 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertEquals(1, test.getContainers().size());
         assertEquals(".CDN_ACCESS_LOGS", test.getLoggingContainer());
         assertEquals("storage101.dfw1.clouddrive.com", test.getOrigin());
+    }
+
+    @Test
+    public void testWriteRackspace() throws Exception {
+        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
+        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        container.attributes().setRegion("ORD");
+        new SwiftDirectoryFeature(session).mkdir(container, "ORD");
+        configuration.write(container, new Distribution(container.getName(), Distribution.DOWNLOAD, true), new DisabledLoginController());
+        assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController()).isEnabled());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
+        session.close();
     }
 
     @Test
