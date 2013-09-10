@@ -60,35 +60,29 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
     public Comparator<Path> getSortingComparator() {
         final boolean ascending = this.isSortedAscending();
         final String identifier = this.selectedColumnIdentifier();
-        if(identifier.equals(BrowserTableDataSource.Columns.ICON.name())
-                || identifier.equals(BrowserTableDataSource.Columns.KIND.name())) {
-            return new FileTypeComparator(ascending);
+        switch(BrowserTableDataSource.Columns.valueOf(identifier)) {
+            case ICON:
+            case KIND:
+                return new FileTypeComparator(ascending);
+            case EXTENSION:
+                return new ExtensionComparator(ascending);
+            case FILENAME:
+                return new FilenameComparator(ascending);
+            case SIZE:
+                return new SizeComparator(ascending);
+            case MODIFIED:
+                return new TimestampComparator(ascending);
+            case OWNER:
+                return new OwnerComparator(ascending);
+            case GROUP:
+                return new GroupComparator(ascending);
+            case PERMISSIONS:
+                return new PermissionsComparator(ascending);
+            case REGION:
+                return new RegionComparator(ascending);
+            default:
+                log.error(String.format("Unknown column identifier %s", identifier));
+                return new NullComparator<Path>();
         }
-        else if(identifier.equals(BrowserTableDataSource.Columns.EXTENSION.name())) {
-            return new ExtensionComparator(ascending);
-        }
-        else if(identifier.equals(BrowserTableDataSource.Columns.FILENAME.name())) {
-            return new FilenameComparator(ascending);
-        }
-        else if(identifier.equals(BrowserTableDataSource.Columns.SIZE.name())) {
-            return new SizeComparator(ascending);
-        }
-        else if(identifier.equals(BrowserTableDataSource.Columns.MODIFIED.name())) {
-            return new TimestampComparator(ascending);
-        }
-        else if(identifier.equals(BrowserTableDataSource.Columns.OWNER.name())) {
-            return new OwnerComparator(ascending);
-        }
-        else if(identifier.equals(BrowserTableDataSource.Columns.GROUP.name())) {
-            return new GroupComparator(ascending);
-        }
-        else if(identifier.equals(BrowserTableDataSource.Columns.PERMISSIONS.name())) {
-            return new PermissionsComparator(ascending);
-        }
-        else if(identifier.equals(BrowserTableDataSource.Columns.REGION.name())) {
-            return new RegionComparator(ascending);
-        }
-        log.error(String.format("Unknown column identifier %s", identifier));
-        return new NullComparator<Path>();
     }
 }
