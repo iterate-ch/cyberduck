@@ -26,7 +26,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
 import java.io.IOException;
-import java.util.Map;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
@@ -60,7 +59,7 @@ public class SwiftFindFeature implements Find {
                 }
             }
             try {
-                final Map<String, String> headers = new SwiftMetadataFeature(session).getMetadata(file);
+                new SwiftMetadataFeature(session).getMetadata(file);
                 return true;
             }
             catch(NotfoundException e) {
