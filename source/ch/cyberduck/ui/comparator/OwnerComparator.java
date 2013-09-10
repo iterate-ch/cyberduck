@@ -35,8 +35,14 @@ public class OwnerComparator extends BrowserComparator {
 
     @Override
     protected int compareFirst(final Path p1, final Path p2) {
-        if(StringUtils.isBlank(p1.attributes().getOwner()) || StringUtils.isBlank(p2.attributes().getOwner())) {
+        if(StringUtils.isBlank(p1.attributes().getOwner()) && StringUtils.isBlank(p2.attributes().getOwner())) {
             return 0;
+        }
+        if(StringUtils.isBlank(p1.attributes().getOwner())) {
+            return -1;
+        }
+        if(StringUtils.isBlank(p2.attributes().getOwner())) {
+            return 1;
         }
         if(ascending) {
             return p1.attributes().getOwner().compareToIgnoreCase(p2.attributes().getOwner());
