@@ -34,7 +34,7 @@ public class FTPUnixPermissionFeature implements UnixPermission {
 
     private FTPSession session;
 
-    private FTPException failure;
+    private BackgroundException failure;
 
     public FTPUnixPermissionFeature(final FTPSession session) {
         this.session = session;
@@ -74,16 +74,16 @@ public class FTPUnixPermissionFeature implements UnixPermission {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Skip setting permission for %s due to previous failure %s", file, failure.getMessage()));
             }
-            throw new FTPExceptionMappingService().map("Cannot change permissions", failure, file);
+            throw failure;
         }
         try {
             if(!session.getClient().sendSiteCommand(String.format("CHMOD %s %s", permission.getMode(), file.getAbsolute()))) {
-                throw failure = new FTPException(session.getClient().getReplyCode(),
+                throw new FTPException(session.getClient().getReplyCode(),
                         session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Cannot change permissions", e, file);
+            throw failure = new FTPExceptionMappingService().map("Cannot change permissions", e, file);
         }
     }
 }
