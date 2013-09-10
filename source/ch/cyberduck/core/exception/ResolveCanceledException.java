@@ -27,4 +27,8 @@ public class ResolveCanceledException extends ConnectionCanceledException {
     public ResolveCanceledException() {
         super();
     }
+
+    public ResolveCanceledException(final Throwable cause) {
+        super(cause);
+    }
 }

@@ -99,7 +99,7 @@ public class Resolver {
             }
             catch(InterruptedException e) {
                 log.error(String.format("Error awaiting lock for resolver %s", e.getMessage()), e);
-                throw new ResolveCanceledException();
+                throw new ResolveCanceledException(e);
             }
         }
         if(!this.isResolved()) {
