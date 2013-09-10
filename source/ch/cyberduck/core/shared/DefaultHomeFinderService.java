@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultHomeFinderService implements HomeFinderService {
 
@@ -46,27 +46,34 @@ public class DefaultHomeFinderService implements HomeFinderService {
         if(host.getWorkdir() != null) {
             return host.getWorkdir();
         }
-        else if(StringUtils.isNotBlank(host.getDefaultPath())) {
-            if(host.getDefaultPath().startsWith(String.valueOf(Path.DELIMITER))) {
-                // Mount absolute path
-                return new Path(host.getDefaultPath(),
-                        host.getDefaultPath().equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
+        else {
+            final String path = host.getDefaultPath();
+            if(StringUtils.isNotBlank(path)) {
+                return this.find(path);
             }
             else {
-                final Path workdir = session.workdir();
-                if(host.getDefaultPath().startsWith(Path.HOME)) {
-                    // Relative path to the home directory
-                    return new Path(workdir, host.getDefaultPath().substring(1), Path.DIRECTORY_TYPE);
-                }
-                else {
-                    // Relative path
-                    return new Path(workdir, host.getDefaultPath(), Path.DIRECTORY_TYPE);
-                }
+                // No default path configured
+                return session.workdir();
             }
         }
+    }
+
+    public Path find(final String path) throws BackgroundException {
+        if(path.startsWith(String.valueOf(Path.DELIMITER))) {
+            // Mount absolute path
+            return new Path(path,
+                    path.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
+        }
         else {
-            // No default path configured
-            return session.workdir();
+            final Path workdir = session.workdir();
+            if(path.startsWith(Path.HOME)) {
+                // Relative path to the home directory
+                return new Path(workdir, path.substring(1), Path.DIRECTORY_TYPE);
+            }
+            else {
+                // Relative path
+                return new Path(workdir, path, Path.DIRECTORY_TYPE);
+            }
         }
     }
 }
