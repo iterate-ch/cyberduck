@@ -21,6 +21,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -87,6 +88,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testListCnameAnonymous() throws Exception {
         final Host host = new Host(new S3Protocol(), "dist.springframework.org", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
