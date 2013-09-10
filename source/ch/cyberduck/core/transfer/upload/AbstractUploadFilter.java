@@ -198,6 +198,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         if(permission.getGroup().implies(Permission.Action.read)) {
             acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
         }
+        if(permission.getGroup().implies(Permission.Action.write)) {
+            acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
+        }
         if(!Acl.EMPTY.equals(acl)) {
             try {
                 feature.setPermission(file, acl);
