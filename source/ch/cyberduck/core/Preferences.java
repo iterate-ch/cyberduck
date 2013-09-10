@@ -700,7 +700,7 @@ public abstract class Preferences {
         /**
          * Default login name
          */
-        defaults.put("connection.login.name", System.getProperty("user.name"));
+        defaults.put("connection.login.name", StringUtils.EMPTY);
         defaults.put("connection.login.anon.name", "anonymous");
         defaults.put("connection.login.anon.pass", "cyberduck@example.net");
         /**
