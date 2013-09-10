@@ -116,4 +116,16 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
+
+    @Test
+    public void testRoles() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        assertTrue(f.getAvailableAclUsers().contains(new Acl.CanonicalUser()));
+        assertTrue(f.getAvailableAclUsers().contains(new Acl.EmailUser()));
+    }
 }
