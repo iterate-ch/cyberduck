@@ -2517,7 +2517,7 @@ public class InfoController extends ToolbarWindowController {
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = containerService.getContainer(getSelected());
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                    final Distribution configuration = new Distribution(null, method, distributionEnableButton.state() == NSCell.NSOnState);
+                    final Distribution configuration = new Distribution(container.getName(), method, distributionEnableButton.state() == NSCell.NSOnState);
                     configuration.setIndexDocument(distributionDefaultRootPopup.selectedItem().representedObject());
                     configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
                     configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
