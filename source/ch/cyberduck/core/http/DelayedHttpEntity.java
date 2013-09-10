@@ -99,7 +99,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
         }
         catch(InterruptedException e) {
             log.error(String.format("Error waiting for exit signal %s", e.getMessage()));
-            throw new IOException();
+            throw new IOException(e);
         }
         // Entity written to server
         consumed = true;
