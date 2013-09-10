@@ -57,18 +57,23 @@ public class UploadTransfer extends Transfer {
 
     private UploadRegexFilter filter = new UploadRegexFilter();
 
-    public UploadTransfer(final Session session, final Path root) {
+    private Upload writer;
+
+    public UploadTransfer(final Session<?> session, final Path root) {
         this(session, Collections.singletonList(root));
+        writer = session.getFeature(Upload.class);
     }
 
-    public UploadTransfer(final Session session, final List<Path> roots) {
+    public UploadTransfer(final Session<?> session, final List<Path> roots) {
         super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
+        writer = session.getFeature(Upload.class);
     }
 
-    public <T> UploadTransfer(final T dict, final Session s) {
+    public <T> UploadTransfer(final T dict, final Session<?> s) {
         super(dict, s, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
+        writer = session.getFeature(Upload.class);
     }
 
     @Override
@@ -188,7 +193,7 @@ public class UploadTransfer extends Transfer {
                         file.getName(), UUID.randomUUID().toString()));
             }
             // Transfer
-            session.getFeature(Upload.class).upload(file, bandwidth, new AbstractStreamListener() {
+            writer.upload(file, bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     addTransferred(bytes);

@@ -68,18 +68,23 @@ public class DownloadTransfer extends Transfer {
     private final IconService icon
             = IconServiceFactory.get();
 
-    public DownloadTransfer(final Session session, final Path root) {
+    private Read reader;
+
+    public DownloadTransfer(final Session<?> session, final Path root) {
         this(session, Collections.singletonList(root));
+        reader = session.getFeature(Read.class);
     }
 
-    public DownloadTransfer(final Session session, final List<Path> roots) {
+    public DownloadTransfer(final Session<?> session, final List<Path> roots) {
         super(session, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
+        reader = session.getFeature(Read.class);
     }
 
-    public <T> DownloadTransfer(final T dict, final Session s) {
+    public <T> DownloadTransfer(final T dict, final Session<?> s) {
         super(dict, s, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
+        reader = session.getFeature(Read.class);
     }
 
     @Override
@@ -238,7 +243,6 @@ public class DownloadTransfer extends Transfer {
             InputStream in = null;
             OutputStream out = null;
             try {
-                final Read reader = session.getFeature(Read.class);
                 in = reader.read(file, status);
                 out = file.getLocal().getOutputStream(status.isAppend());
                 new StreamCopier(status).transfer(new ThrottledInputStream(in, throttle), 0, out, listener);
