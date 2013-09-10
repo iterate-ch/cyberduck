@@ -25,10 +25,7 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
  */
 public class OverwriteFilter extends AbstractUploadFilter {
 
-    private Session<?> session;
-
     public OverwriteFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session);
-        this.session = session;
     }
 }
