@@ -114,6 +114,9 @@ public class Cache {
      * @return Previous cached version
      */
     public AttributedList<Path> put(final PathReference reference, final AttributedList<Path> children) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Caching %s", reference));
+        }
         return impl.put(reference, children);
     }
 
@@ -129,6 +132,9 @@ public class Cache {
      * @param reference Path reference
      */
     public void invalidate(final PathReference reference) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Invalidate %s", reference));
+        }
         if(this.containsKey(reference)) {
             this.get(reference).attributes().setInvalid(true);
         }
