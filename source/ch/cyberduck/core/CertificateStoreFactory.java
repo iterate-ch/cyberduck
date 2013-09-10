@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class CertificateStoreFactory extends Factory<CertificateStore> {
 
@@ -35,10 +35,15 @@ public abstract class CertificateStoreFactory extends Factory<CertificateStore> 
         factories.put(platform, f);
     }
 
+    private static CertificateStore store;
+
     public static CertificateStore get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+        if(null == store) {
+            if(!factories.containsKey(NATIVE_PLATFORM)) {
+                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+            }
+            store = factories.get(NATIVE_PLATFORM).create();
         }
-        return factories.get(NATIVE_PLATFORM).create();
+        return store;
     }
 }
