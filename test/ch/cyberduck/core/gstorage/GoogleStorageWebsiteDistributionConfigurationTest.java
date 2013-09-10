@@ -16,10 +16,13 @@ import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -83,6 +86,35 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
         assertTrue(website.isEnabled());
         assertEquals("http://test.cyberduck.ch.storage.googleapis.com", website.getUrl());
         assertTrue(website.getContainers().contains(new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
+    }
+
+    @Test
+    public void testWrite() throws Exception {
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("google.projectid"), null
+        ));
+        final GoogleStorageSession session = new GoogleStorageSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore() {
+            @Override
+            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                if(user.equals("Google OAuth2 Access Token")) {
+                    return properties.getProperty("google.accesstoken");
+                }
+                if(user.equals("Google OAuth2 Refresh Token")) {
+                    return properties.getProperty("google.refreshtoken");
+                }
+                return null;
+            }
+        }, new DisabledLoginController());
+        final DistributionConfiguration configuration
+                = new GoogleStorageWebsiteDistributionConfiguration(session);
+        final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+        new GoogleStorageBucketCreateService(session).create(bucket, "US");
+        configuration.write(bucket, new Distribution(null, Distribution.WEBSITE, true), new DisabledLoginController());
+        assertTrue(configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginController()).isEnabled());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
+        session.close();
     }
 
     @Test
