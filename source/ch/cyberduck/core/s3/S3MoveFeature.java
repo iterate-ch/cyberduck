@@ -10,7 +10,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3MoveFeature implements Move {
 
@@ -52,6 +52,6 @@ public class S3MoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path file) {
-        return !file.attributes().isVolume();
+        return !containerService.isContainer(file);
     }
 }

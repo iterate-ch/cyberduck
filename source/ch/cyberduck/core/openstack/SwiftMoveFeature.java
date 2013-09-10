@@ -78,6 +78,6 @@ public class SwiftMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path file) {
-        return !file.attributes().isVolume();
+        return !containerService.isContainer(file);
     }
 }
