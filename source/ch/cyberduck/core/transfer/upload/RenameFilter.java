@@ -55,9 +55,9 @@ public class RenameFilter extends AbstractUploadFilter {
                     proposal += "." + FilenameUtils.getExtension(filename);
                 }
                 file.setPath(parentPath, proposal);
-            }
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Changed local name from %s to %s", filename, file.getName()));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Change filename from %s to %s", filename, file));
+                }
             }
         }
         return status;
