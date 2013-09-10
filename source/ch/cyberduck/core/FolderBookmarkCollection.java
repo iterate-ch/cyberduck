@@ -36,7 +36,14 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     private static final FolderBookmarkCollection FAVORITES_COLLECTION = new FolderBookmarkCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Bookmarks")
-    );
+    ) {
+        private static final long serialVersionUID = 6302021296403107371L;
+
+        @Override
+        public void collectionItemAdded(final Host bookmark) {
+            bookmark.setWorkdir(null);
+        }
+    };
 
     private static final String PREFIX = "bookmark.";
 
