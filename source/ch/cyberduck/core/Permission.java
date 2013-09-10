@@ -262,7 +262,7 @@ public class Permission implements Serializable {
      *               g       The group permission bits in the original mode of the file.
      *               o       The other permission bits in the original mode of the file.
      */
-    public void fromSymbol(final String symbol) {
+    private void fromSymbol(final String symbol) {
         try {
             int n = 0;
             for(int i = 0; i < symbol.length(); i++) {
