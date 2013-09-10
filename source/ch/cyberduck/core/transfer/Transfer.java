@@ -62,9 +62,7 @@ public abstract class Transfer implements Serializable {
      */
     private long transferred = 0;
 
-    public Type getType() {
-        return Type.upload;
-    }
+    public abstract Type getType();
 
     public enum Type {
         download {
@@ -100,10 +98,6 @@ public abstract class Transfer implements Serializable {
 
         public abstract boolean isReloadable();
 
-    }
-
-    protected Transfer() {
-        //
     }
 
     protected Session<?> session;
@@ -261,16 +255,10 @@ public abstract class Transfer implements Serializable {
         return session.getFeature(UrlProvider.class).toUrl(this.getRoot()).find(DescriptiveUrl.Type.provider).getUrl();
     }
 
-    /**
-     * @return Download target folder
-     */
     public String getLocal() {
         return this.getRoot().getLocal().toURL();
     }
 
-    /**
-     * @return All <code>root</code>s added to this transfer
-     */
     public List<Path> getRoots() {
         return roots;
     }
@@ -371,9 +359,7 @@ public abstract class Transfer implements Serializable {
      * @param selected Selected files in transfer prompt
      */
     public void setSelected(final Path item, final boolean selected) {
-        TransferStatus s = new TransferStatus();
-        s.setSelected(selected);
-        table.put(item, s);
+        table.put(item, new TransferStatus().selected(true));
     }
 
     /**
