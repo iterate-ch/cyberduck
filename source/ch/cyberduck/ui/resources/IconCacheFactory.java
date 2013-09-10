@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class IconCacheFactory extends Factory<IconCache> {
 
@@ -35,14 +35,15 @@ public abstract class IconCacheFactory extends Factory<IconCache> {
         factories.put(platform, f);
     }
 
-    private static final Object lock = new Object();
+    private static IconCache cache;
 
     public static <I> IconCache<I> get() {
-        synchronized(lock) {
+        if(null == cache) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
                 throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
             }
-            return factories.get(NATIVE_PLATFORM).create();
+            cache = factories.get(NATIVE_PLATFORM).create();
         }
+        return cache;
     }
 }
