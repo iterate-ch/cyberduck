@@ -76,7 +76,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
             context = SSLContext.getInstance("TLS");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, null);
             if(log.isDebugEnabled()) {
-                log.debug("Using SSL context:" + context);
+                log.debug(String.format("Using SSL context with protocol %s", context.getProtocol()));
             }
             factory = context.getSocketFactory();
         }
@@ -109,7 +109,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @return Configured socket
      * @throws IOException Error creating socket
      */
-    private Socket handshake(SocketGetter f) throws IOException {
+    private Socket handshake(final SocketGetter f) throws IOException {
         Socket socket = f.create();
         this.configure(socket, ENABLED_SSL_PROTOCOLS.<String>toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
         if(log.isDebugEnabled()) {
