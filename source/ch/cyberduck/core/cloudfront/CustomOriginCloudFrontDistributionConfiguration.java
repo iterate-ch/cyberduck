@@ -53,7 +53,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
         T call() throws BackgroundException;
     }
 
-    private <T> T connected(final Connected<T> run, final LoginController prompt) throws BackgroundException {
+    private <T> T connected(final Connected<T> run) throws BackgroundException {
         if(!session.isConnected()) {
             session.open(new DefaultHostKeyController());
         }
@@ -68,7 +68,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
             public Distribution call() throws BackgroundException {
                 return CustomOriginCloudFrontDistributionConfiguration.super.read(container, method, prompt);
             }
-        }, prompt);
+        });
     }
 
     @Override
@@ -79,7 +79,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
                 CustomOriginCloudFrontDistributionConfiguration.super.write(container, distribution, prompt);
                 return null;
             }
-        }, prompt);
+        });
     }
 
     @Override
