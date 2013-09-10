@@ -44,7 +44,7 @@ public class S3WriteFeature implements Write {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         final S3SingleUploadService service = new S3SingleUploadService(session);
-        return service.write(file, service.createObjectDetails(file), status.getLength() - status.getCurrent(),
+        return service.write(file, service.createObjectDetails(file), status.getLength(),
                 Collections.<String, String>emptyMap());
     }
 
