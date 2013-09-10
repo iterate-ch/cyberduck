@@ -40,18 +40,14 @@ public class FTPUnixPermissionFeature implements UnixPermission {
         this.session = session;
     }
 
-    private void sendCommand(final Path file, final String owner, final String command) throws IOException {
-        if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
-            throw new FTPException(session.getClient().getReplyCode(),
-                    session.getClient().getReplyString());
-        }
-    }
-
     @Override
     public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
         final String command = "chown";
         try {
-            this.sendCommand(file, owner, command);
+            if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, owner, file.getAbsolute()))) {
+                throw new FTPException(session.getClient().getReplyCode(),
+                        session.getClient().getReplyString());
+            }
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Cannot change owner", e, file);
@@ -62,7 +58,10 @@ public class FTPUnixPermissionFeature implements UnixPermission {
     public void setUnixGroup(final Path file, final String group) throws BackgroundException {
         final String command = "chgrp";
         try {
-            this.sendCommand(file, group, command);
+            if(!session.getClient().sendSiteCommand(String.format("%s %s %s", command, group, file.getAbsolute()))) {
+                throw new FTPException(session.getClient().getReplyCode(),
+                        session.getClient().getReplyString());
+            }
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Cannot change group", e, file);
