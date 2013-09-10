@@ -40,4 +40,10 @@ public class S3MoveFeatureTest extends AbstractTestCase {
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(renamed), new DisabledLoginController());
         session.close();
     }
+
+    @Test
+    public void testSupport() throws Exception {
+        assertFalse(new S3MoveFeature(null).isSupported(new Path("/c", Path.DIRECTORY_TYPE)));
+        assertTrue(new S3MoveFeature(null).isSupported(new Path("/c/f", Path.DIRECTORY_TYPE)));
+    }
 }

@@ -100,4 +100,10 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         test.attributes().setRegion("DFW");
         new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE));
     }
+
+    @Test
+    public void testSupport() throws Exception {
+        assertFalse(new SwiftMoveFeature(null).isSupported(new Path("/c", Path.DIRECTORY_TYPE)));
+        assertTrue(new SwiftMoveFeature(null).isSupported(new Path("/c/f", Path.DIRECTORY_TYPE)));
+    }
 }
