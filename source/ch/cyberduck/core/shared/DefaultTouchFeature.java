@@ -34,10 +34,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
  */
 public class DefaultTouchFeature implements Touch {
 
-    private Session<?> session;
+    private Upload feature;
 
-    public DefaultTouchFeature(final Session session) {
-        this.session = session;
+    public DefaultTouchFeature(final Session<?> session) {
+        this.feature = session.getFeature(Upload.class);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class DefaultTouchFeature implements Touch {
         file.setLocal(temp);
         final TransferStatus status = new TransferStatus();
         try {
-            session.getFeature(Upload.class).upload(file,
+            feature.upload(file,
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                     new AbstractStreamListener(), status);
         }

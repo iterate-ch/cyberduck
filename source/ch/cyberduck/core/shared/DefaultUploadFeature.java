@@ -43,8 +43,10 @@ public class DefaultUploadFeature implements Upload {
 
     private Session<?> session;
 
-    public DefaultUploadFeature(final Session session) {
-        this.session = session;
+    private Write writer;
+
+    public DefaultUploadFeature(final Session<?> session) {
+        this.writer = session.getFeature(Write.class);
     }
 
     @Override
@@ -55,7 +57,6 @@ public class DefaultUploadFeature implements Upload {
             OutputStream out = null;
             try {
                 in = file.getLocal().getInputStream();
-                final Write writer = session.getFeature(Write.class);
                 out = writer.write(file, status);
                 new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener);
             }
