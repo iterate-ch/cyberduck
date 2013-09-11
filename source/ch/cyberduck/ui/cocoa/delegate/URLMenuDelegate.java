@@ -101,7 +101,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         else {
             boolean label = index.intValue() % 2 == 0;
             if(label) {
-                // Dummy menu item to preview URL only
                 item.setEnabled(true);
                 item.setTarget(this.id());
                 item.setAction(Foundation.selector("menuItemClicked:"));
@@ -112,6 +111,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                 item.setTitle(url.getHelp());
             }
             else {
+                // Dummy menu item to preview URL only
                 final List<DescriptiveUrl> target = this.getURLs(index, selected);
                 item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
                         StringUtils.join(target, '\n'), URL_FONT_ATTRIBUTES));
