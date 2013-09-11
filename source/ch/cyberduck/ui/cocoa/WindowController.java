@@ -174,7 +174,9 @@ public abstract class WindowController extends BundleController implements NSWin
      */
     @Override
     public void windowWillClose(final NSNotification notification) {
-        log.debug("windowWillClose:" + notification);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Window will close %s", notification));
+        }
         for(WindowListener listener : listeners.toArray(new WindowListener[listeners.size()])) {
             listener.windowWillClose();
         }
@@ -194,7 +196,7 @@ public abstract class WindowController extends BundleController implements NSWin
             NSWindow w = Rococoa.cast(windows.objectAtIndex(new NSUInteger(count - 1)), NSWindow.class);
             NSPoint origin = w.frame().origin;
             origin = new NSPoint(origin.x.doubleValue(), origin.y.doubleValue() + w.frame().size.height.doubleValue());
-            this.window.setFrameTopLeftPoint(this.window.cascadeTopLeftFromPoint(origin));
+            window.setFrameTopLeftPoint(window.cascadeTopLeftFromPoint(origin));
         }
     }
 
@@ -213,10 +215,10 @@ public abstract class WindowController extends BundleController implements NSWin
      * @return True if this window has a sheet attached
      */
     public boolean hasSheet() {
-        if(null == this.window) {
+        if(null == window) {
             return false;
         }
-        return this.window.attachedSheet() != null;
+        return window.attachedSheet() != null;
     }
 
     /**
