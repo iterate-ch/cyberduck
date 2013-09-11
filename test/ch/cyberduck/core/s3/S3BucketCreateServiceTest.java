@@ -44,7 +44,7 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DefaultHostKeyController()));
-        final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
         new S3BucketCreateService(session).create(bucket, "US");
         assertTrue(new S3FindFeature(session).find(bucket));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
