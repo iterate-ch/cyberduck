@@ -75,14 +75,14 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         roots.add(p);
     }
 
-    protected static class PromptFilter implements Filter<Path> {
+    private static final class PromptFilter implements Filter<Path> {
         @Override
         public boolean accept(final Path file) {
             return true;
         }
     }
 
-    protected Path lookup(PathReference reference) {
+    protected Path lookup(final PathReference reference) {
         return transfer.lookup(reference);
     }
 
