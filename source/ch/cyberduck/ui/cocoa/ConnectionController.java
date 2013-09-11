@@ -24,6 +24,7 @@ import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
@@ -244,7 +245,8 @@ public class ConnectionController extends SheetController {
         this.anonymousCheckboxClicked(anonymousCheckbox);
         if(host.getCredentials().isPublicKeyAuthentication()) {
             pkCheckbox.setState(NSCell.NSOnState);
-            pkLabel.setStringValue(host.getCredentials().getIdentity().getAbbreviatedPath());
+            pkLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                    host.getCredentials().getIdentity().getAbbreviatedPath(), TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         else {
             this.updateIdentity();
@@ -452,8 +454,8 @@ public class ConnectionController extends SheetController {
             final NSEnumerator enumerator = selected.objectEnumerator();
             NSObject next;
             while(null != (next = enumerator.nextObject())) {
-                pkLabel.setStringValue(LocalFactory.createLocal(
-                        Rococoa.cast(next, NSString.class).toString()).getAbbreviatedPath());
+                pkLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                        LocalFactory.createLocal(Rococoa.cast(next, NSString.class).toString()).getAbbreviatedPath(), TRUNCATE_MIDDLE_ATTRIBUTES));
                 pkLabel.setTextColor(NSColor.textColor());
             }
             passField.setEnabled(false);

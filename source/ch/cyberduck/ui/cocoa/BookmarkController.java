@@ -775,7 +775,7 @@ public class BookmarkController extends WindowController {
         pkCheckbox.setEnabled(host.getProtocol().getType() == Protocol.Type.ssh);
         if(host.getCredentials().isPublicKeyAuthentication()) {
             pkCheckbox.setState(NSCell.NSOnState);
-            this.updateField(pkLabel, host.getCredentials().getIdentity().getAbbreviatedPath());
+            this.updateField(pkLabel, host.getCredentials().getIdentity().getAbbreviatedPath(), TRUNCATE_MIDDLE_ATTRIBUTES);
             pkLabel.setTextColor(NSColor.textColor());
         }
         else {
