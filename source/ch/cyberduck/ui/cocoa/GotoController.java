@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -109,7 +110,16 @@ public class GotoController extends AlertController {
     @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.gotoFolder(((BrowserController) parent).workdir(), folderCombobox.stringValue());
+            final String filename = folderCombobox.stringValue();
+            final BrowserController controller = (BrowserController) parent;
+            final Path workdir = controller.workdir();
+            final Path directory = controller.getSession().getFeature(Home.class).find(workdir, filename);
+            if(workdir.getParent().equals(directory)) {
+                controller.setWorkdir(directory, workdir);
+            }
+            else {
+                controller.setWorkdir(directory);
+            }
         }
     }
 
@@ -120,22 +130,5 @@ public class GotoController extends AlertController {
 
     protected Session getSession() {
         return ((BrowserController) parent).getSession();
-    }
-
-    protected void gotoFolder(final Path workdir, final String filename) {
-        final BrowserController c = (BrowserController) parent;
-        final Path dir;
-        if(!filename.startsWith(String.valueOf(Path.DELIMITER))) {
-            dir = new Path(workdir, filename, Path.DIRECTORY_TYPE);
-        }
-        else {
-            dir = new Path(filename, Path.DIRECTORY_TYPE);
-        }
-        if(workdir.getParent().equals(dir)) {
-            c.setWorkdir(dir, workdir);
-        }
-        else {
-            c.setWorkdir(dir);
-        }
     }
 }
