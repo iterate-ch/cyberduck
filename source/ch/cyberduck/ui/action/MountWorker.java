@@ -63,6 +63,7 @@ public class MountWorker extends Worker<Path> {
             list = new SessionListWorker(session, cache, home, listener).run();
         }
         catch(NotfoundException e) {
+            log.warn(String.format("Mount failed with %s", e.getMessage()));
             // The default path does not exist or is not readable due to possible permission issues. Fallback
             // to default working directory
             home = session.workdir();
