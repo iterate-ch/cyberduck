@@ -20,7 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Size;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -52,7 +52,7 @@ public class S3WriteFeature implements Write {
      * @return No Content-Range support
      */
     @Override
-    public Append append(final Path file, final Size feature) throws BackgroundException {
+    public Append append(final Path file, final Attributes feature) throws BackgroundException {
         if(file.getLocal().attributes().getSize() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
             final S3MultipartUploadService multipart = new S3MultipartUploadService(session);
             final MultipartUpload upload = multipart.find(file);

@@ -23,7 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Size;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -112,7 +112,7 @@ public class SwiftWriteFeature implements Write {
      * @return No Content-Range support
      */
     @Override
-    public Append append(final Path file, final Size feature) throws BackgroundException {
+    public Append append(final Path file, final Attributes feature) throws BackgroundException {
         return new Append();
     }
 }
