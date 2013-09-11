@@ -22,33 +22,34 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Size;
+import ch.cyberduck.core.features.Attributes;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class DefaultFileSizeFeature implements Size {
+public class DefaultAttributesFeature implements Attributes {
 
     private Session session;
 
     private Cache cache = new Cache(100);
 
-    public DefaultFileSizeFeature(final Session session) {
+    public DefaultAttributesFeature(final Session session) {
         this.session = session;
     }
 
     @Override
-    public Long getSize(final Path file) throws BackgroundException {
+    public PathAttributes getAttributes(final Path file) throws BackgroundException {
         if(!cache.containsKey(file.getReference())) {
             cache.put(file.getReference(), session.list(file.getParent(), new DisabledListProgressListener()));
         }
         final AttributedList<Path> list = cache.get(file.getReference());
         if(list.contains(file.getReference())) {
-            return list.get(file.getReference()).attributes().getSize();
+            return list.get(file.getReference()).attributes();
         }
         // File not found
-        return 0L;
+        return new PathAttributes(file.attributes().getType());
     }
 }

@@ -40,7 +40,7 @@ public interface Write {
      * @param feature Size feature
      * @return True if can append to existing file
      */
-    Append append(Path file, final Size feature) throws BackgroundException;
+    Append append(Path file, final Attributes feature) throws BackgroundException;
 
     public static final class Append {
         public boolean append;

@@ -19,11 +19,12 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public interface Size {
-    Long getSize(Path file) throws BackgroundException;
+public interface Attributes {
+    PathAttributes getAttributes(Path file) throws BackgroundException;
 }

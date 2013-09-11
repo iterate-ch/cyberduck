@@ -17,9 +17,9 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class DefaultFileSizeFeatureTest extends AbstractTestCase {
+public class DefaultAttributesFeatureTest extends AbstractTestCase {
 
     @Test
     public void testGetSize() throws Exception {
@@ -29,6 +29,6 @@ public class DefaultFileSizeFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertEquals(0L, new DefaultFileSizeFeature(session).getSize(new Path(UUID.randomUUID().toString(), Path.FILE_TYPE)), 0L);
+        assertEquals(0L, new DefaultAttributesFeature(session).getAttributes(new Path(UUID.randomUUID().toString(), Path.FILE_TYPE)).getSize(), 0L);
     }
 }
