@@ -40,7 +40,6 @@ import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
-import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
@@ -72,6 +71,10 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
     private static class Factory extends FilesystemFactory {
         @Override
         protected FuseFilesystem create() {
+            if(null == GMUserFileSystem.CLASS) {
+                log.warn("Framework not available");
+                return null;
+            }
             return new FuseFilesystem();
         }
     }
@@ -89,25 +92,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
         //
     }
 
-    private boolean isAvailable() {
-        if(null == GMUserFileSystem.CLASS) {
-            log.warn("Framework not available");
-            return false;
-        }
-        return true;
-    }
-
     @Override
-    public void mount(Session s) {
-        if(!this.isAvailable()) {
-            this.invoke(new DefaultMainAction() {
-                @Override
-                public void run() {
-
-                }
-            });
-            return;
-        }
+    public void mount(final Session s) {
         session = s;
         filesystem = GMUserFileSystem.create(
                 (fileystemCallback = new FSCallback()).id(), true);
@@ -121,15 +107,14 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 GMUserFileSystem.kGMUserFileSystemDidUnmount, null);
 
         final NSMutableArray options = NSMutableArray.array();
-        options.addObject("volicon="
-                + NSBundle.mainBundle().pathForResource_ofType(session.getHost().getProtocol().disk(), "icns"));
+        options.addObject(String.format("volicon=%s", NSBundle.mainBundle().pathForResource_ofType(session.getHost().getProtocol().disk(), "icns")));
         // You can use the volname option to specify a name for the MacFUSE volume being mounted. This
         // is the name that would show up on the Desktop. In the absence of this option, MacFUSE will
         // automatically generate a name that would incorporate the MacFUSE device index and the
         // user-space file system being used. For example, an SSHFS mount might have an automatically
         // assigned name "MacFUSE Volume 0 (sshfs)".
         final String volume = session.getHost().getHostname();
-        options.addObject("volname=" + volume);
+        options.addObject(String.format("volname=%s", volume));
         // By default, if MacFUSE detects a change in a file's size during getattr(), it will purge
         // that file's buffer cache. When auto_cache is enabled, MacFUSE will additionally
         // detect modification time changes during getattr() and open() and will automatically
@@ -145,7 +130,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
         options.addObject("noapplexattr");
         // This option makes MacFUSE deny all types of access to Apple Double (._) files and .DS_Store files. Any existing files will become apparently non-existent. New files that match the criteria will be disallowed from being created.
         options.addObject("noappledouble");
-        mountpoint = LocalFactory.createLocal("/Volumes/" + volume);
+        mountpoint = LocalFactory.createLocal(String.format("/Volumes/%s", volume));
         if(mountpoint.exists()) {
             // Make sure we do not mount to a already existing path
             final String parent = mountpoint.getParent().getAbsolute();

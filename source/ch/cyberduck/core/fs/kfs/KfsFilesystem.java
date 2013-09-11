@@ -92,7 +92,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
     private KfsLibrary.kfsfilesystem delegate;
 
     @Override
-    public void mount(Session s) {
+    public void mount(final Session s) {
         session = s;
         filesystem = KfsLibrary.INSTANCE;
         delegate = new KfsLibrary.kfsfilesystem();
@@ -495,7 +495,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             int no = 0;
             while(target.exists()) {
                 no++;
-                String proposal = volume + "-" + no;
+                String proposal = String.format("%s-%d", volume, no);
                 target = LocalFactory.createLocal(parent, proposal);
             }
         }

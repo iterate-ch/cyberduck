@@ -20,7 +20,7 @@ package ch.cyberduck.core.fs;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.Session;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +42,20 @@ public abstract class FilesystemFactory extends Factory<Filesystem> {
 
     public static Filesystem get() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+            return new DisabledFilesystem();
         }
         return factories.get(NATIVE_PLATFORM).create();
+    }
+
+    private static final class DisabledFilesystem implements Filesystem {
+        @Override
+        public void mount(final Session session) {
+            //
+        }
+
+        @Override
+        public void unmount() {
+            //
+        }
     }
 }
