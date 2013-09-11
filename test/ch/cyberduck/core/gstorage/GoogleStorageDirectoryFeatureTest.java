@@ -61,7 +61,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
                 return null;
             }
         }, new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
         new GoogleStorageDirectoryFeature(session).mkdir(test, null);
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
