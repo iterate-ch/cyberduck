@@ -51,7 +51,7 @@ public class SFTPCommandFeature implements Command {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Send command %s", command));
         }
-        Session sess = null;
+        final Session sess;
         try {
             sess = session.getClient().openSession();
         }
