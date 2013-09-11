@@ -3413,6 +3413,7 @@ public class BrowserController extends WindowController
                         super.init();
                         window.setTitle(host.getNickname());
                         window.setRepresentedFilename(StringUtils.EMPTY);
+                        window.setFrameAutosaveName(host.getNickname());
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
                     }
