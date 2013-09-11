@@ -18,9 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.cocoa.application.NSCell;
@@ -105,64 +112,48 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         return new PromptFilter();
     }
 
-    ;
-
-    /**
-     * Container for all paths currently being listed in the background
-     */
-    private final List<Path> isLoadingListingInBackground = new Collection<Path>();
-
     /**
      * If no cached listing is available the loading is delayed until the listing is
      * fetched from a background thread
      *
-     * @param path Folder
+     * @param directory Folder
      * @return The list of child items for the parent folder. The listing is filtered
      *         using the standard regex exclusion and the additional passed filter
      */
-    protected AttributedList<Path> children(final Path path) {
-        synchronized(isLoadingListingInBackground) {
-            if(transfer.cache().containsKey(path.getReference())) {
-                return transfer.cache().get(path.getReference()).filter(new NullComparator<Path>(), filter());
-            }
-            // Check first if it hasn't been already requested so we don't spawn
-            // a multitude of unecessary threads
-            if(!isLoadingListingInBackground.contains(path)) {
-                isLoadingListingInBackground.add(path);
-                // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                // Delay until path is cached in the background
-                controller.background(new ControllerBackgroundAction(controller, new PanelAlertCallback(controller), controller, controller) {
-                    @Override
-                    public Boolean run() throws BackgroundException {
-                        transfer.cache().put(path.getReference(), transfer.children(path));
-                        return true;
-                    }
+    protected AttributedList<Path> children(final Path directory) {
+        final Cache cache = transfer.cache();
+        if(!cache.isCached(directory.getReference())) {
+            controller.background(new ControllerBackgroundAction(controller, new PanelAlertCallback(controller), controller, controller) {
+                @Override
+                public Boolean run() throws BackgroundException {
+                    transfer.cache().put(directory.getReference(), transfer.children(directory));
+                    return true;
+                }
 
-                    @Override
-                    public String getActivity() {
-                        return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
-                                path.getName());
-                    }
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
+                            directory.getName());
+                }
 
-                    @Override
-                    public void cleanup() {
-                        super.cleanup();
-                        synchronized(isLoadingListingInBackground) {
-                            isLoadingListingInBackground.remove(path);
-                            if(isLoadingListingInBackground.isEmpty()) {
-                                controller.reloadData();
-                            }
-                        }
-                    }
+                @Override
+                public void cleanup() {
+                    super.cleanup();
+                    controller.reloadData();
+                }
 
-                    @Override
-                    public List<Session<?>> getSessions() {
-                        return transfer.getSessions();
-                    }
-                });
-            }
-            return transfer.cache().get(path.getReference()).filter(new FilenameComparator(true), filter());
+                @Override
+                public List<Session<?>> getSessions() {
+                    return transfer.getSessions();
+                }
+            });
         }
+        return this.get(directory);
+    }
+
+    protected AttributedList<Path> get(final Path directory) {
+        final Cache cache = transfer.cache();
+        return cache.get(directory.getReference()).filter(new FilenameComparator(true), filter());
     }
 
     /**
@@ -214,7 +205,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(null == item) {
             return (NSObject) roots.get(index.intValue()).getReference().unique();
         }
-        final AttributedList<Path> children = this.children(this.lookup(new NSObjectPathReference(item)));
+        final AttributedList<Path> children = this.get(this.lookup(new NSObjectPathReference(item)));
         if(children.isEmpty()) {
             return null;
         }
