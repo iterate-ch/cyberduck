@@ -21,6 +21,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -50,6 +51,9 @@ public class SwiftExceptionMappingService extends AbstractIOExceptionMappingServ
         }
         if(e.getHttpStatusCode() == HttpStatus.SC_NOT_FOUND) {
             return new NotfoundException(buffer.toString(), e);
+        }
+        if(e.getHttpStatusCode() == HttpStatus.SC_BAD_REQUEST) {
+            return new InteroperabilityException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
