@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 
 /**
@@ -49,7 +50,6 @@ public class DefaultAttributesFeature implements Attributes {
         if(list.contains(file.getReference())) {
             return list.get(file.getReference()).attributes();
         }
-        // File not found
-        return new PathAttributes(file.attributes().getType());
+        throw new NotfoundException();
     }
 }

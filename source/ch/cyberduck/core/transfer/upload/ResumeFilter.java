@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -33,21 +34,23 @@ public class ResumeFilter extends AbstractUploadFilter {
 
     private Session<?> session;
 
-    private Attributes size;
+    private Attributes attributes;
 
     public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session);
         this.session = session;
-        this.size = new DefaultAttributesFeature(session);
+        this.attributes = new DefaultAttributesFeature(session);
     }
 
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
-                if(size.getAttributes(file).getSize() >= file.getLocal().attributes().getSize()) {
-                    // No need to resume completed transfers
-                    return false;
+                if(session.getFeature(Find.class).find(file)) {
+                    if(attributes.getAttributes(file).getSize() >= file.getLocal().attributes().getSize()) {
+                        // No need to resume completed transfers
+                        return false;
+                    }
                 }
             }
         }
@@ -60,7 +63,7 @@ public class ResumeFilter extends AbstractUploadFilter {
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
                 final Write write = session.getFeature(Write.class);
-                final Write.Append append = write.append(file, size);
+                final Write.Append append = write.append(file, attributes);
                 if(append.append) {
                     // Append to existing file
                     status.setAppend(true);
