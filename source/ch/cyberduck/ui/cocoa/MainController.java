@@ -233,14 +233,14 @@ public class MainController extends BundleController implements NSApplication.De
     public void setColumnMenu(NSMenu columnMenu) {
         this.columnMenu = columnMenu;
         Map<String, String> columns = new HashMap<String, String>();
-        columns.put("browser.columnKind", LocaleFactory.localizedString("Kind"));
-        columns.put("browser.columnExtension", LocaleFactory.localizedString("Extension"));
-        columns.put("browser.columnSize", LocaleFactory.localizedString("Size"));
-        columns.put("browser.columnModification", LocaleFactory.localizedString("Modified"));
-        columns.put("browser.columnOwner", LocaleFactory.localizedString("Owner"));
-        columns.put("browser.columnGroup", LocaleFactory.localizedString("Group"));
-        columns.put("browser.columnPermissions", LocaleFactory.localizedString("Permissions"));
-        columns.put("browser.columnRegion", LocaleFactory.localizedString("Region"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.KIND.name()), LocaleFactory.localizedString("Kind"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.EXTENSION.name()), LocaleFactory.localizedString("Extension"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.SIZE.name()), LocaleFactory.localizedString("Size"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.MODIFIED.name()), LocaleFactory.localizedString("Modified"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.OWNER.name()), LocaleFactory.localizedString("Owner"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.GROUP.name()), LocaleFactory.localizedString("Group"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.PERMISSIONS.name()), LocaleFactory.localizedString("Permissions"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.REGION.name()), LocaleFactory.localizedString("Region"));
         for(Map.Entry<String, String> entry : columns.entrySet()) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
                     Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);

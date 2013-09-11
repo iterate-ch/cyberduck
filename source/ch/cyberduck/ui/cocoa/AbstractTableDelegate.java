@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Comparator;
@@ -109,6 +110,20 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     }
 
     public abstract void tableColumnClicked(NSTableView view, NSTableColumn tableColumn);
+
+    public void tableViewColumnDidResize(final NSNotification notification) {
+        final NSTableColumn column = Rococoa.cast(notification.userInfo().objectForKey("NSTableColumn"), NSTableColumn.class);
+        this.columnDidResize(column.identifier(), column.width().floatValue());
+    }
+
+    public void outlineViewColumnDidResize(final NSNotification notification) {
+        final NSTableColumn column = Rococoa.cast(notification.userInfo().objectForKey("NSTableColumn"), NSTableColumn.class);
+        this.columnDidResize(column.identifier(), column.width().floatValue());
+    }
+
+    public void columnDidResize(final String columnIdentifier, final float width) {
+        //
+    }
 
     /**
      * @see NSOutlineView.Delegate
