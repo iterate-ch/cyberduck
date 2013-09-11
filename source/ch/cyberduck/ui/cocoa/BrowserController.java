@@ -985,6 +985,15 @@ public class BrowserController extends WindowController
             return this.tooltip(lookup(new NSObjectPathReference(item)));
         }
 
+        public String outlineView_typeSelectStringForTableColumn_item(final NSOutlineView view,
+                                                                      final NSTableColumn tableColumn,
+                                                                      final NSObject item) {
+            if(tableColumn.identifier().equals(BrowserTableDataSource.Columns.FILENAME.name())) {
+                return browserOutlineModel.outlineView_objectValueForTableColumn_byItem(view, tableColumn, item).toString();
+            }
+            return null;
+        }
+
         @Override
         protected void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
             browserOutlineView.setIndicatorImage_inTableColumn(image,
@@ -1018,6 +1027,15 @@ public class BrowserController extends WindowController
         protected void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
             browserListView.setIndicatorImage_inTableColumn(image,
                     browserListView.tableColumnWithIdentifier(columnIdentifier));
+        }
+
+        public String tableView_typeSelectStringForTableColumn_row(final NSTableView view,
+                                                                   final NSTableColumn tableColumn,
+                                                                   final NSInteger row) {
+            if(tableColumn.identifier().equals(BrowserTableDataSource.Columns.FILENAME.name())) {
+                return browserListModel.tableView_objectValueForTableColumn_row(view, tableColumn, row).toString();
+            }
+            return null;
         }
 
         @Override
