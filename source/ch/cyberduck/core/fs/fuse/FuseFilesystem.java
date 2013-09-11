@@ -65,16 +65,17 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
     private static Logger log = Logger.getLogger(FuseFilesystem.class);
 
     public static void register() {
-        FilesystemFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+        if(null == GMUserFileSystem.CLASS) {
+            log.warn("Framework not available");
+        }
+        else {
+            FilesystemFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+        }
     }
 
     private static class Factory extends FilesystemFactory {
         @Override
         protected FuseFilesystem create() {
-            if(null == GMUserFileSystem.CLASS) {
-                log.warn("Framework not available");
-                return null;
-            }
             return new FuseFilesystem();
         }
     }
