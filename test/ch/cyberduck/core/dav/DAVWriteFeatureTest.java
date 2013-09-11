@@ -10,7 +10,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.shared.DefaultFileSizeFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -49,7 +49,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);
-        assertEquals(content.length, new DAVWriteFeature(session).append(test, new DefaultFileSizeFeature(session)).size, 0L);
+        assertEquals(content.length, new DAVWriteFeature(session).append(test, new DefaultAttributesFeature(session)).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
@@ -91,20 +91,10 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertEquals(false, new DAVWriteFeature(session).append(
-                new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE), new DefaultFileSizeFeature(session)).append);
+                new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE), new DefaultAttributesFeature(session)).append);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(test);
-        assertEquals(true, new DAVWriteFeature(session).append(test, new DefaultFileSizeFeature(session)).append);
+        assertEquals(true, new DAVWriteFeature(session).append(test, new DefaultAttributesFeature(session)).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
-    }
-
-    @Test
-    public void testWriteAppend() throws Exception {
-
-    }
-
-    @Test
-    public void testWriteOverride() throws Exception {
-
     }
 }
