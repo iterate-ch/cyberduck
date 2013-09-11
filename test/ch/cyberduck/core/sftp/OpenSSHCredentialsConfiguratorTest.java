@@ -20,12 +20,8 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultCredentials;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.LocalFactory;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.spearce.jgit.transport.OpenSshConfig;
 
@@ -38,19 +34,12 @@ import static org.junit.Assert.*;
  */
 public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void configure() {
-        FinderLocal.register();
-    }
-
     @Test
     public void testNoConfigure() throws Exception {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
                         new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
-        Credentials credentials = new DefaultCredentials("user", " ");
-        credentials.setIdentity(new NullLocal(null, "t"));
-        c.configure(credentials, "t");
+        final Credentials credentials = c.configure("t");
         assertEquals("t", credentials.getIdentity().getName());
     }
 
@@ -59,8 +48,7 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
                         new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
-        Credentials credentials = new DefaultCredentials("user", " ");
-        c.configure(credentials, "alias");
+        final Credentials credentials = c.configure("alias");
         assertNotNull(credentials.getIdentity());
         assertEquals(LocalFactory.createLocal("~/.ssh/version.cyberduck.ch-rsa"), credentials.getIdentity());
         assertEquals("root", credentials.getUsername());
@@ -71,8 +59,7 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
                         new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
-        Credentials credentials = new DefaultCredentials("user", " ");
-        c.configure(credentials, "t");
+        final Credentials credentials = c.configure("t");
         // ssh.authentication.publickey.default.enable
         assertNull(credentials.getIdentity());
     }

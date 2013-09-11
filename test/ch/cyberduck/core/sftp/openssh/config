@@ -2,3 +2,6 @@ Host alias
     HostName cyberduck.ch
     User root
     IdentityFile ~/.ssh/version.cyberduck.ch-rsa
+
+Host portalias
+    Port 555
