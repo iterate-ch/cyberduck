@@ -19,7 +19,7 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface HostnameConfigurator {
     /**
@@ -28,5 +28,7 @@ public interface HostnameConfigurator {
      * @param alias Alias
      * @return Actual hostname
      */
-    String lookup(String alias);
+    String getHostname(String alias);
+
+    int getPort(String alias);
 }

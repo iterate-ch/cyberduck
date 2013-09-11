@@ -61,7 +61,8 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public Connection connect(final HostKeyController key) throws BackgroundException {
         try {
-            final Connection connection = new Connection(new OpenSSHHostnameConfigurator().lookup(host.getHostname()), host.getPort(),
+            final Connection connection = new Connection(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()),
+                    host.getPort(),
                     new PreferencesUseragentProvider().get());
             connection.setTCPNoDelay(true);
             connection.addConnectionMonitor(new ConnectionMonitor() {

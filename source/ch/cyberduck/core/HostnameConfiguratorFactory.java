@@ -42,8 +42,13 @@ public final class HostnameConfiguratorFactory {
 
     private static final class NullHostnameConfigurator implements HostnameConfigurator {
         @Override
-        public String lookup(String alias) {
+        public String getHostname(String alias) {
             return alias;
+        }
+
+        @Override
+        public int getPort(final String alias) {
+            return -1;
         }
     }
 }

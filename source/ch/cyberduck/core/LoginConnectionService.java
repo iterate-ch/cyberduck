@@ -105,7 +105,7 @@ public class LoginConnectionService implements ConnectionService {
 
         // Try to resolve the hostname first
         try {
-            resolver.resolve(HostnameConfiguratorFactory.get(bookmark.getProtocol()).lookup(bookmark.getHostname()));
+            resolver.resolve(HostnameConfiguratorFactory.get(bookmark.getProtocol()).getHostname(bookmark.getHostname()));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

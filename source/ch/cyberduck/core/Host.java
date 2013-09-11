@@ -390,7 +390,9 @@ public final class Host implements Serializable {
     }
 
     public void setCredentials(Credentials credentials) {
-        this.credentials = credentials;
+        if(null != credentials) {
+            this.credentials = credentials;
+        }
     }
 
     public Credentials getCredentials() {
@@ -405,12 +407,12 @@ public final class Host implements Serializable {
     }
 
     /**
-     * @param protocol The protocol to use or null to use the default protocol for this port number
+     * @param p The protocol to use or null to use the default protocol for this port number
      */
-    public void setProtocol(final Protocol protocol) {
-        this.protocol = protocol != null ? protocol :
-                ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
-        CredentialsConfiguratorFactory.get(this.protocol).configure(this.credentials, this.hostname);
+    public void setProtocol(final Protocol p) {
+        this.protocol = p != null ? p : ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
+        this.setPort(HostnameConfiguratorFactory.get(protocol).getPort(hostname));
+        this.setCredentials(CredentialsConfiguratorFactory.get(protocol).configure(hostname));
     }
 
     public Protocol getProtocol() {
@@ -444,8 +446,8 @@ public final class Host implements Serializable {
      * @return The default given name of this bookmark
      */
     private String getDefaultNickname() {
-        if(StringUtils.isNotEmpty(this.getHostname())) {
-            return this.getHostname() + " \u2013 " + this.getProtocol().getName();
+        if(StringUtils.isNotEmpty(hostname)) {
+            return hostname + " \u2013 " + protocol.getName();
         }
         return StringUtils.EMPTY;
     }
@@ -477,13 +479,14 @@ public final class Host implements Serializable {
      * @param hostname Server
      */
     public void setHostname(final String hostname) {
-        if(this.protocol.isHostnameConfigurable()) {
+        if(protocol.isHostnameConfigurable()) {
             this.hostname = hostname.trim();
         }
         else {
             this.hostname = protocol.getDefaultHostname();
         }
-        CredentialsConfiguratorFactory.get(this.protocol).configure(this.credentials, this.hostname);
+        this.setPort(HostnameConfiguratorFactory.get(protocol).getPort(hostname));
+        this.setCredentials(CredentialsConfiguratorFactory.get(protocol).configure(hostname));
     }
 
     /**
@@ -492,7 +495,7 @@ public final class Host implements Serializable {
     public void setPort(final int port) {
         this.port = port;
         if(-1 == port) {
-            this.port = this.protocol.getDefaultPort();
+            this.port = protocol.getDefaultPort();
         }
     }
 
@@ -557,7 +560,7 @@ public final class Host implements Serializable {
      */
     public void setDownloadFolder(final Local folder) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set download folder for bookmark %s to %s", this.getHostname(), folder));
+            log.debug(String.format("Set download folder for bookmark %s to %s", hostname, folder));
         }
         downloadFolder = folder;
     }
@@ -637,7 +640,7 @@ public final class Host implements Serializable {
      * @return HTTP accessible URL with the same hostname as the server
      */
     public String getDefaultWebURL() {
-        return "http://" + this.getHostname();
+        return String.format("http://%s", hostname);
     }
 
     public void setWebURL(final String url) {

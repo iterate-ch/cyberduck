@@ -42,8 +42,8 @@ public final class CredentialsConfiguratorFactory {
 
     private static final class NullCredentialsConfigurator implements CredentialsConfigurator {
         @Override
-        public void configure(Credentials credentials, String hostname) {
-            //
+        public Credentials configure(final String hostname) {
+            return null;
         }
     }
 }

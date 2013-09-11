@@ -48,7 +48,7 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
      * @return Resolves any alias given in ~/.ssh/config
      */
     @Override
-    public String lookup(String alias) {
+    public String getHostname(final String alias) {
         final String hostname = configuration.lookup(alias).getHostName();
         if(null == hostname) {
             return alias;
@@ -57,5 +57,10 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
             log.info(String.format("Using hostname alias %s from ~/.ssh/config", alias));
         }
         return hostname;
+    }
+
+    @Override
+    public int getPort(final String alias) {
+        return configuration.lookup(alias).getPort();
     }
 }

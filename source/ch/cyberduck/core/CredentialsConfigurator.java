@@ -19,15 +19,14 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface CredentialsConfigurator {
 
     /**
      * Configure default credentials from system settings.
      *
-     * @param credentials Credentials
-     * @param hostname    Hostname
+     * @param hostname Hostname
      */
-    void configure(Credentials credentials, String hostname);
+    Credentials configure(String hostname);
 }
