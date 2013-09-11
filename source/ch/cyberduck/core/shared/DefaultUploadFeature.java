@@ -41,8 +41,6 @@ import java.io.OutputStream;
  */
 public class DefaultUploadFeature implements Upload {
 
-    private Session<?> session;
-
     private Write writer;
 
     public DefaultUploadFeature(final Session<?> session) {
