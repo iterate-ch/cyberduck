@@ -18,18 +18,19 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.HomeFinderService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Home;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * @version $Id$
  */
-public class DefaultHomeFinderService implements HomeFinderService {
+public class DefaultHomeFinderService implements Home {
 
     private Session session;
 
@@ -37,9 +38,6 @@ public class DefaultHomeFinderService implements HomeFinderService {
         this.session = session;
     }
 
-    /**
-     * @return Home directory
-     */
     @Override
     public Path find() throws BackgroundException {
         final Host host = session.getHost();
@@ -49,7 +47,7 @@ public class DefaultHomeFinderService implements HomeFinderService {
         else {
             final String path = host.getDefaultPath();
             if(StringUtils.isNotBlank(path)) {
-                return this.find(path);
+                return this.find(session.workdir(), path);
             }
             else {
                 // No default path configured
@@ -58,21 +56,23 @@ public class DefaultHomeFinderService implements HomeFinderService {
         }
     }
 
-    public Path find(final String path) throws BackgroundException {
+    @Override
+    public Path find(final Path workdir, final String path) {
         if(path.startsWith(String.valueOf(Path.DELIMITER))) {
             // Mount absolute path
-            return new Path(path,
-                    path.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
+            final String normalized = PathNormalizer.normalize(path);
+            return new Path(normalized,
+                    normalized.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
         }
         else {
-            final Path workdir = session.workdir();
             if(path.startsWith(Path.HOME)) {
                 // Relative path to the home directory
-                return new Path(workdir, path.substring(1), Path.DIRECTORY_TYPE);
+                return new Path(workdir, PathNormalizer.normalize(StringUtils.removeStart(
+                        StringUtils.removeStart(path, Path.HOME), String.valueOf(Path.DELIMITER)), false), Path.DIRECTORY_TYPE);
             }
             else {
                 // Relative path
-                return new Path(workdir, path, Path.DIRECTORY_TYPE);
+                return new Path(workdir, PathNormalizer.normalize(path), Path.DIRECTORY_TYPE);
             }
         }
     }

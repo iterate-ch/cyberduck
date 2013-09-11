@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.features;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
@@ -18,11 +18,14 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public interface HomeFinderService {
+public interface Home {
     Path find() throws BackgroundException;
+
+    Path find(Path workdir, String path);
 }

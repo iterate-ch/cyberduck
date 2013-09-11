@@ -22,8 +22,10 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -329,6 +331,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         }
         if(type == Find.class) {
             return (T) new DefaultFindFeature(this);
+        }
+        if(type == Home.class) {
+            return (T) new DefaultHomeFinderService(this);
         }
         return null;
     }

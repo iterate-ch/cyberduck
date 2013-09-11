@@ -17,6 +17,7 @@ package ch.cyberduck.ui.action;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
@@ -24,7 +25,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.features.Home;
+
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
@@ -32,6 +35,7 @@ import java.text.MessageFormat;
  * @version $Id$
  */
 public class MountWorker extends Worker<Path> {
+    private static final Logger log = Logger.getLogger(MountWorker.class);
 
     private Session<?> session;
 
@@ -51,19 +55,21 @@ public class MountWorker extends Worker<Path> {
      */
     @Override
     public Path run() throws BackgroundException {
+        Path home;
+        AttributedList<Path> list;
         try {
-            final Path home = new DefaultHomeFinderService(session).find();
+            home = session.getFeature(Home.class).find();
             // Retrieve directory listing of default path
-            cache.put(home.getReference(), new SessionListWorker(session, cache, home, listener).run());
-            return home;
+            list = new SessionListWorker(session, cache, home, listener).run();
         }
         catch(NotfoundException e) {
             // The default path does not exist or is not readable due to possible permission issues. Fallback
             // to default working directory
-            final Path workdir = session.workdir();
-            cache.put(workdir.getReference(), new SessionListWorker(session, cache, workdir, listener).run());
-            return workdir;
+            home = session.workdir();
+            list = new SessionListWorker(session, cache, home, listener).run();
         }
+        cache.put(home.getReference(), list);
+        return home;
     }
 
     @Override

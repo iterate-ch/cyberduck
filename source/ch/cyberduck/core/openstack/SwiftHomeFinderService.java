@@ -1,4 +1,4 @@
-package ch.cyberduck.core.s3;
+package ch.cyberduck.core.openstack;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -26,13 +26,11 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 /**
  * @version $Id$
  */
-public class S3HomeFinderService extends DefaultHomeFinderService {
-
-    private S3Session session;
+public class SwiftHomeFinderService extends DefaultHomeFinderService {
 
     private PathContainerService containerService = new PathContainerService();
 
-    public S3HomeFinderService(final S3Session session) {
+    public SwiftHomeFinderService(final SwiftSession session) {
         super(session);
     }
 

@@ -157,6 +157,9 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == Find.class) {
             return (T) new SwiftFindFeature(this);
         }
+        if(type == Home.class) {
+            return (T) new SwiftHomeFinderService(this);
+        }
         return super.getFeature(type);
     }
 

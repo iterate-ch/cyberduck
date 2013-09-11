@@ -430,6 +430,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(type == Find.class) {
             return (T) new S3FindFeature(this);
         }
+        if(type == Home.class) {
+            return (T) new S3HomeFinderService(this);
+        }
         return super.getFeature(type);
     }
 }
