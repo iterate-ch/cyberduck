@@ -41,6 +41,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
+import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.model.cloudfront.CacheBehavior;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.model.cloudfront.DistributionConfig;
@@ -83,12 +84,14 @@ public class CloudFrontDistributionConfiguration
     private Map<Path, Distribution> cache
             = new HashMap<Path, Distribution>();
 
+    private UseragentProvider ua = new PreferencesUseragentProvider();
+
     public CloudFrontDistributionConfiguration(final S3Session session) {
         this.session = session;
         this.client = new CloudFrontService(
                 new AWSCredentials(session.getHost().getCredentials().getUsername(),
                         session.getHost().getCredentials().getPassword())
-        ) {
+                , ua.get(), null, this.configure()) {
             @Override
             public ProviderCredentials getAWSCredentials() {
                 return new AWSCredentials(session.getHost().getCredentials().getUsername(),
@@ -100,6 +103,13 @@ public class CloudFrontDistributionConfiguration
                 return session.connect();
             }
         };
+    }
+
+    protected Jets3tProperties configure() {
+        final Jets3tProperties configuration = new Jets3tProperties();
+        configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
+        configuration.setProperty("httpclient.retry-max", String.valueOf(0));
+        return configuration;
     }
 
     @Override
