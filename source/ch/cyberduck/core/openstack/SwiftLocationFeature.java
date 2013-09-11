@@ -31,7 +31,7 @@ import ch.iterate.openstack.swift.model.Region;
 /**
  * @version $Id$
  */
-class SwiftLocationFeature implements Location {
+public class SwiftLocationFeature implements Location {
 
     private SwiftSession session;
 
