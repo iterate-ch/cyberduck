@@ -46,17 +46,19 @@ public class S3LocationFeature implements Location {
     }
 
     @Override
-    public String getLocation(final Path container) throws BackgroundException {
+    public String getLocation(final Path file) throws BackgroundException {
         if(session.getHost().getCredentials().isAnonymousLogin()) {
             log.info("Anonymous cannot access bucket location");
             return null;
         }
         try {
-            final String location = session.getClient().getBucketLocation(
-                    new PathContainerService().getContainer(container).getName());
+            final Path container = new PathContainerService().getContainer(file);
+            String location = session.getClient().getBucketLocation(
+                    container.getName());
             if(StringUtils.isBlank(location)) {
-                return "US"; //Default location US is null
+                location = "US"; //Default location US is null
             }
+            container.attributes().setRegion(location);
             return location;
         }
         catch(ServiceException e) {
