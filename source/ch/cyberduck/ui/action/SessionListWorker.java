@@ -54,23 +54,30 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
 
     @Override
     public AttributedList<Path> run() throws BackgroundException {
-        if(cache.isCached(directory.getReference())) {
-            return cache.get(directory.getReference());
-        }
-        final AttributedList<Path> children = session.list(directory, new ListProgressListener() {
-            @Override
-            public void chunk(final AttributedList<Path> list) throws ConnectionCanceledException {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Retrieved chunk of %d items in %s", list.size(), directory));
-                }
-                if(isCanceled()) {
-                    throw new ConnectionCanceledException();
-                }
-                listener.chunk(list);
+        try {
+            if(cache.isCached(directory.getReference())) {
+                return cache.get(directory.getReference());
             }
-        });
-        cache.put(directory.getReference(), children);
-        return children;
+            final AttributedList<Path> children = session.list(directory, new ListProgressListener() {
+                @Override
+                public void chunk(final AttributedList<Path> list) throws ConnectionCanceledException {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Retrieved chunk of %d items in %s", list.size(), directory));
+                    }
+                    if(isCanceled()) {
+                        throw new ConnectionCanceledException();
+                    }
+                    listener.chunk(list);
+                }
+            });
+            cache.put(directory.getReference(), children);
+            return children;
+        }
+        catch(BackgroundException e) {
+            // Cache empty listing
+            cache.put(directory.getReference(), AttributedList.<Path>emptyList());
+            throw e;
+        }
     }
 
     @Override
