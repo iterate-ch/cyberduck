@@ -14,10 +14,11 @@ import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MountWorkerTest extends AbstractTestCase {
 
@@ -34,6 +35,7 @@ public class MountWorkerTest extends AbstractTestCase {
         final MountWorker worker = new MountWorker(session, cache, new DisabledListProgressListener());
         assertEquals(new Path("/home/jenkins", Path.DIRECTORY_TYPE), worker.run());
         assertTrue(cache.containsKey(new Path("/home/jenkins", Path.DIRECTORY_TYPE).getReference()));
-        assertFalse(cache.containsKey(new Path("/notfound", Path.DIRECTORY_TYPE).getReference()));
+        assertTrue(cache.containsKey(new Path("/notfound", Path.DIRECTORY_TYPE).getReference()));
+        session.close();
     }
 }
