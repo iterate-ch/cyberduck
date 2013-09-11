@@ -20,8 +20,10 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultCredentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.NullLocal;
 
 import org.junit.Test;
 import org.spearce.jgit.transport.OpenSshConfig;
@@ -34,6 +36,17 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
+
+    @Test
+    public void testNoConfigure() throws Exception {
+        OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
+                new OpenSshConfig(
+                        new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
+        Credentials credentials = new DefaultCredentials("user", " ");
+        credentials.setIdentity(new NullLocal(null, "t"));
+        c.configure(new Host(new SFTPProtocol(), "t", credentials));
+        assertEquals("t", credentials.getIdentity().getName());
+    }
 
     @Test
     public void testConfigureKnownHost() throws Exception {
