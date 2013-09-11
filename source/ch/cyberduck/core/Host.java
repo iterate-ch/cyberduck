@@ -178,10 +178,10 @@ public final class Host implements Serializable {
      * @param defaultpath Default working directory
      */
     public Host(Protocol protocol, String hostname, int port, String defaultpath) {
-        this.setProtocol(protocol);
-        this.setPort(port);
-        this.setHostname(hostname);
-        this.setDefaultPath(defaultpath);
+        this.protocol = protocol;
+        this.hostname = hostname;
+        this.port = port;
+        this.defaultpath = defaultpath;
     }
 
 
@@ -192,9 +192,9 @@ public final class Host implements Serializable {
      * @param credentials Login credentials
      */
     public Host(Protocol protocol, String hostname, int port, Credentials credentials) {
-        this.setProtocol(protocol);
-        this.setPort(port);
-        this.setHostname(hostname);
+        this.protocol = protocol;
+        this.hostname = hostname;
+        this.port = port;
         this.credentials = credentials;
     }
 
@@ -493,9 +493,11 @@ public final class Host implements Serializable {
      * @param port The port number to connect to or -1 to use the default port for this protocol
      */
     public void setPort(final int port) {
-        this.port = port;
         if(-1 == port) {
             this.port = protocol.getDefaultPort();
+        }
+        else {
+            this.port = port;
         }
     }
 
