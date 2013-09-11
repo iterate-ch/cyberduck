@@ -20,9 +20,9 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Size;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.shared.DefaultFileSizeFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -33,19 +33,19 @@ public class ResumeFilter extends AbstractUploadFilter {
 
     private Session<?> session;
 
-    private Size size;
+    private Attributes size;
 
     public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session);
         this.session = session;
-        this.size = new DefaultFileSizeFeature(session);
+        this.size = new DefaultAttributesFeature(session);
     }
 
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
-                if(size.getSize(file) >= file.getLocal().attributes().getSize()) {
+                if(size.getAttributes(file).getSize() >= file.getLocal().attributes().getSize()) {
                     // No need to resume completed transfers
                     return false;
                 }
