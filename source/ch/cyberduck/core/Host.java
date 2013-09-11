@@ -412,7 +412,7 @@ public final class Host implements Serializable {
     public void setProtocol(final Protocol p) {
         this.protocol = p != null ? p : ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
         this.setPort(HostnameConfiguratorFactory.get(protocol).getPort(hostname));
-        this.setCredentials(CredentialsConfiguratorFactory.get(protocol).configure(hostname));
+        this.setCredentials(CredentialsConfiguratorFactory.get(protocol).configure(this));
     }
 
     public Protocol getProtocol() {
@@ -486,7 +486,7 @@ public final class Host implements Serializable {
             this.hostname = protocol.getDefaultHostname();
         }
         this.setPort(HostnameConfiguratorFactory.get(protocol).getPort(hostname));
-        this.setCredentials(CredentialsConfiguratorFactory.get(protocol).configure(hostname));
+        this.setCredentials(CredentialsConfiguratorFactory.get(protocol).configure(this));
     }
 
     /**

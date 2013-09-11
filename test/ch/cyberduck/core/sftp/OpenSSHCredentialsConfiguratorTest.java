@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 
 import org.junit.Test;
@@ -35,20 +36,11 @@ import static org.junit.Assert.*;
 public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
 
     @Test
-    public void testNoConfigure() throws Exception {
-        OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
-                new OpenSshConfig(
-                        new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
-        final Credentials credentials = c.configure("t");
-        assertEquals("t", credentials.getIdentity().getName());
-    }
-
-    @Test
     public void testConfigureKnownHost() throws Exception {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
                         new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
-        final Credentials credentials = c.configure("alias");
+        final Credentials credentials = c.configure(new Host("alias"));
         assertNotNull(credentials.getIdentity());
         assertEquals(LocalFactory.createLocal("~/.ssh/version.cyberduck.ch-rsa"), credentials.getIdentity());
         assertEquals("root", credentials.getUsername());
@@ -59,7 +51,7 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
                         new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
-        final Credentials credentials = c.configure("t");
+        final Credentials credentials = c.configure(new Host("t"));
         // ssh.authentication.publickey.default.enable
         assertNull(credentials.getIdentity());
     }

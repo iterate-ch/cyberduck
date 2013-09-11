@@ -26,7 +26,7 @@ public interface CredentialsConfigurator {
     /**
      * Configure default credentials from system settings.
      *
-     * @param hostname Hostname
+     * @param host Hostname
      */
-    Credentials configure(String hostname);
+    Credentials configure(Host host);
 }

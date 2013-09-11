@@ -20,6 +20,8 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostCredentials;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
@@ -46,10 +48,10 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public Credentials configure(final String hostname) {
-        final Credentials credentials = new Credentials();
+    public Credentials configure(final Host host) {
+        final Credentials credentials = new HostCredentials(host);
         // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
-        final OpenSshConfig.Host entry = configuration.lookup(hostname);
+        final OpenSshConfig.Host entry = configuration.lookup(host.getHostname());
         if(StringUtils.isNotBlank(entry.getUser())) {
             credentials.setUsername(entry.getUser());
         }
