@@ -28,8 +28,6 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
  */
 public class S3HomeFinderService extends DefaultHomeFinderService {
 
-    private S3Session session;
-
     private PathContainerService containerService = new PathContainerService();
 
     public S3HomeFinderService(final S3Session session) {
