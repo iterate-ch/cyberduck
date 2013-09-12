@@ -20,6 +20,8 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.LocaleFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +44,9 @@ public abstract class TransferAction {
         this.name = name;
     }
 
-    public abstract String getLocalizableString();
+    public abstract String getTitle();
+
+    public abstract String getDescription();
 
     public String name() {
         return name;
@@ -58,18 +62,28 @@ public abstract class TransferAction {
      */
     public static final TransferAction ACTION_OVERWRITE = new TransferAction("overwrite") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Overwrite");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Overwrite all files", "Transfer");
         }
     };
 
     /**
-     * Append to any exsisting file when writing
+     * Append to any existing file when writing
      */
     public static final TransferAction ACTION_RESUME = new TransferAction("resume") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Resume");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Append existing files", "Transfer");
         }
     };
 
@@ -78,8 +92,13 @@ public abstract class TransferAction {
      */
     public static final TransferAction ACTION_RENAME = new TransferAction("similar") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Rename");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Rename transferred files with a timestamp appended to the filename", "Transfer");
         }
     };
 
@@ -88,8 +107,13 @@ public abstract class TransferAction {
      */
     public static final TransferAction ACTION_RENAME_EXISTING = new TransferAction("rename") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Rename existing");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Rename existing files with timestamp appended to filename", "Transfer");
         }
     };
 
@@ -98,8 +122,13 @@ public abstract class TransferAction {
      */
     public static final TransferAction ACTION_SKIP = new TransferAction("skip") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Skip");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Skip transfer of files that already exist", "Transfer");
         }
     };
 
@@ -108,8 +137,13 @@ public abstract class TransferAction {
      */
     public static final TransferAction ACTION_CALLBACK = new TransferAction("ask") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Prompt");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Prompt for action on every file", "Transfer");
         }
     };
 
@@ -118,15 +152,25 @@ public abstract class TransferAction {
      */
     public static final TransferAction ACTION_COMPARISON = new TransferAction("compare") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Compare");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Skip files that match size, modification date or checksum", "Transfer");
         }
     };
 
     public static final TransferAction ACTION_CANCEL = new TransferAction("cancel") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Cancel");
+        }
+
+        @Override
+        public String getDescription() {
+            return StringUtils.EMPTY;
         }
     };
 

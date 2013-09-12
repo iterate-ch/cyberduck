@@ -25,7 +25,9 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -436,6 +438,7 @@ public abstract class TransferPromptController extends SheetController
     public void setActionPopup(final NSPopUpButton actionPopup) {
         this.actionPopup = actionPopup;
         this.actionPopup.removeAllItems();
+        this.actionPopup.setAutoenablesItems(false);
 
         final TransferAction defaultAction
                 = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
@@ -448,14 +451,14 @@ public abstract class TransferPromptController extends SheetController
                 TransferAction.ACTION_RENAME_EXISTING};
 
         for(TransferAction action : actions) {
-            if(null == action) {
-                continue; //Not resumeable
-            }
-            this.actionPopup.addItemWithTitle(action.getLocalizableString());
+            this.actionPopup.addItemWithTitle(action.getTitle());
             this.actionPopup.lastItem().setRepresentedObject(action.name());
             if(action.equals(defaultAction)) {
                 this.actionPopup.selectItem(actionPopup.lastItem());
             }
+            this.actionPopup.addItemWithTitle(action.getDescription());
+            this.actionPopup.lastItem().setAttributedTitle(NSAttributedString.attributedStringWithAttributes(action.getDescription(), MENU_HELP_FONT_ATTRIBUTES));
+            this.actionPopup.lastItem().setEnabled(false);
         }
         this.actionPopup.setTarget(this.id());
         this.actionPopup.setAction(Foundation.selector("actionPopupClicked:"));
