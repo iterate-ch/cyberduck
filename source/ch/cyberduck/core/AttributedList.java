@@ -135,10 +135,19 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         }
     }
 
+    /**
+     * @param filter Filter
+     * @return Unsorted filtered list
+     */
     public AttributedList<E> filter(final Filter filter) {
         return this.filter(null, filter);
     }
 
+    /**
+     * @param comparator The comparator to use
+     * @param filter     Filter
+     * @return Filtered list sorted with comparator
+     */
     public AttributedList<E> filter(final Comparator comparator, final Filter filter) {
         boolean needsSorting = false;
         if(null != comparator) {
