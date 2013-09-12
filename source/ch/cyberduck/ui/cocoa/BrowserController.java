@@ -2316,10 +2316,10 @@ public class BrowserController extends WindowController
                 final ArrayList<Path> changed = new ArrayList<Path>();
                 changed.addAll(selected.keySet());
                 changed.addAll(selected.values());
-                background(new WorkerBackgroundAction<Void>(BrowserController.this,
+                background(new WorkerBackgroundAction<Boolean>(BrowserController.this,
                         new MoveWorker(session, selected) {
                             @Override
-                            public void cleanup(final Void result) {
+                            public void cleanup(final Boolean result) {
                                 reloadData(changed, new ArrayList<Path>(selected.values()));
                             }
                         })
@@ -2490,10 +2490,10 @@ public class BrowserController extends WindowController
     }
 
     private void deletePathsImpl(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<Void>(this,
+        this.background(new WorkerBackgroundAction<Boolean>(this,
                 new DeleteWorker(session, LoginControllerFactory.get(BrowserController.this), files) {
                     @Override
-                    public void cleanup(final Void result) {
+                    public void cleanup(final Boolean result) {
                         reloadData(files, false);
                     }
                 })

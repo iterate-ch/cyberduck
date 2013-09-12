@@ -955,11 +955,11 @@ public class InfoController extends ToolbarWindowController {
 
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
-            this.background(new WorkerBackgroundAction<Void>(controller,
+            this.background(new WorkerBackgroundAction<Boolean>(controller,
                     new WriteAclWorker(controller.getSession(), controller.getSession().getFeature(AclPermission.class),
                             files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
                         @Override
-                        public void cleanup(final Void v) {
+                        public void cleanup(final Boolean v) {
                             toggleAclSettings(true);
                             initAcl();
                         }
@@ -1243,10 +1243,10 @@ public class InfoController extends ToolbarWindowController {
             for(Header header : metadata) {
                 update.put(header.getName(), header.getValue());
             }
-            this.background(new WorkerBackgroundAction<Void>(controller,
+            this.background(new WorkerBackgroundAction<Boolean>(controller,
                     new WriteMetadataWorker(controller.getSession(), controller.getSession().getFeature(Headers.class), files, update) {
                         @Override
-                        public void cleanup(final Void v) {
+                        public void cleanup(final Boolean v) {
                             toggleMetadataSettings(true);
                         }
                     })
@@ -2359,11 +2359,11 @@ public class InfoController extends ToolbarWindowController {
      */
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
-            this.background(new WorkerBackgroundAction<Void>(controller,
+            this.background(new WorkerBackgroundAction<Boolean>(controller,
                     new WritePermissionWorker(controller.getSession(),
                             controller.getSession().getFeature(UnixPermission.class), files, permission, recursive) {
                         @Override
-                        public void cleanup(final Void v) {
+                        public void cleanup(final Boolean v) {
                             setPermissions(Collections.singletonList(permission));
                             togglePermissionSettings(true);
                         }
