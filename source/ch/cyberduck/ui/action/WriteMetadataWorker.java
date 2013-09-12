@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class WriteMetadataWorker extends Worker<Void> {
+public abstract class WriteMetadataWorker extends Worker<Boolean> {
 
     private Session<?> session;
 
@@ -59,7 +59,7 @@ public abstract class WriteMetadataWorker extends Worker<Void> {
     }
 
     @Override
-    public Void run() throws BackgroundException {
+    public Boolean run() throws BackgroundException {
         for(Path file : files) {
             if(!metadata.equals(file.attributes().getMetadata())) {
                 for(Map.Entry<String, String> entry : metadata.entrySet()) {
@@ -75,7 +75,7 @@ public abstract class WriteMetadataWorker extends Worker<Void> {
                 file.attributes().setMetadata(metadata);
             }
         }
-        return null;
+        return true;
     }
 
     @Override

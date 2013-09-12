@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class WritePermissionWorker extends Worker<Void> {
+public abstract class WritePermissionWorker extends Worker<Boolean> {
 
     private Session<?> session;
 
@@ -63,11 +63,11 @@ public abstract class WritePermissionWorker extends Worker<Void> {
     }
 
     @Override
-    public Void run() throws BackgroundException {
+    public Boolean run() throws BackgroundException {
         for(Path next : files) {
             this.write(next);
         }
-        return null;
+        return true;
     }
 
     protected void write(final Path file) throws BackgroundException {

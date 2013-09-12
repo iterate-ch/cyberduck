@@ -49,6 +49,7 @@ namespace ch.cyberduck.ui.controller.threading
             if (null == _result)
             {
                 Log.warn(String.Format("Null result for worker {0}", this));
+                return;
             }
             _worker.cleanup(_result);
         }

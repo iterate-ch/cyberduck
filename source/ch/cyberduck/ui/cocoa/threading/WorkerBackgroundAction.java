@@ -49,6 +49,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
         super.cleanup();
         if(null == result) {
             log.warn(String.format("Null result for worker %s", this));
+            return;
         }
         worker.cleanup(result);
     }

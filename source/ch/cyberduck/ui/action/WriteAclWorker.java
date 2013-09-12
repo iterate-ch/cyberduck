@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class WriteAclWorker extends Worker<Void> {
+public abstract class WriteAclWorker extends Worker<Boolean> {
 
     private Session<?> session;
 
@@ -64,11 +64,11 @@ public abstract class WriteAclWorker extends Worker<Void> {
     }
 
     @Override
-    public Void run() throws BackgroundException {
+    public Boolean run() throws BackgroundException {
         for(Path file : files) {
             this.write(file);
         }
-        return null;
+        return true;
     }
 
     protected void write(final Path file) throws BackgroundException {

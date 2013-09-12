@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class DeleteWorker extends Worker<Void> {
+public abstract class DeleteWorker extends Worker<Boolean> {
 
     private Session<?> session;
 
@@ -51,14 +51,14 @@ public abstract class DeleteWorker extends Worker<Void> {
     }
 
     @Override
-    public Void run() throws BackgroundException {
+    public Boolean run() throws BackgroundException {
         final List<Path> recursive = new ArrayList<Path>();
         for(Path file : files) {
             recursive.addAll(this.compile(file));
         }
         final Delete feature = session.getFeature(Delete.class);
         feature.delete(recursive, prompt);
-        return null;
+        return true;
     }
 
     protected List<Path> compile(final Path file) throws BackgroundException {
