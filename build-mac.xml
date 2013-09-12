@@ -59,6 +59,7 @@
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${home}/codesign-requirement.txt"/>
     <property name="codesign.requirement" value="${home}/codesign-requirement.bin"/>
+    <property name="codesign.arg" value="--requirements ${codesign.requirement} --resource-rules ${codesign.resources}"/>
 
     <property name="keychain.password" value=""/>
 
