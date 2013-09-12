@@ -19,8 +19,9 @@ package ch.cyberduck.core.transfer.synchronisation;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NullPathFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
@@ -118,22 +119,37 @@ public class SyncTransfer extends Transfer {
 
     public static final TransferAction ACTION_DOWNLOAD = new TransferAction("download") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Download");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Download changed and missing files", "Transfer");
         }
     };
 
     public static final TransferAction ACTION_UPLOAD = new TransferAction("upload") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Upload");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Upload changed and missing files", "Transfer");
         }
     };
 
     public static final TransferAction ACTION_MIRROR = new TransferAction("mirror") {
         @Override
-        public String getLocalizableString() {
+        public String getTitle() {
             return LocaleFactory.localizedString("Mirror");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Download and Upload", "Transfer");
         }
     };
 
@@ -205,60 +221,6 @@ public class SyncTransfer extends Transfer {
             }
             return false;
         }
-    }
-
-    /**
-     * Contains both download and upload cache
-     */
-    private final Cache cache = new Cache(Integer.MAX_VALUE) {
-        @Override
-        public AttributedList<Path> remove(PathReference reference) {
-            _delegateDownload.cache().remove(reference);
-            _delegateUpload.cache().remove(reference);
-            return super.remove(reference);
-        }
-
-        @Override
-        public void clear() {
-            _delegateDownload.cache().clear();
-            _delegateUpload.cache().clear();
-            super.clear();
-        }
-
-        @Override
-        public boolean containsKey(PathReference reference) {
-            return _delegateDownload.cache().containsKey(reference)
-                    || _delegateUpload.cache().containsKey(reference);
-        }
-
-        @Override
-        public AttributedList<Path> get(PathReference reference) {
-            final Set<Path> children = new HashSet<Path>();
-            if(_delegateDownload.cache().containsKey(reference)) {
-                children.addAll(_delegateDownload.cache().get(reference));
-            }
-            if(_delegateUpload.cache().containsKey(reference)) {
-                children.addAll(_delegateUpload.cache().get(reference));
-            }
-            return new AttributedList<Path>(children);
-        }
-
-        @Override
-        public Path lookup(PathReference reference) {
-            Path path = _delegateUpload.cache().lookup(reference);
-            if(null == path) {
-                path = _delegateDownload.cache().lookup(reference);
-            }
-            if(null == path) {
-                log.warn(String.format("Lookup failed for %s in cache", reference));
-            }
-            return path;
-        }
-    };
-
-    @Override
-    public Cache cache() {
-        return cache;
     }
 
     @Override
@@ -383,7 +345,6 @@ public class SyncTransfer extends Transfer {
                 _delegateFilterUpload.complete(p, options, status, listener);
             }
             comparisons.remove(p.getReference());
-            cache.remove(p.getReference());
         }
     }
 }
