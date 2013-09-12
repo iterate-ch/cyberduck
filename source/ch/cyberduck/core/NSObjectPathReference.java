@@ -99,4 +99,13 @@ public class NSObjectPathReference implements PathReference<NSObject> {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("NSObjectPathReference{");
+        sb.append("reference=").append(reference);
+        sb.append(", hashcode=").append(hashcode);
+        sb.append('}');
+        return sb.toString();
+    }
 }
