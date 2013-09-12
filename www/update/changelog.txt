@@ -7,6 +7,7 @@
 - [Feature] Set container metadata (OpenStack)
 - [Feature] Support ECHDE cipher suites (WebDAV) (#7344)
 - [Feature] Select region when creating new container (S3, OpenStack)
+- [Feature] Confirmation alert on move and rename in browser (#595)
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Failure duplicating files (FTP) (#7224)
 - [Bugfix] Save workspace does not work for multiple browser sessions to the same server (#7213)
@@ -18,3 +19,4 @@
 - [Bugfix] Connect mode fallback failures (FTP) (#5385)
 - [Bugfix] Directory placeholder not displayed if same name as object (OpenStack) (#6988)
 - [Bugfix] Changing permissions resets extended access rights flags (SFTP) (#3790)
+- [Bugfix] Changing permissions resets extended access rights flags (#3790)
