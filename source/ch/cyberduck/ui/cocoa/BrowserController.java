@@ -2383,7 +2383,7 @@ public class BrowserController extends WindowController
      */
     private void checkMove(final java.util.Collection<Path> selected, final MainAction action) {
         if(selected.size() > 0) {
-            if(Preferences.instance().getBoolean("browser.confirmMove")) {
+            if(Preferences.instance().getBoolean("browser.move.confirm")) {
                 StringBuilder alertText = new StringBuilder(
                         LocaleFactory.localizedString("Do you want to move the selected files?"));
                 int i = 0;
@@ -2403,9 +2403,15 @@ public class BrowserController extends WindowController
                         LocaleFactory.localizedString("Cancel"), //alternative button
                         null //other button
                 );
+                alert.setShowsSuppressionButton(true);
+                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
                 this.alert(alert, new SheetCallback() {
                     @Override
                     public void callback(final int returncode) {
+                        if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                            // Never show again.
+                            Preferences.instance().setProperty("browser.move.confirm", false);
+                        }
                         if(returncode == DEFAULT_OPTION) {
                             checkOverwrite(selected, action);
                         }

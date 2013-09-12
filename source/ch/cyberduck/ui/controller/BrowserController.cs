@@ -2740,7 +2740,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (selected.Count > 0)
             {
-                if (Preferences.instance().getBoolean("browser.confirmMove"))
+                if (Preferences.instance().getBoolean("browser.move.confirm"))
                 {
                     StringBuilder alertText = new StringBuilder(
                         LocaleFactory.localizedString("Do you want to move the selected files?"));
