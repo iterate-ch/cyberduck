@@ -60,7 +60,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
         };
         final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginController(), Collections.singletonList(new Path("/t", Path.DIRECTORY_TYPE))) {
             @Override
-            public void cleanup(final Void result) {
+            public void cleanup(final Boolean result) {
                 //
             }
         };
@@ -89,7 +89,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
         final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginController(),
                 Collections.singletonList(new Path("/s", Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE))) {
             @Override
-            public void cleanup(final Void result) {
+            public void cleanup(final Boolean result) {
                 //
             }
         };

@@ -38,7 +38,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
             }
         }, files, Collections.<String, String>emptyMap()) {
             @Override
-            public void cleanup(final Void result) {
+            public void cleanup(final Boolean result) {
                 fail();
             }
         };
@@ -67,7 +67,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
             }
         }, files, updated) {
             @Override
-            public void cleanup(final Void map) {
+            public void cleanup(final Boolean map) {
                 fail();
             }
         };
@@ -101,7 +101,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
             }
         }, files, updated) {
             @Override
-            public void cleanup(final Void map) {
+            public void cleanup(final Boolean map) {
                 fail();
             }
         };

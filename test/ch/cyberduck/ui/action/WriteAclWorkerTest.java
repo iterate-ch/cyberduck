@@ -47,7 +47,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
             }
         }, Collections.<Path>emptyList(), acl, true) {
             @Override
-            public void cleanup(final Void result) {
+            public void cleanup(final Boolean result) {
                 //
             }
         };
@@ -81,7 +81,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
             }
         }, Collections.singletonList(t), acl, true) {
             @Override
-            public void cleanup(final Void result) {
+            public void cleanup(final Boolean result) {
                 //
             }
         };
@@ -117,7 +117,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
             }
         }, Collections.singletonList(t), acl, true) {
             @Override
-            public void cleanup(final Void result) {
+            public void cleanup(final Boolean result) {
                 //
             }
         };
