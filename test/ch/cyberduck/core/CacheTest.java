@@ -1,5 +1,6 @@
 package ch.cyberduck.core;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -21,6 +22,11 @@ public class CacheTest extends AbstractTestCase {
             @Override
             public Object unique() {
                 return u;
+            }
+
+            @Override
+            public String attributes() {
+                return StringUtils.EMPTY;
             }
         }, list);
         assertNotNull(cache.lookup(PathReferenceFactory.createPathReference(file)));
