@@ -23,10 +23,10 @@ public class NSObjectPathReferenceTest extends AbstractTestCase {
 
     @Test
     public void testEqualConstructors() throws Exception {
-        assertEquals(new NSObjectPathReference(NSString.stringWithString("/b-1")), new NSObjectPathReference(
+        assertEquals(new NSObjectPathReference(NSString.stringWithString("1-/b")), new NSObjectPathReference(
                 new Path("/b", Path.FILE_TYPE)
         ));
-        assertEquals(new NSObjectPathReference(NSString.stringWithString("/d-6")), new NSObjectPathReference(
+        assertEquals(new NSObjectPathReference(NSString.stringWithString("6-/d")), new NSObjectPathReference(
                 new Path("/d", Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE)
         ));
     }
