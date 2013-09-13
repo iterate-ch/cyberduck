@@ -2141,19 +2141,19 @@ pl.lproj/S3.strings -text svneol=unset#text/utf-16
 pl.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 pl.lproj/Status.strings -text svneol=unset#text/utf-16
 pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
-profiles/Cloud.ca[!!-~]Object[!!-~]Store[!!-~]East-1[!!-~]Region.cyberduckprofile -text
-profiles/Dream[!!-~]Objects.cyberduckprofile -text
-profiles/Dump[!!-~]Truck.cyberduckprofile -text svneol=unset#application/xml
-profiles/Dunkel[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text
-profiles/Eucalyptus[!!-~]Walrus[!!-~]S3.cyberduckprofile -text
-profiles/GreenQloud.cyberduckprofile -text
-profiles/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.cyberduckprofile -text
-profiles/Internap[!!-~]XIPCloud[!!-~]Storage.cyberduckprofile -text
-profiles/Openstack[!!-~]Swift[!!-~](HTTP).cyberduckprofile -text
-profiles/Openstack[!!-~]Swift[!!-~](Keystone).cyberduckprofile -text
-profiles/Rackspace[!!-~]UK.cyberduckprofile -text
-profiles/Rackspace[!!-~]US.cyberduckprofile -text svneol=unset#application/xml
-profiles/S3[!!-~](HTTP).cyberduckprofile -text
+profiles/Cloud.ca[!!-~]Object[!!-~]Store[!!-~]East-1[!!-~]Region.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Dream[!!-~]Objects.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Dump[!!-~]Truck.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Dunkel[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Eucalyptus[!!-~]Walrus[!!-~]S3.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/GreenQloud.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Internap[!!-~]XIPCloud[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Openstack[!!-~]Swift[!!-~](HTTP).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Openstack[!!-~]Swift[!!-~](Keystone).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Rackspace[!!-~]UK.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Rackspace[!!-~]US.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/S3[!!-~](HTTP).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/assets/Dream Objects.tiff -text svneol=unset#image/tiff
 profiles/assets/Dump[!!-~]Truck.png -text svneol=unset#image/png
 profiles/assets/GreenQloud.tiff -text svneol=unset#image/tiff
