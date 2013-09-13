@@ -45,10 +45,7 @@ public class DefaultPathReference implements PathReference<String> {
         if(StringUtils.isNotBlank(path.attributes().getVersionId())) {
             qualifier += path.attributes().getVersionId();
         }
-        if(StringUtils.isNotBlank(qualifier)) {
-            return String.format("%s-%s", path.getAbsolute(), qualifier);
-        }
-        return path.getAbsolute();
+        return String.format("%s-%s", qualifier, path.getAbsolute());
     }
 
     @Override
