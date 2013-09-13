@@ -41,7 +41,7 @@ public class WatchEditorTest extends AbstractTestCase {
 
     @Test
     public void testEdit() throws Exception {
-        final Path path = new Path("/f1/f2/t", Path.FILE_TYPE);
+        final Path path = new Path("/f1/f2/t.txt", Path.FILE_TYPE);
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
         final WatchEditor editor = new WatchEditor(new Controller() {
@@ -61,10 +61,11 @@ public class WatchEditorTest extends AbstractTestCase {
             }
         }, new FTPSession(new Host("h")), new Application("com.apple.TextEdit", null), path);
         assertEquals(new Application("com.apple.TextEdit", null), editor.getApplication());
-        assertEquals("t", editor.getEdited().getName());
+        assertEquals("t.txt", editor.getEdited().getName());
         final Local local = editor.getEdited().getLocal();
-        assertEquals("t-11", local.getName());
-        assertEquals("f2", local.getParent().getName());
-        assertEquals("f1", local.getParent().getParent().getName());
+        assertEquals("t.txt", local.getName());
+        assertEquals("1", local.getParent().getName());
+        assertEquals("f2", local.getParent().getParent().getName());
+        assertEquals("f1", local.getParent().getParent().getParent().getName());
     }
 }
