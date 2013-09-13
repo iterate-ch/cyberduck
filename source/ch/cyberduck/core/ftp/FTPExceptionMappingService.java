@@ -22,10 +22,12 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 
+import org.apache.commons.net.MalformedServerReplyException;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPReply;
 
@@ -75,6 +77,9 @@ public class FTPExceptionMappingService extends AbstractIOExceptionMappingServic
                 // Requested action not taken. File unavailable (e.g., file not found, no access)
                 return new NotfoundException(buffer.toString(), e);
             }
+        }
+        if(e instanceof MalformedServerReplyException) {
+            return new InteroperabilityException(buffer.toString(), e);
         }
         return new DefaultIOExceptionMappingService().map(e);
     }
