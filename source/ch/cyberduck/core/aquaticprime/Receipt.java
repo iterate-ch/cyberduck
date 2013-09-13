@@ -104,6 +104,10 @@ public class Receipt extends AbstractLicense {
         }
     }
 
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     private String name;
 
     /**
@@ -121,7 +125,6 @@ public class Receipt extends AbstractLicense {
     @Override
     public boolean verify() {
         try {
-            Security.addProvider(new BouncyCastleProvider());
             PKCS7SignedData signature = new PKCS7SignedData(IOUtils.toByteArray(new FileInputStream(
                     this.getFile().getAbsolute()
             )));
@@ -133,12 +136,12 @@ public class Receipt extends AbstractLicense {
             // is (1 2 840 113635 100 6 11 1).
 
             // Extract the receipt attributes
-            CMSSignedData s = new CMSSignedData(new FileInputStream(
+            final CMSSignedData s = new CMSSignedData(new FileInputStream(
                     this.getFile().getAbsolute()
             ));
-            CMSProcessable signedContent = s.getSignedContent();
+            final CMSProcessable signedContent = s.getSignedContent();
             byte[] originalContent = (byte[]) signedContent.getContent();
-            ASN1Object asn = ASN1Object.fromByteArray(originalContent);
+            final ASN1Object asn = ASN1Object.fromByteArray(originalContent);
 
             byte[] opaque = null;
             String bundleIdentifier = null;
@@ -150,8 +153,8 @@ public class Receipt extends AbstractLicense {
                 // 3 Application version    Interpret as an ASN.1 UTF8STRING.
                 // 4 Opaque value           Interpret as a series of bytes.
                 // 5 SHA-1 hash             Interpret as a 20-byte SHA-1 digest value.
-                DERSet set = (DERSet) asn;
-                Enumeration enumeration = set.getObjects();
+                final DERSet set = (DERSet) asn;
+                final Enumeration enumeration = set.getObjects();
                 while(enumeration.hasMoreElements()) {
                     Object next = enumeration.nextElement();
                     if(next instanceof DERSequence) {
@@ -159,25 +162,25 @@ public class Receipt extends AbstractLicense {
                         DEREncodable type = sequence.getObjectAt(0);
                         if(type instanceof DERInteger) {
                             if(((DERInteger) type).getValue().intValue() == 2) {
-                                DEREncodable value = sequence.getObjectAt(2);
+                                final DEREncodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     bundleIdentifier = new String(((DEROctetString) value).getOctets(), "UTF-8");
                                 }
                             }
                             else if(((DERInteger) type).getValue().intValue() == 3) {
-                                DEREncodable value = sequence.getObjectAt(2);
+                                final DEREncodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     bundleVersion = new String(((DEROctetString) value).getOctets(), "UTF-8");
                                 }
                             }
                             else if(((DERInteger) type).getValue().intValue() == 4) {
-                                DEREncodable value = sequence.getObjectAt(2);
+                                final DEREncodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     opaque = ((DEROctetString) value).getOctets();
                                 }
                             }
                             else if(((DERInteger) type).getValue().intValue() == 5) {
-                                DEREncodable value = sequence.getObjectAt(2);
+                                final DEREncodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     hash = ((DEROctetString) value).getOctets();
                                 }
@@ -204,7 +207,7 @@ public class Receipt extends AbstractLicense {
                 log.warn("No network interface en0");
             }
             else {
-                byte[] mac = en0.getHardwareAddress();
+                final byte[] mac = en0.getHardwareAddress();
                 if(null == mac) {
                     log.error("Cannot determine MAC address");
                     // Continue without validation
@@ -215,11 +218,11 @@ public class Receipt extends AbstractLicense {
                     log.debug("Interface en0:" + hex);
                 }
                 // Compute the hash of the GUID
-                MessageDigest digest = MessageDigest.getInstance("SHA-1");
+                final MessageDigest digest = MessageDigest.getInstance("SHA-1");
                 digest.update(mac);
                 digest.update(opaque);
                 digest.update(bundleIdentifier.getBytes(Charset.forName("UTF-8")));
-                byte[] result = digest.digest();
+                final byte[] result = digest.digest();
                 if(Arrays.equals(result, hash)) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Valid receipt for GUID %s", hex));
