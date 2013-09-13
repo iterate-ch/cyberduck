@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
  * @version $Id$
  */
 public class FTPInvalidListException extends BackgroundException {
+    private static final long serialVersionUID = -231465577746623668L;
 
     private AttributedList<Path> parsed;
 
