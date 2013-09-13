@@ -53,6 +53,8 @@ public class NSObjectPathReference implements PathReference<NSObject> {
 
     private NSObject reference;
 
+    private String attributes;
+
     private int hashcode;
 
     private static Map<String, NSString> cache = Collections.synchronizedMap(new LRUMap(
@@ -62,11 +64,13 @@ public class NSObjectPathReference implements PathReference<NSObject> {
 
     protected NSObjectPathReference(final Path path) {
         // Unique name
-        final String name = new DefaultPathReference(path).unique();
+        final DefaultPathReference d = new DefaultPathReference(path);
+        final String name = d.unique();
         if(!cache.containsKey(name)) {
             cache.put(name, NSString.stringWithString(name));
         }
         this.reference = cache.get(name);
+        this.attributes = d.attributes();
         this.hashcode = name.hashCode();
     }
 
@@ -78,6 +82,11 @@ public class NSObjectPathReference implements PathReference<NSObject> {
     @Override
     public NSObject unique() {
         return reference;
+    }
+
+    @Override
+    public String attributes() {
+        return attributes;
     }
 
     @Override

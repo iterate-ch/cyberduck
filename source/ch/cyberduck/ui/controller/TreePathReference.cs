@@ -39,6 +39,10 @@ namespace Ch.Cyberduck.Ui.Controller
             return _reference.unique();
         }
 
+        public String attributes() {
+            return _reference.attributes();
+        }
+
         public override int GetHashCode()
         {
             return _hashCode;

@@ -29,12 +29,21 @@ public class DefaultPathReferenceTest extends AbstractTestCase {
     @Test
     public void testUnique() throws Exception {
         final Path t = new Path("/", Path.DIRECTORY_TYPE);
-        assertEquals("/-2", new DefaultPathReference(t).unique());
+        assertEquals("2-/", new DefaultPathReference(t).unique());
         t.attributes().setVersionId("1");
-        assertEquals("/-21", new DefaultPathReference(t).unique());
+        assertEquals("2-1/", new DefaultPathReference(t).unique());
         t.attributes().setRegion("r");
-        assertEquals("/-2r1", new DefaultPathReference(t).unique());
+        assertEquals("2-r1/", new DefaultPathReference(t).unique());
         t.attributes().setVersionId(null);
-        assertEquals("/-2r", new DefaultPathReference(t).unique());
+        assertEquals("2-r/", new DefaultPathReference(t).unique());
+    }
+
+    @Test
+    public void testAttributes() throws Exception {
+        final Path t = new Path("/f", Path.FILE_TYPE);
+        t.attributes().setRegion("r");
+        assertEquals("r", new DefaultPathReference(t).attributes());
+        t.attributes().setVersionId("1");
+        assertEquals("r1", new DefaultPathReference(t).attributes());
     }
 }

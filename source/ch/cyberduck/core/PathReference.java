@@ -24,4 +24,6 @@ package ch.cyberduck.core;
 public interface PathReference<T> {
 
     T unique();
+
+    String attributes();
 }

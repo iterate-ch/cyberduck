@@ -38,14 +38,20 @@ public class DefaultPathReference implements PathReference<String> {
      */
     @Override
     public String unique() {
-        String qualifier = String.valueOf(path.attributes().getType());
+        return String.format("%s-%s%s",
+                String.valueOf(path.attributes().getType()), this.attributes(), path.getAbsolute());
+    }
+
+    @Override
+    public String attributes() {
+        String qualifier = StringUtils.EMPTY;
         if(StringUtils.isNotBlank(path.attributes().getRegion())) {
             qualifier += path.attributes().getRegion();
         }
         if(StringUtils.isNotBlank(path.attributes().getVersionId())) {
             qualifier += path.attributes().getVersionId();
         }
-        return String.format("%s-%s", qualifier, path.getAbsolute());
+        return qualifier;
     }
 
     @Override

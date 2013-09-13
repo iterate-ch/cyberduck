@@ -52,10 +52,18 @@ public class TemporaryFileService {
         return this.create(UUID.randomUUID().toString(), file);
     }
 
+    /**
+     * @return Path with /temporary directory/<uid>/shortened absolute parent path/<region><versionid>/filename
+     */
     public Local create(final String uid, final Path file) {
         final Local folder = LocalFactory.createLocal(
                 new File(Preferences.instance().getProperty("tmp.dir"),
-                        uid + String.valueOf(Path.DELIMITER) + file.getParent().getAbsolute()));
-        return LocalFactory.createLocal(folder, PathNormalizer.name(new DefaultPathReference(file).unique()));
+                        uid + String.valueOf(Path.DELIMITER) +
+                                this.shorten(file.getParent().getAbsolute()) + String.valueOf(Path.DELIMITER) + new DefaultPathReference(file).attributes()));
+        return LocalFactory.createLocal(folder, String.format("%s", PathNormalizer.name(file.getAbsolute())));
+    }
+
+    protected String shorten(final String path) {
+        return path;
     }
 }

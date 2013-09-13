@@ -22,6 +22,7 @@ import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -207,6 +208,11 @@ public abstract class Local extends AbstractPath {
             @Override
             public Local unique() {
                 return Local.this;
+            }
+
+            @Override
+            public String attributes() {
+                return StringUtils.EMPTY;
             }
         };
     }

@@ -28,17 +28,12 @@ namespace Ch.Cyberduck.core.local
 {
     internal class WindowsTemporaryFileService : TemporaryFileService
     {
-        public override Local create(string uid, Path file)
-        {
-            string absolute = file.getParent().getAbsolute();
-            if (absolute.Length > 240)
+        protected override String shorten(string path) {
+            if (path.Length > 240)
             {
-                absolute = CalculateMD5Hash(absolute);
+                return CalculateMD5Hash(path);
             }
-            Local folder = LocalFactory.createLocal(
-                new File(Preferences.instance().getProperty("tmp.dir"),
-                         uid + Path.DELIMITER + absolute));
-            return LocalFactory.createLocal(folder, FilenameUtils.getName(new DefaultPathReference(file).unique()));
+            return path;
         }
 
         private static string CalculateMD5Hash(string input)
