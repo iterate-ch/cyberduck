@@ -27,6 +27,7 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.apache.commons.lang3.StringUtils;
@@ -129,6 +130,9 @@ public class FTPListService implements ListService {
                 catch(FTPInvalidListException e) {
                     this.remove(Command.stat);
                 }
+                catch(InteroperabilityException e) {
+                    this.remove(Command.stat);
+                }
                 catch(BackgroundException e) {
                     if(e.getCause() instanceof FTPException) {
                         log.warn(String.format("Command STAT failed with FTP error %s", e.getMessage()));
@@ -148,6 +152,9 @@ public class FTPListService implements ListService {
                     try {
                         return this.post(file, implementations.get(Command.mlsd).list(file, listener));
                     }
+                    catch(InteroperabilityException e) {
+                        this.remove(Command.mlsd);
+                    }
                     catch(FTPInvalidListException e) {
                         this.remove(Command.mlsd);
                     }
@@ -159,6 +166,9 @@ public class FTPListService implements ListService {
             if(implementations.containsKey(Command.lista)) {
                 try {
                     return this.post(file, implementations.get(Command.lista).list(file, listener));
+                }
+                catch(InteroperabilityException e) {
+                    this.remove(Command.lista);
                 }
                 catch(FTPInvalidListException e) {
                     this.remove(Command.lista);
