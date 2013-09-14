@@ -2759,20 +2759,25 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         content.Append("\n" + Character.toString('\u2022') + " ...)");
                     }
-                    DialogResult r = QuestionBox(LocaleFactory.localizedString("Move"),
-                                                 alertText.ToString(),
-                                                 content.ToString(),
-                                                 String.Format("{0}", LocaleFactory.localizedString("Move")),
-                                                 true);
-                    if (r == DialogResult.OK)
-                    {
-                        return CheckOverwrite(selected);
-                    }
+                    bool result = false;
+                    CommandBox(LocaleFactory.localizedString("Move"), alertText.ToString(), content.ToString(),
+                               String.Format("{0}", LocaleFactory.localizedString("Move")), true,
+                               LocaleFactory.localizedString("Don't ask again", "Configuration"),
+                               SysIcons.Question, delegate(int option, bool verificationChecked)
+                                   {
+                                       if (verificationChecked)
+                                       {
+                                           // Never show again.
+                                           Preferences.instance().setProperty("browser.move.confirm", false);
+                                       }
+                                       if (option == 0)
+                                       {
+                                           result = CheckOverwrite(selected);
+                                       }
+                                   });
+                    return result;
                 }
-                else
-                {
-                    return CheckOverwrite(selected);
-                }
+                return CheckOverwrite(selected);
             }
             return false;
         }
