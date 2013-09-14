@@ -701,10 +701,12 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionEnabled = stop && enable;
             View.DistributionDeliveryMethodEnabled = stop && enable;
             View.DistributionLoggingCheckboxEnabled = stop && enable &&
-                                                      cdn.getFeature(typeof (Logging), View.DistributionDeliveryMethod) !=
+                                                      cdn.getFeature(typeof (DistributionLogging),
+                                                                     View.DistributionDeliveryMethod) !=
                                                       null;
             View.DistributionLoggingPopupEnabled = stop && enable &&
-                                                   cdn.getFeature(typeof (Logging), View.DistributionDeliveryMethod) !=
+                                                   cdn.getFeature(typeof (DistributionLogging),
+                                                                  View.DistributionDeliveryMethod) !=
                                                    null;
             View.DistributionCnameEnabled = stop && enable &&
                                             cdn.getFeature(typeof (Cname), View.DistributionDeliveryMethod) != null;
