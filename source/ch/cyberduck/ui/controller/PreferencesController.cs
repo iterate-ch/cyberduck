@@ -1247,55 +1247,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private string GetDuplicateAction(string property)
         {
-            string action = null;
-            if (
-                Preferences.instance().getProperty(property).Equals(
-                    TransferAction.ACTION_CALLBACK.
-                                   toString()))
-            {
-                action = TransferAction.ACTION_CALLBACK.getTitle();
-            }
-            else if (
-                Preferences.instance().getProperty(property).Equals(
-                    TransferAction.
-                        ACTION_OVERWRITE.
-                        toString()))
-            {
-                action = TransferAction.ACTION_OVERWRITE.getTitle();
-            }
-            else if (
-                Preferences.instance().getProperty(property).Equals(
-                    TransferAction.
-                        ACTION_RESUME.
-                        toString()))
-            {
-                action = TransferAction.ACTION_RESUME.getTitle();
-            }
-            else if (
-                Preferences.instance().getProperty(property).Equals(
-                    TransferAction.
-                        ACTION_RENAME.
-                        toString()))
-            {
-                action = TransferAction.ACTION_RENAME.getTitle();
-            }
-            else if (
-                Preferences.instance().getProperty(property).Equals(
-                    TransferAction.
-                        ACTION_RENAME_EXISTING.
-                        toString()))
-            {
-                action = TransferAction.ACTION_RENAME_EXISTING.getTitle();
-            }
-            else if (
-                Preferences.instance().getProperty(property).Equals(
-                    TransferAction.
-                        ACTION_SKIP
-                                  .toString()))
-            {
-                action = TransferAction.ACTION_SKIP.getTitle();
-            }
-            return action;
+            return TransferAction.forName(Preferences.instance().getProperty(property)).getTitle();
         }
 
         private void PopulateDuplicateActions()
