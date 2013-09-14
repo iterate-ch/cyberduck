@@ -46,7 +46,6 @@ using java.text;
 using java.util;
 using org.apache.commons.lang3;
 using org.apache.log4j;
-using Logging = ch.cyberduck.core.features.Logging;
 using Object = System.Object;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
@@ -61,13 +60,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
         private readonly string _multipleFilesString = "(" + LocaleFactory.localizedString("Multiple files") + ")";
         private readonly LoginController _prompt;
+        private readonly PathContainerService containerService = new PathContainerService();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
         private IList<KeyValuePair<string, string>> _lifecycleTransitionPeriods;
         private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
-
-        private PathContainerService containerService = new PathContainerService();
 
         private InfoController(BrowserController controller, IList<Path> files)
         {
@@ -197,7 +195,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 // Currently these settings are only available for Amazon S3
                 View.ToolbarS3Label = ProtocolFactory.S3_SSL.getName();
-                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[ProtocolFactory.S3_SSL.getProvider()];
+                View.ToolbarS3Image =
+                    IconCache.Instance.GetProtocolImages(32).Images[ProtocolFactory.S3_SSL.getProvider()];
             }
 
             //ACL or permission view
@@ -1094,21 +1093,48 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private Permission GetPermissionFromCheckboxes()
         {
-            bool[][] p = new[] {new bool[3], new bool[3], new bool[3]};
+            Permission.Action u = Permission.Action.none;
+            if (View.OwnerRead == CheckState.Checked)
+            {
+                u = u.or(Permission.Action.read);
+            }
+            if (View.OwnerWrite == CheckState.Checked)
+            {
+                u = u.or(Permission.Action.write);
+            }
+            if (View.OwnerExecute == CheckState.Checked)
+            {
+                u = u.or(Permission.Action.execute);
+            }
 
-            p[Permission.OWNER][Permission.READ] = (View.OwnerRead == CheckState.Checked);
-            p[Permission.OWNER][Permission.WRITE] = (View.OwnerWrite == CheckState.Checked);
-            p[Permission.OWNER][Permission.EXECUTE] = (View.OwnerExecute == CheckState.Checked);
+            Permission.Action g = Permission.Action.none;
+            if (View.GroupRead == CheckState.Checked)
+            {
+                g = g.or(Permission.Action.read);
+            }
+            if (View.GroupWrite == CheckState.Checked)
+            {
+                g = g.or(Permission.Action.write);
+            }
+            if (View.GroupExecute == CheckState.Checked)
+            {
+                g = g.or(Permission.Action.execute);
+            }
 
-            p[Permission.GROUP][Permission.READ] = (View.GroupRead == CheckState.Checked);
-            p[Permission.GROUP][Permission.WRITE] = (View.GroupWrite == CheckState.Checked);
-            p[Permission.GROUP][Permission.EXECUTE] = (View.GroupExecute == CheckState.Checked);
-
-            p[Permission.OTHER][Permission.READ] = (View.OtherRead == CheckState.Checked);
-            p[Permission.OTHER][Permission.WRITE] = (View.OtherWrite == CheckState.Checked);
-            p[Permission.OTHER][Permission.EXECUTE] = (View.OtherExecute == CheckState.Checked);
-
-            return new Permission(p);
+            Permission.Action o = Permission.Action.none;
+            if (View.OtherRead == CheckState.Checked)
+            {
+                o = o.or(Permission.Action.read);
+            }
+            if (View.OtherWrite == CheckState.Checked)
+            {
+                o = o.or(Permission.Action.write);
+            }
+            if (View.OtherExecute == CheckState.Checked)
+            {
+                o = o.or(Permission.Action.execute);
+            }
+            return new Permission(u, g, o);
         }
 
         private void InitGeneral()
@@ -1686,23 +1712,23 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (Permission permission in permissions)
                     {
                         view.OwnerRead = GetCheckboxState(view.OwnerRead, overwrite,
-                                                          permission.getOwnerPermissions()[Permission.READ]);
+                                                          permission.getUser().implies(Permission.Action.read));
                         view.OwnerWrite = GetCheckboxState(view.OwnerWrite, overwrite,
-                                                           permission.getOwnerPermissions()[Permission.WRITE]);
+                                                           permission.getUser().implies(Permission.Action.write));
                         view.OwnerExecute = GetCheckboxState(view.OwnerExecute, overwrite,
-                                                             permission.getOwnerPermissions()[Permission.EXECUTE]);
+                                                             permission.getUser().implies(Permission.Action.execute));
                         view.GroupRead = GetCheckboxState(view.GroupRead, overwrite,
-                                                          permission.getGroupPermissions()[Permission.READ]);
+                                                          permission.getGroup().implies(Permission.Action.read));
                         view.GroupWrite = GetCheckboxState(view.GroupWrite, overwrite,
-                                                           permission.getGroupPermissions()[Permission.WRITE]);
+                                                           permission.getGroup().implies(Permission.Action.write));
                         view.GroupExecute = GetCheckboxState(view.GroupExecute, overwrite,
-                                                             permission.getGroupPermissions()[Permission.EXECUTE]);
+                                                             permission.getGroup().implies(Permission.Action.execute));
                         view.OtherRead = GetCheckboxState(view.OtherRead, overwrite,
-                                                          permission.getOtherPermissions()[Permission.READ]);
+                                                          permission.getOther().implies(Permission.Action.read));
                         view.OtherWrite = GetCheckboxState(view.OtherWrite, overwrite,
-                                                           permission.getOtherPermissions()[Permission.WRITE]);
+                                                           permission.getOther().implies(Permission.Action.write));
                         view.OtherExecute = GetCheckboxState(view.OtherExecute, overwrite,
-                                                             permission.getOtherPermissions()[Permission.EXECUTE]);
+                                                             permission.getOther().implies(Permission.Action.execute));
 
                         overwrite = false;
                     }
@@ -1715,7 +1741,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         foreach (Permission permission in permissions)
                         {
-                            view.OctalPermissions = permission.getOctalString();
+                            view.OctalPermissions = permission.getMode();
                             view.Permissions = permission.toString();
                         }
                     }

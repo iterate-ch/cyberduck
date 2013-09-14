@@ -241,10 +241,10 @@ namespace Ch.Cyberduck.Ui.Controller
         protected virtual void PopulateActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-            actions.Add(TransferAction.ACTION_RESUME, TransferAction.ACTION_RESUME.getLocalizableString());
-            actions.Add(TransferAction.ACTION_OVERWRITE, TransferAction.ACTION_OVERWRITE.getLocalizableString());
-            actions.Add(TransferAction.ACTION_RENAME, TransferAction.ACTION_RENAME.getLocalizableString());
-            actions.Add(TransferAction.ACTION_SKIP, TransferAction.ACTION_SKIP.getLocalizableString());
+            actions.Add(TransferAction.ACTION_RESUME, TransferAction.ACTION_RESUME.getTitle());
+            actions.Add(TransferAction.ACTION_OVERWRITE, TransferAction.ACTION_OVERWRITE.getTitle());
+            actions.Add(TransferAction.ACTION_RENAME, TransferAction.ACTION_RENAME.getTitle());
+            actions.Add(TransferAction.ACTION_SKIP, TransferAction.ACTION_SKIP.getTitle());
 
             bool renameSupported = true;
             foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
@@ -258,7 +258,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (renameSupported)
             {
                 actions.Add(TransferAction.ACTION_RENAME_EXISTING,
-                            TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());
+                            TransferAction.ACTION_RENAME_EXISTING.getTitle());
             }
             View.PopulateActions(actions);
 

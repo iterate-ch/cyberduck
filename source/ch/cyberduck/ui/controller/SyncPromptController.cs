@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -60,9 +60,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
             TransferAction defaultAction = ((SyncTransfer) Transfer).getTransferAction();
 
-            actions.Add(SyncTransfer.ACTION_DOWNLOAD, SyncTransfer.ACTION_DOWNLOAD.getLocalizableString());
-            actions.Add(SyncTransfer.ACTION_UPLOAD, SyncTransfer.ACTION_UPLOAD.getLocalizableString());
-            actions.Add(SyncTransfer.ACTION_MIRROR, SyncTransfer.ACTION_MIRROR.getLocalizableString());
+            actions.Add(SyncTransfer.ACTION_DOWNLOAD, SyncTransfer.ACTION_DOWNLOAD.getTitle());
+            actions.Add(SyncTransfer.ACTION_UPLOAD, SyncTransfer.ACTION_UPLOAD.getTitle());
+            actions.Add(SyncTransfer.ACTION_MIRROR, SyncTransfer.ACTION_MIRROR.getTitle());
             View.PopulateActions(actions);
 
             View.SelectedAction = defaultAction;

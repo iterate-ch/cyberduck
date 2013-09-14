@@ -471,21 +471,21 @@ namespace Ch.Cyberduck.Ui.Controller
                 Log.error("No selected item");
                 return;
             }
-            bool[] ownerPerm = p.getOwnerPermissions();
-            bool[] groupPerm = p.getGroupPermissions();
-            bool[] otherPerm = p.getOtherPermissions();
+            Permission.Action ownerPerm = p.getUser();
+            Permission.Action groupPerm = p.getGroup();
+            Permission.Action otherPerm = p.getOther();
 
-            View.UploadOwnerRead = ownerPerm[Permission.READ];
-            View.UploadOwnerWrite = ownerPerm[Permission.WRITE];
-            View.UploadOwnerExecute = ownerPerm[Permission.EXECUTE];
+            View.UploadOwnerRead = ownerPerm.implies(Permission.Action.read);
+            View.UploadOwnerWrite = ownerPerm.implies(Permission.Action.write);
+            View.UploadOwnerExecute = ownerPerm.implies(Permission.Action.execute);
 
-            View.UploadGroupRead = groupPerm[Permission.READ];
-            View.UploadGroupWrite = groupPerm[Permission.WRITE];
-            View.UploadGroupExecute = groupPerm[Permission.EXECUTE];
+            View.UploadGroupRead = groupPerm.implies(Permission.Action.read);
+            View.UploadGroupWrite = groupPerm.implies(Permission.Action.write);
+            View.UploadGroupExecute = groupPerm.implies(Permission.Action.execute);
 
-            View.UploadOtherRead = otherPerm[Permission.READ];
-            View.UploadOtherWrite = otherPerm[Permission.WRITE];
-            View.UploadOtherExecute = otherPerm[Permission.EXECUTE];
+            View.UploadOtherRead = otherPerm.implies(Permission.Action.read);
+            View.UploadOtherWrite = otherPerm.implies(Permission.Action.write);
+            View.UploadOtherExecute = otherPerm.implies(Permission.Action.execute);
         }
 
         private void View_ChmodUploadUseDefaultChangedEvent()
@@ -521,21 +521,21 @@ namespace Ch.Cyberduck.Ui.Controller
                 Log.error("No selected item");
                 return;
             }
-            bool[] ownerPerm = p.getOwnerPermissions();
-            bool[] groupPerm = p.getGroupPermissions();
-            bool[] otherPerm = p.getOtherPermissions();
+            Permission.Action ownerPerm = p.getUser();
+            Permission.Action groupPerm = p.getGroup();
+            Permission.Action otherPerm = p.getOther();
 
-            View.DownloadOwnerRead = ownerPerm[Permission.READ];
-            View.DownloadOwnerWrite = ownerPerm[Permission.WRITE];
-            View.DownloadOwnerExecute = ownerPerm[Permission.EXECUTE];
+            View.DownloadOwnerRead = ownerPerm.implies(Permission.Action.read);
+            View.DownloadOwnerWrite = ownerPerm.implies(Permission.Action.write);
+            View.DownloadOwnerExecute = ownerPerm.implies(Permission.Action.execute);
 
-            View.DownloadGroupRead = groupPerm[Permission.READ];
-            View.DownloadGroupWrite = groupPerm[Permission.WRITE];
-            View.DownloadGroupExecute = groupPerm[Permission.EXECUTE];
+            View.DownloadGroupRead = groupPerm.implies(Permission.Action.read);
+            View.DownloadGroupWrite = groupPerm.implies(Permission.Action.write);
+            View.DownloadGroupExecute = groupPerm.implies(Permission.Action.execute);
 
-            View.DownloadOtherRead = otherPerm[Permission.READ];
-            View.DownloadOtherWrite = otherPerm[Permission.WRITE];
-            View.DownloadOtherExecute = otherPerm[Permission.EXECUTE];
+            View.DownloadOtherRead = otherPerm.implies(Permission.Action.read);
+            View.DownloadOtherWrite = otherPerm.implies(Permission.Action.write);
+            View.DownloadOtherExecute = otherPerm.implies(Permission.Action.execute);
         }
 
         private void View_ChmodDownloadUseDefaultChangedEvent()
@@ -553,59 +553,109 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_UploadDefaultPermissionsChangedEvent()
         {
-            bool[][] p = new[] {new bool[3], new bool[3], new bool[3]};
-
-            p[Permission.OWNER][Permission.READ] = View.UploadOwnerRead;
-            p[Permission.OWNER][Permission.WRITE] = View.UploadOwnerWrite;
-            p[Permission.OWNER][Permission.EXECUTE] = View.UploadOwnerExecute;
-
-            p[Permission.GROUP][Permission.READ] = View.UploadGroupRead;
-            p[Permission.GROUP][Permission.WRITE] = View.UploadGroupWrite;
-            p[Permission.GROUP][Permission.EXECUTE] = View.UploadGroupExecute;
-
-            p[Permission.OTHER][Permission.READ] = View.UploadOtherRead;
-            p[Permission.OTHER][Permission.WRITE] = View.UploadOtherWrite;
-            p[Permission.OTHER][Permission.EXECUTE] = View.UploadOtherExecute;
-
-            Permission permission = new Permission(p);
+            Permission.Action u = Permission.Action.none;
+            if (View.UploadOwnerRead)
+            {
+                u = u.or(Permission.Action.read);
+            }
+            if (View.UploadOwnerWrite)
+            {
+                u = u.or(Permission.Action.write);
+            }
+            if (View.UploadOwnerExecute)
+            {
+                u = u.or(Permission.Action.execute);
+            }
+            Permission.Action g = Permission.Action.none;
+            if (View.UploadGroupRead)
+            {
+                g = g.or(Permission.Action.read);
+            }
+            if (View.UploadGroupWrite)
+            {
+                g = g.or(Permission.Action.write);
+            }
+            if (View.UploadGroupExecute)
+            {
+                g = g.or(Permission.Action.execute);
+            }
+            Permission.Action o = Permission.Action.none;
+            if (View.UploadOtherRead)
+            {
+                o = o.or(Permission.Action.read);
+            }
+            if (View.UploadOtherWrite)
+            {
+                o = o.or(Permission.Action.write);
+            }
+            if (View.UploadOtherExecute)
+            {
+                o = o.or(Permission.Action.execute);
+            }
+            Permission permission = new Permission(u, g, o);
             if (ForFiles.Equals(View.ChmodUploadType))
             {
                 Preferences.instance().setProperty("queue.upload.permissions.file.default",
-                                                   permission.getOctalString());
+                                                   permission.getMode());
             }
             if (ForFolders.Equals(View.ChmodUploadType))
             {
                 Preferences.instance().setProperty("queue.upload.permissions.folder.default",
-                                                   permission.getOctalString());
+                                                   permission.getMode());
             }
         }
 
         private void View_DownloadDefaultPermissionsChangedEvent()
         {
-            bool[][] p = new[] {new bool[3], new bool[3], new bool[3]};
-
-            p[Permission.OWNER][Permission.READ] = View.DownloadOwnerRead;
-            p[Permission.OWNER][Permission.WRITE] = View.DownloadOwnerWrite;
-            p[Permission.OWNER][Permission.EXECUTE] = View.DownloadOwnerExecute;
-
-            p[Permission.GROUP][Permission.READ] = View.DownloadGroupRead;
-            p[Permission.GROUP][Permission.WRITE] = View.DownloadGroupWrite;
-            p[Permission.GROUP][Permission.EXECUTE] = View.DownloadGroupExecute;
-
-            p[Permission.OTHER][Permission.READ] = View.DownloadOtherRead;
-            p[Permission.OTHER][Permission.WRITE] = View.DownloadOtherWrite;
-            p[Permission.OTHER][Permission.EXECUTE] = View.DownloadOtherExecute;
-
-            Permission permission = new Permission(p);
+            Permission.Action u = Permission.Action.none;
+            if (View.DownloadOwnerRead)
+            {
+                u = u.or(Permission.Action.read);
+            }
+            if (View.DownloadOwnerWrite)
+            {
+                u = u.or(Permission.Action.write);
+            }
+            if (View.DownloadOwnerExecute)
+            {
+                u = u.or(Permission.Action.execute);
+            }
+            Permission.Action g = Permission.Action.none;
+            if (View.DownloadGroupRead)
+            {
+                g = g.or(Permission.Action.read);
+            }
+            if (View.DownloadGroupWrite)
+            {
+                g = g.or(Permission.Action.write);
+            }
+            if (View.DownloadGroupExecute)
+            {
+                g = g.or(Permission.Action.execute);
+            }
+            Permission.Action o = Permission.Action.none;
+            if (View.DownloadOtherRead)
+            {
+                o = o.or(Permission.Action.read);
+            }
+            if (View.DownloadOtherWrite)
+            {
+                o = o.or(Permission.Action.write);
+            }
+            if (View.DownloadOtherExecute)
+            {
+                o = o.or(Permission.Action.execute);
+            }
+            Permission permission = new Permission(u, g, o);
             if (ForFiles.Equals(View.ChmodDownloadType))
             {
                 Preferences.instance().setProperty("queue.download.permissions.file.default",
-                                                   permission.getOctalString());
+                                                   permission.getMode());
             }
             if (ForFolders.Equals(View.ChmodDownloadType))
             {
                 Preferences.instance().setProperty("queue.download.permissions.folder.default",
-                                                   permission.getOctalString());
+                                                   permission.getMode());
             }
         }
 
@@ -647,28 +697,28 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void duplicateComboboxClicked(String selected, String property)
         {
-            if (selected.Equals(TransferAction.ACTION_CALLBACK.getLocalizableString()))
+            if (selected.Equals(TransferAction.ACTION_CALLBACK.getTitle()))
             {
                 Preferences.instance().setProperty(property, TransferAction.ACTION_CALLBACK.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_OVERWRITE.getLocalizableString()))
+            else if (selected.Equals(TransferAction.ACTION_OVERWRITE.getTitle()))
             {
                 Preferences.instance().setProperty(property,
                                                    TransferAction.ACTION_OVERWRITE.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_RESUME.getLocalizableString()))
+            else if (selected.Equals(TransferAction.ACTION_RESUME.getTitle()))
             {
                 Preferences.instance().setProperty(property, TransferAction.ACTION_RESUME.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_RENAME.getLocalizableString()))
+            else if (selected.Equals(TransferAction.ACTION_RENAME.getTitle()))
             {
                 Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_RENAME_EXISTING.getLocalizableString()))
+            else if (selected.Equals(TransferAction.ACTION_RENAME_EXISTING.getTitle()))
             {
                 Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME_EXISTING.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_SKIP.getLocalizableString()))
+            else if (selected.Equals(TransferAction.ACTION_SKIP.getTitle()))
             {
                 Preferences.instance().setProperty(property, TransferAction.ACTION_SKIP.toString());
             }
@@ -1203,7 +1253,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     TransferAction.ACTION_CALLBACK.
                                    toString()))
             {
-                action = TransferAction.ACTION_CALLBACK.getLocalizableString();
+                action = TransferAction.ACTION_CALLBACK.getTitle();
             }
             else if (
                 Preferences.instance().getProperty(property).Equals(
@@ -1211,7 +1261,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         ACTION_OVERWRITE.
                         toString()))
             {
-                action = TransferAction.ACTION_OVERWRITE.getLocalizableString();
+                action = TransferAction.ACTION_OVERWRITE.getTitle();
             }
             else if (
                 Preferences.instance().getProperty(property).Equals(
@@ -1219,7 +1269,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         ACTION_RESUME.
                         toString()))
             {
-                action = TransferAction.ACTION_RESUME.getLocalizableString();
+                action = TransferAction.ACTION_RESUME.getTitle();
             }
             else if (
                 Preferences.instance().getProperty(property).Equals(
@@ -1227,7 +1277,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         ACTION_RENAME.
                         toString()))
             {
-                action = TransferAction.ACTION_RENAME.getLocalizableString();
+                action = TransferAction.ACTION_RENAME.getTitle();
             }
             else if (
                 Preferences.instance().getProperty(property).Equals(
@@ -1235,7 +1285,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         ACTION_RENAME_EXISTING.
                         toString()))
             {
-                action = TransferAction.ACTION_RENAME_EXISTING.getLocalizableString();
+                action = TransferAction.ACTION_RENAME_EXISTING.getTitle();
             }
             else if (
                 Preferences.instance().getProperty(property).Equals(
@@ -1243,7 +1293,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         ACTION_SKIP
                                   .toString()))
             {
-                action = TransferAction.ACTION_SKIP.getLocalizableString();
+                action = TransferAction.ACTION_SKIP.getTitle();
             }
             return action;
         }
@@ -1251,21 +1301,21 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDuplicateActions()
         {
             List<string> downloadActions = new List<string>();
-            downloadActions.Add(TransferAction.ACTION_CALLBACK.getLocalizableString());
-            downloadActions.Add(TransferAction.ACTION_OVERWRITE.getLocalizableString());
-            downloadActions.Add(TransferAction.ACTION_RESUME.getLocalizableString());
-            downloadActions.Add(TransferAction.ACTION_RENAME.getLocalizableString());
-            downloadActions.Add(TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());
-            downloadActions.Add(TransferAction.ACTION_SKIP.getLocalizableString());
+            downloadActions.Add(TransferAction.ACTION_CALLBACK.getTitle());
+            downloadActions.Add(TransferAction.ACTION_OVERWRITE.getTitle());
+            downloadActions.Add(TransferAction.ACTION_RESUME.getTitle());
+            downloadActions.Add(TransferAction.ACTION_RENAME.getTitle());
+            downloadActions.Add(TransferAction.ACTION_RENAME_EXISTING.getTitle());
+            downloadActions.Add(TransferAction.ACTION_SKIP.getTitle());
             View.PopulateDuplicateDownloadActions(downloadActions);
 
             List<string> uploadActions = new List<string>();
-            uploadActions.Add(TransferAction.ACTION_CALLBACK.getLocalizableString());
-            uploadActions.Add(TransferAction.ACTION_OVERWRITE.getLocalizableString());
-            uploadActions.Add(TransferAction.ACTION_RESUME.getLocalizableString());
-            uploadActions.Add(TransferAction.ACTION_RENAME.getLocalizableString());
-            uploadActions.Add(TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());
-            uploadActions.Add(TransferAction.ACTION_SKIP.getLocalizableString());
+            uploadActions.Add(TransferAction.ACTION_CALLBACK.getTitle());
+            uploadActions.Add(TransferAction.ACTION_OVERWRITE.getTitle());
+            uploadActions.Add(TransferAction.ACTION_RESUME.getTitle());
+            uploadActions.Add(TransferAction.ACTION_RENAME.getTitle());
+            uploadActions.Add(TransferAction.ACTION_RENAME_EXISTING.getTitle());
+            uploadActions.Add(TransferAction.ACTION_SKIP.getTitle());
             View.PopulateDuplicateUploadActions(uploadActions);
         }
 

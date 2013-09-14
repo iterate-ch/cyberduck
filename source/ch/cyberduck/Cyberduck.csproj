@@ -187,7 +187,6 @@
     <Compile Include="core\aquaticprime\LicenseVerifier.cs" />
     <Compile Include="core\aquaticprime\LicenseImpl.cs" />
     <Compile Include="core\CrashReporter.cs" />
-    <Compile Include="core\editor\Editor.cs" />
     <Compile Include="core\editor\EditorFactory.cs" />
     <Compile Include="core\editor\RegistryApplicationFinder.cs" />
     <Compile Include="core\editor\WatchEditor.cs" />

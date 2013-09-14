@@ -409,8 +409,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PkCheckboxEnabled = View.SelectedProtocol.Equals(ProtocolFactory.SFTP);
             if (Utils.IsNotBlank(View.Hostname))
             {
-                Credentials credentials = new Credentials();
-                CredentialsConfiguratorFactory.get(View.SelectedProtocol).configure(credentials, View.Hostname);
+                Credentials credentials =
+                    CredentialsConfiguratorFactory.get(View.SelectedProtocol).configure(new Host(View.Hostname));
                 if (credentials.isPublicKeyAuthentication())
                 {
                     // No previously manually selected key

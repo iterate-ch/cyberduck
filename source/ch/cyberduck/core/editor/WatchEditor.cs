@@ -21,13 +21,14 @@ using System.Diagnostics;
 using System.IO;
 using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
+using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
 
 namespace Ch.Cyberduck.Core.Editor
 {
-    public class WatchEditor : Editor
+    public class WatchEditor : BrowserBackgroundEditor
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WatchEditor).FullName);
         private FileSystemWatcher _watcher;
