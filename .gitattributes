@@ -2521,6 +2521,7 @@ source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/core/Commands.cs -text
 source/ch/cyberduck/core/CrashReporter.cs -text
+source/ch/cyberduck/core/DefaultPathReferenceFactory.cs -text
 source/ch/cyberduck/core/DragDropLib.cs -text
 source/ch/cyberduck/core/GlobalKeyboardHook.cs -text
 source/ch/cyberduck/core/Keychain.cs -text
@@ -2656,7 +2657,6 @@ source/ch/cyberduck/ui/controller/TransferController.cs -text
 source/ch/cyberduck/ui/controller/TransferPromptController.cs -text
 source/ch/cyberduck/ui/controller/TransferPromptModel.cs -text
 source/ch/cyberduck/ui/controller/TreeBrowserModel.cs -text
-source/ch/cyberduck/ui/controller/TreePathReference.cs -text
 source/ch/cyberduck/ui/controller/UpdateController.cs -text
 source/ch/cyberduck/ui/controller/UploadPromptController.cs -text
 source/ch/cyberduck/ui/controller/UploadPromptModel.cs -text

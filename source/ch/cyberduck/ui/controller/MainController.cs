@@ -189,7 +189,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ProfilePlistReader.Register();
             TcpReachability.Register();
             GrowlImpl.Register();
-            TreePathReference.Register();
+            DefaultPathReferenceFactory.Register();
             PromptLoginController.Register();
             HostKeyController.Register();
             UserDefaultsDateFormatter.Register();

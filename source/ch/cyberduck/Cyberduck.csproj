@@ -198,6 +198,7 @@
     <Compile Include="core\local\Win32FileDescriptor.cs" />
     <Compile Include="core\local\WindowsApplicationLauncher.cs" />
     <Compile Include="core\local\WindowsTemporaryFileService.cs" />
+    <Compile Include="core\DefaultPathReferenceFactory.cs" />
     <Compile Include="core\Proxy.cs" />
     <Compile Include="core\serializer\impl\HostPlistReader.cs" />
     <Compile Include="core\serializer\impl\PlistDeserializer.cs" />
@@ -453,7 +454,6 @@
     <Compile Include="ui\controller\TransferPromptController.cs" />
     <Compile Include="ui\controller\TransferPromptModel.cs" />
     <Compile Include="ui\controller\TreeBrowserModel.cs" />
-    <Compile Include="ui\controller\TreePathReference.cs" />
     <Compile Include="ui\controller\UploadPromptController.cs" />
     <Compile Include="ui\controller\UploadPromptModel.cs" />
     <Compile Include="ui\controller\WindowController.cs" />
