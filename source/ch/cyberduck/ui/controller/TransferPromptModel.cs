@@ -72,37 +72,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public IEnumerable<Path> ChildrenGetter(object p)
         {
-            Path path = ((Path) p);
+            Path directory = ((Path) p);
             AttributedList list;
-            lock (_isLoadingListingInBackground)
-            {
-                if (Transfer.cache().containsKey(path.getReference()))
-                {
-                    list = Transfer.cache().get(path.getReference()).filter(new NullComparator(), Filter());
-                    for (int i = 0; i < list.size(); i++)
-                    {
-                        yield return (Path) list.get(i);
-                    }
-                    yield break;
-                }
-                // Check first if it hasn't been already requested so we don't spawn
-                // a multitude of unecessary threads
-                if (!_isLoadingListingInBackground.Contains(path))
-                {
-                    _isLoadingListingInBackground.Add(path);
 
-                    // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                    // Delay until path is cached in the background
-                    _controller.Background(new ChildGetterTransferPromptBackgrounAction(_controller, Transfer, path,
-                                                                                        _isLoadingListingInBackground));
-                }
+
+            Cache cache = Transfer.cache();
+            if (!cache.isCached(directory.getReference()))
+            {
+                _controller.Background(new ChildGetterTransferPromptBackgrounAction(_controller, Transfer, directory,
+                                                                                    _isLoadingListingInBackground));
             }
-            list = Transfer.cache().get(path.getReference()).filter(new FilenameComparator(true), Filter());
+            list = cache.get(directory.getReference())
+                        .filter(new FilenameComparator(true), Filter());
             for (int i = 0; i < list.size(); i++)
             {
                 yield return (Path) list.get(i);
             }
-            yield break;
         }
 
         public object GetName(Path path)
@@ -185,17 +170,17 @@ namespace Ch.Cyberduck.Ui.Controller
         private class ChildGetterTransferPromptBackgrounAction : ControllerBackgroundAction
         {
             private readonly TransferPromptController _controller;
+            private readonly Path _directory;
             private readonly IList<Path> _isLoadingListingInBackground;
-            private readonly Path _path;
             private readonly Transfer _transfer;
 
             public ChildGetterTransferPromptBackgrounAction(TransferPromptController controller, Transfer transfer,
-                                                            Path path, IList<Path> isLoadingListingInBackground)
+                                                            Path directory, IList<Path> isLoadingListingInBackground)
                 : base(controller, new DialogAlertCallback(controller), controller, controller)
             {
                 _controller = controller;
                 _transfer = transfer;
-                _path = path;
+                _directory = directory;
                 _isLoadingListingInBackground = isLoadingListingInBackground;
             }
 
@@ -204,45 +189,22 @@ namespace Ch.Cyberduck.Ui.Controller
                 return _transfer.getSessions();
             }
 
-            public override void prepare()
-            {
-                AsyncController.AsyncDelegate mainAction = () => _controller.View.StartActivityAnimation();
-                _controller.Invoke(mainAction);
-                base.prepare();
-            }
-
             public override object run()
             {
-                _transfer.cache().put(_path.getReference(), _transfer.children(_path));
+                _transfer.cache().put(_directory.getReference(), _transfer.children(_directory));
                 return true;
             }
 
             public override string getActivity()
             {
-                return String.Format(LocaleFactory.localizedString("Listing directory {0}", "Status"), _path.getName());
+                return String.Format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
+                                     _directory.getName());
             }
 
             public override void cleanup()
             {
                 base.cleanup();
-                lock (_isLoadingListingInBackground)
-                {
-                    _isLoadingListingInBackground.Remove(_path);
-                    if (_isLoadingListingInBackground.Count == 0)
-                    {
-                        _controller.RefreshObject(_path);
-                    }
-                }
-            }
-
-            public override void finish()
-            {
-                AsyncController.AsyncDelegate mainAction = delegate
-                    {
-                        _controller.View.StopActivityAnimation();
-                        _controller.UpdateStatusLabel();
-                    };
-                _controller.Invoke(mainAction);
+                _controller.RefreshObject(_directory);
             }
         }
     }
