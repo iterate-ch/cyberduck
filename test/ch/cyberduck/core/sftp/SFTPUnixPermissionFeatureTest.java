@@ -100,7 +100,35 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
     }
 
     @Test
-    public void testRetainStickyBit() throws Exception {
-
+    public void testRetainStickyBits() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        new SFTPTouchFeature(session).touch(test);
+        final SFTPUnixPermissionFeature feature = new SFTPUnixPermissionFeature(session);
+        feature.setUnixPermission(test,
+                new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
+                        true, false, false));
+        assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
+                true, false, false), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
+                test.getReference()).attributes().getPermission());
+        feature.setUnixPermission(test,
+                new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
+                        false, true, false));
+        assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
+                false, true, false), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
+                test.getReference()).attributes().getPermission());
+        feature.setUnixPermission(test,
+                new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
+                        false, false, true));
+        assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
+                false, false, true), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
+                test.getReference()).attributes().getPermission());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        session.close();
     }
 }
