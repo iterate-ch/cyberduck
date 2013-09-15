@@ -18,8 +18,10 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NullPathFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -80,6 +82,11 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
+    public Filter<Path> getRegexFilter() {
+        return new NullPathFilter<Path>();
+    }
+
+    @Override
     public AttributedList<Path> children(final Path parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", parent));
@@ -92,7 +99,7 @@ public class UploadTransfer extends Transfer {
             return AttributedList.emptyList();
         }
         else {
-            AttributedList<Path> list = new AttributedList<Path>();
+            final AttributedList<Path> list = new AttributedList<Path>();
             for(Local local : parent.getLocal().list().filter(filter)) {
                 list.add(new Path(parent, local));
             }

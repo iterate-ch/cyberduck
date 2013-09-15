@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
@@ -75,13 +74,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         roots.add(p);
     }
 
-    private static final class PromptFilter implements Filter<Path> {
-        @Override
-        public boolean accept(final Path file) {
-            return true;
-        }
-    }
-
     protected Path lookup(final PathReference reference) {
         return transfer.lookup(reference);
     }
@@ -103,13 +95,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             transfer.setSelected(path, state == NSCell.NSOnState);
             outlineView.setNeedsDisplay(true);
         }
-    }
-
-    /**
-     * @return The filter to apply to the file listing in the prompt dialog
-     */
-    protected Filter<Path> filter() {
-        return new PromptFilter();
     }
 
     /**
@@ -153,7 +138,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     protected AttributedList<Path> get(final Path directory) {
         final Cache cache = transfer.cache();
-        return cache.get(directory.getReference()).filter(new FilenameComparator(true), filter());
+        return cache.get(directory.getReference()).filter(new FilenameComparator(true), transfer.getRegexFilter());
     }
 
     /**
@@ -167,8 +152,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(INCLUDE_COLUMN)) {
-                // Not included if the particular path should be skipped or skip
-                // existing is selected as the default transfer action for duplicate files
+                // Not included if the particular path should be skipped or skip existing is selected as the default transfer action for duplicate files
                 final boolean included = !transfer.isSkipped(item) && transfer.isSelected(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
                 return NSNumber.numberWithInt(included ? NSCell.NSOnState : NSCell.NSOffState);
             }

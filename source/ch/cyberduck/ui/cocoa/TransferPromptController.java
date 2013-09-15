@@ -25,9 +25,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -151,9 +149,7 @@ public abstract class TransferPromptController extends SheetController
             log.debug(String.format("Prompt for transfer action of %s", transfer.getName()));
         }
         for(Path next : transfer.getRoots()) {
-            if(browserModel.filter().accept(next)) {
-                browserModel.add(next);
-            }
+            browserModel.add(next);
         }
         this.beginSheet();
         return action;

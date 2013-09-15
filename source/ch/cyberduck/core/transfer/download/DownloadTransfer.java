@@ -17,15 +17,7 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
@@ -93,6 +85,11 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
+    public Filter<Path> getRegexFilter() {
+        return filter;
+    }
+
+    @Override
     public AttributedList<Path> children(final Path parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", parent));
@@ -105,12 +102,12 @@ public class DownloadTransfer extends Transfer {
             return AttributedList.emptyList();
         }
         else {
-            AttributedList<Path> list = session.list(parent, new DisabledListProgressListener()).filter(filter);
+            final AttributedList<Path> list = session.list(parent, new DisabledListProgressListener());
             for(Path download : list) {
                 // Change download path relative to parent local folder
                 download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));
             }
-            return list;
+            return list.filter(filter);
         }
     }
 

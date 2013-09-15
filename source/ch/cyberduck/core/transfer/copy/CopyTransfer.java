@@ -108,6 +108,11 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
+    public Filter<Path> getRegexFilter() {
+        return new NullPathFilter<Path>();
+    }
+
+    @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
         dict.setObjectForKey(session.getHost(), "Host");

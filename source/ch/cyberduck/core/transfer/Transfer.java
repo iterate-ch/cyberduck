@@ -318,7 +318,7 @@ public abstract class Transfer implements Serializable {
                 return root;
             }
         }
-        return this.cache().lookup(r);
+        return cache.lookup(r);
     }
 
     /**
@@ -349,7 +349,7 @@ public abstract class Transfer implements Serializable {
      * @return True if file should not be transferred
      */
     public boolean isSkipped(final Path item) {
-        return false;
+        return !this.getRegexFilter().accept(item);
     }
 
     /**
@@ -361,6 +361,8 @@ public abstract class Transfer implements Serializable {
     public void setSelected(final Path item, final boolean selected) {
         table.put(item, new TransferStatus().selected(true));
     }
+
+    public abstract Filter<Path> getRegexFilter();
 
     /**
      * @param file    File
@@ -377,7 +379,13 @@ public abstract class Transfer implements Serializable {
             return;
         }
         // Transfer
-        this.transfer(file, options, status);
+        try {
+            this.transfer(file, options, status);
+        }
+        catch(BackgroundException e) {
+            // Prompt to continue or abort
+            throw e;
+        }
         if(file.attributes().isFile()) {
             // Post process of file.
             try {
@@ -388,7 +396,7 @@ public abstract class Transfer implements Serializable {
             }
         }
         if(file.attributes().isDirectory()) {
-            for(Path child : this.cache().get(file.getReference())) {
+            for(Path child : cache.get(file.getReference())) {
                 // Recursive
                 this.transfer(child, filter, options);
                 table.remove(child);
@@ -400,7 +408,7 @@ public abstract class Transfer implements Serializable {
             catch(BackgroundException e) {
                 log.warn(String.format("Ignore failure in completion filter for %s", file));
             }
-            this.cache().remove(file.getReference());
+            cache.remove(file.getReference());
         }
     }
 
@@ -438,7 +446,7 @@ public abstract class Transfer implements Serializable {
                     // Call recursively for all children
                     final AttributedList<Path> children = this.children(file);
                     // Put into cache for later reference when transferring
-                    this.cache().put(file.getReference(), children);
+                    cache.put(file.getReference(), children);
                     // Call recursively
                     for(Path child : children) {
                         if(log.isDebugEnabled()) {

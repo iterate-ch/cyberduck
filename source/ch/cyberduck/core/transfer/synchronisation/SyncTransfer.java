@@ -78,6 +78,11 @@ public class SyncTransfer extends Transfer {
         return Type.synchronisation;
     }
 
+    @Override
+    public Filter<Path> getRegexFilter() {
+        return new NullPathFilter<Path>();
+    }
+
     /**
      * The delegate for files to upload
      */
