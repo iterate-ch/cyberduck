@@ -17,6 +17,7 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
@@ -27,13 +28,34 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class FolderController : FileController
     {
-        public FolderController(IPromptView view, BrowserController browserController) : base(view, browserController)
+        private readonly IList<string> _regions;
+        private readonly INewFolderPromptView _view;
+
+        public FolderController(INewFolderPromptView view, BrowserController browserController, IList<string> regions)
+            : base(view, browserController)
         {
+            _view = view;
+            _regions = regions;
+            if (HasLocation())
+            {
+                view.RegionsEnabled = true;
+                IList<KeyValuePair<string, string>> r = new List<KeyValuePair<string, string>>();
+                foreach (string region in regions)
+                {
+                    r.Add(new KeyValuePair<string, string>(region, LocaleFactory.localizedString(region, "S3")));
+                }
+                view.PopulateRegions(r);
+            }
         }
 
         public override Bitmap IconView
         {
             get { return IconCache.Instance.IconForName("newfolder", 64); }
+        }
+
+        private bool HasLocation()
+        {
+            return BrowserController.Workdir.isRoot() && _regions.Count > 0;
         }
 
         public override void Callback(DialogResult result)
@@ -42,7 +64,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 !View.InputText.Trim().Equals(String.Empty))
             {
                 BrowserController.background(new CreateFolderAction(BrowserController, Workdir,
-                                                                    View.InputText));
+                                                                    View.InputText,
+                                                                    HasLocation() ? _view.Region : null));
             }
         }
 
@@ -50,20 +73,22 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly string _filename;
             private readonly Path _folder;
+            private readonly string _region;
             private readonly Path _workdir;
 
-            public CreateFolderAction(BrowserController controller, Path workdir, string filename)
+            public CreateFolderAction(BrowserController controller, Path workdir, string filename, string region)
                 : base(controller)
             {
                 _workdir = workdir;
                 _filename = filename;
+                _region = region;
                 _folder = new Path(_workdir, _filename, AbstractPath.DIRECTORY_TYPE);
             }
 
             public override object run()
             {
                 Directory feature = (Directory) BrowserController.getSession().getFeature(typeof (Directory));
-                feature.mkdir(_folder, null);
+                feature.mkdir(_folder, _region);
                 return true;
             }
 

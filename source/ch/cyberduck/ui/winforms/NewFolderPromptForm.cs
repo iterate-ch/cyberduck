@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -16,15 +16,61 @@
 // yves@cyberduck.ch
 // 
 
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class NewFolderPromptForm : PromptForm, INewFolderPromptView
     {
+        private ComboBox regionComboBox;
+
         public NewFolderPromptForm()
         {
             InitializeComponent();
+        }
+
+        public bool RegionsEnabled
+        {
+            set
+            {
+                if (value && regionComboBox == null)
+                {
+                    regionComboBox = new ComboBox();
+                    regionComboBox.FormattingEnabled = true;
+                    regionComboBox.Location = new Point(84, 70);
+                    regionComboBox.Name = "regionComboBox";
+                    regionComboBox.Size = new Size(121, 23);
+                    regionComboBox.TabIndex = 3;
+
+                    tableLayoutPanel.Controls.Add(regionComboBox, 1, 2);
+                }
+            }
+            private get { return regionComboBox != null; }
+        }
+
+        public string Region
+        {
+            get { return regionComboBox != null ? (string) regionComboBox.SelectedValue : null; }
+            set
+            {
+                if (regionComboBox != null)
+                {
+                    regionComboBox.SelectedValue = value;
+                }
+            }
+        }
+
+        public void PopulateRegions(IList<KeyValuePair<string, string>> regions)
+        {
+            if (regionComboBox != null)
+            {
+                regionComboBox.DataSource = regions;
+                regionComboBox.ValueMember = "Key";
+                regionComboBox.DisplayMember = "Value";
+            }
         }
     }
 }

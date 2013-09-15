@@ -49,6 +49,7 @@ using java.lang;
 using java.util;
 using org.apache.log4j;
 using Application = ch.cyberduck.core.local.Application;
+using Boolean = java.lang.Boolean;
 using DataObject = System.Windows.Forms.DataObject;
 using Exception = System.Exception;
 using Path = ch.cyberduck.core.Path;
@@ -1844,7 +1845,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_NewFolder()
         {
-            FolderController fc = new FolderController(ObjectFactory.GetInstance<INewFolderPromptView>(), this);
+            Location feature = (Location) _session.getFeature(typeof (Location));
+            IList<String> regions = new List<string>();
+            if (Workdir.isRoot() && feature != null)
+            {
+                Iterator iterator = feature.getLocations().iterator();
+                while (iterator.hasNext())
+                {
+                    String region = (String) iterator.next();
+                    regions.Add(region);
+                }
+            }
+            FolderController fc = new FolderController(ObjectFactory.GetInstance<INewFolderPromptView>(), this, regions);
             fc.Show();
         }
 
@@ -3164,7 +3176,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    if ((bool) result)
+                    if (((Boolean) result).booleanValue())
                     {
                         _controller.RefreshParentPaths((IList<Path>) Utils.ConvertFromJavaList<Path>(_files));
                     }

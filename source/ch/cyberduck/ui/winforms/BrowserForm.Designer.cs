@@ -2459,7 +2459,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.treeColumnRegion.DisplayIndex = 6;
             this.treeColumnRegion.IsVisible = false;
-            this.treeColumnRegion.Text = "Extension";
+            this.treeColumnRegion.Text = "Region";
             this.treeColumnRegion.IsEditable = false;
             // 
             // transcriptBox
