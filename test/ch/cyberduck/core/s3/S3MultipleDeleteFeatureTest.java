@@ -29,8 +29,12 @@ import org.jets3t.service.model.container.ObjectKeyAndVersion;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id$
@@ -38,7 +42,60 @@ import java.util.UUID;
 public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
 
     @Test
-    public void testDelete() throws Exception {
+    public void testDeleteFile() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        new S3TouchFeature(session).touch(test);
+        assertTrue(new S3FindFeature(session).find(test));
+        new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        assertFalse(new S3FindFeature(session).find(test));
+        session.close();
+    }
+
+    @Test
+    public void testDeletePlaceholder() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        new S3DirectoryFeature(session).mkdir(test, null);
+        assertTrue(new S3FindFeature(session).find(test));
+        new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        assertFalse(new S3FindFeature(session).find(test));
+        session.close();
+    }
+
+    @Test
+    public void testDeleteContainer() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        new S3DirectoryFeature(session).mkdir(container, null);
+        assertTrue(new S3FindFeature(session).find(container));
+        new S3MultipleDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
+        assertFalse(new S3FindFeature(session).find(container));
+        session.close();
+    }
+
+    @Test
+    public void testDeleteNotFound() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
