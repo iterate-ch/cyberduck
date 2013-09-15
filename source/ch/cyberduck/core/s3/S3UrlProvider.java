@@ -65,13 +65,13 @@ public class S3UrlProvider implements UrlProvider {
                     list.add(this.createSignedUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));
                     // Week
                     list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60));
-                    // Torrent
-                    final S3Service service = new RestS3Service(
-                            new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword()));
-                    list.add(new DescriptiveUrl(URI.create(service.createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
-                            DescriptiveUrl.Type.torrent,
-                            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
                 }
+                // Torrent
+                final S3Service service = new RestS3Service(
+                        new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword()));
+                list.add(new DescriptiveUrl(URI.create(service.createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
+                        DescriptiveUrl.Type.torrent,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
             }
         }
         list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
