@@ -53,7 +53,7 @@ public class FTPListService implements ListService {
      */
     private CompositeFileEntryParser parser;
 
-    private Map<Command, ListService> implementations
+    protected Map<Command, ListService> implementations
             = new HashMap<Command, ListService>();
 
     public enum Command {

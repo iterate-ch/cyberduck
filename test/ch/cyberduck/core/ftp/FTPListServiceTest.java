@@ -18,10 +18,13 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
 
+import java.net.SocketTimeoutException;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -39,6 +42,27 @@ public class FTPListServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final ListService service = new FTPListService(session, null, TimeZone.getDefault());
+        final Path directory = session.workdir();
+        final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
+        assertTrue(list.contains(
+                new Path(directory, "test", Path.FILE_TYPE).getReference()));
+        assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
+                list.get(new Path(directory, "test", Path.FILE_TYPE).getReference()).attributes().getPermission());
+        session.close();
+    }
+
+    @Test
+    public void testListExtended() throws Exception {
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
+        service.remove(FTPListService.Command.list);
+        service.remove(FTPListService.Command.stat);
+        service.remove(FTPListService.Command.mlsd);
         final Path directory = session.workdir();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
         assertTrue(list.contains(
@@ -96,5 +120,37 @@ public class FTPListServiceTest extends AbstractTestCase {
         assertFalse(list.contains(new Path("/test.d", Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE).getReference()));
         assertTrue(list.contains(new Path("/test.d", Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE).getReference()));
         session.close();
+    }
+
+    @Test
+    public void testListIOFailureStat() throws Exception {
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
+        service.remove(FTPListService.Command.lista);
+        service.remove(FTPListService.Command.mlsd);
+        final AtomicBoolean set = new AtomicBoolean();
+        service.implementations.put(FTPListService.Command.stat, new ListService() {
+            @Override
+            public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+                if(set.get()) {
+                    fail();
+                }
+                set.set(true);
+                throw new BackgroundException("t", new SocketTimeoutException());
+            }
+        });
+        final Path directory = session.workdir();
+        final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
+        assertTrue(set.get());
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        assertTrue(list.contains(
+                new Path(directory, "test", Path.FILE_TYPE).getReference()));
+        service.list(directory, new DisabledListProgressListener());
     }
 }
