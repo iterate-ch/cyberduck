@@ -54,6 +54,14 @@ public class S3UrlProviderTest extends AbstractTestCase {
     }
 
     @Test
+    public void testToSignedUrlThirdparty() throws Exception {
+        final S3Session session = new S3Session(new Host(new S3Protocol(), "s.greenqloud.com",
+                new Credentials("k", "s")));
+        assertEquals(DescriptiveUrl.EMPTY,
+                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE)).find(DescriptiveUrl.Type.signed));
+    }
+
+    @Test
     public void testToSignedUrlNoKeyFound() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), null
@@ -82,5 +90,14 @@ public class S3UrlProviderTest extends AbstractTestCase {
                 new Credentials("anonymous", null)));
         assertEquals(new DescriptiveUrl(URI.create("http://test.cyberduck.ch.s3.amazonaws.com/test?torrent"), DescriptiveUrl.Type.torrent),
                 new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE)).find(DescriptiveUrl.Type.torrent));
+    }
+
+    @Test
+    public void testPlaceholder() throws Exception {
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), null
+        )));
+        assertTrue(
+                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", Path.DIRECTORY_TYPE)).filter(DescriptiveUrl.Type.signed).isEmpty());
     }
 }
