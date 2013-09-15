@@ -56,6 +56,8 @@ public class PermissionTest extends AbstractTestCase {
         assertTrue(new Permission(6755).isSetuid());
         assertTrue(new Permission(5755).isSetuid());
         assertFalse(new Permission(1755).isSetuid());
+        assertEquals("--S------", new Permission(4000).getSymbol());
+        assertEquals("4000", new Permission(4000).getMode());
     }
 
     /**
@@ -69,6 +71,8 @@ public class PermissionTest extends AbstractTestCase {
         assertTrue(new Permission(3755).isSetgid());
         assertTrue(new Permission(6755).isSetgid());
         assertFalse(new Permission(1755).isSetgid());
+        assertEquals("-----S---", new Permission(2000).getSymbol());
+        assertEquals("2000", new Permission(2000).getMode());
     }
 
     /**
@@ -81,6 +85,8 @@ public class PermissionTest extends AbstractTestCase {
         assertTrue(new Permission(5755).isSticky());
         assertFalse(new Permission(2755).isSticky());
         assertFalse(new Permission(6755).isSticky());
+        assertEquals("1000", new Permission(1000).getMode());
+        assertEquals("--------T", new Permission(1000).getSymbol());
     }
 
     @Test

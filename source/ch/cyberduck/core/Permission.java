@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -242,7 +243,7 @@ public class Permission implements Serializable {
      * Encode the object to a integer.
      */
     private int toInteger() {
-        return (sticky ? 1 << 9 : 0) |
+        return (sticky ? 1 << 9 : 0) | (setuid ? 4 << 9 : 0) | (setgid ? 2 << 9 : 0) |
                 user.ordinal() << 6 |
                 group.ordinal() << 3 |
                 other.ordinal();
@@ -332,24 +333,38 @@ public class Permission implements Serializable {
         return setuid;
     }
 
+    public void setSetuid(final boolean setuid) {
+        this.setuid = setuid;
+    }
+
     public boolean isSetgid() {
         return setgid;
+    }
+
+    public void setSetgid(final boolean setgid) {
+        this.setgid = setgid;
     }
 
     public boolean isSticky() {
         return sticky;
     }
 
-    public String getSymbol() {
-        String str = user.symbolic + group.symbolic + other.symbolic;
-        if(sticky) {
-            StringBuilder str2 = new StringBuilder(str);
-            str2.replace(str2.length() - 1, str2.length(),
-                    other.implies(Action.execute) ? "t" : "T");
-            str = str2.toString();
-        }
+    public void setSticky(final boolean sticky) {
+        this.sticky = sticky;
+    }
 
-        return str;
+    public String getSymbol() {
+        final StringBuilder symbolic = new StringBuilder();
+        symbolic.append(setuid ? user.implies(Action.execute) ?
+                StringUtils.substring(user.symbolic, 0, 2) + "s" : StringUtils.substring(user.symbolic, 0, 2) + "S" :
+                user.symbolic);
+        symbolic.append(setgid ? group.implies(Action.execute) ?
+                StringUtils.substring(group.symbolic, 0, 2) + "s" : StringUtils.substring(group.symbolic, 0, 2) + "S" :
+                group.symbolic);
+        symbolic.append(sticky ? other.implies(Action.execute) ?
+                StringUtils.substring(other.symbolic, 0, 2) + "t" : StringUtils.substring(other.symbolic, 0, 2) + "T" :
+                other.symbolic);
+        return symbolic.toString();
     }
 
     /**
