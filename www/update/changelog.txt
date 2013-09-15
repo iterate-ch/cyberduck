@@ -18,5 +18,4 @@
 - [Bugfix] Omit absolute paths in archives (ZIP, TAR) (#6644)
 - [Bugfix] Connect mode fallback failures (FTP) (#5385)
 - [Bugfix] Directory placeholder not displayed if same name as object (OpenStack) (#6988)
-- [Bugfix] Changing permissions resets extended access rights flags (SFTP) (#3790)
-- [Bugfix] Changing permissions resets extended access rights flags (#3790)
+- [Bugfix] Changing permissions resets extended access rights flags (SFTP, FTP) (#3790)

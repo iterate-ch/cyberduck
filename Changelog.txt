@@ -29,9 +29,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Directory placeholder not displayed if same name as object (OpenStack) (#6988)
 - [Bugfix] Cannot set custom keyboard shortcut (#7045)
 - [Bugfix] Registration with Growl fails (#7274)
-- [Bugfix] Changing permissions resets extended access rights flags (SFTP) (#3790)
+- [Bugfix] Changing permissions resets extended access rights flags (SFTP, FTP) (#3790)
 - [Bugfix] Remember browser column widths (#6034)
-- [Bugfix] Changing permissions resets extended access rights flags (#3790)
 
 4.3.1 [http://trac.cyberduck.ch/milestone/4.3.1]
 - [Bugfix] Modification date shown as 01.01.1970 (Windows) (#7177)
