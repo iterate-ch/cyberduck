@@ -55,11 +55,6 @@ namespace Ch.Cyberduck.Ui.Controller
             Transfer = transfer;
         }
 
-        public Filter Filter()
-        {
-            return new PromptFilter();
-        }
-
         public virtual void Add(Path p)
         {
             _roots.Add(p);
@@ -83,7 +78,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                     _isLoadingListingInBackground));
             }
             list = cache.get(directory.getReference())
-                        .filter(new FilenameComparator(true), Filter());
+                        .filter(new FilenameComparator(true), Transfer.getRegexFilter());
             for (int i = 0; i < list.size(); i++)
             {
                 yield return (Path) list.get(i);
@@ -206,14 +201,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 base.cleanup();
                 _controller.RefreshObject(_directory);
             }
-        }
-    }
-
-    internal class PromptFilter : Filter
-    {
-        public virtual bool accept(object obj)
-        {
-            return true;
         }
     }
 }

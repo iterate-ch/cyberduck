@@ -72,14 +72,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public virtual TransferAction prompt()
         {
-            Log.debug("prompt:" + Transfer);
+            if (Log.isDebugEnabled())
+            {
+                Log.debug(String.Format("Prompt for transfer action of {0}", Transfer.getName()));
+            }
             for (int i = 0; i < Transfer.getRoots().size(); i++)
             {
                 Path next = (Path) Transfer.getRoots().get(i);
-                if (TransferPromptModel.Filter().accept(next))
-                {
-                    TransferPromptModel.Add(next);
-                }
+                TransferPromptModel.Add(next);
             }
 
             AsyncDelegate wireAction = delegate
