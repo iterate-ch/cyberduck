@@ -43,6 +43,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     regionComboBox.Location = new Point(84, 70);
                     regionComboBox.Name = "regionComboBox";
                     regionComboBox.Size = new Size(121, 23);
+                    regionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
                     regionComboBox.TabIndex = 3;
 
                     tableLayoutPanel.Controls.Add(regionComboBox, 1, 2);
