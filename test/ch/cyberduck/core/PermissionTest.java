@@ -145,6 +145,15 @@ public class PermissionTest extends AbstractTestCase {
     }
 
     @Test
+    public void testInit() {
+        assertEquals(new Permission(1000), new Permission("--------T"));
+        assertEquals(new Permission(2000), new Permission("-----S---"));
+        assertEquals(new Permission(2010), new Permission("-----s---"));
+        assertEquals(new Permission(4000), new Permission("--S------"));
+        assertEquals(new Permission(4100), new Permission("--s------"));
+    }
+
+    @Test
     public void testImplies() {
         assertTrue(new Permission("r--------").getUser().implies(Permission.Action.read));
         assertTrue(new Permission("r-x------").getUser().implies(Permission.Action.execute));

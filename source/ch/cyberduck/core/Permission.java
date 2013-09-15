@@ -271,21 +271,21 @@ public class Permission implements Serializable {
                 char c = symbol.charAt(i);
                 n += (c == '-' || c == 'T' || c == 'S') ? 0 : 1;
             }
+            this.fromInteger(n);
             // Add sticky bit value if set. The sticky bit is represented by the letter t in the final
             // character-place. If the sticky-bit is set on a file or directory without the execution bit set for the others category
             // (non-user-owner and non-group-owner), it is indicated with a capital T
             if(symbol.charAt(8) == 't' || symbol.charAt(8) == 'T') {
-                n += 1000;
+                this.setSticky(true);
             }
             if(symbol.charAt(2) == 's' || symbol.charAt(2) == 'S') {
                 //setuid
-                n += 4000;
+                this.setSetuid(true);
             }
             if(symbol.charAt(5) == 's' || symbol.charAt(5) == 'S') {
                 //setgid
-                n += 2000;
+                this.setSetgid(true);
             }
-            this.fromInteger(n);
         }
         catch(StringIndexOutOfBoundsException e) {
             log.warn(String.format("Failure parsing %s", symbol));
