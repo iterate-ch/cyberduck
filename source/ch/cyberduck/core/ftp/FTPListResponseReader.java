@@ -21,6 +21,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.ftp.parser.FTPExtendedFile;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -117,7 +118,13 @@ public class FTPListResponseReader {
             if(f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)) {
                 o = o.or(Permission.Action.execute);
             }
-            parsed.attributes().setPermission(new Permission(u, g, o));
+            final Permission permission = new Permission(u, g, o);
+            if(f instanceof FTPExtendedFile) {
+                permission.setSetuid(((FTPExtendedFile) f).isSetuid());
+                permission.setSetgid(((FTPExtendedFile) f).isSetgid());
+                permission.setSticky(((FTPExtendedFile) f).isSticky());
+            }
+            parsed.attributes().setPermission(permission);
             final Calendar timestamp = f.getTimestamp();
             if(timestamp != null) {
                 parsed.attributes().setModificationDate(timestamp.getTimeInMillis());

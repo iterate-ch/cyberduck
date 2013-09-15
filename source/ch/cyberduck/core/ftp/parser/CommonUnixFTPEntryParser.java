@@ -68,7 +68,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
     }
 
     protected FTPFile parseFTPEntry(String typeStr, String usr, String grp, long filesize, String datestr, String name, String endtoken) {
-        final FTPFile file = new FTPFile();
+        final FTPExtendedFile file = new FTPExtendedFile();
         int type;
         try {
             file.setTimestamp(this.parseTimestamp(datestr));
@@ -101,18 +101,25 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
 
         int g = 4;
         for(int access = 0; access < 3; access++, g += 4) {
-            // Use != '-' to avoid having to check for suid and sticky bits
-            file.setPermission(access, FTPFile.READ_PERMISSION,
-                    (!group(g).equals("-")));
-            file.setPermission(access, FTPFile.WRITE_PERMISSION,
-                    (!group(g + 1).equals("-")));
+            // Use != '-' to avoid having to check for suid and sticky bits.
+            file.setPermission(access, FTPFile.READ_PERMISSION, (!group(g).equals("-")));
+            file.setPermission(access, FTPFile.WRITE_PERMISSION, (!group(g + 1).equals("-")));
 
             String execPerm = group(g + 2);
-            if(!execPerm.equals("-") && !Character.isUpperCase(execPerm.charAt(0))) {
-                file.setPermission(access, FTPFile.EXECUTE_PERMISSION, true);
+            if(execPerm.equals("-")) {
+                file.setPermission(access, FTPFile.EXECUTE_PERMISSION, false);
             }
             else {
-                file.setPermission(access, FTPFile.EXECUTE_PERMISSION, false);
+                file.setPermission(access, FTPFile.EXECUTE_PERMISSION, Character.isLowerCase(execPerm.charAt(0)));
+                if(0 == access) {
+                    file.setSetuid(execPerm.charAt(0) == 's' || execPerm.charAt(0) == 'S');
+                }
+                if(1 == access) {
+                    file.setSetgid(execPerm.charAt(0) == 's' || execPerm.charAt(0) == 'S');
+                }
+                if(2 == access) {
+                    file.setSticky(execPerm.charAt(0) == 't' || execPerm.charAt(0) == 'T');
+                }
             }
         }
 
