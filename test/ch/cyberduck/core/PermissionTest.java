@@ -147,11 +147,21 @@ public class PermissionTest extends AbstractTestCase {
     @Test
     public void testImplies() {
         assertTrue(new Permission("r--------").getUser().implies(Permission.Action.read));
+        assertTrue(new Permission("r-x------").getUser().implies(Permission.Action.execute));
+        assertTrue(new Permission("r-s------").getUser().implies(Permission.Action.execute));
+        assertFalse(new Permission("r-S------").getUser().implies(Permission.Action.execute));
         assertTrue(new Permission("r--------").isReadable());
         assertFalse(new Permission("r--------").isWritable());
         assertTrue(new Permission("-w-------").getUser().implies(Permission.Action.write));
         assertTrue(new Permission("-w-------").isWritable());
         assertTrue(new Permission("--x------").getUser().implies(Permission.Action.execute));
         assertTrue(new Permission("--x------").isExecutable());
+        assertTrue(new Permission("---r-----").getGroup().implies(Permission.Action.read));
+        assertTrue(new Permission("---r-x---").getGroup().implies(Permission.Action.execute));
+        assertTrue(new Permission("---r-s---").getGroup().implies(Permission.Action.execute));
+        assertFalse(new Permission("---r-S---").getGroup().implies(Permission.Action.execute));
+        assertTrue(new Permission("--------x").getOther().implies(Permission.Action.execute));
+        assertTrue(new Permission("--------t").getOther().implies(Permission.Action.execute));
+        assertFalse(new Permission("--------T").getOther().implies(Permission.Action.execute));
     }
 }
