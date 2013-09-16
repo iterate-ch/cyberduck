@@ -93,7 +93,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             final AttributedList<Local> bookmarks = folder.list().filter(
                     new Filter<Local>() {
                         @Override
-                        public boolean accept(Local file) {
+                        public boolean accept(final Local file) {
                             return file.getName().endsWith(".duck");
                         }
                     }
@@ -119,7 +119,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         super.load();
     }
 
-    protected void rename(Local next, Host bookmark) {
+    protected void rename(final Local next, final Host bookmark) {
         // Rename all files previously saved with nickname to UUID.
         next.rename(this.getFile(bookmark));
     }

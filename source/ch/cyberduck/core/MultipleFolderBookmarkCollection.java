@@ -69,7 +69,7 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
         final AttributedList<Local> groups = folder.list().filter(
                 new Filter<Local>() {
                     @Override
-                    public boolean accept(Local file) {
+                    public boolean accept(final Local file) {
                         return file.attributes().isDirectory();
                     }
                 }
@@ -80,7 +80,7 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
         super.load();
     }
 
-    public boolean contains(Host bookmark) {
+    public boolean contains(final Host bookmark) {
         for(AbstractHostCollection c : this) {
             if(c.contains(bookmark)) {
                 return true;
