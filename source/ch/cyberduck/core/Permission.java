@@ -193,7 +193,7 @@ public class Permission implements Serializable {
      *
      * @param mode Mode
      */
-    public Permission(final Integer mode) {
+    public Permission(final int mode) {
         try {
             this.fromInteger(Integer.valueOf(Integer.toString(mode), 8));
         }
