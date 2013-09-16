@@ -60,7 +60,7 @@ public abstract class LicenseFactory extends Factory<License> {
         if(support.exists()) {
             for(Local key : support.list().filter(new Filter<Local>() {
                 @Override
-                public boolean accept(Local file) {
+                public boolean accept(final Local file) {
                     return "cyberducklicense".equals(FilenameUtils.getExtension(file.getName()));
                 }
             })) {
@@ -69,7 +69,7 @@ public abstract class LicenseFactory extends Factory<License> {
             // No key found. Look for receipt
             for(Local key : support.list().filter(new Filter<Local>() {
                 @Override
-                public boolean accept(Local file) {
+                public boolean accept(final Local file) {
                     return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));
                 }
             })) {
@@ -84,7 +84,7 @@ public abstract class LicenseFactory extends Factory<License> {
      * @param file File to parse
      * @return Read license from file
      */
-    public static License create(Local file) {
+    public static License create(final Local file) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

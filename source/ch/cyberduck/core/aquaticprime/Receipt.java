@@ -86,7 +86,7 @@ public class Receipt extends AbstractLicense {
             if(receipt.exists()) {
                 for(Local key : receipt.list().filter(new Filter<Local>() {
                     @Override
-                    public boolean accept(Local file) {
+                    public boolean accept(final Local file) {
                         return "receipt".equals(file.getName());
                     }
                 })) {
@@ -250,7 +250,7 @@ public class Receipt extends AbstractLicense {
     }
 
     @Override
-    public String getValue(String property) {
+    public String getValue(final String property) {
         return LocaleFactory.localizedString("Unknown");
     }
 
