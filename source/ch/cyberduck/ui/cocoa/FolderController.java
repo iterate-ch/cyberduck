@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -74,6 +75,9 @@ public class FolderController extends FileController {
             for(String region : regions) {
                 regionPopup.addItemWithTitle(LocaleFactory.localizedString(region, "S3"));
                 regionPopup.itemWithTitle(LocaleFactory.localizedString(region, "S3")).setRepresentedObject(region);
+                if(region.equals(Preferences.instance().getProperty("s3.location"))) {
+                    regionPopup.selectItem(regionPopup.lastItem());
+                }
             }
             super.setAccessoryView(view);
         }
