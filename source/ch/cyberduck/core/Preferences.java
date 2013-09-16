@@ -770,8 +770,6 @@ public abstract class Preferences {
 
         defaults.put("disk.unmount.timeout", String.valueOf(2));
 
-        defaults.put("transcript.length", String.valueOf(1000));
-
         /**
          * Read favicon from Web URL
          */

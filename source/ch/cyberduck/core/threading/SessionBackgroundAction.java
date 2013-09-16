@@ -63,12 +63,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      */
     protected int repeatCount;
 
-    /**
-     * Maximum transcript buffer
-     */
-    private static final int TRANSCRIPT_MAX_LENGTH =
-            Preferences.instance().getInteger("transcript.length");
-
     private static final String LINE_SEPARATOR
             = System.getProperty("line.separator");
 
@@ -104,17 +98,10 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     /**
-     * Apppend to the transcript. Reset if maximum length has been reached.
-     *
-     * @param request Message was sent to the server
-     * @param message @see ch.cyberduck.core.TranscriptListener
-     * @see #TRANSCRIPT_MAX_LENGTH
+     * Append to the transcript and notify listeners.
      */
     @Override
     public void log(final boolean request, final String message) {
-        if(transcript.length() > TRANSCRIPT_MAX_LENGTH) {
-            transcript = new StringBuilder();
-        }
         transcript.append(message).append(LINE_SEPARATOR);
         transcriptListener.log(request, message);
     }
