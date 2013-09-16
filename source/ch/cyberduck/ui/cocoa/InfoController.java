@@ -2164,9 +2164,11 @@ public class InfoController extends ToolbarWindowController {
                     controller.getSession().getFeature(Headers.class), files) {
                 @Override
                 public void cleanup(final Map<String, String> updated) {
-                    List<Header> m = new ArrayList<Header>();
-                    for(Map.Entry<String, String> key : updated.entrySet()) {
-                        m.add(new Header(key.getKey(), key.getValue()));
+                    final List<Header> m = new ArrayList<Header>();
+                    if(updated != null) {
+                        for(Map.Entry<String, String> key : updated.entrySet()) {
+                            m.add(new Header(key.getKey(), key.getValue()));
+                        }
                     }
                     setMetadata(m);
                     toggleMetadataSettings(true);
@@ -2216,7 +2218,9 @@ public class InfoController extends ToolbarWindowController {
                     session.getFeature(AclPermission.class), files) {
                 @Override
                 public void cleanup(final List<Acl.UserAndRole> updated) {
-                    setAcl(updated);
+                    if(updated != null) {
+                        setAcl(updated);
+                    }
                     toggleAclSettings(true);
                 }
             }));
@@ -2364,7 +2368,6 @@ public class InfoController extends ToolbarWindowController {
                             controller.getSession().getFeature(UnixPermission.class), files, permission, recursive) {
                         @Override
                         public void cleanup(final Boolean v) {
-                            setPermissions(Collections.singletonList(permission));
                             togglePermissionSettings(true);
                         }
                     })
