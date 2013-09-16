@@ -42,6 +42,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
     public void testLoginFailure() throws Exception {
         final ServiceException f = new ServiceException("m", "<null/>");
         f.setResponseCode(401);
+        f.setErrorMessage("m");
         assertTrue(new ServiceExceptionMappingService().map(f) instanceof LoginFailureException);
     }
 
@@ -49,6 +50,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
     public void testLoginFailure403() throws Exception {
         final ServiceException f = new ServiceException("m", "<null/>");
         f.setResponseCode(403);
+        f.setErrorMessage("m");
         f.setErrorCode("AccessDenied");
         assertTrue(new ServiceExceptionMappingService().map(f) instanceof AccessDeniedException);
         f.setErrorCode("InvalidAccessKeyId");
@@ -60,6 +62,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
     @Test
     public void testBadRequest() {
         final ServiceException f = new ServiceException("m", "<null/>");
+        f.setErrorMessage("m");
         f.setResponseCode(400);
         assertTrue(new ServiceExceptionMappingService().map(f) instanceof InteroperabilityException);
     }
