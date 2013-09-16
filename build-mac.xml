@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  *	Simple Ant (http://jakarta.apache.org/ant) build script for Cyberduck
  *
@@ -20,7 +21,6 @@
  *	Bug fixes, suggestions and comments should be sent to:
  *	dkocher@cyberduck.ch
  -->
-
 <project name="Cyberduck for Mac" basedir=".">
 
     <import file="build.xml"/>
