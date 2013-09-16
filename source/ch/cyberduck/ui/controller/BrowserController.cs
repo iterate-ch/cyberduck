@@ -2044,7 +2044,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<Path> selected = SelectedPaths;
             if (selected.Count > 0)
             {
-                if (Preferences.instance().getBoolean("browser.info.isInspector"))
+                if (Preferences.instance().getBoolean("browser.info.inspector"))
                 {
                     if (null == _inspector || _inspector.View.IsDisposed)
                     {

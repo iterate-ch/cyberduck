@@ -1647,7 +1647,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public static InfoController Create(BrowserController controller, IList<Path> files)
             {
-                if (Preferences.instance().getBoolean("browser.info.isInspector"))
+                if (Preferences.instance().getBoolean("browser.info.inspector"))
                 {
                     if (Open.ContainsKey(controller))
                     {
