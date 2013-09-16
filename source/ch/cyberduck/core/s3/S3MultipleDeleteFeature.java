@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.MultipleDeleteResult;
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
 
 import java.text.MessageFormat;
@@ -112,18 +113,38 @@ public class S3MultipleDeleteFeature implements Delete {
         try {
             if(new S3VersioningFeature(session).getConfiguration(container).isMultifactor()) {
                 final Credentials factor = new S3VersioningFeature(session).getToken(prompt);
-                session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
+                final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
                         keys.toArray(new ObjectKeyAndVersion[keys.size()]),
                         factor.getUsername(),
                         factor.getPassword(),
+                        // Only include errors in response
                         true);
+                if(result.hasErrors()) {
+                    for(MultipleDeleteResult.ErrorResult error : result.getErrorResults()) {
+                        final ServiceException failure = new ServiceException();
+                        failure.setErrorCode(error.getErrorCode());
+                        failure.setErrorMessage(error.getMessage());
+                        throw new ServiceExceptionMappingService().map("Cannot delete {0}", failure,
+                                new Path(container, error.getKey(), Path.FILE_TYPE));
+                    }
+                }
             }
             else {
                 // Request contains a list of up to 1000 keys that you want to delete
                 for(List<ObjectKeyAndVersion> sub : new Partition<ObjectKeyAndVersion>(keys, 1000)) {
-                    session.getClient().deleteMultipleObjects(container.getName(),
+                    final MultipleDeleteResult result = session.getClient().deleteMultipleObjects(container.getName(),
                             sub.toArray(new ObjectKeyAndVersion[sub.size()]),
+                            // Only include errors in response
                             true);
+                    if(result.hasErrors()) {
+                        for(MultipleDeleteResult.ErrorResult error : result.getErrorResults()) {
+                            final ServiceException failure = new ServiceException();
+                            failure.setErrorCode(error.getErrorCode());
+                            failure.setErrorMessage(error.getMessage());
+                            throw new ServiceExceptionMappingService().map("Cannot delete {0}", failure,
+                                    new Path(container, error.getKey(), Path.FILE_TYPE));
+                        }
+                    }
                 }
             }
         }
