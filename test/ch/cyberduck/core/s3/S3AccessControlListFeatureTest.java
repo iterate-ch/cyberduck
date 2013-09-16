@@ -50,7 +50,6 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Acl acl = new S3AccessControlListFeature(session).getPermission(container);
-        assertEquals(2, acl.size());
         assertTrue(acl.containsKey(new Acl.GroupUser("http://acs.amazonaws.com/groups/s3/LogDelivery")));
         assertTrue(acl.get(new Acl.GroupUser("http://acs.amazonaws.com/groups/s3/LogDelivery")).contains(
                 new Acl.Role(Acl.Role.WRITE)
@@ -76,7 +75,6 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Acl acl = new S3AccessControlListFeature(session).getPermission(new Path(container, "test.txt", Path.FILE_TYPE));
-        assertEquals(2, acl.size());
         assertTrue(acl.containsKey(new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers")));
         assertTrue(acl.get(new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers")).contains(
                 new Acl.Role(Acl.Role.READ)
