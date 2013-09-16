@@ -2044,23 +2044,26 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object obj)
                 {
-                    IList<UserAndRoleEntry> entries = Utils.ConvertFromJavaList((List) obj, delegate(object item)
-                        {
-                            Acl.UserAndRole
-                                entry =
-                                    (
-                                    Acl.UserAndRole
-                                    ) item;
-                            return
-                                new UserAndRoleEntry
-                                    (entry.
-                                         getUser
-                                         (),
-                                     entry.
-                                         getRole
-                                         ());
-                        });
-                    _infoController.SetAcl(entries);
+                    if (obj != null)
+                    {
+                        IList<UserAndRoleEntry> entries = Utils.ConvertFromJavaList((List) obj, delegate(object item)
+                            {
+                                Acl.UserAndRole
+                                    entry =
+                                        (
+                                        Acl.UserAndRole
+                                        ) item;
+                                return
+                                    new UserAndRoleEntry
+                                        (entry.
+                                             getUser
+                                             (),
+                                         entry.
+                                             getRole
+                                             ());
+                            });
+                        _infoController.SetAcl(entries);
+                    }
                     _infoController.ToggleAclSettings(true);
                 }
             }
@@ -2294,10 +2297,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     Map updated = (Map) obj;
                     Iterator it = updated.entrySet().iterator();
                     IList<CustomHeaderEntry> metadata = new List<CustomHeaderEntry>();
-                    while (it.hasNext())
+                    if (updated != null)
                     {
-                        Map.Entry pair = (Map.Entry) it.next();
-                        metadata.Add(new CustomHeaderEntry((string) pair.getKey(), (string) pair.getValue()));
+                        while (it.hasNext())
+                        {
+                            Map.Entry pair = (Map.Entry) it.next();
+                            metadata.Add(new CustomHeaderEntry((string) pair.getKey(), (string) pair.getValue()));
+                        }
                     }
                     _infoController.ToggleMetadataSettings(true);
                     _infoController.SetMetadata(metadata);
@@ -2814,8 +2820,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object obj)
                 {
-                    _infoController.background(new FetchPermissionsBackgroundAction(_infoController._controller,
-                                                                                    _infoController));
+                    _infoController.TogglePermissionSettings(true);
                 }
             }
         }
