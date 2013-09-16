@@ -23,7 +23,7 @@ package ch.cyberduck.core;
  */
 public class NullPathFilter<E extends AbstractPath> implements Filter<E> {
 
-    public boolean accept(E file) {
+    public boolean accept(final E file) {
         return true;
     }
 

@@ -29,7 +29,7 @@ public class HiddenFilesPathFilter implements Filter<Path> {
             Preferences.instance().getProperty("browser.hidden.regex"));
 
     @Override
-    public boolean accept(Path file) {
+    public boolean accept(final Path file) {
         if(null == pattern) {
             return true;
         }
