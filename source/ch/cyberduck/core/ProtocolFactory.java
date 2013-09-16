@@ -80,7 +80,7 @@ public final class ProtocolFactory {
         if(bundled.exists()) {
             for(Local profile : bundled.list().filter(new Filter<Local>() {
                 @Override
-                public boolean accept(Local file) {
+                public boolean accept(final Local file) {
                     return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
                 }
             })) {
@@ -100,7 +100,7 @@ public final class ProtocolFactory {
         if(library.exists()) {
             for(Local profile : library.list().filter(new Filter<Local>() {
                 @Override
-                public boolean accept(Local file) {
+                public boolean accept(final Local file) {
                     return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
                 }
             })) {
