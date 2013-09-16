@@ -32,8 +32,10 @@ import org.apache.log4j.Logger;
 public class Permission implements Serializable {
     private static final Logger log = Logger.getLogger(Permission.class);
 
+    /**
+     * POSIX style
+     */
     public enum Action {
-        // POSIX style
         none("---"),
         execute("--x"),
         write("-w-"),
@@ -190,7 +192,6 @@ public class Permission implements Serializable {
      * 0001    For files, allow execution by others.  For directories allow others to search in the directory.
      *
      * @param mode Mode
-     * @see #toInteger()
      */
     public Permission(final Integer mode) {
         try {
@@ -271,21 +272,22 @@ public class Permission implements Serializable {
                 char c = symbol.charAt(i);
                 n += (c == '-' || c == 'T' || c == 'S') ? 0 : 1;
             }
-            this.fromInteger(n);
             // Add sticky bit value if set. The sticky bit is represented by the letter t in the final
             // character-place. If the sticky-bit is set on a file or directory without the execution bit set for the others category
             // (non-user-owner and non-group-owner), it is indicated with a capital T
             if(symbol.charAt(8) == 't' || symbol.charAt(8) == 'T') {
-                this.setSticky(true);
-            }
-            if(symbol.charAt(2) == 's' || symbol.charAt(2) == 'S') {
-                //setuid
-                this.setSetuid(true);
+                // sticky bit octal integer
+                n += 01000;
             }
             if(symbol.charAt(5) == 's' || symbol.charAt(5) == 'S') {
-                //setgid
-                this.setSetgid(true);
+                //setgid octal integer
+                n += 02000;
             }
+            if(symbol.charAt(2) == 's' || symbol.charAt(2) == 'S') {
+                //setuid octal integer
+                n += 04000;
+            }
+            this.fromInteger(n);
         }
         catch(StringIndexOutOfBoundsException e) {
             log.warn(String.format("Failure parsing %s", symbol));
