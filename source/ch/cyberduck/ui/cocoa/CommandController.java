@@ -154,7 +154,7 @@ public class CommandController extends SheetController implements TranscriptList
 
     @Override
     public void callback(final int returncode) {
-        ;
+        //
     }
 
     @Override
