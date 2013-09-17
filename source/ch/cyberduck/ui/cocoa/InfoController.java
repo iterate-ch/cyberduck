@@ -1356,12 +1356,17 @@ public class InfoController extends ToolbarWindowController {
         this.loadBundle();
     }
 
-    private static final String TOOLBAR_ITEM_GENERAL = "info";
-    private static final String TOOLBAR_ITEM_PERMISSIONS = "permissions";
-    private static final String TOOLBAR_ITEM_ACL = "acl";
-    private static final String TOOLBAR_ITEM_DISTRIBUTION = "distribution";
-    private static final String TOOLBAR_ITEM_S3 = "s3";
-    private static final String TOOLBAR_ITEM_METADATA = "metadata";
+    private enum InfoToolbarItem {
+        /**
+         * General
+         */
+        info,
+        permissions,
+        acl,
+        distribution,
+        s3,
+        metadata
+    }
 
     @Override
     protected void setSelectedTab(int tab) {
@@ -1377,101 +1382,102 @@ public class InfoController extends ToolbarWindowController {
         this.initTab(identifier);
     }
 
-    private void initTab(String identifier) {
-        if(identifier.equals(TOOLBAR_ITEM_GENERAL)) {
-            this.initGeneral();
-        }
-        if(identifier.equals(TOOLBAR_ITEM_PERMISSIONS)) {
-            this.initPermissions();
-        }
-        if(identifier.equals(TOOLBAR_ITEM_ACL)) {
-            this.initAcl();
-        }
-        if(identifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
-            this.initDistribution();
-        }
-        if(identifier.equals(TOOLBAR_ITEM_S3)) {
-            this.initS3();
-        }
-        if(identifier.equals(TOOLBAR_ITEM_METADATA)) {
-            this.initMetadata();
+    private void initTab(final String identifier) {
+        switch(InfoToolbarItem.valueOf(identifier)) {
+            case info:
+                this.initGeneral();
+                break;
+            case permissions:
+                this.initPermissions();
+                break;
+            case acl:
+                this.initAcl();
+                break;
+            case distribution:
+                this.initDistribution();
+                break;
+            case s3:
+                this.initS3();
+                break;
+            case metadata:
+                this.initMetadata();
+                break;
         }
     }
 
     @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar,
-                                                                                 final String itemIdentifier,
+                                                                                 final String identifier,
                                                                                  boolean flag) {
-        NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, itemIdentifier, flag);
+        NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, identifier, flag);
         final Session session = controller.getSession();
-        if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
-            if(session.getFeature(DistributionConfiguration.class) != null) {
-                // Give icon and label of the given session
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
-            }
-            else {
-                // CloudFront is the default for custom distributions
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(ProtocolFactory.S3_SSL.disk(), 32));
-            }
-        }
-        else if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
-            if(session.getHost().getProtocol().getType() == Protocol.Type.s3) {
-                // Set icon of cloud service provider
-                item.setLabel(session.getHost().getProtocol().getName());
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
-            }
-            else {
-                // Currently these settings are only available for Amazon S3
-                item.setLabel(ProtocolFactory.S3_SSL.getName());
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(ProtocolFactory.S3_SSL.disk(), 32));
-            }
-        }
-        else if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
-        }
-        else if(itemIdentifier.equals(TOOLBAR_ITEM_ACL)) {
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("permissions.tiff", 32));
+        switch(InfoToolbarItem.valueOf(identifier)) {
+            case distribution:
+                if(session.getFeature(DistributionConfiguration.class) != null) {
+                    // Give icon and label of the given session
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
+                }
+                else {
+                    // CloudFront is the default for custom distributions
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(ProtocolFactory.S3_SSL.disk(), 32));
+                }
+                break;
+            case s3:
+                if(session.getHost().getProtocol().getType() == Protocol.Type.s3) {
+                    // Set icon of cloud service provider
+                    item.setLabel(session.getHost().getProtocol().getName());
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
+                }
+                else {
+                    // Currently these settings are only available for Amazon S3
+                    item.setLabel(ProtocolFactory.S3_SSL.getName());
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(ProtocolFactory.S3_SSL.disk(), 32));
+                }
+                break;
+            case metadata:
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
+                break;
+            case acl:
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("permissions.tiff", 32));
+                break;
         }
         return item;
     }
 
     @Override
-    protected boolean validateTabWithIdentifier(String itemIdentifier) {
+    protected boolean validateTabWithIdentifier(String identifier) {
         final Session session = controller.getSession();
         final boolean anonymous = session.getHost().getCredentials().isAnonymousLogin();
-        if(itemIdentifier.equals(TOOLBAR_ITEM_PERMISSIONS)) {
-            if(anonymous) {
-                // Anonymous never has the right to updated permissions
-                return false;
-            }
-            return session.getFeature(UnixPermission.class) != null;
-        }
-        if(itemIdentifier.equals(TOOLBAR_ITEM_ACL)) {
-            if(anonymous) {
-                // Anonymous never has the right to updated permissions
-                return false;
-            }
-            return session.getFeature(AclPermission.class) != null;
-        }
-        if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
-            if(anonymous) {
-                return false;
-            }
-            // Not enabled if not a cloud session
-            return session.getFeature(DistributionConfiguration.class) != null;
-        }
-        if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
-            if(anonymous) {
-                return false;
-            }
-            return session.getHost().getProtocol().getType() == Protocol.Type.s3;
-        }
-        if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
-            if(anonymous) {
-                return false;
-            }
-            // Not enabled if not a cloud session
-            return session.getFeature(Headers.class) != null;
+        switch(InfoToolbarItem.valueOf(identifier)) {
+            case permissions:
+                if(anonymous) {
+                    // Anonymous never has the right to updated permissions
+                    return false;
+                }
+                return session.getFeature(UnixPermission.class) != null;
+            case acl:
+                if(anonymous) {
+                    // Anonymous never has the right to updated permissions
+                    return false;
+                }
+                return session.getFeature(AclPermission.class) != null;
+            case distribution:
+                if(anonymous) {
+                    return false;
+                }
+                // Not enabled if not a cloud session
+                return session.getFeature(DistributionConfiguration.class) != null;
+            case s3:
+                if(anonymous) {
+                    return false;
+                }
+                return session.getHost().getProtocol().getType() == Protocol.Type.s3;
+            case metadata:
+                if(anonymous) {
+                    return false;
+                }
+                // Not enabled if not a cloud session
+                return session.getFeature(Headers.class) != null;
         }
         return true;
     }
@@ -1612,16 +1618,16 @@ public class InfoController extends ToolbarWindowController {
     @Override
     protected List<String> getPanelIdentifiers() {
         List<String> identifiers = new ArrayList<String>();
-        identifiers.add(TOOLBAR_ITEM_GENERAL);
+        identifiers.add(InfoToolbarItem.info.name());
         if(controller.getSession().getFeature(UnixPermission.class) != null) {
-            identifiers.add(TOOLBAR_ITEM_PERMISSIONS);
+            identifiers.add(InfoToolbarItem.permissions.name());
         }
         if(controller.getSession().getFeature(AclPermission.class) != null) {
-            identifiers.add(TOOLBAR_ITEM_ACL);
+            identifiers.add(InfoToolbarItem.acl.name());
         }
-        identifiers.add(TOOLBAR_ITEM_METADATA);
-        identifiers.add(TOOLBAR_ITEM_DISTRIBUTION);
-        identifiers.add(TOOLBAR_ITEM_S3);
+        identifiers.add(InfoToolbarItem.metadata.name());
+        identifiers.add(InfoToolbarItem.distribution.name());
+        identifiers.add(InfoToolbarItem.s3.name());
         return identifiers;
     }
 
@@ -2774,25 +2780,26 @@ public class InfoController extends ToolbarWindowController {
     @Override
     @Action
     public void helpButtonClicked(final NSButton sender) {
-        final String tab = this.getSelectedTab();
-        StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-        if(tab.equals(TOOLBAR_ITEM_GENERAL)) {
-            site.append("/howto/info");
-        }
-        else if(tab.equals(TOOLBAR_ITEM_PERMISSIONS)) {
-            site.append("/howto/permissions");
-        }
-        else if(tab.equals(TOOLBAR_ITEM_ACL)) {
-            site.append("/howto/acl");
-        }
-        else if(tab.equals(TOOLBAR_ITEM_METADATA)) {
-            site.append("/").append(controller.getSession().getHost().getProtocol().getProvider());
-        }
-        else if(tab.equals(TOOLBAR_ITEM_S3)) {
-            site.append("/").append(controller.getSession().getHost().getProtocol().getProvider());
-        }
-        else if(tab.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
-            site.append("/howto/cdn");
+        final StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+        switch(InfoToolbarItem.valueOf(this.getSelectedTab())) {
+            case info:
+                site.append("/howto/info");
+                break;
+            case permissions:
+                site.append("/howto/permissions");
+                break;
+            case acl:
+                site.append("/howto/acl");
+                break;
+            case distribution:
+                site.append("/howto/cdn");
+                break;
+            case s3:
+                site.append("/").append(controller.getSession().getHost().getProtocol().getProvider());
+                break;
+            case metadata:
+                site.append("/").append(controller.getSession().getHost().getProtocol().getProvider());
+                break;
         }
         openUrl(site.toString());
     }

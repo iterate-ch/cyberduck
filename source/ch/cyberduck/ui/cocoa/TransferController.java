@@ -126,10 +126,11 @@ public final class TransferController extends WindowController implements NSTool
 
     @Override
     public void awakeFromNib() {
-        this.toolbar = NSToolbar.toolbarWithIdentifier("Queue Toolbar");
+        this.toolbar = NSToolbar.toolbarWithIdentifier("Transfer Toolbar");
         this.toolbar.setDelegate(this.id());
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
+        this.toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeLabelOnly);
         this.window.setToolbar(toolbar);
 
         TransferCollection source = TransferCollection.defaultCollection();
@@ -152,9 +153,9 @@ public final class TransferController extends WindowController implements NSTool
             transferSpinner.stopAnimation(null);
             transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
-
         super.awakeFromNib();
     }
+
 
     @Override
     public void setWindow(NSWindow window) {
@@ -628,9 +629,9 @@ public final class TransferController extends WindowController implements NSTool
         final TransferCollection collection = TransferCollection.defaultCollection();
         if(collection.size() > Preferences.instance().getInteger("queue.size.warn")) {
             final NSAlert alert = NSAlert.alert(
-                    LocaleFactory.localizedString(TOOLBAR_CLEAN_UP), //title
+                    TransferToolbarItem.cleanup.label(), //title
                     LocaleFactory.localizedString("Remove completed transfers from list."), // message
-                    LocaleFactory.localizedString(TOOLBAR_CLEAN_UP), // defaultbutton
+                    TransferToolbarItem.cleanup.label(), // defaultbutton
                     LocaleFactory.localizedString("Cancel"), // alternate button
                     null //other button
             );
@@ -734,16 +735,27 @@ public final class TransferController extends WindowController implements NSTool
         }
     }
 
-    private static final String TOOLBAR_RESUME = "Resume";
-    private static final String TOOLBAR_RELOAD = "Reload";
-    private static final String TOOLBAR_STOP = "Stop";
-    private static final String TOOLBAR_REMOVE = "Remove";
-    private static final String TOOLBAR_CLEAN_UP = "Clean Up";
-    private static final String TOOLBAR_OPEN = "Open";
-    private static final String TOOLBAR_SHOW = "Show";
-    private static final String TOOLBAR_TRASH = "Trash";
-    private static final String TOOLBAR_LOG = "Log";
-    private static final String TOOLBAR_FILTER = "Search";
+    private enum TransferToolbarItem {
+        resume,
+        reload,
+        stop,
+        remove,
+        cleanup {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString("Clean Up");
+            }
+        },
+        open,
+        show,
+        trash,
+        log,
+        search;
+
+        public String label() {
+            return LocaleFactory.localizedString(StringUtils.capitalize(this.name()));
+        }
+    }
 
     /**
      * Keep reference to weak toolbar items
@@ -752,101 +764,93 @@ public final class TransferController extends WindowController implements NSTool
             = new HashMap<String, NSToolbarItem>();
 
     @Override
-    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
-        if(!toolbarItems.containsKey(itemIdentifier)) {
-            toolbarItems.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
+    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar, final String identifier, final boolean flag) {
+        if(!toolbarItems.containsKey(identifier)) {
+            toolbarItems.put(identifier, NSToolbarItem.itemWithIdentifier(identifier));
         }
-        final NSToolbarItem item = toolbarItems.get(itemIdentifier);
-        if(itemIdentifier.equals(TOOLBAR_STOP)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_STOP));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_STOP));
-            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_STOP));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop.tiff", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("stopButtonClicked:"));
-            return item;
+        final NSToolbarItem item = toolbarItems.get(identifier);
+        switch(TransferToolbarItem.valueOf(identifier)) {
+            case resume:
+                item.setLabel(TransferToolbarItem.resume.label());
+                item.setPaletteLabel(TransferToolbarItem.resume.label());
+                item.setToolTip(TransferToolbarItem.resume.label());
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("resume.tiff"));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("resumeButtonClicked:"));
+                return item;
+            case reload:
+                item.setLabel(TransferToolbarItem.reload.label());
+                item.setPaletteLabel(TransferToolbarItem.reload.label());
+                item.setToolTip(TransferToolbarItem.reload.label());
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reload.tiff"));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("reloadButtonClicked:"));
+                return item;
+            case stop:
+                item.setLabel(TransferToolbarItem.stop.label());
+                item.setPaletteLabel(TransferToolbarItem.stop.label());
+                item.setToolTip(TransferToolbarItem.stop.label());
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop.tiff", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("stopButtonClicked:"));
+                return item;
+            case remove:
+                item.setLabel(TransferToolbarItem.remove.label());
+                item.setPaletteLabel(TransferToolbarItem.remove.label());
+                item.setToolTip(TransferToolbarItem.remove.label());
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("clean.tiff"));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("deleteButtonClicked:"));
+                return item;
+            case cleanup:
+                item.setLabel(TransferToolbarItem.cleanup.label());
+                item.setPaletteLabel(TransferToolbarItem.cleanup.label());
+                item.setToolTip(TransferToolbarItem.cleanup.label());
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("cleanall.tiff"));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("clearButtonClicked:"));
+                return item;
+            case open:
+                item.setLabel(TransferToolbarItem.open.label());
+                item.setPaletteLabel(TransferToolbarItem.open.label());
+                item.setToolTip(TransferToolbarItem.open.label());
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("open.tiff"));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("openButtonClicked:"));
+                return item;
+            case show:
+                item.setLabel(TransferToolbarItem.show.label());
+                item.setPaletteLabel(LocaleFactory.localizedString("Show in Finder"));
+                item.setToolTip(LocaleFactory.localizedString("Show in Finder"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reveal.tiff"));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("revealButtonClicked:"));
+                return item;
+            case trash:
+                item.setLabel(TransferToolbarItem.trash.label());
+                item.setPaletteLabel(TransferToolbarItem.trash.label());
+                item.setToolTip(LocaleFactory.localizedString("Move to Trash"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("trash.tiff"));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("trashButtonClicked:"));
+                return item;
+            case log:
+                item.setLabel(TransferToolbarItem.log.label());
+                item.setPaletteLabel(TransferToolbarItem.log.label());
+                item.setToolTip(LocaleFactory.localizedString("Toggle Log Drawer"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("log.tiff"));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("toggleLogDrawer:"));
+                break;
+            case search:
+                item.setLabel(TransferToolbarItem.search.label());
+                item.setPaletteLabel(TransferToolbarItem.search.label());
+                item.setView(this.filterField);
+                item.setMinSize(this.filterField.frame().size);
+                item.setMaxSize(this.filterField.frame().size);
+                return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_RESUME)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_RESUME));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_RESUME));
-            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_RESUME));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("resume.tiff"));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("resumeButtonClicked:"));
-            return item;
-        }
-        if(itemIdentifier.equals(TOOLBAR_RELOAD)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_RELOAD));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_RELOAD));
-            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_RELOAD));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reload.tiff"));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("reloadButtonClicked:"));
-            return item;
-        }
-        if(itemIdentifier.equals(TOOLBAR_SHOW)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_SHOW));
-            item.setPaletteLabel(LocaleFactory.localizedString("Show in Finder"));
-            item.setToolTip(LocaleFactory.localizedString("Show in Finder"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reveal.tiff"));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("revealButtonClicked:"));
-            return item;
-        }
-        if(itemIdentifier.equals(TOOLBAR_OPEN)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_OPEN));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_OPEN));
-            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_OPEN));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("open.tiff"));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("openButtonClicked:"));
-            return item;
-        }
-        if(itemIdentifier.equals(TOOLBAR_REMOVE)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_REMOVE));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_REMOVE));
-            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_REMOVE));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("clean.tiff"));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("deleteButtonClicked:"));
-            return item;
-        }
-        if(itemIdentifier.equals(TOOLBAR_CLEAN_UP)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_CLEAN_UP));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_CLEAN_UP));
-            item.setToolTip(LocaleFactory.localizedString(TOOLBAR_CLEAN_UP));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("cleanall.tiff"));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("clearButtonClicked:"));
-            return item;
-        }
-        if(itemIdentifier.equals(TOOLBAR_TRASH)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_TRASH));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_TRASH));
-            item.setToolTip(LocaleFactory.localizedString("Move to Trash"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("trash.tiff"));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("trashButtonClicked:"));
-            return item;
-        }
-        if(itemIdentifier.equals(TOOLBAR_LOG)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
-            item.setToolTip(LocaleFactory.localizedString("Toggle Log Drawer"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("log.tiff"));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("toggleLogDrawer:"));
-            return item;
-        }
-        if(itemIdentifier.equals(TOOLBAR_FILTER)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_FILTER));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_FILTER));
-            item.setView(this.filterField);
-            item.setMinSize(this.filterField.frame().size);
-            item.setMaxSize(this.filterField.frame().size);
-            return item;
-        }
-        // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
+        // Identifier refered to a toolbar item that is not provide or supported.
         // Returning null will inform the toolbar this kind of item is not supported.
         return null;
     }
@@ -1003,13 +1007,13 @@ public final class TransferController extends WindowController implements NSTool
     @Override
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
-                TOOLBAR_RESUME,
-                TOOLBAR_STOP,
-                TOOLBAR_RELOAD,
-                TOOLBAR_REMOVE,
-                TOOLBAR_SHOW,
+                TransferToolbarItem.resume.name(),
+                TransferToolbarItem.stop.name(),
+                TransferToolbarItem.reload.name(),
+                TransferToolbarItem.remove.name(),
+                TransferToolbarItem.show.name(),
                 NSToolbarItem.NSToolbarFlexibleItemIdentifier,
-                TOOLBAR_FILTER
+                TransferToolbarItem.search.name()
         );
     }
 
@@ -1021,16 +1025,16 @@ public final class TransferController extends WindowController implements NSTool
     @Override
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
-                TOOLBAR_RESUME,
-                TOOLBAR_RELOAD,
-                TOOLBAR_STOP,
-                TOOLBAR_REMOVE,
-                TOOLBAR_CLEAN_UP,
-                TOOLBAR_SHOW,
-                TOOLBAR_OPEN,
-                TOOLBAR_TRASH,
-                TOOLBAR_FILTER,
-                TOOLBAR_LOG,
+                TransferToolbarItem.resume.name(),
+                TransferToolbarItem.reload.name(),
+                TransferToolbarItem.stop.name(),
+                TransferToolbarItem.remove.name(),
+                TransferToolbarItem.cleanup.name(),
+                TransferToolbarItem.show.name(),
+                TransferToolbarItem.open.name(),
+                TransferToolbarItem.trash.name(),
+                TransferToolbarItem.search.name(),
+                TransferToolbarItem.log.name(),
                 NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
                 NSToolbarItem.NSToolbarSpaceItemIdentifier,
                 NSToolbarItem.NSToolbarSeparatorItemIdentifier,
