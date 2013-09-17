@@ -2450,6 +2450,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     paths.Add(p.getAbsolute());
                     p = p.getParent();
                 } while (!p.isRoot());
+                View.PopulatePaths(paths);
             }
             View.ComboboxPathEnabled = enabled;
             View.HistoryBackEnabled = enabled && _navigation.getBack().size() > 1;
