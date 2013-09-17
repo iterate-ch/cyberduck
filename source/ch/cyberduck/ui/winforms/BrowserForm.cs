@@ -1632,13 +1632,13 @@ namespace Ch.Cyberduck.Ui.Winforms
                          ApplicationLauncherFactory.get().open(LocalFactory.createLocal("Acknowledgments.rtf")),
                          () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
-                         (sender, args) => Utils.StartProcess(Preferences.instance().getProperty("website.help")),
+                         (sender, args) => BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.help")),
                          () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {donateMainMenuItem},
-                         (sender, args) => Utils.StartProcess(Preferences.instance().getProperty("website.donate")),
+                         (sender, args) => BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate")),
                          () => true);
             Commands.Add(new ToolStripItem[] {reportABugToolStripMenuItem}, new[] {bugMainMenuItem},
-                         (sender, args) => Utils.StartProcess(Preferences.instance().getProperty("website.bug")),
+                         (sender, args) => BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.bug")),
                          () => true);
             Commands.Add(new ToolStripItem[] {aboutCyberduckToolStripMenuItem}, new[] {aboutMainMenuItem},
                          (sender, args) => new AboutBox().ShowDialog(), () => true);

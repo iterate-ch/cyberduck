@@ -476,7 +476,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 _controller.getSession().getHost().getProtocol().getProvider());
                             break;
                     }
-                    Utils.StartProcess(site.ToString());
+                    BrowserLauncherFactory.get().open(site.ToString());
                 };
         }
 

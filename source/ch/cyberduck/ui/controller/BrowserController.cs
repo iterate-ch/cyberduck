@@ -32,6 +32,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
@@ -1280,7 +1281,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (!list.isEmpty())
             {
-                Utils.StartProcess(list.find(DescriptiveUrl.Type.http).getUrl());
+                BrowserLauncherFactory.get().open(list.find(DescriptiveUrl.Type.http).getUrl());
             }
         }
 

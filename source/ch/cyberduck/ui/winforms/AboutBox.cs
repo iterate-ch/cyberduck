@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             creditsRichTextBox.SelectionFont = new Font(Font.FontFamily, 9);
             creditsRichTextBox.DeselectAll();
             creditsRichTextBox.LinkClicked +=
-                (sender, e) => Utils.StartProcess(e.LinkText);
+                (sender, e) => BrowserLauncherFactory.get().open(e.LinkText);
 
             ackButton.Click +=
                 delegate { ApplicationLauncherFactory.get().open(LocalFactory.createLocal("Acknowledgments.rtf")); };

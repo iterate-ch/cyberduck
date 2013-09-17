@@ -23,6 +23,7 @@ using Ch.Cyberduck.Core;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -47,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     Preferences.instance().getProperty("donate.reminder"));
             if (DialogResult.OK == View.ShowDialog())
             {
-                Utils.StartProcess(Preferences.instance().getProperty("website.donate"));
+                BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate"));
             }
             if (View.NeverShowDonation)
             {

@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core;
+using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -50,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         {
             if (e.Button == MouseButtons.Left)
             {
-                Utils.StartProcess(Text);
+                BrowserLauncherFactory.get().open(Text);
             }
             base.OnLinkClicked(e);
         }

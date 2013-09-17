@@ -205,6 +205,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ExplorerRevealService.Register();
             RegistryApplicationFinder.Register();
             TaskbarApplicationBadgeLabeler.Register();
+            DefaultBrowserLauncher.Register();
         }
 
         private static void ConfigureLogging()
