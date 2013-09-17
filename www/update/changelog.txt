@@ -8,6 +8,7 @@
 - [Feature] Support ECHDE cipher suites (WebDAV) (#7344)
 - [Feature] Select region when creating new container (S3, OpenStack)
 - [Feature] Confirmation alert on move and rename in browser (#595)
+- [Feature] Transfer action to skip existing files that match checksum, size or timestamp (#6500)
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Failure duplicating files (FTP) (#7224)
 - [Bugfix] Save workspace does not work for multiple browser sessions to the same server (#7213)
