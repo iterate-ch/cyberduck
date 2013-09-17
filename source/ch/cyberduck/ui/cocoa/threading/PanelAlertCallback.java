@@ -22,7 +22,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.threading.AbstractAlertCallback;
+import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.NetworkFailureDiagnostics;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.cocoa.AlertController;
@@ -37,7 +37,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 /**
  * @version $Id$
  */
-public class PanelAlertCallback extends AbstractAlertCallback {
+public class PanelAlertCallback implements AlertCallback {
 
     private final WindowController controller;
 
