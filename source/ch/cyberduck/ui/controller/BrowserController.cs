@@ -1282,7 +1282,6 @@ namespace Ch.Cyberduck.Ui.Controller
             if (!list.isEmpty())
             {
                 BrowserLauncherFactory.get().open(list.find(DescriptiveUrl.Type.http).getUrl());
-                Utils.StartProcess(list.find(DescriptiveUrl.Type.http).getUrl());
             }
         }
 
