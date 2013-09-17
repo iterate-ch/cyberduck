@@ -1660,7 +1660,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
                 InfoController c = new InfoController(controller, files);
-                controller.View.ViewClosedEvent += delegate
+                c.View.ViewClosedEvent += delegate
                     {
                         lock (SyncRoot)
                         {
