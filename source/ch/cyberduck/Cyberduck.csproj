@@ -275,6 +275,7 @@
       <DependentUpon>GotoPromptForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\winforms\threading\DialogAlertCallback.cs" />
+    <Compile Include="ui\winforms\threading\DialogTransferErrorCallback.cs" />
     <Compile Include="ui\winforms\UpdateForm.cs">
       <SubType>Form</SubType>
     </Compile>

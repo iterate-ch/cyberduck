@@ -3063,24 +3063,27 @@ namespace Ch.Cyberduck.Ui.Controller
         private class CallbackTransferBackgroundAction : TransferBackgroundAction
         {
             private readonly TransferCallback _callback;
+            private readonly Transfer _transfer;
 
-            public CallbackTransferBackgroundAction(TransferCallback callback, ch.cyberduck.ui.Controller controller,
+            public CallbackTransferBackgroundAction(TransferCallback callback, WindowController controller,
                                                     AlertCallback alert, TransferListener transferListener,
                                                     ProgressListener progressListener,
                                                     TranscriptListener transcriptListener, Transfer transfer,
                                                     TransferPrompt prompt, TransferOptions options)
                 : base(
-                    controller, alert, transferListener, progressListener, transcriptListener, transfer, prompt, options
+                    controller, alert, transferListener, progressListener, transcriptListener, transfer, prompt,
+                    new DialogTransferErrorCallback(controller), options
                     )
             {
                 _callback = callback;
+                _transfer = transfer;
             }
 
             public override void finish()
             {
-                if (transfer.isComplete())
+                if (_transfer.isComplete())
                 {
-                    _callback.complete(transfer);
+                    _callback.complete(_transfer);
                 }
             }
         }

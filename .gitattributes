@@ -2769,6 +2769,7 @@ source/ch/cyberduck/ui/winforms/taskdialog/VistaTaskDialogCommonDialog.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/VistaTaskDialogNotificationArgs.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/VistaUnsafeNativeMethods.cs -text
 source/ch/cyberduck/ui/winforms/threading/DialogAlertCallback.cs -text
+source/ch/cyberduck/ui/winforms/threading/DialogTransferErrorCallback.cs -text
 source/com/snoize/SNDisclosableView.m -text
 source/de/zathras/UKCrashReporter.m -text
 source/de/zathras/UKSystemInfo.h -text
