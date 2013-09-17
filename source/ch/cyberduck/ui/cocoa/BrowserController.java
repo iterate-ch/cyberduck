@@ -2673,8 +2673,15 @@ public class BrowserController extends WindowController
     public void downloadToPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            final Local downloadfolder = LocalFactory.createLocal(sheet.filename());
-            this.download(this.getSelectedPaths(), downloadfolder);
+            String folder;
+            if((folder = sheet.filename()) != null) {
+                final Session session = this.getTransferSession();
+                final List<Path> selected = this.getSelectedPaths();
+                for(Path file : selected) {
+                    file.setLocal(LocalFactory.createLocal(LocalFactory.createLocal(folder), file.getName()));
+                }
+                this.transfer(new DownloadTransfer(session, selected), Collections.<Path>emptyList());
+            }
         }
         lastSelectedDownloadDirectory = sheet.filename();
         downloadToPanel = null;
@@ -2699,7 +2706,9 @@ public class BrowserController extends WindowController
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             String filename;
             if((filename = sheet.filename()) != null) {
-                this.download(Collections.singletonList(this.getSelectedPath()), LocalFactory.createLocal(filename));
+                final Path selected = this.getSelectedPath();
+                selected.setLocal(LocalFactory.createLocal(filename));
+                this.transfer(new DownloadTransfer(this.getTransferSession(), selected), Collections.<Path>emptyList());
             }
         }
     }
@@ -2750,29 +2759,12 @@ public class BrowserController extends WindowController
 
     @Action
     public void downloadButtonClicked(final ID sender) {
-        this.download(this.getSelectedPaths());
-    }
-
-    /**
-     * Download to default download directory.
-     *
-     * @param downloads Paths to transfer
-     */
-    public void download(List<Path> downloads) {
-        this.download(downloads, session.getHost().getDownloadFolder());
-    }
-
-    /**
-     * @param downloads      Paths to transfer
-     * @param downloadfolder Destination folder
-     */
-    public void download(final List<Path> downloads, final Local downloadfolder) {
         final Session session = this.getTransferSession();
-        for(Path selected : downloads) {
-            selected.setLocal(LocalFactory.createLocal(downloadfolder, selected.getName()));
+        final List<Path> selected = this.getSelectedPaths();
+        for(Path file : selected) {
+            file.setLocal(LocalFactory.createLocal(session.getHost().getDownloadFolder(), file.getName()));
         }
-        final Transfer transfer = new DownloadTransfer(session, downloads);
-        this.transfer(transfer, Collections.<Path>emptyList());
+        this.transfer(new DownloadTransfer(session, selected), Collections.<Path>emptyList());
     }
 
     private static String lastSelectedUploadDirectory = null;
