@@ -18,6 +18,7 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -43,7 +44,7 @@ public class CombinedComparisionService implements ComparisonService {
         this.session = session;
         this.timestamp = new TimestampComparisonService(tz);
         this.size = new SizeComparisonService();
-        checksum = new ChecksumComparisonService();
+        this.checksum = new ChecksumComparisonService();
     }
 
     /**
@@ -53,7 +54,8 @@ public class CombinedComparisionService implements ComparisonService {
      */
     @Override
     public Comparison compare(final Path p) throws BackgroundException {
-        if(p.getLocal().exists() && session.getFeature(Find.class).find(p)) {
+        final Local local = p.getLocal();
+        if(local.exists() && session.getFeature(Find.class).find(p)) {
             if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                 // MD5/ETag Checksum is supported
                 final Comparison comparison = checksum.compare(p);
@@ -80,7 +82,7 @@ public class CombinedComparisionService implements ComparisonService {
             // Only the remote file exists
             return Comparison.REMOTE_NEWER;
         }
-        else if(p.getLocal().exists()) {
+        else if(local.exists()) {
             // Only the local file exists
             return Comparison.LOCAL_NEWER;
         }
