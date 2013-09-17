@@ -43,12 +43,15 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
 
     private Queue queue = QueueFactory.get();
 
+    private Transfer transfer;
+
     public TransferCollectionBackgroundAction(final Controller controller, final AlertCallback alert,
                                               final TransferListener transferListener,
                                               final ProgressListener progressListener,
                                               final TranscriptListener transcriptListener,
                                               final Transfer transfer, final TransferPrompt prompt, final TransferOptions options) {
         super(controller, alert, transferListener, progressListener, transcriptListener, transfer, prompt, options);
+        this.transfer = transfer;
     }
 
     @Override
