@@ -799,7 +799,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_InfoWindowShowsCurrentSelectionChangedEvent()
         {
-            Preferences.instance().setProperty("browser.info.isInspector",
+            Preferences.instance().setProperty("browser.info.inspector",
                                                View.InfoWindowShowsCurrentSelection);
         }
 
@@ -913,7 +913,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultProtocol =
                 ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
             View.InfoWindowShowsCurrentSelection =
-                Preferences.instance().getBoolean("browser.info.isInspector");
+                Preferences.instance().getBoolean("browser.info.inspector");
             View.ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
             View.DoubleClickEditor = Preferences.instance().getBoolean("browser.doubleclick.edit");
             View.ReturnKeyRenames = Preferences.instance().getBoolean("browser.enterkey.rename");

@@ -1282,6 +1282,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (!list.isEmpty())
             {
                 BrowserLauncherFactory.get().open(list.find(DescriptiveUrl.Type.http).getUrl());
+                Utils.StartProcess(list.find(DescriptiveUrl.Type.http).getUrl());
             }
         }
 
@@ -2115,7 +2116,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // update inspector content if available
             IList<Path> selectedPaths = SelectedPaths;
 
-            if (Preferences.instance().getBoolean("browser.info.isInspector"))
+            if (Preferences.instance().getBoolean("browser.info.inspector"))
             {
                 if (_inspector != null && _inspector.Visible)
                 {

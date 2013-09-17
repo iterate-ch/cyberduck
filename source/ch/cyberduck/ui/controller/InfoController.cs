@@ -87,7 +87,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override bool Singleton
         {
-            get { return Preferences.instance().getBoolean("browser.info.isInspector"); }
+            get { return Preferences.instance().getBoolean("browser.info.inspector"); }
         }
 
         public IList<Path> Files
