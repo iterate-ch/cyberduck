@@ -1012,7 +1012,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_Download()
         {
-            Download(SelectedPaths);
+            Download(SelectedPaths, _session.getHost().getDownloadFolder());
         }
 
         private bool View_ValidateRevertFile()
@@ -1445,14 +1445,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        /// <summary>
-        /// Download to default download directory.
-        /// </summary>
-        /// <param name="downloads"></param>
-        public void Download(IList<Path> downloads)
-        {
-            Download(downloads, _session.getHost().getDownloadFolder());
-        }
 
         public void Download(IList<Path> downloads, Local downloadFolder)
         {
@@ -1462,7 +1454,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 selected.setLocal(LocalFactory.createLocal(downloadFolder, selected.getName()));
             }
             Transfer q = new DownloadTransfer(session, Utils.ConvertToJavaList(downloads));
-            transfer(q);
+            transfer(q, new List<Path>());
         }
 
         private void View_GotoFolder()
@@ -1715,12 +1707,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DownloadTo()
         {
-            string folderName = View.DownloadToDialog(LocaleFactory.localizedString("Download To…"),
-                                                      Environment.SpecialFolder.Desktop, null);
-            if (null != folderName)
+            string folder = View.DownloadToDialog(LocaleFactory.localizedString("Download To…"),
+                                                  Environment.SpecialFolder.Desktop, null);
+            if (null != folder)
             {
-                Local downloadFolder = LocalFactory.createLocal(folderName);
-                Download(SelectedPaths, downloadFolder);
+                Session session = getTransferSession();
+                IList<Path> selected = SelectedPaths;
+
+                foreach (Path file in selected)
+                {
+                    file.setLocal(LocalFactory.createLocal(LocalFactory.createLocal(folder), file.getName()));
+                }
+                transfer(new DownloadTransfer(session, Utils.ConvertToJavaList(selected)), new List<Path>());
             }
         }
 
@@ -1731,10 +1729,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DownloadAs()
         {
-            string fileName = View.DownloadAsDialog(null, SelectedPath.getName());
-            if (null != fileName)
+            string filename = View.DownloadAsDialog(null, SelectedPath.getName());
+            if (null != filename)
             {
-                Download(new List<Path> {SelectedPath}, LocalFactory.createLocal(fileName));
+                Path selected = SelectedPath;
+                selected.setLocal(LocalFactory.createLocal(filename));
+                transfer(new DownloadTransfer(getTransferSession(), selected), new List<Path>());
             }
         }
 
