@@ -974,17 +974,6 @@ public class MainController extends BundleController implements NSApplication.De
             RendezvousFactory.instance().addListener(new RendezvousListener() {
                 @Override
                 public void serviceResolved(final String identifier, final Host host) {
-                    if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
-                        try {
-                            if(InetAddress.getByName(host.getHostname()).equals(InetAddress.getLocalHost())) {
-                                log.info("Supressed Rendezvous notification for " + host);
-                                return;
-                            }
-                        }
-                        catch(UnknownHostException e) {
-                            //Ignore
-                        }
-                    }
                     invoke(new DefaultMainAction() {
                         @Override
                         public void run() {

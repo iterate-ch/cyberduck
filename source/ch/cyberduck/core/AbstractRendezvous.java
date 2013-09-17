@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.TimedSemaphore;
 import org.apache.log4j.Logger;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -238,6 +240,19 @@ public abstract class AbstractRendezvous implements Rendezvous {
         public void serviceResolved(final String identifier, final Host host) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Service resolved with identifier %s with %s", identifier, host));
+            }
+            if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
+                try {
+                    if(InetAddress.getByName(host.getHostname()).equals(InetAddress.getLocalHost())) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Supressed Rendezvous notification for %s", host));
+                        }
+                        return;
+                    }
+                }
+                catch(UnknownHostException e) {
+                    //Ignore
+                }
             }
             if(this.acquire()) {
                 for(RendezvousListener listener : listeners) {
