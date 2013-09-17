@@ -89,7 +89,7 @@ public class SwiftSession extends HttpSession<Client> {
             return null;
         }
         final Region region = client.getRegions().iterator().next();
-        log.warn(String.format("Fallback to first region found %s", region));
+        log.warn(String.format("Fallback to first region found %s", region.getRegionId()));
         return region;
     }
 
