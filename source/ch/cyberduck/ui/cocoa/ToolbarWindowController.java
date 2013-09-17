@@ -163,7 +163,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     private String getToolbarName() {
-        return this.getBundleName().toLowerCase(Locale.ENGLISH) + ".toolbar";
+        return String.format("%s.toolbar", this.getBundleName().toLowerCase(Locale.ENGLISH));
     }
 
     /**
@@ -175,9 +175,9 @@ public abstract class ToolbarWindowController extends WindowController implement
             = new HashMap<String, NSToolbarItem>();
 
     @Override
-    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar,
+    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar,
                                                                                  final String itemIdentifier,
-                                                                                 boolean flag) {
+                                                                                 final boolean flag) {
         if(!cache.containsKey(itemIdentifier)) {
             cache.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
         }
@@ -198,18 +198,18 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     @Override
-    public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
+    public NSArray toolbarAllowedItemIdentifiers(final NSToolbar toolbar) {
         List<String> identifiers = this.getPanelIdentifiers();
         return NSArray.arrayWithObjects(identifiers.toArray(new String[identifiers.size()]));
     }
 
     @Override
-    public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
+    public NSArray toolbarDefaultItemIdentifiers(final NSToolbar toolbar) {
         return this.toolbarAllowedItemIdentifiers(toolbar);
     }
 
     @Override
-    public NSArray toolbarSelectableItemIdentifiers(NSToolbar toolbar) {
+    public NSArray toolbarSelectableItemIdentifiers(final NSToolbar toolbar) {
         return this.toolbarAllowedItemIdentifiers(toolbar);
     }
 
@@ -218,15 +218,15 @@ public abstract class ToolbarWindowController extends WindowController implement
         return this.validateTabWithIdentifier(item.itemIdentifier());
     }
 
-    protected boolean validateTabWithIdentifier(String itemIdentifier) {
+    protected boolean validateTabWithIdentifier(final String itemIdentifier) {
         return true;
     }
 
-    protected String getTitle(NSTabViewItem item) {
+    protected String getTitle(final NSTabViewItem item) {
         return item.label();
     }
 
-    public void select(NSToolbarItem sender) {
+    public void select(final NSToolbarItem sender) {
         this.setSelectedTab(tabView.indexOfTabViewItemWithIdentifier(sender.itemIdentifier()));
     }
 
