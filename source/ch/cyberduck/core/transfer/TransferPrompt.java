@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 public interface TransferPrompt {
 
     /**
-     * @return Transfer action selected in prompt.
+     * @return Transfer action selected in prompt for overwriting files
      */
     TransferAction prompt() throws BackgroundException;
 }

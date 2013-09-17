@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
@@ -49,8 +50,18 @@ import java.util.concurrent.TimeUnit;
 public class TransferBackgroundAction extends ControllerBackgroundAction {
     private static final Logger log = Logger.getLogger(TransferBackgroundAction.class);
 
-    protected Transfer transfer;
-    protected TransferPrompt prompt;
+    private Transfer transfer;
+
+    /**
+     * Overwrite prompt
+     */
+    private TransferPrompt prompt;
+
+    /**
+     * Error prompt
+     */
+    private TransferErrorCallback error;
+
     protected TransferOptions options;
 
     private SleepPreventer sleep = SleepPreventerFactory.get();
@@ -78,10 +89,12 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
                                     final TranscriptListener transcriptListener,
                                     final Transfer transfer,
                                     final TransferPrompt prompt,
+                                    final TransferErrorCallback error,
                                     final TransferOptions options) {
         super(controller, alert, progressListener, transcriptListener);
         this.prompt = prompt;
         this.transfer = transfer;
+        this.error = error;
         this.options = options;
         this.transferListener = transferListener;
         this.meter = new TransferSpeedometer(transfer);
@@ -106,7 +119,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
                     transferListener.progress(status);
                 }
             }, 500L, TimeUnit.MILLISECONDS);
-            transfer.start(prompt, options);
+            transfer.start(prompt, options, error);
         }
         finally {
             progressTimer.cancel(false);

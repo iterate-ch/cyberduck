@@ -7,8 +7,10 @@ import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -66,7 +68,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             public TransferAction prompt() throws BackgroundException {
                 return TransferAction.ACTION_OVERWRITE;
             }
-        }, new TransferOptions());
+        }, new TransferOptions(), new DisabledTransferErrorCallback());
         assertTrue(t.isComplete());
         final DownloadTransfer serialized = new DownloadTransfer(t.serialize(SerializerFactory.get()), new SFTPSession(new Host(new SFTPProtocol(), "t")));
         assertNotSame(t, serialized);
@@ -121,11 +123,11 @@ public class DownloadTransferTest extends AbstractTestCase {
         }, root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options) throws BackgroundException {
+                                    final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options);
+                super.transfer(file, filter, options, new DisabledTransferErrorCallback());
                 if(file.equals(root)) {
                     assertFalse(this.cache().containsKey(root.getReference()));
                 }
@@ -146,7 +148,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             public TransferAction prompt() throws BackgroundException {
                 return TransferAction.ACTION_OVERWRITE;
             }
-        }, new TransferOptions());
+        }, new TransferOptions(), new DisabledTransferErrorCallback());
         assertFalse(t.cache().containsKey(child.getReference()));
         assertTrue(t.cache().isEmpty());
     }

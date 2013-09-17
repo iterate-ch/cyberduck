@@ -7,8 +7,10 @@ import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -84,11 +86,11 @@ public class UploadTransferTest extends AbstractTestCase {
         }, root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options) throws BackgroundException {
+                                    final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options);
+                super.transfer(file, filter, options, new DisabledTransferErrorCallback());
                 assertFalse(this.cache().containsKey(child.getReference()));
             }
 
@@ -107,7 +109,7 @@ public class UploadTransferTest extends AbstractTestCase {
             public TransferAction prompt() throws BackgroundException {
                 return TransferAction.ACTION_OVERWRITE;
             }
-        }, new TransferOptions());
+        }, new TransferOptions(), new DisabledTransferErrorCallback());
         assertFalse(t.cache().containsKey(child.getReference()));
         assertTrue(t.cache().isEmpty());
     }
@@ -133,11 +135,11 @@ public class UploadTransferTest extends AbstractTestCase {
         final Transfer t = new UploadTransfer(new NullSession(new Host("t")), root) {
             @Override
             protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options) throws BackgroundException {
+                                    final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options);
+                super.transfer(file, filter, options, new DisabledTransferErrorCallback());
                 assertFalse(this.cache().containsKey(child.getReference()));
             }
 
@@ -151,7 +153,7 @@ public class UploadTransferTest extends AbstractTestCase {
             public TransferAction prompt() throws BackgroundException {
                 return TransferAction.ACTION_OVERWRITE;
             }
-        }, new TransferOptions());
+        }, new TransferOptions(), new DisabledTransferErrorCallback());
         assertFalse(t.cache().containsKey(child.getReference()));
     }
 
@@ -214,7 +216,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, options);
+        }, options, new DisabledTransferErrorCallback());
         assertEquals(1, c.get());
     }
 
@@ -253,7 +255,7 @@ public class UploadTransferTest extends AbstractTestCase {
             public TransferAction prompt() throws BackgroundException {
                 return TransferAction.ACTION_RENAME;
             }
-        }, new TransferOptions());
+        }, new TransferOptions(), new DisabledTransferErrorCallback());
     }
 
     @Test

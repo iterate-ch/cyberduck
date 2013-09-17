@@ -52,6 +52,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
+import ch.cyberduck.ui.cocoa.threading.PanelTransferErrorCallback;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
@@ -698,7 +699,7 @@ public final class TransferController extends WindowController implements NSTool
             public TransferAction prompt() throws BackgroundException {
                 return TransferPromptControllerFactory.create(TransferController.this, transfer).prompt();
             }
-        }, options) {
+        }, new PanelTransferErrorCallback(this), options) {
             @Override
             public void init() {
                 super.init();

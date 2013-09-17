@@ -370,7 +370,7 @@ public abstract class Transfer implements Serializable {
      * @param options Quarantine option
      */
     protected void transfer(final Path file, final TransferPathFilter filter,
-                            final TransferOptions options) throws BackgroundException {
+                            final TransferOptions options, final TransferErrorCallback prompt) throws BackgroundException {
         final TransferStatus status = table.get(file);
         if(!status.isSelected()) {
             if(log.isInfoEnabled()) {
@@ -384,7 +384,13 @@ public abstract class Transfer implements Serializable {
         }
         catch(BackgroundException e) {
             // Prompt to continue or abort
-            throw e;
+            if(prompt.prompt(e)) {
+                // Continue
+                log.warn(String.format("Ignore transfer failure %s", e));
+            }
+            else {
+                throw e;
+            }
         }
         if(file.attributes().isFile()) {
             // Post process of file.
@@ -398,7 +404,7 @@ public abstract class Transfer implements Serializable {
         if(file.attributes().isDirectory()) {
             for(Path child : cache.get(file.getReference())) {
                 // Recursive
-                this.transfer(child, filter, options);
+                this.transfer(child, filter, options, prompt);
                 table.remove(child);
             }
             // Post process of directory.
@@ -494,7 +500,7 @@ public abstract class Transfer implements Serializable {
      * @param prompt  Transfer prompt callback
      * @param options Transfer options
      */
-    public void start(final TransferPrompt prompt, final TransferOptions options) throws BackgroundException {
+    public void start(final TransferPrompt prompt, final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
         }
@@ -522,7 +528,7 @@ public abstract class Transfer implements Serializable {
             }
             // Transfer all files sequentially
             for(Path next : roots) {
-                this.transfer(next, filter, options);
+                this.transfer(next, filter, options, error);
             }
             this.clear(options);
         }
@@ -581,6 +587,10 @@ public abstract class Transfer implements Serializable {
      */
     public long getSize() {
         return size;
+    }
+
+    public void addSize(final long bytes) {
+        size += bytes;
     }
 
     /**

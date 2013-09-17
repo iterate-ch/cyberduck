@@ -33,6 +33,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -99,7 +100,7 @@ public class CopyTransferTest extends AbstractTestCase {
             public TransferAction prompt() throws BackgroundException {
                 return TransferAction.ACTION_CANCEL;
             }
-        }, new TransferOptions());
+        }, new TransferOptions(), new DisabledTransferErrorCallback());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
 
@@ -133,7 +134,7 @@ public class CopyTransferTest extends AbstractTestCase {
             public TransferAction prompt() throws BackgroundException {
                 return TransferAction.ACTION_CANCEL;
             }
-        }, new TransferOptions());
+        }, new TransferOptions(), new DisabledTransferErrorCallback());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
 

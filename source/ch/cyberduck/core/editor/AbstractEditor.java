@@ -25,6 +25,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -190,7 +191,7 @@ public abstract class AbstractEditor implements Editor {
                     return getAction();
                 }
             };
-            download.start(null, options);
+            download.start(null, options, new DisabledTransferErrorCallback());
             if(download.isComplete()) {
                 checksum = local.attributes().getChecksum();
                 final Permission permissions = local.attributes().getPermission();
@@ -217,7 +218,7 @@ public abstract class AbstractEditor implements Editor {
                     return TransferAction.ACTION_OVERWRITE;
                 }
             };
-            upload.start(null, new TransferOptions());
+            upload.start(null, new TransferOptions(), new DisabledTransferErrorCallback());
             if(upload.isComplete()) {
                 // Update known remote file size
                 edited.attributes().setSize(upload.getTransferred());

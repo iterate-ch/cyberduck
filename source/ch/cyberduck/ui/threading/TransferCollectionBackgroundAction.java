@@ -28,6 +28,7 @@ import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -49,8 +50,11 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
                                               final TransferListener transferListener,
                                               final ProgressListener progressListener,
                                               final TranscriptListener transcriptListener,
-                                              final Transfer transfer, final TransferPrompt prompt, final TransferOptions options) {
-        super(controller, alert, transferListener, progressListener, transcriptListener, transfer, prompt, options);
+                                              final Transfer transfer,
+                                              final TransferPrompt prompt,
+                                              final TransferErrorCallback error,
+                                              final TransferOptions options) {
+        super(controller, alert, transferListener, progressListener, transcriptListener, transfer, prompt, error, options);
         this.transfer = transfer;
     }
 

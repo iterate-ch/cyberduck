@@ -40,6 +40,7 @@ import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferAdapter;
@@ -77,6 +78,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
+import ch.cyberduck.ui.cocoa.threading.PanelTransferErrorCallback;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
@@ -440,7 +442,7 @@ public class BrowserController extends WindowController
                             public TransferAction prompt() throws BackgroundException {
                                 return TransferAction.ACTION_COMPARISON;
                             }
-                        }, options
+                        }, new DisabledTransferErrorCallback(), options
                 ) {
                     @Override
                     public void cleanup() {
@@ -2898,7 +2900,7 @@ public class BrowserController extends WindowController
                         public TransferAction prompt() throws BackgroundException {
                             return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
                         }
-                    }, new TransferOptions()
+                    }, new PanelTransferErrorCallback(this), new TransferOptions()
             ) {
                 @Override
                 public void finish() {
