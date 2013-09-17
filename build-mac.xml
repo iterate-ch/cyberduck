@@ -391,11 +391,11 @@
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
             <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
+            <param name="url.changelog" value="https://version.cyberduck.ch/nightly/changelog.html"/>
         </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
@@ -427,11 +427,11 @@
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
             <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
+            <param name="url.changelog" value="https://version.cyberduck.ch/beta/changelog.html"/>
         </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
@@ -463,11 +463,11 @@
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
             <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
+            <param name="url.changelog" value="https://version.cyberduck.ch/changelog.html"/>
         </antcall>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
