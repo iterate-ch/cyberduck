@@ -17,8 +17,8 @@ package ch.cyberduck.ui.cocoa.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -73,10 +73,7 @@ public class PanelAlertCallback implements AlertCallback {
 
                 @Override
                 protected void help() {
-                    final String provider = action.getSessions().iterator().next().getHost().getProtocol().getProvider();
-                    controller.openUrl(
-                            String.format("%s/%s", Preferences.instance().getProperty("website.help"), provider)
-                    );
+                    new DefaultProviderHelpService().help(action.getSessions().iterator().next().getHost().getProtocol());
                 }
             };
             if(log.length() > 0) {

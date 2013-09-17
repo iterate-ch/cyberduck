@@ -18,15 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.LoginControllerFactory;
@@ -93,7 +85,7 @@ public final class PromptLoginController implements LoginController {
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
         site.append("/").append(protocol.getScheme().name());
-        int option = this.parent.alert(alert, site.toString());
+        int option = parent.alert(alert, site.toString());
         if(alert.suppressionButton().state() == NSCell.NSOnState) {
             // Never show again.
             Preferences.instance().setProperty(preference, true);
@@ -127,9 +119,7 @@ public final class PromptLoginController implements LoginController {
 
             @Override
             public void helpButtonClicked(NSButton sender) {
-                StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-                site.append("/").append(protocol.getProvider());
-                openUrl(site.toString());
+                new DefaultProviderHelpService().help(protocol);
             }
 
             @Outlet

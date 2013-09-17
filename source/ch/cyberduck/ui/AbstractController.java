@@ -18,10 +18,8 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.MainAction;
@@ -107,22 +105,6 @@ public abstract class AbstractController implements Controller {
         return null;
     }
 
-    public void openUrl(final DescriptiveUrl url) {
-        if(url.equals(DescriptiveUrl.EMPTY)) {
-            return;
-        }
-        openUrl(url.getUrl());
-    }
-
-    /**
-     * Open URL with default web browser.
-     *
-     * @param url HTTP URL
-     */
-    public void openUrl(String url) {
-        BrowserLauncherFactory.get().open(url);
-    }
-
     protected void invalidate() {
         singleExecutor.shutdown();
         concurrentExecutor.shutdown();
@@ -130,6 +112,7 @@ public abstract class AbstractController implements Controller {
 
     private final class BackgroundCallable<T> implements Callable<T> {
         private final BackgroundAction<T> action;
+
 
         public BackgroundCallable(final BackgroundAction<T> action) {
             this.action = action;

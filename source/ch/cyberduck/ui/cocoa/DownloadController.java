@@ -27,6 +27,7 @@ import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -99,6 +100,6 @@ public class DownloadController extends AlertController {
     protected void help() {
         StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
         site.append("/howto/download");
-        openUrl(site.toString());
+        BrowserLauncherFactory.get().open(site.toString());
     }
 }

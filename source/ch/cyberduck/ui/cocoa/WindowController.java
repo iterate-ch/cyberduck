@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -274,7 +275,7 @@ public abstract class WindowController extends BundleController implements NSWin
                     super.help();
                 }
                 else {
-                    openUrl(help);
+                    BrowserLauncherFactory.get().open(help);
                 }
             }
         };
@@ -333,7 +334,7 @@ public abstract class WindowController extends BundleController implements NSWin
 
     @Action
     public void helpButtonClicked(final NSButton sender) {
-        openUrl(Preferences.instance().getProperty("website.help"));
+        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.help"));
     }
 
     protected void print(NSView view) {

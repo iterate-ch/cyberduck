@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSPanel;
@@ -117,7 +117,7 @@ public abstract class AlertController extends SheetController {
      * Open help page.
      */
     protected void help() {
-        this.openUrl(Preferences.instance().getProperty("website.help"));
+        new DefaultProviderHelpService().help();
     }
 
     /**

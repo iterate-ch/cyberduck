@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -2630,7 +2631,7 @@ public class BrowserController extends WindowController
             list = session.getFeature(UrlProvider.class).toUrl(this.workdir());
         }
         if(!list.isEmpty()) {
-            this.openUrl(list.find(DescriptiveUrl.Type.http));
+            BrowserLauncherFactory.get().open(list.find(DescriptiveUrl.Type.http).getUrl());
         }
     }
 

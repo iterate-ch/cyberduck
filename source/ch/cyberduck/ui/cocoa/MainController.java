@@ -33,6 +33,7 @@ import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
 import ch.cyberduck.core.importer.TransmitBookmarkCollection;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -437,12 +438,12 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void bugreportMenuClicked(final ID sender) {
-        openUrl(Preferences.instance().getProperty("website.bug"));
+        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.bug"));
     }
 
     @Action
     public void helpMenuClicked(final ID sender) {
-        openUrl(Preferences.instance().getProperty("website.help"));
+        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.help"));
     }
 
     @Action
@@ -459,17 +460,17 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void websiteMenuClicked(final ID sender) {
-        openUrl(Preferences.instance().getProperty("website.home"));
+        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.home"));
     }
 
     @Action
     public void forumMenuClicked(final ID sender) {
-        openUrl(Preferences.instance().getProperty("website.forum"));
+        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.forum"));
     }
 
     @Action
     public void donateMenuClicked(final ID sender) {
-        openUrl(Preferences.instance().getProperty("website.donate"));
+        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate"));
     }
 
     @Action
@@ -487,7 +488,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void feedbackMenuClicked(final ID sender) {
-        openUrl(Preferences.instance().getProperty("mail.feedback")
+        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("mail.feedback")
                 + "?subject=" + Preferences.instance().getProperty("application.name") + "-" + Preferences.instance().getProperty("application.version"));
     }
 
@@ -574,7 +575,7 @@ public class MainController extends BundleController implements NSApplication.De
                             public boolean alertShowHelp(NSAlert alert) {
                                 StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
                                 site.append("/").append("faq");
-                                openUrl(site.toString());
+                                BrowserLauncherFactory.get().open(site.toString());
                                 return true;
                             }
 
@@ -1303,7 +1304,7 @@ public class MainController extends BundleController implements NSApplication.De
 
                 public void closeDonationSheet(final NSButton sender) {
                     if(sender.tag() == SheetCallback.DEFAULT_OPTION) {
-                        openUrl(Preferences.instance().getProperty("website.donate"));
+                        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate"));
                     }
                     this.terminate();
                 }

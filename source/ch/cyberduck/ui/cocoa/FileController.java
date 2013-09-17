@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
@@ -104,8 +105,8 @@ public abstract class FileController extends AlertController {
 
     @Override
     protected void help() {
-        StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+        final StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
         site.append("/howto/browser");
-        openUrl(site.toString());
+        BrowserLauncherFactory.get().open(site.toString());
     }
 }

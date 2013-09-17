@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -114,9 +115,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
 
             @Override
             protected void help() {
-                StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-                site.append("/").append(Scheme.sftp.name());
-                openUrl(site.toString());
+                new DefaultProviderHelpService().help(Scheme.sftp);
             }
         };
         c.beginSheet();
@@ -156,9 +155,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
 
             @Override
             protected void help() {
-                StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-                site.append("/").append(Scheme.sftp.name());
-                openUrl(site.toString());
+                new DefaultProviderHelpService().help(Scheme.sftp);
             }
         };
         c.beginSheet();

@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.logging.LoggingConfiguration;
@@ -2784,23 +2785,22 @@ public class InfoController extends ToolbarWindowController {
         switch(InfoToolbarItem.valueOf(this.getSelectedTab())) {
             case info:
                 site.append("/howto/info");
+                BrowserLauncherFactory.get().open(site.toString());
                 break;
             case permissions:
                 site.append("/howto/permissions");
+                BrowserLauncherFactory.get().open(site.toString());
                 break;
             case acl:
                 site.append("/howto/acl");
+                BrowserLauncherFactory.get().open(site.toString());
                 break;
             case distribution:
                 site.append("/howto/cdn");
+                BrowserLauncherFactory.get().open(site.toString());
                 break;
-            case s3:
-                site.append("/").append(controller.getSession().getHost().getProtocol().getProvider());
-                break;
-            case metadata:
-                site.append("/").append(controller.getSession().getHost().getProtocol().getProvider());
-                break;
+            default:
+                new DefaultProviderHelpService().help(controller.getSession().getHost().getProtocol());
         }
-        openUrl(site.toString());
     }
 }
