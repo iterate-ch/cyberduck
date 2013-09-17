@@ -718,6 +718,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME_EXISTING.toString());
             }
+            else if (selected.Equals(TransferAction.ACTION_COMPARISON.getTitle()))
+            {
+                Preferences.instance().setProperty(property, TransferAction.ACTION_COMPARISON.toString());
+            }
             else if (selected.Equals(TransferAction.ACTION_SKIP.getTitle()))
             {
                 Preferences.instance().setProperty(property, TransferAction.ACTION_SKIP.toString());

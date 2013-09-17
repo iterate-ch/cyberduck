@@ -244,7 +244,9 @@ namespace Ch.Cyberduck.Ui.Controller
             actions.Add(TransferAction.ACTION_RESUME, TransferAction.ACTION_RESUME.getTitle());
             actions.Add(TransferAction.ACTION_OVERWRITE, TransferAction.ACTION_OVERWRITE.getTitle());
             actions.Add(TransferAction.ACTION_RENAME, TransferAction.ACTION_RENAME.getTitle());
+            actions.Add(TransferAction.ACTION_RENAME_EXISTING, TransferAction.ACTION_RENAME_EXISTING.getTitle());
             actions.Add(TransferAction.ACTION_SKIP, TransferAction.ACTION_SKIP.getTitle());
+            actions.Add(TransferAction.ACTION_COMPARISON, TransferAction.ACTION_COMPARISON.getTitle());
 
             bool renameSupported = true;
             foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
