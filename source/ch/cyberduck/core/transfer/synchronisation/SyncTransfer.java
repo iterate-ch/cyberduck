@@ -193,7 +193,7 @@ public class SyncTransfer extends Transfer {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Compare path %s with local", path));
             }
-            final Comparison result = new CombinedComparisionService(session).compare(path);
+            final Comparison result = new CombinedComparisionService(session, session.getHost().getTimezone()).compare(path);
             comparisons.put(path.getReference(), result);
         }
         return new AttributedList<Path>(children);

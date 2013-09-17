@@ -24,6 +24,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 
+import java.util.TimeZone;
+
 /**
  * @version $Id$
  */
@@ -31,17 +33,17 @@ public class CombinedComparisionService implements ComparisonService {
 
     private Session<?> session;
 
-    private ComparisonService checksum
-            = new ChecksumComparisonService();
+    private ComparisonService checksum;
 
-    private ComparisonService size
-            = new SizeComparisonService();
+    private ComparisonService size;
 
-    private ComparisonService timestamp
-            = new TimestampComparisonService();
+    private ComparisonService timestamp;
 
-    public CombinedComparisionService(final Session session) {
+    public CombinedComparisionService(final Session session, final TimeZone tz) {
         this.session = session;
+        this.timestamp = new TimestampComparisonService(tz);
+        this.size = new SizeComparisonService();
+        checksum = new ChecksumComparisonService();
     }
 
     /**

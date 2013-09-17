@@ -43,7 +43,7 @@ public class CompareFilter extends AbstractUploadFilter {
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(super.accept(file, parent)) {
-            final Comparison comparison = new CombinedComparisionService(session).compare(file);
+            final Comparison comparison = new CombinedComparisionService(session, session.getHost().getTimezone()).compare(file);
             switch(comparison) {
                 case LOCAL_NEWER:
                 case EQUAL:

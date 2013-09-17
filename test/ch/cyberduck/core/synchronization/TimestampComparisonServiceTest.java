@@ -21,7 +21,7 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
 
     @Test
     public void testCompare() throws Exception {
-        ComparisonService s = new TimestampComparisonService();
+        ComparisonService s = new TimestampComparisonService(TimeZone.getDefault());
         final long timestmap = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
         assertEquals(Comparison.EQUAL, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override

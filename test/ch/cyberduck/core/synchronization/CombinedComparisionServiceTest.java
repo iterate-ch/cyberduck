@@ -38,7 +38,7 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
                 }
                 return super.getFeature(type);
             }
-        });
+        }, TimeZone.getDefault());
         assertEquals(Comparison.EQUAL, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {

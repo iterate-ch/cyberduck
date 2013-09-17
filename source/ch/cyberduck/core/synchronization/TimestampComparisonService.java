@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import org.apache.log4j.Logger;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -34,7 +35,11 @@ import java.util.Calendar;
 public class TimestampComparisonService implements ComparisonService {
     private static Logger log = Logger.getLogger(CombinedComparisionService.class);
 
-    private CalendarService calendarService = new CalendarService();
+    private CalendarService calendarService;
+
+    public TimestampComparisonService(final TimeZone tz) {
+        this.calendarService = new CalendarService(tz);
+    }
 
     @Override
     public Comparison compare(final Path p) throws BackgroundException {

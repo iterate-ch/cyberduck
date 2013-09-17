@@ -26,7 +26,13 @@ import java.util.TimeZone;
  * @version $Id$
  */
 public class CalendarService implements DateDomainService<Calendar> {
-    private static Logger log = Logger.getLogger(CalendarService.class);
+    private static final Logger log = Logger.getLogger(CalendarService.class);
+
+    private TimeZone tz;
+
+    public CalendarService(final TimeZone tz) {
+        this.tz = null == tz ? TimeZone.getTimeZone("UTC") : tz;
+    }
 
     /**
      * @param timestamp Milliseconds
@@ -39,9 +45,9 @@ public class CalendarService implements DateDomainService<Calendar> {
     @Override
     public Calendar asDate(final long timestamp, final Instant precision) {
         if(log.isDebugEnabled()) {
-            log.debug("asCalendar:" + timestamp);
+            log.debug(String.format("Convert timestamp %d to calendar with precision %s", timestamp, precision));
         }
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar c = Calendar.getInstance(tz);
         c.setTimeInMillis(timestamp);
         if(precision == Instant.MILLISECOND) {
             return c;
