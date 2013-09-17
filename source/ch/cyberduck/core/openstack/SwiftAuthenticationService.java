@@ -95,7 +95,7 @@ public class SwiftAuthenticationService {
         else if(context.contains("2.0")) {
             // Prompt for tenant
             final String user;
-            String tenant = null;
+            final String tenant;
             if(StringUtils.contains(credentials.getUsername(), ':')) {
                 tenant = StringUtils.split(credentials.getUsername(), ':')[0];
                 user = StringUtils.split(credentials.getUsername(), ':')[1];
