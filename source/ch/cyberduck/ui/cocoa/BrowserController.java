@@ -1263,6 +1263,9 @@ public class BrowserController extends WindowController
                     return;
                 }
                 final Path path = lookup(new NSObjectPathReference(item));
+                if(null == path) {
+                    return;
+                }
                 if(tableColumn.identifier().equals(BrowserTableDataSource.Columns.FILENAME.name())) {
                     cell.setEditable(session.getFeature(Move.class).isSupported(path));
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
@@ -3419,7 +3422,6 @@ public class BrowserController extends WindowController
                         super.init();
                         window.setTitle(host.getNickname());
                         window.setRepresentedFilename(StringUtils.EMPTY);
-                        window.setFrameAutosaveName(host.getNickname());
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
                     }
