@@ -46,7 +46,6 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
      */
     @Override
     public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(file, parent);
         if(file.getLocal().exists()) {
             Local renamed = file.getLocal();
             while(renamed.exists()) {
@@ -60,6 +59,6 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
                 file.getLocal().rename(renamed);
             }
         }
-        return status;
+        return super.prepare(file, parent);
     }
 }
