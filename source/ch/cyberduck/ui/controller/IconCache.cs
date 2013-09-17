@@ -128,13 +128,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 return IconForFilename(path.getName(), size);
             }
-            //TODO volume wird nicht mehr speziell ausgewiesen
-            /*
-            if (path.attributes().isVolume())
-            {
-                return IconForName(path.getHost().getProtocol().disk(), size);
-            }
-            */
             if (path.attributes().isDirectory())
             {
                 if (!path.attributes().getPermission().isExecutable())
@@ -223,6 +216,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 _bitmapCache.Put(name, image, size);
             }
             return image;
+        }
+
+        public Bitmap VolumeIcon(Protocol protocol, IconSize size)
+        {
+            return IconForName(protocol.disk(), size);
         }
 
         /// <summary>

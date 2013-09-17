@@ -72,6 +72,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetIcon(Path path)
         {
+            if (path.attributes().isVolume())
+            {
+                return IconCache.Instance.VolumeIcon(_controller.getSession().getHost().getProtocol(),
+                                                     IconCache.IconSize.Small);
+            }
             return IconCache.Instance.IconForPath(path, IconCache.IconSize.Small);
         }
 
