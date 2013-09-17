@@ -153,18 +153,18 @@ public class MainController extends BundleController implements NSApplication.De
                         new Path(h.getDefaultPath(), Path.FILE_TYPE)));
             }
             else {
-                for(BrowserController controller : MainController.getBrowsers()) {
-                    if(controller.isMounted()) {
-                        if(new HostUrlProvider().get(controller.getSession().getHost()).equals(
+                for(BrowserController browser : MainController.getBrowsers()) {
+                    if(browser.isMounted()) {
+                        if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
                                 new HostUrlProvider().get(h))) {
                             // Handle browser window already connected to the same host. #4215
-                            controller.window().makeKeyAndOrderFront(null);
+                            browser.window().makeKeyAndOrderFront(null);
                             return;
                         }
                     }
                 }
-                BrowserController doc = newDocument();
-                doc.mount(h);
+                final BrowserController browser = newDocument(false);
+                browser.mount(h);
             }
         }
     }
@@ -900,7 +900,8 @@ public class MainController extends BundleController implements NSApplication.De
                         if(log.isInfoEnabled()) {
                             log.info(String.format("New browser for saved session %s", host));
                         }
-                        MainController.newDocument().mount(host);
+                        final BrowserController browser = MainController.newDocument(true, host.getUuid());
+                        browser.mount(host);
                     }
                     sessions.clear();
                 }
@@ -1206,16 +1207,17 @@ public class MainController extends BundleController implements NSApplication.De
             return result;
         }
         // Determine if there are any open connections
-        for(BrowserController controller : MainController.getBrowsers()) {
+        for(BrowserController browser : MainController.getBrowsers()) {
             if(Preferences.instance().getBoolean("browser.serialize")) {
-                if(controller.isMounted()) {
+                if(browser.isMounted()) {
                     // The workspace should be saved. Serialize all open browser sessions
-                    final Host serialized = new Host(controller.getSession().getHost().serialize(SerializerFactory.get()));
-                    serialized.setWorkdir(controller.workdir());
+                    final Host serialized = new Host(browser.getSession().getHost().serialize(SerializerFactory.get()));
+                    serialized.setWorkdir(browser.workdir());
                     sessions.add(serialized);
+                    browser.window().saveFrameUsingName(serialized.getUuid());
                 }
             }
-            if(controller.isConnected()) {
+            if(browser.isConnected()) {
                 if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                     final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Quit"),
                             LocaleFactory.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
@@ -1250,7 +1252,7 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                 }
                 else {
-                    controller.unmount();
+                    browser.unmount();
                 }
             }
         }
@@ -1429,11 +1431,16 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * Makes a unmounted browser window the key window and brings it to the front
      *
-     * @param force If true, open a new browser regardeless of any unused browser window
-     * @return A reference to a browser window
+     * @param force If true, open a new browser regardless of any unused browser window
      */
-    public static BrowserController newDocument(boolean force) {
-        log.debug("newDocument");
+    public static BrowserController newDocument(final boolean force) {
+        return newDocument(force, null);
+    }
+
+    /**
+     * @param frame Frame autosave name
+     */
+    public static BrowserController newDocument(final boolean force, final String frame) {
         final List<BrowserController> browsers = MainController.getBrowsers();
         if(!force) {
             for(BrowserController controller : browsers) {
@@ -1450,7 +1457,14 @@ public class MainController extends BundleController implements NSApplication.De
                 browsers.remove(controller);
             }
         });
-        if(!browsers.isEmpty()) {
+        if(StringUtils.isNotBlank(frame)) {
+            if(!controller.window().setFrameUsingName(frame)) {
+                if(!browsers.isEmpty()) {
+                    controller.cascade();
+                }
+            }
+        }
+        else if(!browsers.isEmpty()) {
             controller.cascade();
         }
         controller.window().makeKeyAndOrderFront(null);
