@@ -1258,6 +1258,7 @@ namespace Ch.Cyberduck.Ui.Controller
             downloadActions.Add(TransferAction.ACTION_RESUME.getTitle());
             downloadActions.Add(TransferAction.ACTION_RENAME.getTitle());
             downloadActions.Add(TransferAction.ACTION_RENAME_EXISTING.getTitle());
+            downloadActions.Add(TransferAction.ACTION_COMPARISON.getTitle());
             downloadActions.Add(TransferAction.ACTION_SKIP.getTitle());
             View.PopulateDuplicateDownloadActions(downloadActions);
 
@@ -1267,6 +1268,7 @@ namespace Ch.Cyberduck.Ui.Controller
             uploadActions.Add(TransferAction.ACTION_RESUME.getTitle());
             uploadActions.Add(TransferAction.ACTION_RENAME.getTitle());
             uploadActions.Add(TransferAction.ACTION_RENAME_EXISTING.getTitle());
+            uploadActions.Add(TransferAction.ACTION_COMPARISON.getTitle());
             uploadActions.Add(TransferAction.ACTION_SKIP.getTitle());
             View.PopulateDuplicateUploadActions(uploadActions);
         }
