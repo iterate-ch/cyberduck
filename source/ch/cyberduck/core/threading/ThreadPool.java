@@ -1,8 +1,7 @@
 package ch.cyberduck.core.threading;
 
 /*
- * Copyright (c) 2002-2009 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +15,7 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.ch
  */
 
 import org.apache.log4j.Logger;

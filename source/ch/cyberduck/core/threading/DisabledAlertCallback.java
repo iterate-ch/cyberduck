@@ -14,7 +14,8 @@ package ch.cyberduck.core.threading;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
@@ -22,7 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DisabledAlertCallback implements AlertCallback {
     private static final Logger log = Logger.getLogger(AbstractBackgroundAction.class);
