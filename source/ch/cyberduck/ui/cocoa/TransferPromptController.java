@@ -443,8 +443,10 @@ public abstract class TransferPromptController extends SheetController
                 TransferAction.ACTION_RESUME,
                 TransferAction.ACTION_OVERWRITE,
                 TransferAction.ACTION_RENAME,
+                TransferAction.ACTION_RENAME_EXISTING,
                 TransferAction.ACTION_SKIP,
-                TransferAction.ACTION_RENAME_EXISTING};
+                TransferAction.ACTION_COMPARISON
+        };
 
         for(TransferAction action : actions) {
             this.actionPopup.addItemWithTitle(action.getTitle());

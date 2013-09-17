@@ -1483,6 +1483,7 @@ public class PreferencesController extends ToolbarWindowController {
                 TransferAction.ACTION_RESUME,
                 TransferAction.ACTION_RENAME,
                 TransferAction.ACTION_RENAME_EXISTING,
+                TransferAction.ACTION_COMPARISON,
                 TransferAction.ACTION_SKIP}) {
             this.duplicateDownloadCombobox.addItemWithTitle(action.getTitle());
             this.duplicateDownloadCombobox.lastItem().setRepresentedObject(action.name());
@@ -1541,6 +1542,7 @@ public class PreferencesController extends ToolbarWindowController {
                 TransferAction.ACTION_RESUME,
                 TransferAction.ACTION_RENAME,
                 TransferAction.ACTION_RENAME_EXISTING,
+                TransferAction.ACTION_COMPARISON,
                 TransferAction.ACTION_SKIP}) {
             this.duplicateUploadCombobox.addItemWithTitle(action.getTitle());
             this.duplicateUploadCombobox.lastItem().setRepresentedObject(action.name());
