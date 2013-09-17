@@ -359,7 +359,7 @@ public abstract class Transfer implements Serializable {
      * @param selected Selected files in transfer prompt
      */
     public void setSelected(final Path item, final boolean selected) {
-        table.put(item, new TransferStatus().selected(true));
+        table.put(item, new TransferStatus().selected(selected));
     }
 
     public abstract Filter<Path> getRegexFilter();
