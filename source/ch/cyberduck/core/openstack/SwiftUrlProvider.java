@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -69,17 +70,22 @@ public class SwiftUrlProvider implements UrlProvider {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.attributes().isFile()) {
             final Region region = session.getRegion(containerService.getContainer(file));
-            list.add(new DescriptiveUrl(
-                    URI.create(region.getStorageUrl(containerService.getContainer(file).getName(), containerService.getKey(file)).toString()),
-                    DescriptiveUrl.Type.provider,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                            session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
-            ));
-            list.add(this.createTempUrl(file, 60 * 60));
-            // Default signed URL expiring in 24 hours.
-            list.add(this.createTempUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));
-            // Week
-            list.add(this.createTempUrl(file, 7 * 24 * 60 * 60));
+            if(null == region) {
+                list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
+            }
+            else {
+                list.add(new DescriptiveUrl(
+                        URI.create(region.getStorageUrl(containerService.getContainer(file).getName(), containerService.getKey(file)).toString()),
+                        DescriptiveUrl.Type.provider,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                                session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
+                ));
+                list.add(this.createTempUrl(file, 60 * 60));
+                // Default signed URL expiring in 24 hours.
+                list.add(this.createTempUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));
+                // Week
+                list.add(this.createTempUrl(file, 7 * 24 * 60 * 60));
+            }
         }
         return list;
     }
