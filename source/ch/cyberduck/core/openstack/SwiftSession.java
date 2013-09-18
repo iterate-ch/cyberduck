@@ -81,6 +81,10 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     protected Region getRegion(final String location) {
+        if(null == client) {
+            log.warn("Cannot determine region if not connected");
+            return null;
+        }
         for(Region region : client.getRegions()) {
             if(null == region.getRegionId()) {
                 continue;
