@@ -111,6 +111,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -273,7 +274,7 @@ public class BrowserController extends WindowController
             this.filenameFilter = new Filter<Path>() {
                 @Override
                 public boolean accept(Path file) {
-                    if(file.getName().toLowerCase(java.util.Locale.ENGLISH).contains(search.toLowerCase(java.util.Locale.ENGLISH))) {
+                    if(file.getName().toLowerCase(Locale.ROOT).contains(search.toLowerCase(Locale.ROOT))) {
                         // Matching filename
                         return true;
                     }
@@ -1831,9 +1832,9 @@ public class BrowserController extends WindowController
             bookmarkModel.setFilter(new HostFilter() {
                 @Override
                 public boolean accept(Host host) {
-                    return StringUtils.lowerCase(host.getNickname()).contains(searchString.toLowerCase(java.util.Locale.ENGLISH))
-                            || ((null != host.getComment()) && StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase(java.util.Locale.ENGLISH)))
-                            || StringUtils.lowerCase(host.getHostname()).contains(searchString.toLowerCase(java.util.Locale.ENGLISH));
+                    return StringUtils.lowerCase(host.getNickname()).contains(searchString.toLowerCase(Locale.ROOT))
+                            || ((null != host.getComment()) && StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase(Locale.ROOT)))
+                            || StringUtils.lowerCase(host.getHostname()).contains(searchString.toLowerCase(Locale.ROOT));
                 }
             });
         }
