@@ -59,7 +59,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
         }
 
         @Override
-        public HostKeyController create(Controller c) {
+        public HostKeyController create(final Controller c) {
             return new AlertHostKeyController((WindowController) c);
         }
     }

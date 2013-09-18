@@ -43,7 +43,7 @@ import java.net.URISyntaxException;
  * @version $Id$
  */
 public final class PromptLoginController implements LoginController {
-    private static Logger log = Logger.getLogger(PromptLoginController.class);
+    private static final Logger log = Logger.getLogger(PromptLoginController.class);
 
     public static void register() {
         LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
