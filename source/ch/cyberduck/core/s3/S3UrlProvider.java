@@ -30,6 +30,7 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -116,7 +117,7 @@ public class S3UrlProvider implements UrlProvider {
      */
     protected DescriptiveUrl createSignedUrl(final Path file, final int seconds) {
         // Determine expiry time for URL
-        final Calendar expiry = Calendar.getInstance();
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
         // Generate URL
         final S3Service client = new RestS3Service(
