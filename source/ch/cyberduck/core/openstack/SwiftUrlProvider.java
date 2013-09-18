@@ -18,31 +18,50 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
+import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
 /**
  * @version $Id$
  */
 public class SwiftUrlProvider implements UrlProvider {
-
-    private SwiftSession session;
+    private static final Logger log = Logger.getLogger(SwiftUrlProvider.class);
 
     private PathContainerService containerService
             = new PathContainerService();
 
+    private SwiftSession session;
+
+    private HostPasswordStore store;
+
+    private Map<Region, AccountInfo> accounts;
+
     public SwiftUrlProvider(final SwiftSession session) {
+        this(session, Collections.<Region, AccountInfo>emptyMap());
+    }
+
+    public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts) {
+        this(session, accounts, PasswordStoreFactory.get());
+    }
+
+    public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts, final HostPasswordStore store) {
         this.session = session;
+        this.accounts = accounts;
+        this.store = store;
     }
 
     @Override
@@ -56,7 +75,75 @@ public class SwiftUrlProvider implements UrlProvider {
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                             session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ENGLISH))
             ));
+            list.add(this.createTempUrl(file, 60 * 60));
+            // Default signed URL expiring in 24 hours.
+            list.add(this.createTempUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));
+            // Week
+            list.add(this.createTempUrl(file, 7 * 24 * 60 * 60));
         }
         return list;
+    }
+
+    protected DescriptiveUrl createTempUrl(final Path file, final int seconds) {
+        final Region region = session.getRegion(containerService.getContainer(file));
+        final String path = String.format("%s/%s/%s",
+                region.getStorageUrl().getPath(),
+                containerService.getContainer(file).getName(),
+                containerService.getKey(file));
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.SECOND, seconds);
+        final String signature;
+        if(session.getHost().getHostname().endsWith("identity.hpcloudsvc.com")) {
+            final Credentials credentials = session.getHost().getCredentials();
+            if(StringUtils.contains(credentials.getUsername(), ':')) {
+                if(log.isInfoEnabled()) {
+                    log.info("Using account secret key to sign");
+                }
+                final String tenant = StringUtils.split(credentials.getUsername(), ':')[0];
+                final String accesskey = StringUtils.split(credentials.getUsername(), ':')[1];
+                // HP Cloud Object Storage Temporary URLs require the user's Tenant ID and Access Key ID
+                // to be prepended to the signature. Using the secret key to sign.
+                final String secret = store.find(session.getHost());
+                if(StringUtils.isBlank(secret)) {
+                    log.warn("No secret found in keychain required to sign temporary URL");
+                    return DescriptiveUrl.EMPTY;
+                }
+                signature = String.format("%s:%s:%s",
+                        tenant, accesskey,
+                        ServiceUtils.signWithHmacSha1(secret,
+                                String.format("GET\n%d\n%s", expiry.getTimeInMillis() / 1000, path))
+                );
+            }
+            else {
+                log.warn("Missing tenant in user credentials to sign temporary URL");
+                return DescriptiveUrl.EMPTY;
+            }
+        }
+        else {
+            if(!accounts.containsKey(region)) {
+                log.warn(String.format("No account info for region %s available required to sign temporaray URL", region));
+                return DescriptiveUrl.EMPTY;
+            }
+            // OpenStack Swift Temporary URLs (TempURL) required the X-Account-Meta-Temp-URL-Key header
+            // be set on the Swift account. Used to sign.
+            final AccountInfo info = accounts.get(region);
+            if(StringUtils.isBlank(info.getTempUrlKey())) {
+                log.warn("Missing X-Account-Meta-Temp-URL-Key header value to sign temporary URL");
+                return DescriptiveUrl.EMPTY;
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Using X-Account-Meta-Temp-URL-Key header value %s to sign", info.getTempUrlKey()));
+            }
+            signature = ServiceUtils.signWithHmacSha1(info.getTempUrlKey(),
+                    String.format("GET\n%d\n%s", expiry.getTimeInMillis() / 1000, path));
+        }
+        //Compile the temporary URL
+        return new DescriptiveUrl(URI.create(String.format("https://%s%s?temp_url_sig=%s&temp_url_expires=%d",
+                region.getStorageUrl().getHost(), path, signature, expiry.getTimeInMillis() / 1000)),
+                DescriptiveUrl.Type.signed,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
+                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires on {0}", "S3") + ")",
+                        UserDateFormatterFactory.get().getShortFormat(expiry.getTimeInMillis()))
+        );
     }
 }
