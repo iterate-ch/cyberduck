@@ -89,8 +89,31 @@ public class SwiftSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testConnectHp() throws Exception {
+    public void testConnectHpv1() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
+                properties.getProperty("hpcloud.user"), properties.getProperty("hpcloud.password")
+        ));
+        final SwiftSession session = new SwiftSession(host);
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertNotNull(session.workdir());
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+        assertEquals(Session.State.closed, session.getState());
+    }
+
+    @Test
+    public void testConnectHpv2() throws Exception {
+        final SwiftProtocol protocol = new SwiftProtocol() {
+            @Override
+            public String getContext() {
+                return "/v2.0/tokens";
+            }
+        };
+        final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);

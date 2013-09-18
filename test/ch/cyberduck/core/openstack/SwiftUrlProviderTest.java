@@ -17,15 +17,7 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 
 import org.junit.Test;
 
@@ -55,7 +47,13 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
 
     @Test
     public void testSignedHp() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
+        final SwiftProtocol protocol = new SwiftProtocol() {
+            @Override
+            public String getContext() {
+                return "/v2.0/tokens";
+            }
+        };
+        final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
@@ -64,7 +62,12 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new SwiftTouchFeature(session).touch(file);
-        final UrlProvider provider = session.getFeature(UrlProvider.class);
+        final UrlProvider provider = new SwiftUrlProvider(session, session.accounts, new DisabledPasswordStore() {
+            @Override
+            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                return properties.getProperty("hpcloud.secret");
+            }
+        });
         assertTrue(provider.toUrl(file).find(DescriptiveUrl.Type.signed).getUrl().startsWith(
                 "https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788/test.cyberduck.ch/" + file.getName()));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());

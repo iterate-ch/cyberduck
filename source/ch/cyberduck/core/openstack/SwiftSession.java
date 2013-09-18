@@ -57,7 +57,7 @@ public class SwiftSession extends HttpSession<Client> {
     private SwiftDistributionConfiguration cdn
             = new SwiftDistributionConfiguration(this);
 
-    private Map<Region, AccountInfo> accounts
+    protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
 
     public SwiftSession(Host h) {

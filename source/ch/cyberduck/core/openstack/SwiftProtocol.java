@@ -26,7 +26,7 @@ import ch.cyberduck.core.Scheme;
 /**
  * @version $Id$
  */
-public final class SwiftProtocol extends AbstractProtocol {
+public class SwiftProtocol extends AbstractProtocol {
     @Override
     public String getName() {
         return LocaleFactory.localizedString("Swift", "Mosso");

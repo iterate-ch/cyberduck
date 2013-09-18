@@ -96,7 +96,13 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testReadHpcloud() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "region-a.geo-1.identity.hpcloudsvc.com", 35357);
+        final SwiftProtocol protocol = new SwiftProtocol() {
+            @Override
+            public String getContext() {
+                return "/v2.0/tokens";
+            }
+        };
+        final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357);
         host.setCredentials(new Credentials(
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
