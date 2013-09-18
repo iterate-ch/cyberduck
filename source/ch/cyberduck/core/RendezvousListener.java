@@ -30,7 +30,7 @@ public interface RendezvousListener {
     void serviceResolved(String identifier, Host host);
 
     /**
-     * @param servicename The full service domain name, in the form &lt;servicename&gt;.&lt;protocol&gt;.&lt;domain&gt;.
+     * @param host The full service domain name, in the form &lt;servicename&gt;.&lt;protocol&gt;.&lt;domain&gt;.
      */
-    void serviceLost(String servicename);
+    void serviceLost(Host host);
 }

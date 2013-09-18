@@ -982,7 +982,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
 
                 @Override
-                public void serviceLost(String servicename) {
+                public void serviceLost(final Host servicename) {
                     //
                 }
             });

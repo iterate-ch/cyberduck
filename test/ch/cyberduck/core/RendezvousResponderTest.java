@@ -38,7 +38,7 @@ public class RendezvousResponderTest extends AbstractTestCase {
             }
 
             @Override
-            public void serviceLost(final String servicename) {
+            public void serviceLost(final Host servicename) {
                 //
             }
         });

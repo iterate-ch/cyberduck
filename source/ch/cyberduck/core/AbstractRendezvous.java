@@ -219,10 +219,11 @@ public abstract class AbstractRendezvous implements Rendezvous {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Remove host with identifier %s", identifier));
         }
-        if(null == services.remove(identifier)) {
+        final Host host = services.remove(identifier);
+        if(null == host) {
             return;
         }
-        notifier.serviceLost(identifier);
+        notifier.serviceLost(host);
     }
 
     private final class LimitedRendezvousListener implements RendezvousListener {
@@ -262,7 +263,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
         }
 
         @Override
-        public void serviceLost(final String servicename) {
+        public void serviceLost(final Host servicename) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Service with name %s lost", servicename));
             }

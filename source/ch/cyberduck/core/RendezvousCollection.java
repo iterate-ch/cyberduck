@@ -43,13 +43,13 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     }
 
     @Override
-    public void serviceResolved(String identifier, Host host) {
+    public void serviceResolved(final String identifier, final Host host) {
         this.collectionItemAdded(host);
     }
 
     @Override
-    public void serviceLost(String servicename) {
-        this.collectionItemRemoved(null);
+    public void serviceLost(final Host host) {
+        this.collectionItemRemoved(host);
     }
 
     @Override
