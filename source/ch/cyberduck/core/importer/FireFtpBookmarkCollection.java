@@ -128,7 +128,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                 log.warn("Missing key in line:" + attribute);
                 continue;
             }
-            String name = scanner.next().toLowerCase(Locale.ENGLISH);
+            String name = scanner.next().toLowerCase(Locale.ROOT);
             if(!scanner.hasNext()) {
                 log.warn("Missing value in line:" + attribute);
                 continue;

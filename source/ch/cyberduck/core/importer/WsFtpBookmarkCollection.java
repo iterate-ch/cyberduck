@@ -134,7 +134,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             log.warn("Missing key in line:" + line);
             return false;
         }
-        String name = scanner.next().toLowerCase(Locale.ENGLISH);
+        String name = scanner.next().toLowerCase(Locale.ROOT);
         if(!scanner.hasNext()) {
             log.warn("Missing value in line:" + line);
             return false;
