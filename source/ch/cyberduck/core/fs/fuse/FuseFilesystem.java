@@ -62,7 +62,7 @@ import com.sun.jna.Pointer;
  * @version $Id$
  */
 public final class FuseFilesystem extends ProxyController implements Filesystem {
-    private static Logger log = Logger.getLogger(FuseFilesystem.class);
+    private static final Logger log = Logger.getLogger(FuseFilesystem.class);
 
     public static void register() {
         if(null == GMUserFileSystem.CLASS) {

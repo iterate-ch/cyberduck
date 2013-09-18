@@ -63,7 +63,7 @@ import com.sun.jna.ptr.PointerByReference;
  * @version $Id$
  */
 public final class KfsFilesystem extends ProxyController implements Filesystem {
-    private static Logger log = Logger.getLogger(KfsFilesystem.class);
+    private static final Logger log = Logger.getLogger(KfsFilesystem.class);
 
     public static void register() {
         FilesystemFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
