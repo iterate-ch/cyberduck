@@ -600,6 +600,7 @@ public abstract class Preferences {
         defaults.put("azure.metadata.default", StringUtils.EMPTY);
 
         defaults.put("openstack.authentication.context", "/v1.0");
+//        defaults.put("openstack.authentication.context", "/v2.0/tokens");
         defaults.put("openstack.upload.metadata.md5", String.valueOf(false));
         defaults.put("openstack.metadata.default", StringUtils.EMPTY);
         defaults.put("openstack.list.limit", String.valueOf(10000));
