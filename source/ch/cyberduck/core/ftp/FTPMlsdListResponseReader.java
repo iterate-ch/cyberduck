@@ -70,13 +70,13 @@ public class FTPMlsdListResponseReader {
                         log.error(String.format("No type fact in line %s", line));
                         continue;
                     }
-                    if("dir".equals(facts.get("type").toLowerCase(Locale.ENGLISH))) {
+                    if("dir".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
                         parsed.attributes().setType(Path.DIRECTORY_TYPE);
                     }
-                    else if("file".equals(facts.get("type").toLowerCase(Locale.ENGLISH))) {
+                    else if("file".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
                         parsed.attributes().setType(Path.FILE_TYPE);
                     }
-                    else if(facts.get("type").toLowerCase(Locale.ENGLISH).startsWith("os.unix=slink")) {
+                    else if(facts.get("type").toLowerCase(Locale.ROOT).startsWith("os.unix=slink")) {
                         parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                         final String target = facts.get("type").split(":")[1];
                         if(target.startsWith(String.valueOf(Path.DELIMITER))) {
@@ -98,7 +98,7 @@ public class FTPMlsdListResponseReader {
                         }
                     }
                     if(!success) {
-                        if("dir".equals(facts.get("type").toLowerCase(Locale.ENGLISH)) && parent.getName().equals(name)) {
+                        if("dir".equals(facts.get("type").toLowerCase(Locale.ROOT)) && parent.getName().equals(name)) {
                             log.warn(String.format("Possibly bogus response line %s", line));
                         }
                         else {
@@ -216,7 +216,7 @@ public class FTPMlsdListResponseReader {
                 if(StringUtils.isBlank(value)) {
                     continue;
                 }
-                facts.put(key.toLowerCase(Locale.ENGLISH), value);
+                facts.put(key.toLowerCase(Locale.ROOT), value);
             }
             file.put(filename, facts);
             return file;

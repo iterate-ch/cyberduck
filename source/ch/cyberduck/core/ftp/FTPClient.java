@@ -84,7 +84,7 @@ public class FTPClient extends FTPSClient {
                     final Method method = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
                     method.setAccessible(true);
                     final String key = String.format("%s:%s", socket.getInetAddress().getHostName(),
-                            String.valueOf(socket.getPort())).toLowerCase(Locale.ENGLISH);
+                            String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT);
                     method.invoke(cache, key, session);
                 }
                 catch(NoSuchFieldException e) {

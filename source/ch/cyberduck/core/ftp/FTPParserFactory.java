@@ -34,6 +34,7 @@ import org.apache.commons.net.ftp.parser.OS400FTPEntryParser;
 import org.apache.commons.net.ftp.parser.ParserInitializationException;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -51,7 +52,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
 
     public CompositeFileEntryParser createFileEntryParser(String system, TimeZone timezone) throws ParserInitializationException {
         if(null != system) {
-            String ukey = system.toUpperCase(java.util.Locale.ENGLISH);
+            String ukey = system.toUpperCase(Locale.ROOT);
             if(ukey.contains(FTPClientConfig.SYST_UNIX)) {
                 return this.createUnixFTPEntryParser(timezone);
             }

@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -98,7 +99,7 @@ public class FTPListService implements ListService {
         this.implementations.put(Command.list, new FTPDefaultListService(session, parser, Command.list));
         if(Preferences.instance().getBoolean("ftp.command.stat")) {
             if(StringUtils.isNotBlank(system)) {
-                if(!system.toUpperCase(java.util.Locale.ENGLISH).contains(FTPClientConfig.SYST_NT)) {
+                if(!system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
                     // Workaround for #5572.
                     this.implementations.put(Command.stat, new FTPStatListService(session, parser));
                 }
