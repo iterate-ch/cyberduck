@@ -65,7 +65,7 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
             @Override
             public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
                 if(file.getName().equals("a")) {
-                    assertEquals(permission, permission);
+                    assertEquals(new Permission(744), permission);
                 }
                 else if(file.getName().equals("b")) {
                     assertEquals(new Permission(644), permission);
@@ -75,6 +75,58 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
                 }
             }
         }, Arrays.<Path>asList(path), permission, true
+        ) {
+        };
+        worker.run();
+    }
+
+    @Test
+    public void testRunRecursiveRetainDirectoryExecute() throws Exception {
+        final Permission permission = new Permission(644);
+        final Path a = new Path("a", Path.DIRECTORY_TYPE);
+        final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                if(file.equals(a)) {
+                    final AttributedList<Path> children = new AttributedList<Path>();
+                    final Path d = new Path("d", Path.DIRECTORY_TYPE);
+                    final Permission p = d.attributes().getPermission();
+                    p.setUser(p.getUser().or(Permission.Action.execute));
+                    p.setGroup(p.getGroup().or(Permission.Action.execute));
+                    p.setOther(p.getOther().or(Permission.Action.execute));
+                    children.add(d);
+                    children.add(new Path("f", Path.FILE_TYPE));
+                    return children;
+                }
+                return AttributedList.emptyList();
+            }
+        }, new UnixPermission() {
+            @Override
+            public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                if(file.getName().equals("a")) {
+                    assertEquals(new Permission(644), permission);
+                }
+                else if(file.getName().equals("d")) {
+                    assertEquals(new Permission(544), permission);
+                }
+                else if(file.getName().equals("f")) {
+                    assertEquals(new Permission(644), permission);
+                }
+                else {
+                    fail();
+                }
+            }
+        }, Arrays.<Path>asList(a), permission, true
         ) {
         };
         worker.run();
