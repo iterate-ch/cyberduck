@@ -32,7 +32,7 @@ import java.util.List;
  * @version $Id$
  */
 public class FolderBookmarkCollection extends AbstractFolderHostCollection {
-    private static Logger log = Logger.getLogger(FolderBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(FolderBookmarkCollection.class);
 
     private static final FolderBookmarkCollection FAVORITES_COLLECTION = new FolderBookmarkCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Bookmarks")

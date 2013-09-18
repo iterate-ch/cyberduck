@@ -29,7 +29,7 @@ import java.util.ListIterator;
  * @version $Id$
  */
 public class BookmarkCollection extends AbstractHostCollection {
-    private static Logger log = Logger.getLogger(BookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(BookmarkCollection.class);
 
     private static final long serialVersionUID = -74831755267110254L;
 

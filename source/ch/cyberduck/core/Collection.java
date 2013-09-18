@@ -31,7 +31,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version $Id$
  */
 public class Collection<E> extends ArrayList<E> implements CollectionListener<E> {
-    private static Logger log = Logger.getLogger(Collection.class);
+    private static final Logger log = Logger.getLogger(Collection.class);
 
     private static final long serialVersionUID = 2169368029038925573L;
 

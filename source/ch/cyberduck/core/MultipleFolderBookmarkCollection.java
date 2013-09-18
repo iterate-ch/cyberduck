@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkCollection> implements EditableCollection {
-    private static Logger log = Logger.getLogger(FolderBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(FolderBookmarkCollection.class);
 
     private static final MultipleFolderBookmarkCollection EMPTY = new MultipleFolderBookmarkCollection(null) {
         private static final long serialVersionUID = 5741322275377145083L;

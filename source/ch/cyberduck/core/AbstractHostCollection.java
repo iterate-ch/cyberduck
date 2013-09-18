@@ -35,7 +35,7 @@ import java.util.List;
 public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
     private static final long serialVersionUID = -255801158019850767L;
 
-    private static Logger log = Logger.getLogger(AbstractHostCollection.class);
+    private static final Logger log = Logger.getLogger(AbstractHostCollection.class);
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
         private static final long serialVersionUID = -8444415684736364173L;
