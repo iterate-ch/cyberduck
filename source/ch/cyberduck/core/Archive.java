@@ -32,7 +32,7 @@ import java.util.Locale;
  * @version $Id$
  */
 public abstract class Archive {
-    private static Logger log = Logger.getLogger(Archive.class);
+    private static final Logger log = Logger.getLogger(Archive.class);
 
     public static final Archive TAR
             = new Archive("tar") {

@@ -31,7 +31,7 @@ import java.net.UnknownHostException;
  * @version $Id$
  */
 public final class SystemConfigurationProxy extends AbstractProxy implements Proxy {
-    private static Logger log = Logger.getLogger(SystemConfigurationProxy.class);
+    private static final Logger log = Logger.getLogger(SystemConfigurationProxy.class);
 
     public static void register() {
         ProxyFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());

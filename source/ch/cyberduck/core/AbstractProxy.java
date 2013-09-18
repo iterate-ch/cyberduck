@@ -28,7 +28,7 @@ import java.util.regex.PatternSyntaxException;
  * @version $Id$
  */
 public abstract class AbstractProxy implements Proxy {
-    private static Logger log = Logger.getLogger(AbstractProxy.class);
+    private static final Logger log = Logger.getLogger(AbstractProxy.class);
 
     /**
      * SOCKS port property name

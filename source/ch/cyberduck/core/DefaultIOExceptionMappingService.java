@@ -31,7 +31,7 @@ import java.net.SocketException;
  * @version $Id$
  */
 public class DefaultIOExceptionMappingService extends AbstractIOExceptionMappingService<IOException> {
-    private static Logger log = Logger.getLogger(DefaultIOExceptionMappingService.class);
+    private static final Logger log = Logger.getLogger(DefaultIOExceptionMappingService.class);
 
     public BackgroundException map(final IOException failure, final Path directory) {
         return this.map("Connection failed", failure, directory);
