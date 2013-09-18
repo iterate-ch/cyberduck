@@ -38,9 +38,12 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
 /**
@@ -53,6 +56,9 @@ public class SwiftSession extends HttpSession<Client> {
 
     private SwiftDistributionConfiguration cdn
             = new SwiftDistributionConfiguration(this);
+
+    private Map<Region, AccountInfo> accounts
+            = new HashMap<Region, AccountInfo>();
 
     public SwiftSession(Host h) {
         super(h);
@@ -97,6 +103,13 @@ public class SwiftSession extends HttpSession<Client> {
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         try {
             client.authenticate(new SwiftAuthenticationService().getRequest(host, prompt));
+            for(Region region : client.getRegions()) {
+                final AccountInfo info = client.getAccountInfo(region);
+                accounts.put(region, info);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+                }
+            }
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
@@ -152,7 +165,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) cdn;
         }
         if(type == UrlProvider.class) {
-            return (T) new SwiftUrlProvider(this);
+            return (T) new SwiftUrlProvider(this, accounts);
         }
         if(type == Find.class) {
             return (T) new SwiftFindFeature(this);
