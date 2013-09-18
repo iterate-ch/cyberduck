@@ -52,7 +52,7 @@ import java.util.Enumeration;
  * @version $Id$
  */
 public class Receipt extends AbstractLicense {
-    private static Logger log = Logger.getLogger(Receipt.class);
+    private static final Logger log = Logger.getLogger(Receipt.class);
 
     public static void register() {
         LicenseFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());

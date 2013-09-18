@@ -37,7 +37,7 @@ import java.util.Map;
  * @version $Id$
  */
 public abstract class LicenseFactory extends Factory<License> {
-    private static Logger log = Logger.getLogger(LicenseFactory.class);
+    private static final Logger log = Logger.getLogger(LicenseFactory.class);
 
     /**
      * Registered factories

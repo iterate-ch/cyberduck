@@ -18,8 +18,8 @@ package ch.cyberduck.core.aquaticprime;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.library.Native;
 
 import org.apache.log4j.Logger;
 
@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class Donation extends AbstractLicense {
-    private static Logger log = Logger.getLogger(Donation.class);
+    private static final Logger log = Logger.getLogger(Donation.class);
 
     public static void register() {
         LicenseFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
