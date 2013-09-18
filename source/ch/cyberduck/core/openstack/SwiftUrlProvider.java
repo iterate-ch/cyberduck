@@ -73,7 +73,7 @@ public class SwiftUrlProvider implements UrlProvider {
                     URI.create(region.getStorageUrl(containerService.getContainer(file).getName(), containerService.getKey(file)).toString()),
                     DescriptiveUrl.Type.provider,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                            session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ENGLISH))
+                            session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
             ));
             list.add(this.createTempUrl(file, 60 * 60));
             // Default signed URL expiring in 24 hours.

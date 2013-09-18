@@ -31,6 +31,7 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -107,7 +108,7 @@ public class S3UrlProvider implements UrlProvider {
             }
         }
         return new DescriptiveUrl(URI.create(url.toString()), DescriptiveUrl.Type.http,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), scheme.name().toUpperCase(java.util.Locale.ENGLISH)));
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), scheme.name().toUpperCase(Locale.ROOT)));
     }
 
     /**
