@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Description of an archive format
@@ -125,7 +126,7 @@ public abstract class Archive {
         if(StringUtils.isNotBlank(name)) {
             for(Archive archive : getKnownArchives()) {
                 for(String extension : archive.getExtensions()) {
-                    if(name.toLowerCase(java.util.Locale.ENGLISH).endsWith(extension.toLowerCase(java.util.Locale.ENGLISH))) {
+                    if(name.toLowerCase(Locale.ROOT).endsWith(extension.toLowerCase(Locale.ROOT))) {
                         return archive;
                     }
                 }

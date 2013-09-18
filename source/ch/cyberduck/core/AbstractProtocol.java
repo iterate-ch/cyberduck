@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -35,7 +36,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public String getName() {
-        return this.getScheme().name().toUpperCase(java.util.Locale.ENGLISH);
+        return this.getScheme().name().toUpperCase(Locale.ROOT);
     }
 
     @Override
