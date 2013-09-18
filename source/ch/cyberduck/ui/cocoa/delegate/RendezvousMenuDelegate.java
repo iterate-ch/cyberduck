@@ -37,7 +37,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
  * @version $Id$
  */
 public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
-    private static Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
+    private static final Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
 
     private RendezvousCollection collection;
 

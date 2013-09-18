@@ -33,7 +33,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
  * @version $Id$
  */
 public abstract class AbstractMenuDelegate extends ProxyController implements NSMenu.Delegate {
-    private static Logger log = Logger.getLogger(AbstractMenuDelegate.class);
+    private static final Logger log = Logger.getLogger(AbstractMenuDelegate.class);
 
     /**
      * Menu needs revalidation

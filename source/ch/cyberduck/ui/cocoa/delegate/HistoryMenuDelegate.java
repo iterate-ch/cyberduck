@@ -47,7 +47,7 @@ import java.util.Date;
  * @version $Id$
  */
 public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
-    private static Logger log = Logger.getLogger(HistoryMenuDelegate.class);
+    private static final Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
     protected static final NSDictionary TIMESTAMP_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor(),

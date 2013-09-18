@@ -38,7 +38,7 @@ import java.util.List;
  * @version $Id:$
  */
 public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
-    private static Logger log = Logger.getLogger(CopyURLMenuDelegate.class);
+    private static final Logger log = Logger.getLogger(CopyURLMenuDelegate.class);
 
     @Override
     protected String getKeyEquivalent() {

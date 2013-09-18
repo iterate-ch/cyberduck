@@ -50,7 +50,7 @@ import java.util.List;
  * @version $Id:$
  */
 public abstract class URLMenuDelegate extends AbstractMenuDelegate {
-    private static Logger log = Logger.getLogger(URLMenuDelegate.class);
+    private static final Logger log = Logger.getLogger(URLMenuDelegate.class);
 
     protected static final NSDictionary URL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor(),
