@@ -87,6 +87,22 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
                 this.write(file, modified);
             }
         }
+        else if(recursive && file.attributes().isDirectory()) {
+            // Do not remove executable bit for folders. See #7316
+            final Permission modified = new Permission(permission.getMode());
+            if(file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
+                modified.setUser(modified.getUser().or(Permission.Action.execute));
+            }
+            if(file.attributes().getPermission().getGroup().implies(Permission.Action.execute)) {
+                modified.setUser(modified.getGroup().or(Permission.Action.execute));
+            }
+            if(file.attributes().getPermission().getOther().implies(Permission.Action.execute)) {
+                modified.setUser(modified.getOther().or(Permission.Action.execute));
+            }
+            if(!modified.equals(file.attributes().getPermission())) {
+                this.write(file, modified);
+            }
+        }
         else {
             if(!permission.equals(file.attributes().getPermission())) {
                 this.write(file, permission);
