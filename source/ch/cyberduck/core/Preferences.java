@@ -659,6 +659,10 @@ public abstract class Preferences {
          * Enable Expect-Continue handshake
          */
         defaults.put("webdav.expect-continue", String.valueOf(true));
+        defaults.put("webdav.redirect.GET.follow", String.valueOf(true));
+        defaults.put("webdav.redirect.HEAD.follow", String.valueOf(true));
+        defaults.put("webdav.redirect.PUT.follow", String.valueOf(false));
+        defaults.put("webdav.redirect.PROPFIND.follow", String.valueOf(true));
 
         defaults.put("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
         defaults.put("analytics.provider.qloudstat.iam.policy",

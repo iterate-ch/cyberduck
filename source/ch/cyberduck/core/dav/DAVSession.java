@@ -31,17 +31,21 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.http.PreferencesRedirectCallback;
+import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.SardineRedirectStrategy;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 import com.github.sardine.impl.methods.HttpPropFind;
 
@@ -51,6 +55,9 @@ import com.github.sardine.impl.methods.HttpPropFind;
 public class DAVSession extends HttpSession<DAVClient> {
     private static final Logger log = Logger.getLogger(DAVSession.class);
 
+    private RedirectCallback redirect
+            = new PreferencesRedirectCallback();
+
     public DAVSession(Host h) {
         super(h);
     }
@@ -59,10 +66,21 @@ public class DAVSession extends HttpSession<DAVClient> {
         super(host, manager);
     }
 
+    public DAVSession(final Host host, final X509TrustManager manager, final RedirectCallback redirect) {
+        super(host, manager);
+        this.redirect = redirect;
+    }
+
     @Override
     public DAVClient connect(final HostKeyController key) throws BackgroundException {
-        return new DAVClient(new HostUrlProvider(false).get(host),
-                super.connect());
+        final AbstractHttpClient client = super.connect();
+        client.setRedirectStrategy(new SardineRedirectStrategy() {
+            @Override
+            protected boolean isRedirectable(final String method) {
+                return redirect.redirect(method);
+            }
+        });
+        return new DAVClient(new HostUrlProvider(false).get(host), client);
     }
 
     @Override
