@@ -21,6 +21,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
@@ -36,6 +37,7 @@ import java.util.TimeZone;
  * @version $Id$
  */
 public class S3UrlProvider implements UrlProvider {
+    private static final Logger log = Logger.getLogger(S3UrlProvider.class);
 
     private PathContainerService containerService = new PathContainerService();
 
@@ -124,6 +126,7 @@ public class S3UrlProvider implements UrlProvider {
                 new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword()));
         final String secret = store.find(session.getHost());
         if(StringUtils.isBlank(secret)) {
+            log.warn("No secret found in keychain required to sign temporary URL");
             return DescriptiveUrl.EMPTY;
         }
         client.setProviderCredentials(
