@@ -30,7 +30,7 @@ import java.text.ParseException;
  * @version $Id$
  */
 public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
-    private static Logger log = Logger.getLogger(CommonUnixFTPEntryParser.class);
+    private static final Logger log = Logger.getLogger(CommonUnixFTPEntryParser.class);
 
     /**
      * @param regex Line regular expression

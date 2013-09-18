@@ -19,7 +19,7 @@ import java.util.List;
  * @author Mario Ivankovits <mario@ops.co.at>
  */
 public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements Configurable {
-    private static Logger log = Logger.getLogger(CompositeFileEntryParser.class);
+    private static final Logger log = Logger.getLogger(CompositeFileEntryParser.class);
 
     private final List<? extends FTPFileEntryParser> parsers;
     private FTPFileEntryParser current;
