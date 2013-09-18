@@ -360,7 +360,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_QueueSizeChangedEvent()
         {
-            Preferences.instance().setProperty("queue.maxtransfers", View.QueueSize); //TODO in java nicht vorhanden
+            Preferences.instance().setProperty("queue.maxtransfers", View.QueueSize);
             QueueFactory.get().resize(Preferences.instance().getInteger("queue.maxtransfers"));
         }
 
