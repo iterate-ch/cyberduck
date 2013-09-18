@@ -235,6 +235,8 @@
                 <sysproperty key="rackspace.secret" value="${rackspace.secret}"/>
                 <sysproperty key="hpcloud.key" value="${hpcloud.key}"/>
                 <sysproperty key="hpcloud.secret" value="${hpcloud.secret}"/>
+                <sysproperty key="hpcloud.user" value="${hpcloud.user}"/>
+                <sysproperty key="hpcloud.password" value="${hpcloud.password}"/>
                 <sysproperty key="webdav.user" value="${webdav.user}"/>
                 <sysproperty key="webdav.password" value="${webdav.password}"/>
                 <sysproperty key="ftp.user" value="${ftp.user}"/>
