@@ -94,10 +94,10 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
                 modified.setUser(modified.getUser().or(Permission.Action.execute));
             }
             if(file.attributes().getPermission().getGroup().implies(Permission.Action.execute)) {
-                modified.setUser(modified.getGroup().or(Permission.Action.execute));
+                modified.setGroup(modified.getGroup().or(Permission.Action.execute));
             }
             if(file.attributes().getPermission().getOther().implies(Permission.Action.execute)) {
-                modified.setUser(modified.getOther().or(Permission.Action.execute));
+                modified.setOther(modified.getOther().or(Permission.Action.execute));
             }
             if(!modified.equals(file.attributes().getPermission())) {
                 this.write(file, modified);

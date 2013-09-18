@@ -90,10 +90,7 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
                 if(file.equals(a)) {
                     final AttributedList<Path> children = new AttributedList<Path>();
                     final Path d = new Path("d", Path.DIRECTORY_TYPE);
-                    final Permission p = d.attributes().getPermission();
-                    p.setUser(p.getUser().or(Permission.Action.execute));
-                    p.setGroup(p.getGroup().or(Permission.Action.execute));
-                    p.setOther(p.getOther().or(Permission.Action.execute));
+                    d.attributes().setPermission(new Permission(744));
                     children.add(d);
                     children.add(new Path("f", Path.FILE_TYPE));
                     return children;
