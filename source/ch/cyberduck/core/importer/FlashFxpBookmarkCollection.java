@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static Logger log = Logger.getLogger(FlashFxpBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(FlashFxpBookmarkCollection.class);
 
     private static final long serialVersionUID = 5122804563710604658L;
 

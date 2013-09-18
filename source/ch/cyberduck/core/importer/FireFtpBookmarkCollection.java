@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static Logger log = Logger.getLogger(FireFtpBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(FireFtpBookmarkCollection.class);
 
     private static final long serialVersionUID = -1802799231453221690L;
 

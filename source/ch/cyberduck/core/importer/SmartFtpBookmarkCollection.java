@@ -35,7 +35,7 @@ import org.w3c.util.InvalidDateException;
  * @version $Id$
  */
 public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
-    private static Logger log = Logger.getLogger(SmartFtpBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(SmartFtpBookmarkCollection.class);
 
     private static final long serialVersionUID = 6455585501577444740L;
 

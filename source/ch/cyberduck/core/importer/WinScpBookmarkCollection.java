@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static Logger log = Logger.getLogger(WinScpBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(WinScpBookmarkCollection.class);
 
     private static final long serialVersionUID = 4886529703737860985L;
 

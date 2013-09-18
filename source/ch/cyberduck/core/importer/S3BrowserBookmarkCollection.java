@@ -40,7 +40,7 @@ import java.util.Scanner;
  * @version $Id$
  */
 public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static Logger log = Logger.getLogger(S3BrowserBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(S3BrowserBookmarkCollection.class);
 
     private static final long serialVersionUID = 2559948549693535359L;
 

@@ -36,7 +36,7 @@ import java.util.List;
  * @version $Id$
  */
 public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static Logger log = Logger.getLogger(InterarchyBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(InterarchyBookmarkCollection.class);
 
     private static final long serialVersionUID = 999209774019642938L;
 

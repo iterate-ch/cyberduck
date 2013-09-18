@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
-    private static Logger log = Logger.getLogger(FilezillaBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(FilezillaBookmarkCollection.class);
 
     private static final long serialVersionUID = -4612895793983093594L;
 

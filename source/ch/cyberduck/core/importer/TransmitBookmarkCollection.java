@@ -41,7 +41,7 @@ import org.rococoa.Rococoa;
  * @version $Id$
  */
 public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static Logger log = Logger.getLogger(TransmitBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(TransmitBookmarkCollection.class);
 
     private static final long serialVersionUID = 6406786269501430927L;
 

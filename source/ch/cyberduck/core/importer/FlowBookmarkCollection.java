@@ -37,7 +37,7 @@ import java.util.List;
  * @version $Id$
  */
 public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static Logger log = Logger.getLogger(FlowBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(FlowBookmarkCollection.class);
 
     private static final long serialVersionUID = 2017398431454618548L;
 

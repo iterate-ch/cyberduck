@@ -32,7 +32,7 @@ import org.xml.sax.Attributes;
  * @version $Id$
  */
 public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
-    private static Logger log = Logger.getLogger(CrossFtpBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(CrossFtpBookmarkCollection.class);
 
     private static final long serialVersionUID = 7442378118872253601L;
 

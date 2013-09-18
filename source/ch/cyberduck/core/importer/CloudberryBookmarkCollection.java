@@ -30,7 +30,7 @@ import org.xml.sax.Attributes;
  * @version $Id$
  */
 public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection {
-    private static Logger log = Logger.getLogger(CloudberryBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(CloudberryBookmarkCollection.class);
 
     private static final long serialVersionUID = 2245328157886337606L;
 

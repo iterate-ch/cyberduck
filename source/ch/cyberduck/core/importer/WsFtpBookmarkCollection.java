@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static Logger log = Logger.getLogger(WsFtpBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(WsFtpBookmarkCollection.class);
 
     private static final long serialVersionUID = -254244450037887034L;
 

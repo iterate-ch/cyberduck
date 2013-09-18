@@ -21,9 +21,9 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
@@ -35,7 +35,7 @@ import java.util.List;
  * @version $Id$
  */
 public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static Logger log = Logger.getLogger(FetchBookmarkCollection.class);
+    private static final Logger log = Logger.getLogger(FetchBookmarkCollection.class);
 
     private static final long serialVersionUID = -7544710198776572190L;
 
