@@ -33,7 +33,7 @@ import java.util.TimeZone;
  * @version $Id$
  */
 public class TimestampComparisonService implements ComparisonService {
-    private static Logger log = Logger.getLogger(CombinedComparisionService.class);
+    private static final Logger log = Logger.getLogger(CombinedComparisionService.class);
 
     private CalendarService calendarService;
 

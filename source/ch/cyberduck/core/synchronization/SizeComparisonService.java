@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class SizeComparisonService implements ComparisonService {
-    private static Logger log = Logger.getLogger(ComparisonService.class);
+    private static final Logger log = Logger.getLogger(ComparisonService.class);
 
     @Override
     public Comparison compare(final Path p) throws BackgroundException {
