@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
@@ -177,13 +178,16 @@ namespace Ch.Cyberduck.Ui.Controller
             SetMessageText();
             SetRootPaths();
             SetTransferStatus();
-
             View.StatusText = LocaleFactory.localizedString(LocaleFactory.localizedString(_transfer.isComplete()
                                                                                               ? String.Format(
                                                                                                   "{0} complete",
-                                                                                                  _transfer.getType()
-                                                                                                           .name()
-                                                                                                           .ToUpper())
+                                                                                                  CultureInfo
+                                                                                                      .CurrentCulture
+                                                                                                      .TextInfo
+                                                                                                      .ToTitleCase(
+                                                                                                          _transfer
+                                                                                                              .getType()
+                                                                                                              .name()))
                                                                                               : "Transfer incomplete",
                                                                                           "Status"), "Status");
         }
