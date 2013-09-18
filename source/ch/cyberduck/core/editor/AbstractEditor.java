@@ -31,7 +31,10 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
+import ch.cyberduck.ui.growl.Growl;
+import ch.cyberduck.ui.growl.GrowlFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -42,6 +45,8 @@ import java.util.concurrent.Callable;
  */
 public abstract class AbstractEditor implements Editor {
     private static final Logger log = Logger.getLogger(AbstractEditor.class);
+
+    private Growl growl = GrowlFactory.get();
 
     /**
      * The file has been closed in the editor while the upload was in progress
@@ -192,6 +197,8 @@ public abstract class AbstractEditor implements Editor {
                 }
             };
             download.start(null, options, new DisabledTransferErrorCallback());
+            growl.notify(download.isComplete() ?
+                    String.format("%s complete", StringUtils.capitalize(download.getType().name())) : "Transfer incomplete", download.getName());
             if(download.isComplete()) {
                 checksum = local.attributes().getChecksum();
                 final Permission permissions = local.attributes().getPermission();
@@ -219,6 +226,8 @@ public abstract class AbstractEditor implements Editor {
                 }
             };
             upload.start(null, new TransferOptions(), new DisabledTransferErrorCallback());
+            growl.notify(upload.isComplete() ?
+                    String.format("%s complete", StringUtils.capitalize(upload.getType().name())) : "Transfer incomplete", upload.getName());
             if(upload.isComplete()) {
                 // Update known remote file size
                 edited.attributes().setSize(upload.getTransferred());

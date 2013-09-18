@@ -27,10 +27,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
-import ch.cyberduck.ui.growl.Growl;
-import ch.cyberduck.ui.growl.GrowlFactory;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -42,8 +39,6 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(BrowserBackgroundEditor.class);
 
     private Controller controller;
-
-    private Growl growl = GrowlFactory.get();
 
     /**
      * @param controller  Browser
@@ -68,8 +63,6 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
             @Override
             public Boolean run() throws BackgroundException {
                 final Transfer transfer = download.call();
-                growl.notify(transfer.isComplete() ?
-                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
                 return true;
             }
 
@@ -93,8 +86,6 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
             @Override
             public Boolean run() throws BackgroundException {
                 final Transfer transfer = upload.call();
-                growl.notify(transfer.isComplete() ?
-                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
                 return true;
             }
 
