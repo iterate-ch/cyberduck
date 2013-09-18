@@ -34,7 +34,7 @@ import com.amazonaws.services.identitymanagement.model.*;
  * @version $Id$
  */
 public class AWSIdentityConfiguration implements IdentityConfiguration {
-    private static Logger log = Logger.getLogger(AWSIdentityConfiguration.class);
+    private static final Logger log = Logger.getLogger(AWSIdentityConfiguration.class);
 
     private Host host;
 

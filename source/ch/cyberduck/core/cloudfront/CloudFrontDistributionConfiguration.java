@@ -72,7 +72,7 @@ import java.util.concurrent.Callable;
  */
 public class CloudFrontDistributionConfiguration
         implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
-    private static Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
+    private static final Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
     protected S3Session session;
 
