@@ -1165,9 +1165,9 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void metadataAddExpiresClicked(ID sender) {
-        final Calendar time = Calendar.getInstance();
+        final Calendar time = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         time.add(Calendar.SECOND, Preferences.instance().getInteger("s3.cache.seconds"));
-        this.addMetadataItem("Expires", new RFC1123DateFormatter().format(time.getTime(), TimeZone.getDefault()));
+        this.addMetadataItem("Expires", new RFC1123DateFormatter().format(time.getTime(), TimeZone.getTimeZone("UTC")));
     }
 
     @Action
