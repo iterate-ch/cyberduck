@@ -31,7 +31,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class BundleLocale implements Locale {
-    private static Logger log = Logger.getLogger(BundleLocale.class);
+    private static final Logger log = Logger.getLogger(BundleLocale.class);
 
     public static void register() {
         LocaleFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
