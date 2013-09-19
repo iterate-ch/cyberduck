@@ -23,7 +23,6 @@ import ch.cyberduck.core.library.Native;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -33,7 +32,7 @@ import java.util.List;
  * @version $Id$
  */
 public final class Keychain extends HostPasswordStore implements PasswordStore, CertificateStore {
-    private static Logger log = Logger.getLogger(Keychain.class);
+    private static final Logger log = Logger.getLogger(Keychain.class);
 
     public static void register() {
         PasswordStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new PasswordStoreFactory() {
@@ -94,17 +93,12 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
      * @param certificates Chain of certificates
      * @return ASN.1 DER encoded
      */
-    private Object[] getEncoded(final List<X509Certificate> certificates) {
+    private Object[] getEncoded(final List<X509Certificate> certificates) throws CertificateException {
         final Object[] encoded = new Object[certificates.size()];
         int i = 0;
         for(X509Certificate certificate : certificates) {
-            try {
-                encoded[i] = certificate.getEncoded();
-                i++;
-            }
-            catch(CertificateEncodingException c) {
-                log.error("Error getting encoded certificate", c);
-            }
+            encoded[i] = certificate.getEncoded();
+            i++;
         }
         return encoded;
     }
@@ -134,7 +128,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
      * @return True if chain is trusted
      */
     @Override
-    public synchronized boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
+    public synchronized boolean isTrusted(final String hostname, final List<X509Certificate> certificates) throws CertificateException {
         return this.isTrustedNative(hostname, this.getEncoded(certificates));
     }
 
@@ -150,7 +144,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
      * @return True if certificate was selected. False if prompt is dismissed to close the connection
      */
     @Override
-    public synchronized boolean display(final List<X509Certificate> certificates) {
+    public boolean display(final List<X509Certificate> certificates) throws CertificateException {
         return this.displayCertificatesNative(this.getEncoded(certificates));
     }
 
@@ -161,7 +155,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     private native boolean displayCertificatesNative(Object[] certificates);
 
     @Override
-    public synchronized X509Certificate choose(final String[] issuers, final String hostname, final String prompt) {
+    public X509Certificate choose(final String[] issuers, final String hostname, final String prompt) {
         byte[] cert = this.chooseCertificateNative(issuers, hostname, prompt);
         if(null == cert) {
             log.info("No certificate selected");

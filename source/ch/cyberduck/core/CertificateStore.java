@@ -19,6 +19,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
@@ -32,13 +33,13 @@ public interface CertificateStore {
      * @param certificates Certificate chain
      * @return True if trusted in Keychain
      */
-    public abstract boolean isTrusted(String hostname, List<X509Certificate> certificates);
+    public abstract boolean isTrusted(String hostname, List<X509Certificate> certificates) throws CertificateException;
 
     /**
      * @param certificates X.509 certificates
      * @return False if display is not possible
      */
-    public abstract boolean display(List<X509Certificate> certificates);
+    public abstract boolean display(List<X509Certificate> certificates) throws CertificateException;
 
     /**
      * Prompt user for client certificate

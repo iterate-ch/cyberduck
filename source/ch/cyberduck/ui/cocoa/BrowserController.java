@@ -103,6 +103,7 @@ import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -2223,7 +2224,12 @@ public class BrowserController extends WindowController
                 log.warn("No accepted certificates found");
                 return;
             }
-            CertificateStoreFactory.get().display(certificates);
+            try {
+                CertificateStoreFactory.get().display(certificates);
+            }
+            catch(CertificateException e) {
+                log.warn(String.format("Failure decoding certificate %s", e.getMessage()));
+            }
         }
     }
 
