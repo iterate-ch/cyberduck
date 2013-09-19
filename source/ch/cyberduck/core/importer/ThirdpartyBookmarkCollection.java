@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -72,7 +73,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                             log.info(String.format("Checksum changed for bookmarks file at %s", file.getAbsolute()));
                         }
                         // Should filter existing bookmarks
-                        // this.parse(file);
+                        this.parse(file);
                     }
                 }
             }
@@ -144,5 +145,20 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             bookmark.getCredentials().setPassword(null);
         }
         return super.add(bookmark);
+    }
+
+    /**
+     * Remove all that are contained within the collection passed
+     */
+    public void filter(final AbstractHostCollection bookmarks) {
+        for(Iterator<Host> iter = this.iterator(); iter.hasNext(); ) {
+            final Host i = iter.next();
+            if(bookmarks.find(i)) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Remove %s from import as we found it in bookmarks", i));
+                }
+                iter.remove();
+            }
+        }
     }
 }

@@ -33,7 +33,7 @@ import java.util.UUID;
 /**
  * @version $Id$
  */
-public final class Host implements Serializable {
+public final class Host implements Serializable, Comparable<Host> {
     private static final Logger log = Logger.getLogger(Host.class);
 
     /**
@@ -683,6 +683,23 @@ public final class Host implements Serializable {
     @Override
     public int hashCode() {
         return this.getUuid().hashCode();
+    }
+
+    @Override
+    public int compareTo(final Host other) {
+        if(port != other.port) {
+            return -1;
+        }
+        if(credentials != null ? !credentials.equals(other.credentials) : other.credentials != null) {
+            return -1;
+        }
+        if(hostname != null ? !hostname.equals(other.hostname) : other.hostname != null) {
+            return -1;
+        }
+        if(protocol != null ? !protocol.equals(other.protocol) : other.protocol != null) {
+            return -1;
+        }
+        return 0;
     }
 
     @Override

@@ -209,4 +209,18 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         this.addAll(c);
         this.collectionLoaded();
     }
+
+    /**
+     * Search using comparator
+     *
+     * @param bookmark Bookmark to find that matches comparison
+     */
+    public boolean find(final Host bookmark) {
+        for(Host h : this) {
+            if(h.compareTo(bookmark) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
