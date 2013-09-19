@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.ui.cocoa.ProxyController;
 
 import org.apache.log4j.Logger;
 
@@ -27,6 +29,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Id$
@@ -128,8 +131,18 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
      * @return True if chain is trusted
      */
     @Override
-    public synchronized boolean isTrusted(final String hostname, final List<X509Certificate> certificates) throws CertificateException {
-        return this.isTrustedNative(hostname, this.getEncoded(certificates));
+    public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) throws CertificateException {
+        final Object[] encoded = getEncoded(certificates);
+        final AtomicBoolean trusted = new AtomicBoolean(false);
+        new ProxyController() {
+            //
+        }.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                trusted.set(isTrustedNative(hostname, encoded));
+            }
+        }, true);
+        return trusted.get();
     }
 
     /**
