@@ -1053,18 +1053,16 @@ public class MainController extends BundleController implements NSApplication.De
             public Void run() throws BackgroundException {
                 thirdpartyBookmarkCollections = this.getThirdpartyBookmarks();
                 for(ThirdpartyBookmarkCollection t : thirdpartyBookmarkCollections) {
-                    if(!Preferences.instance().getBoolean(t.getConfiguration())) {
-                        if(!t.isInstalled()) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("No application installed for %s", t.getBundleIdentifier()));
-                            }
-                            continue;
+                    if(!t.isInstalled()) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("No application installed for %s", t.getBundleIdentifier()));
                         }
-                        t.load();
-                        if(t.isEmpty()) {
-                            // Flag as imported
-                            Preferences.instance().setProperty(t.getConfiguration(), true);
-                        }
+                        continue;
+                    }
+                    t.load();
+                    if(t.isEmpty()) {
+                        // Flag as imported
+                        Preferences.instance().setProperty(t.getConfiguration(), true);
                     }
                 }
                 try {
