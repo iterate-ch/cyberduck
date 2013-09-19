@@ -148,6 +148,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(Preferences.instance().getBoolean("queue.upload.file.temporary")) {
                 session.getFeature(Move.class).move(file, new Path(file.getParent(), temporary.get(file), Path.FILE_TYPE));
                 file.setPath(file.getParent(), temporary.get(file));
+                temporary.remove(file);
             }
         }
     }
