@@ -50,8 +50,8 @@ public abstract class AbstractController implements Controller {
      * @param runnable The action to execute
      */
     @Override
-    public void invoke(MainAction runnable) {
-        this.invoke(runnable, true);
+    public void invoke(final MainAction runnable) {
+        this.invoke(runnable, false);
     }
 
     /**
