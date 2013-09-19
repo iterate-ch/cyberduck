@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 public class S3BucketCreateServiceTest extends AbstractTestCase {
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreateLocationUS() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
@@ -46,6 +46,23 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
         new S3BucketCreateService(session).create(bucket, "US");
+        assertTrue(new S3FindFeature(session).find(bucket));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
+        assertFalse(new S3FindFeature(session).find(bucket));
+        session.close();
+    }
+
+    @Test
+    public void testCreateLocationAsia() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+        new S3BucketCreateService(session).create(bucket, "ap-northeast-1");
+        bucket.attributes().setRegion("ap-northeast-1");
         assertTrue(new S3FindFeature(session).find(bucket));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
         assertFalse(new S3FindFeature(session).find(bucket));
