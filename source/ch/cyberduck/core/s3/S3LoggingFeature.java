@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 
@@ -60,6 +61,10 @@ public class S3LoggingFeature implements Logging {
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read logging configuration for %s %s", container, e.getMessage()));
+                return LoggingConfiguration.empty();
+            }
+            catch(InteroperabilityException i) {
+                log.warn(String.format("Not supported to read logging configuration for %s %s", container, e.getMessage()));
                 return LoggingConfiguration.empty();
             }
         }
