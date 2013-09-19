@@ -59,7 +59,7 @@ public class Receipt extends AbstractLicense {
     }
 
     /**
-     *
+     * Application has determined that its receipt is invalid. Exit with a status of 173
      */
     private static final int APPSTORE_VALIDATION_FAILURE = 173;
 
