@@ -84,7 +84,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     @Override
     public boolean addAll(java.util.Collection<? extends Host> c) {
-        List<Host> temporary = new ArrayList<Host>();
+        final List<Host> temporary = new ArrayList<Host>();
         for(Host host : c) {
             if(temporary.contains(host)) {
                 log.warn(String.format("Reset UUID of duplicate in collection for %s", host));
