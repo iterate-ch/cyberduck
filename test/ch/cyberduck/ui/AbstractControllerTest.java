@@ -3,6 +3,7 @@ package ch.cyberduck.ui;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
 
 import org.junit.Test;
@@ -75,5 +76,29 @@ public class AbstractControllerTest extends AbstractTestCase {
         entry.await();
         assertTrue(controller.getActions().contains(action));
         exit.countDown();
+    }
+
+    @Test
+    public void testInvoke() throws Exception {
+        final CountDownLatch entry = new CountDownLatch(1);
+        final AbstractController controller = new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                assertFalse(wait);
+                entry.countDown();
+            }
+        };
+        new Thread() {
+            @Override
+            public void run() {
+                controller.invoke(new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        //
+                    }
+                });
+            }
+        }.start();
+        entry.await();
     }
 }
