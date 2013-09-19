@@ -1,7 +1,9 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Preferences;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -10,6 +12,11 @@ import static org.junit.Assert.assertEquals;
  * @version $Id$
  */
 public class SpeedometerTest extends AbstractTestCase {
+
+    @Before
+    public void preference() {
+        Preferences.instance().setProperty("browser.filesize.decimal", true);
+    }
 
     @Test
     public void testProgressRemaining() throws Exception {
