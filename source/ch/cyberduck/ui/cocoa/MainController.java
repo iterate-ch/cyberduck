@@ -1054,7 +1054,9 @@ public class MainController extends BundleController implements NSApplication.De
                 for(ThirdpartyBookmarkCollection c : bookmarks) {
                     if(!Preferences.instance().getBoolean(c.getConfiguration())) {
                         if(!c.isInstalled()) {
-                            log.info("No application installed for " + c.getBundleIdentifier());
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("No application installed for %s", c.getBundleIdentifier()));
+                            }
                             continue;
                         }
                         c.load();
