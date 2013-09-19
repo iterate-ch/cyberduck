@@ -14,27 +14,23 @@ package ch.cyberduck.core.formatter;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.ch
  */
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface SizeFormatter {
+public abstract class Unit {
+    private Long multiple;
 
-    /**
-     * Rounding mode to round towards "nearest neighbor" unless both
-     * neighbors are equidistant, in which case round up.
-     *
-     * @param size Number of bytes
-     * @return The size of the file using BigDecimal.ROUND_HALF_UP rounding
-     */
-    String format(long size);
+    public Unit(final Long multiple) {
+        this.multiple = multiple;
+    }
 
-    /**
-     * @param size  Bytes
-     * @param plain Include plain format of bytes
-     * @return Formatted size
-     */
-    String format(long size, boolean plain);
+    public Long multiple() {
+        return multiple;
+    }
+
+    public abstract String suffix();
 }

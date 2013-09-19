@@ -22,9 +22,24 @@ package ch.cyberduck.core.formatter;
  */
 public class DecimalSizeFormatter extends AbstractSizeFormatter {
 
-    private static final long KILO = 1000; //10^3
-    private static final long MEGA = 1000000; // 10^6
-    private static final long GIGA = 1000000000; // 10^9
+    private static final Unit KILO = new Unit(1000L) {
+        @Override
+        public String suffix() {
+            return "KB";
+        }
+    }; //10^3
+    private static final Unit MEGA = new Unit(1000000L) {
+        @Override
+        public String suffix() {
+            return "MB";
+        }
+    }; //10^6
+    private static final Unit GIGA = new Unit(1000000000L) {
+        @Override
+        public String suffix() {
+            return "GB";
+        }
+    }; // 10^9
 
     public DecimalSizeFormatter() {
         super(KILO, MEGA, GIGA);

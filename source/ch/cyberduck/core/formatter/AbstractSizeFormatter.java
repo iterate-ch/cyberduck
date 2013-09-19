@@ -25,13 +25,13 @@ import java.text.NumberFormat;
 /**
  * @version $Id$
  */
-public class AbstractSizeFormatter implements SizeFormatter {
+public abstract class AbstractSizeFormatter implements SizeFormatter {
 
-    private final long kilo;
-    private final long mega;
-    private final long giga;
+    private final Unit kilo;
+    private final Unit mega;
+    private final Unit giga;
 
-    public AbstractSizeFormatter(final long kilo, final long mega, final long giga) {
+    public AbstractSizeFormatter(final Unit kilo, final Unit mega, final Unit giga) {
         this.kilo = kilo;
         this.mega = mega;
         this.giga = giga;
@@ -44,33 +44,28 @@ public class AbstractSizeFormatter implements SizeFormatter {
 
     @Override
     public String format(final long size, final boolean plain) {
-        return format(size, plain, true);
-    }
-
-
-    @Override
-    public String format(final long size, final boolean plain, final boolean bytes) {
+        boolean bytes = true;
         if(-1 == size) {
             return LocaleFactory.localizedString("--");
         }
-        if(size < kilo) {
-            return (int) size + (bytes ? " B" : " bit");
+        if(size < kilo.multiple()) {
+            return String.format("%d B", size);
         }
         StringBuilder formatted = new StringBuilder();
-        if(size < mega) {
-            formatted.append(new BigDecimal(size).divide(new BigDecimal(kilo),
+        if(size < mega.multiple()) {
+            formatted.append(new BigDecimal(size).divide(new BigDecimal(kilo.multiple()),
                     1,
-                    BigDecimal.ROUND_HALF_UP).toString()).append(bytes ? " KB" : " kbit");
+                    BigDecimal.ROUND_HALF_UP).toString()).append(" ").append(kilo.suffix());
         }
-        else if(size < giga) {
-            formatted.append(new BigDecimal(size).divide(new BigDecimal(mega),
+        else if(size < giga.multiple()) {
+            formatted.append(new BigDecimal(size).divide(new BigDecimal(mega.multiple()),
                     1,
-                    BigDecimal.ROUND_HALF_UP).toString()).append(bytes ? " MB" : " Mbit");
+                    BigDecimal.ROUND_HALF_UP).toString()).append(" ").append(mega.suffix());
         }
         else {
-            formatted.append(new BigDecimal(size).divide(new BigDecimal(giga),
+            formatted.append(new BigDecimal(size).divide(new BigDecimal(giga.multiple()),
                     1,
-                    BigDecimal.ROUND_HALF_UP).toString()).append(bytes ? " GB" : " Gbit");
+                    BigDecimal.ROUND_HALF_UP).toString()).append(" ").append(giga.suffix());
         }
         if(plain) {
             formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
