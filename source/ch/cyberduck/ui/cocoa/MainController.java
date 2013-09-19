@@ -907,7 +907,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             });
         }
-
+        // Load all bookmarks in background
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
             public Void run() throws BackgroundException {
@@ -1067,18 +1067,18 @@ public class MainController extends BundleController implements NSApplication.De
                         }
                     }
                 }
+                try {
+                    bookmarksSemaphore.await();
+                }
+                catch(InterruptedException e) {
+                    log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
+                }
                 return null;
             }
 
             @Override
             public void cleanup() {
                 for(ThirdpartyBookmarkCollection t : thirdpartyBookmarkCollections) {
-                    try {
-                        bookmarksSemaphore.await();
-                    }
-                    catch(InterruptedException e) {
-                        log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
-                    }
                     final BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
                     t.filter(bookmarks);
                     if(t.isEmpty()) {
