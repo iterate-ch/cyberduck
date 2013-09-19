@@ -44,7 +44,6 @@ public abstract class AbstractSizeFormatter implements SizeFormatter {
 
     @Override
     public String format(final long size, final boolean plain) {
-        boolean bytes = true;
         if(-1 == size) {
             return LocaleFactory.localizedString("--");
         }
