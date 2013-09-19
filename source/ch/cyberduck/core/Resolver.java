@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadFactory;
 public class Resolver {
     private static final Logger log = Logger.getLogger(Resolver.class);
 
-    private ThreadFactory threadFactory
+    private final ThreadFactory threadFactory
             = new NamedThreadFactory("resolver");
 
     private CountDownLatch signal = new CountDownLatch(1);
