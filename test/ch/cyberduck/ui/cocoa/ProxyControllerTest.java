@@ -14,7 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ProxyControllerTest extends AbstractTestCase {
 
@@ -53,7 +53,7 @@ public class ProxyControllerTest extends AbstractTestCase {
                 assertTrue(c.get());
                 return null;
             }
-        }, 100);
+        }, 5);
     }
 
     @Test
@@ -87,6 +87,6 @@ public class ProxyControllerTest extends AbstractTestCase {
                 assertTrue(c.get());
                 return null;
             }
-        }, 100);
+        }, 5);
     }
 }
