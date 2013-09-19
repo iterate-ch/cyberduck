@@ -112,6 +112,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
         final String lock = sleep.lock();
         try {
             timerPool = new ScheduledThreadPool();
+            meter.reset();
             progressTimer = timerPool.repeat(new Runnable() {
                 @Override
                 public void run() {
