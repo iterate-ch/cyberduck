@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -62,7 +61,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
         controller.background(new BrowserBackgroundAction((BrowserController) controller) {
             @Override
             public Boolean run() throws BackgroundException {
-                final Transfer transfer = download.call();
+                download.call();
                 return true;
             }
 
@@ -85,7 +84,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
         controller.background(new BrowserBackgroundAction((BrowserController) controller) {
             @Override
             public Boolean run() throws BackgroundException {
-                final Transfer transfer = upload.call();
+                upload.call();
                 return true;
             }
 
