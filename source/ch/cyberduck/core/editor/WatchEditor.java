@@ -18,14 +18,13 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
@@ -51,11 +50,6 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
      */
     public WatchEditor(final Controller c, final Session session, final Application application, final Path path) {
         super(c, session, application, path);
-    }
-
-    @Override
-    protected TransferAction getAction() {
-        return TransferAction.ACTION_RENAME;
     }
 
     /**

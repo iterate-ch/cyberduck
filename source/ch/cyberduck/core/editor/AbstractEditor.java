@@ -131,13 +131,6 @@ public abstract class AbstractEditor implements Editor {
     }
 
     /**
-     * @return The transfer action for edited file
-     */
-    protected TransferAction getAction() {
-        return TransferAction.ACTION_OVERWRITE;
-    }
-
-    /**
      * Open the file in the parent directory
      */
     @Override
@@ -185,21 +178,20 @@ public abstract class AbstractEditor implements Editor {
         @Override
         public Transfer call() throws BackgroundException {
             // Delete any existing file which might be used by a watch editor already
-            final Local local = edited.getLocal();
-            local.trash();
             final TransferOptions options = new TransferOptions();
             options.quarantine = false;
             options.open = false;
             final Transfer download = new DownloadTransfer(session, edited) {
                 @Override
                 public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-                    return getAction();
+                    return TransferAction.ACTION_RENAME_EXISTING;
                 }
             };
             download.start(null, options, new DisabledTransferErrorCallback());
             growl.notify(download.isComplete() ?
                     String.format("%s complete", StringUtils.capitalize(download.getType().name())) : "Transfer incomplete", download.getName());
             if(download.isComplete()) {
+                final Local local = edited.getLocal();
                 checksum = local.attributes().getChecksum();
                 final Permission permissions = local.attributes().getPermission();
                 // Update local permissions to make sure the file is readable and writable for editing.
