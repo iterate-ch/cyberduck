@@ -18,10 +18,13 @@ package ch.cyberduck.core.transfer;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class TransferSpeedometer extends Speedometer {
+    private static final Logger log = Logger.getLogger(TransferSpeedometer.class);
 
     private Transfer transfer;
 
@@ -30,12 +33,11 @@ public class TransferSpeedometer extends Speedometer {
     }
 
     public TransferProgress getStatus() {
-        final Long time = System.currentTimeMillis();
         final Long transferred = transfer.getTransferred();
         final Long size = transfer.getSize();
         final Double speed = this.getSpeed(transferred);
         return new TransferProgress(size, transferred,
-                this.getProgress(time, transfer.isRunning(), size, transferred, speed), speed);
+                this.getProgress(transfer.isRunning(), size, transferred, speed), speed);
     }
 
     public void reset() {
