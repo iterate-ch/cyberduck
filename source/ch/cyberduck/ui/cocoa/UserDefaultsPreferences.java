@@ -170,9 +170,9 @@ public class UserDefaultsPreferences extends Preferences {
          * The logging level (debug, info, warn, error)
          */
         defaults.put("logging.config", "log4j-cocoa.xml");
-        defaults.put("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
-
+        // Parent defaults
         super.setDefaults();
+        defaults.put("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
         final NSBundle bundle = NSBundle.mainBundle();
         if(null != bundle) {
             final NSObject bundleName = bundle.objectForInfoDictionaryKey("CFBundleName");
@@ -277,7 +277,7 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public List<String> systemLocales() {
-        // Language ordering in system preferences. Can be overriden
+        // Language ordering in system preferences. Can be overridden
         // using the "AppleLanguages" user default
         return this.toList(NSLocale.preferredLanguages());
     }
