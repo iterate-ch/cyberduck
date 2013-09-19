@@ -72,7 +72,7 @@ public class ProxyController extends AbstractController {
     @Override
     protected void invalidate() {
         if(log.isDebugEnabled()) {
-            log.debug("invalidate:" + this.toString());
+            log.debug(String.format("Invalidate controller %s", this));
         }
         if(id != null) {
             NSNotificationCenter.defaultCenter().removeObserver(id);
@@ -109,14 +109,14 @@ public class ProxyController extends AbstractController {
         }
         synchronized(runnable.lock()) {
             if(log.isTraceEnabled()) {
-                log.trace("invoke:" + runnable);
+                log.trace(String.format("Invoke runnable %s on main thread", runnable));
             }
             try {
                 //Defer to main thread
                 Foundation.runOnMainThread(runnable, wait);
             }
             catch(Exception e) {
-                log.error("Exception running task on main thread:" + e.getMessage(), e);
+                log.error(String.format("Exception %s running task on main thread", e.getMessage()), e);
             }
         }
     }
