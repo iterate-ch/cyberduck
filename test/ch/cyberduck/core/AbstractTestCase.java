@@ -35,7 +35,6 @@ import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
-import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.resources.NSImageIconCache;
 
@@ -94,7 +93,12 @@ public class AbstractTestCase {
         Locale.setDefault(Locale.ENGLISH);
         AutoreleaseActionOperationBatcher.register();
         FinderLocal.register();
-        UserDefaultsPreferences.register();
+        PreferencesFactory.addFactory(Factory.NATIVE_PLATFORM, new PreferencesFactory() {
+            @Override
+            protected Preferences create() {
+                return new MemoryPreferences();
+            }
+        });
         BundleLocale.register();
         NSImageIconCache.register();
         PlistDeserializer.register();

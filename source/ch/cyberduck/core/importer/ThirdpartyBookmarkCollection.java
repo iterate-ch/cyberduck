@@ -56,9 +56,11 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                 log.info(String.format("Found bookmarks file at %s", file.getAbsolute()));
             }
             if(Preferences.instance().getBoolean(this.getConfiguration())) {
-                // Prevously imported
+                // Previously imported
                 final String checksum = Preferences.instance().getProperty(String.format("%s.checksum", this.getConfiguration()));
-                log.debug("Saved previous checksum:" + checksum);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Saved previous checksum %s for bookmark %s", checksum, file));
+                }
                 if(StringUtils.isNotBlank(checksum)) {
                     if(checksum.equals(this.getChecksum())) {
                         if(log.isInfoEnabled()) {
@@ -79,9 +81,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                 this.parse(file);
             }
             // Save last checksum
-            Preferences.instance().setProperty(this.getConfiguration() + ".checksum",
-                    this.getChecksum()
-            );
+            Preferences.instance().setProperty(String.format("%s.checksum", this.getConfiguration()), this.getChecksum());
         }
         else {
             if(log.isInfoEnabled()) {
