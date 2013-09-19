@@ -105,7 +105,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             @Override
             public void collectionLoaded() {
                 cache.clear();
-                invoke(new WindowMainAction(controller) {
+                controller.invoke(new WindowMainAction(controller) {
                     @Override
                     public void run() {
                         controller.reloadBookmarks();
@@ -116,7 +116,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             @Override
             public void collectionItemAdded(final Host item) {
                 cache.remove(item);
-                invoke(new WindowMainAction(controller) {
+                controller.invoke(new WindowMainAction(controller) {
                     @Override
                     public void run() {
                         controller.reloadBookmarks();
@@ -127,7 +127,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             @Override
             public void collectionItemRemoved(final Host item) {
                 cache.remove(item);
-                invoke(new WindowMainAction(controller) {
+                controller.invoke(new WindowMainAction(controller) {
                     @Override
                     public void run() {
                         controller.reloadBookmarks();
