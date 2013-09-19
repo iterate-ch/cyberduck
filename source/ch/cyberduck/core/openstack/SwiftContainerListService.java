@@ -46,7 +46,7 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftContainerListService implements RootListService<SwiftSession> {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
-    private ThreadFactory threadFactory
+    private final ThreadFactory threadFactory
             = new NamedThreadFactory("cdn");
 
     @Override
