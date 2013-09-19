@@ -105,10 +105,16 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.StatusText =
                         LocaleFactory.localizedString(LocaleFactory.localizedString(_transfer.isComplete()
                                                                                         ? String.Format("{0} complete",
-                                                                                                        _transfer
-                                                                                                            .getType()
-                                                                                                            .name()
-                                                                                                            .ToUpper())
+                                                                                                        CultureInfo
+                                                                                                            .CurrentCulture
+                                                                                                            .TextInfo
+                                                                                                            .ToTitleCase
+                                                                                                            (
+                                                                                                                _transfer
+                                                                                                                    .getType
+                                                                                                                    ()
+                                                                                                                    .name
+                                                                                                                    ()))
                                                                                         : "Transfer incomplete",
                                                                                     "Status"), "Status");
                     View.TransferStatus = t.isComplete() ? TransferStatus.Complete : TransferStatus.Incomplete;

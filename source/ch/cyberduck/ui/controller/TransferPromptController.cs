@@ -257,11 +257,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     break;
                 }
             }
-            if (renameSupported)
-            {
-                actions.Add(TransferAction.ACTION_RENAME_EXISTING,
-                            TransferAction.ACTION_RENAME_EXISTING.getTitle());
-            }
             View.PopulateActions(actions);
 
             TransferAction defaultAction = TransferAction.forName(
