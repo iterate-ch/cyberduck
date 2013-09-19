@@ -610,10 +610,10 @@ public class MainController extends BundleController implements NSApplication.De
                     public Void run() throws BackgroundException {
                         // Wait until bookmarks are loaded
                         try {
-                            loader.await();
+                            bookmarksSemaphore.await();
                         }
                         catch(InterruptedException e) {
-                            log.error(e.getMessage());
+                            log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
                         }
                         return null;
                     }
@@ -859,7 +859,8 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     // User bookmarks and thirdparty applications
-    private final CountDownLatch loader = new CountDownLatch(2);
+    private final CountDownLatch bookmarksSemaphore = new CountDownLatch(1);
+    private final CountDownLatch thirdpartySemaphore = new CountDownLatch(1);
 
     /**
      * Sent by the default notification center after the application has been launched and initialized but
@@ -912,7 +913,7 @@ public class MainController extends BundleController implements NSApplication.De
             public Void run() throws BackgroundException {
                 final BookmarkCollection c = BookmarkCollection.defaultCollection();
                 c.load();
-                loader.countDown();
+                bookmarksSemaphore.countDown();
                 return null;
             }
 
@@ -1046,23 +1047,23 @@ public class MainController extends BundleController implements NSApplication.De
         }
         // Import thirdparty bookmarks.
         this.background(new AbstractBackgroundAction<Void>() {
-            private List<ThirdpartyBookmarkCollection> bookmarks = Collections.emptyList();
+            private List<ThirdpartyBookmarkCollection> thirdpartyBookmarkCollections = Collections.emptyList();
 
             @Override
             public Void run() throws BackgroundException {
-                bookmarks = this.getThirdpartyBookmarks();
-                for(ThirdpartyBookmarkCollection c : bookmarks) {
-                    if(!Preferences.instance().getBoolean(c.getConfiguration())) {
-                        if(!c.isInstalled()) {
+                thirdpartyBookmarkCollections = this.getThirdpartyBookmarks();
+                for(ThirdpartyBookmarkCollection t : thirdpartyBookmarkCollections) {
+                    if(!Preferences.instance().getBoolean(t.getConfiguration())) {
+                        if(!t.isInstalled()) {
                             if(log.isInfoEnabled()) {
-                                log.info(String.format("No application installed for %s", c.getBundleIdentifier()));
+                                log.info(String.format("No application installed for %s", t.getBundleIdentifier()));
                             }
                             continue;
                         }
-                        c.load();
-                        if(c.isEmpty()) {
+                        t.load();
+                        if(t.isEmpty()) {
                             // Flag as imported
-                            Preferences.instance().setProperty(c.getConfiguration(), true);
+                            Preferences.instance().setProperty(t.getConfiguration(), true);
                         }
                     }
                 }
@@ -1071,13 +1072,21 @@ public class MainController extends BundleController implements NSApplication.De
 
             @Override
             public void cleanup() {
-                for(ThirdpartyBookmarkCollection c : bookmarks) {
-                    if(c.isEmpty()) {
+                for(ThirdpartyBookmarkCollection t : thirdpartyBookmarkCollections) {
+                    try {
+                        bookmarksSemaphore.await();
+                    }
+                    catch(InterruptedException e) {
+                        log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
+                    }
+                    final BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
+                    t.filter(bookmarks);
+                    if(t.isEmpty()) {
                         continue;
                     }
                     final NSAlert alert = NSAlert.alert(
-                            MessageFormat.format(LocaleFactory.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
-                            MessageFormat.format(LocaleFactory.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), c.size()),
+                            MessageFormat.format(LocaleFactory.localizedString("Import {0} Bookmarks", "Configuration"), t.getName()),
+                            MessageFormat.format(LocaleFactory.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), t.size()),
                             LocaleFactory.localizedString("Import", "Configuration"), //default
                             null, //other
                             LocaleFactory.localizedString("Cancel", "Configuration"));
@@ -1087,15 +1096,15 @@ public class MainController extends BundleController implements NSApplication.De
                     int choice = alert.runModal(); //alternate
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
-                        Preferences.instance().setProperty(c.getConfiguration(), true);
+                        Preferences.instance().setProperty(t.getConfiguration(), true);
                     }
                     if(choice == SheetCallback.DEFAULT_OPTION) {
-                        BookmarkCollection.defaultCollection().addAll(c);
+                        bookmarks.addAll(t);
                         // Flag as imported
-                        Preferences.instance().setProperty(c.getConfiguration(), true);
+                        Preferences.instance().setProperty(t.getConfiguration(), true);
                     }
                 }
-                loader.countDown();
+                thirdpartySemaphore.countDown();
             }
 
             @Override
@@ -1108,15 +1117,17 @@ public class MainController extends BundleController implements NSApplication.De
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
             }
         });
+        // Add default bookmarks if empty user collection
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
             public Void run() throws BackgroundException {
                 // Wait until bookmarks are loaded
                 try {
-                    loader.await();
+                    bookmarksSemaphore.await();
+                    thirdpartySemaphore.await();
                 }
                 catch(InterruptedException e) {
-                    log.error(e.getMessage());
+                    log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
                 }
                 final BookmarkCollection c = BookmarkCollection.defaultCollection();
                 if(c.isEmpty()) {
