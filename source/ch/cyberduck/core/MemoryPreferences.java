@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MemoryPreferences extends Preferences {
 
@@ -63,6 +63,11 @@ public class MemoryPreferences extends Preferences {
         defaults.put("logging.config", "log4j.xml");
         defaults.put("application.support.path", System.getProperty("java.io.tmpdir"));
         defaults.put("application.profiles.path", System.getProperty("java.io.tmpdir"));
+        defaults.put("application.receipt.path", System.getProperty("java.io.tmpdir"));
+        defaults.put("application.bookmarks.path", System.getProperty("java.io.tmpdir"));
+        defaults.put("queue.download.folder", "~/Downloads");
+        defaults.put("application.name", "Cyberduck");
+        defaults.put("application.version", "snapshot");
         super.setDefaults();
     }
 
