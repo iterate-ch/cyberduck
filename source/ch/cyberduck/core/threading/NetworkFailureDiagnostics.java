@@ -31,7 +31,7 @@ import java.net.UnknownHostException;
 /**
  * @version $Id$
  */
-public class NetworkFailureDiagnostics {
+public final class NetworkFailureDiagnostics {
 
     public boolean isNetworkFailure(final BackgroundException e) {
         final Throwable cause = e.getCause();
