@@ -40,12 +40,15 @@ public class LoginConnectionService implements ConnectionService {
 
     private Resolver resolver;
 
+    private LoginService login;
+
     public LoginConnectionService(final LoginController prompt,
                                   final HostKeyController key,
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener) {
         this.prompt = prompt;
         this.key = key;
+        this.login = new KeychainLoginService(prompt, keychain);
         this.keychain = keychain;
         this.listener = listener;
         this.resolver = new Resolver();
@@ -124,7 +127,7 @@ public class LoginConnectionService implements ConnectionService {
         bookmark.setTimestamp(new Date());
 
         try {
-            this.login(session);
+            login.login(session, listener);
         }
         catch(BackgroundException e) {
             session.interrupt();
@@ -135,10 +138,5 @@ public class LoginConnectionService implements ConnectionService {
     @Override
     public void cancel() {
         resolver.cancel();
-    }
-
-    protected void login(final Session session) throws BackgroundException {
-        final KeychainLoginService login = new KeychainLoginService(prompt, keychain);
-        login.login(session, listener);
     }
 }
