@@ -69,7 +69,12 @@ public class SyncTransfer extends Transfer {
     }
 
     private void init() {
-        _delegateUpload = new UploadTransfer(session, this.getRoots());
+        _delegateUpload = new UploadTransfer(session, this.getRoots()) {
+            @Override
+            public Filter<Path> getRegexFilter() {
+                return new NullPathFilter<Path>();
+            }
+        };
         _delegateDownload = new DownloadTransfer(session, this.getRoots());
     }
 
