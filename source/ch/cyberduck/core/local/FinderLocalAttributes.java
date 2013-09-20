@@ -37,7 +37,7 @@ import org.rococoa.Rococoa;
 public class FinderLocalAttributes extends LocalAttributes {
     private static final Logger log = Logger.getLogger(FinderLocalAttributes.class);
 
-    public FinderLocalAttributes(String path) {
+    public FinderLocalAttributes(final String path) {
         super(path);
     }
 

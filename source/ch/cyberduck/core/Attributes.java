@@ -71,31 +71,4 @@ public abstract class Attributes {
     public abstract String getGroup();
 
     public abstract String getChecksum();
-
-    /**
-     * A version identifying a particular revision of a file
-     * with the same path.
-     *
-     * @return Version Identifier or null if not versioned.
-     */
-    public String getVersionId() {
-        return null;
-    }
-
-    /**
-     * If the path should not be displayed in a browser by default unless the user
-     * explicitly chooses to show hidden files.
-     *
-     * @return True if hidden by default.
-     */
-    public boolean isDuplicate() {
-        return false;
-    }
-
-    /**
-     * @return The incrementing revision number of the file or null if not versioned.
-     */
-    public String getRevision() {
-        return null;
-    }
 }

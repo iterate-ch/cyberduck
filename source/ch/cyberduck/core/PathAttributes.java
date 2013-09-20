@@ -332,9 +332,11 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     /**
-     * @return Unique version identifier
+     * A version identifying a particular revision of a file
+     * with the same path.
+     *
+     * @return Version Identifier or null if not versioned.
      */
-    @Override
     public String getVersionId() {
         return versionId;
     }
@@ -353,19 +355,18 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     /**
-     * Incremental revision number of document.
-     *
-     * @return Revision number
+     * @return The incrementing revision number of the file or null if not versioned.
      */
-    @Override
     public String getRevision() {
         return String.valueOf(revision);
     }
 
     /**
-     * @return True if hidden by default
+     * If the path should not be displayed in a browser by default unless the user
+     * explicitly chooses to show hidden files.
+     *
+     * @return True if hidden by default.
      */
-    @Override
     public boolean isDuplicate() {
         return duplicate;
     }

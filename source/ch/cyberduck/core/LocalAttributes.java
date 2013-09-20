@@ -33,7 +33,7 @@ public class LocalAttributes extends Attributes {
 
     protected String path;
 
-    public LocalAttributes(String path) {
+    public LocalAttributes(final String path) {
         this.path = path;
     }
 

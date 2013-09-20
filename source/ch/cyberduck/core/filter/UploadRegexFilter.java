@@ -19,8 +19,8 @@ package ch.cyberduck.core.filter;
  */
 
 import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
@@ -37,9 +37,6 @@ public class UploadRegexFilter implements Filter<Local> {
 
     @Override
     public boolean accept(final Local file) {
-        if(file.attributes().isDuplicate()) {
-            return false;
-        }
         if(Preferences.instance().getBoolean("queue.upload.skip.enable")) {
             if(pattern.matcher(file.getName()).matches()) {
                 if(log.isDebugEnabled()) {
