@@ -57,10 +57,7 @@ public class UserDefaultsPreferences extends Preferences {
     private static class Factory extends PreferencesFactory {
         @Override
         protected Preferences create() {
-            if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")) {
-                return new UserDefaultsPreferences();
-            }
-            return new UserDefaultsPortablePreferences();
+            return new UserDefaultsPreferences();
         }
     }
 
