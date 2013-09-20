@@ -20,3 +20,4 @@
 - [Bugfix] Connect mode fallback failures (FTP) (#5385)
 - [Bugfix] Directory placeholder not displayed if same name as object (OpenStack) (#6988)
 - [Bugfix] Changing permissions resets extended access rights flags (SFTP, FTP) (#3790)
+- [Bugfix] Refresh list of thirdparty application bookmarks to import (#6141)
