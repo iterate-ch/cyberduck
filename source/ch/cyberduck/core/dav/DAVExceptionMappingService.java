@@ -38,6 +38,11 @@ public class DAVExceptionMappingService extends AbstractIOExceptionMappingServic
     @Override
     public BackgroundException map(final SardineException e) {
         final StringBuilder buffer = new StringBuilder();
+        if(e.getStatusCode() == HttpStatus.SC_OK) {
+            this.append(buffer, e.getMessage());
+            // Failure unmarshalling XML response
+            return new InteroperabilityException(buffer.toString(), e);
+        }
         // HTTP method status
         this.append(buffer, e.getResponsePhrase());
         if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {

@@ -3,6 +3,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Copy;
@@ -45,7 +46,7 @@ public class DAVSessionTest extends AbstractTestCase {
         assertFalse(session.isConnected());
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test(expected = InteroperabilityException.class)
     public void testSsl() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
@@ -59,6 +60,23 @@ public class DAVSessionTest extends AbstractTestCase {
         catch(BackgroundException e) {
             assertEquals("Interoperability failure", e.getMessage());
             assertEquals("Method Not Allowed.", e.getDetail());
+            throw e;
+        }
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testHtmlResponse() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "cyberduck.ch", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        try {
+            session.list(session.workdir(), new DisabledListProgressListener());
+        }
+        catch(InteroperabilityException e) {
+            assertEquals("Not a valid DAV response.", e.getDetail());
             throw e;
         }
     }
