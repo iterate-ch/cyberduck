@@ -69,6 +69,7 @@ public class MemoryPreferences extends Preferences {
         defaults.put("application.name", "Cyberduck");
         defaults.put("application.version", "snapshot");
         super.setDefaults();
+        defaults.put("local.normalize.unicode", String.valueOf(false));
     }
 
     @Override
