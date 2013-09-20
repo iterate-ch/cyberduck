@@ -45,6 +45,7 @@ using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.comparator;
 using ch.cyberduck.ui.controller.threading;
+using ch.cyberduck.ui.pasteboard;
 using ch.cyberduck.ui.threading;
 using java.lang;
 using java.util;
@@ -80,6 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
         private ConnectionListener _listener;
+        private PathPasteboard _pasteboard;
 
         /*
          * No file filter.
@@ -552,6 +554,11 @@ namespace Ch.Cyberduck.Ui.Controller
             return items;
         }
 
+        private bool IsBrowser()
+        {
+            return View.CurrentView == BrowserView.File;
+        }
+
         private IList<KeyValuePair<string, List<string>>> View_GetOpenUrls()
         {
             IList<KeyValuePair<String, List<String>>> items = new List<KeyValuePair<String, List<String>>>();
@@ -1001,7 +1008,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (dropargs.Effect == DragDropEffects.Copy)
                 {
                     // Drag to browser windows with different session or explicit copy requested by user.
-                    DuplicatePaths(files, dropargs.SourceListView == dropargs.ListView);
+                    DuplicatePaths(files);
                 }
                 if (dropargs.Effect == DragDropEffects.Move)
                 {
@@ -1507,39 +1514,60 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidatePaste()
         {
-            //todo implement
-            return false;
+            return IsBrowser() && IsMounted() && !_pasteboard.isEmpty();
         }
 
         private void View_Paste()
         {
-            //todo implement
-            throw new NotImplementedException();
+            IDictionary<Path, Path> files = new Dictionary<Path, Path>();
+            Path parent = Workdir;
+            for (int i = 0; i < _pasteboard.size(); i++)
+            {
+                Path next = (Path) _pasteboard.get(0);
+                Path renamed = new Path(parent, next.getName(), next.attributes().getType());
+                files.Add(next, renamed);
+            }
+            _pasteboard.clear();
+            if (_pasteboard.isCut())
+            {
+                RenamePaths(files);
+            }
+            if (_pasteboard.isCopy())
+            {
+                DuplicatePaths(files);
+            }
         }
 
         private bool View_ValidateCopy()
         {
-            return false;
-            return IsMounted() && SelectedPaths.Count > 0;
+            return IsBrowser() && IsMounted() && SelectedPaths.Count > 0;
         }
 
         private void View_Copy()
         {
-            //todo implement
-            throw new NotImplementedException();
+            _pasteboard.clear();
+            _pasteboard.setCopy(true);
+            foreach (Path p in SelectedPaths)
+            {
+                // Writing data for private use when the item gets dragged to the transfer queue.
+                _pasteboard.add(p);
+            }
         }
 
         private bool View_ValidateCut()
         {
-            return false;
-            return IsMounted() && SelectedPaths.Count > 0;
+            return IsBrowser() && IsMounted() && SelectedPaths.Count > 0;
         }
 
         private void View_Cut()
         {
-            //todo implement
-            return;
-            throw new NotImplementedException();
+            _pasteboard.clear();
+            _pasteboard.setCut(true);
+            foreach (Path s in SelectedPaths)
+            {
+                // Writing data for private use when the item gets dragged to the transfer queue.
+                _pasteboard.add(s);
+            }
         }
 
         private void View_ShowPreferences()
@@ -2361,8 +2389,7 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (Path path in changed)
             {
                 getSession().cache().invalidate(path.getParent().getReference());
-                Path lookup = getSession().cache().lookup(path.getParent().getReference());
-                if (null == lookup || Workdir.equals(lookup))
+                if (Workdir.equals(path.getParent()))
                 {
                     if (rootRefreshed)
                     {
@@ -2373,7 +2400,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    View.RefreshBrowserObject(lookup);
+                    View.RefreshBrowserObject(path.getParent());
                 }
             }
             SelectedPaths = selected;
@@ -2558,6 +2585,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SelectedEncoding = _session.getEncoding();
             View.ClearTranscript();
             _navigation.clear();
+            _pasteboard = PathPasteboardFactory.getPasteboard(_session);
             return _session;
         }
 
@@ -2958,7 +2986,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="destination">The destination of the duplicated file</param>
         protected internal void DuplicatePath(Path source, Path destination)
         {
-            DuplicatePaths(new Dictionary<Path, Path> {{source, destination}}, true);
+            DuplicatePaths(new Dictionary<Path, Path> {{source, destination}});
         }
 
         /// <summary>
@@ -2966,7 +2994,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="selected">A dictionary with the original files as the key and the destination files as the value</param>
         ///<param name="browser"></param>
-        protected internal void DuplicatePaths(IDictionary<Path, Path> selected, bool browser)
+        protected internal void DuplicatePaths(IDictionary<Path, Path> selected)
         {
             if (CheckOverwrite(selected.Values))
             {
@@ -2974,7 +3002,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                      Utils.ConvertToJavaMap(selected));
                 List<Path> changed = new List<Path>();
                 changed.AddRange(selected.Values);
-                transfer(copy, changed, browser);
+                transfer(copy, changed, true);
             }
         }
 
@@ -3330,7 +3358,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object result)
                 {
                     _controller.RefreshParentPaths(_changed,
-                                                   (IList<Path>) Utils.ConvertFromJavaList<Path>((List) _files.values()));
+                                                   (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
                 }
             }
         }
