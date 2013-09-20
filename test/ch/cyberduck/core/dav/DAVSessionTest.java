@@ -57,7 +57,7 @@ public class DAVSessionTest extends AbstractTestCase {
             session.login(new DisabledPasswordStore(), new DisabledLoginController());
         }
         catch(BackgroundException e) {
-            assertEquals("Connection failed", e.getMessage());
+            assertEquals("Interoperability failure", e.getMessage());
             assertEquals("Method Not Allowed.", e.getDetail());
             throw e;
         }
