@@ -45,9 +45,6 @@ public class FinderLocalAttributes extends LocalAttributes {
      * @return Null if no such file.
      */
     private NSDictionary getNativeAttributes() {
-//            if(!exists()) {
-//                return null;
-//            }
         // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
         // if the link points to a nonexistent file, this method returns null. If flag is false,
         // the attributes of the symbolic link are returned.
@@ -62,7 +59,7 @@ public class FinderLocalAttributes extends LocalAttributes {
     private NSObject getNativeAttribute(final String name) {
         final NSDictionary dict = this.getNativeAttributes();
         if(null == dict) {
-            log.error(String.format("No file at %s", path));
+            log.warn(String.format("No file at %s", path));
             return null;
         }
         // Returns an entry’s value given its key, or null if no value is associated with key.
