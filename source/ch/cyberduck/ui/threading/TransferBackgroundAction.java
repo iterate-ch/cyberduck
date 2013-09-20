@@ -117,7 +117,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
                 public void run() {
                     transferListener.progress(meter.getStatus());
                 }
-            }, 500L, TimeUnit.MILLISECONDS);
+            }, 100L, TimeUnit.MILLISECONDS);
             transfer.start(prompt, options, error);
         }
         finally {
