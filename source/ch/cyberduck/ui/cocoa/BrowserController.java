@@ -2391,7 +2391,7 @@ public class BrowserController extends WindowController
     /**
      * Displays a warning dialog about files to be moved
      *
-     * @param selected The files to check for existance
+     * @param selected The files to check for existence
      */
     private void checkMove(final java.util.Collection<Path> selected, final MainAction action) {
         if(selected.size() > 0) {
@@ -3125,16 +3125,7 @@ public class BrowserController extends WindowController
         }
         else {
             final Map<Path, Path> files = new HashMap<Path, Path>();
-            Path parent = this.workdir();
-            if(this.getSelectionCount() == 1) {
-                Path selected = this.getSelectedPath();
-                if(selected.attributes().isDirectory()) {
-                    parent = selected;
-                }
-                else {
-                    parent = selected.getParent();
-                }
-            }
+            final Path parent = this.workdir();
             for(final Path next : pasteboard) {
                 Path renamed = new Path(parent, next.getName(), next.attributes().getType());
                 files.put(next, renamed);
