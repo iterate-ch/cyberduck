@@ -61,6 +61,9 @@ public class DAVExceptionMappingService extends AbstractIOExceptionMappingServic
         if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
             return new InteroperabilityException(buffer.toString(), e);
         }
+        if(e.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
         return this.wrap(e, buffer);
     }
 }

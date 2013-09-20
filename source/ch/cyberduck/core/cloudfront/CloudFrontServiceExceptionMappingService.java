@@ -20,6 +20,7 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.AbstractIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -49,6 +50,10 @@ public class CloudFrontServiceExceptionMappingService extends AbstractIOExceptio
             if(e.getErrorCode().equals("InvalidHttpAuthHeader")) {
                 return new LoginFailureException(buffer.toString(), e);
             }
+            return new InteroperabilityException(buffer.toString(), e);
+        }
+        if(e.getResponseCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
+            return new InteroperabilityException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }

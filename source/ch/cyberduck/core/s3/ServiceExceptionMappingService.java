@@ -67,6 +67,9 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
         if(HttpStatus.SC_BAD_REQUEST == code) {
             return new InteroperabilityException(buffer.toString(), cause);
         }
+        if(HttpStatus.SC_METHOD_NOT_ALLOWED == code) {
+            return new InteroperabilityException(buffer.toString(), cause);
+        }
         if(HttpStatus.SC_FORBIDDEN == code) {
             if(cause.getErrorCode().equals("SignatureDoesNotMatch")) {
                 return new LoginFailureException(buffer.toString(), cause);
