@@ -66,17 +66,22 @@ public class Speedometer {
      * @return Differential by time
      */
     protected Double getSpeed(final Long transferred) {
-        return this.getSpeed(System.currentTimeMillis(), transferred);
+        return this.getSpeed(System.currentTimeMillis(), transferred, true);
     }
 
-    protected Double getSpeed(final Long time, final Long transferred) {
+    protected Double getSpeed(final Long transferred, final boolean reset) {
+        return this.getSpeed(System.currentTimeMillis(), transferred, reset);
+    }
+
+    protected Double getSpeed(final Long time, final Long transferred, final boolean reset) {
         // Number of seconds data was actually transferred
         final Long elapsed = time - timestamp;
         if(elapsed > 0) {
             final Long differential = transferred - last;
-            // Remember for next iteration
-            last = transferred;
-            timestamp = time;
+            // No reset for overall speed
+            if(reset) {
+                this.reset(time, transferred);
+            }
             // The throughput is usually measured in bits per second
             return (double) differential / elapsed;
         }
@@ -95,7 +100,7 @@ public class Speedometer {
 
     public String getProgress(final Long time, final Boolean running,
                               final Long size, final Long transferred) {
-        return this.getProgress(running, size, transferred, this.getSpeed(time, transferred));
+        return this.getProgress(running, size, transferred, this.getSpeed(time, transferred, true));
     }
 
     public String getProgress(final Boolean running,
@@ -133,8 +138,8 @@ public class Speedometer {
         return b.toString();
     }
 
-    public void reset(Long transferred) {
-        timestamp = System.currentTimeMillis();
-        last = transferred;
+    public void reset(final Long timestamp, final Long transferred) {
+        this.timestamp = timestamp;
+        this.last = transferred;
     }
 }
