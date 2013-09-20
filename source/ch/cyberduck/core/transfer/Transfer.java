@@ -382,6 +382,9 @@ public abstract class Transfer implements Serializable {
         try {
             this.transfer(file, options, status);
         }
+        catch(ConnectionCanceledException e) {
+            throw e;
+        }
         catch(BackgroundException e) {
             // Prompt to continue or abort
             if(prompt.prompt(e)) {
