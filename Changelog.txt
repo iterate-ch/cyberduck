@@ -16,6 +16,7 @@ Changelog. Last modified: $Date$
 - [Feature] Select region when creating new container (S3, OpenStack)
 - [Feature] Confirmation alert on move and rename in browser (#595)
 - [Feature] Transfer action to skip existing files that match checksum, size or timestamp (#6500)
+- [Feature] Fullscreen option for browser window
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)
