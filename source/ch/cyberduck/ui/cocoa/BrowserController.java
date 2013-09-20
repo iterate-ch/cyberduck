@@ -520,6 +520,8 @@ public class BrowserController extends WindowController
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setDelegate(this.id());
+        window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
+        window.setMinSize(new NSSize(400d, 200d));
         super.setWindow(window);
     }
 
@@ -587,13 +589,9 @@ public class BrowserController extends WindowController
         this.donateButton.sizeToFit();
     }
 
-    public NSButton getDonateButton() {
-        return donateButton;
-    }
-
     private void addDonateWindowTitle() {
-        NSView view = this.window().contentView().superview();
-        NSSize bounds = view.frame().size;
+        NSView parent = this.window().contentView().superview();
+        NSSize bounds = parent.frame().size;
         NSSize size = donateButton.frame().size;
         donateButton.setFrame(new NSRect(
                 new NSPoint(
@@ -603,7 +601,8 @@ public class BrowserController extends WindowController
                         size.width.intValue(),
                         size.height.intValue()))
         );
-        view.addSubview(donateButton);
+        donateButton.setAutoresizingMask(new NSUInteger(NSView.NSViewMinXMargin | NSView.NSViewMinYMargin));
+        parent.addSubview(donateButton);
     }
 
     public void removeDonateWindowTitle() {
