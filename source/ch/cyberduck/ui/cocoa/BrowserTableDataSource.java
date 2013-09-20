@@ -315,7 +315,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     for(Path file : pasteboard) {
                         files.put(file, new Path(destination, file.getName(), file.attributes().getType()));
                     }
-                    controller.transfer(new CopyTransfer(pasteboard.getSession(), controller.getSession(), files));
+                    controller.transfer(new CopyTransfer(
+                            SessionFactory.createSession(pasteboard.getSession().getHost()),
+                            SessionFactory.createSession(controller.getSession().getHost()),
+                            files));
                 }
                 else {
                     // The file should be renamed
