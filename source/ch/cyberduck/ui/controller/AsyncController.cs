@@ -17,10 +17,13 @@
 // 
 
 using System;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.threading;
+using java.lang;
+using Exception = System.Exception;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -29,6 +32,10 @@ namespace Ch.Cyberduck.Ui.Controller
         public delegate void AsyncDelegate();
 
         public delegate void SyncDelegate();
+
+        protected AsyncController() : base(new ExceptionHandler())
+        {
+        }
 
         public virtual IView View { get; set; }
 
@@ -109,6 +116,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 //happens because there is no synchronization between the lifecycle of a form and callbacks of background threads.
                 //catch silently                
             }
+        }
+    }
+
+    internal class ExceptionHandler : Thread.UncaughtExceptionHandler
+    {
+        public void uncaughtException(Thread t, Exception e)
+        {
+            CrashReporter.Instance.Write(e);
         }
     }
 
