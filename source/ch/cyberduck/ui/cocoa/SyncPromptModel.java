@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.Transfer;
@@ -36,13 +35,6 @@ public class SyncPromptModel extends TransferPromptModel {
 
     public SyncPromptModel(TransferPromptController c, Transfer transfer) {
         super(c, transfer);
-    }
-
-    @Override
-    public void add(Path p) throws BackgroundException {
-        for(Path child : transfer.children(p)) {
-            super.add(child);
-        }
     }
 
     /**

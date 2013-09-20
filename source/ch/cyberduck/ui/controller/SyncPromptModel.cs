@@ -29,14 +29,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
-        public override void Add(Path path)
-        {
-            foreach (Path child in Transfer.children(path))
-            {
-                base.Add(child);
-            }
-        }
-
         public override object GetSize(Path path)
         {
             Comparison compare = ((SyncTransfer) Transfer).compare(path);
