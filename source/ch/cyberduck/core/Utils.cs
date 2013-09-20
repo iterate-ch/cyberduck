@@ -30,6 +30,7 @@ using java.nio.charset;
 using java.util;
 using org.apache.commons.io;
 using org.apache.log4j;
+using Collection = java.util.Collection;
 
 namespace Ch.Cyberduck.Core
 {
@@ -178,31 +179,32 @@ namespace Ch.Cyberduck.Core
         /// Convert a java list to a generic collection
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
+        /// <param name="collection"></param>
         /// <returns>A List<typeparamref name="T"/></returns>
-        public static ICollection<T> ConvertFromJavaList<T>(List list)
+        public static ICollection<T> ConvertFromJavaList<T>(Collection collection)
         {
-            return ConvertFromJavaList<T>(list, null);
+            return ConvertFromJavaList<T>(collection, null);
         }
 
         /// <summary>
         /// Convert a java list to a generic collection
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
+        /// <param name="collection"></param>
         /// <param name="applyPerItem">Apply this delegate to all list items before adding</param>
         /// <returns>A List<typeparamref name="T"/></returns>
-        public static IList<T> ConvertFromJavaList<T>(List list, ApplyPerItemReverseDelegate<T> applyPerItem)
+        public static IList<T> ConvertFromJavaList<T>(Collection collection, ApplyPerItemReverseDelegate<T> applyPerItem)
         {
-            List<T> result = new List<T>(list.size());
-            for (int i = 0; i < list.size(); i++)
+            List<T> result = new List<T>(collection.size());
+            for (Iterator iterator = collection.iterator(); iterator.hasNext();)
             {
+                Object next = iterator.next();
                 if (null != applyPerItem)
                 {
-                    result.Add(applyPerItem(list.get(i)));
+                    result.Add(applyPerItem(next));
                     continue;
                 }
-                result.Add((T) list.get(i));
+                result.Add((T) next);
             }
             return result;
         }
