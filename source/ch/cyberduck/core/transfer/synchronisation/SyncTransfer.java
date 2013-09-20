@@ -67,7 +67,7 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public Type getType() {
-        return Type.synchronisation;
+        return Type.sync;
     }
 
     @Override

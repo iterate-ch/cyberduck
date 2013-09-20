@@ -59,7 +59,7 @@ public class TransferPlistReader extends PlistReader<Transfer> {
                     return new DownloadTransfer(dict, s);
                 case upload:
                     return new UploadTransfer(dict, s);
-                case synchronisation:
+                case sync:
                     return new SyncTransfer(dict, s);
                 case copy:
                     return new CopyTransfer(dict, s);

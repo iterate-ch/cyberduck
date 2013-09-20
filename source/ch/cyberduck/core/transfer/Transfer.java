@@ -77,7 +77,7 @@ public abstract class Transfer implements Serializable {
                 return true;
             }
         },
-        synchronisation {
+        sync {
             @Override
             public boolean isReloadable() {
                 return true;
