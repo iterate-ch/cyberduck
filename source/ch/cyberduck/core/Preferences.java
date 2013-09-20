@@ -258,28 +258,28 @@ public abstract class Preferences {
          */
         defaults.put("browser.info.inspector", String.valueOf(true));
 
-        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.ICON.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Columns.ICON.name()), String.valueOf(20));
-        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.FILENAME.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Columns.FILENAME.name()), String.valueOf(250));
-        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.KIND.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Columns.KIND.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.EXTENSION.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Columns.EXTENSION.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.SIZE.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Columns.SIZE.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.MODIFIED.name()), String.valueOf(true));
-        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Columns.MODIFIED.name()), String.valueOf(150));
-        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.OWNER.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Columns.OWNER.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.GROUP.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Columns.GROUP.name()), String.valueOf(80));
-        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.PERMISSIONS.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Columns.PERMISSIONS.name()), String.valueOf(100));
-        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.REGION.name()), String.valueOf(false));
-        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Columns.REGION.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.icon.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.icon.name()), String.valueOf(20));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.filename.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.filename.name()), String.valueOf(250));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.kind.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.kind.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.extension.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.extension.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.size.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.size.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.modified.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.modified.name()), String.valueOf(150));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.owner.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.owner.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.group.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.group.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.permission.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.permission.name()), String.valueOf(100));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.region.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.region.name()), String.valueOf(80));
 
-        defaults.put("browser.sort.column", BrowserTableDataSource.Columns.FILENAME.name());
+        defaults.put("browser.sort.column", BrowserTableDataSource.Column.filename.name());
         defaults.put("browser.sort.ascending", String.valueOf(true));
 
         defaults.put("browser.alternatingRows", String.valueOf(false));
