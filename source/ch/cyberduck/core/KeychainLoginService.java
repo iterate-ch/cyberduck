@@ -49,7 +49,8 @@ public class KeychainLoginService implements LoginService {
     @Override
     public void login(final Session session, final ProgressListener listener) throws BackgroundException {
         final Host bookmark = session.getHost();
-        this.validate(bookmark, LocaleFactory.localizedString("Login with username and password", "Credentials"));
+        this.validate(bookmark,
+                MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), bookmark.getHostname()));
         if(session.alert()) {
             // Warning if credentials are sent plaintext.
             controller.warn(bookmark.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),

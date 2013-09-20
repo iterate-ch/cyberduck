@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.*;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.ConnectionMonitor;
@@ -112,7 +113,7 @@ public class SFTPSession extends Session<Connection> {
                         LocaleFactory.localizedString("Partial authentication success", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials") + ".", new LoginOptions());
                 if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
-                    throw new LoginFailureException(LocaleFactory.localizedString("Login with username and password", "Credentials"));
+                    throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
                 }
             }
             if(client.isAuthenticationComplete()) {
@@ -135,7 +136,7 @@ public class SFTPSession extends Session<Connection> {
                 }
             }
             else {
-                throw new LoginFailureException(LocaleFactory.localizedString("Login with username and password", "Credentials"));
+                throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
             }
         }
         catch(IOException e) {
