@@ -30,7 +30,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.Controller;
@@ -116,8 +115,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
             progressTimer = timerPool.repeat(new Runnable() {
                 @Override
                 public void run() {
-                    final TransferProgress status = meter.getStatus();
-                    transferListener.progress(status);
+                    transferListener.progress(meter.getStatus());
                 }
             }, 500L, TimeUnit.MILLISECONDS);
             transfer.start(prompt, options, error);
