@@ -18,15 +18,7 @@ package ch.cyberduck.core.transfer.synchronisation;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.NullPathFilter;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -69,13 +61,8 @@ public class SyncTransfer extends Transfer {
     }
 
     private void init() {
-        _delegateUpload = new UploadTransfer(session, this.getRoots()) {
-            @Override
-            public Filter<Path> getRegexFilter() {
-                return new NullPathFilter<Path>();
-            }
-        };
-        _delegateDownload = new DownloadTransfer(session, this.getRoots());
+        _delegateUpload = new UploadTransfer(session, this.getRoots(), new NullPathFilter<Local>());
+        _delegateDownload = new DownloadTransfer(session, this.getRoots(), new NullPathFilter<Path>());
     }
 
     @Override

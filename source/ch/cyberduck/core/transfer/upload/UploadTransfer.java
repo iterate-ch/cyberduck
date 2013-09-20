@@ -55,13 +55,20 @@ import java.util.List;
 public class UploadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(UploadTransfer.class);
 
-    private UploadRegexFilter filter = new UploadRegexFilter();
+    private Filter<Local> filter = new UploadRegexFilter();
 
     private Upload writer;
 
     public UploadTransfer(final Session<?> session, final Path root) {
         this(session, Collections.singletonList(root));
         writer = session.getFeature(Upload.class);
+    }
+
+    public UploadTransfer(final Session<?> session, final List<Path> roots, final Filter<Local> f) {
+        super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
+                Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
+        writer = session.getFeature(Upload.class);
+        filter = f;
     }
 
     public UploadTransfer(final Session<?> session, final List<Path> roots) {

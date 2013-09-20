@@ -54,7 +54,7 @@ import java.util.List;
 public class DownloadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(DownloadTransfer.class);
 
-    private DownloadRegexFilter filter
+    private Filter<Path> filter
             = new DownloadRegexFilter();
 
     private final IconService icon
@@ -65,6 +65,13 @@ public class DownloadTransfer extends Transfer {
     public DownloadTransfer(final Session<?> session, final Path root) {
         this(session, Collections.singletonList(root));
         reader = session.getFeature(Read.class);
+    }
+
+    public DownloadTransfer(final Session<?> session, final List<Path> roots, final Filter<Path> f) {
+        super(session, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
+                Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
+        reader = session.getFeature(Read.class);
+        filter = f;
     }
 
     public DownloadTransfer(final Session<?> session, final List<Path> roots) {
