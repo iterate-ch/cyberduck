@@ -1,7 +1,7 @@
 package ch.cyberduck.core.exception;
 
 /*
- * Copyright (c) 2013 David Kocher. All rights reserved.
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.LocaleFactory;
@@ -36,5 +36,10 @@ public class LoginFailureException extends BackgroundException {
 
     public LoginFailureException(final String message, final String detail, final Throwable cause) {
         super(message, detail, cause);
+    }
+
+    @Override
+    public String getHelp() {
+        return LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support");
     }
 }

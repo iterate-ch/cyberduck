@@ -14,7 +14,8 @@ package ch.cyberduck.core.exception;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.LocaleFactory;
@@ -27,5 +28,10 @@ public class QuotaException extends BackgroundException {
 
     public QuotaException(final String detail, final Throwable cause) {
         super(LocaleFactory.localizedString("Insufficient disk space", "Error"), detail, cause);
+    }
+
+    @Override
+    public String getHelp() {
+        return LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support");
     }
 }

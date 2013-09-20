@@ -1,7 +1,7 @@
 package ch.cyberduck.core.exception;
 
 /*
- * Copyright (c) 2013 David Kocher. All rights reserved.
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,5 +28,10 @@ public class AccessDeniedException extends BackgroundException {
 
     public AccessDeniedException(final String detail, final Throwable cause) {
         super(LocaleFactory.localizedString("Access denied", "Credentials"), detail, cause);
+    }
+
+    @Override
+    public String getHelp() {
+        return LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support");
     }
 }
