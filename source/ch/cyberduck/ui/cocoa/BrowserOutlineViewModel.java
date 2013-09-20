@@ -64,8 +64,11 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(null == item) {
             return false;
         }
-        final Path path = controller.lookup(new NSObjectPathReference(item));
-        return path.attributes().isDirectory();
+        final Path lookup = controller.lookup(new NSObjectPathReference(item));
+        if(null == lookup) {
+            return false;
+        }
+        return lookup.attributes().isDirectory();
     }
 
     /**
@@ -100,6 +103,9 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                 }
             }
             final Path lookup = controller.lookup(new NSObjectPathReference(item));
+            if(null == lookup) {
+                return new NSInteger(0);
+            }
             return new NSInteger(this.list(lookup).size());
         }
         return new NSInteger(0);
@@ -122,6 +128,9 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         }
         else {
             path = controller.lookup(new NSObjectPathReference(item));
+            if(null == path) {
+                return null;
+            }
         }
         final AttributedList<Path> children = this.get(path);
         if(index.intValue() >= children.size()) {
@@ -196,6 +205,9 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
             }
             else {
                 destination = controller.lookup(new NSObjectPathReference(item));
+                if(null == destination) {
+                    return false;
+                }
             }
         }
         return super.acceptDrop(view, destination, info);
