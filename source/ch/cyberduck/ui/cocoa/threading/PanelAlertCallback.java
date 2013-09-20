@@ -41,6 +41,9 @@ public class PanelAlertCallback implements AlertCallback {
 
     private final WindowController controller;
 
+    private final NetworkFailureDiagnostics diagnostics
+            = new NetworkFailureDiagnostics();
+
     public PanelAlertCallback(final WindowController controller) {
         this.controller = controller;
     }
@@ -53,7 +56,7 @@ public class PanelAlertCallback implements AlertCallback {
                     null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
                     null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail(),
                     LocaleFactory.localizedString("Try Again", "Alert"), // default button
-                    new NetworkFailureDiagnostics().isNetworkFailure(failure) ? LocaleFactory.localizedString("Network Diagnostics") : null, //other button
+                    diagnostics.isNetworkFailure(failure) ? LocaleFactory.localizedString("Network Diagnostics") : null, //other button
                     LocaleFactory.localizedString("Cancel") // alternate button
             );
             alert.setShowsHelp(true);
