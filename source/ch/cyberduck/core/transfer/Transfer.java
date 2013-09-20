@@ -500,7 +500,8 @@ public abstract class Transfer implements Serializable {
      * @param prompt  Transfer prompt callback
      * @param options Transfer options
      */
-    public void start(final TransferPrompt prompt, final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
+    public void start(final TransferPrompt prompt, final TransferOptions options,
+                      final TransferErrorCallback error) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
         }
@@ -513,7 +514,7 @@ public abstract class Transfer implements Serializable {
             }
             if(action.equals(TransferAction.ACTION_CANCEL)) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Transfer canceled by user:%s", this));
+                    log.info(String.format("Transfer %s canceled by user", this));
                 }
                 throw new ConnectionCanceledException();
             }
