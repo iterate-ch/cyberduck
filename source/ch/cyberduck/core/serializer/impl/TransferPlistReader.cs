@@ -66,7 +66,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
                 {
                     return new UploadTransfer(dictNode, session);
                 }
-                if (type == Transfer.Type.synchronisation)
+                if (type == Transfer.Type.sync)
                 {
                     return new SyncTransfer(dictNode, session);
                 }
