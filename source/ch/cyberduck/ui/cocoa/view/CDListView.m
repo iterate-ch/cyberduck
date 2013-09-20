@@ -197,7 +197,7 @@ static NSTableColumn *localSelectionColumn;
 + (NSTableColumn *)_localSelectionColumn
 {
 	if(nil == localSelectionColumn) {
-		localSelectionColumn = [[NSTableColumn alloc] initWithIdentifier:@"FILENAME"];
+		localSelectionColumn = [[NSTableColumn alloc] initWithIdentifier:@"filename"];
 	}
 	return localSelectionColumn;
 }

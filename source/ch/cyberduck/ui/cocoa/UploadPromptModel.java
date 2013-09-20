@@ -39,7 +39,7 @@ public class UploadPromptModel extends TransferPromptModel {
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
-            if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
+            if(identifier.equals(TransferPromptModel.Column.warning.name())) {
                 if(item.attributes().isFile()) {
                     if(item.getLocal().attributes().getSize() == 0) {
                         return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
@@ -50,7 +50,7 @@ public class UploadPromptModel extends TransferPromptModel {
                 }
                 return null;
             }
-            if(identifier.equals(TransferPromptModel.SIZE_COLUMN)) {
+            if(identifier.equals(TransferPromptModel.Column.size.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         SizeFormatterFactory.get().format(item.attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));

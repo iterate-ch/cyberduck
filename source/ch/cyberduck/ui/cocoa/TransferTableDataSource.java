@@ -37,7 +37,6 @@ import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 
@@ -57,9 +56,9 @@ import java.util.Map;
 public class TransferTableDataSource extends ListDataSource {
     private static Logger log = Logger.getLogger(TransferTableDataSource.class);
 
-    public static final String PROGRESS_COLUMN = "PROGRESS";
-    // virtual column to implement keyboard selection
-    protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
+    public enum Column {
+        progress,
+    }
 
     /**
      *
@@ -157,11 +156,8 @@ public class TransferTableDataSource extends ListDataSource {
         final Transfer item = this.getSource().get(row.intValue());
         final NSObject cached = cache.get(item, identifier);
         if(null == cached) {
-            if(identifier.equals(PROGRESS_COLUMN)) {
+            if(identifier.equals(Column.progress.name())) {
                 return cache.put(item, identifier, null);
-            }
-            if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return cache.put(item, identifier, NSString.stringWithString(item.getName()));
             }
             throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
         }

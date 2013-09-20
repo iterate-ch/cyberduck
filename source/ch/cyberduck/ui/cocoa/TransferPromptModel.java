@@ -35,7 +35,6 @@ import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 import ch.cyberduck.ui.comparator.FilenameComparator;
 import ch.cyberduck.ui.threading.ControllerBackgroundAction;
@@ -61,6 +60,13 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     private TransferPromptController controller;
 
+    public enum Column {
+        include,
+        warning,
+        filename,
+        size,
+    }
+
     /**
      * @param c        The parent window to attach the prompt
      * @param transfer Transfer
@@ -78,18 +84,11 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         return transfer.lookup(reference);
     }
 
-    protected static final String INCLUDE_COLUMN = "INCLUDE";
-    protected static final String WARNING_COLUMN = "WARNING";
-    protected static final String FILENAME_COLUMN = "FILENAME";
-    protected static final String SIZE_COLUMN = "SIZE";
-    // virtual column to implement keyboard selection
-    protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
-
     @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, final NSObject value,
                                                                  final NSTableColumn tableColumn, final NSObject item) {
         final String identifier = tableColumn.identifier();
-        if(identifier.equals(INCLUDE_COLUMN)) {
+        if(identifier.equals(Column.include.name())) {
             final Path path = this.lookup(new NSObjectPathReference(item));
             final int state = Rococoa.cast(value, NSNumber.class).intValue();
             transfer.setSelected(path, state == NSCell.NSOnState);
@@ -151,17 +150,14 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
-            if(identifier.equals(INCLUDE_COLUMN)) {
+            if(identifier.equals(Column.include.name())) {
                 // Not included if the particular path should be skipped or skip existing is selected as the default transfer action for duplicate files
                 final boolean included = !transfer.isSkipped(item) && transfer.isSelected(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
                 return NSNumber.numberWithInt(included ? NSCell.NSOnState : NSCell.NSOffState);
             }
-            if(identifier.equals(FILENAME_COLUMN)) {
+            if(identifier.equals(Column.filename.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
                         TableCellAttributes.browserFontLeftAlignment()));
-            }
-            if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSString.stringWithString(item.getName()));
             }
             throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
         }

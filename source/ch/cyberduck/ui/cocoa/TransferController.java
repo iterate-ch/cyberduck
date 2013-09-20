@@ -433,7 +433,7 @@ public final class TransferController extends WindowController implements NSTool
         this.transferTable = view;
         this.transferTable.setRowHeight(new CGFloat(82));
         {
-            NSTableColumn c = tableColumnsFactory.create(TransferTableDataSource.PROGRESS_COLUMN);
+            NSTableColumn c = tableColumnsFactory.create(TransferTableDataSource.Column.progress.name());
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
@@ -442,7 +442,7 @@ public final class TransferController extends WindowController implements NSTool
         }
         this.transferTable.setDataSource((transferTableModel = new TransferTableDataSource()).id());
         this.transferTable.setDelegate((transferTableDelegate = new AbstractTableDelegate<Transfer>(
-                transferTable.tableColumnWithIdentifier(TransferTableDataSource.PROGRESS_COLUMN)
+                transferTable.tableColumnWithIdentifier(TransferTableDataSource.Column.progress.name())
         ) {
             @Override
             public String tooltip(Transfer t) {

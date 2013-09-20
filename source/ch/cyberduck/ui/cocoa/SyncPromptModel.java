@@ -37,27 +37,29 @@ public class SyncPromptModel extends TransferPromptModel {
         super(c, transfer);
     }
 
-    /**
-     * A column indicating if the file will be uploaded or downloaded
-     */
-    protected static final String SYNC_COLUMN = "SYNC";
-    /**
-     * A column indicating if the file is missing and will be created
-     */
-    protected static final String CREATE_COLUMN = "CREATE";
+    public enum Column {
+        /**
+         * A column indicating if the file will be uploaded or downloaded
+         */
+        sync,
+        /**
+         * A column indicating if the file is missing and will be created
+         */
+        create
+    }
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
-            if(identifier.equals(SIZE_COLUMN)) {
+            if(identifier.equals(TransferPromptModel.Column.size.name())) {
                 final Comparison compare = ((SyncTransfer) transfer).compare(item);
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         SizeFormatterFactory.get().format(
                                 compare.equals(Comparison.REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
-            if(identifier.equals(SYNC_COLUMN)) {
+            if(identifier.equals(Column.sync.name())) {
                 final Comparison compare = ((SyncTransfer) transfer).compare(item);
                 if(item.attributes().isDirectory()) {
                     if(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists()) {
@@ -72,7 +74,7 @@ public class SyncPromptModel extends TransferPromptModel {
                 }
                 return null;
             }
-            if(identifier.equals(WARNING_COLUMN)) {
+            if(identifier.equals(TransferPromptModel.Column.warning.name())) {
                 if(item.attributes().isFile()) {
                     if(transfer.cache().lookup(item.getReference()) != null) {
                         if(item.attributes().getSize() == 0) {
@@ -87,7 +89,7 @@ public class SyncPromptModel extends TransferPromptModel {
                 }
                 return null;
             }
-            if(identifier.equals(CREATE_COLUMN)) {
+            if(identifier.equals(Column.create.name())) {
                 if(!(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists())) {
                     return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16));
                 }

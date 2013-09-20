@@ -62,12 +62,10 @@ import java.util.concurrent.TimeUnit;
 public class BookmarkTableDataSource extends ListDataSource {
     private static Logger log = Logger.getLogger(BookmarkTableDataSource.class);
 
-    public enum Columns {
-        ICON,
-        BOOKMARK,
-        STATUS,
-        // virtual column to implement keyboard selection
-        TYPEAHEAD
+    public enum Column {
+        icon,
+        bookmark,
+        status,
     }
 
     protected BrowserController controller;
@@ -263,11 +261,11 @@ public class BookmarkTableDataSource extends ListDataSource {
         final Host host = this.getSource().get(row.intValue());
         final NSObject cached = cache.get(host, identifier);
         if(null == cached) {
-            if(identifier.equals(Columns.ICON.name())) {
+            if(identifier.equals(Column.icon.name())) {
                 return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(),
                         Preferences.instance().getInteger("bookmark.icon.size"));
             }
-            if(identifier.equals(Columns.BOOKMARK.name())) {
+            if(identifier.equals(Column.bookmark.name())) {
                 NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>serialize(SerializerFactory.get()));
                 dict.setObjectForKey(new HostUrlProvider().get(host) + PathNormalizer.normalize(host.getDefaultPath()), "URL");
                 String comment = this.getSource().getComment(host);
@@ -276,7 +274,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                 }
                 return cache.put(host, identifier, dict);
             }
-            if(identifier.equals(Columns.STATUS.name())) {
+            if(identifier.equals(Column.status.name())) {
                 if(controller.hasSession()) {
                     final Session session = controller.getSession();
                     if(host.equals(session.getHost())) {
@@ -290,9 +288,6 @@ public class BookmarkTableDataSource extends ListDataSource {
                     }
                 }
                 return null;
-            }
-            if(identifier.equals(Columns.TYPEAHEAD.name())) {
-                return cache.put(host, identifier, NSString.stringWithString(host.getNickname()));
             }
             throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
         }

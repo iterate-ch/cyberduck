@@ -42,12 +42,12 @@ public class DownloadPromptModel extends TransferPromptModel {
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
-            if(identifier.equals(TransferPromptModel.SIZE_COLUMN)) {
+            if(identifier.equals(Column.size.name())) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         SizeFormatterFactory.get().format(item.getLocal().attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
-            if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
+            if(identifier.equals(Column.warning.name())) {
                 if(item.attributes().isFile()) {
                     if(item.attributes().getSize() == 0) {
                         return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));

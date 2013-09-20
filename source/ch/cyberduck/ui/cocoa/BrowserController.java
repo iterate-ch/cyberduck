@@ -1437,7 +1437,7 @@ public class BrowserController extends WindowController
     protected void _updateBookmarkCell() {
         final int size = Preferences.instance().getInteger("bookmark.icon.size");
         final double width = size * 1.5;
-        final NSTableColumn c = bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Columns.ICON.name());
+        final NSTableColumn c = bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Column.icon.name());
         c.setMinWidth(width);
         c.setMaxWidth(width);
         c.setWidth(width);
@@ -1565,14 +1565,14 @@ public class BrowserController extends WindowController
         this.bookmarkTable.setSelectionHighlightStyle(NSTableView.NSTableViewSelectionHighlightStyleSourceList);
         this.bookmarkTable.setDataSource((this.bookmarkModel = new BookmarkTableDataSource(this)).id());
         {
-            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Columns.ICON.name());
+            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Column.icon.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setResizingMask(NSTableColumn.NSTableColumnNoResizing);
             c.setDataCell(imageCellPrototype);
             this.bookmarkTable.addTableColumn(c);
         }
         {
-            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Columns.BOOKMARK.name());
+            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Column.bookmark.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Bookmarks"));
             c.setMinWidth(150);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
@@ -1580,7 +1580,7 @@ public class BrowserController extends WindowController
             this.bookmarkTable.addTableColumn(c);
         }
         {
-            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Columns.STATUS.name());
+            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.Column.status.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(40);
             c.setWidth(40);
@@ -1592,7 +1592,7 @@ public class BrowserController extends WindowController
         }
         this.bookmarkModel.setSource(BookmarkCollection.defaultCollection());
         this.bookmarkTable.setDelegate((this.bookmarkTableDelegate = new AbstractTableDelegate<Host>(
-                bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Columns.BOOKMARK.name())
+                bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Column.bookmark.name())
         ) {
             @Override
             public String tooltip(Host bookmark) {

@@ -54,7 +54,7 @@ public class SyncPromptController extends TransferPromptController {
     public void setBrowserView(NSOutlineView view) {
         super.setBrowserView(view);
         {
-            NSTableColumn c = tableColumnsFactory.create(SyncPromptModel.SYNC_COLUMN);
+            NSTableColumn c = tableColumnsFactory.create(SyncPromptModel.Column.sync.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -66,7 +66,7 @@ public class SyncPromptController extends TransferPromptController {
             view.addTableColumn(c);
         }
         {
-            NSTableColumn c = tableColumnsFactory.create(SyncPromptModel.CREATE_COLUMN);
+            NSTableColumn c = tableColumnsFactory.create(SyncPromptModel.Column.create.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(20f);
             c.setWidth(20f);
