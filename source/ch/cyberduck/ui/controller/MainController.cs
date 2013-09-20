@@ -366,13 +366,15 @@ namespace Ch.Cyberduck.Ui.Controller
             _bc.Background(delegate { GrowlFactory.get().setup(); }, delegate { });
 
             // User bookmarks and thirdparty applications
-            CountdownEvent cde = new CountdownEvent(2);
+            CountdownEvent bookmarksSemaphore = new CountdownEvent(1);
+            CountdownEvent thirdpartySemaphore = new CountdownEvent(1);
 
+            // Load all bookmarks in background
             _bc.Background(delegate
                 {
                     BookmarkCollection c = BookmarkCollection.defaultCollection();
                     c.load();
-                    cde.Signal();
+                    bookmarksSemaphore.Signal();
                 }, delegate
                     {
                         if (Preferences.instance
@@ -447,26 +449,26 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
                     {
-                        if (!Preferences.instance().getBoolean(c.getConfiguration()))
+                        if (!c.isInstalled())
                         {
-                            if (!c.isInstalled())
-                            {
-                                Logger.info("No application installed for " + c.getBundleIdentifier());
-                                continue;
-                            }
-                            c.load();
-                            if (c.isEmpty())
-                            {
-                                // Flag as imported
-                                Preferences.instance().setProperty(c.getConfiguration(), true);
-                            }
+                            Logger.info("No application installed for " + c.getBundleIdentifier());
+                            continue;
+                        }
+                        c.load();
+                        if (c.isEmpty())
+                        {
+                            // Flag as imported
+                            Preferences.instance().setProperty(c.getConfiguration(), true);
                         }
                     }
+                    bookmarksSemaphore.Wait();
                 },
                            delegate
                                {
                                    foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
                                    {
+                                       BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
+                                       c.filter(bookmarks);
                                        if (!c.isEmpty())
                                        {
                                            ThirdpartyBookmarkCollection c1 = c;
@@ -507,11 +509,12 @@ namespace Ch.Cyberduck.Ui.Controller
                                                               });
                                        }
                                    }
-                                   cde.Signal();
+                                   thirdpartySemaphore.Signal();
                                });
             _bc.Background(delegate
                 {
-                    cde.Wait();
+                    bookmarksSemaphore.Wait();
+                    thirdpartySemaphore.Wait();
                     BookmarkCollection c = BookmarkCollection.defaultCollection();
                     if (c.isEmpty())
                     {
