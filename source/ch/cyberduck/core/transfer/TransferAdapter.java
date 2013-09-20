@@ -23,12 +23,12 @@ package ch.cyberduck.core.transfer;
 public class TransferAdapter implements TransferListener {
 
     @Override
-    public void start(Transfer transfer) {
+    public void start(final Transfer transfer) {
         //
     }
 
     @Override
-    public void stop(Transfer transfer) {
+    public void stop(final Transfer transfer) {
         //
     }
 
