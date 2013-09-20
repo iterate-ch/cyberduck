@@ -20,6 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Collections;
 using Microsoft.Win32;
@@ -32,6 +34,7 @@ namespace Ch.Cyberduck.core.editor
 {
     internal class RegistryApplicationFinder : ApplicationFinder
     {
+        private static readonly Guid CLSID_QueryAssociations = new Guid("a07034fd-6caa-4954-ac3f-97a27216f98a");
         private static readonly Logger Log = Logger.getLogger(typeof (RegistryApplicationFinder).Name);
 
         private static readonly LRUCache<string, Application> applicationNameCache =
@@ -42,6 +45,9 @@ namespace Ch.Cyberduck.core.editor
 
         private static readonly LRUCache<string, IList<Application>> defaultApplicationListCache =
             new LRUCache<string, IList<Application>>(100);
+
+        private static Guid IID_IQueryAssociations = new Guid("c46ca590-3c3f-11d2-bee6-0000f805ca57");
+
 
         //vormals GetApplicationNameForExe
         public Application getDescription(string application)
@@ -234,6 +240,12 @@ namespace Ch.Cyberduck.core.editor
             return Utils.IsNotBlank(application.getIdentifier()) && File.Exists(application.getIdentifier());
         }
 
+        [DllImport("shlwapi.dll")]
+        private static extern int AssocCreate(
+            Guid clsid,
+            ref Guid riid,
+            [MarshalAs(UnmanagedType.Interface)] out object ppv);
+
         public static void Register()
         {
             ApplicationFinderFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
@@ -249,44 +261,39 @@ namespace Ch.Cyberduck.core.editor
         /// <see cref="http://msdn.microsoft.com/en-us/library/cc144154%28VS.85%29.aspx"/>
         private string GetExplorerRegisteredApplication(string extension)
         {
-            string command = null;
             try
             {
-                extension = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\" + extension;
-                using (RegistryKey oApplication = Registry.CurrentUser.OpenSubKey(extension))
-                {
-                    if (null != oApplication)
-                    {
-                        //for Windows XP and earlier
-                        string strExe = (string) oApplication.GetValue("Application");
+                object obj;
+                AssocCreate(
+                    CLSID_QueryAssociations,
+                    ref IID_IQueryAssociations,
+                    out obj);
+                IQueryAssociations qa = (IQueryAssociations) obj;
+                qa.Init(
+                    ASSOCF.INIT_DEFAULTTOSTAR, extension,
+                    UIntPtr.Zero, IntPtr.Zero);
 
-                        if (string.IsNullOrEmpty(strExe))
-                        {
-                            //for Vista and later there might be a UserChoice entry
-                            using (RegistryKey userChoice = oApplication.OpenSubKey("UserChoice"))
-                            {
-                                if (null != userChoice)
-                                {
-                                    string progId = (string) userChoice.GetValue("Progid");
-                                    if (!string.IsNullOrEmpty(progId))
-                                    {
-                                        using (RegistryKey p = Registry.ClassesRoot.OpenSubKey(progId))
-                                        {
-                                            command = GetEditCommand(p);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if (!string.IsNullOrEmpty(command))
+                int size = 0;
+                qa.GetString(ASSOCF.NOTRUNCATE, ASSOCSTR.COMMAND,
+                             "edit", null, ref size);
+
+                StringBuilder sb = new StringBuilder(size);
+                qa.GetString(ASSOCF.NOTRUNCATE, ASSOCSTR.COMMAND,
+                             "edit", sb, ref size);
+
+                string cmd = sb.ToString();
+                if (Utils.IsBlank(cmd))
                 {
-                    command = Utils.ExtractExeFromCommand(command);
+                    return null;
                 }
-                return command;
+
+                if (cmd.Contains("\""))
+                {
+                    return cmd.Substring(1, cmd.LastIndexOf("\"") - 1);
+                }
+                return cmd.Substring(0, cmd.IndexOf(" ") - 1);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return null;
             }
@@ -320,12 +327,99 @@ namespace Ch.Cyberduck.core.editor
             return null;
         }
 
+        private enum ASSOCDATA
+        {
+            MSIDESCRIPTOR = 1,
+            NOACTIVATEHANDLER,
+            QUERYCLASSSTORE,
+            HASPERUSERASSOC,
+            EDITFLAGS,
+            VALUE
+        }
+
+        [Flags]
+        private enum ASSOCF
+        {
+            INIT_NOREMAPCLSID = 0x00000001,
+            INIT_BYEXENAME = 0x00000002,
+            OPEN_BYEXENAME = 0x00000002,
+            INIT_DEFAULTTOSTAR = 0x00000004,
+            INIT_DEFAULTTOFOLDER = 0x00000008,
+            NOUSERSETTINGS = 0x00000010,
+            NOTRUNCATE = 0x00000020,
+            VERIFY = 0x00000040,
+            REMAPRUNDLL = 0x00000080,
+            NOFIXUPS = 0x00000100,
+            IGNOREBASECLASS = 0x00000200,
+            INIT_IGNOREUNKNOWN = 0x00000400
+        }
+
+        private enum ASSOCKEY
+        {
+            SHELLEXECCLASS = 1,
+            APP,
+            CLASS,
+            BASECLASS
+        }
+
+        private enum ASSOCSTR
+        {
+            COMMAND = 1,
+            EXECUTABLE,
+            FRIENDLYDOCNAME,
+            FRIENDLYAPPNAME,
+            NOOPEN,
+            SHELLNEWVALUE,
+            DDECOMMAND,
+            DDEIFEXEC,
+            DDEAPPLICATION,
+            DDETOPIC,
+            INFOTIP,
+            QUICKTIP,
+            TILEINFO,
+            CONTENTTYPE,
+            DEFAULTICON,
+            SHELLEXTENSION
+        }
+
         private class Factory : ApplicationFinderFactory
         {
             protected override object create()
             {
                 return new RegistryApplicationFinder();
             }
+        }
+
+        [Guid("c46ca590-3c3f-11d2-bee6-0000f805ca57"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        private interface IQueryAssociations
+        {
+            void Init(
+                [In] ASSOCF flags,
+                [In, MarshalAs(UnmanagedType.LPWStr)] string pszAssoc,
+                [In] UIntPtr hkProgid,
+                [In] IntPtr hwnd);
+
+            void GetString(
+                [In] ASSOCF flags,
+                [In] ASSOCSTR str,
+                [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
+                [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszOut,
+                [In, Out] ref int pcchOut);
+
+            void GetKey(
+                [In] ASSOCF flags,
+                [In] ASSOCKEY str,
+                [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
+                [Out] out UIntPtr phkeyOut);
+
+            void GetData(
+                [In] ASSOCF flags,
+                [In] ASSOCDATA data,
+                [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
+                [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] out byte[] pvOut,
+                [In, Out] ref int pcbOut);
+
+            void GetEnum(); // not used actually
         }
     }
 }
