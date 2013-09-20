@@ -60,25 +60,25 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
     public Comparator<Path> getSortingComparator() {
         final boolean ascending = this.isSortedAscending();
         final String identifier = this.selectedColumnIdentifier();
-        switch(BrowserTableDataSource.Columns.valueOf(identifier)) {
-            case ICON:
-            case KIND:
+        switch(BrowserTableDataSource.Column.valueOf(identifier)) {
+            case icon:
+            case kind:
                 return new FileTypeComparator(ascending);
-            case EXTENSION:
+            case extension:
                 return new ExtensionComparator(ascending);
-            case FILENAME:
+            case filename:
                 return new FilenameComparator(ascending);
-            case SIZE:
+            case size:
                 return new SizeComparator(ascending);
-            case MODIFIED:
+            case modified:
                 return new TimestampComparator(ascending);
-            case OWNER:
+            case owner:
                 return new OwnerComparator(ascending);
-            case GROUP:
+            case group:
                 return new GroupComparator(ascending);
-            case PERMISSIONS:
+            case permission:
                 return new PermissionsComparator(ascending);
-            case REGION:
+            case region:
                 return new RegionComparator(ascending);
             default:
                 log.error(String.format("Unknown column identifier %s", identifier));

@@ -232,14 +232,14 @@ public class MainController extends BundleController implements NSApplication.De
     public void setColumnMenu(NSMenu columnMenu) {
         this.columnMenu = columnMenu;
         Map<String, String> columns = new HashMap<String, String>();
-        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.KIND.name()), LocaleFactory.localizedString("Kind"));
-        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.EXTENSION.name()), LocaleFactory.localizedString("Extension"));
-        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.SIZE.name()), LocaleFactory.localizedString("Size"));
-        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.MODIFIED.name()), LocaleFactory.localizedString("Modified"));
-        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.OWNER.name()), LocaleFactory.localizedString("Owner"));
-        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.GROUP.name()), LocaleFactory.localizedString("Group"));
-        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.PERMISSIONS.name()), LocaleFactory.localizedString("Permissions"));
-        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Columns.REGION.name()), LocaleFactory.localizedString("Region"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.kind.name()), LocaleFactory.localizedString("Kind"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.extension.name()), LocaleFactory.localizedString("Extension"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.size.name()), LocaleFactory.localizedString("Size"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.modified.name()), LocaleFactory.localizedString("Modified"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.owner.name()), LocaleFactory.localizedString("Owner"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.group.name()), LocaleFactory.localizedString("Group"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.permission.name()), LocaleFactory.localizedString("Permissions"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.region.name()), LocaleFactory.localizedString("Region"));
         for(Map.Entry<String, String> entry : columns.entrySet()) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
                     Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);

@@ -992,7 +992,7 @@ public class BrowserController extends WindowController
         public String outlineView_typeSelectStringForTableColumn_item(final NSOutlineView view,
                                                                       final NSTableColumn tableColumn,
                                                                       final NSObject item) {
-            if(tableColumn.identifier().equals(BrowserTableDataSource.Columns.FILENAME.name())) {
+            if(tableColumn.identifier().equals(BrowserTableDataSource.Column.filename.name())) {
                 return browserOutlineModel.outlineView_objectValueForTableColumn_byItem(view, tableColumn, item).toString();
             }
             return null;
@@ -1036,7 +1036,7 @@ public class BrowserController extends WindowController
         public String tableView_typeSelectStringForTableColumn_row(final NSTableView view,
                                                                    final NSTableColumn tableColumn,
                                                                    final NSInteger row) {
-            if(tableColumn.identifier().equals(BrowserTableDataSource.Columns.FILENAME.name())) {
+            if(tableColumn.identifier().equals(BrowserTableDataSource.Column.filename.name())) {
                 return browserListModel.tableView_objectValueForTableColumn_row(view, tableColumn, row).toString();
             }
             return null;
@@ -1062,7 +1062,7 @@ public class BrowserController extends WindowController
         @Override
         public boolean isColumnRowEditable(NSTableColumn column, int row) {
             if(Preferences.instance().getBoolean("browser.editable")) {
-                return column.identifier().equals(BrowserTableDataSource.Columns.FILENAME.name());
+                return column.identifier().equals(BrowserTableDataSource.Column.filename.name());
             }
             return false;
         }
@@ -1230,11 +1230,11 @@ public class BrowserController extends WindowController
                 NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
 
         {
-            NSTableColumn c = browserOutlineColumnsFactory.create(BrowserTableDataSource.Columns.FILENAME.name());
+            NSTableColumn c = browserOutlineColumnsFactory.create(BrowserTableDataSource.Column.filename.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
             c.setMinWidth(new CGFloat(100));
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.FILENAME.name())));
+                    BrowserTableDataSource.Column.filename.name())));
             c.setMaxWidth(new CGFloat(1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(outlineCellPrototype);
@@ -1243,7 +1243,7 @@ public class BrowserController extends WindowController
         }
         browserOutlineView.setDataSource((browserOutlineModel = new BrowserOutlineViewModel(this)).id());
         browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>(
-                browserOutlineView.tableColumnWithIdentifier(BrowserTableDataSource.Columns.FILENAME.name())
+                browserOutlineView.tableColumnWithIdentifier(BrowserTableDataSource.Column.filename.name())
         ) {
             @Override
             public void enterKeyPressed(final ID sender) {
@@ -1270,7 +1270,7 @@ public class BrowserController extends WindowController
                 if(null == path) {
                     return;
                 }
-                if(tableColumn.identifier().equals(BrowserTableDataSource.Columns.FILENAME.name())) {
+                if(tableColumn.identifier().equals(BrowserTableDataSource.Column.filename.name())) {
                     cell.setEditable(session.getFeature(Move.class).isSupported(path));
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
@@ -1355,11 +1355,11 @@ public class BrowserController extends WindowController
                 NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
 
         {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Columns.ICON.name());
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.icon.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth((20));
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.ICON.name())));
+                    BrowserTableDataSource.Column.icon.name())));
             c.setMaxWidth((20));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
@@ -1367,11 +1367,11 @@ public class BrowserController extends WindowController
             browserListView.addTableColumn(c);
         }
         {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Columns.FILENAME.name());
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.filename.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
             c.setMinWidth((100));
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.FILENAME.name())));
+                    BrowserTableDataSource.Column.filename.name())));
             c.setMaxWidth((1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(filenameCellPrototype);
@@ -1380,7 +1380,7 @@ public class BrowserController extends WindowController
 
         browserListView.setDataSource((browserListModel = new BrowserListViewModel(this)).id());
         browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>(
-                browserListView.tableColumnWithIdentifier(BrowserTableDataSource.Columns.FILENAME.name())
+                browserListView.tableColumnWithIdentifier(BrowserTableDataSource.Column.filename.name())
         ) {
             @Override
             public void enterKeyPressed(final ID sender) {
@@ -1398,7 +1398,7 @@ public class BrowserController extends WindowController
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSInteger row) {
                 final String identifier = tableColumn.identifier();
                 final Path path = browserListModel.get(BrowserController.this.workdir()).get(row.intValue());
-                if(identifier.equals(BrowserTableDataSource.Columns.FILENAME.name())) {
+                if(identifier.equals(BrowserTableDataSource.Column.filename.name())) {
                     cell.setEditable(session.getFeature(Move.class).isSupported(path));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
@@ -1447,97 +1447,97 @@ public class BrowserController extends WindowController
     }
 
     private void _updateBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate<Path> delegate) {
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Columns.SIZE.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Columns.SIZE.name()))) {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Columns.SIZE.name());
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.size.name()));
+        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.size.name()))) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.size.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Size"));
             c.setMinWidth(50f);
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.SIZE.name())));
+                    BrowserTableDataSource.Column.size.name())));
             c.setMaxWidth(150f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Columns.MODIFIED.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Columns.MODIFIED.name()))) {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Columns.MODIFIED.name());
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.modified.name()));
+        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.modified.name()))) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.modified.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Modified"));
             c.setMinWidth(100f);
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.MODIFIED.name())));
+                    BrowserTableDataSource.Column.modified.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Columns.OWNER.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Columns.OWNER.name()))) {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Columns.OWNER.name());
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.owner.name()));
+        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.owner.name()))) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.owner.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Owner"));
             c.setMinWidth(50);
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.OWNER.name())));
+                    BrowserTableDataSource.Column.owner.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Columns.GROUP.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Columns.GROUP.name()))) {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Columns.GROUP.name());
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.group.name()));
+        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.group.name()))) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.group.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Group"));
             c.setMinWidth(50);
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.GROUP.name())));
+                    BrowserTableDataSource.Column.group.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Columns.PERMISSIONS.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Columns.PERMISSIONS.name()))) {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Columns.PERMISSIONS.name());
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.permission.name()));
+        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.permission.name()))) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.permission.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Permissions"));
             c.setMinWidth(100);
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.PERMISSIONS.name())));
+                    BrowserTableDataSource.Column.permission.name())));
             c.setMaxWidth(800);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Columns.KIND.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Columns.KIND.name()))) {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Columns.KIND.name());
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.kind.name()));
+        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.kind.name()))) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.kind.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Kind"));
             c.setMinWidth(50);
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.KIND.name())));
+                    BrowserTableDataSource.Column.kind.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Columns.EXTENSION.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Columns.EXTENSION.name()))) {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Columns.EXTENSION.name());
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.extension.name()));
+        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.extension.name()))) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.extension.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Extension"));
             c.setMinWidth(50);
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.EXTENSION.name())));
+                    BrowserTableDataSource.Column.extension.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Columns.REGION.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Columns.REGION.name()))) {
-            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Columns.REGION.name());
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.region.name()));
+        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.region.name()))) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.region.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Region"));
             c.setMinWidth(50);
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
-                    BrowserTableDataSource.Columns.REGION.name())));
+                    BrowserTableDataSource.Column.region.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -1545,7 +1545,7 @@ public class BrowserController extends WindowController
         }
         NSTableColumn selected = table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column"));
         if(null == selected) {
-            selected = table.tableColumnWithIdentifier(BrowserTableDataSource.Columns.FILENAME.name());
+            selected = table.tableColumnWithIdentifier(BrowserTableDataSource.Column.filename.name());
         }
         delegate.setSelectedColumn(selected);
         table.setIndicatorImage_inTableColumn(this.getSelectedBrowserDelegate().isSortedAscending() ?
@@ -2592,7 +2592,7 @@ public class BrowserController extends WindowController
     @Action
     public void renameFileButtonClicked(final ID sender) {
         final NSTableView browser = this.getSelectedBrowserView();
-        browser.editRow(browser.columnWithIdentifier(BrowserTableDataSource.Columns.FILENAME.name()),
+        browser.editRow(browser.columnWithIdentifier(BrowserTableDataSource.Column.filename.name()),
                 browser.selectedRow(), true);
         final Path selected = this.getSelectedPath();
         if(StringUtils.isNotBlank(selected.getExtension())) {
