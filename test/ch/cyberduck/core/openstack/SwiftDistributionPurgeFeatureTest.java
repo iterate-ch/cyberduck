@@ -8,20 +8,19 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.exception.InteroperabilityException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.UUID;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftDistributionPurgeFeatureTest extends AbstractTestCase {
 
-    @Test
-    @Ignore
+    @Test(expected = InteroperabilityException.class)
     public void testInvalidateContainer() throws Exception {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
