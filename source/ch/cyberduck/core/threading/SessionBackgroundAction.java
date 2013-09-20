@@ -169,7 +169,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public T call() {
         try {
-            this.connect();
+            for(Session session : this.getSessions()) {
+                this.connect(session);
+            }
             return super.call();
         }
         catch(ConnectionCanceledException failure) {
@@ -187,12 +189,10 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         return null;
     }
 
-    protected void connect() throws BackgroundException {
-        for(Session session : this.getSessions()) {
-            if(connection.check(session)) {
-                // New connection opened
-                growl.notify("Connection opened", session.getHost().getHostname());
-            }
+    protected void connect(final Session session) throws BackgroundException {
+        if(connection.check(session)) {
+            // New connection opened
+            growl.notify("Connection opened", session.getHost().getHostname());
         }
     }
 

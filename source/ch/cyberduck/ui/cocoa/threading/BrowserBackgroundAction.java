@@ -17,7 +17,12 @@ package ch.cyberduck.ui.cocoa.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.HistoryCollection;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
@@ -74,6 +79,21 @@ public abstract class BrowserBackgroundAction extends ControllerBackgroundAction
     public void prepare() throws ConnectionCanceledException {
         controller.getProgress().startAnimation(null);
         super.prepare();
+    }
+
+    @Override
+    protected void connect(final Session session) throws BackgroundException {
+        super.connect(session);
+
+        final Host bookmark = session.getHost();
+
+        final HistoryCollection history = HistoryCollection.defaultCollection();
+        history.add(new Host(bookmark.serialize(SerializerFactory.get())));
+
+        // Notify changed bookmark
+        if(BookmarkCollection.defaultCollection().contains(bookmark)) {
+            BookmarkCollection.defaultCollection().collectionItemChanged(bookmark);
+        }
     }
 
     @Override
