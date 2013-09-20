@@ -18,7 +18,7 @@ Changelog. Last modified: $Date$
 - [Feature] Transfer action to skip existing files that match checksum, size or timestamp (#6500)
 - [Feature] Fullscreen option for browser window
 - [Feature] Remember window position of browser window when saving workspace
-- [Feature] Copy temporary signed URLs (#7018)
+- [Feature] Copy temporary signed URLs (OpenStack) (#7018)
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)
