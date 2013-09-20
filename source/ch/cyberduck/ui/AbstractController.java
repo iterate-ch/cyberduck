@@ -38,11 +38,19 @@ import java.util.concurrent.RejectedExecutionException;
 public abstract class AbstractController implements Controller {
     private static Logger log = Logger.getLogger(AbstractController.class);
 
-    private ThreadPool singleExecutor
-            = new ThreadPool();
+    private ThreadPool singleExecutor;
 
-    private ThreadPool concurrentExecutor
-            = new ThreadPool(Integer.MAX_VALUE);
+    private ThreadPool concurrentExecutor;
+
+    protected AbstractController() {
+        singleExecutor = new ThreadPool();
+        concurrentExecutor = new ThreadPool(Integer.MAX_VALUE);
+    }
+
+    protected AbstractController(final Thread.UncaughtExceptionHandler handler) {
+        singleExecutor = new ThreadPool(handler);
+        concurrentExecutor = new ThreadPool(Integer.MAX_VALUE, handler);
+    }
 
     /**
      * Does wait for main action to return before continuing the caller thread.

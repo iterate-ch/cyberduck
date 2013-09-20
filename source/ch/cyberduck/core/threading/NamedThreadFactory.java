@@ -33,8 +33,15 @@ public class NamedThreadFactory implements ThreadFactory {
 
     private String name;
 
+    private Thread.UncaughtExceptionHandler handler;
+
     public NamedThreadFactory(String name) {
+        this(name, new LoggingUncaughtExceptionHandler());
+    }
+
+    public NamedThreadFactory(final String name, final Thread.UncaughtExceptionHandler handler) {
         this.name = name;
+        this.handler = handler;
     }
 
     @Override
@@ -56,14 +63,7 @@ public class NamedThreadFactory implements ThreadFactory {
         });
         thread.setDaemon(true);
         thread.setName(String.format("%s-%d", name, threadNumber.getAndIncrement()));
-        thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                // Swallow the exception
-                log.error(String.format("Thread %s has thrown uncaught exception:%s",
-                        t.getName(), e.getMessage()), e);
-            }
-        });
+        thread.setUncaughtExceptionHandler(handler);
         return thread;
     }
 }

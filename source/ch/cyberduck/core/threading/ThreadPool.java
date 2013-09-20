@@ -33,8 +33,7 @@ import java.util.concurrent.ThreadFactory;
 public class ThreadPool {
     private static final Logger log = Logger.getLogger(ThreadPool.class);
 
-    private final ThreadFactory threadFactory
-            = new NamedThreadFactory("background");
+    private final ThreadFactory threadFactory;
 
     private final ExecutorService pool;
 
@@ -42,6 +41,12 @@ public class ThreadPool {
      * With FIFO (first-in-first-out) ordered wait queue.
      */
     public ThreadPool() {
+        threadFactory = new NamedThreadFactory("background");
+        pool = Executors.newSingleThreadExecutor(threadFactory);
+    }
+
+    public ThreadPool(final Thread.UncaughtExceptionHandler handler) {
+        threadFactory = new NamedThreadFactory("background", handler);
         pool = Executors.newSingleThreadExecutor(threadFactory);
     }
 
@@ -51,6 +56,12 @@ public class ThreadPool {
      * @param size Number of concurrent threads
      */
     public ThreadPool(int size) {
+        threadFactory = new NamedThreadFactory("background");
+        pool = Executors.newFixedThreadPool(size, threadFactory);
+    }
+
+    public ThreadPool(final int size, final Thread.UncaughtExceptionHandler handler) {
+        threadFactory = new NamedThreadFactory("background", handler);
         pool = Executors.newFixedThreadPool(size, threadFactory);
     }
 
