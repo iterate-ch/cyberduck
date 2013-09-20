@@ -48,28 +48,31 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
 
         public override void prepare()
         {
-            //TODO in java kein Invoke?
-            AsyncController.AsyncDelegate mainAction = delegate
-                {
-                    BrowserController.View.StartActivityAnimation();
-                    // TODO braucht es das? in java nicht vorhanden
-                    //BrowserController.SetStatus(getActivity());
-                };
+            AsyncController.AsyncDelegate mainAction = delegate { BrowserController.View.StartActivityAnimation(); };
             BrowserController.Invoke(mainAction);
             base.prepare();
         }
 
         public override void finish()
         {
-            //TODO in java kein Invoke?
-            AsyncController.AsyncDelegate mainAction = delegate
-                {
-                    BrowserController.View.StopActivityAnimation();
-                    // TODO braucht es das? in java nicht vorhanden
-                    //BrowserController.SetStatus();
-                };
+            AsyncController.AsyncDelegate mainAction = delegate { BrowserController.View.StopActivityAnimation(); };
             BrowserController.Invoke(mainAction);
             base.finish();
+        }
+
+        protected override void connect(Session session)
+        {
+            base.connect(session);
+
+            Host bookmark = session.getHost();
+            HistoryCollection history = HistoryCollection.defaultCollection();
+            history.add(new Host(bookmark.serialize(SerializerFactory.get())));
+
+            // Notify changed bookmark
+            if (BookmarkCollection.defaultCollection().contains(bookmark))
+            {
+                BookmarkCollection.defaultCollection().collectionItemChanged(bookmark);
+            }
         }
 
         public override void init()
