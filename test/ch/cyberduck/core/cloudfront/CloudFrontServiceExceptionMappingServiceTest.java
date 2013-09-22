@@ -19,7 +19,6 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.cloudfront.CloudFrontServiceExceptionMappingService;
 import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.jets3t.service.CloudFrontServiceException;
@@ -40,7 +39,7 @@ public class CloudFrontServiceExceptionMappingServiceTest extends AbstractTestCa
         );
         assertTrue(new CloudFrontServiceExceptionMappingService().map(f) instanceof LoginFailureException);
         assertEquals("Login failed", new CloudFrontServiceExceptionMappingService().map(f).getMessage());
-        assertEquals("The security token included in the request is invalid. detail.", new CloudFrontServiceExceptionMappingService().map(f).getDetail());
+        assertEquals("The security token included in the request is invalid. detail. Please contact your web hosting service provider for assistance.", new CloudFrontServiceExceptionMappingService().map(f).getDetail());
     }
 
     @Test

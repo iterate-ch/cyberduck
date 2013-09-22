@@ -94,7 +94,7 @@ public class BackgroundException extends Exception {
         if(StringUtils.isBlank(this.getHelp())) {
             return detail;
         }
-        return String.format("%s\n\n%s.", detail, this.getHelp());
+        return String.format("%s %s.", detail, this.getHelp());
     }
 
     @Override
