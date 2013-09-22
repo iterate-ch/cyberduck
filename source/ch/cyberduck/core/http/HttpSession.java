@@ -78,9 +78,10 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     private static final Logger log = Logger.getLogger(HttpSession.class);
 
     /**
-     * Target hostname of current request
+     * Target hostname of current request stored as thread local
      */
-    private String target;
+    private ThreadLocal<String> target
+            = new ThreadLocal<String>();
 
     protected AbstractHttpClient route;
 
@@ -136,7 +137,8 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         route.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                target = ((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName();
+                target.set(
+                        ((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName());
             }
         });
         route.addRequestInterceptor(new HttpRequestInterceptor() {
@@ -216,7 +218,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     @Override
     public String getTarget() {
-        return target;
+        return target.get();
     }
 
     private abstract class FutureHttpResponse<T> implements Runnable {
