@@ -126,14 +126,17 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 if(Preferences.instance().getBoolean("queue.download.icon.update")) {
                     icon.remove(file.getLocal());
                 }
-                if(options.quarantine) {
-                    // Set quarantine attributes
-                    quarantine.setQuarantine(file.getLocal(), new HostUrlProvider(false).get(session.getHost()),
-                            session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl());
-                }
-                if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
-                    // Set quarantine attributes
-                    quarantine.setWhereFrom(file.getLocal(), session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl());
+                final DescriptiveUrl provider = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider);
+                if(!DescriptiveUrl.EMPTY.equals(provider)) {
+                    if(options.quarantine) {
+                        // Set quarantine attributes
+                        quarantine.setQuarantine(file.getLocal(), new HostUrlProvider(false).get(session.getHost()),
+                                provider.getUrl());
+                    }
+                    if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
+                        // Set quarantine attributes
+                        quarantine.setWhereFrom(file.getLocal(), provider.getUrl());
+                    }
                 }
                 if(options.open) {
                     launcher.open(file.getLocal());
