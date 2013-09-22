@@ -22,6 +22,7 @@ import ch.cyberduck.core.HostnameConfigurator;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.spearce.jgit.transport.OpenSshConfig;
 
@@ -49,8 +50,11 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
      */
     @Override
     public String getHostname(final String alias) {
+        if(StringUtils.isBlank(alias)) {
+            return alias;
+        }
         final String hostname = configuration.lookup(alias).getHostName();
-        if(null == hostname) {
+        if(StringUtils.isBlank(hostname)) {
             return alias;
         }
         if(log.isInfoEnabled()) {
@@ -61,6 +65,9 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
 
     @Override
     public int getPort(final String alias) {
+        if(StringUtils.isBlank(alias)) {
+            return -1;
+        }
         return configuration.lookup(alias).getPort();
     }
 }

@@ -20,9 +20,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.local.FinderLocal;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.spearce.jgit.transport.OpenSshConfig;
 
@@ -34,11 +32,6 @@ import static org.junit.Assert.assertEquals;
  * @version $Id$
  */
 public class OpenSSHHostnameConfiguratorTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void configure() {
-        FinderLocal.register();
-    }
 
     @Test
     public void testLookup() throws Exception {
@@ -54,5 +47,6 @@ public class OpenSSHHostnameConfiguratorTest extends AbstractTestCase {
                 new OpenSshConfig(
                         new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
         assertEquals(555, c.getPort("portalias"));
+        assertEquals(-1, c.getPort(null));
     }
 }
