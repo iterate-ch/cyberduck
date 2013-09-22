@@ -247,7 +247,7 @@ public class DAVSessionTest extends AbstractTestCase {
             session.login(new DisabledPasswordStore(), new DisabledLoginController());
         }
         catch(LoginFailureException e) {
-            assertEquals("Unauthorized.", e.getDetail());
+            assertEquals("Unauthorized. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }
