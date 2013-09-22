@@ -50,25 +50,27 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     public Credentials configure(final Host host) {
         final Credentials credentials = host.getCredentials();
         if(!credentials.isPublicKeyAuthentication()) {
-            // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
-            final OpenSshConfig.Host entry = configuration.lookup(host.getHostname());
-            if(StringUtils.isNotBlank(entry.getUser())) {
-                credentials.setUsername(entry.getUser());
-            }
-            if(null != entry.getIdentityFile()) {
-                credentials.setIdentity(LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
-            }
-            else {
-                // No custom public key authentication configuration
-                if(Preferences.instance().getBoolean("ssh.authentication.publickey.default.enable")) {
-                    final Local rsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.rsa"));
-                    if(rsa.exists()) {
-                        credentials.setIdentity(rsa);
-                    }
-                    else {
-                        final Local dsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.dsa"));
-                        if(dsa.exists()) {
-                            credentials.setIdentity(dsa);
+            if(StringUtils.isNotBlank(host.getHostname())) {
+                // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
+                final OpenSshConfig.Host entry = configuration.lookup(host.getHostname());
+                if(StringUtils.isNotBlank(entry.getUser())) {
+                    credentials.setUsername(entry.getUser());
+                }
+                if(null != entry.getIdentityFile()) {
+                    credentials.setIdentity(LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
+                }
+                else {
+                    // No custom public key authentication configuration
+                    if(Preferences.instance().getBoolean("ssh.authentication.publickey.default.enable")) {
+                        final Local rsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.rsa"));
+                        if(rsa.exists()) {
+                            credentials.setIdentity(rsa);
+                        }
+                        else {
+                            final Local dsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.dsa"));
+                            if(dsa.exists()) {
+                                credentials.setIdentity(dsa);
+                            }
                         }
                     }
                 }

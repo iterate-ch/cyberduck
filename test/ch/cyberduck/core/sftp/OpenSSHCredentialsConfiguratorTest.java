@@ -68,4 +68,12 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
         // ssh.authentication.publickey.default.enable
         assertNull(credentials.getIdentity());
     }
+
+    @Test
+    public void testNullHostname() throws Exception {
+        OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
+                new OpenSshConfig(
+                        new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
+        assertNotNull(c.configure(new Host(null)));
+    }
 }
