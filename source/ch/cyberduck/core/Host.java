@@ -39,8 +39,8 @@ public final class Host implements Serializable, Comparable<Host> {
     /**
      * The protocol identifier.
      */
-    private Protocol protocol
-            = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
+    private Protocol protocol;
+
     /**
      * The port number to connect to
      *
@@ -50,8 +50,7 @@ public final class Host implements Serializable, Comparable<Host> {
     /**
      * The fully qualified hostname
      */
-    private String hostname
-            = Preferences.instance().getProperty("connection.hostname.default");
+    private String hostname;
 
     /**
      * The credentials to authenticate with
@@ -129,7 +128,7 @@ public final class Host implements Serializable, Comparable<Host> {
      *
      * @param hostname The hostname of the server
      */
-    public Host(String hostname) {
+    public Host(final String hostname) {
         this(ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default")),
                 hostname);
     }
@@ -140,7 +139,7 @@ public final class Host implements Serializable, Comparable<Host> {
      * @param hostname The hostname of the server
      * @param port     The port number to connect to
      */
-    public Host(String hostname, int port) {
+    public Host(final String hostname, final int port) {
         this(ProtocolFactory.getDefaultProtocol(port), hostname, port);
     }
 
@@ -148,7 +147,7 @@ public final class Host implements Serializable, Comparable<Host> {
      * @param protocol Scheme
      * @param hostname The hostname of the server
      */
-    public Host(Protocol protocol, String hostname) {
+    public Host(final Protocol protocol, final String hostname) {
         this(protocol, hostname, protocol.getDefaultPort());
     }
 
@@ -157,7 +156,7 @@ public final class Host implements Serializable, Comparable<Host> {
      * @param hostname    The hostname of the server
      * @param credentials Login credentials
      */
-    public Host(Protocol protocol, String hostname, Credentials credentials) {
+    public Host(final Protocol protocol, final String hostname, final Credentials credentials) {
         this(protocol, hostname, protocol.getDefaultPort());
         this.credentials = credentials;
     }
@@ -167,7 +166,7 @@ public final class Host implements Serializable, Comparable<Host> {
      * @param hostname The hostname of the server
      * @param port     The port number to connect to
      */
-    public Host(Protocol protocol, String hostname, int port) {
+    public Host(final Protocol protocol, final String hostname, final int port) {
         this(protocol, hostname, port, (String) null);
     }
 
@@ -177,7 +176,7 @@ public final class Host implements Serializable, Comparable<Host> {
      * @param port        Port number
      * @param defaultpath Default working directory
      */
-    public Host(Protocol protocol, String hostname, int port, String defaultpath) {
+    public Host(final Protocol protocol, final String hostname, final int port, final String defaultpath) {
         this.protocol = protocol;
         this.hostname = hostname;
         this.port = port;
@@ -191,7 +190,7 @@ public final class Host implements Serializable, Comparable<Host> {
      * @param port        Port number
      * @param credentials Login credentials
      */
-    public Host(Protocol protocol, String hostname, int port, Credentials credentials) {
+    public Host(final Protocol protocol, final String hostname, final int port, final Credentials credentials) {
         this.protocol = protocol;
         this.hostname = hostname;
         this.port = port;
@@ -201,7 +200,7 @@ public final class Host implements Serializable, Comparable<Host> {
     /**
      * @param serialized A valid bookmark dictionary
      */
-    public <T> Host(T serialized) {
+    public <T> Host(final T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         Object uuidObj = dict.stringForKey("UUID");
         if(uuidObj != null) {
@@ -407,10 +406,10 @@ public final class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @param p The protocol to use or null to use the default protocol for this port number
+     * @param protocol The protocol to use or null to use the default protocol for this port number
      */
-    public void setProtocol(final Protocol p) {
-        this.protocol = p != null ? p : ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
+    public void setProtocol(final Protocol protocol) {
+        this.protocol = protocol;
         this.setPort(HostnameConfiguratorFactory.get(protocol).getPort(hostname));
         this.setCredentials(CredentialsConfiguratorFactory.get(protocol).configure(this));
     }
