@@ -38,6 +38,7 @@ import java.util.concurrent.ThreadFactory;
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.Container;
+import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.Region;
 
 /**
@@ -59,7 +60,7 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
             final Client client = session.getClient();
             for(Region region : client.getRegions()) {
                 // List all containers
-                for(Container f : client.listContainers(region)) {
+                for(final Container f : client.listContainers(region)) {
                     final Path container = new Path(String.format("/%s", f.getName()),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     container.attributes().setRegion(f.getRegion().getRegionId());
@@ -73,13 +74,27 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
                                         cdn.read(container, method, new DisabledLoginController());
                                     }
                                     catch(BackgroundException e) {
-                                        log.warn(String.format("Failure preloading CDN configuration for container %s:%s", container, e.getMessage()));
+                                        log.warn(String.format("Failure preloading CDN configuration for container %s %s", container, e.getMessage()));
                                     }
                                 }
                             }
                         }).start();
                     }
-                    containers.add(container);
+                    if(Preferences.instance().getBoolean("openstack.container.size.preload")) {
+                        threadFactory.newThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    final ContainerInfo info = client.getContainerInfo(f.getRegion(), f.getName());
+                                    container.attributes().setSize(info.getTotalSize());
+                                    containers.add(container);
+                                }
+                                catch(IOException e) {
+                                    log.warn(String.format("Failure reading info for container %s %s", container, e.getMessage()));
+                                }
+                            }
+                        }).start();
+                    }
                 }
             }
             return containers;
