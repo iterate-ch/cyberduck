@@ -241,6 +241,7 @@ public class BrowserController extends WindowController
         if(LicenseFactory.find().equals(LicenseFactory.EMPTY_LICENSE)) {
             this.addDonateWindowTitle();
         }
+        this.setNavigation(false);
         this.selectBookmarks();
     }
 
