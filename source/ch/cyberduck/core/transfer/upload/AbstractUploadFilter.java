@@ -74,7 +74,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(!file.getLocal().exists()) {
             // Local file is no more here
-            throw new NotfoundException(file.getAbsolute());
+            throw new NotfoundException(file.getLocal().getAbsolute());
         }
         if(file.attributes().isFile()) {
             if(file.getLocal().attributes().isSymbolicLink()) {
