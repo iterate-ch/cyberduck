@@ -69,13 +69,11 @@ public class FTPReadFeature implements Read {
                         super.close();
                     }
                     finally {
-                        if(this.getByteCount() == status.getLength()) {
-                            // Read 226 status
-                            if(!session.getClient().completePendingCommand()) {
-                                throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
-                            }
+                        // Read 226 status
+                        if(!session.getClient().completePendingCommand()) {
+                            throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                         }
-                        else {
+                        if(this.getByteCount() != status.getLength()) {
                             // Interrupted transfer
                             if(!session.getClient().abort()) {
                                 log.error("Error closing data socket:" + session.getClient().getReplyString());
