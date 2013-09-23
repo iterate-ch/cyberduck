@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
@@ -13,8 +14,8 @@ import static org.junit.Assert.*;
  */
 public class OverwriteFilterTest extends AbstractTestCase {
 
-    @Test
-    public void testAcceptNoLocal() throws Exception {
+    @Test(expected = NotfoundException.class)
+    public void testAcceptNotFoundFile() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         // Local file does not exist
         assertFalse(f.accept(new Path("a", Path.FILE_TYPE) {
@@ -28,6 +29,12 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 };
             }
         }, new TransferStatus()));
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testAcceptNotFoundDirectory() throws Exception {
+        final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        // Local file does not exist
         assertFalse(f.accept(new Path("a", Path.DIRECTORY_TYPE) {
             @Override
             public Local getLocal() {

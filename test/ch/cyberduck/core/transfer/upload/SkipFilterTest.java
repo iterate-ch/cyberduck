@@ -6,6 +6,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
@@ -33,6 +34,11 @@ public class SkipFilterTest extends AbstractTestCase {
                 };
             }
         }, new TransferStatus()));
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testNotFound() throws Exception {
+        SkipFilter f = new SkipFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         assertFalse(f.accept(new Path("a", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
