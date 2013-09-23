@@ -79,12 +79,13 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
         ));
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final UrlProvider provider = new SwiftUrlProvider(session, session.accounts, new DisabledPasswordStore());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        assertEquals(DescriptiveUrl.EMPTY, provider.toUrl(file).find(DescriptiveUrl.Type.signed));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         new SwiftTouchFeature(session).touch(file);
-        final UrlProvider provider = session.getFeature(UrlProvider.class);
         assertTrue(provider.toUrl(file).find(DescriptiveUrl.Type.signed).getUrl().startsWith(
                 "https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + file.getName()));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
