@@ -189,6 +189,7 @@ public final class PromptLoginController implements LoginController {
 
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
+                this.textField.setSelectable(true);
                 if(reason.startsWith(Scheme.http.name())) {
                     try {
                         // For OAuth2
