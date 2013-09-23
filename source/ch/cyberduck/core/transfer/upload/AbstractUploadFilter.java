@@ -27,6 +27,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
@@ -72,9 +73,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(!file.getLocal().exists()) {
-            log.warn(String.format("Skip file %s not found", file));
             // Local file is no more here
-            return false;
+            throw new NotfoundException(file.getAbsolute());
         }
         if(file.attributes().isFile()) {
             if(file.getLocal().attributes().isSymbolicLink()) {
