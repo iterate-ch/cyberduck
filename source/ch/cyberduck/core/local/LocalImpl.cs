@@ -190,6 +190,11 @@ namespace Ch.Cyberduck.Core.Local
                 : base(path)
             {
             }
+
+            public override bool isSymbolicLink()
+            {
+                return false;
+            }
         }
     }
 }
