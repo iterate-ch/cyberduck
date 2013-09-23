@@ -5,13 +5,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 import org.junit.Test;
 
@@ -128,9 +128,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, files);
-        Preferences.instance().setProperty("queue.upload.preserveDate", true);
-        Preferences.instance().setProperty("queue.upload.changePermissions", true);
+        }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true));
         final TransferStatus status = new TransferStatus();
         final NullSession session = new NullSession(new Host("h"));
         status.setLength(1L);
