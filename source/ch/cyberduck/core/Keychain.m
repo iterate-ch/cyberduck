@@ -257,25 +257,26 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	const char *cHostname = [hostname cStringUsingEncoding:NSASCIIStringEncoding];
 	if(!cHostname) {
         NSLog(@"Error adding hostname to SSL options");
-	    return FALSE;
 	}
-	CSSM_APPLE_TP_SSL_OPTIONS ssloptions = {
-		.Version = CSSM_APPLE_TP_SSL_OPTS_VERSION,
-		.ServerNameLen = strlen(cHostname),
-		.ServerName = cHostname,
-		.Flags = 0
-	};
-	CSSM_DATA customCssmData = {
-		.Length = sizeof(ssloptions),
-		.Data = (uint8*)&ssloptions
-	};
-	err = SecPolicySetValue(policyRef, &customCssmData);
-	if(err != noErr) {
-        NSLog(@"Error setting policy for evaluating trust");
-		if(policyRef) {
-			CFRelease(policyRef);
-		}
-		return FALSE;
+	else {
+        CSSM_APPLE_TP_SSL_OPTIONS ssloptions = {
+            .Version = CSSM_APPLE_TP_SSL_OPTS_VERSION,
+            .ServerNameLen = strlen(cHostname),
+            .ServerName = cHostname,
+            .Flags = 0
+        };
+        CSSM_DATA customCssmData = {
+            .Length = sizeof(ssloptions),
+            .Data = (uint8*)&ssloptions
+        };
+        err = SecPolicySetValue(policyRef, &customCssmData);
+        if(err != noErr) {
+            NSLog(@"Error setting policy for evaluating trust");
+            if(policyRef) {
+                CFRelease(policyRef);
+            }
+            return FALSE;
+        }
 	}
 	// Creates a trust management object based on certificates and policies.
 	SecTrustRef trustRef = NULL;
