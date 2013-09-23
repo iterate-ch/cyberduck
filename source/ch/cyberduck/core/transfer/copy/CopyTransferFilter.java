@@ -50,9 +50,13 @@ public class CopyTransferFilter implements TransferPathFilter {
     private UploadFilterOptions options;
 
     public CopyTransferFilter(final Session session, final Map<Path, Path> files) {
+        this(session, files, new UploadFilterOptions());
+    }
+
+    public CopyTransferFilter(final Session<?> session, final Map<Path, Path> files, final UploadFilterOptions options) {
         this.session = session;
         this.files = files;
-        this.options = new UploadFilterOptions();
+        this.options = options;
     }
 
     @Override
