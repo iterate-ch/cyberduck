@@ -73,8 +73,11 @@ namespace Ch.Cyberduck.Core.Local
         {
             if (System.IO.File.Exists(getAbsolute()))
             {
+                Log.debug(string.Format("File {0} exists", getAbsolute()));
                 return true;
             }
+            Log.debug(getAbsolute() + " is a non-existing file or a folder");
+
             return Directory.Exists(getAbsolute());
         }
 
