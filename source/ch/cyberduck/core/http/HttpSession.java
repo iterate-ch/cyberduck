@@ -43,6 +43,7 @@ import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.client.protocol.ResponseContentEncoding;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -67,6 +68,9 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
@@ -110,27 +114,36 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                         new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
                         new X509HostnameVerifier() {
                             @Override
-                            public void verify(String host, SSLSocket ssl) throws IOException {
+                            public void verify(final String host, final SSLSocket socket) throws IOException {
                                 log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                                target.set(host);
                             }
 
                             @Override
-                            public void verify(String host, X509Certificate cert) throws SSLException {
+                            public void verify(final String host, final X509Certificate cert) throws SSLException {
                                 log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                                target.set(host);
                             }
 
                             @Override
-                            public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
+                            public void verify(final String host, final String[] cns, final String[] subjectAlts) throws SSLException {
                                 log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+                                target.set(host);
                             }
 
                             @Override
-                            public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {
+                            public boolean verify(String s, final javax.net.ssl.SSLSession sslSession) {
                                 log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
                                 return true;
                             }
                         }
-                )));
+                ) {
+                    @Override
+                    public Socket connectSocket(final Socket socket, final InetSocketAddress remoteAddress, final InetSocketAddress localAddress, final HttpParams params) throws IOException, UnknownHostException, ConnectTimeoutException {
+                        target.set(remoteAddress.getHostName());
+                        return super.connectSocket(socket, remoteAddress, localAddress, params);
+                    }
+                }));
         if(Preferences.instance().getBoolean("connection.proxy.enable")) {
             this.proxy(params);
         }
