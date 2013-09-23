@@ -1387,6 +1387,7 @@ public class InfoController extends ToolbarWindowController {
         switch(InfoToolbarItem.valueOf(identifier)) {
             case info:
                 this.initGeneral();
+                this.initPermissions();
                 break;
             case permissions:
                 this.initPermissions();
