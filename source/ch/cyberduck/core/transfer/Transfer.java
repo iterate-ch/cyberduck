@@ -447,7 +447,7 @@ public abstract class Transfer implements Serializable {
             // Only prepare the path it will be actually transferred
             if(filter.accept(file, parent)) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Accepted in %s transfer", file));
+                    log.info(String.format("Accepted file %s in transfer %s", file, this));
                 }
                 session.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
                 final TransferStatus status = filter.prepare(file, parent);
@@ -467,6 +467,9 @@ public abstract class Transfer implements Serializable {
                 this.save(file, status);
             }
             else {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skip file %s transfer %s", file, this));
+                }
                 this.save(file, new TransferStatus().selected(false));
             }
         }
