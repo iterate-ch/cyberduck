@@ -127,7 +127,7 @@ public class SwiftUrlProvider implements UrlProvider {
         }
         else {
             if(!accounts.containsKey(region)) {
-                log.warn(String.format("No account info for region %s available required to sign temporaray URL", region));
+                log.warn(String.format("No account info for region %s available required to sign temporary URL", region));
                 return DescriptiveUrl.EMPTY;
             }
             // OpenStack Swift Temporary URLs (TempURL) required the X-Account-Meta-Temp-URL-Key header
