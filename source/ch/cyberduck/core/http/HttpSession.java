@@ -88,12 +88,14 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     private final ThreadFactory factory
             = new NamedThreadFactory("http");
 
-    protected HttpSession(final Host h) {
-        super(h);
+    protected HttpSession(final Host host) {
+        super(host);
+        target.set(host.getHostname());
     }
 
     protected HttpSession(final Host host, final X509TrustManager manager) {
         super(host, manager);
+        target.set(host.getHostname());
     }
 
     public AbstractHttpClient connect() {
@@ -137,8 +139,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         route.addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                target.set(
-                        ((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName());
+                target.set(((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName());
             }
         });
         route.addRequestInterceptor(new HttpRequestInterceptor() {
