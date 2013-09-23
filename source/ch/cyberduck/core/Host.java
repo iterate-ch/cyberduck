@@ -209,7 +209,13 @@ public final class Host implements Serializable, Comparable<Host> {
         }
         Object protocolObj = dict.stringForKey("Protocol");
         if(protocolObj != null) {
-            this.setProtocol(ProtocolFactory.forName(protocolObj.toString()));
+            final Protocol p = ProtocolFactory.forName(protocolObj.toString());
+            if(null != p) {
+                this.setProtocol(p);
+            }
+            else {
+                log.warn(String.format("Protocol %s no more available. Default to %s", protocolObj, protocol));
+            }
         }
         Object providerObj = dict.stringForKey("Provider");
         if(providerObj != null) {
