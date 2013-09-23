@@ -1918,9 +1918,9 @@ lib/ext/junit-4.11.jar -text svneol=unset#application/jar
 lib/ext/nunit.framework.dll -text
 lib/ext/sonar-ant-task-2.1.jar -text svneol=unset#application/jar
 lib/ganymed-ssh2-261.jar -text svneol=unset#application/zip
-lib/httpclient-4.2.5.jar -text svneol=unset#application/zip
+lib/httpclient-4.2.6.jar -text svneol=unset#application/zip
 lib/httpcore-4.3.jar -text svneol=unset#application/zip
-lib/httpmime-4.2.5.jar -text svneol=unset#application/x-gzip
+lib/httpmime-4.2.6.jar -text svneol=unset#application/zip
 lib/icu4j-module-4.4.1.1.jar -text
 lib/jackson-core-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jackson-mapper-asl-1.9.13.jar -text svneol=unset#application/jar
