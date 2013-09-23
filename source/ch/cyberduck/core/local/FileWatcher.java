@@ -43,7 +43,7 @@ import static com.barbarysoftware.watchservice.StandardWatchEventKind.*;
 /**
  * @version $Id$
  */
-public class FileWatcher implements FileWatcherCallback {
+public final class FileWatcher implements FileWatcherCallback {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
     private WatchService monitor;
