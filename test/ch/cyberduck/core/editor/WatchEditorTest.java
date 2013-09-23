@@ -40,7 +40,7 @@ import static org.junit.Assert.assertEquals;
 public class WatchEditorTest extends AbstractTestCase {
 
     @Test
-    public void testEdit() throws Exception {
+    public void testTemporaryPath() throws Exception {
         final Path path = new Path("/f1/f2/t.txt", Path.FILE_TYPE);
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
