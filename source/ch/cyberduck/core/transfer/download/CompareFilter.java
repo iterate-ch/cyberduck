@@ -47,6 +47,9 @@ public class CompareFilter extends AbstractDownloadFilter {
             switch(comparison) {
                 case LOCAL_NEWER:
                 case EQUAL:
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Skip file %s with comparison %s", file, comparison));
+                    }
                     return false;
                 case REMOTE_NEWER:
                     return super.accept(file, parent);

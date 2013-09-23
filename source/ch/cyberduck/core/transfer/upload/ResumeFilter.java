@@ -27,10 +27,13 @@ import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class ResumeFilter extends AbstractUploadFilter {
+    private static final Logger log = Logger.getLogger(ResumeFilter.class);
 
     private Session<?> session;
 
@@ -47,7 +50,11 @@ public class ResumeFilter extends AbstractUploadFilter {
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
                 if(session.getFeature(Find.class).find(file)) {
-                    if(attributes.getAttributes(file).getSize() >= file.getLocal().attributes().getSize()) {
+                    final long remote = attributes.getAttributes(file).getSize();
+                    if(remote >= file.getLocal().attributes().getSize()) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Skip file %s with remote size %d", file, remote));
+                        }
                         // No need to resume completed transfers
                         return false;
                     }

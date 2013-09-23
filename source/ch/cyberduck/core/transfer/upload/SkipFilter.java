@@ -24,10 +24,13 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class SkipFilter extends AbstractUploadFilter {
+    private static final Logger log = Logger.getLogger(SkipFilter.class);
 
     private Session<?> session;
 
@@ -43,6 +46,9 @@ public class SkipFilter extends AbstractUploadFilter {
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(parent.isExists()) {
             if(session.getFeature(Find.class).find(file)) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skip file %s", file));
+                }
                 return false;
             }
         }

@@ -29,6 +29,7 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
@@ -36,6 +37,7 @@ import java.text.MessageFormat;
  * @version $Id$
  */
 public class RenameExistingFilter extends AbstractDownloadFilter {
+    private static final Logger log = Logger.getLogger(RenameExistingFilter.class);
 
     public RenameExistingFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session);
@@ -56,6 +58,9 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
                 renamed = LocalFactory.createLocal(renamed.getParent().getAbsolute(), proposal);
             }
             if(!renamed.equals(file.getLocal())) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Rename existing file %s to %s", file.getLocal(), renamed));
+                }
                 file.getLocal().rename(renamed);
             }
         }

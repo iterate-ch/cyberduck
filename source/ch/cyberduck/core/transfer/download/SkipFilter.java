@@ -23,10 +23,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class SkipFilter extends AbstractDownloadFilter {
+    private static final Logger log = Logger.getLogger(SkipFilter.class);
 
     public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session);
@@ -35,6 +38,9 @@ public class SkipFilter extends AbstractDownloadFilter {
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.getLocal().exists()) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Skip file %s", file));
+            }
             return false;
         }
         return super.accept(file, parent);

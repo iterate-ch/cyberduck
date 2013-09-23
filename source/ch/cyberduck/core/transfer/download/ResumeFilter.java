@@ -24,10 +24,13 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class ResumeFilter extends AbstractDownloadFilter {
+    private static final Logger log = Logger.getLogger(ResumeFilter.class);
 
     private Session<?> session;
 
@@ -40,7 +43,11 @@ public class ResumeFilter extends AbstractDownloadFilter {
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isFile()) {
             if(file.getLocal().exists()) {
-                if(file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
+                final long local = file.getLocal().attributes().getSize();
+                if(local >= file.attributes().getSize()) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Skip file %s with local size %d", file, local));
+                    }
                     // No need to resume completed transfers
                     return false;
                 }

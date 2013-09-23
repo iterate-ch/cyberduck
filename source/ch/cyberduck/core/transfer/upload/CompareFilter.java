@@ -49,6 +49,9 @@ public class CompareFilter extends AbstractUploadFilter {
                 case EQUAL:
                     return super.accept(file, parent);
                 case REMOTE_NEWER:
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Skip file %s with comparison %s", file, comparison));
+                    }
                     return false;
             }
             log.warn(String.format("Invalid comparison result %s", comparison));
