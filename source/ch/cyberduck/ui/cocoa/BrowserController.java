@@ -1918,6 +1918,7 @@ public class BrowserController extends WindowController
         bookmarkModel.getSource().add(item);
         final int row = bookmarkModel.getSource().lastIndexOf(item);
         final NSInteger index = new NSInteger(row);
+        this.reloadBookmarks();
         bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         bookmarkTable.scrollRowToVisible(index);
         final BookmarkController c = BookmarkControllerFactory.create(item);
