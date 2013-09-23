@@ -31,15 +31,19 @@ public abstract class AbstractIOExceptionMappingService<T extends Exception> imp
 
     public BackgroundException map(final String message, final T failure) {
         final BackgroundException exception = this.map(failure);
-        exception.setMessage(StringUtils.chomp(LocaleFactory.localizedString(message, "Error")));
+        final StringBuilder m = new StringBuilder();
+        this.append(m, StringUtils.chomp(LocaleFactory.localizedString(message, "Error")));
+        exception.setMessage(m.toString());
         return exception;
     }
 
     public BackgroundException map(final String message, final T failure, final Path file) {
         final BackgroundException exception = this.map(failure);
-        exception.setMessage(String.format("%s (%s)",
+        final StringBuilder m = new StringBuilder();
+        this.append(m, String.format("%s (%s)",
                 MessageFormat.format(StringUtils.chomp(LocaleFactory.localizedString(message, "Error")), file.getName()),
                 file.getAbsolute()));
+        exception.setMessage(m.toString());
         return exception;
     }
 
