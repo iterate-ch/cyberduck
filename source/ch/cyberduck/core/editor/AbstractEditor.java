@@ -18,18 +18,29 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
+import ch.cyberduck.core.transfer.download.TrashFilter;
+import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
+import ch.cyberduck.core.transfer.upload.OverwriteFilter;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
@@ -153,14 +164,18 @@ public abstract class AbstractEditor implements Editor {
     @Override
     public void save() {
         // If checksum still the same no need for save
-        if(checksum.equals(edited.getLocal().attributes().getChecksum())) {
+        final String current = edited.getLocal().attributes().getChecksum();
+        if(checksum.equals(current)) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("File %s not modified with checkum %s", edited.getLocal(), checksum));
+                log.info(String.format("File %s not modified with checkum %s", edited.getLocal(), current));
             }
         }
         else {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Save new checksum %s for file %s", current, edited.getLocal()));
+            }
             // Store current checksum
-            checksum = edited.getLocal().attributes().getChecksum();
+            checksum = current;
             final TransferCallable background = new SaveBackgroundAction();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", edited.getLocal().getAbsolute()));
@@ -183,15 +198,17 @@ public abstract class AbstractEditor implements Editor {
             options.open = false;
             final Transfer download = new DownloadTransfer(session, edited) {
                 @Override
-                public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-                    return TransferAction.ACTION_RENAME_EXISTING;
+                public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
+                    final SymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
+                    return new TrashFilter(resolver, session);
                 }
             };
-            download.start(null, options, new DisabledTransferErrorCallback());
+            download.start(new DisabledTransferPrompt(), options, new DisabledTransferErrorCallback());
             growl.notify(download.isComplete() ?
                     String.format("%s complete", StringUtils.capitalize(download.getType().name())) : "Transfer incomplete", download.getName());
             if(download.isComplete()) {
                 final Local local = edited.getLocal();
+                // Save checksum before edit
                 checksum = local.attributes().getChecksum();
                 final Permission permissions = local.attributes().getPermission();
                 // Update local permissions to make sure the file is readable and writable for editing.
@@ -201,7 +218,7 @@ public abstract class AbstractEditor implements Editor {
                     edit();
                 }
                 catch(IOException e) {
-                    throw new BackgroundException(e.getMessage(), e);
+                    throw new DefaultIOExceptionMappingService().map(e);
                 }
             }
             return download;
@@ -213,11 +230,13 @@ public abstract class AbstractEditor implements Editor {
         public Transfer call() throws BackgroundException {
             final Transfer upload = new UploadTransfer(session, edited) {
                 @Override
-                public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-                    return TransferAction.ACTION_OVERWRITE;
+                public TransferPathFilter filter(final TransferPrompt prompt,
+                                                 final TransferAction action) throws BackgroundException {
+                    final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots());
+                    return new OverwriteFilter(resolver, session, new UploadFilterOptions().withTemporary(true));
                 }
             };
-            upload.start(null, new TransferOptions(), new DisabledTransferErrorCallback());
+            upload.start(new DisabledTransferPrompt(), new TransferOptions(), new DisabledTransferErrorCallback());
             growl.notify(upload.isComplete() ?
                     String.format("%s complete", StringUtils.capitalize(upload.getType().name())) : "Transfer incomplete", upload.getName());
             if(upload.isComplete()) {
