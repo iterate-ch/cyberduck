@@ -27,17 +27,16 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -95,12 +94,7 @@ public class CopyTransferTest extends AbstractTestCase {
         final Transfer t = new CopyTransfer(session, session,
                 Collections.<Path, Path>singletonMap(test, copy));
 
-        t.start(new TransferPrompt() {
-            @Override
-            public TransferAction prompt() throws BackgroundException {
-                return TransferAction.ACTION_CANCEL;
-            }
-        }, new TransferOptions(), new DisabledTransferErrorCallback());
+        t.start(new DisabledTransferPrompt(), new TransferOptions(), new DisabledTransferErrorCallback());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
 
@@ -129,12 +123,7 @@ public class CopyTransferTest extends AbstractTestCase {
         final Transfer t = new CopyTransfer(session, destination,
                 Collections.<Path, Path>singletonMap(test, copy));
 
-        t.start(new TransferPrompt() {
-            @Override
-            public TransferAction prompt() throws BackgroundException {
-                return TransferAction.ACTION_CANCEL;
-            }
-        }, new TransferOptions(), new DisabledTransferErrorCallback());
+        t.start(new DisabledTransferPrompt(), new TransferOptions(), new DisabledTransferErrorCallback());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
 
