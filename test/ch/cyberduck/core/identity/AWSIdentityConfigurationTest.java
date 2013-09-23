@@ -33,7 +33,7 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
             fail();
         }
         catch(BackgroundException e) {
-            assertEquals("Cannot write user configuration", e.getMessage());
+            assertEquals("Cannot write user configuration.", e.getMessage());
             assertEquals(MalformedPolicyDocumentException.class, e.getCause().getClass());
             iam.delete(username, new DisabledLoginController());
         }

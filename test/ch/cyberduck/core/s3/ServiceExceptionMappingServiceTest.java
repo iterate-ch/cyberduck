@@ -78,7 +78,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testDNSFailure() {
-        assertEquals("custom",
+        assertEquals("custom.",
                 new ServiceExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getMessage());
         assertEquals("h.",
                 new ServiceExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getDetail());
@@ -86,7 +86,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testCustomMessage() {
-        assertEquals("custom",
+        assertEquals("custom.",
                 new ServiceExceptionMappingService().map("custom", new ServiceException("message")).getMessage());
         assertEquals("message.",
                 new ServiceExceptionMappingService().map("custom", new ServiceException("message")).getDetail());
@@ -94,7 +94,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testIAMFailure() {
-        assertEquals("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9",
+        assertEquals("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9.",
                 new ServiceExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message")).getMessage());
         assertEquals("message.",
                 new ServiceExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message")).getDetail());
