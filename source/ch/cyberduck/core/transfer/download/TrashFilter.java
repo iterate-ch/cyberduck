@@ -23,10 +23,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class TrashFilter extends AbstractDownloadFilter {
+    private static final Logger log = Logger.getLogger(SkipFilter.class);
 
     public TrashFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session);
@@ -38,6 +41,9 @@ public class TrashFilter extends AbstractDownloadFilter {
     @Override
     public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.getLocal().exists()) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Trash file %s", file.getLocal()));
+            }
             file.getLocal().trash();
         }
         return super.prepare(file, parent);
