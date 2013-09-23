@@ -1553,6 +1553,7 @@ public class BrowserController extends WindowController
                 IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
                 IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
                 selected);
+        table.sizeToFit();
         this.reloadData(false);
     }
 
