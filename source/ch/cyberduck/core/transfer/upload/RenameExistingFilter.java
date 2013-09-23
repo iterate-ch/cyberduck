@@ -43,9 +43,16 @@ public class RenameExistingFilter extends AbstractUploadFilter {
 
     private Session<?> session;
 
+    private UploadFilterOptions options;
+
     public RenameExistingFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session);
+        this(symlinkResolver, session, new UploadFilterOptions());
+    }
+
+    public RenameExistingFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+        super(symlinkResolver, session, options);
         this.session = session;
+        this.options = options;
     }
 
     /**
@@ -53,7 +60,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      */
     @Override
     public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
-        if(!Preferences.instance().getBoolean("queue.upload.file.temporary")) {
+        if(!options.temporary) {
             // Rename existing file before putting new file in place
             if(parent.isExists()) {
                 this.rename(file);
@@ -82,7 +89,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     @Override
     public void complete(final Path file, final TransferOptions options, final TransferStatus status,
                          final ProgressListener listener) throws BackgroundException {
-        if(Preferences.instance().getBoolean("queue.upload.file.temporary")) {
+        if(this.options.temporary) {
             // If uploaded with temporary name rename after upload is complete
             this.rename(new Path(file.getParent(), temporary.get(file), Path.FILE_TYPE));
         }

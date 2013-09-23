@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -31,6 +30,7 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 import org.apache.log4j.Logger;
 
@@ -47,9 +47,12 @@ public class CopyTransferFilter implements TransferPathFilter {
 
     private final Map<Path, Path> files;
 
+    private UploadFilterOptions options;
+
     public CopyTransferFilter(final Session session, final Map<Path, Path> files) {
         this.session = session;
         this.files = files;
+        this.options = new UploadFilterOptions();
     }
 
     @Override
@@ -82,18 +85,18 @@ public class CopyTransferFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", source.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            final UnixPermission unix = session.getFeature(UnixPermission.class);
-            if(unix != null) {
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+            if(this.options.permissions) {
+                final UnixPermission unix = session.getFeature(UnixPermission.class);
+                if(unix != null) {
                     Permission permission = source.attributes().getPermission();
                     if(!Permission.EMPTY.equals(permission)) {
                         this.permission(source, unix, permission);
                     }
                 }
             }
-            final Timestamp timestamp = session.getFeature(Timestamp.class);
-            if(timestamp != null) {
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+            if(this.options.timestamp) {
+                final Timestamp timestamp = session.getFeature(Timestamp.class);
+                if(timestamp != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
                             source.getName(), UserDateFormatterFactory.get().getShortFormat(source.attributes().getModificationDate())));
                     this.timestamp(source, timestamp);

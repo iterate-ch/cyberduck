@@ -57,9 +57,16 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     protected Map<Path, String> temporary
             = new HashMap<Path, String>();
 
+    private UploadFilterOptions options;
+
     public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+        this(symlinkResolver, session, new UploadFilterOptions());
+    }
+
+    public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
+        this.options = options;
     }
 
     @Override
@@ -96,7 +103,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 // Read file size from filesystem
                 status.setLength(file.getLocal().attributes().getSize());
             }
-            if(Preferences.instance().getBoolean("queue.upload.file.temporary")) {
+            if(options.temporary) {
                 final String original = file.getName();
                 file.setPath(file.getParent(), MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
                         file.getName(), UUID.randomUUID().toString()));
@@ -122,7 +129,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+            if(this.options.permissions) {
                 final UnixPermission unix = session.getFeature(UnixPermission.class);
                 if(unix != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
@@ -136,7 +143,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     this.acl(file, acl);
                 }
             }
-            if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+            if(this.options.timestamp) {
                 final Timestamp timestamp = session.getFeature(Timestamp.class);
                 if(timestamp != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
@@ -145,7 +152,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
                 }
             }
-            if(Preferences.instance().getBoolean("queue.upload.file.temporary")) {
+            if(this.options.temporary) {
                 session.getFeature(Move.class).move(file, new Path(file.getParent(), temporary.get(file), Path.FILE_TYPE));
                 file.setPath(file.getParent(), temporary.get(file));
                 temporary.remove(file);
