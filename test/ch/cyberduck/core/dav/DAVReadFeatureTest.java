@@ -8,9 +8,21 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collections;
+import java.util.UUID;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @version $Id$
@@ -28,5 +40,38 @@ public class DAVReadFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final TransferStatus status = new TransferStatus();
         new DAVReadFeature(session).read(new Path(session.workdir(), "nosuchname", Path.FILE_TYPE), status);
+    }
+
+    @Test
+    public void testReadRange() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        new DefaultTouchFeature(session).touch(test);
+        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final OutputStream out = new DAVWriteFeature(session).write(test, new TransferStatus().length(content.length));
+        assertNotNull(out);
+        IOUtils.write(content, out);
+        IOUtils.closeQuietly(out);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        status.setAppend(true);
+        status.setCurrent(100L);
+        final Path workdir = session.workdir();
+        final InputStream in = new DAVReadFeature(session).read(test, status);
+        assertNotNull(in);
+        final byte[] download = new byte[content.length - 100];
+        IOUtils.readFully(in, download);
+        final byte[] reference = new byte[content.length - 100];
+        System.arraycopy(content, 100, reference, 0, content.length - 100);
+        assertArrayEquals(reference, download);
+        in.close();
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        session.close();
     }
 }
