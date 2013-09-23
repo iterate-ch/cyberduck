@@ -160,7 +160,7 @@ public final class ProtocolFactory {
             }
         }
         log.warn(String.format("Unknown protocol with identifier %s", identifier));
-        return forName(Preferences.instance().getProperty("connection.protocol.default"));
+        return null;
     }
 
     /**

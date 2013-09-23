@@ -39,7 +39,8 @@ public final class Host implements Serializable, Comparable<Host> {
     /**
      * The protocol identifier.
      */
-    private Protocol protocol;
+    private Protocol protocol
+            = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
 
     /**
      * The port number to connect to
@@ -217,7 +218,7 @@ public final class Host implements Serializable, Comparable<Host> {
                 this.setProtocol(provider);
             }
             else {
-                log.warn(String.format("Provider %s no more available. Default to %s", providerObj, protocolObj));
+                log.warn(String.format("Provider %s no more available. Default to %s", providerObj, protocol));
             }
         }
         Object hostnameObj = dict.stringForKey("Hostname");

@@ -53,7 +53,6 @@ public class HostTest extends AbstractTestCase {
         Host host = new Host("test");
         host.setWebURL("http://localhost/~dkocher");
         assertEquals("http://localhost/~dkocher", host.getWebURL());
-
     }
 
     @Test
