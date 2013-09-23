@@ -95,15 +95,6 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
     }
 
     @Override
-    public void fileRenamed(Local file) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("File %s renamed", file));
-        }
-        monitor.close(edited.getLocal());
-        monitor.removeListener(this);
-    }
-
-    @Override
     public void fileDeleted(Local file) {
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s deleted", file));

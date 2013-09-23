@@ -33,13 +33,6 @@ public interface FileWatcherListener {
     void fileWritten(Local file);
 
     /**
-     * The file has been renamed
-     *
-     * @param file File that triggered event
-     */
-    void fileRenamed(Local file);
-
-    /**
      * The file has been removed
      *
      * @param file File that triggered event

@@ -37,16 +37,6 @@ public class FileWatcherTest extends AbstractTestCase {
             }
 
             @Override
-            public void fileRenamed(final Local file) {
-                try {
-                    assertEquals(new File(f.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
-                }
-                catch(IOException e) {
-                    fail();
-                }
-            }
-
-            @Override
             public void fileDeleted(final Local file) {
                 try {
                     assertEquals(new File(f.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
