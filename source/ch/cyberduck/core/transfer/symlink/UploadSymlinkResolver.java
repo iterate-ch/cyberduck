@@ -17,10 +17,12 @@ package ch.cyberduck.core.transfer.symlink;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.Local;
+
+import org.apache.log4j.Logger;
 
 import java.util.List;
 
@@ -28,6 +30,7 @@ import java.util.List;
  * @version $Id$
  */
 public class UploadSymlinkResolver extends AbstractSymlinkResolver {
+    private static final Logger log = Logger.getLogger(UploadSymlinkResolver.class);
 
     private Symlink feature;
 
@@ -68,6 +71,9 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver {
             // Do not transfer files referenced from symlinks pointing to files also included
             for(Path root : files) {
                 if(this.findTarget(target, root)) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Skip file %s with target %s already included", file, target));
+                    }
                     return false;
                 }
             }

@@ -20,12 +20,15 @@ package ch.cyberduck.core.transfer.symlink;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 
+import org.apache.log4j.Logger;
+
 import java.util.List;
 
 /**
  * @version $Id$
  */
 public class DownloadSymlinkResolver extends AbstractSymlinkResolver {
+    private static final Logger log = Logger.getLogger(DownloadSymlinkResolver.class);
 
     private List<Path> files;
 
@@ -59,6 +62,9 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver {
             // Do not transfer files referenced from symlinks pointing to files also included
             for(Path root : files) {
                 if(this.findTarget(target, root)) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Skip file %s with target %s already included", file, target));
+                    }
                     return false;
                 }
             }
