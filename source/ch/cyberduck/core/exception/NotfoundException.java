@@ -30,6 +30,10 @@ public class NotfoundException extends BackgroundException {
         super(LocaleFactory.localizedString("File not found", "Error"));
     }
 
+    public NotfoundException(final String detail) {
+        super(detail);
+    }
+
     public NotfoundException(final String detail, final Throwable cause) {
         super(LocaleFactory.localizedString("File not found", "Error"), detail, cause);
     }

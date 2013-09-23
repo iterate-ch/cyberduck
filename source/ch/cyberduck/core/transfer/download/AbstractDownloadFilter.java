@@ -27,6 +27,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.IconService;
@@ -73,7 +74,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         final Local volume = file.getLocal().getVolume();
         if(!volume.exists()) {
-            throw new BackgroundException(String.format("Volume %s not mounted", volume.getAbsolute()));
+            throw new NotfoundException(String.format("Volume %s not mounted", volume.getAbsolute()));
         }
         return true;
     }
