@@ -123,6 +123,15 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         public static extern uint GetLastError();
 
         [DllImport("user32.dll", EntryPoint = "SendMessageW", CharSet=CharSet.Unicode)]
+        public static extern IntPtr SendMessageIntPtr
+            (
+            IntPtr hWnd,
+            UInt32 Msg,
+            IntPtr wParam,
+            IntPtr lParam
+            );
+
+        [DllImport("user32.dll", EntryPoint = "SendMessageW", CharSet=CharSet.Unicode)]
         public static extern uint SendMessage
             (
             [In] IntPtr hWnd,

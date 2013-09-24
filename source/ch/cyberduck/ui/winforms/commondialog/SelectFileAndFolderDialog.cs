@@ -788,7 +788,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             IntPtr buffer = Marshal.AllocCoTaskMem(2*InteropUtil.NumberOfFileChars);
             try
             {
-                InteropUtil.SendMessage(hWnd, msg, InteropUtil.NumberOfFileChars, unchecked((uint) buffer));
+                InteropUtil.SendMessageIntPtr(hWnd, msg, new IntPtr(InteropUtil.NumberOfFileChars), buffer);
                 var chars = new char[InteropUtil.NumberOfFileChars];
                 Marshal.Copy(buffer, chars, 0, chars.Length);
                 int firstZeroTerm = ((IList) chars).IndexOf('\0');
@@ -902,6 +902,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             if (selectedIndex >= 0)
             {
                 var lvitem = new InteropUtil.LVITEM();
+                lvitem.iSubItem = 0;
                 lvitem.mask = InteropUtil.LVIF_TEXT;
                 IntPtr nativeBuffer = Marshal.AllocCoTaskMem(InteropUtil.NumberOfFileChars*2);
                 for (int i = 0; i < InteropUtil.NumberOfFileChars; ++i)
