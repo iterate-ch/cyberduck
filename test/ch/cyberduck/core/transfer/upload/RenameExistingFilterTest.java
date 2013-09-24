@@ -2,22 +2,25 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -71,5 +74,66 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         p.setLocal(new NullLocal("/Downloads", "n"));
         f.prepare(p, new TransferStatus().exists(true));
         assertTrue(c.get());
+    }
+
+    @Test
+    public void testTemporary() throws Exception {
+        final Path file = new Path("/t", Path.FILE_TYPE);
+        file.setLocal(new NullLocal(null, "a"));
+        final AtomicBoolean found = new AtomicBoolean();
+        final AtomicInteger moved = new AtomicInteger();
+        final NullSession session = new NullSession(new Host("h")) {
+            @Override
+            public <T> T getFeature(final Class<T> type) {
+                if(type.equals(Find.class)) {
+                    return (T) new Find() {
+                        @Override
+                        public boolean find(final Path f) throws BackgroundException {
+                            if(f.equals(file)) {
+                                found.set(true);
+                                return true;
+                            }
+                            return false;
+                        }
+                    };
+                }
+                if(type.equals(Move.class)) {
+                    return (T) new Move() {
+                        @Override
+                        public void move(final Path f, final Path renamed) throws BackgroundException {
+                            if(moved.incrementAndGet() == 1) {
+                                assertEquals(file, f);
+                            }
+                            else if(moved.get() == 2) {
+                                assertEquals(file, renamed);
+                            }
+                            else {
+                                fail();
+                            }
+                        }
+
+                        @Override
+                        public boolean isSupported(final Path file) {
+                            return true;
+                        }
+                    };
+                }
+                return null;
+            }
+        };
+        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), session,
+                new UploadFilterOptions().withTemporary(true));
+        final TransferStatus status = f.prepare(file, new TransferStatus());
+        assertNotNull(status.getRenamed());
+        assertTrue(status.isRename());
+        assertNotEquals(file, status.getRenamed());
+        assertNotNull(status.getRenamed().getLocal());
+        assertEquals(new NullLocal(null, "a"), status.getRenamed().getLocal());
+        // Complete
+        status.setLength(1L);
+        status.setCurrent(1L);
+        f.complete(status.getRenamed(), new TransferOptions(), status, new DisabledProgressListener());
+        assertTrue(found.get());
+        assertEquals(2, moved.get());
     }
 }

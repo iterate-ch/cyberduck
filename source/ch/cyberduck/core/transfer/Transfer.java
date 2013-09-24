@@ -453,7 +453,13 @@ public abstract class Transfer implements Serializable {
                 final TransferStatus status = filter.prepare(file, parent);
                 if(file.attributes().isDirectory()) {
                     // Call recursively for all children
-                    final AttributedList<Path> children = this.children(file);
+                    final AttributedList<Path> children;
+                    if(status.isRename()) {
+                        children = this.children(status.getRenamed());
+                    }
+                    else {
+                        children = this.children(file);
+                    }
                     // Put into cache for later reference when transferring
                     cache.put(file.getReference(), children);
                     // Call recursively
@@ -464,7 +470,12 @@ public abstract class Transfer implements Serializable {
                         this.prepare(child, status, filter);
                     }
                 }
-                this.save(file, status);
+                if(status.isRename()) {
+                    this.save(status.getRenamed(), status);
+                }
+                else {
+                    this.save(file, status);
+                }
             }
             else {
                 if(log.isInfoEnabled()) {

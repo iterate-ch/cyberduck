@@ -179,7 +179,7 @@ public class CopyTransfer extends Transfer {
             final AttributedList<Path> list = session.list(parent, new DisabledListProgressListener());
             final Path copy = files.get(parent);
             for(Path p : list) {
-                files.put(p, new Path(copy, p.getName(), p.attributes().getType()));
+                files.put(p, new Path(copy, p.getName(), p.attributes()));
             }
             return list;
         }

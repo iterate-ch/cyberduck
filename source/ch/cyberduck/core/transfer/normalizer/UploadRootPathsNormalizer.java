@@ -34,7 +34,8 @@ public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Path>
     @Override
     public List<Path> normalize(final List<Path> roots) {
         final List<Path> normalized = new Collection<Path>();
-        for(final Path upload : roots) {
+        for(final Path root : roots) {
+            Path upload = root;
             boolean duplicate = false;
             for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
                 Path n = iter.next();
@@ -62,7 +63,7 @@ public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Path>
                         else {
                             proposal = String.format("%s-%d", filename, no);
                         }
-                        upload.setPath(parent, proposal);
+                        upload = new Path(parent, proposal, upload.attributes(), upload.getLocal());
                     }
                     while(false);//(upload.exists());
                     if(log.isInfoEnabled()) {

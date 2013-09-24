@@ -18,6 +18,8 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -65,8 +67,7 @@ public final class TransferStatus {
      */
     private boolean selected = true;
 
-    public void setComplete() {
-    }
+    private Path renamed;
 
     public boolean isComplete() {
         return current == length;
@@ -176,6 +177,23 @@ public final class TransferStatus {
     public TransferStatus append(final boolean append) {
         this.append = append;
         return this;
+    }
+
+    public Path getRenamed() {
+        return renamed;
+    }
+
+    public void setRenamed(final Path renamed) {
+        this.renamed = renamed;
+    }
+
+    public TransferStatus rename(final Path renamed) {
+        this.renamed = renamed;
+        return this;
+    }
+
+    public boolean isRename() {
+        return renamed != null;
     }
 
     @Override

@@ -84,7 +84,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                     }
                 };
             }
-        }, new ch.cyberduck.core.transfer.TransferStatus()).getLength(), 0L);
+        }, new TransferStatus()).getLength(), 0L);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path file = new Path("/t", Path.FILE_TYPE);
         file.setLocal(new NullLocal(null, "a"));
-        assertFalse(f.prepare(file, new ch.cyberduck.core.transfer.TransferStatus()).isComplete());
+        assertFalse(f.prepare(file, new TransferStatus()).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }
@@ -102,8 +102,22 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path file = new Path("/t", Path.FILE_TYPE);
         file.setLocal(new NullLocal(null, "a"));
-        assertFalse(f.prepare(file, new ch.cyberduck.core.transfer.TransferStatus()).isComplete());
+        assertFalse(f.prepare(file, new TransferStatus()).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
+    }
+
+    @Test
+    public void testTemporary() throws Exception {
+        final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+                new UploadFilterOptions().withTemporary(true));
+        final Path file = new Path("/t", Path.FILE_TYPE);
+        file.setLocal(new NullLocal(null, "a"));
+        final TransferStatus status = f.prepare(file, new TransferStatus());
+        assertNotNull(status.getRenamed());
+        assertTrue(status.isRename());
+        assertNotEquals(file, status.getRenamed());
+        assertNotNull(status.getRenamed().getLocal());
+        assertEquals(new NullLocal(null, "a"), status.getRenamed().getLocal());
     }
 }

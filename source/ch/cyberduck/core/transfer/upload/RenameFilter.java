@@ -48,16 +48,19 @@ public class RenameFilter extends AbstractUploadFilter {
             final Path parentPath = file.getParent();
             final String filename = file.getName();
             int no = 0;
-            while(session.getFeature(Find.class).find(file)) {
-                no++;
-                String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
-                if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                    proposal += "." + FilenameUtils.getExtension(filename);
+            if(session.getFeature(Find.class).find(file)) {
+                do {
+                    no++;
+                    String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
+                    if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                        proposal += "." + FilenameUtils.getExtension(filename);
+                    }
+                    status.setRenamed(new Path(parentPath, proposal, file.attributes()));
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Change filename from %s to %s", filename, status.getRenamed()));
+                    }
                 }
-                file.setPath(parentPath, proposal);
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Change filename from %s to %s", filename, file));
-                }
+                while(session.getFeature(Find.class).find(status.getRenamed()));
             }
         }
         return status;

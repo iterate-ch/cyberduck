@@ -105,10 +105,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setLength(file.getLocal().attributes().getSize());
             }
             if(options.temporary) {
-                final String original = file.getName();
-                file.setPath(file.getParent(), MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
-                        file.getName(), UUID.randomUUID().toString()));
-                temporary.put(file, original);
+                final Path renamed = new Path(file.getParent(), MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
+                        file.getName(), UUID.randomUUID().toString()), file.attributes(), file.getLocal());
+                status.setRenamed(renamed);
+                temporary.put(renamed, file.getName());
             }
         }
         if(parent.isExists()) {
@@ -154,8 +154,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
             if(this.options.temporary) {
-                session.getFeature(Move.class).move(file, new Path(file.getParent(), temporary.get(file), Path.FILE_TYPE));
-                file.setPath(file.getParent(), temporary.get(file));
+                final Move move = session.getFeature(Move.class);
+                move.move(file, new Path(file.getParent(), temporary.get(file), file.attributes()));
                 temporary.remove(file);
             }
         }

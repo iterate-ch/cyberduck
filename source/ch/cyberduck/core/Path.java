@@ -122,13 +122,35 @@ public class Path extends AbstractPath implements Serializable {
      * and the remote equivalent might be created later.
      * The remote filename will be extracted from the local file.
      *
-     * @param parent The absolute path to the parent directory on the remote host
+     * @param parent Parent path reference
      * @param file   The associated local file
      */
     public Path(final Path parent, final Local file) {
         this._setPath(parent, file.getName());
         this.local = file;
         this.attributes = new PathAttributes(local.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
+    }
+
+    /**
+     * @param parent     Parent path reference
+     * @param name
+     * @param attributes
+     */
+    public Path(final Path parent, final String name, final PathAttributes attributes) {
+        this._setPath(parent, name);
+        this.attributes = attributes;
+    }
+
+    /**
+     * @param parent     Parent path reference
+     * @param name
+     * @param attributes
+     * @param file
+     */
+    public Path(final Path parent, final String name, final PathAttributes attributes, final Local file) {
+        this._setPath(parent, name);
+        this.attributes = attributes;
+        this.local = file;
     }
 
     private void setPath(final String absolute) {
@@ -143,14 +165,6 @@ public class Path extends AbstractPath implements Serializable {
             }
             this._setPath(parent, PathNormalizer.name(absolute));
         }
-    }
-
-    /**
-     * @param parent The parent directory
-     * @param name   The filename
-     */
-    public void setPath(final Path parent, final String name) {
-        this._setPath(parent, name);
     }
 
     private void _setPath(final Path parent, final String name) {
