@@ -174,7 +174,7 @@ public abstract class Archive {
         }
         if(files.size() == 1) {
             return new Path(files.get(0).getParent(),
-                    files.get(0).getName() + "." + this.getIdentifier(),
+                    String.format("%s.%s", files.get(0).getName(), this.getIdentifier()),
                     Path.FILE_TYPE);
         }
         return new Path(files.get(0).getParent(),
