@@ -50,7 +50,7 @@ public class RenameFilter extends AbstractUploadFilter {
             int no = 0;
             while(session.getFeature(Find.class).find(file)) {
                 no++;
-                String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
+                String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
                 if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                     proposal += "." + FilenameUtils.getExtension(filename);
                 }
