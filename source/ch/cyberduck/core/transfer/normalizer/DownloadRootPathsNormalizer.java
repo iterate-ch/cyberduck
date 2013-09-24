@@ -58,7 +58,7 @@ public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<Pat
                     int no = 0;
                     do {
                         no++;
-                        proposal = FilenameUtils.getBaseName(filename) + "-" + no;
+                        proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
                         if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                             proposal += "." + FilenameUtils.getExtension(filename);
                         }
