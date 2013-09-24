@@ -55,8 +55,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private Session<?> session;
 
-    protected Map<Path, String> temporary
-            = new HashMap<Path, String>();
+    protected Map<Path, Path> temporary
+            = new HashMap<Path, Path>();
 
     private UploadFilterOptions options;
 
@@ -108,7 +108,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 final Path renamed = new Path(file.getParent(), MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
                         file.getName(), UUID.randomUUID().toString()), file.attributes(), file.getLocal());
                 status.setRenamed(renamed);
-                temporary.put(renamed, file.getName());
+                temporary.put(file, renamed);
             }
         }
         if(parent.isExists()) {
@@ -155,7 +155,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             if(this.options.temporary) {
                 final Move move = session.getFeature(Move.class);
-                move.move(file, new Path(file.getParent(), temporary.get(file), file.attributes()));
+                move.move(temporary.get(file), file);
                 temporary.remove(file);
             }
         }

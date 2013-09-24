@@ -470,12 +470,7 @@ public abstract class Transfer implements Serializable {
                         this.prepare(child, status, filter);
                     }
                 }
-                if(status.isRename()) {
-                    this.save(status.getRenamed(), status);
-                }
-                else {
-                    this.save(file, status);
-                }
+                this.save(file, status);
             }
             else {
                 if(log.isInfoEnabled()) {
