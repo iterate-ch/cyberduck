@@ -39,6 +39,11 @@ public class SkipFilter extends AbstractUploadFilter {
         this.session = session;
     }
 
+    public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+        super(symlinkResolver, session, options);
+        this.session = session;
+    }
+
     /**
      * Skip files that already exist on the server.
      */

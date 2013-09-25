@@ -45,6 +45,12 @@ public class ResumeFilter extends AbstractUploadFilter {
         this.attributes = new DefaultAttributesFeature(session);
     }
 
+    public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+        super(symlinkResolver, session, options);
+        this.session = session;
+        this.attributes = new DefaultAttributesFeature(session);
+    }
+
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isFile()) {
