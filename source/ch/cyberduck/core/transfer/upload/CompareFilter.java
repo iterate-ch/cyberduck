@@ -45,10 +45,10 @@ public class CompareFilter extends AbstractUploadFilter {
         if(super.accept(file, parent)) {
             final Comparison comparison = new CombinedComparisionService(session, session.getHost().getTimezone()).compare(file);
             switch(comparison) {
-                case LOCAL_NEWER:
-                case EQUAL:
+                case local:
+                case equal:
                     return super.accept(file, parent);
-                case REMOTE_NEWER:
+                case remote:
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Skip file %s with comparison %s", file, comparison));
                     }

@@ -45,13 +45,13 @@ public class CompareFilter extends AbstractDownloadFilter {
         if(super.accept(file, parent)) {
             final Comparison comparison = new CombinedComparisionService(session, session.getHost().getTimezone()).compare(file);
             switch(comparison) {
-                case LOCAL_NEWER:
-                case EQUAL:
+                case local:
+                case equal:
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Skip file %s with comparison %s", file, comparison));
                     }
                     return false;
-                case REMOTE_NEWER:
+                case remote:
                     return super.accept(file, parent);
             }
             log.warn(String.format("Invalid comparison result %s", comparison));

@@ -39,7 +39,7 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.EQUAL, s.compare(new Path("t", Path.FILE_TYPE) {
+        assertEquals(Comparison.equal, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -70,7 +70,7 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
                 };
             }
         }));
-        assertEquals(Comparison.LOCAL_NEWER, s.compare(new Path("t", Path.FILE_TYPE) {
+        assertEquals(Comparison.local, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {

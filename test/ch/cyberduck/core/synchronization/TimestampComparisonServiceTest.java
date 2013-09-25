@@ -23,7 +23,7 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
     public void testCompare() throws Exception {
         ComparisonService s = new TimestampComparisonService(TimeZone.getDefault());
         final long timestmap = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
-        assertEquals(Comparison.EQUAL, s.compare(new Path("t", Path.FILE_TYPE) {
+        assertEquals(Comparison.equal, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {
@@ -49,7 +49,7 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
                 };
             }
         }));
-        assertEquals(Comparison.LOCAL_NEWER, s.compare(new Path("t", Path.FILE_TYPE) {
+        assertEquals(Comparison.local, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
                 return new NullLocal(null, "t") {

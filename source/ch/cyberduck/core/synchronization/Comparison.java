@@ -22,17 +22,17 @@ public enum Comparison {
     /**
      * Remote file is newer or local file does not exist
      */
-    REMOTE_NEWER,
+    remote,
     /**
      * Local file is newer or remote file does not exist
      */
-    LOCAL_NEWER,
+    local,
     /**
      * Files are identical or directories
      */
-    EQUAL,
+    equal,
     /**
-     * Files differ in size
+     * Files differ in size, checksum or timestamp
      */
-    UNEQUAL
+    notequal
 }

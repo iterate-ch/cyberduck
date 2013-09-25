@@ -49,17 +49,17 @@ public class TimestampComparisonService implements ComparisonService {
         final PathAttributes attributes = p.attributes();
         if(-1 == attributes.getModificationDate()) {
             log.warn("No modification date available for comparison:" + p);
-            return Comparison.UNEQUAL;
+            return Comparison.notequal;
         }
         final Calendar remote = calendarService.asDate(attributes.getModificationDate(), Instant.SECOND);
         final Calendar local = calendarService.asDate(p.getLocal().attributes().getModificationDate(), Instant.SECOND);
         if(local.before(remote)) {
-            return Comparison.REMOTE_NEWER;
+            return Comparison.remote;
         }
         if(local.after(remote)) {
-            return Comparison.LOCAL_NEWER;
+            return Comparison.local;
         }
         //same timestamp
-        return Comparison.EQUAL;
+        return Comparison.equal;
     }
 }

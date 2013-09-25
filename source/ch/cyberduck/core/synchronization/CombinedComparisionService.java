@@ -48,44 +48,48 @@ public class CombinedComparisionService implements ComparisonService {
     }
 
     /**
-     * @see Comparison#EQUAL
-     * @see Comparison#REMOTE_NEWER
-     * @see Comparison#LOCAL_NEWER
+     * @see Comparison#equal
+     * @see Comparison#remote
+     * @see Comparison#local
      */
     @Override
     public Comparison compare(final Path p) throws BackgroundException {
         final Local local = p.getLocal();
-        if(local.exists() && session.getFeature(Find.class).find(p)) {
-            if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
-                // MD5/ETag Checksum is supported
-                final Comparison comparison = checksum.compare(p);
-                if(!Comparison.UNEQUAL.equals(comparison)) {
+        if(local.exists()) {
+            if(session.getFeature(Find.class).find(p)) {
+                if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
+                    // MD5/ETag Checksum is supported
+                    final Comparison comparison = checksum.compare(p);
+                    if(!Comparison.notequal.equals(comparison)) {
+                        // Decision is available
+                        return comparison;
+                    }
+                }
+                if(Preferences.instance().getBoolean("queue.sync.compare.size")) {
+                    final Comparison comparison = size.compare(p);
+                    if(!Comparison.notequal.equals(comparison)) {
+                        // Decision is available
+                        return comparison;
+                    }
+                }
+                // Default comparison is using timestamp of file.
+                final Comparison comparison = timestamp.compare(p);
+                if(!Comparison.notequal.equals(comparison)) {
                     // Decision is available
                     return comparison;
                 }
             }
-            if(Preferences.instance().getBoolean("queue.sync.compare.size")) {
-                final Comparison comparison = size.compare(p);
-                if(!Comparison.UNEQUAL.equals(comparison)) {
-                    // Decision is available
-                    return comparison;
-                }
-            }
-            // Default comparison is using timestamp of file.
-            final Comparison comparison = timestamp.compare(p);
-            if(!Comparison.UNEQUAL.equals(comparison)) {
-                // Decision is available
-                return comparison;
+            else {
+                // Only the local file exists
+                return Comparison.local;
             }
         }
-        else if(session.getFeature(Find.class).find(p)) {
-            // Only the remote file exists
-            return Comparison.REMOTE_NEWER;
+        else {
+            if(session.getFeature(Find.class).find(p)) {
+                // Only the remote file exists
+                return Comparison.remote;
+            }
         }
-        else if(local.exists()) {
-            // Only the local file exists
-            return Comparison.LOCAL_NEWER;
-        }
-        return Comparison.EQUAL;
+        return Comparison.equal;
     }
 }

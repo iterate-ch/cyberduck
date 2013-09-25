@@ -39,19 +39,19 @@ public class SizeComparisonService implements ComparisonService {
         if(attributes.isFile()) {
             //fist make sure both files are larger than 0 bytes
             if(attributes.getSize() == 0 && p.getLocal().attributes().getSize() == 0) {
-                return Comparison.EQUAL;
+                return Comparison.equal;
             }
             if(attributes.getSize() == 0) {
-                return Comparison.LOCAL_NEWER;
+                return Comparison.local;
             }
             if(p.getLocal().attributes().getSize() == 0) {
-                return Comparison.REMOTE_NEWER;
+                return Comparison.remote;
             }
             if(attributes.getSize() == p.getLocal().attributes().getSize()) {
-                return Comparison.EQUAL;
+                return Comparison.equal;
             }
         }
         //different file size - further comparison check
-        return Comparison.UNEQUAL;
+        return Comparison.notequal;
     }
 }

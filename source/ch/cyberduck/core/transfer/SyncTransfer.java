@@ -196,15 +196,15 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Comparison for file %s is %s", path, comparison));
         }
         // Updating default skip settings for actual transfer
-        if(Comparison.EQUAL.equals(comparison)) {
+        if(Comparison.equal.equals(comparison)) {
             return path.attributes().isFile();
         }
         else {
             if(path.attributes().isFile()) {
-                if(comparison.equals(Comparison.REMOTE_NEWER)) {
+                if(comparison.equals(Comparison.remote)) {
                     return this.getTransferAction().equals(ACTION_UPLOAD);
                 }
-                else if(comparison.equals(Comparison.LOCAL_NEWER)) {
+                else if(comparison.equals(Comparison.local)) {
                     return this.getTransferAction().equals(ACTION_DOWNLOAD);
                 }
             }
@@ -225,10 +225,10 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Comparison compare = this.compare(file);
-        if(compare.equals(Comparison.REMOTE_NEWER)) {
+        if(compare.equals(Comparison.remote)) {
             _delegateDownload.transfer(file, options, status);
         }
-        else if(compare.equals(Comparison.LOCAL_NEWER)) {
+        else if(compare.equals(Comparison.local)) {
             _delegateUpload.transfer(file, options, status);
         }
     }
@@ -268,7 +268,7 @@ public class SyncTransfer extends Transfer {
         if(comparisons.containsKey(p.getReference())) {
             return comparisons.get(p.getReference());
         }
-        return Comparison.EQUAL;
+        return Comparison.equal;
     }
 
     private final class DelegateTransferPathFilter implements TransferPathFilter {
@@ -292,10 +292,10 @@ public class SyncTransfer extends Transfer {
         @Override
         public TransferStatus prepare(final Path p, final TransferStatus parent) throws BackgroundException {
             final Comparison compare = SyncTransfer.this.compare(p);
-            if(compare.equals(Comparison.REMOTE_NEWER)) {
+            if(compare.equals(Comparison.remote)) {
                 return _delegateFilterDownload.prepare(p, new TransferStatus());
             }
-            if(compare.equals(Comparison.LOCAL_NEWER)) {
+            if(compare.equals(Comparison.local)) {
                 return _delegateFilterUpload.prepare(p, new TransferStatus());
             }
             return new TransferStatus();
@@ -304,17 +304,17 @@ public class SyncTransfer extends Transfer {
         @Override
         public boolean accept(final Path p, final TransferStatus parent) throws BackgroundException {
             final Comparison compare = SyncTransfer.this.compare(p);
-            if(compare.equals(Comparison.EQUAL)) {
+            if(compare.equals(Comparison.equal)) {
                 return false;
             }
-            if(compare.equals(Comparison.REMOTE_NEWER)) {
+            if(compare.equals(Comparison.remote)) {
                 if(getTransferAction().equals(ACTION_UPLOAD)) {
                     return false;
                 }
                 // Ask the download delegate for inclusion
                 return _delegateFilterDownload.accept(p, parent);
             }
-            else if(compare.equals(Comparison.LOCAL_NEWER)) {
+            else if(compare.equals(Comparison.local)) {
                 if(getTransferAction().equals(ACTION_DOWNLOAD)) {
                     return false;
                 }
@@ -327,10 +327,10 @@ public class SyncTransfer extends Transfer {
         @Override
         public void complete(final Path p, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
             final Comparison compare = SyncTransfer.this.compare(p);
-            if(compare.equals(Comparison.REMOTE_NEWER)) {
+            if(compare.equals(Comparison.remote)) {
                 _delegateFilterDownload.complete(p, options, status, listener);
             }
-            else if(compare.equals(Comparison.LOCAL_NEWER)) {
+            else if(compare.equals(Comparison.local)) {
                 _delegateFilterUpload.complete(p, options, status, listener);
             }
             comparisons.remove(p.getReference());

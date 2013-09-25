@@ -56,7 +56,7 @@ public class SyncPromptModel extends TransferPromptModel {
                 final Comparison compare = ((SyncTransfer) transfer).compare(item);
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         SizeFormatterFactory.get().format(
-                                compare.equals(Comparison.REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
+                                compare.equals(Comparison.remote) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(Column.sync.name())) {
@@ -66,10 +66,10 @@ public class SyncPromptModel extends TransferPromptModel {
                         return null;
                     }
                 }
-                if(compare.equals(Comparison.REMOTE_NEWER)) {
+                if(compare.equals(Comparison.remote)) {
                     return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("transfer-download.tiff", 16));
                 }
-                if(compare.equals(Comparison.LOCAL_NEWER)) {
+                if(compare.equals(Comparison.local)) {
                     return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("transfer-upload.tiff", 16));
                 }
                 return null;

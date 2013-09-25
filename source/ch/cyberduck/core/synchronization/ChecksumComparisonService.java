@@ -39,14 +39,14 @@ public class ChecksumComparisonService implements ComparisonService {
         if(attributes.isFile()) {
             if(null == attributes.getChecksum()) {
                 log.warn("No checksum available for comparison:" + p);
-                return Comparison.UNEQUAL;
+                return Comparison.notequal;
             }
             //fist make sure both files are larger than 0 bytes
             if(attributes.getChecksum().equals(p.getLocal().attributes().getChecksum())) {
-                return Comparison.EQUAL;
+                return Comparison.equal;
             }
         }
         //different sum - further comparison check
-        return Comparison.UNEQUAL;
+        return Comparison.notequal;
     }
 }

@@ -32,7 +32,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public override object GetSize(Path path)
         {
             Comparison compare = ((SyncTransfer) Transfer).compare(path);
-            return compare.equals(Comparison.REMOTE_NEWER)
+            return compare.equals(Comparison.remote)
                        ? path.attributes().getSize()
                        : path.getLocal().attributes().getSize();
         }
@@ -78,11 +78,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             Comparison compare = ((SyncTransfer) Transfer).compare(path);
-            if (compare.equals(Comparison.REMOTE_NEWER))
+            if (compare.equals(Comparison.remote))
             {
                 return IconCache.Instance.IconForName("transfer-download", 16);
             }
-            if (compare.equals(Comparison.LOCAL_NEWER))
+            if (compare.equals(Comparison.local))
             {
                 return IconCache.Instance.IconForName("transfer-upload", 16);
             }
