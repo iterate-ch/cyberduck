@@ -21,6 +21,7 @@ package ch.cyberduck.core.http;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.MappingMimeTypeService;
+import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -91,6 +92,9 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     private final ThreadFactory factory
             = new NamedThreadFactory("http");
+
+    private MimeTypeService mapping
+            = new MappingMimeTypeService();
 
     protected HttpSession(final Host host) {
         super(host);
@@ -269,8 +273,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     return command.getContentLength();
                 }
             };
-            final String type = new MappingMimeTypeService().getMime(file.getName());
-            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, type));
+            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mapping.getMime(file.getName())));
             final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
                 @Override
                 public void run() {
