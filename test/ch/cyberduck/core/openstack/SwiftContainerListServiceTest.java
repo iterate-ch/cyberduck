@@ -3,6 +3,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -29,7 +30,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final List<Path> list = new SwiftContainerListService(false, false).list(session);
+        final List<Path> list = new SwiftContainerListService(session, false, false).list(new DisabledListProgressListener());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         container.attributes().setRegion("DFW");
         assertTrue(list.contains(container));

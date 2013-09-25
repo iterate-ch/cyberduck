@@ -558,7 +558,7 @@ public class CloudFrontDistributionConfiguration
             distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
         }
         if(this.getFeature(DistributionLogging.class, method) != null) {
-            distribution.setContainers(new S3BucketListService().list(session));
+            distribution.setContainers(new S3BucketListService(session).list(new DisabledListProgressListener()));
         }
         return distribution;
     }

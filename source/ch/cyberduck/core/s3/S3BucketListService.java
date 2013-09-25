@@ -18,7 +18,9 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.RootListService;
@@ -37,13 +39,19 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class S3BucketListService implements RootListService<S3Session> {
+public class S3BucketListService implements RootListService {
     private static final Logger log = Logger.getLogger(S3BucketListService.class);
 
+    private S3Session session;
+
+    public S3BucketListService(final S3Session session) {
+        this.session = session;
+    }
+
     @Override
-    public List<Path> list(final S3Session session) throws BackgroundException {
+    public List<Path> list(final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("List containers for %s", session));
+            log.debug(String.format("List containers for %s", listener));
         }
         try {
             if(session.getHost().getCredentials().isAnonymousLogin()) {
@@ -86,6 +94,7 @@ public class S3BucketListService implements RootListService<S3Session> {
                             bucket.attributes().setRegion(b.getLocation());
                         }
                         buckets.add(bucket);
+                        listener.chunk(new AttributedList<Path>(buckets));
                     }
                     return buckets;
                 }

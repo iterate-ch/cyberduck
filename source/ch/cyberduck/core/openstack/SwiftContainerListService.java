@@ -18,8 +18,10 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.RootListService;
@@ -44,30 +46,34 @@ import ch.iterate.openstack.swift.model.Region;
 /**
  * @version $Id$
  */
-public class SwiftContainerListService implements RootListService<SwiftSession> {
+public class SwiftContainerListService implements RootListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
     private final ThreadFactory threadFactory
             = new NamedThreadFactory("cdn");
 
+    private SwiftSession session;
+
     private boolean cdn;
 
     private boolean size;
 
-    public SwiftContainerListService() {
-        this(Preferences.instance().getBoolean("openstack.cdn.preload"),
+    public SwiftContainerListService(final SwiftSession session) {
+        this(session,
+                Preferences.instance().getBoolean("openstack.cdn.preload"),
                 Preferences.instance().getBoolean("openstack.container.size.preload"));
     }
 
-    public SwiftContainerListService(final boolean cdn, final boolean size) {
+    public SwiftContainerListService(final SwiftSession session, final boolean cdn, final boolean size) {
+        this.session = session;
         this.cdn = cdn;
         this.size = size;
     }
 
     @Override
-    public List<Path> list(final SwiftSession session) throws BackgroundException {
+    public List<Path> list(final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("List containers for %s", session));
+            log.debug(String.format("List containers for %s", listener));
         }
         try {
             final List<Path> containers = new ArrayList<Path>();
@@ -101,7 +107,6 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
                                 try {
                                     final ContainerInfo info = client.getContainerInfo(f.getRegion(), f.getName());
                                     container.attributes().setSize(info.getTotalSize());
-                                    containers.add(container);
                                 }
                                 catch(IOException e) {
                                     log.warn(String.format("Failure reading info for container %s %s", container, e.getMessage()));
@@ -109,6 +114,8 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
                             }
                         }).start();
                     }
+                    containers.add(container);
+                    listener.chunk(new AttributedList<Path>(containers));
                 }
             }
             return containers;

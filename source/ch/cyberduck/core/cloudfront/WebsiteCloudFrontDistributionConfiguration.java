@@ -18,6 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
@@ -100,7 +101,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 // http://example-bucket.s3-website-us-east-1.amazonaws.com/
                 distribution.setUrl(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)));
                 distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
-                distribution.setContainers(new S3BucketListService().list(session));
+                distribution.setContainers(new S3BucketListService(session).list(new DisabledListProgressListener()));
                 return distribution;
             }
             catch(ServiceException e) {
