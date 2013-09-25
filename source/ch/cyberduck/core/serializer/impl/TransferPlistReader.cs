@@ -20,10 +20,6 @@ using System;
 using System.Xml;
 using ch.cyberduck.core;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.core.transfer.copy;
-using ch.cyberduck.core.transfer.download;
-using ch.cyberduck.core.transfer.synchronisation;
-using ch.cyberduck.core.transfer.upload;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Serializer.Impl
