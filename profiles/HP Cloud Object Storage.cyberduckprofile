@@ -9,7 +9,7 @@
 	<key>Description</key>
 	<string>HP Cloud Object Storage</string>
 	<key>Default Hostname</key>
-	<string>region-b.geo-1.identity.hpcloudsvc.com</string>
+	<string>region-a.geo-1.identity.hpcloudsvc.com</string>
 	<key>Default Port</key>
 	<string>35357</string>
     <key>Context</key>
