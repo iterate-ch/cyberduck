@@ -89,6 +89,9 @@ public interface Protocol {
      */
     boolean isAnonymousConfigurable();
 
+    /**
+     * @return False if the hostname to connect is static.
+     */
     boolean isHostnameConfigurable();
 
     /**
