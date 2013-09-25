@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -35,7 +36,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
         test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
         final String random = RandomStringUtils.random(1000);
         IOUtils.write(random, test.getLocal().getOutputStream(false));
@@ -48,6 +49,9 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                 new DisabledListProgressListener()).get(test.getReference()).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());
         assertEquals("REDUCED_REDUNDANCY", attributes.getStorageClass());
+        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        assertFalse(metadata.isEmpty());
+        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }

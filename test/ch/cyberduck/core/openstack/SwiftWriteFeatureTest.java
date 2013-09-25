@@ -18,6 +18,7 @@ import org.junit.Test;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -40,7 +41,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         status.setLength(content.length);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
         test.attributes().setRegion("DFW");
         final OutputStream out = new SwiftWriteFeature(session).write(test, status);
         assertNotNull(out);
@@ -56,6 +57,9 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
+        final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
+        assertFalse(metadata.isEmpty());
+        assertEquals("text/plain", metadata.get("Content-Type"));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }

@@ -15,10 +15,10 @@ import org.junit.Test;
 
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -36,7 +36,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final S3SingleUploadService m = new S3SingleUploadService(session);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
         test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = test.getLocal().getOutputStream(false);
@@ -51,6 +51,9 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
                 new DisabledListProgressListener()).get(test.getReference()).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());
         assertEquals("REDUCED_REDUNDANCY", attributes.getStorageClass());
+        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        assertFalse(metadata.isEmpty());
+        assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
