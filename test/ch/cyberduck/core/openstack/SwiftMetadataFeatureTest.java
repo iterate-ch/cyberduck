@@ -39,26 +39,6 @@ import static org.junit.Assert.*;
 public class SwiftMetadataFeatureTest extends AbstractTestCase {
 
     @Test
-    public void testGetObjectMetadata() throws Exception {
-        final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
-                        )));
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        container.attributes().setRegion("DFW");
-        final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(new Path(container, "test.txt", Path.FILE_TYPE));
-        assertFalse(metadata.isEmpty());
-        assertTrue(metadata.containsKey("Content-Type"));
-        assertEquals("text/plain", metadata.get("Content-Type"));
-        assertTrue(metadata.containsKey("X-Object-Meta-Test"));
-        assertEquals("Cyberduck", metadata.get("X-Object-Meta-Test"));
-        session.close();
-    }
-
-    @Test
     public void testGetContainerMetadata() throws Exception {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
@@ -87,7 +67,7 @@ public class SwiftMetadataFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
         new SwiftTouchFeature(session).touch(test);
         final String v = UUID.randomUUID().toString();
         new SwiftMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
@@ -95,6 +75,7 @@ public class SwiftMetadataFeatureTest extends AbstractTestCase {
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("X-Object-Meta-Test"));
         assertEquals(v, metadata.get("X-Object-Meta-Test"));
+        assertEquals("text/plain", metadata.get("Content-Type"));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
         session.close();
     }

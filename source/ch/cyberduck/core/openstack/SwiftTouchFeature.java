@@ -19,6 +19,8 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.MappingMimeTypeService;
+import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,6 +39,9 @@ public class SwiftTouchFeature implements Touch {
 
     final PathContainerService containerService = new PathContainerService();
 
+    private MimeTypeService mapping
+            = new MappingMimeTypeService();
+
     public SwiftTouchFeature(final SwiftSession session) {
         this.session = session;
     }
@@ -53,7 +58,7 @@ public class SwiftTouchFeature implements Touch {
             else {
                 session.getClient().storeObject(session.getRegion(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(),
-                        new ByteArrayInputStream(new byte[]{}), "application/octet-stream", containerService.getKey(file),
+                        new ByteArrayInputStream(new byte[]{}), mapping.getMime(file.getName()), containerService.getKey(file),
                         new HashMap<String, String>());
             }
         }

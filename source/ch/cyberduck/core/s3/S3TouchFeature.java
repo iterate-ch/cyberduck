@@ -18,6 +18,8 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.MappingMimeTypeService;
+import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,6 +37,9 @@ public class S3TouchFeature implements Touch {
 
     private PathContainerService containerService = new PathContainerService();
 
+    private MimeTypeService mapping
+            = new MappingMimeTypeService();
+
     public S3TouchFeature(final S3Session session) {
         this.session = session;
     }
@@ -42,8 +47,9 @@ public class S3TouchFeature implements Touch {
     @Override
     public void touch(final Path file) throws BackgroundException {
         try {
-            session.getClient().putObject(containerService.getContainer(file).getName(),
-                    new StorageObject(containerService.getKey(file)));
+            final StorageObject key = new StorageObject(containerService.getKey(file));
+            key.setContentType(mapping.getMime(file.getName()));
+            session.getClient().putObject(containerService.getContainer(file).getName(), key);
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot create file {0}", e, file);
