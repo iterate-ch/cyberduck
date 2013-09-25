@@ -29,7 +29,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final List<Path> list = new SwiftContainerListService().list(session);
+        final List<Path> list = new SwiftContainerListService(false, false).list(session);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         container.attributes().setRegion("DFW");
         assertTrue(list.contains(container));

@@ -50,6 +50,20 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
     private final ThreadFactory threadFactory
             = new NamedThreadFactory("cdn");
 
+    private boolean cdn;
+
+    private boolean size;
+
+    public SwiftContainerListService() {
+        this(Preferences.instance().getBoolean("openstack.cdn.preload"),
+                Preferences.instance().getBoolean("openstack.container.size.preload"));
+    }
+
+    public SwiftContainerListService(final boolean cdn, final boolean size) {
+        this.cdn = cdn;
+        this.size = size;
+    }
+
     @Override
     public List<Path> list(final SwiftSession session) throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -64,7 +78,7 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
                     final Path container = new Path(String.format("/%s", f.getName()),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     container.attributes().setRegion(f.getRegion().getRegionId());
-                    if(Preferences.instance().getBoolean("openstack.cdn.preload")) {
+                    if(cdn) {
                         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                         threadFactory.newThread(new Runnable() {
                             @Override
@@ -80,7 +94,7 @@ public class SwiftContainerListService implements RootListService<SwiftSession> 
                             }
                         }).start();
                     }
-                    if(Preferences.instance().getBoolean("openstack.container.size.preload")) {
+                    if(size) {
                         threadFactory.newThread(new Runnable() {
                             @Override
                             public void run() {
