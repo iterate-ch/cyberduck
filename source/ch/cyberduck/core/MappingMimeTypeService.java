@@ -34,13 +34,9 @@ public class MappingMimeTypeService implements MimeTypeService {
     private static final Mimetypes types
             = Mimetypes.getInstance();
 
-    public MappingMimeTypeService() {
-        this.load();
-    }
-
-    private void load() {
+    static {
         try {
-            final Enumeration<URL> resources = getClass().getClassLoader().getResources("mime.types");
+            final Enumeration<URL> resources = MappingMimeTypeService.class.getClassLoader().getResources("mime.types");
             while(resources.hasMoreElements()) {
                 final URL url = resources.nextElement();
                 if(log.isDebugEnabled()) {
