@@ -79,7 +79,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
 
     @Ignore
     @Test(expected = NotfoundException.class)
-    public void testDeleteNotFound() throws Exception {
+    public void testDeleteNotFoundKey() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
@@ -90,5 +90,18 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testDeleteNotFoundBucket() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
     }
 }
