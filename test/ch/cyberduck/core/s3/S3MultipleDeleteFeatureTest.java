@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.jets3t.service.model.container.ObjectKeyAndVersion;
 import org.junit.Test;
@@ -95,7 +96,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
     }
 
     @Test
-    public void testDeleteNotFound() throws Exception {
+    public void testDeleteNotFoundKey() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
@@ -110,5 +111,18 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
         }
         new S3MultipleDeleteFeature(session).delete(container, keys, new DisabledLoginController());
         session.close();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testDeleteNotFoundBucket() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE);
+        new S3MultipleDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
     }
 }
