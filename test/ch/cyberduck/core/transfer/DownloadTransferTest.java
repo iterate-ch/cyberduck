@@ -253,4 +253,24 @@ public class DownloadTransferTest extends AbstractTestCase {
         assertFalse(t.isReset());
         assertNull(t.getTimestamp());
     }
+
+    @Test
+    public void testRegexFilter() throws Exception {
+        final Path parent = new Path("t", Path.DIRECTORY_TYPE);
+        parent.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir")));
+        Transfer t = new DownloadTransfer(new NullSession(new Host("t")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                final AttributedList<Path> l = new AttributedList<Path>();
+                l.add(new Path("/t/.DS_Store", Path.FILE_TYPE));
+                l.add(new Path("/t/t", Path.FILE_TYPE));
+                return l;
+
+            }
+        }, parent);
+        final AttributedList<Path> list = t.children(parent);
+        assertEquals(1, list.size());
+        assertFalse(list.contains(new Path("/t/.DS_Store", Path.FILE_TYPE)));
+        assertTrue(list.contains(new Path("/t/t", Path.FILE_TYPE)));
+    }
 }
