@@ -32,7 +32,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path t = new Path("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal("/Downloads", "n"));
-        assertTrue(f.accept(t, new TransferStatus()));
+        assertTrue(f.accept(t, new TransferStatus().exists(true)));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     }
 
     @Test
-    public void testTemporary() throws Exception {
+    public void testTemporaryFileUpload() throws Exception {
         final Path file = new Path("/t", Path.FILE_TYPE);
         file.setLocal(new NullLocal(null, "a"));
         final AtomicBoolean found = new AtomicBoolean();
@@ -123,7 +123,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         };
         final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true));
-        final TransferStatus status = f.prepare(file, new TransferStatus());
+        final TransferStatus status = f.prepare(file, new TransferStatus().exists(true));
         assertNotNull(status.getRenamed());
         assertTrue(status.isRename());
         assertNotEquals(file, status.getRenamed());
@@ -135,5 +135,53 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         f.complete(file, new TransferOptions(), status, new DisabledProgressListener());
         assertTrue(found.get());
         assertEquals(2, moved.get());
+    }
+
+    @Test
+    public void testTemporaryDirectoryUpload() throws Exception {
+        final Path file = new Path("/t", Path.DIRECTORY_TYPE);
+        file.setLocal(new NullLocal(null, "a"));
+        final AtomicBoolean found = new AtomicBoolean();
+        final AtomicBoolean moved = new AtomicBoolean();
+        final NullSession session = new NullSession(new Host("h")) {
+            @Override
+            public <T> T getFeature(final Class<T> type) {
+                if(type.equals(Find.class)) {
+                    return (T) new Find() {
+                        @Override
+                        public boolean find(final Path f) throws BackgroundException {
+                            if(f.equals(file)) {
+                                found.set(true);
+                                return true;
+                            }
+                            return false;
+                        }
+                    };
+                }
+                if(type.equals(Move.class)) {
+                    return (T) new Move() {
+                        @Override
+                        public void move(final Path f, final Path renamed) throws BackgroundException {
+                            assertFalse(moved.get());
+                            assertEquals(file, f);
+                            moved.set(true);
+                        }
+
+                        @Override
+                        public boolean isSupported(final Path file) {
+                            return true;
+                        }
+                    };
+                }
+                return null;
+            }
+        };
+        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), session,
+                new UploadFilterOptions().withTemporary(true));
+        final TransferStatus status = f.prepare(file, new TransferStatus().exists(true));
+        assertTrue(found.get());
+        assertNull(status.getRenamed());
+        f.complete(file, new TransferOptions(), status, new DisabledProgressListener());
+        assertTrue(moved.get());
     }
 }
