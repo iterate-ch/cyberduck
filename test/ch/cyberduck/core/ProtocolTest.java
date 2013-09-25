@@ -27,12 +27,19 @@ public class ProtocolTest extends AbstractTestCase {
     @Test
     public void testConfigurable() {
         assertTrue(new S3Protocol().isHostnameConfigurable());
+        assertFalse(new S3Protocol().isPortConfigurable());
         assertTrue(new SwiftProtocol().isHostnameConfigurable());
+        assertTrue(new SwiftProtocol().isPortConfigurable());
         assertTrue(new FTPProtocol().isHostnameConfigurable());
+        assertTrue(new FTPProtocol().isPortConfigurable());
         assertTrue(new SFTPProtocol().isHostnameConfigurable());
+        assertTrue(new SFTPProtocol().isPortConfigurable());
         assertTrue(new DAVProtocol().isHostnameConfigurable());
+        assertTrue(new DAVProtocol().isPortConfigurable());
         assertFalse(new CloudfilesProtocol().isHostnameConfigurable());
+        assertFalse(new CloudfilesProtocol().isPortConfigurable());
         assertFalse(new GoogleStorageProtocol().isHostnameConfigurable());
+        assertFalse(new GoogleStorageProtocol().isPortConfigurable());
     }
 
     @Test
