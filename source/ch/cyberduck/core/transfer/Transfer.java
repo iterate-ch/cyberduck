@@ -291,7 +291,7 @@ public abstract class Transfer implements Serializable {
      * @param action Transfer action for duplicate files
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
-    public TransferPathFilter filter(TransferPrompt prompt, final TransferAction action) throws BackgroundException {
+    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
         if(action.equals(TransferAction.ACTION_CANCEL)) {
             throw new ConnectionCanceledException();
         }
