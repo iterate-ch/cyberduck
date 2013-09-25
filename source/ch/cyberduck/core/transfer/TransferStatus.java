@@ -67,6 +67,9 @@ public final class TransferStatus {
      */
     private boolean selected = true;
 
+    /**
+     * Upload destination
+     */
     private Path renamed;
 
     public boolean isComplete() {
