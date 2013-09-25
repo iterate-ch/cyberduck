@@ -29,19 +29,19 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
+import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.download.DownloadTransfer;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.TrashFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
@@ -82,7 +82,8 @@ public abstract class AbstractEditor implements Editor {
     /**
      * Store checksum of downloaded file to detect modifications
      */
-    private String checksum;
+    private String checksum
+            = StringUtils.EMPTY;
 
     /**
      * Session for transfers
