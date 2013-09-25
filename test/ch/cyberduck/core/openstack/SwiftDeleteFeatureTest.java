@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftDeleteFeatureTest extends AbstractTestCase {
 
@@ -51,7 +51,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
     }
 
     @Test(expected = NotfoundException.class)
-    public void testDeleteNotFound() throws Exception {
+    public void testDeleteNotFoundKey() throws Exception {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(

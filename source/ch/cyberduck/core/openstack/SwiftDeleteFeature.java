@@ -24,7 +24,6 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.apache.log4j.Logger;
@@ -55,49 +54,27 @@ public class SwiftDeleteFeature implements Delete {
         for(Path file : files) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
-            if(file.attributes().isFile()) {
-                try {
+            try {
+                if(file.attributes().isFile()) {
                     session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
-                catch(GenericException e) {
-                    throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
-                }
-            }
-            else if(file.attributes().isDirectory()) {
-                try {
+                else if(file.attributes().isDirectory()) {
                     if(containerService.isContainer(file)) {
                         session.getClient().deleteContainer(session.getRegion(containerService.getContainer(file)),
                                 containerService.getContainer(file).getName());
                     }
-                }
-                catch(GenericException e) {
-                    throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
-                }
-            }
-            else {
-                try {
-                    try {
+                    else {
                         session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
                                 containerService.getContainer(file).getName(), containerService.getKey(file));
                     }
-                    catch(GenericException e) {
-                        throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
-                    }
-                    catch(IOException e) {
-                        throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
-                    }
                 }
-                catch(NotfoundException e) {
-                    // No real placeholder but just a delimiter returned in the object listing.
-                    log.warn(e.getMessage());
-                }
+            }
+            catch(GenericException e) {
+                throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
     }
