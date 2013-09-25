@@ -337,4 +337,13 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Session{");
+        sb.append("host=").append(host);
+        sb.append(", state=").append(state);
+        sb.append('}');
+        return sb.toString();
+    }
 }
