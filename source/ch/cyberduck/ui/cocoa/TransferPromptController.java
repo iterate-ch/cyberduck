@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -144,7 +143,7 @@ public abstract class TransferPromptController extends SheetController
     }
 
     @Override
-    public TransferAction prompt() throws BackgroundException {
+    public TransferAction prompt() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for transfer action of %s", transfer.getName()));
         }

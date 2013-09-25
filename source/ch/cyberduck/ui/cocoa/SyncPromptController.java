@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -44,7 +43,7 @@ public class SyncPromptController extends TransferPromptController {
     }
 
     @Override
-    public TransferAction prompt() throws BackgroundException {
+    public TransferAction prompt() {
         browserModel = new SyncPromptModel(this, transfer);
         action = TransferAction.ACTION_OVERWRITE;
         return super.prompt();

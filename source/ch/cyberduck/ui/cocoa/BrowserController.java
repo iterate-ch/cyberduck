@@ -432,7 +432,7 @@ public class BrowserController extends WindowController
                 }, this, this, download,
                         new TransferPrompt() {
                             @Override
-                            public TransferAction prompt() throws BackgroundException {
+                            public TransferAction prompt() {
                                 return TransferAction.ACTION_COMPARISON;
                             }
                         }, new DisabledTransferErrorCallback(), options
@@ -2896,7 +2896,7 @@ public class BrowserController extends WindowController
             }, this, this, transfer,
                     new TransferPrompt() {
                         @Override
-                        public TransferAction prompt() throws BackgroundException {
+                        public TransferAction prompt() {
                             return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
                         }
                     }, new PanelTransferErrorCallback(this), new TransferOptions()

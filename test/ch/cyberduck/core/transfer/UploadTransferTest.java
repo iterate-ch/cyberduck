@@ -103,7 +103,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         t.start(new TransferPrompt() {
             @Override
-            public TransferAction prompt() throws BackgroundException {
+            public TransferAction prompt() {
                 return TransferAction.ACTION_OVERWRITE;
             }
         }, new TransferOptions(), new DisabledTransferErrorCallback());
@@ -147,7 +147,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         t.start(new TransferPrompt() {
             @Override
-            public TransferAction prompt() throws BackgroundException {
+            public TransferAction prompt() {
                 return TransferAction.ACTION_OVERWRITE;
             }
         }, new TransferOptions(), new DisabledTransferErrorCallback());
@@ -209,7 +209,7 @@ public class UploadTransferTest extends AbstractTestCase {
         options.resumeRequested = true;
         t.start(new TransferPrompt() {
             @Override
-            public TransferAction prompt() throws BackgroundException {
+            public TransferAction prompt() {
                 fail();
                 return null;
             }
@@ -249,7 +249,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         t.start(new TransferPrompt() {
             @Override
-            public TransferAction prompt() throws BackgroundException {
+            public TransferAction prompt() {
                 return TransferAction.ACTION_RENAME;
             }
         }, new TransferOptions(), new DisabledTransferErrorCallback());

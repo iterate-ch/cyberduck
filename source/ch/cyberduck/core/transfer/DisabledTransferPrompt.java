@@ -18,15 +18,13 @@ package ch.cyberduck.core.transfer;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DisabledTransferPrompt implements TransferPrompt {
 
     @Override
-    public TransferAction prompt() throws BackgroundException {
+    public TransferAction prompt() {
         return TransferAction.ACTION_CANCEL;
     }
 }

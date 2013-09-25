@@ -59,7 +59,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         });
         t.start(new TransferPrompt() {
             @Override
-            public TransferAction prompt() throws BackgroundException {
+            public TransferAction prompt() {
                 return TransferAction.ACTION_OVERWRITE;
             }
         }, new TransferOptions(), new DisabledTransferErrorCallback());
@@ -139,7 +139,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         };
         t.start(new TransferPrompt() {
             @Override
-            public TransferAction prompt() throws BackgroundException {
+            public TransferAction prompt() {
                 return TransferAction.ACTION_OVERWRITE;
             }
         }, new TransferOptions(), new DisabledTransferErrorCallback());

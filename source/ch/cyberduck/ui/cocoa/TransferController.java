@@ -28,7 +28,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
@@ -696,7 +695,7 @@ public final class TransferController extends WindowController implements NSTool
                 new PanelAlertCallback(this), controller, controller, transcript,
                 transfer, new TransferPrompt() {
             @Override
-            public TransferAction prompt() throws BackgroundException {
+            public TransferAction prompt() {
                 return TransferPromptControllerFactory.create(TransferController.this, transfer).prompt();
             }
         }, new PanelTransferErrorCallback(this), options) {

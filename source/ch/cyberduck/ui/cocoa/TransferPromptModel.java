@@ -76,7 +76,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         this.transfer = transfer;
     }
 
-    public void add(final Path p) throws BackgroundException {
+    public void add(final Path p) {
         roots.add(p);
     }
 

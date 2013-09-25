@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 
@@ -32,7 +31,7 @@ public class UploadPromptController extends TransferPromptController {
     }
 
     @Override
-    public TransferAction prompt() throws BackgroundException {
+    public TransferAction prompt() {
         browserModel = new UploadPromptModel(this, transfer);
         return super.prompt();
     }
