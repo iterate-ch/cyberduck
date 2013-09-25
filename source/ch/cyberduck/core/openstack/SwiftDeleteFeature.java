@@ -55,21 +55,23 @@ public class SwiftDeleteFeature implements Delete {
         for(Path file : files) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
-            try {
+            if(file.attributes().isFile()) {
                 try {
-                    if(file.attributes().isFile()) {
-                        session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
-                                containerService.getContainer(file).getName(), containerService.getKey(file));
-                    }
-                    else if(file.attributes().isDirectory()) {
-                        if(containerService.isContainer(file)) {
-                            session.getClient().deleteContainer(session.getRegion(containerService.getContainer(file)),
-                                    containerService.getContainer(file).getName());
-                        }
-                        else {
-                            session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
-                                    containerService.getContainer(file).getName(), containerService.getKey(file));
-                        }
+                    session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
+                            containerService.getContainer(file).getName(), containerService.getKey(file));
+                }
+                catch(GenericException e) {
+                    throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
+                }
+            }
+            else if(file.attributes().isDirectory()) {
+                try {
+                    if(containerService.isContainer(file)) {
+                        session.getClient().deleteContainer(session.getRegion(containerService.getContainer(file)),
+                                containerService.getContainer(file).getName());
                     }
                 }
                 catch(GenericException e) {
@@ -79,9 +81,23 @@ public class SwiftDeleteFeature implements Delete {
                     throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
             }
-            catch(NotfoundException e) {
-                // No real placeholder but just a delimiter returned in the object listing.
-                log.warn(e.getMessage());
+            else {
+                try {
+                    try {
+                        session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
+                                containerService.getContainer(file).getName(), containerService.getKey(file));
+                    }
+                    catch(GenericException e) {
+                        throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
+                    }
+                    catch(IOException e) {
+                        throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
+                    }
+                }
+                catch(NotfoundException e) {
+                    // No real placeholder but just a delimiter returned in the object listing.
+                    log.warn(e.getMessage());
+                }
             }
         }
     }
