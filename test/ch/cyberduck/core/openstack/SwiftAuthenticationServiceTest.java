@@ -108,7 +108,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
             //
         }
         host.getCredentials().setUsername("tenant:key");
-        assertEquals(URI.create("https://region-b.geo-1.identity.hpcloudsvc.com:35357/v2.0/tokens"), s.getRequest(host,
+        assertEquals(URI.create("https://region-a.geo-1.identity.hpcloudsvc.com:35357/v2.0/tokens"), s.getRequest(host,
                 new DisabledLoginController()).getURI());
         assertEquals(Client.AuthVersion.v20, s.getRequest(host, new DisabledLoginController()).getVersion());
         assertEquals(Authentication20AccessKeySecretKeyRequest.class, s.getRequest(host, new DisabledLoginController()).getClass());
