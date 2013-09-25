@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.transfer.download.DownloadTransfer;
 
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class QueueTest extends AbstractTestCase {
 

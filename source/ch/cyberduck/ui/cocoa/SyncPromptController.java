@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;

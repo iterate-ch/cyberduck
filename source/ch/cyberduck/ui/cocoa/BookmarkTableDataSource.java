@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.upload.UploadTransfer;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSDraggingSource;

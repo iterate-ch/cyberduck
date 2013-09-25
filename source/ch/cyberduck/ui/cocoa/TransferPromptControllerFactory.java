@@ -1,12 +1,12 @@
 package ch.cyberduck.ui.cocoa;
 
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.download.DownloadTransfer;
-import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
-import ch.cyberduck.core.transfer.upload.UploadTransfer;
+import ch.cyberduck.core.transfer.UploadTransfer;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class TransferPromptControllerFactory {
 
