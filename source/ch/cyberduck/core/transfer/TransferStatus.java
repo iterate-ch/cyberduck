@@ -239,14 +239,14 @@ public final class TransferStatus {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("TransferStatus");
-        sb.append("{append=").append(append);
+        final StringBuilder sb = new StringBuilder("TransferStatus{");
+        sb.append("exists=").append(exists);
+        sb.append(", append=").append(append);
         sb.append(", current=").append(current);
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);
         sb.append(", selected=").append(selected);
-        sb.append(", exists=").append(exists);
+        sb.append(", renamed=").append(renamed);
         sb.append('}');
         return sb.toString();
     }
