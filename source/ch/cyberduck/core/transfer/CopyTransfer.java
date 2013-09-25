@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.copy;
+package ch.cyberduck.core.transfer;
 
 /*
  * Copyright (c) 2002-2011 David Kocher. All rights reserved.
@@ -33,12 +33,7 @@ import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPathFilter;
-import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.copy.CopyTransferFilter;
 import ch.cyberduck.core.transfer.normalizer.CopyRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 

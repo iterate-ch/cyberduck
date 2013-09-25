@@ -380,7 +380,12 @@ public abstract class Transfer implements Serializable {
         }
         // Transfer
         try {
-            this.transfer(file, options, status);
+            if(status.isRename()) {
+                this.transfer(status.getRenamed(), options, status);
+            }
+            else {
+                this.transfer(file, options, status);
+            }
         }
         catch(ConnectionCanceledException e) {
             throw e;
@@ -615,5 +620,15 @@ public abstract class Transfer implements Serializable {
 
     public void addTransferred(final long bytes) {
         transferred += bytes;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Transfer{");
+        sb.append("roots=").append(roots);
+        sb.append(", session=").append(session);
+        sb.append(", state=").append(state);
+        sb.append('}');
+        return sb.toString();
     }
 }

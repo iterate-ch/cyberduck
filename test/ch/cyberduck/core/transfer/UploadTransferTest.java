@@ -1,21 +1,17 @@
-package ch.cyberduck.core.transfer.upload;
+package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferErrorCallback;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPathFilter;
-import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
+import ch.cyberduck.core.transfer.upload.OverwriteFilter;
+import ch.cyberduck.core.transfer.upload.ResumeFilter;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -24,6 +20,7 @@ import org.junit.Test;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
@@ -85,8 +82,8 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, root) {
             @Override
-            protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
+            public void transfer(final Path file, final TransferPathFilter filter,
+                                 final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
@@ -134,8 +131,8 @@ public class UploadTransferTest extends AbstractTestCase {
         });
         final Transfer t = new UploadTransfer(new NullSession(new Host("t")), root) {
             @Override
-            protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
+            public void transfer(final Path file, final TransferPathFilter filter,
+                                 final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }
@@ -308,5 +305,50 @@ public class UploadTransferTest extends AbstractTestCase {
         expected.setLength(bytes.length);
         assertEquals(expected, transfer.getStatus(new Path("/transfer/" + name, Path.FILE_TYPE)));
         local.delete();
+    }
+
+    @Test
+    public void testUploadTemporaryName() throws Exception {
+        final Path test = new Path(new Path("/", Path.DIRECTORY_TYPE),
+                new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
+        final AtomicBoolean moved = new AtomicBoolean();
+        final Session session = new NullSession(new Host("t")) {
+            @Override
+            public <T> T getFeature(final Class<T> type) {
+                if(type.equals(Move.class)) {
+                    return (T) new Move() {
+                        @Override
+                        public void move(final Path file, final Path renamed) throws BackgroundException {
+                            assertEquals(test, renamed);
+                            moved.set(true);
+                        }
+
+                        @Override
+                        public boolean isSupported(final Path file) {
+                            return true;
+                        }
+                    };
+                }
+                return null;
+            }
+        };
+        test.getLocal().touch();
+        final AtomicBoolean set = new AtomicBoolean();
+        final Transfer transfer = new UploadTransfer(session, test) {
+            @Override
+            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                assertEquals(this.getStatus(test).getRenamed(), file);
+                set.set(true);
+            }
+        };
+        final OverwriteFilter filter = new OverwriteFilter(
+                new UploadSymlinkResolver(null, Collections.<Path>emptyList()), session,
+                new UploadFilterOptions().withTemporary(true));
+        transfer.prepare(test, new TransferStatus().exists(true), filter);
+        assertNotNull(transfer.getStatus(test));
+        assertNotNull(transfer.getStatus(test).getRenamed());
+        transfer.transfer(test, filter, new TransferOptions(), new DisabledTransferErrorCallback());
+        assertTrue(set.get());
+        assertTrue(moved.get());
     }
 }

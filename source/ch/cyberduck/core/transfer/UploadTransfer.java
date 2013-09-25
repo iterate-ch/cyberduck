@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.upload;
+package ch.cyberduck.core.transfer;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -33,15 +33,15 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPathFilter;
-import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
+import ch.cyberduck.core.transfer.upload.CompareFilter;
+import ch.cyberduck.core.transfer.upload.OverwriteFilter;
+import ch.cyberduck.core.transfer.upload.RenameExistingFilter;
+import ch.cyberduck.core.transfer.upload.RenameFilter;
+import ch.cyberduck.core.transfer.upload.ResumeFilter;
+import ch.cyberduck.core.transfer.upload.SkipFilter;
 
 import org.apache.log4j.Logger;
 

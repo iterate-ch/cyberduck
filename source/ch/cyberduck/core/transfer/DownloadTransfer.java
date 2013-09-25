@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.download;
+package ch.cyberduck.core.transfer;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -28,12 +28,12 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPathFilter;
-import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.download.CompareFilter;
+import ch.cyberduck.core.transfer.download.OverwriteFilter;
+import ch.cyberduck.core.transfer.download.RenameExistingFilter;
+import ch.cyberduck.core.transfer.download.RenameFilter;
+import ch.cyberduck.core.transfer.download.ResumeFilter;
+import ch.cyberduck.core.transfer.download.SkipFilter;
 import ch.cyberduck.core.transfer.normalizer.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;

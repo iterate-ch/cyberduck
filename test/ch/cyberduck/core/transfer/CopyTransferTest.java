@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.copy;
+package ch.cyberduck.core.transfer;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
@@ -32,12 +32,6 @@ import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DisabledTransferPrompt;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 

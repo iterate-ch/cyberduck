@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.synchronization;
+package ch.cyberduck.core.transfer;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
@@ -25,9 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 
 import org.junit.Test;
 

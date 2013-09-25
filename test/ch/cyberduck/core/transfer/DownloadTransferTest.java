@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.download;
+package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -7,14 +7,8 @@ import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferErrorCallback;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPathFilter;
-import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.download.OverwriteFilter;
+import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 
 import org.apache.commons.io.IOUtils;
@@ -122,8 +116,8 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }, root) {
             @Override
-            protected void transfer(final Path file, final TransferPathFilter filter,
-                                    final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
+            public void transfer(final Path file, final TransferPathFilter filter,
+                                 final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(this.cache().containsKey(root.getReference()));
                 }

@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.copy.CopyTransfer;
 
 import org.junit.Test;
 
