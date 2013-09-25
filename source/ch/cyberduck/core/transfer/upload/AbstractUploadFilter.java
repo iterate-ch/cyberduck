@@ -153,10 +153,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
                 }
             }
-            if(this.options.temporary) {
-                final Move move = session.getFeature(Move.class);
-                move.move(temporary.get(file), file);
-                temporary.remove(file);
+            if(file.attributes().isFile()) {
+                if(this.options.temporary) {
+                    final Move move = session.getFeature(Move.class);
+                    move.move(temporary.get(file), file);
+                    temporary.remove(file);
+                }
             }
         }
     }
