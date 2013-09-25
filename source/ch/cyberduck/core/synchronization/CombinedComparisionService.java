@@ -32,7 +32,7 @@ import java.util.TimeZone;
  */
 public class CombinedComparisionService implements ComparisonService {
 
-    private Session<?> session;
+    private Find finder;
 
     private ComparisonService checksum;
 
@@ -40,8 +40,8 @@ public class CombinedComparisionService implements ComparisonService {
 
     private ComparisonService timestamp;
 
-    public CombinedComparisionService(final Session session, final TimeZone tz) {
-        this.session = session;
+    public CombinedComparisionService(final Session<?> session, final TimeZone tz) {
+        this.finder = session.getFeature(Find.class);
         this.timestamp = new TimestampComparisonService(tz);
         this.size = new SizeComparisonService();
         this.checksum = new ChecksumComparisonService();
@@ -56,7 +56,7 @@ public class CombinedComparisionService implements ComparisonService {
     public Comparison compare(final Path p) throws BackgroundException {
         final Local local = p.getLocal();
         if(local.exists()) {
-            if(session.getFeature(Find.class).find(p)) {
+            if(finder.find(p)) {
                 if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                     // MD5/ETag Checksum is supported
                     final Comparison comparison = checksum.compare(p);
@@ -85,7 +85,7 @@ public class CombinedComparisionService implements ComparisonService {
             }
         }
         else {
-            if(session.getFeature(Find.class).find(p)) {
+            if(finder.find(p)) {
                 // Only the remote file exists
                 return Comparison.remote;
             }
