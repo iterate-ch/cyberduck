@@ -41,6 +41,11 @@ public class RenameFilter extends AbstractUploadFilter {
         this.session = session;
     }
 
+    public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+        super(symlinkResolver, session, options);
+        this.session = session;
+    }
+
     @Override
     public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, parent);
@@ -53,9 +58,9 @@ public class RenameFilter extends AbstractUploadFilter {
                     no++;
                     String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                        proposal += "." + FilenameUtils.getExtension(filename);
+                        proposal += String.format(".%s", FilenameUtils.getExtension(filename));
                     }
-                    status.setRenamed(new Path(parentPath, proposal, file.attributes()));
+                    status.setRenamed(new Path(parentPath, proposal, file.attributes(), file.getLocal()));
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Change filename from %s to %s", filename, status.getRenamed()));
                     }
