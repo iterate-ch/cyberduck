@@ -42,4 +42,10 @@ public interface Deserializer<T> {
      * @return List values for key
      */
     List<T> listForKey(String key);
+
+    /**
+     * @param key Key name
+     * @return True if key exists and is enabled
+     */
+    boolean booleanForKey(String key);
 }

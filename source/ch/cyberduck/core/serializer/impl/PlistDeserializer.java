@@ -68,6 +68,18 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
     }
 
     @Override
+    public boolean booleanForKey(String key) {
+        final String value = this.stringForKey(key);
+        if(null == value) {
+            return false;
+        }
+        if(value.equalsIgnoreCase(String.valueOf(1))) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public NSDictionary objectForKey(String key) {
         final NSObject value = dict.objectForKey(key);
         if(null == value) {
