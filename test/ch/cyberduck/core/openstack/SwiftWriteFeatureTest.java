@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -47,7 +48,8 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         Thread.sleep(2000L);
         assertTrue(new SwiftFindFeature(session).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes();
+        assertEquals(content.length, attributes.getSize());
         assertEquals(0L, new SwiftWriteFeature(session).append(test, new DefaultAttributesFeature(session)).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
