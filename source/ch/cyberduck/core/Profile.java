@@ -49,7 +49,7 @@ public final class Profile implements Protocol, Serializable {
 
     public <T> Profile(final T serialized) {
         dict = DeserializerFactory.createDeserializer(serialized);
-        final String protocol = this.getValue("Protocol");
+        final String protocol = this.value("Protocol");
         if(StringUtils.isBlank(protocol)) {
             log.error("Missing protocol in profile");
             parent = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
@@ -57,20 +57,12 @@ public final class Profile implements Protocol, Serializable {
         else {
             parent = ProtocolFactory.forName(protocol);
         }
-        disk = this.write(this.getValue("Disk"));
+        disk = this.write(this.value("Disk"));
     }
 
     @Override
-    public <T> T serialize(Serializer dict) {
-        dict.setStringForKey("Protocol", parent.getIdentifier());
-        dict.setStringForKey("Scheme", this.getScheme().toString());
-        dict.setStringForKey("Vendor", this.getProvider());
-        dict.setStringForKey("Description", this.getDescription());
-        dict.setStringForKey("Default Hostname", this.getDefaultHostname());
-        dict.setStringForKey("Default Port", String.valueOf(this.getDefaultPort()));
-        dict.setStringForKey("Username Placeholder", this.getUsernamePlaceholder());
-        dict.setStringForKey("Password Placeholder", this.getPasswordPlaceholder());
-        return dict.getSerialized();
+    public <T> T serialize(final Serializer dict) {
+        throw new UnsupportedOperationException();
     }
 
     public Protocol getProtocol() {
@@ -82,21 +74,13 @@ public final class Profile implements Protocol, Serializable {
      */
     @Override
     public boolean isEnabled() {
-        return StringUtils.isNotBlank(this.getValue("Protocol"))
-                && StringUtils.isNotBlank(this.getValue("Vendor"));
+        return StringUtils.isNotBlank(this.value("Protocol"))
+                && StringUtils.isNotBlank(this.value("Vendor"));
     }
 
     @Override
     public boolean isSecure() {
         return parent.isSecure();
-    }
-
-    private String getValue(final String key) {
-        final String value = dict.stringForKey(key);
-        if(StringUtils.isBlank(value)) {
-            log.debug("No value for key:" + key);
-        }
-        return value;
     }
 
     @Override
@@ -111,7 +95,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public String getUsernamePlaceholder() {
-        final String v = this.getValue("Username Placeholder");
+        final String v = this.value("Username Placeholder");
         if(StringUtils.isBlank(v)) {
             return parent.getUsernamePlaceholder();
         }
@@ -120,7 +104,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public String getPasswordPlaceholder() {
-        final String v = this.getValue("Password Placeholder");
+        final String v = this.value("Password Placeholder");
         if(StringUtils.isBlank(v)) {
             return parent.getPasswordPlaceholder();
         }
@@ -129,7 +113,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public String getDefaultHostname() {
-        final String v = this.getValue("Default Hostname");
+        final String v = this.value("Default Hostname");
         if(StringUtils.isBlank(v)) {
             return parent.getDefaultHostname();
         }
@@ -138,7 +122,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public String getProvider() {
-        final String v = this.getValue("Vendor");
+        final String v = this.value("Vendor");
         if(StringUtils.isBlank(v)) {
             return parent.getProvider();
         }
@@ -147,7 +131,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public String getName() {
-        final String v = this.getValue("Name");
+        final String v = this.value("Name");
         if(StringUtils.isBlank(v)) {
             return parent.getName();
         }
@@ -156,7 +140,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public String getDescription() {
-        final String v = this.getValue("Description");
+        final String v = this.value("Description");
         if(StringUtils.isBlank(v)) {
             return parent.getDescription();
         }
@@ -165,7 +149,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public int getDefaultPort() {
-        final String v = this.getValue("Default Port");
+        final String v = this.value("Default Port");
         if(StringUtils.isBlank(v)) {
             return parent.getDefaultPort();
         }
@@ -233,7 +217,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public Scheme getScheme() {
-        final String v = this.getValue("Scheme");
+        final String v = this.value("Scheme");
         if(StringUtils.isBlank(v)) {
             return parent.getScheme();
         }
@@ -247,7 +231,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public String getContext() {
-        final String v = this.getValue("Context");
+        final String v = this.value("Context");
         if(StringUtils.isBlank(v)) {
             return parent.getContext();
         }
@@ -271,12 +255,18 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public boolean isHostnameConfigurable() {
-        return parent.isHostnameConfigurable();
+        if(StringUtils.isBlank(this.value("Hostname Configurable"))) {
+            return parent.isHostnameConfigurable();
+        }
+        return this.bool("Hostname Configurable");
     }
 
     @Override
     public boolean isPortConfigurable() {
-        return parent.isPortConfigurable();
+        if(StringUtils.isBlank(this.value("Port Configurable"))) {
+            return parent.isPortConfigurable();
+        }
+        return this.bool("Port Configurable");
     }
 
     @Override
@@ -287,5 +277,17 @@ public final class Profile implements Protocol, Serializable {
     @Override
     public Session createSession(final Host host) {
         return parent.createSession(host);
+    }
+
+    private String value(final String key) {
+        final String value = dict.stringForKey(key);
+        if(StringUtils.isBlank(value)) {
+            log.debug("No value for key:" + key);
+        }
+        return value;
+    }
+
+    private boolean bool(final String key) {
+        return dict.booleanForKey(key);
     }
 }

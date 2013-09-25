@@ -28,23 +28,63 @@ public class ProfileTest extends AbstractTestCase {
 
     @Test
     public void testProvider() throws Exception {
-        final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile")
-        );
-        assertEquals(Protocol.Type.swift, profile.getType());
-        assertEquals(new SwiftProtocol(), profile.getProtocol());
-        assertEquals("swift", profile.getIdentifier());
-        assertNotSame(new CloudfilesProtocol().getDefaultHostname(), profile.getDefaultHostname());
-        assertEquals(Scheme.https, profile.getScheme());
-        assertNotNull(profile.disk());
-        assertEquals(profile.disk(), profile.disk());
-        assertEquals(profile.icon(), profile.disk());
-        assertEquals("Tenant ID:Access Key", profile.getUsernamePlaceholder());
-        assertEquals("Secret Key", profile.getPasswordPlaceholder());
-        assertEquals(35357, profile.getDefaultPort());
-        assertEquals("region-b.geo-1.identity.hpcloudsvc.com", profile.getDefaultHostname());
-        assertEquals("/v2.0/tokens", profile.getContext());
-        assertFalse(profile.disk().equals(new SwiftProtocol().disk()));
-        assertNotNull(profile.getProvider());
+        {
+            final Profile profile = ProfileReaderFactory.get().read(
+                    LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile")
+            );
+            assertEquals(Protocol.Type.swift, profile.getType());
+            assertEquals(new SwiftProtocol(), profile.getProtocol());
+            assertFalse(profile.isHostnameConfigurable());
+            assertFalse(profile.isPortConfigurable());
+            assertEquals("swift", profile.getIdentifier());
+            assertNotSame(new CloudfilesProtocol().getDefaultHostname(), profile.getDefaultHostname());
+            assertEquals(Scheme.https, profile.getScheme());
+            assertNotNull(profile.disk());
+            assertEquals(profile.disk(), profile.disk());
+            assertEquals(profile.icon(), profile.disk());
+            assertEquals("Tenant ID:Access Key", profile.getUsernamePlaceholder());
+            assertEquals("Secret Key", profile.getPasswordPlaceholder());
+            assertEquals(35357, profile.getDefaultPort());
+            assertEquals("region-a.geo-1.identity.hpcloudsvc.com", profile.getDefaultHostname());
+            assertEquals("/v2.0/tokens", profile.getContext());
+            assertFalse(profile.disk().equals(new SwiftProtocol().disk()));
+            assertNotNull(profile.getProvider());
+        }
+        {
+            final Profile profile = ProfileReaderFactory.get().read(
+                    LocalFactory.createLocal("profiles/S3 (HTTP).cyberduckprofile")
+            );
+            assertEquals(Protocol.Type.s3, profile.getType());
+            assertEquals(new S3Protocol(), profile.getProtocol());
+            assertTrue(profile.isHostnameConfigurable());
+            assertTrue(profile.isPortConfigurable());
+            assertEquals("s3", profile.getIdentifier());
+            assertEquals(Scheme.http, profile.getScheme());
+            assertNotNull(profile.disk());
+            assertEquals(profile.disk(), profile.disk());
+            assertEquals(profile.icon(), profile.disk());
+            assertEquals(80, profile.getDefaultPort());
+            assertEquals(new S3Protocol().getDefaultHostname(), profile.getDefaultHostname());
+            assertTrue(profile.disk().equals(new S3Protocol().disk()));
+            assertNotNull(profile.getProvider());
+        }
+        {
+            final Profile profile = ProfileReaderFactory.get().read(
+                    LocalFactory.createLocal("profiles/S3 (HTTPS).cyberduckprofile")
+            );
+            assertEquals(Protocol.Type.s3, profile.getType());
+            assertEquals(new S3Protocol(), profile.getProtocol());
+            assertTrue(profile.isHostnameConfigurable());
+            assertTrue(profile.isPortConfigurable());
+            assertEquals("s3", profile.getIdentifier());
+            assertEquals(Scheme.https, profile.getScheme());
+            assertNotNull(profile.disk());
+            assertEquals(profile.disk(), profile.disk());
+            assertEquals(profile.icon(), profile.disk());
+            assertEquals(443, profile.getDefaultPort());
+            assertEquals(new S3Protocol().getDefaultHostname(), profile.getDefaultHostname());
+            assertTrue(profile.disk().equals(new S3Protocol().disk()));
+            assertNotNull(profile.getProvider());
+        }
     }
 }
