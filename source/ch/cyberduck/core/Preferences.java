@@ -932,12 +932,7 @@ public abstract class Preferences {
         if(v.equalsIgnoreCase(String.valueOf(0))) {
             return false;
         }
-        try {
-            return v.equalsIgnoreCase("yes");
-        }
-        catch(NumberFormatException e) {
-            return false;
-        }
+        return v.equalsIgnoreCase("yes");
     }
 
     /**
