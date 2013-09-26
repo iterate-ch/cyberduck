@@ -27,10 +27,6 @@ using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.core.transfer.copy;
-using ch.cyberduck.core.transfer.download;
-using ch.cyberduck.core.transfer.synchronisation;
-using ch.cyberduck.core.transfer.upload;
 using java.util;
 using TransferStatus = Ch.Cyberduck.Ui.Winforms.Controls.TransferStatus;
 

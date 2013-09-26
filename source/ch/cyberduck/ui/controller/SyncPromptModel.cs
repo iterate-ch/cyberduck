@@ -19,7 +19,6 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.synchronization;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.core.transfer.synchronisation;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

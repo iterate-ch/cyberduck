@@ -26,9 +26,6 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.core.transfer.download;
-using ch.cyberduck.core.transfer.synchronisation;
-using ch.cyberduck.core.transfer.upload;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller

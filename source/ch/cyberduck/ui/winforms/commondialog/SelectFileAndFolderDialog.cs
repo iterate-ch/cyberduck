@@ -902,7 +902,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             if (selectedIndex >= 0)
             {
                 var lvitem = new InteropUtil.LVITEM();
-                lvitem.iSubItem = 0;
                 lvitem.mask = InteropUtil.LVIF_TEXT;
                 IntPtr nativeBuffer = Marshal.AllocCoTaskMem(InteropUtil.NumberOfFileChars*2);
                 for (int i = 0; i < InteropUtil.NumberOfFileChars; ++i)

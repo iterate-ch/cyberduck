@@ -16,6 +16,7 @@
 // yves@cyberduck.ch
 // 
 
+using System;
 using System.Xml;
 using ch.cyberduck.core;
 using ch.cyberduck.core.serializer;
@@ -40,6 +41,20 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
                 return null;
             }
             return foundNode.NextSibling.InnerText;
+        }
+
+        public bool booleanForKey(string key)
+        {
+            XmlNode foundNode = _plistEntry.SelectSingleNode("key[.='" + key + "']");
+            if (null == foundNode)
+            {
+                return false;
+            }
+            if ("1".Equals(foundNode.NextSibling.InnerText, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            return false;
         }
 
         public List listForKey(string key)

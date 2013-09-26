@@ -24,7 +24,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\build\Debug\AnyCPU\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\lib\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -92,6 +92,6 @@
     <Win32Resource>$(IntermediateOutputPath)\res1.res</Win32Resource>
   </PropertyGroup>
   <Target Name="BeforeBuild" DependsOnTargets="GetFrameworkPaths;PrepareForBuild">
-      <Exec Command="&quot;C:\Program Files (x86)\Windows Kits\8.0\bin\x86\rc.exe&quot; /i &quot;C:\Program Files (x86)\Windows Kits\8.0\Include\um&quot; /i &quot;C:\Program Files (x86)\Windows Kits\8.0\Include\shared&quot; /i &quot;$(VCIncludePath)&quot; /i &quot;$(FrameworkSDKDir)\include&quot; /r /fo &quot;$(IntermediateOutputPath)\res1.res&quot; res1.rc" />
+    <Exec Command="&quot;C:\Program Files (x86)\Windows Kits\8.0\bin\x86\rc.exe&quot; /i &quot;C:\Program Files (x86)\Windows Kits\8.0\Include\um&quot; /i &quot;C:\Program Files (x86)\Windows Kits\8.0\Include\shared&quot; /i &quot;$(VCIncludePath)&quot; /i &quot;$(FrameworkSDKDir)\include&quot; /r /fo &quot;$(IntermediateOutputPath)\res1.res&quot; res1.rc" />
   </Target>
 </Project>

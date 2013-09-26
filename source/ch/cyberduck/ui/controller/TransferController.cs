@@ -28,7 +28,6 @@ using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.core.transfer.synchronisation;
 using ch.cyberduck.ui.threading;
 using org.apache.log4j;
 
