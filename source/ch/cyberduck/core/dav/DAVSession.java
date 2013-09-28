@@ -47,7 +47,6 @@ import java.io.IOException;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.SardineRedirectStrategy;
 import com.github.sardine.impl.handler.VoidResponseHandler;
-import com.github.sardine.impl.methods.HttpPropFind;
 
 /**
  * @version $Id$
@@ -99,8 +98,9 @@ public class DAVSession extends HttpSession<DAVClient> {
             }
         }
         try {
+            final Path home = new DefaultHomeFinderService(this).find();
             try {
-                client.execute(new HttpHead(new DAVPathEncoder().encode(new DefaultHomeFinderService(this).find())), new VoidResponseHandler());
+                client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
             }
             catch(SardineException e) {
                 if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN
@@ -110,14 +110,14 @@ public class DAVSession extends HttpSession<DAVClient> {
                     log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
                             host, e.getResponsePhrase()));
                     // Possibly only HEAD requests are not allowed
-                    client.execute(new HttpPropFind(new DAVPathEncoder().encode(new DefaultHomeFinderService(this).find())), new VoidResponseHandler());
+                    new DAVListService(this).list(home, new DisabledListProgressListener());
                 }
                 else if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
                     if(Preferences.instance().getBoolean("webdav.basic.preemptive")) {
                         log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
                                 host, e.getResponsePhrase()));
                         client.disablePreemptiveAuthentication();
-                        client.execute(new HttpHead(new DAVPathEncoder().encode(new DefaultHomeFinderService(this).find())), new VoidResponseHandler());
+                        client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
                     }
                     else {
                         throw new DAVExceptionMappingService().map(e);
