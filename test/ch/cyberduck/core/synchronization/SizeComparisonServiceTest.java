@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
  * @version $Id$
  */
 public class SizeComparisonServiceTest extends AbstractTestCase {
+
     @Test
     public void testCompare() throws Exception {
         ComparisonService s = new SizeComparisonService();
@@ -70,5 +71,11 @@ public class SizeComparisonServiceTest extends AbstractTestCase {
                 };
             }
         }));
+    }
+
+    @Test
+    public void testDirectory() throws Exception {
+        ComparisonService s = new SizeComparisonService();
+        assertEquals(Comparison.notequal, s.compare(new Path("t", Path.DIRECTORY_TYPE)));
     }
 }

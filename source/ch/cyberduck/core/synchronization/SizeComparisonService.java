@@ -36,7 +36,10 @@ public class SizeComparisonService implements ComparisonService {
             log.debug(String.format("Compare size for %s", p.getAbsolute()));
         }
         final PathAttributes attributes = p.attributes();
-        if(attributes.isFile()) {
+        if(attributes.isDirectory()) {
+            return Comparison.notequal;
+        }
+        else {
             //fist make sure both files are larger than 0 bytes
             if(attributes.getSize() == 0 && p.getLocal().attributes().getSize() == 0) {
                 return Comparison.equal;
@@ -50,8 +53,8 @@ public class SizeComparisonService implements ComparisonService {
             if(attributes.getSize() == p.getLocal().attributes().getSize()) {
                 return Comparison.equal;
             }
+            // Different file size
+            return Comparison.notequal;
         }
-        //different file size - further comparison check
-        return Comparison.notequal;
     }
 }

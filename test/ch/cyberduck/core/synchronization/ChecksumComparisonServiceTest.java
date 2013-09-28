@@ -72,4 +72,10 @@ public class ChecksumComparisonServiceTest extends AbstractTestCase {
             }
         }));
     }
+
+    @Test
+    public void testDirectory() throws Exception {
+        ComparisonService s = new ChecksumComparisonService();
+        assertEquals(Comparison.notequal, s.compare(new Path("t", Path.DIRECTORY_TYPE)));
+    }
 }

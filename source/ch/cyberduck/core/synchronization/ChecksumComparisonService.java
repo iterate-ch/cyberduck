@@ -36,7 +36,10 @@ public class ChecksumComparisonService implements ComparisonService {
             log.debug(String.format("Compare checksum for %s", p.getAbsolute()));
         }
         final PathAttributes attributes = p.attributes();
-        if(attributes.isFile()) {
+        if(attributes.isDirectory()) {
+            return Comparison.notequal;
+        }
+        else {
             if(null == attributes.getChecksum()) {
                 log.warn("No checksum available for comparison:" + p);
                 return Comparison.notequal;
@@ -45,8 +48,7 @@ public class ChecksumComparisonService implements ComparisonService {
             if(attributes.getChecksum().equals(p.getLocal().attributes().getChecksum())) {
                 return Comparison.equal;
             }
+            return Comparison.notequal;
         }
-        //different sum - further comparison check
-        return Comparison.notequal;
     }
 }
