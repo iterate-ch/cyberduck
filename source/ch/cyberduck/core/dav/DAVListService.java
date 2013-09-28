@@ -46,7 +46,6 @@ public class DAVListService implements ListService {
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-
             final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(file));
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
