@@ -59,7 +59,7 @@ public class TimestampComparisonService implements ComparisonService {
         if(local.after(remote)) {
             return Comparison.local;
         }
-        //same timestamp
+        // Same timestamp
         return Comparison.equal;
     }
 }

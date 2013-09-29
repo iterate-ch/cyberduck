@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 public class TimestampComparisonServiceTest extends AbstractTestCase {
 
     @Test
-    public void testCompare() throws Exception {
+    public void testCompareEqual() throws Exception {
         ComparisonService s = new TimestampComparisonService(TimeZone.getDefault());
         final long timestmap = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
         assertEquals(Comparison.equal, s.compare(new Path("t", Path.FILE_TYPE) {
@@ -49,6 +49,12 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
                 };
             }
         }));
+    }
+
+    @Test
+    public void testCompareLocal() throws Exception {
+        ComparisonService s = new TimestampComparisonService(TimeZone.getDefault());
+        final long timestmap = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
         assertEquals(Comparison.local, s.compare(new Path("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
