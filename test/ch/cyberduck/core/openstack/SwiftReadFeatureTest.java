@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -61,11 +62,11 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
+        assertNotNull(((ResponseOutputStream<String>) out).getResponse());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setCurrent(100L);
-        final Path workdir = session.workdir();
         final InputStream in = new SwiftReadFeature(session).read(test, status);
         assertNotNull(in);
         final byte[] download = new byte[content.length - 100];

@@ -62,7 +62,6 @@ public class S3ReadFeatureTest extends AbstractTestCase {
         status.setLength(content.length);
         status.setAppend(true);
         status.setCurrent(100L);
-        final Path workdir = session.workdir();
         final InputStream in = new S3ReadFeature(session).read(test, status);
         assertNotNull(in);
         final byte[] download = new byte[content.length - 100];
