@@ -110,7 +110,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                     log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
                             host, e.getResponsePhrase()));
                     // Possibly only HEAD requests are not allowed
-                    new DAVListService(this).list(home, new DisabledListProgressListener());
+                    this.cache().put(home.getReference(), this.list(home, new DisabledListProgressListener()));
                 }
                 else if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
                     if(Preferences.instance().getBoolean("webdav.basic.preemptive")) {
