@@ -92,7 +92,15 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
         try {
-            if(host.getCredentials().isPublicKeyAuthentication()) {
+            if(host.getCredentials().isAnonymousLogin()) {
+                if(new SFTPNoneAuthentication(this).authenticate(host, prompt)) {
+                    log.info("Login successful");
+                }
+                else {
+                    throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
+                }
+            }
+            else if(host.getCredentials().isPublicKeyAuthentication()) {
                 if(new SFTPPublicKeyAuthentication(this).authenticate(host, prompt)) {
                     log.info("Login successful");
                 }
@@ -101,9 +109,6 @@ public class SFTPSession extends Session<Connection> {
                 log.info("Login successful");
             }
             else if(new SFTPPasswordAuthentication(this).authenticate(host, prompt)) {
-                log.info("Login successful");
-            }
-            else if(new SFTPNoneAuthentication(this).authenticate(host, prompt)) {
                 log.info("Login successful");
             }
             // Check if authentication is partial

@@ -53,11 +53,6 @@ public final class SFTPProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isAnonymousConfigurable() {
-        return false;
-    }
-
-    @Override
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }
