@@ -41,17 +41,33 @@ public class LoginConnectionService implements ConnectionService {
     private Resolver resolver;
 
     private LoginService login;
+    private Proxy proxy;
 
     public LoginConnectionService(final LoginController prompt,
                                   final HostKeyController key,
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener) {
+        this(prompt, key, keychain,
+                new KeychainLoginService(prompt, keychain),
+                new Resolver(),
+                ProxyFactory.get(),
+                listener);
+    }
+
+    public LoginConnectionService(final LoginController prompt,
+                                  final HostKeyController key,
+                                  final HostPasswordStore keychain,
+                                  final LoginService login,
+                                  final Resolver resolver,
+                                  final Proxy proxy,
+                                  final ProgressListener listener) {
         this.prompt = prompt;
         this.key = key;
-        this.login = new KeychainLoginService(prompt, keychain);
         this.keychain = keychain;
         this.listener = listener;
-        this.resolver = new Resolver();
+        this.resolver = resolver;
+        this.login = login;
+        this.proxy = proxy;
     }
 
     /**
@@ -101,7 +117,7 @@ public class LoginConnectionService implements ConnectionService {
         final Host bookmark = session.getHost();
 
         // Configuring proxy if any
-        ProxyFactory.get().configure(bookmark);
+        proxy.configure(bookmark);
 
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"),
                 bookmark.getHostname()));
