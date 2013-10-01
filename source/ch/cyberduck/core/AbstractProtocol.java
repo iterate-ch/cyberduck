@@ -55,35 +55,6 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(!(o instanceof Protocol)) {
-            return false;
-        }
-        Protocol protocol = (Protocol) o;
-        if(this.getIdentifier() != null ? !this.getIdentifier().equals(protocol.getIdentifier()) : protocol.getIdentifier() != null) {
-            return false;
-        }
-        if(this.getScheme() != null ? !this.getScheme().equals(protocol.getScheme()) : protocol.getScheme() != null) {
-            return false;
-        }
-        if(this.getProvider() != null ? !this.getProvider().equals(protocol.getProvider()) : protocol.getProvider() != null) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = this.getIdentifier() != null ? this.getIdentifier().hashCode() : 0;
-        result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);
-        result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return this.getProvider();
     }
@@ -180,5 +151,34 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public Type getType() {
         return Type.valueOf(this.getIdentifier());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof Protocol)) {
+            return false;
+        }
+        Protocol protocol = (Protocol) o;
+        if(this.getIdentifier() != null ? !this.getIdentifier().equals(protocol.getIdentifier()) : protocol.getIdentifier() != null) {
+            return false;
+        }
+        if(this.getScheme() != null ? !this.getScheme().equals(protocol.getScheme()) : protocol.getScheme() != null) {
+            return false;
+        }
+        if(this.getProvider() != null ? !this.getProvider().equals(protocol.getProvider()) : protocol.getProvider() != null) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.getIdentifier() != null ? this.getIdentifier().hashCode() : 0;
+        result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);
+        result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
+        return result;
     }
 }
