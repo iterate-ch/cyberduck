@@ -243,7 +243,7 @@ public class BrowserController extends WindowController
         return this.getSelectedBrowserDelegate().getSortingComparator();
     }
 
-    protected Filter<Path> getFileFilter() {
+    protected Filter<Path> getFilter() {
         return this.filenameFilter;
     }
 
@@ -3664,7 +3664,7 @@ public class BrowserController extends WindowController
             }
         }
         else if(action.equals(Foundation.selector("showHiddenFilesClicked:"))) {
-            item.setState(this.getFileFilter() instanceof NullPathFilter ? NSCell.NSOnState : NSCell.NSOffState);
+            item.setState(this.getFilter() instanceof NullPathFilter ? NSCell.NSOnState : NSCell.NSOffState);
         }
         else if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
             if(this.isMounted()) {

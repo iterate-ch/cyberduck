@@ -116,7 +116,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     protected AttributedList<Path> get(final Path directory) {
-        return cache.get(directory.getReference()).filter(controller.getComparator(), controller.getFileFilter());
+        return cache.get(directory.getReference()).filter(controller.getComparator(), controller.getFilter());
     }
 
     public int indexOf(NSTableView view, PathReference reference) {
