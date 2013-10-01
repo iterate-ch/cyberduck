@@ -69,18 +69,20 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
         if(log.isDebugEnabled()) {
             log.debug(String.format("Finish background action for transfer %s", transfer));
         }
+        queue.remove(transfer);
         super.finish();
-        for(Session s : transfer.getSessions()) {
-            try {
+    }
+
+    @Override
+    public Boolean run() throws BackgroundException {
+        if(super.run()) {
+            for(Session s : transfer.getSessions()) {
+                // We have our own session independent of any browser.
                 s.close();
             }
-            catch(BackgroundException e) {
-                log.warn(String.format("Error closing connection %s", e.getMessage()));
-            }
-            // We have our own session independent of any browser.
-            s.cache().clear();
+            return true;
         }
-        queue.remove(transfer);
+        return false;
     }
 
     @Override
