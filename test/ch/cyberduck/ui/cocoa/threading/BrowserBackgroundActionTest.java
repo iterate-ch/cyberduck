@@ -10,17 +10,18 @@ import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.cocoa.BrowserController;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @version $Id$
  */
 public class BrowserBackgroundActionTest extends AbstractTestCase {
 
-    @Test
-    public void testGetSessions() throws Exception {
+    @Before
+    public void factory() {
         LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginControllerFactory() {
             @Override
             protected LoginController create(final Controller c) {
@@ -44,7 +45,11 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
                 return null;
             }
         });
-        assertTrue(new BrowserBackgroundAction(new BrowserController() {
+    }
+
+    @Test
+    public void testGetSessions() throws Exception {
+        assertFalse(new BrowserBackgroundAction(new BrowserController() {
             @Override
             protected String getBundleName() {
                 return null;
