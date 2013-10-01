@@ -3390,9 +3390,6 @@ public class BrowserController extends WindowController
                                     unmount();
                                 }
                                 else {
-                                    // Clear second level cache
-                                    browserListModel.clear();
-                                    browserOutlineModel.clear();
                                     // Update status icon
                                     bookmarkTable.setNeedsDisplay();
                                     // Set the working directory

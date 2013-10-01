@@ -94,19 +94,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     /**
-     * Clear the view cache
-     */
-    protected void clear() {
-        tableViewCache.clear();
-    }
-
-    @Override
-    protected void invalidate() {
-        this.clear();
-        super.invalidate();
-    }
-
-    /**
      * Must be efficient; called very frequently by the table view
      *
      * @param directory The directory to fetch the children from
@@ -120,7 +107,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     new SessionListWorker(controller.getSession(), cache, directory, new DisabledListProgressListener()) {
                         @Override
                         public void cleanup(final AttributedList<Path> list) {
-                            tableViewCache.clear();
                             controller.reloadData(true, true);
                         }
                     })
@@ -157,13 +143,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         return IconCacheFactory.<NSImage>get().fileIcon(item, 16);
     }
 
-    /**
-     * Second cache because it is expensive to create proxy instances
-     */
-    private AttributeCache<Path> tableViewCache = new AttributeCache<Path>(
-            Preferences.instance().getInteger("browser.model.cache.size")
-    );
-
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         if(null == item) {
             return null;
@@ -171,61 +150,57 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(log.isTraceEnabled()) {
             log.trace("objectValueForItem:" + item.getAbsolute());
         }
-        final NSObject cached = tableViewCache.get(item, identifier);
-        if(null == cached) {
-            if(identifier.equals(Column.icon.name())) {
-                return tableViewCache.put(item, identifier, this.iconForPath(item));
-            }
-            if(identifier.equals(Column.filename.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        item.getName(),
-                        TableCellAttributes.browserFontLeftAlignment()));
-            }
-            if(identifier.equals(Column.size.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        SizeFormatterFactory.get().format(item.attributes().getSize()),
-                        TableCellAttributes.browserFontRightAlignment()));
-            }
-            if(identifier.equals(Column.modified.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        UserDateFormatterFactory.get().getShortFormat(item.attributes().getModificationDate(),
-                                Preferences.instance().getBoolean("browser.date.natural")),
-                        TableCellAttributes.browserFontLeftAlignment()));
-            }
-            if(identifier.equals(Column.owner.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isBlank(item.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : item.attributes().getOwner(),
-                        TableCellAttributes.browserFontLeftAlignment()));
-            }
-            if(identifier.equals(Column.group.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isBlank(item.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : item.attributes().getGroup(),
-                        TableCellAttributes.browserFontLeftAlignment()));
-            }
-            if(identifier.equals(Column.permission.name())) {
-                Permission permission = item.attributes().getPermission();
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        permission.toString(),
-                        TableCellAttributes.browserFontLeftAlignment()));
-            }
-            if(identifier.equals(Column.kind.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        descriptor.getKind(item),
-                        TableCellAttributes.browserFontLeftAlignment()));
-            }
-            if(identifier.equals(Column.extension.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        item.attributes().isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
-                        TableCellAttributes.browserFontLeftAlignment()));
-            }
-            if(identifier.equals(Column.region.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() : LocaleFactory.localizedString("Unknown"),
-                        TableCellAttributes.browserFontLeftAlignment()));
-            }
-            throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
+        if(identifier.equals(Column.icon.name())) {
+            return this.iconForPath(item);
         }
-        return cached;
+        if(identifier.equals(Column.filename.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    item.getName(),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(Column.size.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    SizeFormatterFactory.get().format(item.attributes().getSize()),
+                    TableCellAttributes.browserFontRightAlignment());
+        }
+        if(identifier.equals(Column.modified.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    UserDateFormatterFactory.get().getShortFormat(item.attributes().getModificationDate(),
+                            Preferences.instance().getBoolean("browser.date.natural")),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(Column.owner.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    StringUtils.isBlank(item.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : item.attributes().getOwner(),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(Column.group.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    StringUtils.isBlank(item.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : item.attributes().getGroup(),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(Column.permission.name())) {
+            Permission permission = item.attributes().getPermission();
+            return NSAttributedString.attributedStringWithAttributes(
+                    permission.toString(),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(Column.kind.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    descriptor.getKind(item),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(Column.extension.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    item.attributes().isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(Column.region.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() : LocaleFactory.localizedString("Unknown"),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
     }
 
     /**
