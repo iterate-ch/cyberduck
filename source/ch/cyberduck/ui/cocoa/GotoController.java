@@ -43,13 +43,20 @@ import java.util.Comparator;
 public class GotoController extends AlertController {
 
     private NSComboBox folderCombobox;
-    private ProxyController folderComboboxModel = new FolderComboboxModel();
+
+    private ProxyController folderComboboxModel;
 
     private Cache cache;
 
     private class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {
 
+        private Path workdir;
+
         private final Comparator<Path> comparator = new NullComparator<Path>();
+
+        private FolderComboboxModel(final Path workdir) {
+            this.workdir = workdir;
+        }
 
         private final Filter<Path> filter = new Filter<Path>() {
             @Override
@@ -60,22 +67,17 @@ public class GotoController extends AlertController {
 
         @Override
         public NSInteger numberOfItemsInComboBox(NSComboBox combo) {
-            final BrowserController controller = (BrowserController) parent;
-            if(!controller.isMounted()) {
-                return new NSInteger(0);
-            }
-            return new NSInteger(cache.get(controller.workdir().getReference()).filter(comparator, filter).size());
+            return new NSInteger(cache.get(workdir.getReference()).filter(comparator, filter).size());
         }
 
         @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            final BrowserController controller = (BrowserController) parent;
-            return (NSObject) cache.get(controller.workdir().getReference()).filter(comparator, filter).get(
+            return (NSObject) cache.get(workdir.getReference()).filter(comparator, filter).get(
                     row.intValue()).getReference().unique();
         }
     }
 
-    public GotoController(final WindowController parent, final Cache cache) {
+    public GotoController(final BrowserController parent, final Cache cache) {
         super(parent, NSAlert.alert(
                 LocaleFactory.localizedString("Go to folder", "Goto"),
                 LocaleFactory.localizedString("Enter the pathname to list:", "Goto"),
@@ -88,8 +90,9 @@ public class GotoController extends AlertController {
         folderCombobox = NSComboBox.textfieldWithFrame(new NSRect(0, 26));
         folderCombobox.setCompletes(true);
         folderCombobox.setUsesDataSource(true);
+        folderComboboxModel = new FolderComboboxModel(parent.workdir());
         folderCombobox.setDataSource(folderComboboxModel.id());
-        folderCombobox.setStringValue(((BrowserController) this.parent).workdir().getAbsolute());
+        folderCombobox.setStringValue(parent.workdir().getAbsolute());
         this.setAccessoryView(folderCombobox);
     }
 
