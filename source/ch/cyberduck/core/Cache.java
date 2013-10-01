@@ -112,6 +112,10 @@ public class Cache {
         return children;
     }
 
+    public boolean isHidden(final Path file) {
+        return this.get(file.getParent().getReference()).attributes().getHidden().contains(file);
+    }
+
     /**
      * @param reference Reference to the path in cache.
      * @param children  Cached directory listing
