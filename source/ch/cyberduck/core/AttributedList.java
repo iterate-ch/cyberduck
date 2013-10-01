@@ -20,19 +20,20 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A sortable list with a map to lookup values by key.
  *
  * @version $Id$
  */
-public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList<E> {
+public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
     private static final Logger log = Logger.getLogger(AttributedList.class);
 
     private static final long serialVersionUID = 8900332123622028341L;
@@ -171,12 +172,13 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
             this.addAll(hidden);
             // Clear the previously set of hidden files
             hidden.clear();
-            for(E child : this) {
+            for(Iterator<E> iter = this.iterator(); iter.hasNext(); ) {
+                final E child = iter.next();
                 if(!filter.accept(child)) {
                     // Child not accepted by filter; add to cached hidden files
                     attributes.addHidden(child);
                     // Remove hidden file from current file listing
-                    this.remove(child);
+                    iter.remove();
                 }
             }
             // Saving last filter
