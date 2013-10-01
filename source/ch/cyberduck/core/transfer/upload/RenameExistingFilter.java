@@ -41,7 +41,9 @@ import java.text.MessageFormat;
 public class RenameExistingFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(RenameExistingFilter.class);
 
-    private Session<?> session;
+    private Find find;
+
+    private Move move;
 
     private UploadFilterOptions options;
 
@@ -51,7 +53,8 @@ public class RenameExistingFilter extends AbstractUploadFilter {
 
     public RenameExistingFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
-        this.session = session;
+        this.find = session.getFeature(Find.class);
+        this.move = session.getFeature(Move.class);
         this.options = options;
     }
 
@@ -71,7 +74,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
 
     private void rename(final Path file) throws BackgroundException {
         Path renamed = file;
-        while(session.getFeature(Find.class).find(renamed)) {
+        while(find.find(renamed)) {
             final String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
                     FilenameUtils.getBaseName(file.getName()),
                     UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
@@ -82,7 +85,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Rename existing file %s to %s", file, renamed));
             }
-            session.getFeature(Move.class).move(file, renamed);
+            move.move(file, renamed);
         }
     }
 

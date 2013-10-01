@@ -32,16 +32,15 @@ import org.apache.log4j.Logger;
 public class SkipFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(SkipFilter.class);
 
-    private Session<?> session;
+    private Find find;
 
     public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session);
-        this.session = session;
+        this(symlinkResolver, session, new UploadFilterOptions());
     }
 
     public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
-        this.session = session;
+        this.find = session.getFeature(Find.class);
     }
 
     /**
@@ -50,7 +49,7 @@ public class SkipFilter extends AbstractUploadFilter {
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(parent.isExists()) {
-            if(session.getFeature(Find.class).find(file)) {
+            if(find.find(file)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skip file %s", file));
                 }

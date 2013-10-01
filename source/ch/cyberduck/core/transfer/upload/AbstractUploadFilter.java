@@ -60,10 +60,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private UploadFilterOptions options;
 
-    public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
-        this(symlinkResolver, session, new UploadFilterOptions());
-    }
-
     public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;

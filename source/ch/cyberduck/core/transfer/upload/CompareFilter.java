@@ -36,7 +36,7 @@ public class CompareFilter extends AbstractUploadFilter {
     private Session<?> session;
 
     public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session);
+        super(symlinkResolver, session, new UploadFilterOptions());
         this.session = session;
     }
 

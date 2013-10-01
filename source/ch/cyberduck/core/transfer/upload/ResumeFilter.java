@@ -35,19 +35,20 @@ import org.apache.log4j.Logger;
 public class ResumeFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(ResumeFilter.class);
 
-    private Session<?> session;
+    private Write write;
+
+    private Find find;
 
     private Attributes attributes;
 
     public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session);
-        this.session = session;
-        this.attributes = new DefaultAttributesFeature(session);
+        this(symlinkResolver, session, new UploadFilterOptions());
     }
 
     public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
-        this.session = session;
+        this.find = session.getFeature(Find.class);
+        this.write = session.getFeature(Write.class);
         this.attributes = new DefaultAttributesFeature(session);
     }
 
@@ -55,7 +56,7 @@ public class ResumeFilter extends AbstractUploadFilter {
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
-                if(session.getFeature(Find.class).find(file)) {
+                if(find.find(file)) {
                     final long remote = attributes.getAttributes(file).getSize();
                     if(remote >= file.getLocal().attributes().getSize()) {
                         if(log.isInfoEnabled()) {
@@ -75,7 +76,6 @@ public class ResumeFilter extends AbstractUploadFilter {
         final TransferStatus status = super.prepare(file, parent);
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
-                final Write write = session.getFeature(Write.class);
                 final Write.Append append = write.append(file, attributes);
                 if(append.append) {
                     // Append to existing file

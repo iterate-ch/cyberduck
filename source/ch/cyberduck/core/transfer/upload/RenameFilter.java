@@ -37,8 +37,7 @@ public class RenameFilter extends AbstractUploadFilter {
     private Session<?> session;
 
     public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session);
-        this.session = session;
+        this(symlinkResolver, session, new UploadFilterOptions());
     }
 
     public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
