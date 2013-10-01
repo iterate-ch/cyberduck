@@ -17,6 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginController;
@@ -32,7 +33,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPDataFallback {
     private static final Logger log = Logger.getLogger(FTPSession.class);
@@ -88,7 +89,7 @@ public class FTPDataFallback {
                         log.warn(String.format("Ignore failure completing pending command %s", e.getMessage()));
                         // Reconnect
                         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
-                                new DisabledPasswordStore(), session).connect(session);
+                                new DisabledPasswordStore(), session).connect(session, Cache.empty());
                     }
                     return this.fallback(action);
                 }

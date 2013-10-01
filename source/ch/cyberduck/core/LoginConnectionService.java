@@ -78,12 +78,12 @@ public class LoginConnectionService implements ConnectionService {
      * @throws BackgroundException If opening connection fails
      */
     @Override
-    public boolean check(final Session session) throws BackgroundException {
+    public boolean check(final Session session, final Cache cache) throws BackgroundException {
         if(!session.isConnected()) {
             if(StringUtils.isBlank(session.getHost().getHostname())) {
                 throw new ConnectionCanceledException();
             }
-            this.connect(session);
+            this.connect(session, cache);
         }
         else {
             // The session is still supposed to be connected
@@ -95,14 +95,14 @@ public class LoginConnectionService implements ConnectionService {
             catch(BackgroundException e) {
                 log.warn(String.format("No operation command failed for session %s. Attempt to reopen connection", session));
                 // Try to reconnect once more
-                this.connect(session);
+                this.connect(session, cache);
             }
         }
         return true;
     }
 
     @Override
-    public void connect(final Session session) throws BackgroundException {
+    public void connect(final Session session, final Cache cache) throws BackgroundException {
         if(session.isConnected()) {
             try {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
@@ -143,7 +143,7 @@ public class LoginConnectionService implements ConnectionService {
         bookmark.setTimestamp(new Date());
 
         try {
-            login.login(session, listener);
+            login.login(session, cache, listener);
         }
         catch(BackgroundException e) {
             session.interrupt();

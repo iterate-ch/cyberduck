@@ -19,15 +19,7 @@ package ch.cyberduck.core.fs.fuse;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -82,9 +74,8 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
     private Session<?> session;
 
-    /**
-     *
-     */
+    private Cache cache = Cache.empty();
+
     private Local mountpoint;
 
     private RevealService reveal = RevealServiceFactory.get();
@@ -236,7 +227,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
         public NSArray contentsOfDirectoryAtPath_error(final String path, long/*ObjCObjectByReference*/ error) {
             log.debug("contentsOfDirectoryAtPath_error:" + path);
-            final Future<NSArray> future = background(new FilesystemBackgroundAction<NSArray>(session) {
+            final Future<NSArray> future = background(new FilesystemBackgroundAction<NSArray>(session, cache) {
                 final Path directory = new Path(path, Path.DIRECTORY_TYPE);
 
                 @Override
@@ -269,7 +260,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
         public NSDictionary attributesOfItemAtPath_userData_error(final String path, ID userData, long/*ObjCObjectByReference*/ error) {
             log.debug("attributesOfItemAtPath_userData_error:" + path);
             final NSMutableDictionary attributes = NSMutableDictionary.dictionary();
-            final Future<NSDictionary> future = background(new FilesystemBackgroundAction<NSDictionary>(session) {
+            final Future<NSDictionary> future = background(new FilesystemBackgroundAction<NSDictionary>(session, cache) {
                 @Override
                 public NSDictionary run() throws BackgroundException {
                     final Path selected = new Path(path, Path.DIRECTORY_TYPE);
@@ -310,7 +301,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
         public boolean setAttributes_ofItemAtPath_userData_error(final NSDictionary attributes, final String path, ID userData, long/*ObjCObjectByReference*/ error) {
             log.debug("setAttributes_ofItemAtPath_userData_error:" + path);
-            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path selected = new Path(path, Path.DIRECTORY_TYPE);
@@ -353,7 +344,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
         public boolean createDirectoryAtPath_attributes_error(final String path, NSDictionary attributes, long/*ObjCObjectByReference*/ error) {
             log.debug("createDirectoryAtPath_attributes_error:" + path);
-            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path directory = new Path(path, Path.DIRECTORY_TYPE);
@@ -376,7 +367,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
         public boolean createFileAtPath_attributes_userData_error(final String path, NSDictionary attributes, ID userData, long/*ObjCObjectByReference*/ error) {
             log.debug("createFileAtPath_attributes_userData_error:" + path);
-            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path file = new Path(path, Path.DIRECTORY_TYPE);
@@ -402,7 +393,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
         public boolean removeDirectoryAtPath_error(final String path, long/*ObjCObjectByReference*/ error) {
             log.debug("removeDirectoryAtPath_error:" + path);
-            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path directory = new Path(path, Path.DIRECTORY_TYPE);
@@ -425,7 +416,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
         public boolean removeItemAtPath_error(final String path, long/*ObjCObjectByReference*/ error) {
             log.debug("removeItemAtPath_error:" + path);
-            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path file = new Path(path, Path.FILE_TYPE);
@@ -448,7 +439,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
         public boolean moveItemAtPath_toPath_error(final String source, final String destination, long/*ObjCObjectByReference*/ error) {
             log.debug("moveItemAtPath_toPath_error:" + source);
-            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+            final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Path file = new Path(source, Path.FILE_TYPE);

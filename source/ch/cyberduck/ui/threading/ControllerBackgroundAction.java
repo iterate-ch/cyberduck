@@ -17,7 +17,9 @@ package ch.cyberduck.ui.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
@@ -25,17 +27,27 @@ import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 
+import java.util.List;
+
 /**
  * @version $Id$
  */
 public abstract class ControllerBackgroundAction extends SessionBackgroundAction<Boolean> {
 
-    public ControllerBackgroundAction(final Controller controller,
-                                      final AlertCallback alert,
-                                      final ProgressListener progressListener,
-                                      final TranscriptListener transcriptListener) {
-        super(alert, progressListener, transcriptListener,
+    public ControllerBackgroundAction(final Session<?> session, final Cache cache,
+                                      final Controller controller, final AlertCallback alert,
+                                      final ProgressListener progressListener, final TranscriptListener transcriptListener) {
+        super(session, cache, alert, progressListener, transcriptListener,
                 LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
     }
 
+
+    public ControllerBackgroundAction(final List<Session<?>> sessions,
+                                      final Cache cache,
+                                      final Controller controller, final AlertCallback alert,
+                                      final ProgressListener progressListener,
+                                      final TranscriptListener transcriptListener) {
+        super(sessions, cache, alert, progressListener, transcriptListener,
+                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
+    }
 }

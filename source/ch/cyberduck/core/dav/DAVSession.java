@@ -83,7 +83,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
         client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 Preferences.instance().getProperty("webdav.ntlm.workstation"),
@@ -110,7 +110,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                     log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
                             host, e.getResponsePhrase()));
                     // Possibly only HEAD requests are not allowed
-                    this.cache().put(home.getReference(), this.list(home, new DisabledListProgressListener()));
+                    cache.put(home.getReference(), this.list(home, new DisabledListProgressListener()));
                 }
                 else if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
                     if(Preferences.instance().getBoolean("webdav.basic.preemptive")) {

@@ -26,7 +26,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginController(), new DisabledPasswordStore());
-        l.login(session, new ProgressListener() {
+        l.login(session, Cache.empty(), new ProgressListener() {
             int i = 0;
 
             @Override
@@ -49,7 +49,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testCancel() throws Exception {
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginController(), new DisabledPasswordStore());
-        l.login(new FTPSession(new Host(new FTPProtocol(), "h")), new ProgressListener() {
+        l.login(new FTPSession(new Host(new FTPProtocol(), "h")), Cache.empty(), new ProgressListener() {
             @Override
             public void message(final String message) {
                 //
@@ -74,7 +74,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
             }
         }, new DisabledPasswordStore());
         try {
-            l.login(session, new ProgressListener() {
+            l.login(session, Cache.empty(), new ProgressListener() {
                 @Override
                 public void message(final String message) {
                     //

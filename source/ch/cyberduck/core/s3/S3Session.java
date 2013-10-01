@@ -305,12 +305,12 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
         client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         try {
             final Path home = new S3HomeFinderService(this).find();
-            this.cache().put(home.getReference(), this.list(home, new DisabledListProgressListener()));
+            cache.put(home.getReference(), this.list(home, new DisabledListProgressListener()));
         }
         catch(BackgroundException e) {
             throw new LoginFailureException(e.getMessage(), e.getCause());

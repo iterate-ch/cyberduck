@@ -19,15 +19,7 @@ package ch.cyberduck.core.fs.kfs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -78,6 +70,8 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
 
     private Session<?> session;
 
+    private Cache cache = Cache.empty();
+
     private RevealService reveal = RevealServiceFactory.get();
 
     private KfsFilesystem() {
@@ -99,7 +93,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         delegate.statfs = new KfsLibrary.kfsstatfs_f() {
             @Override
             public boolean apply(final String path, final KfsLibrary.kfsstatfs stat, Pointer context) {
-                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                     @Override
                     public Boolean run() {
                         log.debug("kfsstatfs_f:" + path);
@@ -127,7 +121,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         delegate.stat = new KfsLibrary.kfsstat_f() {
             @Override
             public boolean apply(final String path, final KfsLibrary.kfsstat stat, Pointer context) {
-                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                     @Override
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsstat_f:" + path);
@@ -211,7 +205,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         delegate.readdir = new KfsLibrary.kfsreaddir_f() {
             @Override
             public boolean apply(final String path, final Pointer contents, Pointer context) {
-                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                     @Override
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsreaddir_f:" + path);
@@ -237,7 +231,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         delegate.read = new KfsLibrary.kfsread_f() {
             @Override
             public KfsLibrary.size_t apply(final String path, final Pointer buf, final KfsLibrary.size_t offset, final KfsLibrary.size_t length, Pointer context) {
-                final Future<KfsLibrary.size_t> future = background(new FilesystemBackgroundAction<KfsLibrary.size_t>(session) {
+                final Future<KfsLibrary.size_t> future = background(new FilesystemBackgroundAction<KfsLibrary.size_t>(session, cache) {
                     @Override
                     public KfsLibrary.size_t run() throws BackgroundException {
                         log.debug("kfsread_f:" + path);
@@ -282,7 +276,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         delegate.write = new KfsLibrary.kfswrite_f() {
             @Override
             public KfsLibrary.size_t apply(final String path, final Pointer buf, final KfsLibrary.size_t offset, final KfsLibrary.size_t length, Pointer context) {
-                final Future<KfsLibrary.size_t> future = background(new FilesystemBackgroundAction<KfsLibrary.size_t>(session) {
+                final Future<KfsLibrary.size_t> future = background(new FilesystemBackgroundAction<KfsLibrary.size_t>(session, cache) {
                     @Override
                     public KfsLibrary.size_t run() throws BackgroundException {
                         log.debug("kfswrite_f:" + path);
@@ -336,7 +330,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         delegate.create = new KfsLibrary.kfscreate_f() {
             @Override
             public boolean apply(final String path, Pointer context) {
-                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                     @Override
                     public Boolean run() throws BackgroundException {
                         log.debug("kfscreate_f:" + path);
@@ -364,7 +358,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         delegate.remove = new KfsLibrary.kfsremove_f() {
             @Override
             public boolean apply(final String path, Pointer context) {
-                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                     @Override
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsremove_f:" + path);
@@ -389,7 +383,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         delegate.rename = new KfsLibrary.kfsrename_f() {
             @Override
             public boolean apply(final String path, final String destination, Pointer context) {
-                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                     @Override
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsrename_f:" + path);
@@ -440,7 +434,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         delegate.mkdir = new KfsLibrary.kfsmkdir_f() {
             @Override
             public boolean apply(final String path, Pointer context) {
-                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                     @Override
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsmkdir_f:" + path);
@@ -465,7 +459,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         delegate.rmdir = new KfsLibrary.kfsrmdir_f() {
             @Override
             public boolean apply(final String path, Pointer context) {
-                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
+                final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                     @Override
                     public Boolean run() throws BackgroundException {
                         log.debug("kfsrmdir_f:" + path);
@@ -501,7 +495,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         }
         final Local mountpoint = target;
         delegate.options = new KfsLibrary.kfsoptions(mountpoint.getAbsolute());
-        final Future<Void> future = background(new FilesystemBackgroundAction<Void>(session) {
+        final Future<Void> future = background(new FilesystemBackgroundAction<Void>(session, cache) {
             @Override
             public Void run() throws BackgroundException {
                 identifier = filesystem.kfs_mount(delegate);

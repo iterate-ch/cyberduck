@@ -39,10 +39,11 @@ public class S3SessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        Cache cache = new Cache();
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), cache);
         assertNotNull(session.workdir());
-        assertTrue(session.cache().containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertNotNull(session.cache().lookup(new Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertTrue(cache.containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertNotNull(cache.lookup(new Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -62,9 +63,10 @@ public class S3SessionTest extends AbstractTestCase {
         host.setDefaultPath("/test.cyberduck.ch");
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertFalse(session.cache().containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertTrue(session.cache().containsKey(new Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        Cache cache = new Cache();
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), cache);
+        assertFalse(cache.containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertTrue(cache.containsKey(new Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
         session.close();
     }
 

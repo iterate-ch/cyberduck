@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
@@ -44,8 +45,8 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public class BrowserOutlineViewModel extends BrowserTableDataSource implements NSOutlineView.DataSource {
     private static final Logger log = Logger.getLogger(BrowserOutlineViewModel.class);
 
-    public BrowserOutlineViewModel(final BrowserController controller) {
-        super(controller);
+    public BrowserOutlineViewModel(final BrowserController controller, final Cache cache) {
+        super(controller, cache);
     }
 
     @Override

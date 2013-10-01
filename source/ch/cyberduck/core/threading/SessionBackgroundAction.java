@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginController;
@@ -33,6 +34,7 @@ import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -75,11 +77,29 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     private Growl growl = GrowlFactory.get();
 
-    public SessionBackgroundAction(final AlertCallback alert,
+    private List<Session<?>> sessions;
+
+    private Cache cache;
+
+    public SessionBackgroundAction(final Session<?> session,
+                                   final Cache cache,
+                                   final AlertCallback alert,
                                    final ProgressListener progressListener,
                                    final TranscriptListener transcriptListener,
                                    final LoginController prompt,
                                    final HostKeyController key) {
+        this(Collections.<Session<?>>singletonList(session), cache, alert, progressListener, transcriptListener, prompt, key);
+    }
+
+    public SessionBackgroundAction(final List<Session<?>> sessions,
+                                   final Cache cache,
+                                   final AlertCallback alert,
+                                   final ProgressListener progressListener,
+                                   final TranscriptListener transcriptListener,
+                                   final LoginController prompt,
+                                   final HostKeyController key) {
+        this.sessions = sessions;
+        this.cache = cache;
         this.alert = alert;
         this.progressListener = progressListener;
         this.transcriptListener = transcriptListener;
@@ -114,7 +134,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     public void prepare() throws ConnectionCanceledException {
         super.prepare();
         this.message(this.getActivity());
-        for(Session s : this.getSessions()) {
+        for(Session s : sessions) {
             s.addProgressListener(this);
             s.addTranscriptListener(this);
         }
@@ -125,13 +145,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         connection.cancel();
         super.cancel();
     }
-
-    /**
-     * To be overridden in concrete subclass
-     *
-     * @return The session if any or null if invalid
-     */
-    public abstract List<Session<?>> getSessions();
 
     /**
      * The number of times a new connection attempt should be made. Takes into
@@ -169,7 +182,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public T call() {
         try {
-            for(Session session : this.getSessions()) {
+            for(Session session : sessions) {
                 this.connect(session);
             }
             return super.call();
@@ -180,7 +193,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         }
         catch(BackgroundException failure) {
             log.warn(String.format("Failure executing background action: %s", failure));
-            for(Session session : this.getSessions()) {
+            for(Session session : sessions) {
                 growl.notify(failure.getMessage(), session.getHost().getHostname());
             }
             exception = failure;
@@ -190,7 +203,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     protected void connect(final Session session) throws BackgroundException {
-        if(connection.check(session)) {
+        if(connection.check(session, cache)) {
             // New connection opened
             growl.notify("Connection opened", session.getHost().getHostname());
         }
@@ -212,7 +225,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                 this.call();
             }
         }
-        for(Session session : this.getSessions()) {
+        for(Session session : sessions) {
             session.removeProgressListener(this);
             // It is important _not_ to do this in #cleanup as otherwise
             // the listeners are still registered when the next BackgroundAction
@@ -245,9 +258,13 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         pauser.await(this);
     }
 
+    public List<Session<?>> getSessions() {
+        return sessions;
+    }
+
     @Override
     public String getName() {
-        for(Session session : this.getSessions()) {
+        for(Session session : sessions) {
             return session.getHost().getNickname();
         }
         return super.getName();
@@ -258,9 +275,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      */
     @Override
     public Object lock() {
-        if(this.getSessions().isEmpty()) {
+        if(sessions.isEmpty()) {
             return super.lock();
         }
-        return this.getSessions().iterator().next();
+        return sessions.iterator().next();
     }
 }

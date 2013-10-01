@@ -41,7 +41,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 }
         );
         try {
-            s.check(session);
+            s.check(session, Cache.empty());
         }
         catch(BackgroundException e) {
             assertEquals(UnknownHostException.class, e.getCause().getClass());
@@ -74,7 +74,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                         //
                     }
                 });
-        s.check(session);
+        s.check(session, Cache.empty());
     }
 
     @Test(expected = ConnectionCanceledException.class)
@@ -87,6 +87,6 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                         //
                     }
                 });
-        s.check(new FTPSession(new Host("")));
+        s.check(new FTPSession(new Host("")), Cache.empty());
     }
 }

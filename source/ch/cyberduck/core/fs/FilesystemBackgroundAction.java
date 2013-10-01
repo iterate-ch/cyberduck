@@ -19,6 +19,7 @@ package ch.cyberduck.core.fs;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -29,25 +30,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.DisabledAlertCallback;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @version $Id$
  */
 public abstract class FilesystemBackgroundAction<T> extends SessionBackgroundAction<T> {
 
-    private Session<?> session;
+    private Cache cache;
 
-    public FilesystemBackgroundAction(final Session session) {
-        super(new DisabledAlertCallback(), new DisabledProgressListener(), new DisabledTranscriptListener(), new DisabledLoginController(),
+    public FilesystemBackgroundAction(final Session session, final Cache cache) {
+        super(session, cache, new DisabledAlertCallback(), new DisabledProgressListener(), new DisabledTranscriptListener(), new DisabledLoginController(),
                 new DefaultHostKeyController());
-        this.session = session;
-    }
-
-    @Override
-    public List<Session<?>> getSessions() {
-        return Collections.<Session<?>>singletonList(session);
+        this.cache = cache;
     }
 
     public T run() throws BackgroundException {

@@ -17,8 +17,8 @@ package ch.cyberduck.ui.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.TranscriptListener;
@@ -39,7 +39,6 @@ import ch.cyberduck.ui.growl.GrowlFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -90,7 +89,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error,
                                     final TransferOptions options) {
-        super(controller, alert, progressListener, transcriptListener);
+        super(transfer.getSessions(), Cache.empty(), controller, alert, progressListener, transcriptListener);
         this.prompt = prompt;
         this.transfer = transfer;
         this.error = error;
@@ -149,11 +148,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction {
                     String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
         }
         super.cleanup();
-    }
-
-    @Override
-    public List<Session<?>> getSessions() {
-        return transfer.getSessions();
     }
 
     @Override

@@ -36,6 +36,35 @@ public abstract class AbstractPath {
     public static final int SYMBOLIC_LINK_TYPE = 4;
     public static final int VOLUME_TYPE = 8;
 
+//    public enum Type {
+//        file {
+//            @Override
+//            public int legacy() {
+//                return 1;
+//            }
+//        },
+//        directory {
+//            @Override
+//            public int legacy() {
+//                return 2;
+//            }
+//        },
+//        symboliclink {
+//            @Override
+//            public int legacy() {
+//                return 4;
+//            }
+//        },
+//        volume {
+//            @Override
+//            public int legacy() {
+//                return 8;
+//            }
+//        };
+//
+//        public abstract int legacy();
+//    }
+
     /**
      * @return Descriptive features for path
      */

@@ -110,7 +110,7 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController controller) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController controller, final Cache cache) throws BackgroundException {
         if(NumberUtils.isNumber(host.getCredentials().getUsername())) {
             // Project ID needs OAuth2 authentication
             final OAuth2Credentials oauth = new OAuth2Credentials(
@@ -162,14 +162,14 @@ public class GoogleStorageSession extends S3Session {
             try {
                 // List all buckets and cache
                 final Path root = new Path(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
-                this.cache().put(root.getReference(), this.list(root, new DisabledListProgressListener()));
+                cache.put(root.getReference(), this.list(root, new DisabledListProgressListener()));
             }
             catch(BackgroundException e) {
                 throw new LoginFailureException(e.getMessage(), e);
             }
         }
         else {
-            super.login(keychain, controller);
+            super.login(keychain, controller, cache);
         }
     }
 

@@ -29,10 +29,6 @@ import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.threading.ControllerBackgroundAction;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @version $Id$
  */
@@ -49,17 +45,8 @@ public abstract class BrowserBackgroundAction extends ControllerBackgroundAction
     }
 
     public BrowserBackgroundAction(final BrowserController controller, final AlertCallback alert) {
-        super(controller, alert, controller, controller);
+        super(controller.getSession(), controller.getCache(), controller, alert, controller, controller);
         this.controller = controller;
-    }
-
-    @Override
-    public List<Session<?>> getSessions() {
-        final Session<?> session = controller.getSession();
-        if(null == session) {
-            return Collections.emptyList();
-        }
-        return new ArrayList<Session<?>>(Collections.singletonList(session));
     }
 
     @Override

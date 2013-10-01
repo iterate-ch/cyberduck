@@ -179,6 +179,11 @@ public class BrowserController extends WindowController
 
     private PathPasteboard pasteboard;
 
+    /**
+     * Caching files listings of previously listed directories
+     */
+    private Cache cache = new Cache();
+
     public BrowserController() {
         this.loadBundle();
     }
@@ -271,7 +276,7 @@ public class BrowserController extends WindowController
                     }
                     if(file.attributes().isDirectory() && getSelectedBrowserView() == browserOutlineView) {
                         // #471. Expanded item children may match search string
-                        return session.cache().isCached(file.getReference());
+                        return cache.isCached(file.getReference());
                     }
                     return false;
                 }
@@ -375,7 +380,7 @@ public class BrowserController extends WindowController
         }
         for(Path p : changed) {
             // This will force the model to list this directory
-            session.cache().invalidate(p.getParent().getReference());
+            cache.invalidate(p.getParent().getReference());
         }
         // Tell the browser view to reload the data. This will request all paths from the browser model
         // which will refetch paths from the server marked as invalid.
@@ -1231,7 +1236,7 @@ public class BrowserController extends WindowController
             browserOutlineView.addTableColumn(c);
             browserOutlineView.setOutlineTableColumn(c);
         }
-        browserOutlineView.setDataSource((browserOutlineModel = new BrowserOutlineViewModel(this)).id());
+        browserOutlineView.setDataSource((browserOutlineModel = new BrowserOutlineViewModel(this, cache)).id());
         browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>(
                 browserOutlineView.tableColumnWithIdentifier(BrowserTableDataSource.Column.filename.name())
         ) {
@@ -1368,7 +1373,7 @@ public class BrowserController extends WindowController
             this.browserListView.addTableColumn(c);
         }
 
-        browserListView.setDataSource((browserListModel = new BrowserListViewModel(this)).id());
+        browserListView.setDataSource((browserListModel = new BrowserListViewModel(this, cache)).id());
         browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>(
                 browserListView.tableColumnWithIdentifier(BrowserTableDataSource.Column.filename.name())
         ) {
@@ -2251,13 +2256,13 @@ public class BrowserController extends WindowController
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
                         if(browserOutlineView.isItemExpanded(item)) {
-                            session.cache().invalidate(new NSObjectPathReference(item));
+                            cache.invalidate(new NSObjectPathReference(item));
                         }
                     }
                     break;
                 }
             }
-            session.cache().invalidate(this.workdir().getReference());
+            cache.invalidate(this.workdir().getReference());
             this.reloadData(true);
         }
     }
@@ -2552,7 +2557,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void gotoButtonClicked(final ID sender) {
-        SheetController sheet = new GotoController(this, session.cache());
+        SheetController sheet = new GotoController(this, cache);
         sheet.beginSheet();
     }
 
@@ -2996,6 +3001,10 @@ public class BrowserController extends WindowController
         return session;
     }
 
+    public Cache getCache() {
+        return cache;
+    }
+
     /**
      * @return true if the remote file system has been mounted
      */
@@ -3267,7 +3276,7 @@ public class BrowserController extends WindowController
      */
     public Path lookup(final PathReference reference) {
         if(this.isMounted()) {
-            return session.cache().lookup(reference);
+            return cache.lookup(reference);
         }
         return null;
     }
@@ -3374,7 +3383,7 @@ public class BrowserController extends WindowController
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this,
-                        new MountWorker(session, session.cache(), new DisabledListProgressListener()) {
+                        new MountWorker(session, cache, new DisabledListProgressListener()) {
                             @Override
                             public void cleanup(final Path workdir) {
                                 if(null == workdir) {
@@ -3493,7 +3502,7 @@ public class BrowserController extends WindowController
             public void run() {
                 if(session != null) {
                     // Clear the cache on the main thread to make sure the browser model is not in an invalid state
-                    session.cache().clear();
+                    cache.clear();
                     PathPasteboardFactory.delete(session);
                 }
                 session = null;

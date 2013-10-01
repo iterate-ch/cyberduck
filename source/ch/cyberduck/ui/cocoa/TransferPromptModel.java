@@ -25,7 +25,6 @@ import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -43,7 +42,6 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
-import java.util.List;
 
 /**
  * @version $Id$
@@ -107,10 +105,11 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     protected AttributedList<Path> children(final Path directory) {
         final Cache cache = transfer.cache();
         if(!cache.isCached(directory.getReference())) {
-            controller.background(new ControllerBackgroundAction(controller, new PanelAlertCallback(controller), controller, controller) {
+            controller.background(new ControllerBackgroundAction(transfer.getSessions(), Cache.empty(), controller,
+                    new PanelAlertCallback(controller), controller, controller) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    transfer.cache().put(directory.getReference(), transfer.children(directory));
+                    cache.put(directory.getReference(), transfer.children(directory));
                     return true;
                 }
 
@@ -124,11 +123,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                 public void cleanup() {
                     super.cleanup();
                     controller.reloadData();
-                }
-
-                @Override
-                public List<Session<?>> getSessions() {
-                    return transfer.getSessions();
                 }
             });
         }

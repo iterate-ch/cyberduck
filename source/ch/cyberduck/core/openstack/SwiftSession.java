@@ -18,15 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -104,7 +96,7 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
         try {
             client.authenticate(new SwiftAuthenticationService().getRequest(host, prompt));
             for(Region region : client.getRegions()) {

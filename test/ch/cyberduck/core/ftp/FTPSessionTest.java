@@ -166,7 +166,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 throw new LoginCanceledException();
             }
         }, new DisabledPasswordStore());
-        l.login(session, new ProgressListener() {
+        l.login(session, Cache.empty(), new ProgressListener() {
             @Override
             public void message(final String message) {
                 //

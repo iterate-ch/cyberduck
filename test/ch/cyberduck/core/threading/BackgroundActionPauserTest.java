@@ -18,17 +18,16 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,7 +39,7 @@ public class BackgroundActionPauserTest extends AbstractTestCase {
 
     @Test
     public void testAwait() throws Exception {
-        final SessionBackgroundAction action = new SessionBackgroundAction(new AlertCallback() {
+        final SessionBackgroundAction action = new SessionBackgroundAction(Collections.emptyList(), Cache.empty(), new AlertCallback() {
             @Override
             public void alert(final SessionBackgroundAction action, final BackgroundException failure, final StringBuilder transcript) {
                 //
@@ -59,11 +58,6 @@ public class BackgroundActionPauserTest extends AbstractTestCase {
             }
         }, new DisabledLoginController(), new DefaultHostKeyController()
         ) {
-            @Override
-            public List<Session<?>> getSessions() {
-                return Collections.emptyList();
-            }
-
             @Override
             public Object run() throws BackgroundException {
                 throw new BackgroundException(new RuntimeException("f"));

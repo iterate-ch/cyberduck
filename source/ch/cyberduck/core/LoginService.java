@@ -20,8 +20,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface LoginService {
-    void login(Session session, ProgressListener listener) throws BackgroundException;
+    void login(Session session, Cache cache, ProgressListener listener) throws BackgroundException;
 }

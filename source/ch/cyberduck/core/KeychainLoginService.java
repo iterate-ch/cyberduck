@@ -45,9 +45,10 @@ public class KeychainLoginService implements LoginService {
      * login attempts until canceled by the user.
      *
      * @param session Session
+     * @param cache   Directory listing cache
      */
     @Override
-    public void login(final Session session, final ProgressListener listener) throws BackgroundException {
+    public void login(final Session session, final Cache cache, final ProgressListener listener) throws BackgroundException {
         final Host bookmark = session.getHost();
         this.validate(bookmark,
                 MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), bookmark.getHostname()));
@@ -67,7 +68,7 @@ public class KeychainLoginService implements LoginService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", bookmark));
             }
-            session.login(keychain, controller);
+            session.login(keychain, controller, cache);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for session %s", session));
             }
@@ -89,7 +90,7 @@ public class KeychainLoginService implements LoginService {
                 bookmark.getCredentials().setPassword(null);
                 throw c;
             }
-            this.login(session, listener);
+            this.login(session, cache, listener);
         }
     }
 

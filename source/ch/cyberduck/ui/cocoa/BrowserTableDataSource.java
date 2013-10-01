@@ -86,8 +86,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     protected BrowserController controller;
 
-    public BrowserTableDataSource(final BrowserController controller) {
+    private Cache cache;
+
+    protected BrowserTableDataSource(final BrowserController controller, final Cache cache) {
         this.controller = controller;
+        this.cache = cache;
     }
 
     /**
@@ -110,7 +113,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * @return The cached or newly fetched file listing of the directory
      */
     protected AttributedList<Path> list(final Path directory) {
-        final Cache cache = controller.getSession().cache();
         if(!cache.isCached(directory.getReference())) {
             // Reloading a working directory that is not cached yet would cause the interface to freeze;
             // Delay until path is cached in the background
@@ -128,7 +130,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     protected AttributedList<Path> get(final Path directory) {
-        final Cache cache = controller.getSession().cache();
         return cache.get(directory.getReference()).filter(controller.getComparator(), controller.getFileFilter());
     }
 

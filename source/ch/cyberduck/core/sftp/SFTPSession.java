@@ -90,7 +90,7 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
         try {
             if(host.getCredentials().isAnonymousLogin()) {
                 if(new SFTPNoneAuthentication(this).authenticate(host, prompt)) {

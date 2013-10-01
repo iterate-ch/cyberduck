@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
@@ -41,8 +42,8 @@ import java.util.List;
  */
 public class BrowserListViewModel extends BrowserTableDataSource implements NSTableView.DataSource {
 
-    public BrowserListViewModel(final BrowserController controller) {
-        super(controller);
+    public BrowserListViewModel(final BrowserController controller, final Cache cache) {
+        super(controller, cache);
     }
 
     @Override

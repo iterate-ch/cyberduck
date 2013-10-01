@@ -181,7 +181,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
         try {
             if(!host.getCredentials().isAnonymousLogin()
                     && !host.getProtocol().isSecure()

@@ -47,12 +47,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     protected Host host;
 
     protected C client;
-
-    /**
-     * Caching files listings of previously listed directories
-     */
-    private Cache cache = new Cache();
-
     private Set<ConnectionListener> connectionListeners
             = Collections.synchronizedSet(new HashSet<ConnectionListener>(0));
 
@@ -93,13 +87,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     }
 
     /**
-     * @return The directory listing cache for this session
-     */
-    public Cache cache() {
-        return cache;
-    }
-
-    /**
      * @return The client implementation.
      */
     public C getClient() {
@@ -136,13 +123,18 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     protected abstract C connect(HostKeyController key) throws BackgroundException;
 
+    public void login(PasswordStore keychain, LoginController prompt) throws BackgroundException {
+        this.login(keychain, prompt, Cache.empty());
+    }
+
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
      *
      * @param keychain Password store
      * @param prompt   Prompt
+     * @param cache    Directory listing cache
      */
-    public abstract void login(PasswordStore keychain, LoginController prompt) throws BackgroundException;
+    public abstract void login(PasswordStore keychain, LoginController prompt, Cache cache) throws BackgroundException;
 
     /**
      * Logout and close client connection

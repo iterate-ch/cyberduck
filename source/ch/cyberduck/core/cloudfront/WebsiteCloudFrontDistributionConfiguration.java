@@ -68,6 +68,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             // Disable website configuration if bucket name is not DNS compatible
             return super.getMethods(container);
         }
+        //todo only website for non AWS
         final List<Distribution.Method> methods = new ArrayList<Distribution.Method>(super.getMethods(container));
         methods.addAll(Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN));
         return methods;
