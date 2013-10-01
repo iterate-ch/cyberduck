@@ -72,13 +72,6 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     private HostFilter filter;
 
-    /**
-     * Second cache because it is expensive to create proxy instances
-     */
-    private AttributeCache<Host> cache = new AttributeCache<Host>(
-            Preferences.instance().getInteger("bookmark.model.cache.size")
-    );
-
     private AbstractHostCollection source = AbstractHostCollection.empty();
 
     /**
@@ -102,7 +95,6 @@ public class BookmarkTableDataSource extends ListDataSource {
 
             @Override
             public void collectionLoaded() {
-                cache.clear();
                 controller.invoke(new WindowMainAction(controller) {
                     @Override
                     public void run() {
@@ -113,7 +105,6 @@ public class BookmarkTableDataSource extends ListDataSource {
 
             @Override
             public void collectionItemAdded(final Host item) {
-                cache.remove(item);
                 controller.invoke(new WindowMainAction(controller) {
                     @Override
                     public void run() {
@@ -124,7 +115,6 @@ public class BookmarkTableDataSource extends ListDataSource {
 
             @Override
             public void collectionItemRemoved(final Host item) {
-                cache.remove(item);
                 controller.invoke(new WindowMainAction(controller) {
                     @Override
                     public void run() {
@@ -135,7 +125,6 @@ public class BookmarkTableDataSource extends ListDataSource {
 
             @Override
             public void collectionItemChanged(final Host item) {
-                cache.remove(item);
                 if(null != delayed) {
                     delayed.cancel(false);
                 }
@@ -153,13 +142,11 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
         });
         this.setFilter(null);
-        cache.clear();
     }
 
     @Override
     protected void invalidate() {
         timerPool.shutdown();
-        cache.clear();
         source.removeListener(listener);
         super.invalidate();
     }
@@ -259,39 +246,35 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         final String identifier = tableColumn.identifier();
         final Host host = this.getSource().get(row.intValue());
-        final NSObject cached = cache.get(host, identifier);
-        if(null == cached) {
-            if(identifier.equals(Column.icon.name())) {
-                return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(),
-                        Preferences.instance().getInteger("bookmark.icon.size"));
+        if(identifier.equals(Column.icon.name())) {
+            return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(),
+                    Preferences.instance().getInteger("bookmark.icon.size"));
+        }
+        if(identifier.equals(Column.bookmark.name())) {
+            NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>serialize(SerializerFactory.get()));
+            dict.setObjectForKey(new HostUrlProvider().get(host) + PathNormalizer.normalize(host.getDefaultPath()), "URL");
+            String comment = this.getSource().getComment(host);
+            if(StringUtils.isNotBlank(comment)) {
+                dict.setObjectForKey(comment, "Comment");
             }
-            if(identifier.equals(Column.bookmark.name())) {
-                NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>serialize(SerializerFactory.get()));
-                dict.setObjectForKey(new HostUrlProvider().get(host) + PathNormalizer.normalize(host.getDefaultPath()), "URL");
-                String comment = this.getSource().getComment(host);
-                if(StringUtils.isNotBlank(comment)) {
-                    dict.setObjectForKey(comment, "Comment");
-                }
-                return cache.put(host, identifier, dict);
-            }
-            if(identifier.equals(Column.status.name())) {
-                if(controller.hasSession()) {
-                    final Session session = controller.getSession();
-                    if(host.equals(session.getHost())) {
-                        switch(session.getState()) {
-                            case open:
-                                return IconCacheFactory.<NSImage>get().iconNamed("statusGreen.tiff", 16);
-                            case opening:
-                            case closing:
-                                return IconCacheFactory.<NSImage>get().iconNamed("statusYellow.tiff", 16);
-                        }
+            return dict;
+        }
+        if(identifier.equals(Column.status.name())) {
+            if(controller.hasSession()) {
+                final Session session = controller.getSession();
+                if(host.equals(session.getHost())) {
+                    switch(session.getState()) {
+                        case open:
+                            return IconCacheFactory.<NSImage>get().iconNamed("statusGreen.tiff", 16);
+                        case opening:
+                        case closing:
+                            return IconCacheFactory.<NSImage>get().iconNamed("statusYellow.tiff", 16);
                     }
                 }
-                return null;
             }
-            throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
+            return null;
         }
-        return cached;
+        throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
     }
 
     /**
