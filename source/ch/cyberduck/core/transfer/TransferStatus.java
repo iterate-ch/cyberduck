@@ -22,6 +22,8 @@ import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * The Status class is the model of a download's status.
  * The wrapper for any status informations of a transfer as the size and transferred
@@ -59,7 +61,7 @@ public final class TransferStatus {
     /**
      * The transfer has been canceled by the user.
      */
-    private boolean canceled = false;
+    private AtomicBoolean canceled = new AtomicBoolean();
 
     /**
      * A state variable to mark this path if the path is explicitly selected
@@ -80,14 +82,14 @@ public final class TransferStatus {
      * If this path is currently transferred, interrupt it as soon as possible
      */
     public void setCanceled() {
-        canceled = true;
+        canceled.set(true);
     }
 
     /**
      * @return True if marked for interrupt
      */
     public boolean isCanceled() {
-        return canceled;
+        return canceled.get();
     }
 
     /**
@@ -234,7 +236,7 @@ public final class TransferStatus {
         int result = (append ? 1 : 0);
         result = 31 * result + (int) (current ^ (current >>> 32));
         result = 31 * result + (int) (length ^ (length >>> 32));
-        result = 31 * result + (canceled ? 1 : 0);
+        result = 31 * result + (canceled.get() ? 1 : 0);
         result = 31 * result + (selected ? 1 : 0);
         result = 31 * result + (exists ? 1 : 0);
         return result;
