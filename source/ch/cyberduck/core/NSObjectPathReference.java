@@ -62,9 +62,9 @@ public class NSObjectPathReference implements PathReference<NSObject> {
     ));
 
 
-    protected NSObjectPathReference(final Path path) {
+    protected NSObjectPathReference(final Path file) {
         // Unique name
-        final DefaultPathReference d = new DefaultPathReference(path);
+        final DefaultPathReference d = new DefaultPathReference(file);
         final String name = d.unique();
         if(!cache.containsKey(name)) {
             cache.put(name, NSString.stringWithString(name));
@@ -74,7 +74,7 @@ public class NSObjectPathReference implements PathReference<NSObject> {
         this.hashcode = name.hashCode();
     }
 
-    public NSObjectPathReference(NSObject reference) {
+    public NSObjectPathReference(final NSObject reference) {
         this.reference = reference;
         this.hashcode = reference.toString().hashCode();
     }
