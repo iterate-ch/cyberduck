@@ -71,6 +71,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BookmarkCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
         private readonly BookmarkModel _bookmarkModel;
         private readonly TreeBrowserModel _browserModel;
+        private readonly Cache _cache = new Cache();
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
         private Comparator _comparator = new NullComparator();
@@ -78,6 +79,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
         private ConnectionListener _listener;
         private PathPasteboard _pasteboard;
+
+        /**
+         * Caching files listings of previously listed directories
+        */
 
         /*
          * No file filter.
@@ -96,7 +101,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
 
-            _browserModel = new TreeBrowserModel(this);
+            _browserModel = new TreeBrowserModel(this, _cache);
             _bookmarkModel = new BookmarkModel(this, BookmarkCollection.defaultCollection());
 
             //default view is the bookmark view
@@ -362,6 +367,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 _showHiddenFiles = value;
                 View.HiddenFilesVisible = _showHiddenFiles;
             }
+        }
+
+        public Cache Cache
+        {
+            get { return _cache; }
         }
 
         public Filter FilenameFilter { get; set; }
@@ -1471,12 +1481,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                Session session = getSession();
-                session.cache().invalidate(Workdir.getReference());
+                _cache.invalidate(Workdir.getReference());
                 foreach (Path path in View.VisiblePaths)
                 {
                     if (null == path) continue;
-                    session.cache().invalidate(path.getReference());
+                    _cache.invalidate(path.getReference());
                 }
                 ReloadData(true);
             }
@@ -2374,7 +2383,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                return getSession().cache().lookup(reference);
+                return _cache.lookup(reference);
             }
             return null;
         }
@@ -2384,7 +2393,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool rootRefreshed = false; //prevent multiple root updates
             foreach (Path path in changed)
             {
-                getSession().cache().invalidate(path.getParent().getReference());
+                _cache.invalidate(path.getParent().getReference());
                 if (Workdir.equals(path.getParent()))
                 {
                     if (rootRefreshed)
@@ -2709,7 +2718,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (_session != null)
                     {
                         // Clear the cache on the main thread to make sure the browser model is not in an invalid state
-                        _session.cache().clear();
+                        _cache.clear();
                     }
                     _session = null;
                     View.WindowTitle = Preferences.instance().getProperty("application.name");
@@ -3173,7 +3182,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (path.attributes().isDirectory())
                 {
                     // #471. Expanded item childs may match search string
-                    return _controller.getSession().cache().isCached(path.getReference());
+                    return _controller._cache.isCached(path.getReference());
                 }
                 return false;
             }
@@ -3298,7 +3307,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Session _session;
 
                 public InnerMountWorker(BrowserController controller, Session session, Host host)
-                    : base(session, session.cache(), new DisabledListProgressListener())
+                    : base(session, controller._cache, new DisabledListProgressListener())
                 {
                     _controller = controller;
                     _session = session;

@@ -27,7 +27,6 @@ using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui.comparator;
 using ch.cyberduck.ui.threading;
-using java.util;
 using org.apache.log4j;
 
 //using Ch.Cyberduck.ui.winforms.threading;
@@ -166,22 +165,17 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly TransferPromptController _controller;
             private readonly Path _directory;
-            private readonly IList<Path> _isLoadingListingInBackground;
             private readonly Transfer _transfer;
 
             public ChildGetterTransferPromptBackgrounAction(TransferPromptController controller, Transfer transfer,
                                                             Path directory, IList<Path> isLoadingListingInBackground)
-                : base(controller, new DialogAlertCallback(controller), controller, controller)
+                : base(
+                    transfer.getSessions(), Cache.empty(), controller, new DialogAlertCallback(controller), controller,
+                    controller)
             {
                 _controller = controller;
                 _transfer = transfer;
                 _directory = directory;
-                _isLoadingListingInBackground = isLoadingListingInBackground;
-            }
-
-            public override List getSessions()
-            {
-                return _transfer.getSessions();
             }
 
             public override object run()

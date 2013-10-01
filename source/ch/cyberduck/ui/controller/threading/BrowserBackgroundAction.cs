@@ -20,7 +20,6 @@ using Ch.Cyberduck.Ui.Winforms.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui.threading;
-using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
@@ -29,22 +28,14 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
         private readonly BackgroundActionRegistry _registry = BackgroundActionRegistry.global();
 
         protected BrowserBackgroundAction(BrowserController controller)
-            : base(controller, new DialogAlertCallback(controller), controller, controller)
+            : base(
+                controller.getSession(), controller.Cache, controller, new DialogAlertCallback(controller), controller,
+                controller)
         {
             BrowserController = controller;
         }
 
         public BrowserController BrowserController { get; private set; }
-
-        public override List getSessions()
-        {
-            Session session = BrowserController.getSession();
-            if (null == session)
-            {
-                return Collections.emptyList();
-            }
-            return Collections.singletonList(session);
-        }
 
         public override void prepare()
         {

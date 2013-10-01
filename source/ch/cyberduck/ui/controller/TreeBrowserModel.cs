@@ -30,13 +30,15 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class TreeBrowserModel
     {
+        private readonly Cache _cache;
         private readonly BrowserController _controller;
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
         private readonly string _unknown = LocaleFactory.localizedString("Unknown");
 
-        public TreeBrowserModel(BrowserController controller)
+        public TreeBrowserModel(BrowserController controller, Cache cache)
         {
             _controller = controller;
+            _cache = cache;
         }
 
         public bool CanExpand(object path)
@@ -48,17 +50,16 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Path directory = (Path) p;
             AttributedList list;
-            Cache cache = _controller.getSession().cache();
-            if (!cache.isCached(directory.getReference()))
+            if (!_cache.isCached(directory.getReference()))
             {
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
                 // switch to blocking children fetching
                 //path.childs();
-                _controller.background(new ListAction(_controller, directory));
+                _controller.background(new ListAction(_controller, directory, _cache));
             }
-            list = cache.get(directory.getReference())
-                        .filter(_controller.FilenameComparator, _controller.FilenameFilter);
+            list = _cache.get(directory.getReference())
+                         .filter(_controller.FilenameComparator, _controller.FilenameFilter);
             for (int i = 0; i < list.size(); i++)
             {
                 yield return (Path) list.get(i);
@@ -164,8 +165,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class ListAction : WorkerBackgroundAction
         {
-            public ListAction(BrowserController controller, Path directory)
-                : base(controller, new InnerListWorker(controller, directory))
+            public ListAction(BrowserController controller, Path directory, Cache cache)
+                : base(controller, new InnerListWorker(controller, directory, cache))
             {
             }
 
@@ -173,9 +174,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly BrowserController _controller;
 
-                public InnerListWorker(BrowserController controller, Path directory)
+                public InnerListWorker(BrowserController controller, Path directory, Cache cache)
                     : base(
-                        controller.getSession(), controller.getSession().cache(), directory,
+                        controller.getSession(), cache, directory,
                         new DisabledListProgressListener())
                 {
                     _controller = controller;
