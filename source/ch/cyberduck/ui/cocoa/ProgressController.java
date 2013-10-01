@@ -148,27 +148,22 @@ public class ProgressController extends BundleController implements TransferList
 
     @Override
     public void message(final String message) {
-        this.invoke(new DefaultMainAction() {
-            @Override
-            public void run() {
-                final String text;
-                if(StringUtils.isBlank(message)) {
-                    // Do not display any progress text when transfer is stopped
-                    final Date timestamp = transfer.getTimestamp();
-                    if(null != timestamp) {
-                        text = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime(), false);
-                    }
-                    else {
-                        text = StringUtils.EMPTY;
-                    }
-                }
-                else {
-                    text = message;
-                }
-                messageField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        text, TRUNCATE_MIDDLE_ATTRIBUTES));
+        final String text;
+        if(StringUtils.isBlank(message)) {
+            // Do not display any progress text when transfer is stopped
+            final Date timestamp = transfer.getTimestamp();
+            if(null != timestamp) {
+                text = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime(), false);
             }
-        });
+            else {
+                text = StringUtils.EMPTY;
+            }
+        }
+        else {
+            text = message;
+        }
+        messageField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                text, TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void status(final String status) {

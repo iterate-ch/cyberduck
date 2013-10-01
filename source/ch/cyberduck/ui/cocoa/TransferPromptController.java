@@ -28,7 +28,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
@@ -97,14 +96,9 @@ public abstract class TransferPromptController extends SheetController
 
     @Override
     public void message(final String message) {
-        invoke(new WindowMainAction(this) {
-            @Override
-            public void run() {
-                // Update the status label at the bottom of the browser window
-                statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(message,
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
-            }
-        });
+        // Update the status label at the bottom of the browser window
+        statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(message,
+                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     protected TransferAction action

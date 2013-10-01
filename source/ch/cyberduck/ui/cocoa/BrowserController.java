@@ -2164,36 +2164,31 @@ public class BrowserController extends WindowController
      */
     @Override
     public void message(final String label) {
-        this.invoke(new WindowMainAction(this) {
-            @Override
-            public void run() {
-                if(StringUtils.isNotBlank(label)) {
-                    // Update the status label at the bottom of the browser window
-                    statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label,
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
+        if(StringUtils.isNotBlank(label)) {
+            // Update the status label at the bottom of the browser window
+            statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label,
+                    TRUNCATE_MIDDLE_ATTRIBUTES));
+        }
+        else {
+            if(getSelectedTabView() == TAB_BOOKMARKS) {
+                statusLabel.setAttributedStringValue(
+                        NSAttributedString.attributedStringWithAttributes(String.format("%s %s", bookmarkTable.numberOfRows(),
+                                LocaleFactory.localizedString("Bookmarks")),
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
+            }
+            else {
+                // Browser view
+                if(isConnected()) {
+                    statusLabel.setAttributedStringValue(
+                            NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
+                                    String.valueOf(getSelectedBrowserView().numberOfRows())),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                 }
                 else {
-                    if(getSelectedTabView() == TAB_BOOKMARKS) {
-                        statusLabel.setAttributedStringValue(
-                                NSAttributedString.attributedStringWithAttributes(String.format("%s %s", bookmarkTable.numberOfRows(),
-                                        LocaleFactory.localizedString("Bookmarks")),
-                                        TRUNCATE_MIDDLE_ATTRIBUTES));
-                    }
-                    else {
-                        // Browser view
-                        if(isConnected()) {
-                            statusLabel.setAttributedStringValue(
-                                    NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
-                                            String.valueOf(getSelectedBrowserView().numberOfRows())),
-                                            TRUNCATE_MIDDLE_ATTRIBUTES));
-                        }
-                        else {
-                            statusLabel.setStringValue(StringUtils.EMPTY);
-                        }
-                    }
+                    statusLabel.setStringValue(StringUtils.EMPTY);
                 }
             }
-        });
+        }
     }
 
     @Override
