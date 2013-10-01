@@ -352,7 +352,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void storageClassPopupClicked(final NSPopUpButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
@@ -392,7 +392,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void encryptionButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Encryption feature = controller.getSession().getFeature(Encryption.class);
@@ -432,7 +432,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketLoggingButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     controller.getSession().getFeature(Logging.class).setConfiguration(containerService.getContainer(getSelected()),
@@ -486,7 +486,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -533,7 +533,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     controller.getSession().getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()), prompt,
@@ -565,7 +565,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketMfaButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     controller.getSession().getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()),
@@ -658,7 +658,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void lifecyclePopupClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     controller.getSession().getFeature(Lifecycle.class).setConfiguration(containerService.getContainer(getSelected()),
@@ -2001,7 +2001,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 String location;
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
@@ -2482,7 +2482,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -2521,7 +2521,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionApplyButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
@@ -2561,7 +2561,7 @@ public class InfoController extends ToolbarWindowController {
                     = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
             final List<Path> rootDocuments = new ArrayList<Path>();
             final Session<?> session = controller.getSession();
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 private Distribution distribution = new Distribution(container.getName(), method);
 
                 @Override
@@ -2700,7 +2700,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleDistributionSettings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(controller)) {
+            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
