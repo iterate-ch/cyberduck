@@ -46,6 +46,9 @@ public final class HostCredentials extends Credentials {
 
     @Override
     public String getPasswordPlaceholder() {
+        if(this.isPublicKeyAuthentication()) {
+            return LocaleFactory.localizedString("Private Key Passphrase", "Credentials");
+        }
         return host.getProtocol().getPasswordPlaceholder();
     }
 }
