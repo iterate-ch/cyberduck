@@ -126,8 +126,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     /**
-     * @return True if the feaatures AUTH TLS, PBSZ and PROT are supported.
-     * @throws BackgroundException Error reading FEAT response
+     * @return True if the server features AUTH TLS, PBSZ and PROT
      */
     protected boolean isTLSSupported() throws BackgroundException {
         try {
