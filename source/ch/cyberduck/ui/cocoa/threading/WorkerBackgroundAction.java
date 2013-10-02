@@ -21,13 +21,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.ui.action.Worker;
 import ch.cyberduck.ui.cocoa.BrowserController;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> {
-    private static Logger log = Logger.getLogger(WorkerBackgroundAction.class);
 
     private Worker<T> worker;
 
