@@ -124,7 +124,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
      * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
      * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
      */
-    public void sort(Comparator<E> comparator) {
+    private void sort(Comparator<E> comparator) {
         if(null == comparator) {
             return;
         }
