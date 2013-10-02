@@ -99,12 +99,10 @@ public class FolderController extends FileController {
 
     protected void createFolder(final Path workdir, final String filename) {
         final BrowserController c = (BrowserController) parent;
-        c.background(new BrowserBackgroundAction(c) {
-            final Path folder = new Path(workdir,
-                    filename, Path.DIRECTORY_TYPE);
-
+        final Path folder = new Path(workdir, filename, Path.DIRECTORY_TYPE);
+        c.background(new BrowserBackgroundAction<Path>(c) {
             @Override
-            public Boolean run() throws BackgroundException {
+            public Path run() throws BackgroundException {
                 final Directory feature = c.getSession().getFeature(Directory.class);
                 if(hasLocation()) {
                     feature.mkdir(folder, regionPopup.selectedItem().representedObject());
@@ -112,7 +110,7 @@ public class FolderController extends FileController {
                 else {
                     feature.mkdir(folder, null);
                 }
-                return true;
+                return folder;
             }
 
             @Override

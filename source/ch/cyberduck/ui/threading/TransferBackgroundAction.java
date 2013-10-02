@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @version $Id$
  */
-public class TransferBackgroundAction extends ControllerBackgroundAction {
+public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean> {
     private static final Logger log = Logger.getLogger(TransferBackgroundAction.class);
 
     private Transfer transfer;

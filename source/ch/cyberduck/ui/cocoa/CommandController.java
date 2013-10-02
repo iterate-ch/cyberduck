@@ -107,14 +107,14 @@ public class CommandController extends SheetController implements TranscriptList
         if(StringUtils.isNotBlank(command)) {
             progress.startAnimation(null);
             sender.setEnabled(false);
-            parent.background(new BrowserBackgroundAction((BrowserController) parent) {
+            parent.background(new BrowserBackgroundAction<Void>((BrowserController) parent) {
                 boolean close;
 
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     final Command feature = session.getFeature(Command.class);
                     feature.send(command, this);
-                    return true;
+                    return null;
                 }
 
                 @Override

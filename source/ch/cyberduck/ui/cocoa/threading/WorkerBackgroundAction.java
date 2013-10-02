@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
+public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> {
     private static Logger log = Logger.getLogger(WorkerBackgroundAction.class);
 
     private Worker<T> worker;

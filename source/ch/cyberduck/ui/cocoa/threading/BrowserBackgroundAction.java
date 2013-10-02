@@ -32,7 +32,7 @@ import ch.cyberduck.ui.threading.ControllerBackgroundAction;
 /**
  * @version $Id$
  */
-public abstract class BrowserBackgroundAction extends ControllerBackgroundAction {
+public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAction<T> {
 
     private BrowserController controller;
 

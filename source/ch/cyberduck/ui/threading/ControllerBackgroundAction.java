@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class ControllerBackgroundAction extends SessionBackgroundAction<Boolean> {
+public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAction<T> {
 
     public ControllerBackgroundAction(final Session<?> session, final Cache cache,
                                       final Controller controller, final AlertCallback alert,

@@ -486,21 +486,19 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
+            this.background(new BrowserBackgroundAction<Void>(controller, new PanelAlertCallback(this)) {
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
                     final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class);
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
-                        iam.create(controller.getSession().getFeature(AnalyticsProvider.class
-                        ).getName(), document, prompt);
+                        iam.create(controller.getSession().getFeature(AnalyticsProvider.class).getName(), document, prompt);
                     }
                     else {
-                        iam.delete(controller.getSession().getFeature(AnalyticsProvider.class
-                        ).getName(), prompt);
+                        iam.delete(controller.getSession().getFeature(AnalyticsProvider.class).getName(), prompt);
                     }
-                    return true;
+                    return null;
                 }
 
                 @Override
@@ -533,15 +531,15 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
+            this.background(new BrowserBackgroundAction<Void>(controller, new PanelAlertCallback(this)) {
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     controller.getSession().getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()), prompt,
                             new VersioningConfiguration(
                                     bucketVersioningButton.state() == NSCell.NSOnState,
                                     bucketMfaButton.state() == NSCell.NSOnState)
                     );
-                    return true;
+                    return null;
                 }
 
                 @Override
@@ -565,16 +563,16 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketMfaButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
+            this.background(new BrowserBackgroundAction<Void>(controller, new PanelAlertCallback(this)) {
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     controller.getSession().getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()),
                             prompt,
                             new VersioningConfiguration(
                                     bucketVersioningButton.state() == NSCell.NSOnState,
                                     bucketMfaButton.state() == NSCell.NSOnState)
                     );
-                    return true;
+                    return null;
                 }
 
                 @Override
@@ -658,15 +656,15 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void lifecyclePopupClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
+            this.background(new BrowserBackgroundAction<Void>(controller, new PanelAlertCallback(this)) {
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     controller.getSession().getFeature(Lifecycle.class).setConfiguration(containerService.getContainer(getSelected()),
                             new LifecycleConfiguration(
                                     lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
                                     lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null)
                     );
-                    return true;
+                    return null;
                 }
 
                 @Override
@@ -2001,7 +1999,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
+            this.background(new BrowserBackgroundAction<Void>(controller, new PanelAlertCallback(this)) {
                 String location;
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
@@ -2011,7 +2009,7 @@ public class InfoController extends ToolbarWindowController {
                 Credentials credentials;
 
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     final Path container = containerService.getContainer(getSelected());
                     if(session.getFeature(Location.class) != null) {
                         location = session.getFeature(Location.class).getLocation(container);
@@ -2039,7 +2037,7 @@ public class InfoController extends ToolbarWindowController {
                             encryption = session.getFeature(Encryption.class).getEncryption(getSelected());
                         }
                     }
-                    return true;
+                    return null;
                 }
 
                 @Override
@@ -2482,16 +2480,16 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
+            this.background(new BrowserBackgroundAction<Void>(controller, new PanelAlertCallback(this)) {
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = containerService.getContainer(getSelected());
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                     final Purge feature = cdn.getFeature(Purge.class, method);
                     feature.invalidate(container, method, files, prompt);
-                    return true;
+                    return null;
                 }
 
                 @Override
@@ -2521,9 +2519,9 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionApplyButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
+            this.background(new BrowserBackgroundAction<Void>(controller, new PanelAlertCallback(this)) {
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = containerService.getContainer(getSelected());
@@ -2534,7 +2532,7 @@ public class InfoController extends ToolbarWindowController {
                     configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
                     configuration.setCNAMEs(StringUtils.split(distributionCnameField.stringValue()));
                     cdn.write(container, configuration, prompt);
-                    return true;
+                    return null;
                 }
 
                 @Override
@@ -2561,18 +2559,18 @@ public class InfoController extends ToolbarWindowController {
                     = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
             final List<Path> rootDocuments = new ArrayList<Path>();
             final Session<?> session = controller.getSession();
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
+            this.background(new BrowserBackgroundAction<Distribution>(controller, new PanelAlertCallback(this)) {
                 private Distribution distribution = new Distribution(container.getName(), method);
 
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Distribution run() throws BackgroundException {
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                     distribution = cdn.read(container, method, prompt);
                     if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                         // Make sure container items are cached for default root object.
                         rootDocuments.addAll(session.list(container, new DisabledListProgressListener()));
                     }
-                    return true;
+                    return distribution;
                 }
 
                 @Override
@@ -2700,9 +2698,9 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleDistributionSettings(false)) {
-            this.background(new BrowserBackgroundAction(controller, new PanelAlertCallback(this)) {
+            this.background(new BrowserBackgroundAction<Void>(controller, new PanelAlertCallback(this)) {
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
                         final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
@@ -2711,7 +2709,7 @@ public class InfoController extends ToolbarWindowController {
                     else {
                         session.getFeature(IdentityConfiguration.class).delete(session.getFeature(AnalyticsProvider.class).getName(), prompt);
                     }
-                    return true;
+                    return null;
                 }
 
                 @Override

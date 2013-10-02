@@ -3514,7 +3514,7 @@ public class BrowserController extends WindowController
             c.window().close();
         }
         if(this.hasSession()) {
-            this.background(new BrowserBackgroundAction(this) {
+            this.background(new BrowserBackgroundAction<Void>(this) {
                 @Override
                 public void prepare() throws ConnectionCanceledException {
                     if(!session.isConnected()) {
@@ -3524,9 +3524,9 @@ public class BrowserController extends WindowController
                 }
 
                 @Override
-                public Boolean run() throws BackgroundException {
+                public Void run() throws BackgroundException {
                     session.close();
-                    return true;
+                    return null;
                 }
 
                 @Override

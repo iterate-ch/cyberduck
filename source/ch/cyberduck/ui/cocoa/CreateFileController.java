@@ -61,12 +61,10 @@ public class CreateFileController extends FileController {
 
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
         final BrowserController c = (BrowserController) parent;
-        c.background(new BrowserBackgroundAction(c) {
-            final Path file = new Path(workdir,
-                    filename, Path.FILE_TYPE);
-
+        final Path file = new Path(workdir, filename, Path.FILE_TYPE);
+        c.background(new BrowserBackgroundAction<Path>(c) {
             @Override
-            public Boolean run() throws BackgroundException {
+            public Path run() throws BackgroundException {
                 final Session<?> session = c.getSession();
                 final Touch feature = session.getFeature(Touch.class);
                 feature.touch(file);
@@ -74,7 +72,7 @@ public class CreateFileController extends FileController {
                     Editor editor = EditorFactory.instance().create(c, session, file);
                     editor.open();
                 }
-                return true;
+                return file;
             }
 
             @Override
