@@ -2548,7 +2548,6 @@ source/ch/cyberduck/core/aquaticprime/LicenseVerifier.cs -text
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
 source/ch/cyberduck/core/date/AbstractUserDateFormatter.java -text
-source/ch/cyberduck/core/editor/Editor.cs -text
 source/ch/cyberduck/core/editor/EditorFactory.cs -text
 source/ch/cyberduck/core/editor/RegistryApplicationFinder.cs -text
 source/ch/cyberduck/core/editor/WatchEditor.cs -text
@@ -2667,11 +2666,10 @@ source/ch/cyberduck/ui/controller/UploadPromptController.cs -text
 source/ch/cyberduck/ui/controller/UploadPromptModel.cs -text
 source/ch/cyberduck/ui/controller/UserPreferences.cs -text
 source/ch/cyberduck/ui/controller/WindowController.cs -text
-source/ch/cyberduck/ui/controller/threading/BrowserBackgroundAction.cs -text
+source/ch/cyberduck/ui/controller/threading/BrowserControllerBackgroundAction.cs -text
 source/ch/cyberduck/ui/controller/threading/SimpleDefaultMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/SimpleWindowMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/WindowMainAction.cs -text
-source/ch/cyberduck/ui/controller/threading/WorkerBackgroundAction.cs -text
 source/ch/cyberduck/ui/growl/GrowlFactory.java -text
 source/ch/cyberduck/ui/growl/GrowlImpl.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.Designer.cs -text

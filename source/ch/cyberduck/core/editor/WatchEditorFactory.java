@@ -25,6 +25,7 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.cocoa.BrowserController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,8 +81,8 @@ public class WatchEditorFactory extends EditorFactory {
     }
 
     @Override
-    public Editor create(final Controller c, final Session session, final Application application, final Path path) {
-        return new WatchEditor(c, session, application, path);
+    public Editor create(final Controller c, final Session session, final Application application, final Path file) {
+        return new WatchEditor((BrowserController) c, session, application, file);
     }
 
     @Override

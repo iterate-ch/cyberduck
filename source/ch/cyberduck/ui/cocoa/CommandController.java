@@ -33,7 +33,7 @@ import ch.cyberduck.ui.cocoa.application.NSTextView;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
@@ -107,7 +107,7 @@ public class CommandController extends SheetController implements TranscriptList
         if(StringUtils.isNotBlank(command)) {
             progress.startAnimation(null);
             sender.setEnabled(false);
-            parent.background(new BrowserBackgroundAction<Void>((BrowserController) parent) {
+            parent.background(new BrowserControllerBackgroundAction<Void>((BrowserController) parent) {
                 boolean close;
 
                 @Override

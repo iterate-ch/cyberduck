@@ -1,14 +1,18 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.ui.AbstractController;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
-import ch.cyberduck.ui.cocoa.BrowserController;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -49,12 +53,12 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testGetSessions() throws Exception {
-        assertFalse(new BrowserBackgroundAction(new BrowserController() {
+        assertFalse(new BrowserBackgroundAction(new AbstractController() {
             @Override
-            protected String getBundleName() {
-                return null;
+            public void invoke(final MainAction runnable, final boolean wait) {
+                throw new UnsupportedOperationException();
             }
-        }) {
+        }, new NullSession(new Host("t")), Cache.empty()) {
             @Override
             public Boolean run() throws BackgroundException {
                 return false;

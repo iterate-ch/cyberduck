@@ -18,8 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionListener;
+import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
@@ -103,6 +105,12 @@ public class TaskController extends BundleController {
             public void stop(BackgroundAction action) {
                 progress.stopAnimation(null);
                 action.removeListener(this);
+            }
+
+            @Override
+            public void alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
+                              final StringBuilder transcript) {
+                //
             }
         });
     }

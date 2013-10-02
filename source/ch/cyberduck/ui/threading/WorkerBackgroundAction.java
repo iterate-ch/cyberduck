@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.ui.threading;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -17,9 +17,11 @@ package ch.cyberduck.ui.cocoa.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.action.Worker;
-import ch.cyberduck.ui.cocoa.BrowserController;
 
 /**
  * @version $Id$
@@ -30,8 +32,9 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
 
     private T result;
 
-    public WorkerBackgroundAction(final BrowserController controller, final Worker<T> worker) {
-        super(controller);
+    public WorkerBackgroundAction(final Controller controller, final Session session,
+                                  final Worker<T> worker) {
+        super(controller, session, Cache.empty());
         this.worker = worker;
     }
 

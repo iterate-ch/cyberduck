@@ -20,13 +20,16 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -220,6 +223,12 @@ public abstract class WindowController extends BundleController implements NSWin
             return false;
         }
         return window.attachedSheet() != null;
+    }
+
+    @Override
+    public void alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
+                      final StringBuilder transcript) {
+        new PanelAlertCallback(this).alert(action, failure, transcript);
     }
 
     /**

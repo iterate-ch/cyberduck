@@ -44,12 +44,13 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
     /**
      * With custom editor for file type.
      *
-     * @param c           Browser
+     * @param controller  Browser
      * @param application Editor application
-     * @param path        Remote file
+     * @param file        Remote file
      */
-    public WatchEditor(final Controller c, final Session session, final Application application, final Path path) {
-        super(c, session, application, path);
+    public WatchEditor(final Controller controller, final Session session,
+                       final Application application, final Path file) {
+        super(controller, session, application, file);
     }
 
     /**

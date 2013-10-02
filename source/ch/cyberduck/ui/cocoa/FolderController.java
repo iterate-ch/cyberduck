@@ -27,7 +27,7 @@ import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
 import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import java.text.MessageFormat;
@@ -100,7 +100,7 @@ public class FolderController extends FileController {
     protected void createFolder(final Path workdir, final String filename) {
         final BrowserController c = (BrowserController) parent;
         final Path folder = new Path(workdir, filename, Path.DIRECTORY_TYPE);
-        c.background(new BrowserBackgroundAction<Path>(c) {
+        c.background(new BrowserControllerBackgroundAction<Path>(c) {
             @Override
             public Path run() throws BackgroundException {
                 final Directory feature = c.getSession().getFeature(Directory.class);

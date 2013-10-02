@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.io.FilenameUtils;
@@ -66,7 +66,7 @@ public class CreateSymlinkController extends FileController {
         final BrowserController c = (BrowserController) parent;
         final Session<?> session = this.getSession();
         final Path link = new Path(this.getWorkdir(), symlink, Path.FILE_TYPE);
-        c.background(new BrowserBackgroundAction<Path>(c) {
+        c.background(new BrowserControllerBackgroundAction<Path>(c) {
             @Override
             public Path run() throws BackgroundException {
                 // Symlink pointing to existing file

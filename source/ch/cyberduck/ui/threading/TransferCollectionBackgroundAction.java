@@ -24,7 +24,6 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -46,7 +45,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
 
     private Transfer transfer;
 
-    public TransferCollectionBackgroundAction(final Controller controller, final AlertCallback alert,
+    public TransferCollectionBackgroundAction(final Controller controller,
                                               final TransferListener transferListener,
                                               final ProgressListener progressListener,
                                               final TranscriptListener transcriptListener,
@@ -54,7 +53,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
                                               final TransferPrompt prompt,
                                               final TransferErrorCallback error,
                                               final TransferOptions options) {
-        super(controller, alert, transferListener, progressListener, transcriptListener, transfer, prompt, error, options);
+        super(controller, transferListener, progressListener, transcriptListener, transfer, prompt, error, options);
         this.transfer = transfer;
     }
 

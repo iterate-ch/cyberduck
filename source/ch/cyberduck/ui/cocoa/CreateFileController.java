@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import java.text.MessageFormat;
@@ -62,7 +62,7 @@ public class CreateFileController extends FileController {
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
         final BrowserController c = (BrowserController) parent;
         final Path file = new Path(workdir, filename, Path.FILE_TYPE);
-        c.background(new BrowserBackgroundAction<Path>(c) {
+        c.background(new BrowserControllerBackgroundAction<Path>(c) {
             @Override
             public Path run() throws BackgroundException {
                 final Session<?> session = c.getSession();

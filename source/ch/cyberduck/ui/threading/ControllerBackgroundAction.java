@@ -18,9 +18,8 @@ package ch.cyberduck.ui.threading;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.Controller;
@@ -34,20 +33,38 @@ import java.util.List;
  */
 public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAction<T> {
 
-    public ControllerBackgroundAction(final Session<?> session, final Cache cache,
-                                      final Controller controller, final AlertCallback alert,
-                                      final ProgressListener progressListener, final TranscriptListener transcriptListener) {
-        super(session, cache, alert, progressListener, transcriptListener,
+    private Controller controller;
+
+    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache,
+                                      final AlertCallback alert) {
+        super(session, cache, alert, controller, controller,
                 LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
+        this.controller = controller;
+    }
+
+    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache) {
+        super(session, cache, controller, controller, controller,
+                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
+        this.controller = controller;
     }
 
 
-    public ControllerBackgroundAction(final List<Session<?>> sessions,
-                                      final Cache cache,
-                                      final Controller controller, final AlertCallback alert,
-                                      final ProgressListener progressListener,
-                                      final TranscriptListener transcriptListener) {
-        super(sessions, cache, alert, progressListener, transcriptListener,
+    public ControllerBackgroundAction(final Controller controller, final List<Session<?>> sessions,
+                                      final Cache cache) {
+        super(sessions, cache, controller, controller, controller,
                 LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
+        this.controller = controller;
+    }
+
+    @Override
+    public void prepare() throws ConnectionCanceledException {
+        this.addListener(controller);
+        super.prepare();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        this.removeListener(controller);
     }
 }

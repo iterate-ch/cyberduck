@@ -18,11 +18,17 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundAction> implements BackgroundActionListener {
     private static final long serialVersionUID = 1721336643608575003L;
+
+    private static final Logger log = Logger.getLogger(BackgroundActionRegistry.class);
 
     private static BackgroundActionRegistry global = null;
 
@@ -59,6 +65,12 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
     @Override
     public void cancel(final BackgroundAction action) {
         current = null;
+    }
+
+    @Override
+    public void alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
+                      final StringBuilder transcript) {
+        log.warn(failure.getMessage());
     }
 
     /**

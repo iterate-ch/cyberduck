@@ -88,7 +88,7 @@ public abstract class AbstractEditor implements Editor {
     /**
      * Session for transfers
      */
-    private Session session;
+    protected Session session;
 
     public AbstractEditor(final Application application, final Session session, final Path path) {
         this.application = application;

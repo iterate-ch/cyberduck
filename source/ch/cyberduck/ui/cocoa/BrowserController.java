@@ -66,17 +66,16 @@ import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
-import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
-import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
+import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.PanelTransferErrorCallback;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 import ch.cyberduck.ui.threading.TransferBackgroundAction;
+import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -429,7 +428,7 @@ public class BrowserController extends WindowController
             if(downloads.size() > 0) {
                 final Transfer download = new DownloadTransfer(session, downloads);
                 final TransferOptions options = new TransferOptions();
-                background(new TransferBackgroundAction(this, new PanelAlertCallback(this), new TransferAdapter() {
+                background(new TransferBackgroundAction(this, new TransferAdapter() {
                     @Override
                     public void progress(final TransferProgress status) {
                         message(status.getProgress());
@@ -2132,10 +2131,6 @@ public class BrowserController extends WindowController
         this.statusSpinner.setIndeterminate(true);
     }
 
-    public NSProgressIndicator getProgress() {
-        return statusSpinner;
-    }
-
     @Outlet
     protected NSProgressIndicator browserSpinner;
 
@@ -2157,6 +2152,16 @@ public class BrowserController extends WindowController
     public void setStatus() {
         final BackgroundAction current = this.getActions().getCurrent();
         this.message(null != current ? current.getActivity() : null);
+    }
+
+    @Override
+    public void stop(final BackgroundAction action) {
+        statusSpinner.stopAnimation(null);
+    }
+
+    @Override
+    public void start(final BackgroundAction action) {
+        statusSpinner.startAnimation(null);
     }
 
     /**
@@ -2320,7 +2325,7 @@ public class BrowserController extends WindowController
                 final ArrayList<Path> changed = new ArrayList<Path>();
                 changed.addAll(selected.keySet());
                 changed.addAll(selected.values());
-                background(new WorkerBackgroundAction<Boolean>(BrowserController.this,
+                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, session,
                         new MoveWorker(session, selected) {
                             @Override
                             public void cleanup(final Boolean result) {
@@ -2500,7 +2505,7 @@ public class BrowserController extends WindowController
     }
 
     private void deletePathsImpl(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<Boolean>(this,
+        this.background(new WorkerBackgroundAction<Boolean>(this, session,
                 new DeleteWorker(session, LoginControllerFactory.get(BrowserController.this), files) {
                     @Override
                     public void cleanup(final Boolean result) {
@@ -2514,7 +2519,7 @@ public class BrowserController extends WindowController
      * @param selected File
      */
     public void revertPath(final Path selected) {
-        this.background(new BrowserBackgroundAction(this) {
+        this.background(new BrowserControllerBackgroundAction(this) {
             @Override
             public Boolean run() throws BackgroundException {
                 final Versioning feature = session.getFeature(Versioning.class);
@@ -2888,7 +2893,7 @@ public class BrowserController extends WindowController
             }
         };
         if(browser) {
-            this.background(new TransferBackgroundAction(this, new PanelAlertCallback(this), new TransferAdapter() {
+            this.background(new TransferBackgroundAction(this, new TransferAdapter() {
                 @Override
                 public void progress(final TransferProgress status) {
                     message(status.getProgress());
@@ -3195,7 +3200,7 @@ public class BrowserController extends WindowController
         this.checkOverwrite(Collections.singletonList(archive.getArchive(changed)), new DefaultMainAction() {
             @Override
             public void run() {
-                background(new BrowserBackgroundAction(BrowserController.this) {
+                background(new BrowserControllerBackgroundAction(BrowserController.this) {
                     @Override
                     public Boolean run() throws BackgroundException {
                         final Compress feature = session.getFeature(Compress.class);
@@ -3231,7 +3236,7 @@ public class BrowserController extends WindowController
             this.checkOverwrite(archive.getExpanded(Collections.singletonList(s)), new DefaultMainAction() {
                 @Override
                 public void run() {
-                    background(new BrowserBackgroundAction(BrowserController.this) {
+                    background(new BrowserControllerBackgroundAction(BrowserController.this) {
                         @Override
                         public Boolean run() throws BackgroundException {
                             final Compress feature = session.getFeature(Compress.class);
@@ -3377,7 +3382,7 @@ public class BrowserController extends WindowController
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
-                background(new WorkerBackgroundAction<Path>(BrowserController.this,
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, session,
                         new MountWorker(session, cache, new DisabledListProgressListener()) {
                             @Override
                             public void cleanup(final Path workdir) {
@@ -3514,7 +3519,7 @@ public class BrowserController extends WindowController
             c.window().close();
         }
         if(this.hasSession()) {
-            this.background(new BrowserBackgroundAction<Void>(this) {
+            this.background(new BrowserControllerBackgroundAction<Void>(this) {
                 @Override
                 public void prepare() throws ConnectionCanceledException {
                     if(!session.isConnected()) {

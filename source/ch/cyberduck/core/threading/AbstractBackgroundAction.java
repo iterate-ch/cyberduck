@@ -126,7 +126,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         return name.toString();
     }
 
-    private Set<BackgroundActionListener> listeners
+    protected Set<BackgroundActionListener> listeners
             = Collections.synchronizedSet(new HashSet<BackgroundActionListener>());
 
     @Override

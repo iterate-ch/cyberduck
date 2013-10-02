@@ -43,10 +43,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
+import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -103,7 +103,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(!cache.isCached(directory.getReference())) {
             // Reloading a working directory that is not cached yet would cause the interface to freeze;
             // Delay until path is cached in the background
-            controller.background(new WorkerBackgroundAction(controller,
+            controller.background(new WorkerBackgroundAction(controller, controller.getSession(),
                     new SessionListWorker(controller.getSession(), cache, directory, new DisabledListProgressListener()) {
                         @Override
                         public void cleanup(final AttributedList<Path> list) {

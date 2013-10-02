@@ -1,4 +1,5 @@
-package ch.cyberduck.core.threading;
+package ch.cyberduck.ui.cocoa.threading;
+
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
@@ -13,17 +14,18 @@ package ch.cyberduck.core.threading;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
+
+import ch.cyberduck.ui.cocoa.BrowserController;
+import ch.cyberduck.ui.threading.BrowserBackgroundAction;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface BackgroundActionListener extends AlertCallback {
-    void start(BackgroundAction action);
+public abstract class BrowserControllerBackgroundAction<T> extends BrowserBackgroundAction<T> {
 
-    void cancel(BackgroundAction action);
-
-    void stop(BackgroundAction action);
+    public BrowserControllerBackgroundAction(final BrowserController controller) {
+        super(controller, controller.getSession(), controller.getCache());
+    }
 }

@@ -18,7 +18,10 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundActionListener;
 import ch.cyberduck.core.threading.MainAction;
 
 import java.util.concurrent.Future;
@@ -26,7 +29,7 @@ import java.util.concurrent.Future;
 /**
  * @version $Id$
  */
-public interface Controller {
+public interface Controller extends ProgressListener, TranscriptListener, BackgroundActionListener {
 
     /**
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed

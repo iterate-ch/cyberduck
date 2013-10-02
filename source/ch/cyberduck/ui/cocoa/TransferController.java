@@ -50,7 +50,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 import ch.cyberduck.ui.cocoa.threading.PanelTransferErrorCallback;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
@@ -692,7 +691,7 @@ public final class TransferController extends WindowController implements NSTool
     public void startTransfer(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController controller = transferTableModel.getController(transfer);
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
-                new PanelAlertCallback(this), controller, controller, transcript,
+                controller, controller, transcript,
                 transfer, new TransferPrompt() {
             @Override
             public TransferAction prompt() {

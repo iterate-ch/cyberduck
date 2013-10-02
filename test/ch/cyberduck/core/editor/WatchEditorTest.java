@@ -26,7 +26,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.AbstractController;
 
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ public class WatchEditorTest extends AbstractTestCase {
         final Path path = new Path("/f1/f2/t.txt", Path.FILE_TYPE);
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
-        final WatchEditor editor = new WatchEditor(new Controller() {
+        final WatchEditor editor = new WatchEditor(new AbstractController() {
             @Override
             public <T> Future<T> background(final BackgroundAction<T> runnable) {
                 return null;

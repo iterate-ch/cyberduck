@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 
@@ -175,5 +176,41 @@ public abstract class AbstractController implements Controller {
             // Canceled action yields no result
             return null;
         }
+    }
+
+    @Override
+    public void start(final BackgroundAction action) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Start action %s", action));
+        }
+    }
+
+    @Override
+    public void cancel(final BackgroundAction action) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cancel action %s", action));
+        }
+    }
+
+    @Override
+    public void stop(final BackgroundAction action) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Stop action %s", action));
+        }
+    }
+
+    @Override
+    public void message(final String message) {
+        log.info(message);
+    }
+
+    @Override
+    public void log(final boolean request, final String message) {
+        log.info(message);
+    }
+
+    @Override
+    public void alert(final SessionBackgroundAction<?> action, final BackgroundException failure, final StringBuilder transcript) {
+        log.warn(failure.getMessage(), failure);
     }
 }
