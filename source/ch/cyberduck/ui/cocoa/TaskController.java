@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionListener;
-import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
@@ -94,27 +93,15 @@ public class TaskController extends BundleController {
         }
         this.task.addListener(new BackgroundActionListener() {
             public void start(BackgroundAction action) {
-                invoke(new DefaultMainAction() {
-                    public void run() {
-                        progress.startAnimation(null);
-                    }
-                });
+                progress.startAnimation(null);
             }
 
             public void cancel(BackgroundAction action) {
-                invoke(new DefaultMainAction() {
-                    public void run() {
-                        progress.stopAnimation(null);
-                    }
-                });
+                progress.stopAnimation(null);
             }
 
             public void stop(BackgroundAction action) {
-                invoke(new DefaultMainAction() {
-                    public void run() {
-                        progress.stopAnimation(null);
-                    }
-                });
+                progress.stopAnimation(null);
                 action.removeListener(this);
             }
         });
