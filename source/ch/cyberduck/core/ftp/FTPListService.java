@@ -28,7 +28,10 @@ import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -180,31 +183,34 @@ public class FTPListService implements ListService {
         }
     }
 
-    protected AttributedList<Path> post(final Path file, final AttributedList<Path> list) throws BackgroundException {
+    protected AttributedList<Path> post(final Path directory, final AttributedList<Path> list) throws BackgroundException {
         try {
-            for(Path child : list) {
-                if(child.attributes().isSymbolicLink()) {
-                    list.remove(list.indexOf(child.getReference()));
-                    if(session.getClient().changeWorkingDirectory(child.getAbsolute())) {
-                        child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+            final List<Path> symlinks = new ArrayList<Path>();
+            for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
+                final Path file = iter.next();
+                if(file.attributes().isSymbolicLink()) {
+                    iter.remove();
+                    if(session.getClient().changeWorkingDirectory(file.getAbsolute())) {
+                        file.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                     }
                     else {
                         // Try if change working directory to symbolic link target succeeds
-                        if(session.getClient().changeWorkingDirectory(child.getSymlinkTarget().getAbsolute())) {
+                        if(session.getClient().changeWorkingDirectory(file.getSymlinkTarget().getAbsolute())) {
                             // Workdir change succeeded
-                            child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                            file.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                         }
                         else {
-                            child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                            file.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                         }
                     }
-                    list.add(child);
+                    symlinks.add(file);
                 }
             }
+            list.addAll(symlinks);
             return list;
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Listing directory failed", e, file);
+            throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
         }
     }
 }
