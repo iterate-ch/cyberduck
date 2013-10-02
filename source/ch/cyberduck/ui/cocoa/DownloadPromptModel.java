@@ -40,26 +40,22 @@ public class DownloadPromptModel extends TransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = tableViewCache.get(item, identifier);
-        if(null == cached) {
-            if(identifier.equals(Column.size.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        SizeFormatterFactory.get().format(item.getLocal().attributes().getSize()),
-                        TableCellAttributes.browserFontRightAlignment()));
-            }
-            if(identifier.equals(Column.warning.name())) {
-                if(item.attributes().isFile()) {
-                    if(item.attributes().getSize() == 0) {
-                        return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
-                    }
-                    if(item.getLocal().attributes().getSize() > item.attributes().getSize()) {
-                        return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
-                    }
-                }
-                return null;
-            }
-            return super.objectValueForItem(item, identifier);
+        if(identifier.equals(Column.size.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    SizeFormatterFactory.get().format(item.getLocal().attributes().getSize()),
+                    TableCellAttributes.browserFontRightAlignment());
         }
-        return cached;
+        if(identifier.equals(Column.warning.name())) {
+            if(item.attributes().isFile()) {
+                if(item.attributes().getSize() == 0) {
+                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                }
+                if(item.getLocal().attributes().getSize() > item.attributes().getSize()) {
+                    IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                }
+            }
+            return null;
+        }
+        return super.objectValueForItem(item, identifier);
     }
 }

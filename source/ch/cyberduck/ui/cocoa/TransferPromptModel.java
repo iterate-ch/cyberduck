@@ -24,7 +24,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -34,7 +33,6 @@ import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 import ch.cyberduck.ui.comparator.FilenameComparator;
 import ch.cyberduck.ui.threading.ControllerBackgroundAction;
 
@@ -105,8 +103,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     protected AttributedList<Path> children(final Path directory) {
         final Cache cache = transfer.cache();
         if(!cache.isCached(directory.getReference())) {
-            controller.background(new ControllerBackgroundAction(transfer.getSessions(), Cache.empty(), controller,
-                    new PanelAlertCallback(controller), controller, controller) {
+            controller.background(new ControllerBackgroundAction(controller, transfer.getSessions(), Cache.empty()
+            ) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     cache.put(directory.getReference(), transfer.children(directory));
@@ -134,28 +132,17 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         return cache.get(directory.getReference()).filter(new FilenameComparator(true), transfer.getRegexFilter());
     }
 
-    /**
-     * Second cache because it is expensive to create proxy instances
-     */
-    protected AttributeCache<Path> tableViewCache = new AttributeCache<Path>(
-            Preferences.instance().getInteger("browser.model.cache.size")
-    );
-
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = tableViewCache.get(item, identifier);
-        if(null == cached) {
-            if(identifier.equals(Column.include.name())) {
-                // Not included if the particular path should be skipped or skip existing is selected as the default transfer action for duplicate files
-                final boolean included = !transfer.isSkipped(item) && transfer.isSelected(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
-                return NSNumber.numberWithInt(included ? NSCell.NSOnState : NSCell.NSOffState);
-            }
-            if(identifier.equals(Column.filename.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
-                        TableCellAttributes.browserFontLeftAlignment()));
-            }
-            throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
+        if(identifier.equals(Column.include.name())) {
+            // Not included if the particular path should be skipped or skip existing is selected as the default transfer action for duplicate files
+            final boolean included = !transfer.isSkipped(item) && transfer.isSelected(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
+            return NSNumber.numberWithInt(included ? NSCell.NSOnState : NSCell.NSOffState);
         }
-        return cached;
+        if(identifier.equals(Column.filename.name())) {
+            return NSAttributedString.attributedStringWithAttributes(item.getName(),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
     }
 
     @Override
@@ -192,18 +179,5 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             return null;
         }
         return this.objectValueForItem(this.lookup(new NSObjectPathReference(item)), tableColumn.identifier());
-    }
-
-    /**
-     * Clear the view cache
-     */
-    protected void clear() {
-        tableViewCache.clear();
-    }
-
-    @Override
-    protected void invalidate() {
-        this.clear();
-        super.invalidate();
     }
 }

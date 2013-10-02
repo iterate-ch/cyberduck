@@ -37,26 +37,22 @@ public class UploadPromptModel extends TransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = tableViewCache.get(item, identifier);
-        if(null == cached) {
-            if(identifier.equals(TransferPromptModel.Column.warning.name())) {
-                if(item.attributes().isFile()) {
-                    if(item.getLocal().attributes().getSize() == 0) {
-                        return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
-                    }
-                    if(item.attributes().getSize() > item.getLocal().attributes().getSize()) {
-                        return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
-                    }
+        if(identifier.equals(TransferPromptModel.Column.warning.name())) {
+            if(item.attributes().isFile()) {
+                if(item.getLocal().attributes().getSize() == 0) {
+                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
                 }
-                return null;
+                if(item.attributes().getSize() > item.getLocal().attributes().getSize()) {
+                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                }
             }
-            if(identifier.equals(TransferPromptModel.Column.size.name())) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        SizeFormatterFactory.get().format(item.attributes().getSize()),
-                        TableCellAttributes.browserFontRightAlignment()));
-            }
-            return super.objectValueForItem(item, identifier);
+            return null;
         }
-        return cached;
+        if(identifier.equals(TransferPromptModel.Column.size.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    SizeFormatterFactory.get().format(item.attributes().getSize()),
+                    TableCellAttributes.browserFontRightAlignment());
+        }
+        return super.objectValueForItem(item, identifier);
     }
 }

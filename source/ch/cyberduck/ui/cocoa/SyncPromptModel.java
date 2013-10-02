@@ -50,53 +50,49 @@ public class SyncPromptModel extends TransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = tableViewCache.get(item, identifier);
-        if(null == cached) {
-            if(identifier.equals(TransferPromptModel.Column.size.name())) {
-                final Comparison compare = ((SyncTransfer) transfer).compare(item);
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        SizeFormatterFactory.get().format(
-                                compare.equals(Comparison.remote) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
-                        TableCellAttributes.browserFontRightAlignment()));
-            }
-            if(identifier.equals(Column.sync.name())) {
-                final Comparison compare = ((SyncTransfer) transfer).compare(item);
-                if(item.attributes().isDirectory()) {
-                    if(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists()) {
-                        return null;
-                    }
-                }
-                if(compare.equals(Comparison.remote)) {
-                    return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("transfer-download.tiff", 16));
-                }
-                if(compare.equals(Comparison.local)) {
-                    return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("transfer-upload.tiff", 16));
-                }
-                return null;
-            }
-            if(identifier.equals(TransferPromptModel.Column.warning.name())) {
-                if(item.attributes().isFile()) {
-                    if(transfer.cache().lookup(item.getReference()) != null) {
-                        if(item.attributes().getSize() == 0) {
-                            return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
-                        }
-                    }
-                    if(item.getLocal().exists()) {
-                        if(item.getLocal().attributes().getSize() == 0) {
-                            return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
-                        }
-                    }
-                }
-                return null;
-            }
-            if(identifier.equals(Column.create.name())) {
-                if(!(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists())) {
-                    return tableViewCache.put(item, identifier, IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16));
-                }
-                return null;
-            }
-            return super.objectValueForItem(item, identifier);
+        if(identifier.equals(TransferPromptModel.Column.size.name())) {
+            final Comparison compare = ((SyncTransfer) transfer).compare(item);
+            return NSAttributedString.attributedStringWithAttributes(
+                    SizeFormatterFactory.get().format(
+                            compare.equals(Comparison.remote) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
+                    TableCellAttributes.browserFontRightAlignment());
         }
-        return cached;
+        if(identifier.equals(Column.sync.name())) {
+            final Comparison compare = ((SyncTransfer) transfer).compare(item);
+            if(item.attributes().isDirectory()) {
+                if(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists()) {
+                    return null;
+                }
+            }
+            if(compare.equals(Comparison.remote)) {
+                return IconCacheFactory.<NSImage>get().iconNamed("transfer-download.tiff", 16);
+            }
+            if(compare.equals(Comparison.local)) {
+                return IconCacheFactory.<NSImage>get().iconNamed("transfer-upload.tiff", 16);
+            }
+            return null;
+        }
+        if(identifier.equals(TransferPromptModel.Column.warning.name())) {
+            if(item.attributes().isFile()) {
+                if(transfer.cache().lookup(item.getReference()) != null) {
+                    if(item.attributes().getSize() == 0) {
+                        return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                    }
+                }
+                if(item.getLocal().exists()) {
+                    if(item.getLocal().attributes().getSize() == 0) {
+                        return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                    }
+                }
+            }
+            return null;
+        }
+        if(identifier.equals(Column.create.name())) {
+            if(!(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists())) {
+                return IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16);
+            }
+            return null;
+        }
+        return super.objectValueForItem(item, identifier);
     }
 }
