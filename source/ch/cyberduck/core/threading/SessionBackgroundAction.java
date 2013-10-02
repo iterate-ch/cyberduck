@@ -202,11 +202,14 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         return null;
     }
 
-    protected void connect(final Session session) throws BackgroundException {
+    protected boolean connect(final Session session) throws BackgroundException {
         if(connection.check(session, cache)) {
             // New connection opened
             growl.notify("Connection opened", session.getHost().getHostname());
+            return true;
         }
+        // Use existing connection
+        return false;
     }
 
     @Override

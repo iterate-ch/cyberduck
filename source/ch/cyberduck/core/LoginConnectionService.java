@@ -75,6 +75,7 @@ public class LoginConnectionService implements ConnectionService {
      * Open connection if needed.
      *
      * @param session Session
+     * @return True if new connection was opened. False if connection is reused.
      * @throws BackgroundException If opening connection fails
      */
     @Override
