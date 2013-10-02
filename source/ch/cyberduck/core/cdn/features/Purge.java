@@ -37,5 +37,6 @@ public interface Purge {
      * @param files     Selected files or containers to purge
      * @param prompt    Callback
      */
-    void invalidate(final Path container, Distribution.Method method, List<Path> files, final LoginController prompt) throws BackgroundException;
+    void invalidate(Path container, Distribution.Method method, List<Path> files,
+                    LoginController prompt) throws BackgroundException;
 }
