@@ -22,7 +22,6 @@ import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TransferCollection;
@@ -60,10 +59,9 @@ public class TransferTableDataSource extends ListDataSource {
         progress,
     }
 
-    /**
-     *
-     */
     private final Map<Transfer, ProgressController> controllers = new HashMap<Transfer, ProgressController>();
+
+    private TransferFilter filter = new NullTransferFilter();
 
     public TransferTableDataSource() {
         TransferCollection.defaultCollection().addListener(new AbstractCollectionListener<Transfer>() {
@@ -76,17 +74,6 @@ public class TransferTableDataSource extends ListDataSource {
             }
         });
     }
-
-    @Override
-    protected void invalidate() {
-        cache.clear();
-        super.invalidate();
-    }
-
-    /**
-     *
-     */
-    private TransferFilter filter = new NullTransferFilter();
 
     /**
      * @param searchString Filter hostname or file
@@ -140,28 +127,9 @@ public class TransferTableDataSource extends ListDataSource {
         return new NSInteger(this.getSource().size());
     }
 
-    /**
-     * Second cache because it is expensive to create proxy instances
-     */
-    private AttributeCache<Transfer> cache = new AttributeCache<Transfer>(
-            Preferences.instance().getInteger("queue.model.cache.size")
-    );
-
     @Override
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
-        if(row.intValue() >= this.numberOfRowsInTableView(view).intValue()) {
-            return null;
-        }
-        final String identifier = tableColumn.identifier();
-        final Transfer item = this.getSource().get(row.intValue());
-        final NSObject cached = cache.get(item, identifier);
-        if(null == cached) {
-            if(identifier.equals(Column.progress.name())) {
-                return cache.put(item, identifier, null);
-            }
-            throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
-        }
-        return cached;
+        return null;
     }
 
     // ----------------------------------------------------------
