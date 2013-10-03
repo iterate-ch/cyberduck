@@ -117,7 +117,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         //
     }
 
-    protected String toString(List<Path> files) {
+    protected String toString(final List<Path> files) {
         StringBuilder name = new StringBuilder();
         name.append(files.get(0).getName());
         if(files.size() > 1) {
@@ -130,12 +130,12 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
             = Collections.synchronizedSet(new HashSet<BackgroundActionListener>());
 
     @Override
-    public void addListener(BackgroundActionListener listener) {
+    public void addListener(final BackgroundActionListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeListener(BackgroundActionListener listener) {
+    public void removeListener(final BackgroundActionListener listener) {
         listeners.remove(listener);
     }
 
