@@ -57,11 +57,6 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
         {
             XmlDocument xmlDoc = new XmlDocument();
             XmlDeclaration declaration = xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", string.Empty);
-            // todo takes a very long time...goes to the internet probably
-            // 20100623: try with XmlResolver = null
-            // http://social.msdn.microsoft.com/Forums/en-US/xmlandnetfx/thread/45ed2191-2613-42e3-91d7-9a9a5f941309
-            //XmlDocumentType type = xmlDoc.CreateDocumentType("plist", "-//Apple//DTD PLIST 1.0//EN",
-            //                                                 "http://www.apple.com/DTDs/PropertyList-1.0.dtd", null);
             XmlNode plist = xmlDoc.CreateElement("plist");
             xmlDoc.AppendChild(declaration);
             //xmlDoc.AppendChild(type);
