@@ -1017,8 +1017,18 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (dropargs.Effect == DragDropEffects.Copy)
                 {
-                    // Drag to browser windows with different session or explicit copy requested by user.
-                    DuplicatePaths(files);
+                    foreach (BrowserController controller in MainController.Browsers)
+                    {
+                        // Find source browser
+                        if (controller.View.Browser.Equals(dropargs.SourceListView))
+                        {
+                            controller.transfer(new CopyTransfer(
+                                                    SessionFactory.createSession(controller.Session.getHost()),
+                                                    SessionFactory.createSession(Session.getHost()),
+                                                    Utils.ConvertToJavaMap(files)));
+                            break;
+                        }
+                    }
                 }
                 if (dropargs.Effect == DragDropEffects.Move)
                 {
