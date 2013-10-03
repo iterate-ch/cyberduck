@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A cache for remote directory listings
@@ -76,6 +77,10 @@ public class Cache {
 
     public boolean isEmpty() {
         return impl.isEmpty();
+    }
+
+    public Set<PathReference> keySet() {
+        return impl.keySet();
     }
 
     /**
