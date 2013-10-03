@@ -16,13 +16,16 @@
 // yves@cyberduck.ch
 // 
 
-using System;
 using System.Collections;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
+using java.lang;
 using org.apache.log4j;
+using Exception = System.Exception;
+using Object = System.Object;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -188,6 +191,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 public void stop(BackgroundAction ba)
                 {
                     _controller.View.RefreshTask(_action);
+                }
+
+
+                public void alert(SessionBackgroundAction sba, BackgroundException be, StringBuilder sb)
+                {
+                    //
                 }
             }
         }

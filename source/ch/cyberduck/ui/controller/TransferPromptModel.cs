@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Winforms;
-using Ch.Cyberduck.Ui.Winforms.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.transfer;
@@ -41,10 +40,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly string UNKNOWN = LocaleFactory.localizedString("Unknown");
         private readonly TransferPromptController _controller;
 
-        /*
-         * Container for all paths currently being listed in the background
-         */
-        private readonly List<Path> _isLoadingListingInBackground = new List<Path>();
         private readonly List<Path> _roots = new List<Path>();
         protected Bitmap AlertIcon = IconCache.Instance.IconForName("alert");
 
@@ -73,8 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Cache cache = Transfer.cache();
             if (!cache.isCached(directory.getReference()))
             {
-                _controller.Background(new ChildGetterTransferPromptBackgrounAction(_controller, Transfer, directory,
-                                                                                    _isLoadingListingInBackground));
+                _controller.Background(new ChildGetterTransferPromptBackgrounAction(_controller, Transfer, directory));
             }
             list = cache.get(directory.getReference())
                         .filter(new FilenameComparator(true), Transfer.getRegexFilter());
@@ -168,10 +162,9 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Transfer _transfer;
 
             public ChildGetterTransferPromptBackgrounAction(TransferPromptController controller, Transfer transfer,
-                                                            Path directory, IList<Path> isLoadingListingInBackground)
-                : base(
-                    transfer.getSessions(), Cache.empty(), controller, new DialogAlertCallback(controller), controller,
-                    controller)
+                                                            Path directory)
+                : base(controller,
+                       transfer.getSessions(), Cache.empty())
             {
                 _controller = controller;
                 _transfer = transfer;

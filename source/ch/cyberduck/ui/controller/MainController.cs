@@ -594,7 +594,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (browser.HasSession())
                         {
-                            if (browser.getSession().getHost().equals(bookmark))
+                            if (browser.Session.getHost().equals(bookmark))
                             {
                                 Logger.debug("Default bookmark already mounted");
                                 return;
@@ -677,7 +677,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (controller.IsMounted())
                     {
                         // The workspace should be saved. Serialize all open browser sessions
-                        Host serialized = new Host(controller.getSession().getHost().serialize(SerializerFactory.get()));
+                        Host serialized = new Host(controller.Session.getHost().serialize(SerializerFactory.get()));
                         serialized.setWorkdir(controller.Workdir);
                         Application._sessions.add(serialized);
                     }
