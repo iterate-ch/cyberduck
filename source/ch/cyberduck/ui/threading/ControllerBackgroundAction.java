@@ -18,6 +18,7 @@ package ch.cyberduck.ui.threading;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.AlertCallback;
@@ -35,6 +36,12 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
 
     private Controller controller;
 
+    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache) {
+        super(session, cache, controller, controller, controller,
+                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
+        this.controller = controller;
+    }
+
     public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache,
                                       final AlertCallback alert) {
         super(session, cache, alert, controller, controller,
@@ -42,16 +49,36 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
         this.controller = controller;
     }
 
-    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache) {
-        super(session, cache, controller, controller, controller,
+    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache,
+                                      final ProgressListener listener) {
+        super(session, cache, controller, listener, controller,
                 LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
         this.controller = controller;
     }
 
+    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache,
+                                      final AlertCallback alert, final ProgressListener listener) {
+        super(session, cache, alert, listener, controller,
+                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
+        this.controller = controller;
+    }
 
-    public ControllerBackgroundAction(final Controller controller, final List<Session<?>> sessions,
-                                      final Cache cache) {
+    public ControllerBackgroundAction(final Controller controller, final List<Session<?>> sessions, final Cache cache) {
         super(sessions, cache, controller, controller, controller,
+                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
+        this.controller = controller;
+    }
+
+    public ControllerBackgroundAction(final Controller controller, final List<Session<?>> sessions, final Cache cache,
+                                      final AlertCallback alert) {
+        super(sessions, cache, alert, controller, controller,
+                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
+        this.controller = controller;
+    }
+
+    public ControllerBackgroundAction(final Controller controller, final List<Session<?>> sessions, final Cache cache,
+                                      final ProgressListener listener) {
+        super(sessions, cache, controller, listener, controller,
                 LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
         this.controller = controller;
     }

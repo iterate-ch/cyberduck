@@ -81,13 +81,10 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     public TransferBackgroundAction(final Controller controller,
                                     final TransferListener transferListener,
-                                    final ProgressListener progressListener,
-                                    final TranscriptListener transcriptListener,
-                                    final Transfer transfer,
-                                    final TransferPrompt prompt,
-                                    final TransferErrorCallback error,
-                                    final TransferOptions options) {
-        super(controller, transfer.getSessions(), Cache.empty());
+                                    final ProgressListener progressListener, final TranscriptListener transcriptListener,
+                                    final Transfer transfer, final TransferOptions options,
+                                    final TransferPrompt prompt, final TransferErrorCallback error) {
+        super(controller, transfer.getSessions(), Cache.empty(), progressListener);
         this.prompt = prompt;
         this.transfer = transfer;
         this.error = error;
