@@ -5,9 +5,7 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -28,7 +26,7 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
 
     @Test
     public void testAll() throws Exception {
-        for(Local l : LocalFactory.createLocal("profiles").list().filter(null, new Filter<Local>() {
+        for(Local l : LocalFactory.createLocal("profiles").list().filter(new Filter<Local>() {
             @Override
             public boolean accept(final Local file) {
                 return file.getName().endsWith(".cyberduckprofile");
