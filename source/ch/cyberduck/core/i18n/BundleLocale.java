@@ -22,7 +22,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.commons.collections.map.LRUMap;
-import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Map;
@@ -31,7 +30,6 @@ import java.util.Map;
  * @version $Id$
  */
 public class BundleLocale implements Locale {
-    private static final Logger log = Logger.getLogger(BundleLocale.class);
 
     public static void register() {
         LocaleFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
@@ -44,13 +42,7 @@ public class BundleLocale implements Locale {
         }
     }
 
-    private static Map<String, String> cache = Collections.<String, String>synchronizedMap(new LRUMap(1000) {
-        @Override
-        protected boolean removeLRU(LinkEntry entry) {
-            log.debug("Removing from cache:" + entry);
-            return true;
-        }
-    });
+    private static Map<String, String> cache = Collections.<String, String>synchronizedMap(new LRUMap(1000));
 
     @Override
     public String localize(final String key, final String table) {

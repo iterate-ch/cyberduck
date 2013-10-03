@@ -25,7 +25,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -82,38 +81,20 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      * display name of application
      */
     private static Map<String, Application> applicationNameCache
-            = Collections.<String, Application>synchronizedMap(new LRUMap(20) {
-        @Override
-        protected boolean removeLRU(AbstractLinkedMap.LinkEntry entry) {
-            log.debug("Removing from cache:" + entry);
-            return true;
-        }
-    });
+            = Collections.<String, Application>synchronizedMap(new LRUMap(20));
 
     /**
      *
      */
     private static Map<String, Application> defaultApplicationCache
-            = Collections.<String, Application>synchronizedMap(new LRUMap(20) {
-        @Override
-        protected boolean removeLRU(AbstractLinkedMap.LinkEntry entry) {
-            log.debug("Removing from cache:" + entry);
-            return true;
-        }
-    });
+            = Collections.<String, Application>synchronizedMap(new LRUMap(20));
 
     /**
      * Caching map between application bundle identifiers and
      * file type extensions.
      */
     private static Map<String, List<Application>> defaultApplicationListCache
-            = Collections.<String, List<Application>>synchronizedMap(new LRUMap(20) {
-        @Override
-        protected boolean removeLRU(AbstractLinkedMap.LinkEntry entry) {
-            log.debug("Removing from cache:" + entry);
-            return true;
-        }
-    });
+            = Collections.<String, List<Application>>synchronizedMap(new LRUMap(20));
 
     @Override
     public List<Application> findAll(final String filename) {
