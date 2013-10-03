@@ -60,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected Session Session
         {
-            get { return BrowserController.getSession(); }
+            get { return BrowserController.Session; }
         }
 
         protected virtual bool ValidateInput()

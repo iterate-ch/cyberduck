@@ -40,7 +40,6 @@ using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.comparator;
-using ch.cyberduck.ui.controller.threading;
 using ch.cyberduck.ui.pasteboard;
 using ch.cyberduck.ui.threading;
 using java.lang;
@@ -476,13 +475,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateOpenInTerminal()
         {
-            return IsMounted() && getSession() is SFTPSession &&
+            return IsMounted() && Session is SFTPSession &&
                    File.Exists(Preferences.instance().getProperty("terminal.command.ssh"));
         }
 
         private void View_OpenInTerminal()
         {
-            Host host = getSession().getHost();
+            Host host = Session.getHost();
             Path workdir = null;
             if (SelectedPaths.Count == 1)
             {
@@ -1033,7 +1032,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted() && SelectedPaths.Count == 1)
             {
-                return getSession().getFeature(typeof (Versioning)) != null;
+                return Session.getFeature(typeof (Versioning)) != null;
             }
             return false;
         }
@@ -1807,7 +1806,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if the selected path is editable (not a directory)</returns>
         private bool IsEditable(Path selected)
         {
-            if (getSession().getHost().getCredentials().isAnonymousLogin())
+            if (Session.getHost().getCredentials().isAnonymousLogin())
             {
                 return false;
             }
@@ -1827,7 +1826,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return false;
                 }
-                return ((Move) getSession().getFeature(typeof (Move))).isSupported(SelectedPath);
+                return ((Move) Session.getFeature(typeof (Move))).isSupported(SelectedPath);
             }
             return false;
         }
@@ -2260,7 +2259,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 BrowserController c = MainController.NewBrowser(true);
 
-                Host host = new Host(getSession().getHost().serialize(SerializerFactory.get()));
+                Host host = new Host(Session.getHost().serialize(SerializerFactory.get()));
                 host.setDefaultPath(selected.getAbsolute());
                 c.Mount(host);
             }
@@ -2271,9 +2270,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public Session getSession()
+        public Session Session
         {
-            return _session;
+            get { return _session; }
         }
 
         protected void transfer(Transfer transfer)
@@ -2288,7 +2287,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         protected void transfer(Transfer transfer, IList<Path> selected)
         {
-            this.transfer(transfer, selected, getSession().getMaxConnections() == 1);
+            this.transfer(transfer, selected, Session.getMaxConnections() == 1);
         }
 
         /// <summary>
@@ -2302,7 +2301,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TransferCallback callback = new ReloadTransferCallback(this, selected);
             if (browser)
             {
-                Background(new CallbackTransferBackgroundAction(callback, this, new DialogAlertCallback(this),
+                Background(new CallbackTransferBackgroundAction(callback, this,
                                                                 new ProgressTransferAdapter(this), this, this,
                                                                 transfer, new LazyTransferPrompt(this, transfer),
                                                                 new TransferOptions()));
@@ -2386,6 +2385,16 @@ namespace Ch.Cyberduck.Ui.Controller
                 return _cache.lookup(reference);
             }
             return null;
+        }
+
+        public override void start(BackgroundAction action)
+        {
+            Invoke(delegate { View.StartActivityAnimation(); });
+        }
+
+        public override void stop(BackgroundAction action)
+        {
+            Invoke(delegate { View.StopActivityAnimation(); });
         }
 
         public void RefreshParentPaths(IList<Path> changed, IList<Path> selected)
@@ -2620,9 +2629,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return false;
             }
-            if (current is BrowserBackgroundAction)
+            if (current is BrowserControllerBackgroundAction)
             {
-                return ((BrowserBackgroundAction) current).BrowserController == this;
+                return ((BrowserControllerBackgroundAction) current).BrowserController == this;
             }
             return false;
         }
@@ -3053,7 +3062,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                View.SelectBookmark(getSession().getHost());
+                View.SelectBookmark(Session.getHost());
             }
         }
 
@@ -3101,12 +3110,12 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Transfer _transfer;
 
             public CallbackTransferBackgroundAction(TransferCallback callback, WindowController controller,
-                                                    AlertCallback alert, TransferListener transferListener,
+                                                    TransferListener transferListener,
                                                     ProgressListener progressListener,
                                                     TranscriptListener transcriptListener, Transfer transfer,
                                                     TransferPrompt prompt, TransferOptions options)
                 : base(
-                    controller, alert, transferListener, progressListener, transcriptListener, transfer, prompt,
+                    controller, transferListener, progressListener, transcriptListener, transfer, prompt,
                     new DialogTransferErrorCallback(controller), options
                     )
             {
@@ -3123,7 +3132,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class CreateArchiveAction : BrowserBackgroundAction
+        private class CreateArchiveAction : BrowserControllerBackgroundAction
         {
             private readonly Archive _archive;
             private readonly IList<Path> _selected;
@@ -3196,7 +3205,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class DeleteAction : WorkerBackgroundAction
         {
             public DeleteAction(BrowserController controller, LoginController prompt, List files)
-                : base(controller, new InnerDeleteWorker(controller, prompt, files))
+                : base(controller, controller._session, new InnerDeleteWorker(controller, prompt, files))
             {
             }
 
@@ -3222,7 +3231,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class DisconnectAction : BrowserBackgroundAction
+        private class DisconnectAction : BrowserControllerBackgroundAction
         {
             private readonly CallbackDelegate _callback;
 
@@ -3260,7 +3269,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override string getActivity()
             {
                 return String.Format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-                                     BrowserController.getSession().getHost().getHostname());
+                                     BrowserController.Session.getHost().getHostname());
             }
         }
 
@@ -3283,21 +3292,23 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class MountAction : WorkerBackgroundAction
         {
+            private readonly BrowserController _controller;
             private readonly Host _host;
 
             public MountAction(BrowserController controller,
                                Session session,
                                Host host)
-                : base(controller, new InnerMountWorker(controller, session, host))
+                : base(controller, controller.Session, new InnerMountWorker(controller, session, host))
             {
+                _controller = controller;
                 _host = host;
             }
 
             public override void init()
             {
                 base.init();
-                BrowserController.View.WindowTitle = _host.getNickname();
-                BrowserController.View.RefreshBookmark(BrowserController.getSession().getHost());
+                _controller.View.WindowTitle = _host.getNickname();
+                _controller.View.RefreshBookmark(_controller.Session.getHost());
             }
 
             private class InnerMountWorker : MountWorker
@@ -3342,7 +3353,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class MoveAction : WorkerBackgroundAction
         {
             public MoveAction(BrowserController controller, Map selected, IList<Path> changed)
-                : base(controller, new InnerMoveWorker(controller, selected, changed))
+                : base(controller, controller._session, new InnerMoveWorker(controller, selected, changed))
             {
             }
 
@@ -3422,7 +3433,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class RevertPathAction : BrowserBackgroundAction
+        private class RevertPathAction : BrowserControllerBackgroundAction
         {
             private readonly Path _selected;
 
@@ -3450,7 +3461,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class UnarchiveAction : BrowserBackgroundAction
+        private class UnarchiveAction : BrowserControllerBackgroundAction
         {
             private readonly Archive _archive;
             private readonly List<Path> _expanded;

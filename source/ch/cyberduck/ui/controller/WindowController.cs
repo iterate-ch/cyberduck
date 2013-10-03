@@ -18,7 +18,10 @@
 
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using Ch.Cyberduck.Ui.Winforms.Threading;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
+using java.lang;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -109,6 +112,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 base.invoke(mainAction, wait);
             }
+        }
+
+        public override void alert(SessionBackgroundAction action, BackgroundException failure, StringBuilder transcript)
+        {
+            new DialogAlertCallback(this).alert(action, failure, transcript);
         }
 
         protected virtual void Invalidate()

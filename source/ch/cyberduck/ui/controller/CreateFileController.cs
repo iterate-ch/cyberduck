@@ -49,7 +49,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class CreateFileAction : BrowserBackgroundAction
+        private class CreateFileAction : BrowserControllerBackgroundAction
         {
             private readonly bool _edit;
             private readonly Path _file;
@@ -67,13 +67,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override object run()
             {
-                Session session = BrowserController.getSession();
+                Session session = BrowserController.Session;
                 Touch feature = (Touch) session.getFeature(typeof (Touch));
                 feature.touch(_file);
                 if (_edit)
                 {
                     Editor editor = EditorFactory.instance()
-                                                 .create(BrowserController, BrowserController.getSession(), _file);
+                                                 .create(BrowserController, BrowserController.Session, _file);
                     editor.open();
                 }
                 return true;

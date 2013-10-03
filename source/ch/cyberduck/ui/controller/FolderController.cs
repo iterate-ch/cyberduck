@@ -69,7 +69,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class CreateFolderAction : BrowserBackgroundAction
+        private class CreateFolderAction : BrowserControllerBackgroundAction
         {
             private readonly string _filename;
             private readonly Path _folder;
@@ -87,7 +87,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override object run()
             {
-                Directory feature = (Directory) BrowserController.getSession().getFeature(typeof (Directory));
+                Directory feature = (Directory) BrowserController.Session.getFeature(typeof (Directory));
                 feature.mkdir(_folder, _region);
                 return true;
             }

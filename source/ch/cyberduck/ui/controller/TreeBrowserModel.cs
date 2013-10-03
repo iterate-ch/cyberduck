@@ -24,7 +24,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.local;
 using ch.cyberduck.ui.action;
-using ch.cyberduck.ui.controller.threading;
+using ch.cyberduck.ui.threading;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (path.attributes().isVolume())
             {
-                return IconCache.Instance.VolumeIcon(_controller.getSession().getHost().getProtocol(),
+                return IconCache.Instance.VolumeIcon(_controller.Session.getHost().getProtocol(),
                                                      IconCache.IconSize.Small);
             }
             return IconCache.Instance.IconForPath(path, IconCache.IconSize.Small);
@@ -166,7 +166,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class ListAction : WorkerBackgroundAction
         {
             public ListAction(BrowserController controller, Path directory, Cache cache)
-                : base(controller, new InnerListWorker(controller, directory, cache))
+                : base(controller, controller.Session, new InnerListWorker(controller, directory, cache))
             {
             }
 
@@ -176,7 +176,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerListWorker(BrowserController controller, Path directory, Cache cache)
                     : base(
-                        controller.getSession(), cache, directory,
+                        controller.Session, cache, directory,
                         new DisabledListProgressListener())
                 {
                     _controller = controller;

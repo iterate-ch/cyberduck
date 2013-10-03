@@ -629,7 +629,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
                                             TransferCallback callback) :
                                                 base(
-                                                controller, new DialogAlertCallback(controller),
+                                                controller,
                                                 controller.GetController(transfer), controller.GetController(transfer),
                                                 controller,
                                                 transfer, new LazyTransferPrompt(controller, transfer),

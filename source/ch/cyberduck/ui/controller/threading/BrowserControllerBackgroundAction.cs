@@ -16,15 +16,23 @@
 // yves@cyberduck.ch
 // 
 
-using Ch.Cyberduck.Ui.Winforms.Threading;
-using ch.cyberduck.core;
 using ch.cyberduck.ui.threading;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
     public abstract class BrowserControllerBackgroundAction : BrowserBackgroundAction
     {
-        protected BrowserBackgroundAction(BrowserController controller)
-            : base(controller, controller.Session, controller.Cache) {}
+        private readonly BrowserController _controller;
+
+        protected BrowserControllerBackgroundAction(BrowserController controller)
+            : base(controller, controller.Session, controller.Cache)
+        {
+            _controller = controller;
+        }
+
+        public BrowserController BrowserController
+        {
+            get { return _controller; }
+        }
     }
 }

@@ -47,7 +47,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class CreateSymlinkAction : BrowserBackgroundAction
+        private class CreateSymlinkAction : BrowserControllerBackgroundAction
         {
             private readonly Path _link;
             private readonly string _symlink;
@@ -66,7 +66,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override object run()
             {
                 // Symlink pointing to existing file
-                ((Symlink) BrowserController.getSession().getFeature(typeof (Symlink))).symlink(_link, _target);
+                ((Symlink) BrowserController.Session.getFeature(typeof (Symlink))).symlink(_link, _target);
                 return true;
             }
 

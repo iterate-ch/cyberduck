@@ -187,7 +187,6 @@
     <Compile Include="core\aquaticprime\LicenseVerifier.cs" />
     <Compile Include="core\aquaticprime\LicenseImpl.cs" />
     <Compile Include="core\CrashReporter.cs" />
-    <Compile Include="core\editor\Editor.cs" />
     <Compile Include="core\editor\EditorFactory.cs" />
     <Compile Include="core\editor\RegistryApplicationFinder.cs" />
     <Compile Include="core\editor\WatchEditor.cs" />
@@ -234,7 +233,7 @@
     <Compile Include="ui\controller\IGotoPromptView.cs" />
     <Compile Include="ui\controller\IUpdateView.cs" />
     <Compile Include="ui\controller\MainController.cs" />
-    <Compile Include="ui\controller\threading\WorkerBackgroundAction.cs" />
+    <Compile Include="ui\controller\threading\BrowserControllerBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
     <Compile Include="ui\growl\GrowlImpl.cs" />
     <Compile Include="ui\winforms\controls\ClickLinkLabel.cs">
@@ -449,7 +448,6 @@
     </Compile>
     <Compile Include="ui\controller\SettingsDictionary.cs" />
     <Compile Include="core\TcpReachability.cs" />
-    <Compile Include="ui\controller\threading\BrowserBackgroundAction.cs" />
     <Compile Include="ui\controller\threading\SimpleDefaultMainAction.cs" />
     <Compile Include="ui\controller\threading\SimpleWindowMainAction.cs" />
     <Compile Include="ui\controller\threading\WindowMainAction.cs" />

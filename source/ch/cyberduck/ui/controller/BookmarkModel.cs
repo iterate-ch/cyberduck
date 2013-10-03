@@ -108,7 +108,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (_controller.HasSession())
             {
-                Session session = _controller.getSession();
+                Session session = _controller.Session;
                 if (((Host) rowobject).Equals(session.getHost()))
                 {
                     if (session.getState().Equals(Session.State.open))
