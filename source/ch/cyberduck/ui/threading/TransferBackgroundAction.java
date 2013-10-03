@@ -21,7 +21,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
@@ -81,7 +80,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     public TransferBackgroundAction(final Controller controller,
                                     final TransferListener transferListener,
-                                    final ProgressListener progressListener, final TranscriptListener transcriptListener,
+                                    final ProgressListener progressListener,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
         super(controller, transfer.getSessions(), Cache.empty(), progressListener);

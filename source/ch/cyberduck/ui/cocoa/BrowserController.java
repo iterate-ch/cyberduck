@@ -433,7 +433,7 @@ public class BrowserController extends WindowController
                     public void progress(final TransferProgress status) {
                         message(status.getProgress());
                     }
-                }, this, this, download, options,
+                }, this, download, options,
                         new TransferPrompt() {
                             @Override
                             public TransferAction prompt() {
@@ -2898,7 +2898,7 @@ public class BrowserController extends WindowController
                 public void progress(final TransferProgress status) {
                     message(status.getProgress());
                 }
-            }, this, this, transfer, new TransferOptions(),
+            }, this, transfer, new TransferOptions(),
                     new TransferPrompt() {
                         @Override
                         public TransferAction prompt() {

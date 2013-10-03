@@ -53,7 +53,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
                                               final TransferPrompt prompt,
                                               final TransferErrorCallback error,
                                               final TransferOptions options) {
-        super(controller, transferListener, progressListener, transcriptListener, transfer, options, prompt, error);
+        super(controller, transferListener, progressListener, transfer, options, prompt, error);
         this.transfer = transfer;
     }
 
