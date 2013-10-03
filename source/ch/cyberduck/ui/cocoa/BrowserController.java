@@ -433,13 +433,13 @@ public class BrowserController extends WindowController
                     public void progress(final TransferProgress status) {
                         message(status.getProgress());
                     }
-                }, this, this, download,
+                }, this, this, download, options,
                         new TransferPrompt() {
                             @Override
                             public TransferAction prompt() {
                                 return TransferAction.ACTION_COMPARISON;
                             }
-                        }, new DisabledTransferErrorCallback(), options
+                        }, new DisabledTransferErrorCallback()
                 ) {
                     @Override
                     public void cleanup() {
@@ -2898,13 +2898,13 @@ public class BrowserController extends WindowController
                 public void progress(final TransferProgress status) {
                     message(status.getProgress());
                 }
-            }, this, this, transfer,
+            }, this, this, transfer, new TransferOptions(),
                     new TransferPrompt() {
                         @Override
                         public TransferAction prompt() {
                             return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
                         }
-                    }, new PanelTransferErrorCallback(this), new TransferOptions()
+                    }, new PanelTransferErrorCallback(this)
             ) {
                 @Override
                 public void finish() {
