@@ -210,9 +210,6 @@ public final class TransferStatus {
             return false;
         }
         final TransferStatus that = (TransferStatus) o;
-        if(canceled != that.canceled) {
-            return false;
-        }
         if(current != that.current) {
             return false;
         }
@@ -236,7 +233,6 @@ public final class TransferStatus {
         int result = (append ? 1 : 0);
         result = 31 * result + (int) (current ^ (current >>> 32));
         result = 31 * result + (int) (length ^ (length >>> 32));
-        result = 31 * result + (canceled.get() ? 1 : 0);
         result = 31 * result + (selected ? 1 : 0);
         result = 31 * result + (exists ? 1 : 0);
         return result;
