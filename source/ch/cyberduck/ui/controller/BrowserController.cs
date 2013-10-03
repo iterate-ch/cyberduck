@@ -381,6 +381,11 @@ namespace Ch.Cyberduck.Ui.Controller
             set { _comparator = value; }
         }
 
+        public Session Session
+        {
+            get { return _session; }
+        }
+
         public void collectionLoaded()
         {
             AsyncDelegate mainAction = delegate { ReloadBookmarks(); };
@@ -2270,11 +2275,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public Session Session
-        {
-            get { return _session; }
-        }
-
         protected void transfer(Transfer transfer)
         {
             this.transfer(transfer, (IList<Path>) Utils.ConvertFromJavaList<Path>(transfer.getRoots()));
@@ -3115,8 +3115,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                     TranscriptListener transcriptListener, Transfer transfer,
                                                     TransferPrompt prompt, TransferOptions options)
                 : base(
-                    controller, transferListener, progressListener, transcriptListener, transfer, prompt,
-                    new DialogTransferErrorCallback(controller), options
+                    controller, transferListener, progressListener, transcriptListener, transfer, options, prompt,
+                    new DialogTransferErrorCallback(controller)
                     )
             {
                 _callback = callback;
