@@ -61,7 +61,6 @@ public class NSObjectPathReference implements PathReference<NSObject> {
             Preferences.instance().getInteger("browser.model.cache.size")
     ));
 
-
     protected NSObjectPathReference(final Path file) {
         // Unique name
         final DefaultPathReference d = new DefaultPathReference(file);
