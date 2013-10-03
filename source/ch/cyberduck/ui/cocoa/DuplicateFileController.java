@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
@@ -36,8 +37,8 @@ import java.text.MessageFormat;
  */
 public class DuplicateFileController extends FileController {
 
-    public DuplicateFileController(final WindowController parent) {
-        super(parent, NSAlert.alert(
+    public DuplicateFileController(final WindowController parent, final Cache cache) {
+        super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Duplicate File", "Duplicate"),
                 LocaleFactory.localizedString("Enter the name for the new file:", "Duplicate"),
                 LocaleFactory.localizedString("Duplicate", "Duplicate"),

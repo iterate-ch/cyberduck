@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -40,8 +41,8 @@ import java.util.Collections;
  */
 public class CreateSymlinkController extends FileController {
 
-    public CreateSymlinkController(final WindowController parent) {
-        super(parent, NSAlert.alert(
+    public CreateSymlinkController(final WindowController parent, final Cache cache) {
+        super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new symbolic link", "File"),
                 StringUtils.EMPTY,
                 LocaleFactory.localizedString("Create", "File"),

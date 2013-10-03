@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
@@ -55,8 +56,8 @@ public class FolderController extends FileController {
 
     private Set<String> regions;
 
-    public FolderController(final WindowController parent, final Set<String> regions) {
-        super(parent, NSAlert.alert(
+    public FolderController(final WindowController parent, final Cache cache, final Set<String> regions) {
+        super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new folder", "Folder"),
                 LocaleFactory.localizedString("Enter the name for the new folder:", "Folder"),
                 LocaleFactory.localizedString("Create", "Folder"),

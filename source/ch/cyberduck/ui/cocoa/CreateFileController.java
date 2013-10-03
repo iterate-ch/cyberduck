@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -38,8 +39,8 @@ import java.util.Collections;
  */
 public class CreateFileController extends FileController {
 
-    public CreateFileController(final WindowController parent) {
-        super(parent, NSAlert.alert(
+    public CreateFileController(final WindowController parent, final Cache cache) {
+        super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new file", "File"),
                 LocaleFactory.localizedString("Enter the name for the new file:", "File"),
                 LocaleFactory.localizedString("Create", "File"),

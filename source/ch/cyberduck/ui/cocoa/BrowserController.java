@@ -980,7 +980,7 @@ public class BrowserController extends WindowController
         public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell,
                                                                                      ID rect, NSTableColumn c,
                                                                                      NSObject item, NSPoint mouseLocation) {
-            return this.tooltip(lookup(new NSObjectPathReference(item)));
+            return this.tooltip(cache.lookup(new NSObjectPathReference(item)));
         }
 
         public String outlineView_typeSelectStringForTableColumn_item(final NSOutlineView view,
@@ -1001,7 +1001,7 @@ public class BrowserController extends WindowController
         @Override
         protected Path pathAtRow(final int row) {
             if(row < browserOutlineView.numberOfRows().intValue()) {
-                return lookup(new NSObjectPathReference(browserOutlineView.itemAtRow(new NSInteger(row))));
+                return cache.lookup(new NSObjectPathReference(browserOutlineView.itemAtRow(new NSInteger(row))));
             }
             log.warn(String.format("No item at row %d", row));
             return null;
@@ -1260,7 +1260,7 @@ public class BrowserController extends WindowController
                 if(null == item) {
                     return;
                 }
-                final Path path = lookup(new NSObjectPathReference(item));
+                final Path path = cache.lookup(new NSObjectPathReference(item));
                 if(null == path) {
                     return;
                 }
@@ -2351,7 +2351,7 @@ public class BrowserController extends WindowController
             boolean shouldWarn = false;
             for(iter = selected.iterator(); iter.hasNext(); ) {
                 final Path item = iter.next();
-                if(this.lookup(item.getReference()) != null) {
+                if(cache.lookup(item.getReference()) != null) {
                     if(i < 10) {
                         alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
                     }
@@ -2563,26 +2563,26 @@ public class BrowserController extends WindowController
 
     @Action
     public void createFileButtonClicked(final ID sender) {
-        SheetController sheet = new CreateFileController(this);
+        SheetController sheet = new CreateFileController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createSymlinkButtonClicked(final ID sender) {
-        SheetController sheet = new CreateSymlinkController(this);
+        SheetController sheet = new CreateSymlinkController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void duplicateFileButtonClicked(final ID sender) {
-        SheetController sheet = new DuplicateFileController(this);
+        SheetController sheet = new DuplicateFileController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = session.getFeature(Location.class);
-        SheetController sheet = new FolderController(this, feature != null ? feature.getLocations() : Collections.<String>emptySet());
+        SheetController sheet = new FolderController(this, cache, feature != null ? feature.getLocations() : Collections.<String>emptySet());
         sheet.beginSheet();
     }
 
@@ -3268,17 +3268,6 @@ public class BrowserController extends WindowController
     public boolean isActivityRunning() {
         final BackgroundAction current = this.getActions().getCurrent();
         return null != current;
-    }
-
-    /**
-     * @param reference Reference for path
-     * @return Null if not mounted or lookup fails
-     */
-    public Path lookup(final PathReference reference) {
-        if(this.isMounted()) {
-            return cache.lookup(reference);
-        }
-        return null;
     }
 
     /**

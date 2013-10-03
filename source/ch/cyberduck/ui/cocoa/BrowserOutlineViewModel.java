@@ -65,7 +65,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(null == item) {
             return false;
         }
-        final Path lookup = controller.lookup(new NSObjectPathReference(item));
+        final Path lookup = cache.lookup(new NSObjectPathReference(item));
         if(null == lookup) {
             return false;
         }
@@ -103,7 +103,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                     }
                 }
             }
-            final Path lookup = controller.lookup(new NSObjectPathReference(item));
+            final Path lookup = cache.lookup(new NSObjectPathReference(item));
             if(null == lookup) {
                 return new NSInteger(0);
             }
@@ -128,7 +128,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
             path = controller.workdir();
         }
         else {
-            path = controller.lookup(new NSObjectPathReference(item));
+            path = cache.lookup(new NSObjectPathReference(item));
             if(null == path) {
                 return null;
             }
@@ -144,7 +144,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView view, final NSObject value,
                                                                  final NSTableColumn tableColumn, final NSObject item) {
-        super.setObjectValueForItem(controller.lookup(new NSObjectPathReference(item)), value, tableColumn.identifier());
+        super.setObjectValueForItem(cache.lookup(new NSObjectPathReference(item)), value, tableColumn.identifier());
     }
 
     @Override
@@ -152,7 +152,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(null == item) {
             return null;
         }
-        return super.objectValueForItem(controller.lookup(new NSObjectPathReference(item)), tableColumn.identifier());
+        return super.objectValueForItem(cache.lookup(new NSObjectPathReference(item)), tableColumn.identifier());
     }
 
     @Override
@@ -162,7 +162,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(controller.isMounted()) {
             Path destination = null;
             if(null != item) {
-                destination = controller.lookup(new NSObjectPathReference(item));
+                destination = cache.lookup(new NSObjectPathReference(item));
             }
             if(null == destination) {
                 // Dragging over empty rows
@@ -205,7 +205,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                 destination = controller.workdir();
             }
             else {
-                destination = controller.lookup(new NSObjectPathReference(item));
+                destination = cache.lookup(new NSObjectPathReference(item));
                 if(null == destination) {
                     return false;
                 }

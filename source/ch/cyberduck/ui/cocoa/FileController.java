@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -44,8 +45,11 @@ public abstract class FileController extends AlertController {
         this.inputField = inputField;
     }
 
-    public FileController(final WindowController parent, final NSAlert alert) {
+    private Cache cache;
+
+    public FileController(final WindowController parent, final Cache cache, final NSAlert alert) {
         super(parent, alert);
+        this.cache = cache;
         alert.setShowsHelp(true);
     }
 
@@ -96,9 +100,8 @@ public abstract class FileController extends AlertController {
             return false;
         }
         if(StringUtils.isNotBlank(inputField.stringValue())) {
-            Path file = new Path(this.getWorkdir(),
-                    inputField.stringValue(), Path.FILE_TYPE);
-            return ((BrowserController) parent).lookup(file.getReference()) == null;
+            Path file = new Path(this.getWorkdir(), inputField.stringValue(), Path.FILE_TYPE);
+            return cache.lookup(file.getReference()) == null;
         }
         return false;
     }

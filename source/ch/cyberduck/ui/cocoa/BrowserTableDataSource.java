@@ -86,7 +86,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     protected BrowserController controller;
 
-    private Cache cache;
+    protected Cache cache;
 
     protected BrowserTableDataSource(final BrowserController controller, final Cache cache) {
         this.controller = controller;
@@ -429,7 +429,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 final NSMutableArray fileTypes = NSMutableArray.array();
                 final PathPasteboard pasteboard = controller.getPasteboard();
                 for(int i = 0; i < items.count().intValue(); i++) {
-                    final Path path = controller.lookup(new NSObjectPathReference(items.objectAtIndex(new NSUInteger(i))));
+                    final Path path = cache.lookup(new NSObjectPathReference(items.objectAtIndex(new NSUInteger(i))));
                     if(path.attributes().isFile()) {
                         if(StringUtils.isNotEmpty(path.getExtension())) {
                             fileTypes.addObject(NSString.stringWithString(path.getExtension()));
