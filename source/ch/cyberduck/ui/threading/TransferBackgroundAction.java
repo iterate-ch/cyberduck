@@ -146,7 +146,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     @Override
     public String getActivity() {
-        return transfer.getName();
+        return StringUtils.EMPTY;
     }
 
     @Override
