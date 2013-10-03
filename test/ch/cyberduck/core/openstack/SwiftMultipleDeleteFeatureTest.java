@@ -12,14 +12,14 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
 
@@ -34,11 +34,15 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path dfw = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         dfw.attributes().setRegion("DFW");
-        final Path test = new Path(dfw, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new SwiftTouchFeature(session).touch(test);
-        assertTrue(new SwiftFindFeature(session).find(test));
-        new SwiftMultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
-        assertFalse(new SwiftFindFeature(session).find(test));
+        final Path test1 = new Path(dfw, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test2 = new Path(dfw, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        new SwiftTouchFeature(session).touch(test1);
+        new SwiftTouchFeature(session).touch(test2);
+        assertTrue(new SwiftFindFeature(session).find(test1));
+        assertTrue(new SwiftFindFeature(session).find(test2));
+        new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginController());
+        assertFalse(new SwiftFindFeature(session).find(test1));
+        assertFalse(new SwiftFindFeature(session).find(test2));
         session.close();
     }
 
@@ -53,7 +57,9 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new SwiftMultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(
+                new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE),
+                new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE)
+        ), new DisabledLoginController());
     }
 }
