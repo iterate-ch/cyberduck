@@ -144,6 +144,10 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
         return this.filter(null, filter);
     }
 
+    public AttributedList<E> filter(final Comparator comparator) {
+        return this.filter(comparator, null);
+    }
+
     /**
      * @param comparator The comparator to use
      * @param filter     Filter
