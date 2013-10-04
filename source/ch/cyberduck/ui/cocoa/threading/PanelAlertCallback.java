@@ -56,8 +56,8 @@ public class PanelAlertCallback implements AlertCallback {
                     null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
                     null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail(),
                     LocaleFactory.localizedString("Try Again", "Alert"), // default button
-                    diagnostics.isNetworkFailure(failure) ? LocaleFactory.localizedString("Network Diagnostics") : null, //other button
-                    LocaleFactory.localizedString("Cancel") // alternate button
+                    diagnostics.isNetworkFailure(failure) ? LocaleFactory.localizedString("Network Diagnostics", "Alert") : null, //other button
+                    LocaleFactory.localizedString("Cancel", "Alert") // alternate button
             );
             alert.setShowsHelp(true);
             final AlertController c = new AlertController(controller, alert) {
