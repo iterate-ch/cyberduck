@@ -8,9 +8,6 @@
 /LICENSE.txt -text
 Spotlight[!!-~]Importer/English.lproj/InfoPlist.strings svneol=native#unset
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
-ar.lproj/Alert.nib/classes.nib -text
-ar.lproj/Alert.nib/info.nib -text
-ar.lproj/Alert.nib/keyedobjects.nib -text
 ar.lproj/Alert.strings -text svneol=unset#text/utf-16
 ar.lproj/Archive.strings -text svneol=unset#text/utf-16
 ar.lproj/Bookmark.nib/classes.nib -text
@@ -70,9 +67,6 @@ ar.lproj/S3.strings -text svneol=unset#text/utf-16
 ar.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 ar.lproj/Status.strings -text svneol=unset#text/utf-16
 ar.lproj/Transfer.strings -text svneol=unset#text/utf-16
-bg.lproj/Alert.nib/classes.nib -text
-bg.lproj/Alert.nib/info.nib -text
-bg.lproj/Alert.nib/keyedobjects.nib -text
 bg.lproj/Alert.strings -text svneol=unset#text/utf-16
 bg.lproj/Archive.strings -text svneol=unset#text/utf-16
 bg.lproj/Bookmark.nib/classes.nib -text
@@ -137,9 +131,6 @@ bookmarks/s3.amazonaws.com[!!-~]–[!!-~]S3.duck -text svneol=unset#application/
 /build-mac.xml svneol=native#text/xml
 /build-windows.xml svneol=native#text/xml
 /build.xml svneol=native#text/xml
-ca.lproj/Alert.nib/classes.nib -text
-ca.lproj/Alert.nib/info.nib -text
-ca.lproj/Alert.nib/keyedobjects.nib -text
 ca.lproj/Alert.strings -text svneol=unset#text/utf-16
 ca.lproj/Archive.strings -text svneol=unset#text/utf-16
 ca.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -183,9 +174,6 @@ ca.lproj/Status.strings -text svneol=unset#text/utf-16
 ca.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /codesign-resources.plist -text svneol=unset#application/xml
 /container-migration.plist -text
-cs.lproj/Alert.nib/classes.nib -text
-cs.lproj/Alert.nib/info.nib -text
-cs.lproj/Alert.nib/keyedobjects.nib -text
 cs.lproj/Alert.strings -text svneol=unset#text/utf-16
 cs.lproj/Archive.strings -text svneol=unset#text/utf-16
 cs.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -227,9 +215,6 @@ cs.lproj/S3.strings -text svneol=unset#text/utf-16
 cs.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 cs.lproj/Status.strings -text svneol=unset#text/utf-16
 cs.lproj/Transfer.strings -text svneol=unset#text/utf-16
-cy.lproj/Alert.nib/classes.nib -text
-cy.lproj/Alert.nib/info.nib -text
-cy.lproj/Alert.nib/keyedobjects.nib -text
 cy.lproj/Alert.strings -text svneol=unset#text/utf-16
 cy.lproj/Archive.strings -text svneol=unset#text/utf-16
 cy.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -282,9 +267,6 @@ cy.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /cyberduck-document.png -text svneol=unset#image/png
 /cyberduck-document.tiff -text
 /cyberduck-document@2x.png -text svneol=unset#image/png
-da.lproj/Alert.nib/classes.nib -text
-da.lproj/Alert.nib/info.nib -text
-da.lproj/Alert.nib/keyedobjects.nib -text
 da.lproj/Alert.strings -text svneol=unset#text/utf-16
 da.lproj/Archive.strings -text svneol=unset#text/utf-16
 da.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -326,9 +308,6 @@ da.lproj/S3.strings -text svneol=unset#text/utf-16
 da.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 da.lproj/Status.strings -text svneol=unset#text/utf-16
 da.lproj/Transfer.strings -text svneol=unset#text/utf-16
-de.lproj/Alert.nib/classes.nib -text
-de.lproj/Alert.nib/info.nib -text
-de.lproj/Alert.nib/keyedobjects.nib -text
 de.lproj/Alert.strings -text svneol=unset#text/utf-16
 de.lproj/Archive.strings -text svneol=unset#text/utf-16
 de.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -370,9 +349,6 @@ de.lproj/S3.strings -text svneol=unset#text/utf-16
 de.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 de.lproj/Status.strings -text svneol=unset#text/utf-16
 de.lproj/Transfer.strings -text svneol=unset#text/utf-16
-el.lproj/Alert.nib/classes.nib -text
-el.lproj/Alert.nib/info.nib -text
-el.lproj/Alert.nib/keyedobjects.nib -text
 el.lproj/Alert.strings -text svneol=unset#text/utf-16
 el.lproj/Archive.strings -text svneol=unset#text/utf-16
 el.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -435,9 +411,6 @@ el.lproj/S3.strings -text svneol=unset#text/utf-16
 el.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 el.lproj/Status.strings -text svneol=unset#text/utf-16
 el.lproj/Transfer.strings -text svneol=unset#text/utf-16
-en.lproj/Alert.nib/classes.nib -text
-en.lproj/Alert.nib/info.nib -text
-en.lproj/Alert.nib/keyedobjects.nib -text
 en.lproj/Alert.strings -text svneol=unset#text/utf-16
 en.lproj/Archive.strings -text svneol=unset#text/utf-16
 en.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -479,9 +452,6 @@ en.lproj/S3.strings -text svneol=unset#text/utf-16
 en.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 en.lproj/Status.strings -text svneol=unset#text/utf-16
 en.lproj/Transfer.strings -text svneol=unset#text/utf-16
-es.lproj/Alert.nib/classes.nib -text
-es.lproj/Alert.nib/info.nib -text
-es.lproj/Alert.nib/keyedobjects.nib -text
 es.lproj/Alert.strings -text svneol=unset#text/utf-16
 es.lproj/Archive.strings -text svneol=unset#text/utf-16
 es.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -523,9 +493,6 @@ es.lproj/S3.strings -text svneol=unset#text/utf-16
 es.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 es.lproj/Status.strings -text svneol=unset#text/utf-16
 es.lproj/Transfer.strings -text svneol=unset#text/utf-16
-fi.lproj/Alert.nib/classes.nib -text
-fi.lproj/Alert.nib/info.nib -text
-fi.lproj/Alert.nib/keyedobjects.nib -text
 fi.lproj/Alert.strings -text svneol=unset#text/utf-16
 fi.lproj/Archive.strings -text svneol=unset#text/utf-16
 fi.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -567,9 +534,6 @@ fi.lproj/S3.strings -text svneol=unset#text/utf-16
 fi.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 fi.lproj/Status.strings -text svneol=unset#text/utf-16
 fi.lproj/Transfer.strings -text svneol=unset#text/utf-16
-fr.lproj/Alert.nib/classes.nib -text
-fr.lproj/Alert.nib/info.nib -text
-fr.lproj/Alert.nib/keyedobjects.nib -text
 fr.lproj/Alert.strings -text svneol=unset#text/utf-16
 fr.lproj/Archive.strings -text svneol=unset#text/utf-16
 fr.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -611,9 +575,6 @@ fr.lproj/S3.strings -text svneol=unset#text/utf-16
 fr.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 fr.lproj/Status.strings -text svneol=unset#text/utf-16
 fr.lproj/Transfer.strings -text svneol=unset#text/utf-16
-he.lproj/Alert.nib/classes.nib -text
-he.lproj/Alert.nib/info.nib -text
-he.lproj/Alert.nib/keyedobjects.nib -text
 he.lproj/Alert.strings -text svneol=unset#text/utf-16
 he.lproj/Archive.strings -text svneol=unset#text/utf-16
 he.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -675,9 +636,6 @@ he.lproj/S3.strings -text svneol=unset#text/utf-16
 he.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 he.lproj/Status.strings -text svneol=unset#text/utf-16
 he.lproj/Transfer.strings -text svneol=unset#text/utf-16
-hu.lproj/Alert.nib/classes.nib -text
-hu.lproj/Alert.nib/info.nib -text
-hu.lproj/Alert.nib/keyedobjects.nib -text
 hu.lproj/Alert.strings -text svneol=unset#text/utf-16
 hu.lproj/Archive.strings -text svneol=unset#text/utf-16
 hu.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -719,9 +677,6 @@ hu.lproj/S3.strings -text svneol=unset#text/utf-16
 hu.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 hu.lproj/Status.strings -text svneol=unset#text/utf-16
 hu.lproj/Transfer.strings -text svneol=unset#text/utf-16
-id.lproj/Alert.nib/classes.nib -text
-id.lproj/Alert.nib/info.nib -text
-id.lproj/Alert.nib/keyedobjects.nib -text
 id.lproj/Alert.strings -text svneol=unset#text/utf-16
 id.lproj/Archive.strings -text svneol=unset#text/utf-16
 id.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -985,9 +940,6 @@ img/update@2x.png -text svneol=unset#image/png
 img/upload.png -text svneol=unset#image/png
 img/upload.tiff -text svneol=unset#image/tiff
 img/upload@2x.png -text svneol=unset#image/png
-it.lproj/Alert.nib/classes.nib -text
-it.lproj/Alert.nib/info.nib -text
-it.lproj/Alert.nib/keyedobjects.nib -text
 it.lproj/Alert.strings -text svneol=unset#text/utf-16
 it.lproj/Archive.strings -text svneol=unset#text/utf-16
 it.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -1029,9 +981,6 @@ it.lproj/S3.strings -text svneol=unset#text/utf-16
 it.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 it.lproj/Status.strings -text svneol=unset#text/utf-16
 it.lproj/Transfer.strings -text svneol=unset#text/utf-16
-ja.lproj/Alert.nib/classes.nib -text
-ja.lproj/Alert.nib/info.nib -text
-ja.lproj/Alert.nib/keyedobjects.nib -text
 ja.lproj/Alert.strings -text svneol=unset#text/utf-16
 ja.lproj/Archive.strings -text svneol=unset#text/utf-16
 ja.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -1074,9 +1023,6 @@ ja.lproj/S3.strings -text svneol=unset#text/utf-16
 ja.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 ja.lproj/Status.strings -text svneol=unset#text/utf-16
 ja.lproj/Transfer.strings -text svneol=unset#text/utf-16
-ka.lproj/Alert.nib/classes.nib -text
-ka.lproj/Alert.nib/info.nib -text
-ka.lproj/Alert.nib/keyedobjects.nib -text
 ka.lproj/Alert.strings -text svneol=unset#text/utf-16
 ka.lproj/Archive.strings -text svneol=unset#text/utf-16
 ka.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -1138,9 +1084,6 @@ ka.lproj/S3.strings -text svneol=unset#text/utf-16
 ka.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 ka.lproj/Status.strings -text svneol=unset#text/utf-16
 ka.lproj/Transfer.strings -text svneol=unset#text/utf-16
-ko.lproj/Alert.nib/classes.nib -text
-ko.lproj/Alert.nib/info.nib -text
-ko.lproj/Alert.nib/keyedobjects.nib -text
 ko.lproj/Alert.strings -text svneol=unset#text/utf-16
 ko.lproj/Archive.strings -text svneol=unset#text/utf-16
 ko.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -1943,9 +1886,6 @@ lib/signpost-core-1.2.1.2.jar -text
 lib/slf4j-api-1.7.1.jar -text
 lib/slf4j-log4j12-1.7.1.jar -text
 lib/swift-2.0.jar -text svneol=unset#application/zip
-lv.lproj/Alert.nib/classes.nib -text
-lv.lproj/Alert.nib/info.nib -text
-lv.lproj/Alert.nib/keyedobjects.nib -text
 lv.lproj/Alert.strings -text svneol=unset#text/utf-16
 lv.lproj/Archive.strings -text svneol=unset#text/utf-16
 lv.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2008,9 +1948,6 @@ lv.lproj/S3.strings -text svneol=unset#text/utf-16
 lv.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 lv.lproj/Status.strings -text svneol=unset#text/utf-16
 lv.lproj/Transfer.strings -text svneol=unset#text/utf-16
-nl.lproj/Alert.nib/classes.nib -text
-nl.lproj/Alert.nib/info.nib -text
-nl.lproj/Alert.nib/keyedobjects.nib -text
 nl.lproj/Alert.strings -text svneol=unset#text/utf-16
 nl.lproj/Archive.strings -text svneol=unset#text/utf-16
 nl.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2052,9 +1989,6 @@ nl.lproj/S3.strings -text svneol=unset#text/utf-16
 nl.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 nl.lproj/Status.strings -text svneol=unset#text/utf-16
 nl.lproj/Transfer.strings -text svneol=unset#text/utf-16
-no.lproj/Alert.nib/classes.nib -text
-no.lproj/Alert.nib/info.nib -text
-no.lproj/Alert.nib/keyedobjects.nib -text
 no.lproj/Alert.strings -text svneol=unset#text/utf-16
 no.lproj/Archive.strings -text svneol=unset#text/utf-16
 no.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2096,9 +2030,6 @@ no.lproj/S3.strings -text svneol=unset#text/utf-16
 no.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 no.lproj/Status.strings -text svneol=unset#text/utf-16
 no.lproj/Transfer.strings -text svneol=unset#text/utf-16
-pl.lproj/Alert.nib/classes.nib -text
-pl.lproj/Alert.nib/info.nib -text
-pl.lproj/Alert.nib/keyedobjects.nib -text
 pl.lproj/Alert.strings -text svneol=unset#text/utf-16
 pl.lproj/Archive.strings -text svneol=unset#text/utf-16
 pl.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2162,9 +2093,6 @@ profiles/assets/Dump[!!-~]Truck.png -text svneol=unset#image/png
 profiles/assets/GreenQloud.tiff -text svneol=unset#image/tiff
 profiles/assets/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.tiff -text svneol=unset#image/tiff
 profiles/assets/Lunacloud.png -text svneol=unset#image/png
-pt_BR.lproj/Alert.nib/classes.nib -text
-pt_BR.lproj/Alert.nib/info.nib -text
-pt_BR.lproj/Alert.nib/keyedobjects.nib -text
 pt_BR.lproj/Alert.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Archive.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2227,9 +2155,6 @@ pt_BR.lproj/S3.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Status.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Transfer.strings -text svneol=unset#text/utf-16
-pt_PT.lproj/Alert.nib/classes.nib -text
-pt_PT.lproj/Alert.nib/info.nib -text
-pt_PT.lproj/Alert.nib/keyedobjects.nib -text
 pt_PT.lproj/Alert.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Archive.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2292,9 +2217,6 @@ resources/Transcript.nib/keyedobjects.nib -text
 resources/Transfer.nib/classes.nib -text
 resources/Transfer.nib/info.nib -text
 resources/Transfer.nib/keyedobjects.nib -text
-ro.lproj/Alert.nib/classes.nib -text
-ro.lproj/Alert.nib/info.nib -text
-ro.lproj/Alert.nib/keyedobjects.nib -text
 ro.lproj/Alert.strings -text svneol=unset#text/utf-16
 ro.lproj/Archive.strings -text svneol=unset#text/utf-16
 ro.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2356,9 +2278,6 @@ ro.lproj/S3.strings -text svneol=unset#text/utf-16
 ro.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 ro.lproj/Status.strings -text svneol=unset#text/utf-16
 ro.lproj/Transfer.strings -text svneol=unset#text/utf-16
-ru.lproj/Alert.nib/classes.nib -text
-ru.lproj/Alert.nib/info.nib -text
-ru.lproj/Alert.nib/keyedobjects.nib -text
 ru.lproj/Alert.strings -text svneol=unset#text/utf-16
 ru.lproj/Archive.strings -text svneol=unset#text/utf-16
 ru.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2409,9 +2328,6 @@ setup/header.bmp -text
 setup/uninstall.png -text svneol=unset#image/png
 setup/verpatch.exe -text
 setup/welcome.bmp -text
-sk.lproj/Alert.nib/classes.nib -text
-sk.lproj/Alert.nib/info.nib -text
-sk.lproj/Alert.nib/keyedobjects.nib -text
 sk.lproj/Alert.strings -text svneol=unset#text/utf-16
 sk.lproj/Archive.strings -text svneol=unset#text/utf-16
 sk.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2453,9 +2369,6 @@ sk.lproj/S3.strings -text svneol=unset#text/utf-16
 sk.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 sk.lproj/Status.strings -text svneol=unset#text/utf-16
 sk.lproj/Transfer.strings -text svneol=unset#text/utf-16
-sl.lproj/Alert.nib/classes.nib -text
-sl.lproj/Alert.nib/info.nib -text
-sl.lproj/Alert.nib/keyedobjects.nib -text
 sl.lproj/Alert.strings -text svneol=unset#text/utf-16
 sl.lproj/Archive.strings -text svneol=unset#text/utf-16
 sl.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2784,9 +2697,6 @@ source/net/oofn/CTGradientView.m -text
 source/org/kohsuke/putty/DEREncoder.java -text
 source/org/kohsuke/putty/KeyReader.java -text
 source/org/kohsuke/putty/PuTTYKey.java -text
-sr.lproj/Alert.nib/classes.nib -text
-sr.lproj/Alert.nib/info.nib -text
-sr.lproj/Alert.nib/keyedobjects.nib -text
 sr.lproj/Alert.strings -text svneol=unset#text/utf-16
 sr.lproj/Archive.strings -text svneol=unset#text/utf-16
 sr.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2848,9 +2758,6 @@ sr.lproj/S3.strings -text svneol=unset#text/utf-16
 sr.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 sr.lproj/Status.strings -text svneol=unset#text/utf-16
 sr.lproj/Transfer.strings -text svneol=unset#text/utf-16
-sv.lproj/Alert.nib/classes.nib -text
-sv.lproj/Alert.nib/info.nib -text
-sv.lproj/Alert.nib/keyedobjects.nib -text
 sv.lproj/Alert.strings -text svneol=unset#text/utf-16
 sv.lproj/Archive.strings -text svneol=unset#text/utf-16
 sv.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2913,9 +2820,6 @@ test/ch/cyberduck/core/transfer/TransferCollectionEmpty.plist -text
 test/ch/cyberduck/ui/controller/KeychainTest.cs -text
 test/ch/cyberduck/ui/controller/PersistentFormHandlerTest.cs -text
 test/org/kohsuke/putty/PuTTYKeyTest.java -text
-th.lproj/Alert.nib/classes.nib -text
-th.lproj/Alert.nib/info.nib -text
-th.lproj/Alert.nib/keyedobjects.nib -text
 th.lproj/Alert.strings -text svneol=unset#text/utf-16
 th.lproj/Archive.strings -text svneol=unset#text/utf-16
 th.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2977,9 +2881,6 @@ th.lproj/S3.strings -text svneol=unset#text/utf-16
 th.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 th.lproj/Status.strings -text svneol=unset#text/utf-16
 th.lproj/Transfer.strings -text svneol=unset#text/utf-16
-tr.lproj/Alert.nib/classes.nib -text
-tr.lproj/Alert.nib/info.nib -text
-tr.lproj/Alert.nib/keyedobjects.nib -text
 tr.lproj/Alert.strings -text svneol=unset#text/utf-16
 tr.lproj/Archive.strings -text svneol=unset#text/utf-16
 tr.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -3041,9 +2942,6 @@ tr.lproj/S3.strings -text svneol=unset#text/utf-16
 tr.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 tr.lproj/Status.strings -text svneol=unset#text/utf-16
 tr.lproj/Transfer.strings -text svneol=unset#text/utf-16
-uk.lproj/Alert.nib/classes.nib -text
-uk.lproj/Alert.nib/info.nib -text
-uk.lproj/Alert.nib/keyedobjects.nib -text
 uk.lproj/Alert.strings -text svneol=unset#text/utf-16
 uk.lproj/Archive.strings -text svneol=unset#text/utf-16
 uk.lproj/Bookmark.nib/classes.nib -text
@@ -3113,9 +3011,6 @@ www/update/update.pem -text
 www/update/updater.wyp -text
 www/update/updater.xml -text
 www/update/version.xml -text
-zh_CN.lproj/Alert.nib/classes.nib -text
-zh_CN.lproj/Alert.nib/info.nib -text
-zh_CN.lproj/Alert.nib/keyedobjects.nib -text
 zh_CN.lproj/Alert.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Archive.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -3157,9 +3052,6 @@ zh_CN.lproj/S3.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Status.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Transfer.strings -text svneol=unset#text/utf-16
-zh_TW.lproj/Alert.nib/classes.nib -text
-zh_TW.lproj/Alert.nib/info.nib -text
-zh_TW.lproj/Alert.nib/keyedobjects.nib -text
 zh_TW.lproj/Alert.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Archive.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Azure.strings -text svneol=unset#text/utf-16
