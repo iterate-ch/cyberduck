@@ -9,7 +9,7 @@
 	<key>Description</key>
 	<string>GMX Mediacenter (WebDAV)</string>
 	<key>Default Hostname</key>
-	<string>mediacenter.gmx.net</string>
+	<string>webdav.mc.gmx.net</string>
 	<key>Username Placeholder</key>
 	<string>GMX Kundennummer</string>
 </dict>
