@@ -17,23 +17,32 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class TransferAdapter implements TransferListener {
+    private static final Logger log = Logger.getLogger(TransferAdapter.class);
 
     @Override
     public void start(final Transfer transfer) {
-        //
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Start transfer %s", transfer));
+        }
     }
 
     @Override
     public void stop(final Transfer transfer) {
-        //
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Stop transfer %s", transfer));
+        }
     }
 
     @Override
     public void progress(final TransferProgress status) {
-        //
+        if(log.isDebugEnabled()) {
+            log.debug(status.toString());
+        }
     }
 }

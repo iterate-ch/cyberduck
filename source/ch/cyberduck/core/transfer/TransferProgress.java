@@ -18,7 +18,7 @@ package ch.cyberduck.core.transfer;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class TransferProgress {
 
@@ -49,5 +49,16 @@ public final class TransferProgress {
 
     public Double getSpeed() {
         return speed;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TransferProgress{");
+        sb.append("size=").append(size);
+        sb.append(", transferred=").append(transferred);
+        sb.append(", progress='").append(progress).append('\'');
+        sb.append(", speed=").append(speed);
+        sb.append('}');
+        return sb.toString();
     }
 }
