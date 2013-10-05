@@ -63,7 +63,7 @@
 
 /* Signed URL Expiry */
 "Signed" = "Signed";
-"Expires on {0}" = "Expires on {0}";
+"Expires {0}" = "Expires {0}";
 
 /* HTTP Metadata */
 "Custom Header" = "Custom Header";
