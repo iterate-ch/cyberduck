@@ -19,8 +19,8 @@ package ch.cyberduck.core.serializer.impl;
  */
 
 import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -38,7 +38,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
     private static Logger log = Logger.getLogger(PlistReader.class);
 
     @Override
-    public Collection<S> readCollection(Local file) {
+    public Collection<S> readCollection(final Local file) {
         final Collection<S> c = new Collection<S>();
         NSArray list = NSArray.arrayWithContentsOfFile(file.getAbsolute());
         if(null == list) {
@@ -59,7 +59,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
      * @return Null if the file cannot be deserialized
      */
     @Override
-    public S read(Local file) {
+    public S read(final Local file) {
         NSDictionary dict = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == dict) {
             log.error("Invalid bookmark file:" + file);

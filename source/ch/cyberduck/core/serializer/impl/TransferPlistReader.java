@@ -51,7 +51,7 @@ public class TransferPlistReader extends PlistReader<Transfer> {
         }
     }
 
-    public Transfer deserialize(NSDictionary dict, Session s) {
+    public Transfer deserialize(final NSDictionary dict, final Session s) {
         NSObject kindObj = dict.objectForKey("Kind");
         if(kindObj != null) {
             switch(Transfer.Type.values()[Integer.parseInt(kindObj.toString())]) {
@@ -70,7 +70,7 @@ public class TransferPlistReader extends PlistReader<Transfer> {
     }
 
     @Override
-    public Transfer deserialize(NSDictionary dict) {
+    public Transfer deserialize(final NSDictionary dict) {
         NSObject hostObj = dict.objectForKey("Host");
         if(hostObj != null) {
             final Host host = new Host(Rococoa.cast(hostObj, NSDictionary.class));

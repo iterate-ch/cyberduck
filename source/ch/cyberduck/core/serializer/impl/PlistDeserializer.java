@@ -54,12 +54,12 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
 
     final NSDictionary dict;
 
-    public PlistDeserializer(NSDictionary dict) {
+    public PlistDeserializer(final NSDictionary dict) {
         this.dict = dict;
     }
 
     @Override
-    public String stringForKey(String key) {
+    public String stringForKey(final String key) {
         final NSObject value = dict.objectForKey(key);
         if(null == value) {
             return null;
@@ -68,7 +68,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
     }
 
     @Override
-    public boolean booleanForKey(String key) {
+    public boolean booleanForKey(final String key) {
         final String value = this.stringForKey(key);
         if(null == value) {
             return false;
@@ -80,7 +80,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
     }
 
     @Override
-    public NSDictionary objectForKey(String key) {
+    public NSDictionary objectForKey(final String key) {
         final NSObject value = dict.objectForKey(key);
         if(null == value) {
             return null;
@@ -89,7 +89,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
     }
 
     @Override
-    public List<NSDictionary> listForKey(String key) {
+    public List<NSDictionary> listForKey(final String key) {
         final NSObject value = dict.objectForKey(key);
         if(null == value) {
             return null;

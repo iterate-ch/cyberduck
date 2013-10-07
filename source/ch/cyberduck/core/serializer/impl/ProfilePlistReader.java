@@ -41,7 +41,7 @@ public class ProfilePlistReader extends PlistReader<Profile> {
     }
 
     @Override
-    public Profile deserialize(NSDictionary dict) {
+    public Profile deserialize(final NSDictionary dict) {
         return new Profile(dict);
     }
 }

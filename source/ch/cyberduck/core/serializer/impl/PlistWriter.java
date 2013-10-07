@@ -66,7 +66,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
     }
 
     @Override
-    public void write(Collection<S> collection, Local file) {
+    public void write(final Collection<S> collection, final Local file) {
         NSMutableArray list = NSMutableArray.array();
         for(S bookmark : collection) {
             list.addObject(bookmark.<NSDictionary>serialize(SerializerFactory.get()));
@@ -75,7 +75,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
     }
 
     @Override
-    public void write(S item, Local file) {
+    public void write(final S item, final Local file) {
         item.<NSDictionary>serialize(SerializerFactory.get()).writeToFile(file.getAbsolute());
     }
 }

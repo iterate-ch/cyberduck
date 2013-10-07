@@ -40,7 +40,7 @@ public class HostPlistReader extends PlistReader<Host> {
     }
 
     @Override
-    public Host deserialize(NSDictionary dict) {
+    public Host deserialize(final NSDictionary dict) {
         return new Host(dict);
     }
 }

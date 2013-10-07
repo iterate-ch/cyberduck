@@ -54,17 +54,17 @@ public class PlistSerializer implements Serializer {
     }
 
     @Override
-    public void setStringForKey(String value, String key) {
+    public void setStringForKey(final String value, final String key) {
         dict.setObjectForKey(value, key);
     }
 
     @Override
-    public void setObjectForKey(Serializable value, String key) {
+    public void setObjectForKey(final Serializable value, final String key) {
         dict.setObjectForKey(value.<NSDictionary>serialize(SerializerFactory.get()), key);
     }
 
     @Override
-    public <T extends Serializable> void setListForKey(List<T> value, String key) {
+    public <T extends Serializable> void setListForKey(final List<T> value, final String key) {
         final NSMutableArray list = NSMutableArray.array();
         for(Serializable serializable : value) {
             list.addObject(serializable.<NSDictionary>serialize(SerializerFactory.get()));
