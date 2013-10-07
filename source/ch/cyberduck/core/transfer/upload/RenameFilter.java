@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 public class RenameFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(RenameFilter.class);
 
-    private Session<?> session;
+    private Find find;
 
     public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions());
@@ -42,7 +42,7 @@ public class RenameFilter extends AbstractUploadFilter {
 
     public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
-        this.session = session;
+        this.find = session.getFeature(Find.class);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class RenameFilter extends AbstractUploadFilter {
             final Path parentPath = file.getParent();
             final String filename = file.getName();
             int no = 0;
-            if(session.getFeature(Find.class).find(file)) {
+            if(find.find(file)) {
                 do {
                     no++;
                     String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
@@ -64,7 +64,7 @@ public class RenameFilter extends AbstractUploadFilter {
                         log.info(String.format("Change filename from %s to %s", filename, status.getRenamed()));
                     }
                 }
-                while(session.getFeature(Find.class).find(status.getRenamed()));
+                while(find.find(status.getRenamed()));
             }
         }
         return status;
