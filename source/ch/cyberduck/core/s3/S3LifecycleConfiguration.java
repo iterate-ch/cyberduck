@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
@@ -62,7 +63,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
         }
     }
 
@@ -98,7 +99,10 @@ public class S3LifecycleConfiguration implements Lifecycle {
                 log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", container, e.getMessage()));
                 return LifecycleConfiguration.empty();
             }
+            catch(InteroperabilityException i) {
+                log.warn(String.format("Not supported to read lifecycle configuration for %s %s", container, e.getMessage()));
+                return LifecycleConfiguration.empty();
+            }
         }
     }
-
 }
