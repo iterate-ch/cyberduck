@@ -43,10 +43,10 @@ public class DefaultAttributesFeature implements Attributes {
 
     @Override
     public PathAttributes getAttributes(final Path file) throws BackgroundException {
-        if(!cache.containsKey(file.getReference())) {
-            cache.put(file.getReference(), session.list(file.getParent(), new DisabledListProgressListener()));
+        if(!cache.containsKey(file.getParent().getReference())) {
+            cache.put(file.getParent().getReference(), session.list(file.getParent(), new DisabledListProgressListener()));
         }
-        final AttributedList<Path> list = cache.get(file.getReference());
+        final AttributedList<Path> list = cache.get(file.getParent().getReference());
         if(list.contains(file.getReference())) {
             return list.get(file.getReference()).attributes();
         }
