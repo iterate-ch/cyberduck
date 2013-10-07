@@ -18,10 +18,10 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 
@@ -56,10 +56,6 @@ public class S3AccessControlListFeature implements AclPermission {
 
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
-        final Credentials credentials = session.getHost().getCredentials();
-        if(credentials.isAnonymousLogin()) {
-            return Acl.EMPTY;
-        }
         try {
             if(containerService.isContainer(file)) {
                 // This method can be performed by anonymous services, but can only succeed if the
@@ -84,7 +80,13 @@ public class S3AccessControlListFeature implements AclPermission {
             return Acl.EMPTY;
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, file);
+            try {
+                throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, file);
+            }
+            catch(AccessDeniedException l) {
+                log.warn(String.format("Missing permission to read ACL for %s %s", file, e.getMessage()));
+                return Acl.EMPTY;
+            }
         }
     }
 

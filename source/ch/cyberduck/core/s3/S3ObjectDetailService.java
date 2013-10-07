@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
@@ -44,12 +45,6 @@ public class S3ObjectDetailService {
      */
     public StorageObject getDetails(final Path file) throws BackgroundException {
         final String container = new PathContainerService().getContainer(file).getName();
-        if(session.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot access object details");
-            final StorageObject object = new StorageObject(new PathContainerService().getKey(file));
-            object.setBucketName(container);
-            return object;
-        }
         try {
             if(file.attributes().isDuplicate()) {
                 return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
@@ -60,7 +55,15 @@ public class S3ObjectDetailService {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, file);
+            try {
+                throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, file);
+            }
+            catch(AccessDeniedException l) {
+                log.warn(String.format("Missing permission to read object details for %s %s", file, e.getMessage()));
+                final StorageObject object = new StorageObject(new PathContainerService().getKey(file));
+                object.setBucketName(container);
+                return object;
+            }
         }
     }
 }
