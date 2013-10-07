@@ -24,11 +24,11 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -47,6 +47,17 @@ public class S3LocationFeatureTest extends AbstractTestCase {
         assertEquals("EU", new S3LocationFeature(session).getLocation(
                 new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE)
         ));
+        session.close();
+    }
+
+    @Test
+    public void testForbidden() throws Exception {
+        final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        assertNull(new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE)));
         session.close();
     }
 }

@@ -19,7 +19,9 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,12 +49,8 @@ public class S3LocationFeature implements Location {
 
     @Override
     public String getLocation(final Path file) throws BackgroundException {
-        if(session.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot access bucket location");
-            return null;
-        }
+        final Path container = new PathContainerService().getContainer(file);
         try {
-            final Path container = new PathContainerService().getContainer(file);
             String location = session.getClient().getBucketLocation(
                     container.getName());
             if(StringUtils.isBlank(location)) {
@@ -62,7 +60,17 @@ public class S3LocationFeature implements Location {
             return location;
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+            try {
+                throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+            }
+            catch(AccessDeniedException l) {
+                log.warn(String.format("Missing permission to read location for %s %s", container, e.getMessage()));
+                return null;
+            }
+            catch(InteroperabilityException i) {
+                log.warn(String.format("Not supported to read location for %s %s", container, e.getMessage()));
+                return null;
+            }
         }
     }
 }
