@@ -18,17 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.transfer.SyncTransfer;
-import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSText;
 
 import org.apache.commons.lang3.StringUtils;
-import org.rococoa.Foundation;
 
 /**
  * @version $Id$
@@ -38,15 +34,9 @@ public class SyncPromptController extends TransferPromptController {
     private final TableColumnFactory tableColumnsFactory
             = new TableColumnFactory();
 
-    public SyncPromptController(final WindowController parent, final Transfer transfer) {
+    public SyncPromptController(final WindowController parent, final SyncTransfer transfer) {
         super(parent, transfer);
-    }
-
-    @Override
-    public TransferAction prompt() {
-        browserModel = new SyncPromptModel(this, transfer);
-        action = TransferAction.ACTION_OVERWRITE;
-        return super.prompt();
+        browserModel = new SyncPromptModel(this, transfer, cache);
     }
 
     @Override
@@ -80,50 +70,11 @@ public class SyncPromptController extends TransferPromptController {
     }
 
     @Override
-    public void callback(final int returncode) {
-        if(returncode == DEFAULT_OPTION) { // Continue
-            action = TransferAction.ACTION_OVERWRITE;
-        }
-        else if(returncode == CANCEL_OPTION) { // Abort
-            action = TransferAction.ACTION_CANCEL;
-        }
-    }
-
-    @Override
-    public void setActionPopup(final NSPopUpButton actionPopup) {
-        this.actionPopup = actionPopup;
-        this.actionPopup.removeAllItems();
-
-        final TransferAction defaultAction
-                = ((SyncTransfer) transfer).getTransferAction();
-
-        final TransferAction[] actions = new TransferAction[]{
+    protected TransferAction[] getTransferActions() {
+        return new TransferAction[]{
                 SyncTransfer.ACTION_DOWNLOAD,
                 SyncTransfer.ACTION_UPLOAD,
                 SyncTransfer.ACTION_MIRROR
         };
-
-        for(TransferAction action : actions) {
-            this.actionPopup.addItemWithTitle(action.getTitle());
-            this.actionPopup.lastItem().setRepresentedObject(action.toString());
-            if(action.equals(defaultAction)) {
-                this.actionPopup.selectItem(actionPopup.lastItem());
-            }
-        }
-        this.actionPopup.setTarget(this.id());
-        this.actionPopup.setAction(Foundation.selector("actionPopupClicked:"));
-    }
-
-    @Override
-    @Action
-    public void actionPopupClicked(NSPopUpButton sender) {
-        final TransferAction current = ((SyncTransfer) transfer).getTransferAction();
-        final TransferAction selected = TransferAction.forName(sender.selectedItem().representedObject());
-        if(current.equals(selected)) {
-            return;
-        }
-        Preferences.instance().setProperty("queue.sync.action.default", selected.toString());
-        ((SyncTransfer) transfer).setTransferAction(selected);
-        this.reloadData();
     }
 }

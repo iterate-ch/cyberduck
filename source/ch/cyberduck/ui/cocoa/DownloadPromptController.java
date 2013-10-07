@@ -18,21 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.DownloadTransfer;
 
 /**
  * @version $Id$
  */
 public class DownloadPromptController extends TransferPromptController {
 
-    public DownloadPromptController(final WindowController parent, Transfer transfer) {
+    public DownloadPromptController(final WindowController parent, DownloadTransfer transfer) {
         super(parent, transfer);
-    }
-
-    @Override
-    public TransferAction prompt() {
-        browserModel = new DownloadPromptModel(this, transfer);
-        return super.prompt();
+        browserModel = new DownloadPromptModel(this, transfer, cache);
     }
 }

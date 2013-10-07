@@ -18,21 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.UploadTransfer;
 
 /**
  * @version $Id$
  */
 public class UploadPromptController extends TransferPromptController {
 
-    public UploadPromptController(final WindowController parent, final Transfer transfer) {
+    public UploadPromptController(final WindowController parent, final UploadTransfer transfer) {
         super(parent, transfer);
-    }
-
-    @Override
-    public TransferAction prompt() {
-        browserModel = new UploadPromptModel(this, transfer);
-        return super.prompt();
+        browserModel = new UploadPromptModel(this, transfer, cache);
     }
 }
