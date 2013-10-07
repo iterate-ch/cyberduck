@@ -45,10 +45,6 @@ public class S3LoggingFeature implements Logging {
 
     @Override
     public LoggingConfiguration getConfiguration(final Path container) throws BackgroundException {
-        if(session.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot access logging status");
-            return LoggingConfiguration.empty();
-        }
         try {
             final StorageBucketLoggingStatus status
                     = session.getClient().getBucketLoggingStatusImpl(container.getName());

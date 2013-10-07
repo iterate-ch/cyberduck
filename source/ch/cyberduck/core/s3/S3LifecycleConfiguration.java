@@ -70,10 +70,6 @@ public class S3LifecycleConfiguration implements Lifecycle {
 
     @Override
     public LifecycleConfiguration getConfiguration(final Path container) throws BackgroundException {
-        if(session.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot access logging status");
-            return LifecycleConfiguration.empty();
-        }
         try {
             final LifecycleConfig status = session.getClient().getLifecycleConfig(container.getName());
             if(null != status) {
