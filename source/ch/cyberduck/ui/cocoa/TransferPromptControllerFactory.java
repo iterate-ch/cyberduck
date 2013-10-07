@@ -16,13 +16,13 @@ public final class TransferPromptControllerFactory {
 
     public static TransferPromptController create(final WindowController parent, final Transfer transfer) {
         if(transfer instanceof DownloadTransfer) {
-            return new DownloadPromptController(parent, transfer);
+            return new DownloadPromptController(parent, (DownloadTransfer) transfer);
         }
         if(transfer instanceof UploadTransfer) {
-            return new UploadPromptController(parent, transfer);
+            return new UploadPromptController(parent, (UploadTransfer) transfer);
         }
         if(transfer instanceof SyncTransfer) {
-            return new SyncPromptController(parent, transfer);
+            return new SyncPromptController(parent, (SyncTransfer) transfer);
         }
         throw new IllegalArgumentException(transfer.toString());
     }
