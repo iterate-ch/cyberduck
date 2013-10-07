@@ -108,7 +108,9 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
             progressTimer = timerPool.repeat(new Runnable() {
                 @Override
                 public void run() {
-                    transferListener.progress(meter.getStatus());
+                    if(transfer.isReset()) {
+                        transferListener.progress(meter.getStatus());
+                    }
                 }
             }, 100L, TimeUnit.MILLISECONDS);
             transfer.start(prompt, options, error);
