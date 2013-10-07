@@ -18,22 +18,26 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DeserializerFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @version $Id$
@@ -45,12 +49,6 @@ public abstract class Transfer implements Serializable {
      * Files and folders initially selected to be part of this transfer
      */
     private List<Path> roots;
-
-    /**
-     * Transfer status determined by filters
-     */
-    private Map<Path, TransferStatus> table
-            = new HashMap<Path, TransferStatus>();
 
     /**
      * The sum of the file length of all files in the <code>queue</code>
@@ -118,11 +116,6 @@ public abstract class Transfer implements Serializable {
      * Last transferred timestamp
      */
     private Date timestamp;
-
-    /**
-     * Prefetched workload
-     */
-    private Cache cache = new Cache(Integer.MAX_VALUE);
 
     /**
      * Transfer state
@@ -263,6 +256,10 @@ public abstract class Transfer implements Serializable {
         return roots;
     }
 
+    public Session<?> getSession() {
+        return session;
+    }
+
     public List<Session<?>> getSessions() {
         return new ArrayList<Session<?>>(Collections.singletonList(session));
     }
@@ -280,151 +277,27 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return All child elements of root path items to transfer
-     */
-    public Cache cache() {
-        return cache;
-    }
-
-    /**
-     * @param prompt Callback
      * @param action Transfer action for duplicate files
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
-    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
-        if(action.equals(TransferAction.ACTION_CANCEL)) {
-            throw new ConnectionCanceledException();
-        }
-        throw new ConnectionCanceledException(String.format("Unknown transfer action %s", action));
-    }
+    public abstract TransferPathFilter filter(TransferAction action);
 
     /**
      * @param resumeRequested Requested resume
      * @param reloadRequested Requested overwrite
+     * @param prompt          Callback
      * @return Duplicate file strategy from preferences or user selection
      */
-    public abstract TransferAction action(final boolean resumeRequested, final boolean reloadRequested);
-
-    /**
-     * Lookup the path by reference in the session cache
-     *
-     * @param r Key
-     * @return Lookup from cache
-     * @see ch.cyberduck.core.Cache#lookup(ch.cyberduck.core.PathReference)
-     */
-    public Path lookup(final PathReference r) {
-        for(Path root : roots) {
-            if(r.equals(root.getReference())) {
-                return root;
-            }
-        }
-        return cache.lookup(r);
-    }
+    public abstract TransferAction action(boolean resumeRequested, boolean reloadRequested,
+                                          TransferPrompt prompt) throws BackgroundException;
 
     /**
      * Returns the children of this path filtering it with the default regex filter
      *
-     * @param parent The directory to list the children
+     * @param directory The directory to list the children
      * @return A list of child items
      */
-    public abstract AttributedList<Path> children(final Path parent) throws BackgroundException;
-
-    /**
-     * @param item File
-     * @return False if unchecked in prompt to exclude from transfer
-     */
-    public boolean isSelected(final Path item) {
-        if(table.containsKey(item)) {
-            return table.get(item).isSelected();
-        }
-        return true;
-    }
-
-    public TransferStatus getStatus(final Path item) {
-        return table.get(item);
-    }
-
-    /**
-     * @param item File
-     * @return True if file should not be transferred
-     */
-    public boolean isSkipped(final Path item) {
-        return !this.getRegexFilter().accept(item);
-    }
-
-    /**
-     * Select the path to be included in the transfer
-     *
-     * @param item     File
-     * @param selected Selected files in transfer prompt
-     */
-    public void setSelected(final Path item, final boolean selected) {
-        table.put(item, new TransferStatus().selected(selected));
-    }
-
-    public abstract Filter<Path> getRegexFilter();
-
-    /**
-     * @param file    File
-     * @param filter  Filter to apply to exclude files from transfer
-     * @param options Quarantine option
-     */
-    protected void transfer(final Path file, final TransferPathFilter filter,
-                            final TransferOptions options, final TransferErrorCallback prompt) throws BackgroundException {
-        final TransferStatus status = table.get(file);
-        if(!status.isSelected()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skip file %s with status %s", file, status));
-            }
-            return;
-        }
-        // Transfer
-        try {
-            if(status.isRename()) {
-                this.transfer(status.getRenamed(), options, status);
-            }
-            else {
-                this.transfer(file, options, status);
-            }
-        }
-        catch(ConnectionCanceledException e) {
-            throw e;
-        }
-        catch(BackgroundException e) {
-            // Prompt to continue or abort
-            if(prompt.prompt(e)) {
-                // Continue
-                log.warn(String.format("Ignore transfer failure %s", e));
-            }
-            else {
-                throw e;
-            }
-        }
-        if(file.attributes().isFile()) {
-            // Post process of file.
-            try {
-                filter.complete(file, options, status, session);
-            }
-            catch(BackgroundException e) {
-                log.warn(String.format("Ignore failure in completion filter for %s", file));
-            }
-        }
-        if(file.attributes().isDirectory()) {
-            for(Path child : cache.get(file.getReference())) {
-                // Recursive
-                this.transfer(child, filter, options, prompt);
-                table.remove(child);
-            }
-            // Post process of directory.
-            try {
-                filter.complete(file, options, status, session);
-            }
-            catch(BackgroundException e) {
-                log.warn(String.format("Ignore failure in completion filter for %s", file));
-            }
-            cache.remove(file.getReference());
-        }
-    }
+    public abstract AttributedList<Path> list(Path directory, TransferStatus parent) throws BackgroundException;
 
     /**
      * The actual transfer implementation
@@ -435,140 +308,13 @@ public abstract class Transfer implements Serializable {
      */
     public abstract void transfer(Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
 
-    /**
-     * To be called before any file is actually transferred
-     *
-     * @param file   File
-     * @param filter Filter to apply to exclude files from transfer
-     */
-    public void prepare(final Path file, final TransferStatus parent, final TransferPathFilter filter) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer status of %s for transfer %s", file, this));
-        }
-        if(this.isCanceled()) {
-            throw new ConnectionCanceledException();
-        }
-        if(this.isSelected(file)) {
-            // Only prepare the path it will be actually transferred
-            if(filter.accept(file, parent)) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Accepted file %s in transfer %s", file, this));
-                }
-                session.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
-                final TransferStatus status = filter.prepare(file, parent);
-                if(file.attributes().isDirectory()) {
-                    // Call recursively for all children
-                    final AttributedList<Path> children;
-                    if(status.isRename()) {
-                        children = this.children(status.getRenamed());
-                    }
-                    else {
-                        children = this.children(file);
-                    }
-                    // Put into cache for later reference when transferring
-                    cache.put(file.getReference(), children);
-                    // Call recursively
-                    for(Path child : children) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Find transfer status of %s for transfer %s", child, this));
-                        }
-                        this.prepare(child, status, filter);
-                    }
-                }
-                this.save(file, status);
-            }
-            else {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Skip file %s transfer %s", file, this));
-                }
-                this.save(file, new TransferStatus().selected(false));
-            }
-        }
-        else {
-            log.info(String.format("Skip unchecked file %s for transfer %s", file, this));
-        }
-    }
-
-    public void save(final Path file, final TransferStatus status) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Determined transfer status %s of %s for transfer %s", status, file, this));
-        }
-        // Add transfer length to total bytes
-        size += status.getLength();
-        // Add skipped bytes
-        transferred += status.getCurrent();
-        table.put(file, status);
-    }
-
-    /**
-     * Clear all cached values
-     *
-     * @param options Transfer options
-     */
-    public void clear(final TransferOptions options) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Clear cache with options %s", options));
-        }
-        cache.clear();
-        table.clear();
-    }
-
-    /**
-     * @param prompt  Transfer prompt callback
-     * @param options Transfer options
-     */
-    public void start(final TransferPrompt prompt, final TransferOptions options,
-                      final TransferErrorCallback error) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
-        }
+    public void start() {
         state = State.running;
-        try {
-            // Determine the filter to match files against
-            final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Selected transfer action %s", action));
-            }
-            if(action.equals(TransferAction.ACTION_CANCEL)) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Transfer %s canceled by user", this));
-                }
-                throw new ConnectionCanceledException();
-            }
-            this.clear(options);
-            // Get the transfer filter from the concrete transfer class. Will throw connection canceled failure if prompt is dismissed.
-            final TransferPathFilter filter = this.filter(prompt, action);
-            // Reset the cached size of the transfer and progress value
-            this.reset();
-            // Calculate information about the files in advance to give progress information
-            for(Path next : roots) {
-                this.prepare(next, new TransferStatus().exists(true), filter);
-            }
-            // Transfer all files sequentially
-            for(Path next : roots) {
-                this.transfer(next, filter, options, error);
-            }
-            this.clear(options);
-        }
-        finally {
-            state = State.stopped;
-            timestamp = new Date();
-        }
     }
 
-    /**
-     * Marks all items in the queue as canceled. Canceled items will be
-     * skipped when processed. If the transfer is already in a <code>canceled</code>
-     * state, the underlying session's socket is interrupted to force exit.
-     */
-    public void cancel() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cancel transfer %s", this));
-        }
-        state = State.canceled;
-        for(TransferStatus s : table.values()) {
-            s.setCanceled();
-        }
+    public void stop() {
+        state = State.stopped;
+        timestamp = new Date();
     }
 
     /**

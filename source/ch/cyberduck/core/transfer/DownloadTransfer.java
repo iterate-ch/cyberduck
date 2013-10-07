@@ -92,41 +92,34 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public Filter<Path> getRegexFilter() {
-        return filter;
-    }
-
-    @Override
-    public AttributedList<Path> children(final Path parent) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final TransferStatus parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("List children for %s", parent));
+            log.debug(String.format("List children for %s", directory));
         }
-        if(parent.attributes().isSymbolicLink()
-                && new DownloadSymlinkResolver(this.getRoots()).resolve(parent)) {
+        if(directory.attributes().isSymbolicLink()
+                && new DownloadSymlinkResolver(this.getRoots()).resolve(directory)) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Do not list children for symbolic link %s", parent));
+                log.debug(String.format("Do not list children for symbolic link %s", directory));
             }
             return AttributedList.emptyList();
         }
         else {
-            final AttributedList<Path> list = session.list(parent, new DisabledListProgressListener());
+            final AttributedList<Path> list = session.list(directory, new DisabledListProgressListener());
             for(Path download : list) {
                 // Change download path relative to parent local folder
-                download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));
+                download.setLocal(LocalFactory.createLocal(directory.getLocal(), download.getName()));
             }
-            return list.filter(filter);
+            // Return copy with filtered result only
+            return new AttributedList<Path>(list.filter(filter));
         }
     }
 
     @Override
-    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
+    public TransferPathFilter filter(final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
         final SymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
-        if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return new OverwriteFilter(resolver, session);
-        }
         if(action.equals(TransferAction.ACTION_RESUME)) {
             return new ResumeFilter(resolver, session);
         }
@@ -141,6 +134,30 @@ public class DownloadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_COMPARISON)) {
             return new CompareFilter(resolver, session);
+        }
+        return new OverwriteFilter(resolver, session);
+    }
+
+    @Override
+    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested,
+                                 final TransferPrompt prompt) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+        }
+        final TransferAction action;
+        if(resumeRequested) {
+            // Force resume
+            action = TransferAction.ACTION_RESUME;
+        }
+        else if(reloadRequested) {
+            action = TransferAction.forName(
+                    Preferences.instance().getProperty("queue.download.reload.fileExists"));
+        }
+        else {
+            // Use default
+            action = TransferAction.forName(
+                    Preferences.instance().getProperty("queue.download.fileExists")
+            );
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path download : this.getRoots()) {
@@ -159,34 +176,13 @@ public class DownloadTransfer extends Transfer {
                         }
                     }
                     // Prompt user to choose a filter
-                    final TransferAction result = prompt.prompt();
-                    return this.filter(prompt, result);
+                    return prompt.prompt();
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action
-            return this.filter(prompt, TransferAction.ACTION_OVERWRITE);
+            return TransferAction.ACTION_OVERWRITE;
         }
-        return super.filter(prompt, action);
-    }
-
-    @Override
-    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
-        }
-        if(resumeRequested) {
-            // Force resume
-            return TransferAction.ACTION_RESUME;
-        }
-        if(reloadRequested) {
-            return TransferAction.forName(
-                    Preferences.instance().getProperty("queue.download.reload.fileExists")
-            );
-        }
-        // Use default
-        return TransferAction.forName(
-                Preferences.instance().getProperty("queue.download.fileExists")
-        );
+        return action;
     }
 
     @Override
@@ -260,5 +256,4 @@ public class DownloadTransfer extends Transfer {
             throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
         }
     }
-
 }

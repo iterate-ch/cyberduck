@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer;
+package ch.cyberduck.ui.action;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -18,20 +18,21 @@ package ch.cyberduck.core.transfer;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.Transfer;
+
+import org.apache.log4j.Logger;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class DisabledTransferPrompt implements TransferPrompt {
+public class ConcurrentTransferWorker extends Worker<Boolean> {
+    private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
+
+    private Transfer transfer;
 
     @Override
-    public TransferAction prompt() {
-        return TransferAction.ACTION_CANCEL;
-    }
-
-    @Override
-    public boolean isSelected(final Path file) {
-        return true;
+    public Boolean run() throws BackgroundException {
+        return false;
     }
 }

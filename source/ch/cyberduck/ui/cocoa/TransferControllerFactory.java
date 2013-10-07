@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 
@@ -68,10 +68,8 @@ public class TransferControllerFactory {
                 @Override
                 public void callback(int returncode) {
                     if(returncode == DEFAULT_OPTION) { //Quit
-                        for(Transfer transfer : TransferCollection.defaultCollection()) {
-                            if(transfer.isRunning()) {
-                                transfer.cancel();
-                            }
+                        for(BackgroundAction action : shared.getActions()) {
+                            action.cancel();
                         }
                         app.replyToApplicationShouldTerminate(true);
                     }

@@ -34,14 +34,13 @@ import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -57,6 +56,7 @@ import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 import ch.cyberduck.ui.threading.ControllerMainAction;
+import ch.cyberduck.ui.threading.TransferBackgroundAction;
 import ch.cyberduck.ui.threading.TransferCollectionBackgroundAction;
 
 import org.apache.commons.lang3.StringUtils;
@@ -689,15 +689,11 @@ public final class TransferController extends WindowController implements NSTool
      * @param transfer Transfer
      */
     public void startTransfer(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
-        final ProgressController controller = transferTableModel.getController(transfer);
+        final ProgressController progress = transferTableModel.getController(transfer);
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
-                controller, controller, transcript,
-                transfer, new TransferPrompt() {
-            @Override
-            public TransferAction prompt() {
-                return TransferPromptControllerFactory.create(TransferController.this, transfer).prompt();
-            }
-        }, new PanelTransferErrorCallback(this), options) {
+                progress, progress, transcript, transfer,
+                TransferPromptControllerFactory.create(TransferController.this, transfer),
+                new PanelTransferErrorCallback(this), options) {
             @Override
             public void init() {
                 super.init();
@@ -877,10 +873,19 @@ public final class TransferController extends WindowController implements NSTool
     @Action
     public void stopButtonClicked(final ID sender) {
         NSIndexSet selected = transferTable.selectedRowIndexes();
+        final BackgroundActionRegistry registry = this.getActions();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
             if(transfer.isRunning()) {
-                transfer.cancel();
+                // Find matching background task
+                for(BackgroundAction action : registry) {
+                    if(action instanceof TransferBackgroundAction) {
+                        final TransferBackgroundAction t = (TransferBackgroundAction) action;
+                        if(t.getTransfer().equals(transfer)) {
+                            t.cancel();
+                        }
+                    }
+                }
             }
         }
     }
@@ -888,9 +893,18 @@ public final class TransferController extends WindowController implements NSTool
     @Action
     public void stopAllButtonClicked(final ID sender) {
         final Collection<Transfer> transfers = transferTableModel.getSource();
+        final BackgroundActionRegistry registry = this.getActions();
         for(final Transfer transfer : transfers) {
             if(transfer.isRunning()) {
-                transfer.cancel();
+                // Find matching background task
+                for(BackgroundAction action : registry) {
+                    if(action instanceof TransferBackgroundAction) {
+                        final TransferBackgroundAction t = (TransferBackgroundAction) action;
+                        if(t.getTransfer().equals(transfer)) {
+                            t.cancel();
+                        }
+                    }
+                }
             }
         }
     }

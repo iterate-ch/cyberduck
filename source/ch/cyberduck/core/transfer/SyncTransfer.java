@@ -18,27 +18,43 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NullPathFilter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.transfer.synchronisation.CachingComparisonService;
+import ch.cyberduck.core.transfer.synchronisation.SynchronizationPathFilter;
 
-import org.apache.commons.collections.map.AbstractLinkedMap;
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * @version $Id$
  */
 public class SyncTransfer extends Transfer {
-    private static Logger log = Logger.getLogger(SyncTransfer.class);
+    private static final Logger log = Logger.getLogger(SyncTransfer.class);
+
+    /**
+     * The delegate for files to upload
+     */
+    private Transfer upload;
+
+    /**
+     * The delegate for files to download
+     */
+    private Transfer download;
+
+    private CachingComparisonService comparison;
 
     public SyncTransfer(final Session session, final Path root) {
         super(session, root, new BandwidthThrottle(
@@ -53,8 +69,9 @@ public class SyncTransfer extends Transfer {
     }
 
     private void init() {
-        _delegateUpload = new UploadTransfer(session, this.getRoots(), new NullPathFilter<Local>());
-        _delegateDownload = new DownloadTransfer(session, this.getRoots(), new NullPathFilter<Path>());
+        comparison = new CachingComparisonService(new CombinedComparisionService(session, session.getHost().getTimezone()));
+        upload = new UploadTransfer(session, this.getRoots(), new NullPathFilter<Local>());
+        download = new DownloadTransfer(session, this.getRoots(), new NullPathFilter<Path>());
     }
 
     @Override
@@ -63,24 +80,9 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public Filter<Path> getRegexFilter() {
-        return new NullPathFilter<Path>();
-    }
-
-    /**
-     * The delegate for files to upload
-     */
-    private Transfer _delegateUpload;
-
-    /**
-     * The delegate for files to download
-     */
-    private Transfer _delegateDownload;
-
-    @Override
     public void setBandwidth(float bytesPerSecond) {
-        _delegateUpload.setBandwidth(bytesPerSecond);
-        _delegateDownload.setBandwidth(bytesPerSecond);
+        upload.setBandwidth(bytesPerSecond);
+        download.setBandwidth(bytesPerSecond);
     }
 
     @Override
@@ -91,19 +93,7 @@ public class SyncTransfer extends Transfer {
     @Override
     public long getTransferred() {
         // Include super for serialized state.
-        return super.getTransferred() + _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
-    }
-
-    private TransferAction action = TransferAction.forName(
-            Preferences.instance().getProperty("queue.sync.action.default")
-    );
-
-    public void setTransferAction(TransferAction action) {
-        this.action = action;
-    }
-
-    public TransferAction getTransferAction() {
-        return this.action;
+        return super.getTransferred() + download.getTransferred() + upload.getTransferred();
     }
 
     public static final TransferAction ACTION_DOWNLOAD = new TransferAction("download") {
@@ -143,197 +133,77 @@ public class SyncTransfer extends Transfer {
     };
 
     @Override
-    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
+    public TransferPathFilter filter(final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
-        if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            // When synchronizing, either cancel or overwrite. Resume is not supported
-            return new DelegateTransferPathFilter(
-                    _delegateDownload.filter(null, TransferAction.ACTION_OVERWRITE),
-                    _delegateUpload.filter(null, TransferAction.ACTION_OVERWRITE)
-            );
-        }
-        if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            final TransferAction result = prompt.prompt();
-            return this.filter(prompt, result); // Break out. Either cancel or overwrite
-        }
-        return super.filter(prompt, action);
+        // Set chosen action (upload, download, mirror) from prompt
+        return new SynchronizationPathFilter(
+                comparison,
+                download.filter(TransferAction.ACTION_OVERWRITE),
+                upload.filter(TransferAction.ACTION_OVERWRITE),
+                action
+        );
     }
 
     @Override
-    public AttributedList<Path> children(final Path parent) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final TransferStatus parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Children for %s", parent));
+            log.debug(String.format("Children for %s", directory));
         }
         final Set<Path> children = new HashSet<Path>();
-        if(session.getFeature(Find.class).find(parent)) {
-            children.addAll(_delegateDownload.children(parent));
+        if(session.getFeature(Find.class).find(directory)) {
+            children.addAll(download.list(directory, parent));
         }
-        if(parent.getLocal().exists()) {
-            children.addAll(_delegateUpload.children(parent));
-        }
-        for(Path path : children) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Compare path %s with local", path));
-            }
-            final Comparison result = new CombinedComparisionService(session, session.getHost().getTimezone()).compare(path);
-            comparisons.put(path.getReference(), result);
+        if(directory.getLocal().exists()) {
+            children.addAll(upload.list(directory, parent));
         }
         return new AttributedList<Path>(children);
     }
 
-    /**
-     * Set the skipped flag on the file attributes if no synchronisation is needed
-     * depending on the current action selection to mirror or only download or upload missing files.
-     *
-     * @param path File
-     */
     @Override
-    public boolean isSkipped(final Path path) {
-        final Comparison comparison = comparisons.get(path.getReference());
+    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Comparison for file %s is %s", path, comparison));
+            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }
-        // Updating default skip settings for actual transfer
-        if(Comparison.equal.equals(comparison)) {
-            return path.attributes().isFile();
-        }
-        else {
-            if(path.attributes().isFile()) {
-                if(comparison.equals(Comparison.remote)) {
-                    return this.getTransferAction().equals(ACTION_UPLOAD);
-                }
-                else if(comparison.equals(Comparison.local)) {
-                    return this.getTransferAction().equals(ACTION_DOWNLOAD);
-                }
-            }
-            return false;
-        }
+        // Prompt for synchronization.
+        return prompt.prompt();
     }
 
     @Override
-    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug(String.format("Resume=%s,Reload=%s", resumeRequested, reloadRequested));
-        // Always prompt for synchronization
-        return TransferAction.ACTION_CALLBACK;
-    }
-
-    @Override
-    public void transfer(final Path file, TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
-        final Comparison compare = this.compare(file);
+        final Comparison compare = comparison.compare(file);
         if(compare.equals(Comparison.remote)) {
-            _delegateDownload.transfer(file, options, status);
+            download.transfer(file, options, status);
         }
         else if(compare.equals(Comparison.local)) {
-            _delegateUpload.transfer(file, options, status);
+            upload.transfer(file, options, status);
         }
     }
 
-    @Override
-    public void clear(final TransferOptions options) {
-        _delegateDownload.clear(options);
-        _delegateUpload.clear(options);
-        comparisons.clear();
-        super.clear(options);
+    /**
+     * @param file The path to compare
+     */
+    public Comparison compare(final Path file) {
+        return comparison.get(file);
     }
 
     @Override
     public void reset() {
-        _delegateDownload.reset();
-        _delegateUpload.reset();
-
+        download.reset();
+        upload.reset();
         super.reset();
     }
 
-    private Map<PathReference, Comparison> comparisons = Collections.<PathReference, Comparison>synchronizedMap(new LRUMap(
-            Preferences.instance().getInteger("transfer.cache.size")
-    ) {
-        @Override
-        protected boolean removeLRU(AbstractLinkedMap.LinkEntry
-                                            entry) {
-            log.debug("Removing from cache:" + entry);
-            return true;
-        }
-    });
-
-    /**
-     * @param p The path to compare
-     * @return Comparison.REMOTE_NEWER, Comparison.LOCAL_NEWER or Comparison.EQUAL
-     */
-    public Comparison compare(final Path p) {
-        if(comparisons.containsKey(p.getReference())) {
-            return comparisons.get(p.getReference());
-        }
-        return Comparison.equal;
-    }
-
-    private final class DelegateTransferPathFilter implements TransferPathFilter {
-
-        /**
-         * Download delegate filter
-         */
-        private TransferPathFilter _delegateFilterDownload;
-
-        /**
-         * Upload delegate filter
-         */
-        private TransferPathFilter _delegateFilterUpload;
-
-        private DelegateTransferPathFilter(final TransferPathFilter _delegateFilterDownload,
-                                           final TransferPathFilter _delegateFilterUpload) {
-            this._delegateFilterDownload = _delegateFilterDownload;
-            this._delegateFilterUpload = _delegateFilterUpload;
-        }
-
-        @Override
-        public TransferStatus prepare(final Path p, final TransferStatus parent) throws BackgroundException {
-            final Comparison compare = SyncTransfer.this.compare(p);
-            if(compare.equals(Comparison.remote)) {
-                return _delegateFilterDownload.prepare(p, new TransferStatus());
-            }
-            if(compare.equals(Comparison.local)) {
-                return _delegateFilterUpload.prepare(p, new TransferStatus());
-            }
-            return new TransferStatus();
-        }
-
-        @Override
-        public boolean accept(final Path p, final TransferStatus parent) throws BackgroundException {
-            final Comparison compare = SyncTransfer.this.compare(p);
-            if(compare.equals(Comparison.equal)) {
-                return false;
-            }
-            if(compare.equals(Comparison.remote)) {
-                if(getTransferAction().equals(ACTION_UPLOAD)) {
-                    return false;
-                }
-                // Ask the download delegate for inclusion
-                return _delegateFilterDownload.accept(p, parent);
-            }
-            else if(compare.equals(Comparison.local)) {
-                if(getTransferAction().equals(ACTION_DOWNLOAD)) {
-                    return false;
-                }
-                // Ask the upload delegate for inclusion
-                return _delegateFilterUpload.accept(p, parent);
-            }
-            return false;
-        }
-
-        @Override
-        public void complete(final Path p, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
-            final Comparison compare = SyncTransfer.this.compare(p);
-            if(compare.equals(Comparison.remote)) {
-                _delegateFilterDownload.complete(p, options, status, listener);
-            }
-            else if(compare.equals(Comparison.local)) {
-                _delegateFilterUpload.complete(p, options, status, listener);
-            }
-            comparisons.remove(p.getReference());
-        }
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SyncTransfer{");
+        sb.append("upload=").append(upload);
+        sb.append(", download=").append(download);
+        sb.append('}');
+        return sb.toString();
     }
 }

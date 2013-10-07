@@ -18,6 +18,8 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
+
 /**
  * @version $Id$
  */
@@ -27,4 +29,10 @@ public interface TransferPrompt {
      * @return Transfer action selected in prompt for overwriting files
      */
     TransferAction prompt();
+
+    /**
+     * @param file File
+     * @return True if file is selected in transfer prompt
+     */
+    boolean isSelected(Path file);
 }

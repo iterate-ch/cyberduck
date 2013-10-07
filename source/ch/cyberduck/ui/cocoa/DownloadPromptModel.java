@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -26,36 +27,35 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class DownloadPromptModel extends TransferPromptModel {
-    private static final Logger log = Logger.getLogger(DownloadPromptModel.class);
 
-    public DownloadPromptModel(TransferPromptController c, Transfer transfer) {
-        super(c, transfer);
+    public DownloadPromptModel(final TransferPromptController c, final Transfer transfer, final Cache cache) {
+        super(c, transfer, cache);
     }
 
     @Override
-    protected NSObject objectValueForItem(final Path item, final String identifier) {
+    protected NSObject objectValueForItem(final Path file, final String identifier) {
         if(identifier.equals(Column.size.name())) {
             return NSAttributedString.attributedStringWithAttributes(
-                    SizeFormatterFactory.get().format(item.getLocal().attributes().getSize()),
+                    SizeFormatterFactory.get().format(file.getLocal().attributes().getSize()),
                     TableCellAttributes.browserFontRightAlignment());
         }
         if(identifier.equals(Column.warning.name())) {
-            if(item.attributes().isFile()) {
-                if(item.attributes().getSize() == 0) {
+            if(file.attributes().isFile()) {
+                if(file.attributes().getSize() == 0) {
                     return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
                 }
-                if(item.getLocal().attributes().getSize() > item.attributes().getSize()) {
-                    IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                if(status.containsKey(file)) {
+                    if(file.getLocal().attributes().getSize() > status.get(file).getLength()) {
+                        return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                    }
                 }
             }
             return null;
         }
-        return super.objectValueForItem(item, identifier);
+        return super.objectValueForItem(file, identifier);
     }
 }

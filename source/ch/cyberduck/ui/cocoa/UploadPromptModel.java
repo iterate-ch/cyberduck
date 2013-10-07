@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -31,28 +32,30 @@ import ch.cyberduck.ui.resources.IconCacheFactory;
  */
 public class UploadPromptModel extends TransferPromptModel {
 
-    public UploadPromptModel(TransferPromptController c, Transfer transfer) {
-        super(c, transfer);
+    public UploadPromptModel(final TransferPromptController c, final Transfer transfer, final Cache cache) {
+        super(c, transfer, cache);
     }
 
     @Override
-    protected NSObject objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(TransferPromptModel.Column.warning.name())) {
-            if(item.attributes().isFile()) {
-                if(item.getLocal().attributes().getSize() == 0) {
+    protected NSObject objectValueForItem(final Path file, final String identifier) {
+        if(identifier.equals(Column.size.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    SizeFormatterFactory.get().format(file.attributes().getSize()),
+                    TableCellAttributes.browserFontRightAlignment());
+        }
+        if(identifier.equals(Column.warning.name())) {
+            if(file.attributes().isFile()) {
+                if(file.getLocal().attributes().getSize() == 0) {
                     return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
                 }
-                if(item.attributes().getSize() > item.getLocal().attributes().getSize()) {
-                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                if(status.containsKey(file)) {
+                    if(status.get(file).getLength() > file.getLocal().attributes().getSize()) {
+                        return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                    }
                 }
             }
             return null;
         }
-        if(identifier.equals(TransferPromptModel.Column.size.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
-                    SizeFormatterFactory.get().format(item.attributes().getSize()),
-                    TableCellAttributes.browserFontRightAlignment());
-        }
-        return super.objectValueForItem(item, identifier);
+        return super.objectValueForItem(file, identifier);
     }
 }

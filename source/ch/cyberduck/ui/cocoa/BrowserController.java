@@ -439,6 +439,11 @@ public class BrowserController extends WindowController
                             public TransferAction prompt() {
                                 return TransferAction.ACTION_COMPARISON;
                             }
+
+                            @Override
+                            public boolean isSelected(final Path file) {
+                                return true;
+                            }
                         }, new DisabledTransferErrorCallback()
                 ) {
                     @Override
@@ -2903,6 +2908,11 @@ public class BrowserController extends WindowController
                         @Override
                         public TransferAction prompt() {
                             return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
+                        }
+
+                        @Override
+                        public boolean isSelected(final Path file) {
+                            return true;
                         }
                     }, new PanelTransferErrorCallback(this)
             ) {

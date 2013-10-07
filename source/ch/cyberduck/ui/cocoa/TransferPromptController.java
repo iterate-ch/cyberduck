@@ -20,12 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
@@ -47,14 +47,40 @@ import java.text.MessageFormat;
  */
 public abstract class TransferPromptController extends SheetController
         implements TransferPrompt, ProgressListener, TranscriptListener {
-    private static Logger log = Logger.getLogger(TransferPromptController.class);
+    private static final Logger log = Logger.getLogger(TransferPromptController.class);
 
     private final TableColumnFactory tableColumnsFactory
             = new TableColumnFactory();
 
+    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
+            LocaleFactory.localizedString("Unknown"),
+            TRUNCATE_MIDDLE_ATTRIBUTES);
+
+    // Setting appearance attributes
+    final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
+
+    /**
+     * A browsable listing of duplicate files and folders
+     */
+    @Outlet
+    private NSOutlineView browserView;
+
+    protected TransferPromptModel browserModel;
+
+    protected AbstractPathTableDelegate browserViewDelegate;
+
+    protected Transfer transfer;
+
+    private TransferAction action;
+
+    protected Cache cache
+            = new Cache(Integer.MAX_VALUE);
+
     public TransferPromptController(final WindowController parent, final Transfer transfer) {
         super(parent);
         this.transfer = transfer;
+        this.action = TransferAction.forName(Preferences.instance().getProperty(
+                String.format("queue.prompt.%s.action.default", transfer.getType().name())));
     }
 
     @Override
@@ -74,12 +100,7 @@ public abstract class TransferPromptController extends SheetController
         for(Session s : transfer.getSessions()) {
             s.addProgressListener(this);
         }
-        this.reloadData();
-        if(browserView.numberOfRows().intValue() > 0) {
-            browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
-        }
         this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));
-
         super.awakeFromNib();
     }
 
@@ -90,7 +111,6 @@ public abstract class TransferPromptController extends SheetController
         }
         browserView.setDataSource(null);
         browserView.setDelegate(null);
-        browserModel.invalidate();
         super.invalidate();
     }
 
@@ -100,15 +120,6 @@ public abstract class TransferPromptController extends SheetController
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(message,
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
-
-    protected TransferAction action
-            = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
-
-    public TransferAction getAction() {
-        return action;
-    }
-
-    protected Transfer transfer;
 
     @Override
     public void callback(final int returncode) {
@@ -128,9 +139,7 @@ public abstract class TransferPromptController extends SheetController
         if(log.isDebugEnabled()) {
             log.debug("Reload table view");
         }
-        statusIndicator.startAnimation(null);
         browserView.reloadData();
-        statusIndicator.stopAnimation(null);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                 MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(browserView.numberOfRows())),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -141,29 +150,14 @@ public abstract class TransferPromptController extends SheetController
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for transfer action of %s", transfer.getName()));
         }
-        for(Path next : transfer.getRoots()) {
-            browserModel.add(next);
-        }
         this.beginSheet();
         return action;
     }
 
-    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
-            LocaleFactory.localizedString("Unknown"),
-            TRUNCATE_MIDDLE_ATTRIBUTES);
-
-    // Setting appearance attributes
-    final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
-
-    /**
-     * A browsable listing of duplicate files and folders
-     */
-    @Outlet
-    protected NSOutlineView browserView;
-
-    protected TransferPromptModel browserModel;
-
-    protected AbstractPathTableDelegate browserViewDelegate;
+    @Override
+    public boolean isSelected(final Path file) {
+        return browserModel.isSelected(file);
+    }
 
     public void setBrowserView(final NSOutlineView view) {
         this.browserView = view;
@@ -259,7 +253,7 @@ public abstract class TransferPromptController extends SheetController
                     localModificationField.setStringValue(StringUtils.EMPTY);
                 }
                 else {
-                    final Path file = browserModel.lookup(new NSObjectPathReference(
+                    final Path file = cache.lookup(new NSObjectPathReference(
                             browserView.itemAtRow(browserView.selectedRow())));
                     localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             file.getLocal().getAbsolute(),
@@ -281,7 +275,7 @@ public abstract class TransferPromptController extends SheetController
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            transfer.getSessions().iterator().next().getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(),
+                            transfer.getSession().getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     if(file.attributes().getSize() == -1) {
                         remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
@@ -307,28 +301,23 @@ public abstract class TransferPromptController extends SheetController
                 return true;
             }
 
-            public String tableView_typeSelectStringForTableColumn_row(NSTableView view,
-                                                                       NSTableColumn column,
-                                                                       NSInteger row) {
-                final Path p = browserModel.lookup(new NSObjectPathReference(browserView.itemAtRow(row)));
-                return p.getName();
+            public String tableView_typeSelectStringForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
+                return cache.lookup(new NSObjectPathReference(browserView.itemAtRow(row))).getName();
             }
 
-            public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell,
-                                                                        NSTableColumn column, NSObject item) {
-                if(null == item) {
-                    return;
-                }
+            public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSCell cell,
+                                                                        final NSTableColumn column, final NSObject item) {
                 final String identifier = column.identifier();
-                final Path path = browserModel.lookup(new NSObjectPathReference(item));
+                final Path file = cache.lookup(new NSObjectPathReference(item));
+                final boolean filtered = browserModel.isFiltered(file);
                 if(identifier.equals(TransferPromptModel.Column.include.name())) {
-                    cell.setEnabled(!transfer.isSkipped(path) && !getAction().equals(TransferAction.ACTION_SKIP));
+                    cell.setEnabled(!filtered);
                 }
                 if(identifier.equals(TransferPromptModel.Column.filename.name())) {
-                    (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCacheFactory.<NSImage>get().fileIcon(path, 16));
+                    (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCacheFactory.<NSImage>get().fileIcon(file, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(transfer.isSkipped(path) || !transfer.isSelected(path) || getAction().equals(TransferAction.ACTION_SKIP)) {
+                    if(filtered) {
                         Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {
@@ -422,7 +411,7 @@ public abstract class TransferPromptController extends SheetController
     }
 
     @Outlet
-    protected NSPopUpButton actionPopup;
+    private NSPopUpButton actionPopup;
 
     public void setActionPopup(final NSPopUpButton actionPopup) {
         this.actionPopup = actionPopup;
@@ -430,16 +419,9 @@ public abstract class TransferPromptController extends SheetController
         this.actionPopup.setAutoenablesItems(false);
 
         final TransferAction defaultAction
-                = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
+                = TransferAction.forName(Preferences.instance().getProperty(String.format("queue.prompt.%s.action.default", transfer.getType().name())));
 
-        final TransferAction[] actions = new TransferAction[]{
-                TransferAction.ACTION_RESUME,
-                TransferAction.ACTION_OVERWRITE,
-                TransferAction.ACTION_RENAME,
-                TransferAction.ACTION_RENAME_EXISTING,
-                TransferAction.ACTION_SKIP,
-                TransferAction.ACTION_COMPARISON
-        };
+        final TransferAction[] actions = this.getTransferActions();
 
         for(TransferAction action : actions) {
             this.actionPopup.addItemWithTitle(action.getTitle());
@@ -455,20 +437,41 @@ public abstract class TransferPromptController extends SheetController
         this.actionPopup.setAction(Foundation.selector("actionPopupClicked:"));
     }
 
+    protected TransferAction[] getTransferActions() {
+        return new TransferAction[]{
+                TransferAction.ACTION_RESUME,
+                TransferAction.ACTION_OVERWRITE,
+                TransferAction.ACTION_RENAME,
+                TransferAction.ACTION_RENAME_EXISTING,
+                TransferAction.ACTION_SKIP,
+                TransferAction.ACTION_COMPARISON
+        };
+    }
+
     @Action
     public void actionPopupClicked(NSPopUpButton sender) {
         final TransferAction selected = TransferAction.forName(sender.selectedItem().representedObject());
-
         if(action.equals(selected)) {
             return;
         }
-        Preferences.instance().setProperty("queue.prompt.action.default", selected.name());
+        Preferences.instance().setProperty(String.format("queue.prompt.%s.action.default", transfer.getType().name()), selected.name());
         action = selected;
+        browserModel.setAction(selected);
         this.reloadData();
     }
 
     @Override
     public void log(final boolean request, final String message) {
         //
+    }
+
+    @Override
+    public void stop(final BackgroundAction action) {
+        statusIndicator.stopAnimation(null);
+    }
+
+    @Override
+    public void start(final BackgroundAction action) {
+        statusIndicator.startAnimation(null);
     }
 }

@@ -64,12 +64,6 @@ public final class TransferStatus {
     private AtomicBoolean canceled = new AtomicBoolean();
 
     /**
-     * A state variable to mark this path if the path is explicitly selected
-     * for inclusion in the transfer prompt
-     */
-    private boolean selected = true;
-
-    /**
      * Upload destination
      */
     private Path renamed;
@@ -129,24 +123,6 @@ public final class TransferStatus {
     public TransferStatus length(final long length) {
         this.length = length;
         return this;
-    }
-
-    public TransferStatus selected(final boolean selected) {
-        this.selected = selected;
-        return this;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    /**
-     * Mark for inclusion from transfer prompt
-     *
-     * @param selected True if selected
-     */
-    public void setSelected(final boolean selected) {
-        this.selected = selected;
     }
 
     public boolean isExists() {
@@ -219,9 +195,6 @@ public final class TransferStatus {
         if(append != that.append) {
             return false;
         }
-        if(selected != that.selected) {
-            return false;
-        }
         if(exists != that.exists) {
             return false;
         }
@@ -233,7 +206,6 @@ public final class TransferStatus {
         int result = (append ? 1 : 0);
         result = 31 * result + (int) (current ^ (current >>> 32));
         result = 31 * result + (int) (length ^ (length >>> 32));
-        result = 31 * result + (selected ? 1 : 0);
         result = 31 * result + (exists ? 1 : 0);
         return result;
     }
@@ -246,7 +218,6 @@ public final class TransferStatus {
         sb.append(", current=").append(current);
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);
-        sb.append(", selected=").append(selected);
         sb.append(", renamed=").append(renamed);
         sb.append('}');
         return sb.toString();

@@ -34,7 +34,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
-import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.TrashFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
@@ -42,6 +41,7 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
+import ch.cyberduck.ui.action.SingleTransferWorker;
 import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
@@ -74,6 +74,8 @@ public abstract class AbstractEditor implements Editor {
      */
     protected Path edited;
 
+    private Local local;
+
     /**
      * The editor application
      */
@@ -90,10 +92,11 @@ public abstract class AbstractEditor implements Editor {
      */
     protected Session session;
 
-    public AbstractEditor(final Application application, final Session session, final Path path) {
+    public AbstractEditor(final Application application, final Session session, final Path file) {
         this.application = application;
-        this.edited = path;
-        this.edited.setLocal(TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), edited));
+        this.edited = file;
+        this.local = TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), edited);
+        this.edited.setLocal(local);
         this.session = session;
     }
 
@@ -117,7 +120,7 @@ public abstract class AbstractEditor implements Editor {
 
     protected void setClosed(boolean closed) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set deferred delete flag for %s", edited.getLocal().getAbsolute()));
+            log.debug(String.format("Set deferred delete flag for %s", local.getAbsolute()));
         }
         this.closed = closed;
     }
@@ -135,11 +138,10 @@ public abstract class AbstractEditor implements Editor {
     }
 
     protected void delete() {
-        final Local file = edited.getLocal();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Delete edited file %s", file.getAbsolute()));
+            log.debug(String.format("Delete edited file %s", local.getAbsolute()));
         }
-        file.trash();
+        local.trash();
     }
 
     /**
@@ -149,7 +151,7 @@ public abstract class AbstractEditor implements Editor {
     public void open() {
         final TransferCallable background = new EditBackgroundAction();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Download file for edit %s", edited.getLocal().getAbsolute()));
+            log.debug(String.format("Download file for edit %s", local.getAbsolute()));
         }
         this.open(background);
     }
@@ -165,21 +167,21 @@ public abstract class AbstractEditor implements Editor {
     @Override
     public void save() {
         // If checksum still the same no need for save
-        final String current = edited.getLocal().attributes().getChecksum();
+        final String current = local.attributes().getChecksum();
         if(checksum.equals(current)) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("File %s not modified with checkum %s", edited.getLocal(), current));
+                log.info(String.format("File %s not modified with checkum %s", local, current));
             }
         }
         else {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Save new checksum %s for file %s", current, edited.getLocal()));
+                log.info(String.format("Save new checksum %s for file %s", current, local));
             }
             // Store current checksum
             checksum = current;
             final TransferCallable background = new SaveBackgroundAction();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Upload changes for %s", edited.getLocal().getAbsolute()));
+                log.debug(String.format("Upload changes for %s", local.getAbsolute()));
             }
             this.save(background);
         }
@@ -199,16 +201,17 @@ public abstract class AbstractEditor implements Editor {
             options.open = false;
             final Transfer download = new DownloadTransfer(session, edited) {
                 @Override
-                public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
+                public TransferPathFilter filter(final TransferAction action) {
                     final SymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
                     return new TrashFilter(resolver, session);
                 }
             };
-            download.start(new DisabledTransferPrompt(), options, new DisabledTransferErrorCallback());
+            final SingleTransferWorker worker
+                    = new SingleTransferWorker(download, options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+            worker.run();
             growl.notify(download.isComplete() ?
                     String.format("%s complete", StringUtils.capitalize(download.getType().name())) : "Transfer incomplete", download.getName());
             if(download.isComplete()) {
-                final Local local = edited.getLocal();
                 // Save checksum before edit
                 checksum = local.attributes().getChecksum();
                 final Permission permissions = local.attributes().getPermission();
@@ -231,13 +234,14 @@ public abstract class AbstractEditor implements Editor {
         public Transfer call() throws BackgroundException {
             final Transfer upload = new UploadTransfer(session, edited) {
                 @Override
-                public TransferPathFilter filter(final TransferPrompt prompt,
-                                                 final TransferAction action) throws BackgroundException {
+                public TransferPathFilter filter(final TransferAction action) {
                     final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots());
                     return new OverwriteFilter(resolver, session, new UploadFilterOptions().withTemporary(true));
                 }
             };
-            upload.start(new DisabledTransferPrompt(), new TransferOptions(), new DisabledTransferErrorCallback());
+            final SingleTransferWorker worker
+                    = new SingleTransferWorker(upload, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+            worker.run();
             growl.notify(upload.isComplete() ?
                     String.format("%s complete", StringUtils.capitalize(upload.getType().name())) : "Transfer incomplete", upload.getName());
             if(upload.isComplete()) {

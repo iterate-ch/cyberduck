@@ -103,11 +103,6 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public Filter<Path> getRegexFilter() {
-        return new NullPathFilter<Path>();
-    }
-
-    @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
         dict.setObjectForKey(session.getHost(), "Host");
@@ -143,36 +138,37 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public TransferAction action(boolean resumeRequested, boolean reloadRequested) {
+    public TransferAction action(boolean resumeRequested, boolean reloadRequested,
+                                 final TransferPrompt prompt) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+        }
         return TransferAction.ACTION_OVERWRITE;
     }
 
     @Override
-    public TransferPathFilter filter(TransferPrompt prompt, final TransferAction action) throws BackgroundException {
+    public TransferPathFilter filter(final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
-        if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return new CopyTransferFilter(destination, files);
-        }
-        return super.filter(prompt, action);
+        return new CopyTransferFilter(destination, files);
     }
 
     @Override
-    public AttributedList<Path> children(final Path parent) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final TransferStatus parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("List children for %s", parent));
+            log.debug(String.format("List children for %s", directory));
         }
-        if(parent.attributes().isSymbolicLink()
-                && new DownloadSymlinkResolver(this.getRoots()).resolve(parent)) {
+        if(directory.attributes().isSymbolicLink()
+                && new DownloadSymlinkResolver(this.getRoots()).resolve(directory)) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Do not list children for symbolic link %s", parent));
+                log.debug(String.format("Do not list children for symbolic link %s", directory));
             }
             return AttributedList.emptyList();
         }
         else {
-            final AttributedList<Path> list = session.list(parent, new DisabledListProgressListener());
-            final Path copy = files.get(parent);
+            final AttributedList<Path> list = session.list(directory, new DisabledListProgressListener());
+            final Path copy = files.get(directory);
             for(Path p : list) {
                 files.put(p, new Path(copy, p.getName(), p.attributes()));
             }

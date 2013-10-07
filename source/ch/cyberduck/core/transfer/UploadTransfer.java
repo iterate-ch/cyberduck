@@ -21,11 +21,11 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.NullPathFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
@@ -59,28 +60,40 @@ public class UploadTransfer extends Transfer {
 
     private Upload writer;
 
+    private Attributes attributes;
+
+    private Find find;
+
     public UploadTransfer(final Session<?> session, final Path root) {
         this(session, Collections.singletonList(root));
         writer = session.getFeature(Upload.class);
+        find = session.getFeature(Find.class);
+        attributes = new DefaultAttributesFeature(session);
     }
 
     public UploadTransfer(final Session<?> session, final List<Path> roots, final Filter<Local> f) {
         super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
-        writer = session.getFeature(Upload.class);
         filter = f;
+        writer = session.getFeature(Upload.class);
+        find = session.getFeature(Find.class);
+        attributes = new DefaultAttributesFeature(session);
     }
 
     public UploadTransfer(final Session<?> session, final List<Path> roots) {
         super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         writer = session.getFeature(Upload.class);
+        find = session.getFeature(Find.class);
+        attributes = new DefaultAttributesFeature(session);
     }
 
     public <T> UploadTransfer(final T dict, final Session<?> s) {
         super(dict, s, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         writer = session.getFeature(Upload.class);
+        find = session.getFeature(Find.class);
+        attributes = new DefaultAttributesFeature(session);
     }
 
     @Override
@@ -89,40 +102,38 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public Filter<Path> getRegexFilter() {
-        return new NullPathFilter<Path>();
-    }
-
-    @Override
-    public AttributedList<Path> children(final Path parent) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final TransferStatus parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("List children for %s", parent));
+            log.debug(String.format("List children for %s", directory));
         }
-        if(parent.getLocal().attributes().isSymbolicLink()
-                && new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots()).resolve(parent)) {
+        if(directory.getLocal().attributes().isSymbolicLink()
+                && new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots()).resolve(directory)) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Do not list children for symbolic link %s", parent));
+                log.debug(String.format("Do not list children for symbolic link %s", directory));
             }
             return AttributedList.emptyList();
         }
         else {
             final AttributedList<Path> list = new AttributedList<Path>();
-            for(Local local : parent.getLocal().list().filter(filter)) {
-                list.add(new Path(parent, local));
+            for(Local local : directory.getLocal().list().filter(filter)) {
+                final Path file = new Path(directory, local);
+                if(parent.isExists()) {
+                    if(find.find(file)) {
+                        file.setAttributes(attributes.getAttributes(file));
+                    }
+                }
+                list.add(file);
             }
             return list;
         }
     }
 
     @Override
-    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) throws BackgroundException {
+    public TransferPathFilter filter(final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
         final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots());
-        if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return new OverwriteFilter(resolver, session);
-        }
         if(action.equals(TransferAction.ACTION_RESUME)) {
             return new ResumeFilter(resolver, session);
         }
@@ -138,46 +149,45 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_COMPARISON)) {
             return new CompareFilter(resolver, session);
         }
+        return new OverwriteFilter(resolver, session);
+    }
+
+    @Override
+    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested,
+                                 final TransferPrompt prompt) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+        }
+        final TransferAction action;
+        if(resumeRequested) {
+            // Force resume
+            action = TransferAction.ACTION_RESUME;
+        }
+        else if(reloadRequested) {
+            action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.reload.fileExists"));
+        }
+        else {
+            // Use default
+            action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.fileExists"));
+        }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path upload : this.getRoots()) {
-                if(session.getFeature(Find.class).find(upload)) {
+                if(find.find(upload)) {
                     if(upload.attributes().isDirectory()) {
-                        if(this.children(upload).isEmpty()) {
+                        if(this.list(upload, new TransferStatus().exists(true)).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
                     // Prompt user to choose a filter
-                    final TransferAction result = prompt.prompt();
-                    return this.filter(prompt, result);
+                    return prompt.prompt();
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action
-            return this.filter(prompt, TransferAction.ACTION_OVERWRITE);
+            return TransferAction.ACTION_OVERWRITE;
         }
-        return super.filter(prompt, action);
+        return action;
     }
-
-    @Override
-    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
-        }
-        if(resumeRequested) {
-            // Force resume
-            return TransferAction.ACTION_RESUME;
-        }
-        if(reloadRequested) {
-            return TransferAction.forName(
-                    Preferences.instance().getProperty("queue.upload.reload.fileExists")
-            );
-        }
-        // Use default
-        return TransferAction.forName(
-                Preferences.instance().getProperty("queue.upload.fileExists")
-        );
-    }
-
 
     @Override
     public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {

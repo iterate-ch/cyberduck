@@ -18,11 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.SyncTransfer;
-import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -33,8 +33,11 @@ import ch.cyberduck.ui.resources.IconCacheFactory;
  */
 public class SyncPromptModel extends TransferPromptModel {
 
-    public SyncPromptModel(TransferPromptController c, Transfer transfer) {
-        super(c, transfer);
+    private SyncTransfer transfer;
+
+    public SyncPromptModel(final TransferPromptController c, final SyncTransfer transfer, final Cache cache) {
+        super(c, transfer, cache);
+        this.transfer = transfer;
     }
 
     public enum Column {
@@ -49,21 +52,16 @@ public class SyncPromptModel extends TransferPromptModel {
     }
 
     @Override
-    protected NSObject objectValueForItem(final Path item, final String identifier) {
+    protected NSObject objectValueForItem(final Path file, final String identifier) {
         if(identifier.equals(TransferPromptModel.Column.size.name())) {
-            final Comparison compare = ((SyncTransfer) transfer).compare(item);
+            final Comparison compare = transfer.compare(file);
             return NSAttributedString.attributedStringWithAttributes(
                     SizeFormatterFactory.get().format(
-                            compare.equals(Comparison.remote) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
+                            compare.equals(Comparison.remote) ? file.attributes().getSize() : file.getLocal().attributes().getSize()),
                     TableCellAttributes.browserFontRightAlignment());
         }
         if(identifier.equals(Column.sync.name())) {
-            final Comparison compare = ((SyncTransfer) transfer).compare(item);
-            if(item.attributes().isDirectory()) {
-                if(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists()) {
-                    return null;
-                }
-            }
+            final Comparison compare = transfer.compare(file);
             if(compare.equals(Comparison.remote)) {
                 return IconCacheFactory.<NSImage>get().iconNamed("transfer-download.tiff", 16);
             }
@@ -73,14 +71,12 @@ public class SyncPromptModel extends TransferPromptModel {
             return null;
         }
         if(identifier.equals(TransferPromptModel.Column.warning.name())) {
-            if(item.attributes().isFile()) {
-                if(transfer.cache().lookup(item.getReference()) != null) {
-                    if(item.attributes().getSize() == 0) {
-                        return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
-                    }
+            if(file.attributes().isFile()) {
+                if(file.attributes().getSize() == 0) {
+                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
                 }
-                if(item.getLocal().exists()) {
-                    if(item.getLocal().attributes().getSize() == 0) {
+                if(file.getLocal().exists()) {
+                    if(file.getLocal().attributes().getSize() == 0) {
                         return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
                     }
                 }
@@ -88,11 +84,16 @@ public class SyncPromptModel extends TransferPromptModel {
             return null;
         }
         if(identifier.equals(Column.create.name())) {
-            if(!(transfer.cache().lookup(item.getReference()) != null && item.getLocal().exists())) {
+            if(!file.getLocal().exists()) {
                 return IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16);
+            }
+            if(status.containsKey(file)) {
+                if(!status.get(file).isExists()) {
+                    return IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16);
+                }
             }
             return null;
         }
-        return super.objectValueForItem(item, identifier);
+        return super.objectValueForItem(file, identifier);
     }
 }

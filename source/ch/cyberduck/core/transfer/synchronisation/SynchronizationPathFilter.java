@@ -1,0 +1,122 @@
+package ch.cyberduck.core.transfer.synchronisation;
+
+/*
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.ch
+ */
+
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.log4j.Logger;
+
+/**
+ * @version $Id:$
+ */
+public class SynchronizationPathFilter implements TransferPathFilter {
+    private static final Logger log = Logger.getLogger(SynchronizationPathFilter.class);
+
+    private ComparisonService comparison;
+
+    /**
+     * Download delegate filter
+     */
+    private TransferPathFilter downloadFilter;
+
+    /**
+     * Upload delegate filter
+     */
+    private TransferPathFilter uploadFilter;
+
+    /**
+     * Direction
+     */
+    private TransferAction action = SyncTransfer.ACTION_MIRROR;
+
+    public SynchronizationPathFilter(final ComparisonService comparison,
+                                     final TransferPathFilter downloadFilter,
+                                     final TransferPathFilter uploadFilter,
+                                     final TransferAction action) {
+        this.comparison = comparison;
+        this.downloadFilter = downloadFilter;
+        this.uploadFilter = uploadFilter;
+        this.action = action;
+    }
+
+    @Override
+    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
+        final Comparison compare = comparison.compare(file);
+        if(compare.equals(Comparison.remote)) {
+            return downloadFilter.prepare(file, parent);
+        }
+        if(compare.equals(Comparison.local)) {
+            return uploadFilter.prepare(file, parent);
+        }
+        throw new BackgroundException(String.format("Invalid comparison %s", compare));
+    }
+
+    @Override
+    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
+        final Comparison compare = comparison.compare(file);
+        if(compare.equals(Comparison.equal)) {
+            return file.attributes().isDirectory();
+        }
+        else if(compare.equals(Comparison.remote)) {
+            if(action.equals(SyncTransfer.ACTION_UPLOAD)) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skip file %s with comparison result %s because action is %s",
+                            file, compare, action));
+                }
+                return false;
+            }
+            // Ask the download delegate for inclusion
+            return downloadFilter.accept(file, parent);
+        }
+        else if(compare.equals(Comparison.local)) {
+            if(action.equals(SyncTransfer.ACTION_DOWNLOAD)) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skip file %s with comparison result %s because action is %s",
+                            file, compare, action));
+                }
+                return false;
+            }
+            // Ask the upload delegate for inclusion
+            return uploadFilter.accept(file, parent);
+        }
+        // Not equal
+        throw new BackgroundException(String.format("Invalid comparison %s", compare));
+    }
+
+    @Override
+    public void complete(final Path file, final TransferOptions options, final TransferStatus status,
+                         final ProgressListener listener) throws BackgroundException {
+        final Comparison compare = comparison.compare(file);
+        if(compare.equals(Comparison.remote)) {
+            downloadFilter.complete(file, options, status, listener);
+        }
+        else if(compare.equals(Comparison.local)) {
+            uploadFilter.complete(file, options, status, listener);
+        }
+    }
+}

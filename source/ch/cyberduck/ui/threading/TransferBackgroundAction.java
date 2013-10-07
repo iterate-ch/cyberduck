@@ -19,8 +19,6 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.SleepPreventer;
-import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
@@ -31,6 +29,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.action.SingleTransferWorker;
 import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
 
@@ -48,19 +47,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     private Transfer transfer;
 
-    /**
-     * Overwrite prompt
-     */
-    private TransferPrompt prompt;
-
-    /**
-     * Error prompt
-     */
-    private TransferErrorCallback error;
-
-    protected TransferOptions options;
-
-    private SleepPreventer sleep = SleepPreventerFactory.get();
+    private TransferOptions options;
 
     private Growl growl = GrowlFactory.get();
 
@@ -76,7 +63,9 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     private ScheduledThreadPool timerPool;
 
-    private TransferListener transferListener;
+    private TransferListener listener;
+
+    private SingleTransferWorker worker;
 
     public TransferBackgroundAction(final Controller controller,
                                     final TransferListener transferListener,
@@ -84,48 +73,40 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
         super(controller, transfer.getSessions(), Cache.empty(), progressListener);
-        this.prompt = prompt;
+        this.worker = new SingleTransferWorker(transfer, options, prompt, error);
         this.transfer = transfer;
-        this.error = error;
         this.options = options;
-        this.transferListener = transferListener;
+        this.listener = transferListener;
         this.meter = new TransferSpeedometer(transfer);
         this.timerPool = new ScheduledThreadPool();
     }
 
     @Override
     public void prepare() throws ConnectionCanceledException {
-        transferListener.start(transfer);
+        listener.start(transfer);
+        timerPool = new ScheduledThreadPool();
+        meter.reset();
+        progressTimer = timerPool.repeat(new Runnable() {
+            @Override
+            public void run() {
+                if(transfer.isReset()) {
+                    listener.progress(meter.getStatus());
+                }
+            }
+        }, 100L, TimeUnit.MILLISECONDS);
         super.prepare();
     }
 
     @Override
     public Boolean run() throws BackgroundException {
-        final String lock = sleep.lock();
-        try {
-            timerPool = new ScheduledThreadPool();
-            meter.reset();
-            progressTimer = timerPool.repeat(new Runnable() {
-                @Override
-                public void run() {
-                    if(transfer.isReset()) {
-                        transferListener.progress(meter.getStatus());
-                    }
-                }
-            }, 100L, TimeUnit.MILLISECONDS);
-            transfer.start(prompt, options, error);
-        }
-        finally {
-            progressTimer.cancel(false);
-            sleep.release(lock);
-        }
-        return true;
+        return worker.run();
     }
 
     @Override
     public void finish() {
         super.finish();
-        transferListener.stop(transfer);
+        progressTimer.cancel(false);
+        listener.stop(transfer);
         timerPool.shutdown();
     }
 
@@ -134,7 +115,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel background action for transfer %s", transfer));
         }
-        transfer.cancel();
+        worker.cancel();
     }
 
     @Override
@@ -151,6 +132,10 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         return StringUtils.EMPTY;
     }
 
+    public Transfer getTransfer() {
+        return transfer;
+    }
+
     @Override
     public void pause() {
         if(log.isDebugEnabled()) {
@@ -160,10 +145,5 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         options.reloadRequested = false;
         options.resumeRequested = true;
         super.pause();
-    }
-
-    @Override
-    public boolean isCanceled() {
-        return transfer.isCanceled();
     }
 }

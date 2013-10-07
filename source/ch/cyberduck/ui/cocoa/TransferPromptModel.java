@@ -20,41 +20,57 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.ui.action.TransferPromptFilterWorker;
+import ch.cyberduck.ui.action.TransferPromptListWorker;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.comparator.FilenameComparator;
-import ch.cyberduck.ui.threading.ControllerBackgroundAction;
+import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
  */
 public abstract class TransferPromptModel extends OutlineDataSource {
-
-    protected final Transfer transfer;
-
-    /**
-     * The root nodes to be included in the prompt dialog
-     */
-    protected final AttributedList<Path> roots
-            = new AttributedList<Path>();
+    private static Logger log = Logger.getLogger(TransferPromptModel.class);
 
     private TransferPromptController controller;
+
+    private Transfer transfer;
+
+    /**
+     * Selected transfer action in prompt
+     */
+    private TransferAction action;
+
+    private Cache cache;
+
+    /**
+     * Selection status map in the prompt
+     */
+    protected Map<Path, Boolean> selected
+            = new HashMap<Path, Boolean>();
+
+    /**
+     * Transfer status determined by filters
+     */
+    protected Map<Path, TransferStatus> status
+            = new HashMap<Path, TransferStatus>();
 
     public enum Column {
         include,
@@ -67,17 +83,90 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @param c        The parent window to attach the prompt
      * @param transfer Transfer
      */
-    public TransferPromptModel(final TransferPromptController c, final Transfer transfer) {
+    public TransferPromptModel(final TransferPromptController c, final Transfer transfer, final Cache cache) {
         this.controller = c;
         this.transfer = transfer;
+        this.cache = cache;
+        this.action = TransferAction.forName(Preferences.instance().getProperty(
+                String.format("queue.prompt.%s.action.default", transfer.getType().name())));
     }
 
-    public void add(final Path p) {
-        roots.add(p);
+    /**
+     * Change transfer action and reload list of files
+     *
+     * @param action Transfer action
+     */
+    public void setAction(final TransferAction action) {
+        this.action = action;
+        this.filter();
     }
 
-    protected Path lookup(final PathReference reference) {
-        return transfer.lookup(reference);
+    public boolean isSelected(final Path file) {
+        if(selected.containsKey(file)) {
+            return selected.get(file);
+        }
+        return true;
+    }
+
+    public void setSelected(final Path file, boolean state) {
+        selected.put(file, state);
+    }
+
+    public boolean isFiltered(final Path file) {
+        return !status.containsKey(file);
+    }
+
+    protected AttributedList<Path> get(final Path directory) {
+        // Return list with filtered files included
+        return cache.get(null == directory ? null : directory.getReference());
+    }
+
+    protected AttributedList<Path> children(final Path directory) {
+        if(null == directory) {
+            // Root
+            if(!cache.isCached(null)) {
+                cache.put(null, new AttributedList<Path>(transfer.getRoots()));
+                this.filter();
+            }
+        }
+        else if(!cache.isCached(directory.getReference())) {
+            controller.background(new WorkerBackgroundAction(controller, transfer.getSession(),
+                    new TransferPromptListWorker(transfer, directory, status.get(directory)) {
+                        @Override
+                        public void cleanup(final AttributedList<Path> list) {
+                            cache.put(directory.getReference(), list);
+                            filter();
+                        }
+                    }));
+        }
+        return this.get(directory);
+    }
+
+    private void filter() {
+        controller.background(new WorkerBackgroundAction<Map<Path, TransferStatus>>(controller, transfer.getSession(),
+                new TransferPromptFilterWorker(transfer, action, cache) {
+                    @Override
+                    public void cleanup(final Map<Path, TransferStatus> accepted) {
+                        status = accepted;
+                        controller.reloadData();
+                    }
+                })
+        );
+    }
+
+
+    protected NSObject objectValueForItem(final Path file, final String identifier) {
+        if(identifier.equals(Column.include.name())) {
+            if(this.isFiltered(file)) {
+                return NSNumber.numberWithBoolean(false);
+            }
+            return NSNumber.numberWithBoolean(this.isSelected(file));
+        }
+        if(identifier.equals(Column.filename.name())) {
+            return NSAttributedString.attributedStringWithAttributes(file.getName(),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
     }
 
     @Override
@@ -85,99 +174,30 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                                                                  final NSTableColumn tableColumn, final NSObject item) {
         final String identifier = tableColumn.identifier();
         if(identifier.equals(Column.include.name())) {
-            final Path path = this.lookup(new NSObjectPathReference(item));
+            final Path file = cache.lookup(new NSObjectPathReference(item));
             final int state = Rococoa.cast(value, NSNumber.class).intValue();
-            transfer.setSelected(path, state == NSCell.NSOnState);
-            outlineView.setNeedsDisplay(true);
+            this.setSelected(file, state == NSCell.NSOnState);
         }
-    }
-
-    /**
-     * If no cached listing is available the loading is delayed until the listing is
-     * fetched from a background thread
-     *
-     * @param directory Folder
-     * @return The list of child items for the parent folder. The listing is filtered
-     *         using the standard regex exclusion and the additional passed filter
-     */
-    protected AttributedList<Path> children(final Path directory) {
-        final Cache cache = transfer.cache();
-        if(!cache.isCached(directory.getReference())) {
-            controller.background(new ControllerBackgroundAction(controller, transfer.getSessions(), Cache.empty()
-            ) {
-                @Override
-                public Boolean run() throws BackgroundException {
-                    cache.put(directory.getReference(), transfer.children(directory));
-                    return true;
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
-                            directory.getName());
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
-                    controller.reloadData();
-                }
-            });
-        }
-        return this.get(directory);
-    }
-
-    protected AttributedList<Path> get(final Path directory) {
-        final Cache cache = transfer.cache();
-        return cache.get(directory.getReference()).filter(new FilenameComparator(true), transfer.getRegexFilter());
-    }
-
-    protected NSObject objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(Column.include.name())) {
-            // Not included if the particular path should be skipped or skip existing is selected as the default transfer action for duplicate files
-            final boolean included = !transfer.isSkipped(item) && transfer.isSelected(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
-            return NSNumber.numberWithInt(included ? NSCell.NSOnState : NSCell.NSOffState);
-        }
-        if(identifier.equals(Column.filename.name())) {
-            return NSAttributedString.attributedStringWithAttributes(item.getName(),
-                    TableCellAttributes.browserFontLeftAlignment());
-        }
-        throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
     }
 
     @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
-        if(null == item) {
-            return false;
-        }
-        return this.lookup(new NSObjectPathReference(item)).attributes().isDirectory();
+        return cache.lookup(new NSObjectPathReference(item)).attributes().isDirectory();
     }
 
     @Override
-    public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
-        if(null == item) {
-            return new NSInteger(roots.size());
-        }
-        return new NSInteger(this.children(this.lookup(new NSObjectPathReference(item))).size());
+    public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, final NSObject item) {
+        return new NSInteger(this.children(null == item ? null : cache.lookup(new NSObjectPathReference(item))).size());
     }
 
     @Override
-    public NSObject outlineView_child_ofItem(final NSOutlineView view, NSInteger index, NSObject item) {
-        if(null == item) {
-            return (NSObject) roots.get(index.intValue()).getReference().unique();
-        }
-        final AttributedList<Path> children = this.get(this.lookup(new NSObjectPathReference(item)));
-        if(children.isEmpty()) {
-            return null;
-        }
+    public NSObject outlineView_child_ofItem(final NSOutlineView view, final NSInteger index, final NSObject item) {
+        final AttributedList<Path> children = this.get(null == item ? null : cache.lookup(new NSObjectPathReference(item)));
         return (NSObject) children.get(index.intValue()).getReference().unique();
     }
 
     @Override
-    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, NSObject item) {
-        if(null == item) {
-            return null;
-        }
-        return this.objectValueForItem(this.lookup(new NSObjectPathReference(item)), tableColumn.identifier());
+    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, final NSObject item) {
+        return this.objectValueForItem(cache.lookup(new NSObjectPathReference(item)), tableColumn.identifier());
     }
 }

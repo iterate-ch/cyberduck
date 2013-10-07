@@ -32,6 +32,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.ui.action.SingleTransferWorker;
 
 import org.junit.Test;
 
@@ -50,10 +51,8 @@ public class CopyTransferTest extends AbstractTestCase {
         final Path test = new Path("t", Path.FILE_TYPE);
         CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(new SFTPProtocol(), "t")),
                 new FTPSession(new Host(new FTPProtocol(), "t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
-        TransferStatus saved = new TransferStatus();
-        saved.setLength(4L);
-        saved.setCurrent(3L);
-        t.save(test, saved);
+        t.addSize(4L);
+        t.addTransferred(3L);
         final CopyTransfer serialized = new CopyTransfer(t.serialize(SerializerFactory.get()),
                 new SFTPSession(new Host(new SFTPProtocol(), "t")));
         assertNotSame(t, serialized);
@@ -69,7 +68,7 @@ public class CopyTransferTest extends AbstractTestCase {
         final Path test = new Path("t", Path.FILE_TYPE);
         CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(new SFTPProtocol(), "t")),
                 new FTPSession(new Host(new FTPProtocol(), "t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
-        assertEquals(TransferAction.ACTION_OVERWRITE, t.action(false, true));
+        assertEquals(TransferAction.ACTION_OVERWRITE, t.action(false, true, new DisabledTransferPrompt()));
     }
 
     @Test
@@ -88,7 +87,7 @@ public class CopyTransferTest extends AbstractTestCase {
         final Transfer t = new CopyTransfer(session, session,
                 Collections.<Path, Path>singletonMap(test, copy));
 
-        t.start(new DisabledTransferPrompt(), new TransferOptions(), new DisabledTransferErrorCallback());
+        new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback()).run();
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
 
@@ -117,7 +116,7 @@ public class CopyTransferTest extends AbstractTestCase {
         final Transfer t = new CopyTransfer(session, destination,
                 Collections.<Path, Path>singletonMap(test, copy));
 
-        t.start(new DisabledTransferPrompt(), new TransferOptions(), new DisabledTransferErrorCallback());
+        new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback()).run();
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
 
