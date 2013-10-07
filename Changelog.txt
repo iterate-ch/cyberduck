@@ -19,6 +19,8 @@ Changelog. Last modified: $Date$
 - [Feature] Fullscreen option for browser window
 - [Feature] Remember window position of browser window when saving workspace
 - [Feature] Copy temporary signed URLs (OpenStack) (#7018)
+- [Feature] Preview file status in overwrite prompt when choosing transfer action
+- [Feature] Option to continue or cancel on failure transferring multiple files
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)

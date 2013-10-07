@@ -11,6 +11,8 @@
 - [Feature] Transfer action to skip existing files that match checksum, size or timestamp (#6500)
 - [Feature] Copy temporary signed URLs (OpenStack) (#7018)
 - [Feature] Cut and paste to move and copy files in browser (#7153)
+- [Feature] Preview file status in overwrite prompt when choosing transfer action
+- [Feature] Option to continue or cancel on failure transferring multiple files
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Failure duplicating files (FTP) (#7224)
 - [Bugfix] Save workspace does not work for multiple browser sessions to the same server (#7213)
@@ -23,4 +25,3 @@
 - [Bugfix] Directory placeholder not displayed if same name as object (OpenStack) (#6988)
 - [Bugfix] Changing permissions resets extended access rights flags (SFTP, FTP) (#3790)
 - [Bugfix] Refresh list of thirdparty application bookmarks to import (#6141)
-- [Bugfix] Wrong local path reference for uploads when hide extensions option in Windows Explorer is checked (#7397)
