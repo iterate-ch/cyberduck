@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -61,7 +62,7 @@ public class FTPClient extends FTPSClient {
     /**
      * Map of FEAT responses. If null, has not been initialised.
      */
-    private HashMap<String, Set<String>> features;
+    private Map<String, Set<String>> features;
 
 
     public FTPClient(final SSLSocketFactory f, final SSLContext c) {
