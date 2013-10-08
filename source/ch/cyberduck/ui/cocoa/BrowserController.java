@@ -47,6 +47,7 @@ import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.action.DeleteWorker;
 import ch.cyberduck.ui.action.MountWorker;
 import ch.cyberduck.ui.action.MoveWorker;
+import ch.cyberduck.ui.action.RevertWorker;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
@@ -2520,28 +2521,12 @@ public class BrowserController extends WindowController
         );
     }
 
-    /**
-     * @param selected File
-     */
-    public void revertPath(final Path selected) {
-        this.background(new BrowserControllerBackgroundAction(this) {
-            @Override
-            public Boolean run() throws BackgroundException {
-                final Versioning feature = session.getFeature(Versioning.class);
-                feature.revert(selected);
-                return true;
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(LocaleFactory.localizedString("Reverting {0}", "Status"),
-                        selected.getName());
-            }
-
+    public void revertPaths(final List<Path> files) {
+        this.background(new WorkerBackgroundAction<Boolean>(this, session,
+                new RevertWorker(session, files)) {
             @Override
             public void cleanup() {
-                super.cleanup();
-                reloadData(Collections.singletonList(selected), false);
+                reloadData(files, false);
             }
         });
     }
@@ -2653,7 +2638,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void revertFileButtonClicked(final ID sender) {
-        this.revertPath(this.getSelectedPath());
+        this.revertPaths(this.getSelectedPaths());
     }
 
     @Action
