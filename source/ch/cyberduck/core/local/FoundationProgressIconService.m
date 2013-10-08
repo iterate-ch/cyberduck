@@ -25,11 +25,11 @@
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconService_setProgress(JNIEnv *env, jobject this, jstring file, jlong current, jlong size)
 {
     if(NSClassFromString(@"NSProgress")) {
-        NSDictionary* info = @{
-            @"NSProgressFileDownloadingSourceURL" : @false,
-            @"NSProgressFileOperationKind" : @"NSProgressFileOperationKindDownloading",
-            @"NSProgressFileURL" : [NSURL fileURLWithPath:JNFJavaToNSString(env, file)]
-        };
+        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
+            @false, @"NSProgressFileDownloadingSourceURL",
+            @"NSProgressFileOperationKindDownloading", @"NSProgressFileOperationKind",
+            [NSURL fileURLWithPath:JNFJavaToNSString(env, file)], @"NSProgressFileURL",
+            nil];
         id progress = [NSClassFromString(@"NSProgress") performSelector:@selector(currentProgress)];
         if(nil == progress) {
             progress = [NSClassFromString(@"NSProgress") performSelector:@selector(alloc)];
