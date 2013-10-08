@@ -164,7 +164,8 @@ public class SyncTransferTest extends AbstractTestCase {
         }, root);
         final AttributedList<Path> list = t.list(root, new TransferStatus().exists(true));
         assertEquals(1, list.size());
-        assertTrue(t.filter(TransferAction.download).accept(root, new TransferStatus().exists(true)));
+        assertFalse(t.filter(TransferAction.download).accept(root, new TransferStatus().exists(true)));
+        assertTrue(t.filter(TransferAction.upload).accept(root, new TransferStatus().exists(true)));
         assertTrue(t.filter(TransferAction.mirror).accept(root, new TransferStatus().exists(true)));
         assertTrue(t.filter(TransferAction.download).accept(a, new TransferStatus().exists(true)));
         // Because root is directory
