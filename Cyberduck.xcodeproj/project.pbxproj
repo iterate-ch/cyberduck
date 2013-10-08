@@ -37,6 +37,10 @@
 		471B490B102C66600059687D /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = 471B4907102C66600059687D /* Growl.m */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
 		471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
+		471F77AD180439B500A4C196 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
+		471F77AF180439B500A4C196 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		471F77B718043A0300A4C196 /* FoundationProgressIconService.h in Headers */ = {isa = PBXBuildFile; fileRef = 471F77B418043A0300A4C196 /* FoundationProgressIconService.h */; };
+		471F77B918043A0300A4C196 /* FoundationProgressIconService.m in Sources */ = {isa = PBXBuildFile; fileRef = 471F77B518043A0300A4C196 /* FoundationProgressIconService.m */; };
 		472938A00F9DBC420086605D /* AquaticPrime.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389C0F9DBC420086605D /* AquaticPrime.h */; };
 		472938A10F9DBC420086605D /* License.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389D0F9DBC420086605D /* License.h */; };
 		472938A30F9DBC420086605D /* License.m in Sources */ = {isa = PBXBuildFile; fileRef = 4729389F0F9DBC420086605D /* License.m */; };
@@ -291,6 +295,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4762DAB809FC42EC0034C662;
 			remoteInfo = libDiagnostics;
+		};
+		471F77BA18043A3800A4C196 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 471F77A7180439B500A4C196;
+			remoteInfo = libFoundationProgressService;
 		};
 		4726A8D30DAD6E27001BC01D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -607,6 +618,9 @@
 		471F5C2912AD1B6B0005D323 /* ru */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2C12AD1B6B0005D323 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2D12AD1B6B0005D323 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Alert.strings; sourceTree = "<group>"; };
+		471F77B3180439B500A4C196 /* libFoundationProgressService.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libFoundationProgressService.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		471F77B418043A0300A4C196 /* FoundationProgressIconService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoundationProgressIconService.h; sourceTree = "<group>"; };
+		471F77B518043A0300A4C196 /* FoundationProgressIconService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoundationProgressIconService.m; sourceTree = "<group>"; };
 		4725396B10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sr; path = sr.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		4725396E10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sr; path = sr.lproj/Browser.nib; sourceTree = "<group>"; };
 		4725397110F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sr; path = sr.lproj/Command.nib; sourceTree = "<group>"; };
@@ -1532,6 +1546,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		471F77AC180439B500A4C196 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471F77AD180439B500A4C196 /* Foundation.framework in Frameworks */,
+				471F77AF180439B500A4C196 /* JavaNativeFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4739EF6C0856981300405FD3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1707,6 +1730,7 @@
 				47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */,
 				47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */,
 				47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */,
+				471F77B3180439B500A4C196 /* libFoundationProgressService.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2161,6 +2185,8 @@
 				47C57EAB162F45F200A272BC /* FinderLocal.m */,
 				47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */,
 				47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */,
+				471F77B418043A0300A4C196 /* FoundationProgressIconService.h */,
+				471F77B518043A0300A4C196 /* FoundationProgressIconService.m */,
 			);
 			path = local;
 			sourceTree = "<group>";
@@ -2168,6 +2194,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		471F77A8180439B500A4C196 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471F77B718043A0300A4C196 /* FoundationProgressIconService.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4739EF680856981300405FD3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2326,6 +2360,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				471F77BB18043A3800A4C196 /* PBXTargetDependency */,
 				479737AD162F4962002809CC /* PBXTargetDependency */,
 				47F102DA1628D61A00923FDE /* PBXTargetDependency */,
 				4797D28D1628299700340E1C /* PBXTargetDependency */,
@@ -2346,6 +2381,24 @@
 			productName = Cyberduck;
 			productReference = 471D2C5505A2505600675163 /* Cyberduck.app */;
 			productType = "com.apple.product-type.application";
+		};
+		471F77A7180439B500A4C196 /* libFoundationProgressService */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 471F77B0180439B500A4C196 /* Build configuration list for PBXNativeTarget "libFoundationProgressService" */;
+			buildPhases = (
+				471F77A8180439B500A4C196 /* Headers */,
+				471F77AA180439B500A4C196 /* Sources */,
+				471F77AC180439B500A4C196 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libFoundationProgressService;
+			productInstallPath = /usr/local/lib;
+			productName = keychainLib;
+			productReference = 471F77B3180439B500A4C196 /* libFoundationProgressService.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
 		};
 		4739EF670856981300405FD3 /* libKeychain */ = {
 			isa = PBXNativeTarget;
@@ -2673,6 +2726,7 @@
 				47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */,
 				47C57EAE162F471700A272BC /* libLaunchServicesFileDescriptor */,
 				47FB9C5E1725A5CC00FE33C1 /* libIOKitSleepPreventer */,
+				471F77A7180439B500A4C196 /* libFoundationProgressService */,
 			);
 		};
 /* End PBXProject section */
@@ -2833,6 +2887,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		471F77AA180439B500A4C196 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471F77B918043A0300A4C196 /* FoundationProgressIconService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4739EF6A0856981300405FD3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2996,6 +3058,11 @@
 			isa = PBXTargetDependency;
 			target = 4762DAB809FC42EC0034C662 /* libDiagnostics */;
 			targetProxy = 471E21570A1734D7009E164E /* PBXContainerItemProxy */;
+		};
+		471F77BB18043A3800A4C196 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 471F77A7180439B500A4C196 /* libFoundationProgressService */;
+			targetProxy = 471F77BA18043A3800A4C196 /* PBXContainerItemProxy */;
 		};
 		4726A8D40DAD6E27001BC01D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4211,6 +4278,35 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		471F77B1180439B500A4C196 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libFoundationProgressService;
+			};
+			name = Release;
+		};
+		471F77B2180439B500A4C196 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
+				);
+				LD_DYLIB_INSTALL_NAME = "";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libFoundationProgressService;
+			};
+			name = Debug;
+		};
 		4739EF720856981300405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4722,6 +4818,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		471F77B0180439B500A4C196 /* Build configuration list for PBXNativeTarget "libFoundationProgressService" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				471F77B1180439B500A4C196 /* Release */,
+				471F77B2180439B500A4C196 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4739EF710856981300405FD3 /* Build configuration list for PBXNativeTarget "libKeychain" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

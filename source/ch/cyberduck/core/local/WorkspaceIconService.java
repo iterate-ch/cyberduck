@@ -24,15 +24,22 @@ import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
+import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
  */
 public final class WorkspaceIconService implements IconService {
+    private static final Logger log = Logger.getLogger(WorkspaceIconService.class);
 
     public static void register() {
-        IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+        if(Factory.VERSION_PLATFORM.matches("10\\.(5|6|7).*")) {
+            IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+        }
+        else {
+            log.warn(String.format("Skip registering Growl on %s", Factory.VERSION_PLATFORM));
+        }
     }
 
     private static class Factory extends IconServiceFactory {
@@ -42,7 +49,7 @@ public final class WorkspaceIconService implements IconService {
         }
     }
 
-    private WorkspaceIconService() {
+    public WorkspaceIconService() {
         //
     }
 
@@ -54,7 +61,12 @@ public final class WorkspaceIconService implements IconService {
     protected boolean update(final Local file, final NSImage icon) {
         synchronized(NSWorkspace.class) {
             // Specify 0 if you want to generate icons in all available icon representation formats
-            return NSWorkspace.sharedWorkspace().setIcon_forFile_options(icon, file.getAbsolute(), new NSUInteger(0));
+            final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+            if(workspace.setIcon_forFile_options(icon, file.getAbsolute(), new NSUInteger(0))) {
+                workspace.noteFileSystemChanged(file.getAbsolute());
+                return true;
+            }
+            return false;
         }
     }
 

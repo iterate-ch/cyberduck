@@ -115,6 +115,7 @@ public final class MainApplication {
                 LaunchServicesQuarantineService.register();
                 LaunchServicesSchemeHandler.register();
                 WorkspaceIconService.register();
+                FoundationProgressIconService.register();
                 WorkspaceApplicationLauncher.register();
                 WorkspaceBrowserLauncher.register();
                 WorkspaceRevealService.register();
