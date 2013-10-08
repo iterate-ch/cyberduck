@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CachingComparisonService implements ComparisonService {
     private static final Logger log = Logger.getLogger(CachingComparisonService.class);
@@ -48,6 +48,9 @@ public class CachingComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path file) throws BackgroundException {
         if(!cache.containsKey(file)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Compare file %s", file));
+            }
             cache.put(file, delegate.compare(file));
         }
         return cache.get(file);
