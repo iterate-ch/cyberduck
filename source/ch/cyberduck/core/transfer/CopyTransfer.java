@@ -248,12 +248,6 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public String getName() {
-        return MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
-                files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
-    }
-
-    @Override
     public String getLocal() {
         return null;
     }
