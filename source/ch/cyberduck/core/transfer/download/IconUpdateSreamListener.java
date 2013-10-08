@@ -29,7 +29,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class IconUpdateSreamListener extends AbstractStreamListener {
 
@@ -59,7 +59,7 @@ public class IconUpdateSreamListener extends AbstractStreamListener {
     public void bytesReceived(long bytes) {
         if(enabled && threshold) {
             final BigDecimal fraction = new BigDecimal(status.getCurrent()).divide(new BigDecimal(status.getLength()), 1, RoundingMode.DOWN);
-            if(fraction.multiply(new BigDecimal(10)).intValue() > step) {
+            if(fraction.multiply(BigDecimal.TEN).intValue() > step) {
                 // Another 10 percent of the file has been transferred
                 icon.set(file, status);
                 step++;
