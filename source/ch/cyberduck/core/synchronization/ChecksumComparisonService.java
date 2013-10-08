@@ -41,7 +41,7 @@ public class ChecksumComparisonService implements ComparisonService {
         }
         else {
             if(null == attributes.getChecksum()) {
-                log.warn("No checksum available for comparison:" + file);
+                log.warn(String.format("No checksum available for comparison %s", file));
                 return Comparison.notequal;
             }
             //fist make sure both files are larger than 0 bytes
