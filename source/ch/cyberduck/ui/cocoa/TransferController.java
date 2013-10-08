@@ -624,7 +624,7 @@ public final class TransferController extends WindowController implements NSTool
      *
      * @param transfer Transfer
      */
-    public void addTransfer(final Transfer transfer, final BackgroundAction action) {
+    public void add(final Transfer transfer, final BackgroundAction action) {
         final TransferCollection collection = TransferCollection.defaultCollection();
         if(collection.size() > Preferences.instance().getInteger("queue.size.warn")) {
             final NSAlert alert = NSAlert.alert(
@@ -646,18 +646,18 @@ public final class TransferController extends WindowController implements NSTool
                     if(returncode == DEFAULT_OPTION) {
                         clearButtonClicked(null);
                     }
-                    addTransfer(transfer);
+                    add(transfer);
                     background(action);
                 }
             });
         }
         else {
-            this.addTransfer(transfer);
+            this.add(transfer);
             this.background(action);
         }
     }
 
-    private void addTransfer(final Transfer transfer) {
+    private void add(final Transfer transfer) {
         final TransferCollection collection = TransferCollection.defaultCollection();
         collection.add(transfer);
         final int row = collection.size() - 1;
@@ -669,15 +669,15 @@ public final class TransferController extends WindowController implements NSTool
     /**
      * @param transfer Transfer
      */
-    public void startTransfer(final Transfer transfer) {
-        this.startTransfer(transfer, new TransferOptions());
+    public void start(final Transfer transfer) {
+        this.start(transfer, new TransferOptions());
     }
 
     /**
      * @param transfer Transfer
      */
-    public void startTransfer(final Transfer transfer, final TransferOptions options) {
-        this.startTransfer(transfer, options, new TransferCallback() {
+    public void start(final Transfer transfer, final TransferOptions options) {
+        this.start(transfer, options, new TransferCallback() {
             @Override
             public void complete(final Transfer transfer) {
                 //
@@ -688,7 +688,7 @@ public final class TransferController extends WindowController implements NSTool
     /**
      * @param transfer Transfer
      */
-    public void startTransfer(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
+    public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
                 progress, progress, transfer,
@@ -723,7 +723,7 @@ public final class TransferController extends WindowController implements NSTool
             }
         };
         if(!TransferCollection.defaultCollection().contains(transfer)) {
-            this.addTransfer(transfer, action);
+            this.add(transfer, action);
         }
         else {
             this.background(action);
@@ -865,7 +865,7 @@ public final class TransferController extends WindowController implements NSTool
                         pasteboard.getSession().getHost().getDownloadFolder(),
                         download.getName()));
             }
-            this.addTransfer(new DownloadTransfer(session, pasteboard));
+            this.add(new DownloadTransfer(session, pasteboard));
             pasteboard.clear();
         }
     }
@@ -919,7 +919,7 @@ public final class TransferController extends WindowController implements NSTool
                 final TransferOptions options = new TransferOptions();
                 options.resumeRequested = true;
                 options.reloadRequested = false;
-                this.startTransfer(transfer, options);
+                this.start(transfer, options);
             }
         }
     }
@@ -934,7 +934,7 @@ public final class TransferController extends WindowController implements NSTool
                 final TransferOptions options = new TransferOptions();
                 options.resumeRequested = false;
                 options.reloadRequested = true;
-                this.startTransfer(transfer, options);
+                this.start(transfer, options);
             }
         }
     }

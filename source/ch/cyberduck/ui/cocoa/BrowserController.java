@@ -2874,11 +2874,6 @@ public class BrowserController extends WindowController
                     public void run() {
                         reloadData(selected, selected, true);
                     }
-
-                    @Override
-                    public boolean isValid() {
-                        return super.isValid() && BrowserController.this.isConnected();
-                    }
                 });
             }
         };
@@ -2902,7 +2897,7 @@ public class BrowserController extends WindowController
             });
         }
         else {
-            TransferControllerFactory.get().startTransfer(transfer, new TransferOptions(), callback);
+            TransferControllerFactory.get().start(transfer, new TransferOptions(), callback);
         }
     }
 

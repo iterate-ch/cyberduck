@@ -148,7 +148,7 @@ public class MainController extends BundleController implements NSApplication.De
             final Host h = HostParser.parse(url);
             if(Path.FILE_TYPE == detector.detect(h.getDefaultPath())) {
                 final Session session = SessionFactory.createSession(h);
-                TransferControllerFactory.get().startTransfer(new DownloadTransfer(session,
+                TransferControllerFactory.get().start(new DownloadTransfer(session,
                         new Path(h.getDefaultPath(), Path.FILE_TYPE)));
             }
             else {
@@ -750,7 +750,7 @@ public class MainController extends BundleController implements NSApplication.De
             roots.add(new Path(destination, file));
         }
         final TransferController t = TransferControllerFactory.get();
-        t.startTransfer(new UploadTransfer(session, roots));
+        t.start(new UploadTransfer(session, roots));
     }
 
     /**
