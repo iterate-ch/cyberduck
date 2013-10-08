@@ -2904,23 +2904,15 @@ public class BrowserController extends WindowController
                     message(status.getProgress());
                 }
             }, this, transfer, new TransferOptions(),
-                    new TransferPrompt() {
-                        @Override
-                        public TransferAction prompt() {
-                            return TransferPromptControllerFactory.create(BrowserController.this, transfer).prompt();
-                        }
-
-                        @Override
-                        public boolean isSelected(final Path file) {
-                            return true;
-                        }
-                    }, new PanelTransferErrorCallback(this)
+                    TransferPromptControllerFactory.create(BrowserController.this, transfer),
+                    new PanelTransferErrorCallback(this)
             ) {
                 @Override
                 public void finish() {
                     if(transfer.isComplete()) {
                         callback.complete(transfer);
                     }
+                    super.finish();
                 }
             });
         }
