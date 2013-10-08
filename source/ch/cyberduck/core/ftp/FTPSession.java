@@ -20,7 +20,6 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -239,7 +238,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 permission = new FTPUnixPermissionFeature(this);
             }
             else {
-                throw new LoginFailureException(client.getReplyString());
+                throw new FTPExceptionMappingService().map(new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString()));
             }
         }
         catch(IOException e) {
