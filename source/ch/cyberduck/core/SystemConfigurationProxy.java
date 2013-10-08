@@ -68,7 +68,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
      * @param hostname Hostname or CIDR notation
      * @return True if host is excluded in native proxy configuration
      */
-    private boolean isHostExcluded(String hostname) {
+    private boolean isHostExcluded(final String hostname) {
         if(!hostname.contains(".")) {
             // Non fully qualified hostname
             if(this.isSimpleHostnameExcludedNative()) {
@@ -115,7 +115,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
     public native boolean isSimpleHostnameExcludedNative();
 
     @Override
-    public boolean isSOCKSProxyEnabled(Host host) {
+    public boolean isSOCKSProxyEnabled(final Host host) {
         if(this.isHostExcluded(host.getHostname())) {
             return false;
         }
@@ -123,17 +123,17 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
     }
 
     @Override
-    public String getSOCKSProxyHost(Host host) {
+    public String getSOCKSProxyHost(final Host host) {
         return this.getSOCKSProxyHostNative();
     }
 
     @Override
-    public int getSOCKSProxyPort(Host host) {
+    public int getSOCKSProxyPort(final Host host) {
         return this.getSOCKSProxyPortNative();
     }
 
     @Override
-    public boolean isHTTPProxyEnabled(Host host) {
+    public boolean isHTTPProxyEnabled(final Host host) {
         if(this.isHostExcluded(host.getHostname())) {
             return false;
         }
@@ -141,17 +141,17 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
     }
 
     @Override
-    public String getHTTPProxyHost(Host host) {
+    public String getHTTPProxyHost(final Host host) {
         return this.getHTTPProxyHostNative();
     }
 
     @Override
-    public int getHTTPProxyPort(Host host) {
+    public int getHTTPProxyPort(final Host host) {
         return getHTTPProxyPortNative();
     }
 
     @Override
-    public boolean isHTTPSProxyEnabled(Host host) {
+    public boolean isHTTPSProxyEnabled(final Host host) {
         if(this.isHostExcluded(host.getHostname())) {
             return false;
         }
@@ -159,12 +159,12 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
     }
 
     @Override
-    public String getHTTPSProxyHost(Host host) {
+    public String getHTTPSProxyHost(final Host host) {
         return this.getHTTPSProxyHostNative();
     }
 
     @Override
-    public int getHTTPSProxyPort(Host host) {
+    public int getHTTPSProxyPort(final Host host) {
         return this.getHTTPSProxyPortNative();
     }
 
