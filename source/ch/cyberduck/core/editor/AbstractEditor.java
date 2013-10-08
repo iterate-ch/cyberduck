@@ -209,8 +209,6 @@ public abstract class AbstractEditor implements Editor {
             final SingleTransferWorker worker
                     = new SingleTransferWorker(download, options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
             worker.run();
-            growl.notify(download.isComplete() ?
-                    String.format("%s complete", StringUtils.capitalize(download.getType().name())) : "Transfer incomplete", download.getName());
             if(download.isComplete()) {
                 // Save checksum before edit
                 checksum = local.attributes().getChecksum();
@@ -242,8 +240,6 @@ public abstract class AbstractEditor implements Editor {
             final SingleTransferWorker worker
                     = new SingleTransferWorker(upload, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
             worker.run();
-            growl.notify(upload.isComplete() ?
-                    String.format("%s complete", StringUtils.capitalize(upload.getType().name())) : "Transfer incomplete", upload.getName());
             if(upload.isComplete()) {
                 // Update known remote file size
                 edited.attributes().setSize(upload.getTransferred());

@@ -34,7 +34,10 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.ui.growl.Growl;
+import ch.cyberduck.ui.growl.GrowlFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -49,6 +52,8 @@ public class SingleTransferWorker extends Worker<Boolean> {
     private static final Logger log = Logger.getLogger(SingleTransferWorker.class);
 
     private SleepPreventer sleep = SleepPreventerFactory.get();
+
+    private Growl growl = GrowlFactory.get();
 
     private Transfer transfer;
 
@@ -151,6 +156,10 @@ public class SingleTransferWorker extends Worker<Boolean> {
         }
         finally {
             transfer.stop();
+            if(transfer.isReset()) {
+                growl.notify(transfer.isComplete() ?
+                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
+            }
             sleep.release(lock);
         }
         return true;

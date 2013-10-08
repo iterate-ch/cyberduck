@@ -30,8 +30,6 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.action.SingleTransferWorker;
-import ch.cyberduck.ui.growl.Growl;
-import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -48,8 +46,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     private Transfer transfer;
 
     private TransferOptions options;
-
-    private Growl growl = GrowlFactory.get();
 
     /**
      * Keeping track of the current transfer rate
@@ -116,15 +112,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
             log.debug(String.format("Cancel background action for transfer %s", transfer));
         }
         worker.cancel();
-    }
-
-    @Override
-    public void cleanup() {
-        if(transfer.isReset()) {
-            growl.notify(transfer.isComplete() ?
-                    String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
-        }
-        super.cleanup();
     }
 
     @Override
