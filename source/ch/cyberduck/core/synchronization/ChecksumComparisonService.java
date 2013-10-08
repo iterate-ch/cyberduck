@@ -31,21 +31,21 @@ public class ChecksumComparisonService implements ComparisonService {
     private static final Logger log = Logger.getLogger(ComparisonService.class);
 
     @Override
-    public Comparison compare(final Path p) throws BackgroundException {
+    public Comparison compare(final Path file) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare checksum for %s", p.getAbsolute()));
+            log.debug(String.format("Compare checksum for %s", file.getAbsolute()));
         }
-        final PathAttributes attributes = p.attributes();
+        final PathAttributes attributes = file.attributes();
         if(attributes.isDirectory()) {
             return Comparison.notequal;
         }
         else {
             if(null == attributes.getChecksum()) {
-                log.warn("No checksum available for comparison:" + p);
+                log.warn("No checksum available for comparison:" + file);
                 return Comparison.notequal;
             }
             //fist make sure both files are larger than 0 bytes
-            if(attributes.getChecksum().equals(p.getLocal().attributes().getChecksum())) {
+            if(attributes.getChecksum().equals(file.getLocal().attributes().getChecksum())) {
                 return Comparison.equal;
             }
             return Comparison.notequal;

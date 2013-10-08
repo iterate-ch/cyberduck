@@ -31,26 +31,26 @@ public class SizeComparisonService implements ComparisonService {
     private static final Logger log = Logger.getLogger(ComparisonService.class);
 
     @Override
-    public Comparison compare(final Path p) throws BackgroundException {
+    public Comparison compare(final Path file) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare size for %s", p.getAbsolute()));
+            log.debug(String.format("Compare size for %s", file.getAbsolute()));
         }
-        final PathAttributes attributes = p.attributes();
+        final PathAttributes attributes = file.attributes();
         if(attributes.isDirectory()) {
             return Comparison.notequal;
         }
         else {
             //fist make sure both files are larger than 0 bytes
-            if(attributes.getSize() == 0 && p.getLocal().attributes().getSize() == 0) {
+            if(attributes.getSize() == 0 && file.getLocal().attributes().getSize() == 0) {
                 return Comparison.equal;
             }
             if(attributes.getSize() == 0) {
                 return Comparison.local;
             }
-            if(p.getLocal().attributes().getSize() == 0) {
+            if(file.getLocal().attributes().getSize() == 0) {
                 return Comparison.remote;
             }
-            if(attributes.getSize() == p.getLocal().attributes().getSize()) {
+            if(attributes.getSize() == file.getLocal().attributes().getSize()) {
                 return Comparison.equal;
             }
             // Different file size

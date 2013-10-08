@@ -53,27 +53,27 @@ public class CombinedComparisionService implements ComparisonService {
      * @see Comparison#local
      */
     @Override
-    public Comparison compare(final Path p) throws BackgroundException {
-        final Local local = p.getLocal();
+    public Comparison compare(final Path file) throws BackgroundException {
+        final Local local = file.getLocal();
         if(local.exists()) {
-            if(finder.find(p)) {
+            if(finder.find(file)) {
                 if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                     // MD5/ETag Checksum is supported
-                    final Comparison comparison = checksum.compare(p);
+                    final Comparison comparison = checksum.compare(file);
                     if(!Comparison.notequal.equals(comparison)) {
                         // Decision is available
                         return comparison;
                     }
                 }
                 if(Preferences.instance().getBoolean("queue.sync.compare.size")) {
-                    final Comparison comparison = size.compare(p);
+                    final Comparison comparison = size.compare(file);
                     if(!Comparison.notequal.equals(comparison)) {
                         // Decision is available
                         return comparison;
                     }
                 }
                 // Default comparison is using timestamp of file.
-                final Comparison comparison = timestamp.compare(p);
+                final Comparison comparison = timestamp.compare(file);
                 if(!Comparison.notequal.equals(comparison)) {
                     // Decision is available
                     return comparison;
@@ -85,7 +85,7 @@ public class CombinedComparisionService implements ComparisonService {
             }
         }
         else {
-            if(finder.find(p)) {
+            if(finder.find(file)) {
                 // Only the remote file exists
                 return Comparison.remote;
             }

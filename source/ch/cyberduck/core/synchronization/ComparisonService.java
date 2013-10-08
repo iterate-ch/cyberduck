@@ -26,5 +26,5 @@ import ch.cyberduck.core.exception.BackgroundException;
  */
 public interface ComparisonService {
 
-    Comparison compare(Path p) throws BackgroundException;
+    Comparison compare(Path file) throws BackgroundException;
 }
