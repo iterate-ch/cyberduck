@@ -49,6 +49,32 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
                 };
             }
         }));
+        assertEquals(Comparison.equal, s.compare(new Path("t", Path.DIRECTORY_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "t") {
+                    @Override
+                    public Attributes attributes() {
+                        return new PathAttributes(Path.FILE_TYPE) {
+                            @Override
+                            public long getModificationDate() {
+                                return timestmap;
+                            }
+                        };
+                    }
+                };
+            }
+
+            @Override
+            public PathAttributes attributes() {
+                return new PathAttributes(Path.FILE_TYPE) {
+                    @Override
+                    public long getModificationDate() {
+                        return timestmap;
+                    }
+                };
+            }
+        }));
     }
 
     @Test
