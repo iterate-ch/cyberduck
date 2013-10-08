@@ -43,7 +43,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineServ
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setWhereFrom(JNIEnv *env, jobject this, jstring path, jstring dataUrl)
 {
-	// From mozilla/camino/src/download/nsDownloadListener.mm
 	typedef OSStatus (*MDItemSetAttribute_type)(MDItemRef, CFStringRef, CFTypeRef);
 	static MDItemSetAttribute_type mdItemSetAttributeFunc = NULL;
 	static bool didSymbolLookup = false;
