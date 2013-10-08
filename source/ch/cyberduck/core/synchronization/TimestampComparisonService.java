@@ -44,12 +44,16 @@ public class TimestampComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path file) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare timestamp for %s", file.getAbsolute()));
+            log.debug(String.format("Compare timestamp for %s", file));
         }
         final PathAttributes attributes = file.attributes();
         if(-1 == attributes.getModificationDate()) {
-            log.warn("No modification date available for comparison:" + file);
-            return Comparison.notequal;
+            log.warn(String.format("No remote modification date available for comparison for %s", file));
+            return Comparison.local;
+        }
+        if(-1 == file.getLocal().attributes().getModificationDate()) {
+            log.warn(String.format("No local modification date available for comparison for %s", file));
+            return Comparison.remote;
         }
         final Calendar remote = calendarService.asDate(attributes.getModificationDate(), Instant.SECOND);
         final Calendar local = calendarService.asDate(file.getLocal().attributes().getModificationDate(), Instant.SECOND);

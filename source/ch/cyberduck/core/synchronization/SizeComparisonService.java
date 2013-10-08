@@ -18,6 +18,7 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -33,7 +34,7 @@ public class SizeComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path file) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare size for %s", file.getAbsolute()));
+            log.debug(String.format("Compare size for %s", file));
         }
         final PathAttributes attributes = file.attributes();
         if(attributes.isDirectory()) {
@@ -41,16 +42,17 @@ public class SizeComparisonService implements ComparisonService {
         }
         else {
             //fist make sure both files are larger than 0 bytes
-            if(attributes.getSize() == 0 && file.getLocal().attributes().getSize() == 0) {
+            final Local local = file.getLocal();
+            if(attributes.getSize() == 0 && local.attributes().getSize() == 0) {
                 return Comparison.equal;
             }
             if(attributes.getSize() == 0) {
                 return Comparison.local;
             }
-            if(file.getLocal().attributes().getSize() == 0) {
+            if(local.attributes().getSize() == 0) {
                 return Comparison.remote;
             }
-            if(attributes.getSize() == file.getLocal().attributes().getSize()) {
+            if(attributes.getSize() == local.attributes().getSize()) {
                 return Comparison.equal;
             }
             // Different file size
