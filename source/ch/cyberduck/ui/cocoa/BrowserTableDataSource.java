@@ -27,6 +27,7 @@ import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.action.SessionListWorker;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
@@ -515,7 +516,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 final Local file = pasteboard.get(0).getLocal();
                 if(pasteboard.get(0).attributes().isFile()) {
                     file.touch();
-                    IconServiceFactory.get().set(file, 0);
+                    IconServiceFactory.get().set(file, new TransferStatus());
                 }
                 if(pasteboard.get(0).attributes().isDirectory()) {
                     file.mkdir();

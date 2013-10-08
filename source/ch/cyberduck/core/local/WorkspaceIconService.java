@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.resources.IconCacheFactory;
@@ -58,8 +59,14 @@ public final class WorkspaceIconService implements IconService {
     }
 
     @Override
-    public boolean set(final Local file, final int progress) {
-        return this.set(file, String.format("download%d.icns", progress));
+    public boolean set(final Local file, final TransferStatus status) {
+        if(status.getLength() > 0) {
+            int fraction = (int) (status.getCurrent() / status.getLength() * 10);
+            return this.set(file, String.format("download%d.icns", ++fraction));
+        }
+        else {
+            return this.set(file, String.format("download%d.icns", 0));
+        }
     }
 
     @Override

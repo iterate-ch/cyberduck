@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 /**
  * @version $Id$
@@ -37,7 +38,7 @@ public interface IconService {
      * @param progress An integer from -1 and 9. If -1 is passed, the icon should be removed.
      * @return True if icon is set
      */
-    boolean set(Local file, int progress);
+    boolean set(Local file, TransferStatus progress);
 
     /**
      * Remove custom icon

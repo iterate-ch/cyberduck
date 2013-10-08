@@ -20,6 +20,7 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -57,7 +58,7 @@ public abstract class IconServiceFactory extends Factory<IconService> {
         }
 
         @Override
-        public boolean set(final Local file, final int progress) {
+        public boolean set(final Local file, final TransferStatus progress) {
             return false;
         }
 

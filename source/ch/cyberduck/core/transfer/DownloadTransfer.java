@@ -21,14 +21,12 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
-import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledInputStream;
-import ch.cyberduck.core.local.IconService;
-import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.transfer.download.CompareFilter;
+import ch.cyberduck.core.transfer.download.IconUpdateSreamListener;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.RenameExistingFilter;
 import ch.cyberduck.core.transfer.download.RenameFilter;
@@ -56,9 +54,6 @@ public class DownloadTransfer extends Transfer {
 
     private Filter<Path> filter
             = new DownloadRegexFilter();
-
-    private final IconService icon
-            = IconServiceFactory.get();
 
     private Read reader;
 
@@ -206,27 +201,11 @@ public class DownloadTransfer extends Transfer {
                     file.getName()));
             local.getParent().mkdir();
             // Transfer
-            this.download(file, bandwidth, new AbstractStreamListener() {
-                // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
-                // overhead when transferring a large amount of files
-                private final boolean threshold
-                        = file.attributes().getSize() > Preferences.instance().getLong("queue.download.icon.threshold");
-
-                // An integer between 0 and 9
-                private int step = 0;
-
+            this.download(file, bandwidth, new IconUpdateSreamListener(status, file.getLocal()) {
                 @Override
                 public void bytesReceived(long bytes) {
                     addTransferred(bytes);
-                    if(threshold) {
-                        if(Preferences.instance().getBoolean("queue.download.icon.update")) {
-                            int fraction = (int) (status.getCurrent() / file.attributes().getSize() * 10);
-                            if(fraction > step) {
-                                // Another 10 percent of the file has been transferred
-                                icon.set(local, ++step);
-                            }
-                        }
-                    }
+                    super.bytesReceived(bytes);
                 }
             }, status);
         }

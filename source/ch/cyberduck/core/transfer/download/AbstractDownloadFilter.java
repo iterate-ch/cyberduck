@@ -112,7 +112,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(file.attributes().isFile()) {
             // No icon update if disabled
             if(Preferences.instance().getBoolean("queue.download.icon.update")) {
-                icon.set(file.getLocal(), 0);
+                icon.set(file.getLocal(), new TransferStatus());
             }
         }
     }
