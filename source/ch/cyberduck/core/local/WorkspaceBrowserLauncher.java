@@ -41,11 +41,13 @@ public class WorkspaceBrowserLauncher implements BrowserLauncher {
 
     @Override
     public boolean open(final String url) {
-        if(StringUtils.isNotBlank(url)) {
-            if(NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url))) {
-                return true;
+        synchronized(NSWorkspace.class) {
+            if(StringUtils.isNotBlank(url)) {
+                if(NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url))) {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
     }
 }
