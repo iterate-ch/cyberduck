@@ -143,7 +143,9 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                         }
                 ) {
                     @Override
-                    public Socket connectSocket(final Socket socket, final InetSocketAddress remoteAddress, final InetSocketAddress localAddress, final HttpParams params) throws IOException, UnknownHostException, ConnectTimeoutException {
+                    public Socket connectSocket(final Socket socket, final InetSocketAddress remoteAddress,
+                                                final InetSocketAddress localAddress, final HttpParams params)
+                            throws IOException, UnknownHostException, ConnectTimeoutException {
                         target.set(remoteAddress.getHostName());
                         return super.connectSocket(socket, remoteAddress, localAddress, params);
                     }
