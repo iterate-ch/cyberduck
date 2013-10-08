@@ -39,22 +39,32 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
 
     @Override
     public BackgroundException map(final ServiceException e) {
+        final int code = e.getResponseCode();
         if(StringUtils.isNotBlank(e.getErrorMessage())) {
             // S3 protocol message parsed from XML
             final String message = e.getErrorMessage();
-            final int code = e.getResponseCode();
             return this.map(e, message, code);
         }
         else {
-            if(e.getCause() instanceof IOException) {
-                return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
-            }
             final StringBuilder buffer = new StringBuilder();
             if(null == e.getCause()) {
                 this.append(buffer, e.getMessage());
             }
             else {
                 this.append(buffer, e.getCause().getMessage());
+            }
+            if(HttpStatus.SC_NOT_FOUND == code) {
+                return new NotfoundException(buffer.toString(), e);
+            }
+            if(HttpStatus.SC_FORBIDDEN == code) {
+                return new AccessDeniedException(buffer.toString(), e);
+            }
+            if(HttpStatus.SC_UNAUTHORIZED == code) {
+                // Actually never returned by S3 but always 403
+                return new LoginFailureException(buffer.toString(), e);
+            }
+            if(e.getCause() instanceof IOException) {
+                return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
             }
             return this.wrap(e, buffer);
         }

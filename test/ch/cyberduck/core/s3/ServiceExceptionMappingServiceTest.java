@@ -105,4 +105,11 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
         assertEquals(ConnectionCanceledException.class, new ServiceExceptionMappingService().map(
                 new ServiceException(new SSLHandshakeException("f"))).getClass());
     }
+
+    @Test
+    public void test403NoXml() {
+        final ServiceException f = new ServiceException();
+        f.setResponseCode(403);
+        assertTrue(new ServiceExceptionMappingService().map(f) instanceof AccessDeniedException);
+    }
 }
