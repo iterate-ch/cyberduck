@@ -98,7 +98,7 @@ public class UploadTransferTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.ACTION_OVERWRITE;
             }
-        }, new DisabledTransferErrorCallback()) {
+        }, new DisabledTransferErrorCallback(), cache) {
             @Override
             public void transfer(final Path file, final TransferPathFilter filter,
                                  final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
@@ -210,7 +210,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         final TransferOptions options = new TransferOptions();
         options.resumeRequested = true;
-        new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt() {
+        new SingleTransferWorker(t, options, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();
