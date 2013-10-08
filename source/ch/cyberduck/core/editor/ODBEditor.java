@@ -56,8 +56,8 @@ public class ODBEditor extends BrowserBackgroundEditor {
         final Path file = this.getEdited();
         // Important, should always be run on the main thread; otherwise applescript crashes
         final UrlProvider provider = session.getFeature(UrlProvider.class);
-        if(!this.edit(file.getLocal().getAbsolute(), provider.toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(), this.getApplication().getIdentifier())) {
-            throw new IOException(String.format("Edit failed for %s", file.getLocal().getAbsolute()));
+        if(!this.edit(local.getAbsolute(), provider.toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(), this.getApplication().getIdentifier())) {
+            throw new IOException(String.format("Edit failed for %s", local));
         }
     }
 
@@ -77,8 +77,7 @@ public class ODBEditor extends BrowserBackgroundEditor {
      */
     public void didCloseFile() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Received notification from editor to close file %s",
-                    edited.getLocal().getAbsolute()));
+            log.debug(String.format("Received notification from editor to close file %s", local));
         }
         if(this.isModified()) {
             this.setClosed(true);
@@ -94,8 +93,7 @@ public class ODBEditor extends BrowserBackgroundEditor {
      */
     public void didModifyFile() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Received notification from editor to save file %s",
-                    edited.getLocal().getAbsolute()));
+            log.debug(String.format("Received notification from editor to save file %s", local));
         }
         this.setModified(true);
         this.save();

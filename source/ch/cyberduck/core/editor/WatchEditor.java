@@ -59,7 +59,7 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
     @Override
     public void edit() throws IOException {
         final Application application = this.getApplication();
-        if(ApplicationLauncherFactory.get().open(edited.getLocal(), application)) {
+        if(ApplicationLauncherFactory.get().open(local, application)) {
             this.watch();
         }
         else {
@@ -72,17 +72,17 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
      */
     public void watch() throws IOException {
         try {
-            monitor.register(edited.getLocal()).await();
+            monitor.register(local).await();
         }
         catch(InterruptedException e) {
-            throw new IOException(String.format("Failure monitoring file %s", edited.getLocal()), e);
+            throw new IOException(String.format("Failure monitoring file %s", local), e);
         }
         monitor.addListener(this);
     }
 
     @Override
     protected void delete() {
-        monitor.close(edited.getLocal());
+        monitor.close(local);
         monitor.removeListener(this);
         super.delete();
     }
@@ -100,7 +100,7 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s deleted", file));
         }
-        monitor.close(edited.getLocal());
+        monitor.close(local);
         monitor.removeListener(this);
     }
 

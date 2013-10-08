@@ -57,7 +57,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     @Override
     public void open(final TransferCallable download) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Open %s in %s", edited.getLocal().getAbsolute(), this.getApplication()));
+            log.debug(String.format("Open %s in %s", local.getAbsolute(), this.getApplication()));
         }
         controller.background(new BrowserBackgroundAction(controller, session, Cache.empty()) {
             @Override
@@ -80,7 +80,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     @Override
     public void save(final TransferCallable upload) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), edited.getLocal().getAbsolute()));
+            log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), local.getAbsolute()));
         }
         controller.background(new BrowserBackgroundAction(controller, session, Cache.empty()) {
             @Override
