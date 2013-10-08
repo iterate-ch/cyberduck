@@ -26,7 +26,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconServic
 {
     if(NSClassFromString(@"NSProgress")) {
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-            @false, @"NSProgressFileDownloadingSourceURL",
+            false, @"NSProgressFileDownloadingSourceURL",
             @"NSProgressFileOperationKindDownloading", @"NSProgressFileOperationKind",
             [NSURL fileURLWithPath:JNFJavaToNSString(env, file)], @"NSProgressFileURL",
             nil];
