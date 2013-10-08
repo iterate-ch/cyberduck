@@ -631,7 +631,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                                 base(
                                                 controller,
                                                 controller.GetController(transfer), controller.GetController(transfer),
-                                                controller,
                                                 transfer, new LazyTransferPrompt(controller, transfer),
                                                 new DialogTransferErrorCallback(controller), options)
             {

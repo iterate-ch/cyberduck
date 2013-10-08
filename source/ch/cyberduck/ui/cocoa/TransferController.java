@@ -691,7 +691,7 @@ public final class TransferController extends WindowController implements NSTool
     public void startTransfer(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
-                progress, progress, transcript, transfer,
+                progress, progress, transfer,
                 TransferPromptControllerFactory.create(TransferController.this, transfer),
                 new PanelTransferErrorCallback(this), options) {
             @Override
