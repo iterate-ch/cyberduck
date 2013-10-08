@@ -148,7 +148,7 @@ public abstract class TransferPromptController extends SheetController
     @Override
     public TransferAction prompt() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Prompt for transfer action of %s", transfer.getName()));
+            log.debug(String.format("Prompt for transfer action of %s", transfer));
         }
         this.beginSheet();
         return action;
