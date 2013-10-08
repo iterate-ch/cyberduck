@@ -116,53 +116,6 @@ public class SyncTransferTest extends AbstractTestCase {
 
     @Test
     public void testChildrenLocalOnly() throws Exception {
-        final Path p = new Path("t", Path.DIRECTORY_TYPE);
-        p.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
-            @Override
-            public AttributedList<Local> list() {
-                final AttributedList<Local> list = new AttributedList<Local>();
-                list.add(new NullLocal(System.getProperty("java.io.tmpdir") + "/t", "a"));
-                return list;
-            }
-        });
-        Transfer t = new SyncTransfer(new NullSession(new Host("t")) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                return AttributedList.emptyList();
-            }
-        }, p);
-        final AttributedList<Path> list = t.list(p, new TransferStatus().exists(true));
-        assertEquals(1, list.size());
-    }
-
-    @Test
-    public void testChildrenRemoteOnly() throws Exception {
-        final Path p = new Path("t", Path.DIRECTORY_TYPE);
-        p.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
-            @Override
-            public AttributedList<Local> list() {
-                return new AttributedList<Local>();
-            }
-        });
-        Transfer t = new SyncTransfer(new NullSession(new Host("t")) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> list = new AttributedList<Path>();
-                if(file.equals(p.getParent())) {
-                    list.add(p);
-                }
-                else {
-                    list.add(new Path(p, "a", Path.FILE_TYPE));
-                }
-                return list;
-            }
-        }, p);
-        final AttributedList<Path> list = t.list(p, new TransferStatus().exists(true));
-        assertEquals(1, list.size());
-    }
-
-    @Test
-    public void testChildrenEqual() throws Exception {
         final Path root = new Path("t", Path.DIRECTORY_TYPE);
         root.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
@@ -175,15 +128,47 @@ public class SyncTransferTest extends AbstractTestCase {
         Transfer t = new SyncTransfer(new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> list = new AttributedList<Path>();
-                list.add(new Path(root, "a", Path.FILE_TYPE));
-                return list;
+                return AttributedList.emptyList();
             }
         }, root);
         final AttributedList<Path> list = t.list(root, new TransferStatus().exists(true));
         assertEquals(1, list.size());
         assertFalse(t.filter(SyncTransfer.ACTION_DOWNLOAD).accept(root, new TransferStatus().exists(true)));
-        assertFalse(t.filter(SyncTransfer.ACTION_UPLOAD).accept(root, new TransferStatus().exists(true)));
-        assertFalse(t.filter(SyncTransfer.ACTION_MIRROR).accept(root, new TransferStatus().exists(true)));
+        assertTrue(t.filter(SyncTransfer.ACTION_UPLOAD).accept(root, new TransferStatus().exists(true)));
+        assertTrue(t.filter(SyncTransfer.ACTION_MIRROR).accept(root, new TransferStatus().exists(true)));
+    }
+
+    @Test
+    public void testChildrenRemoteOnly() throws Exception {
+        final Path root = new Path("t", Path.DIRECTORY_TYPE);
+        root.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
+            @Override
+            public AttributedList<Local> list() {
+                return new AttributedList<Local>();
+            }
+        });
+        final Path a = new Path(root, "a", Path.FILE_TYPE);
+        a.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
+        Transfer t = new SyncTransfer(new NullSession(new Host("t")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                final AttributedList<Path> list = new AttributedList<Path>();
+                if(file.equals(root.getParent())) {
+                    list.add(root);
+                }
+                else {
+                    list.add(a);
+                }
+                return list;
+            }
+        }, root);
+        final AttributedList<Path> list = t.list(root, new TransferStatus().exists(true));
+        assertEquals(1, list.size());
+        assertTrue(t.filter(SyncTransfer.ACTION_DOWNLOAD).accept(root, new TransferStatus().exists(true)));
+        assertTrue(t.filter(SyncTransfer.ACTION_MIRROR).accept(root, new TransferStatus().exists(true)));
+        assertTrue(t.filter(SyncTransfer.ACTION_DOWNLOAD).accept(a, new TransferStatus().exists(true)));
+        // Because root is directory
+        assertTrue(t.filter(SyncTransfer.ACTION_UPLOAD).accept(root, new TransferStatus().exists(true)));
+        assertFalse(t.filter(SyncTransfer.ACTION_UPLOAD).accept(a, new TransferStatus().exists(true)));
     }
 }
