@@ -16,11 +16,12 @@ Changelog. Last modified: $Date$
 - [Feature] Select region when creating new container (S3, OpenStack)
 - [Feature] Confirmation alert on move and rename in browser (#595)
 - [Feature] Transfer action to skip existing files that match checksum, size or timestamp (#6500)
-- [Feature] Fullscreen option for browser window
-- [Feature] Remember window position of browser window when saving workspace
+- [Feature] Fullscreen option for browser window (Mac)
+- [Feature] Remember window position of browser window when saving workspace (Mac)
 - [Feature] Copy temporary signed URLs (OpenStack) (#7018)
 - [Feature] Preview file status in overwrite prompt when choosing transfer action
 - [Feature] Option to continue or cancel on failure transferring multiple files
+- [Feature] Display download progress in Finder and Dock (Mac)
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)
@@ -33,10 +34,10 @@ Changelog. Last modified: $Date$
 - [Bugfix] Omit absolute paths in archives (ZIP, TAR) (#6644)
 - [Bugfix] Connect mode fallback failures (FTP) (#5385)
 - [Bugfix] Directory placeholder not displayed if same name as object (OpenStack) (#6988)
-- [Bugfix] Cannot set custom keyboard shortcut (#7045)
-- [Bugfix] Registration with Growl fails (#7274)
+- [Bugfix] Cannot set custom keyboard shortcut (Mac) (#7045)
+- [Bugfix] Registration with Growl fails (Mac) (#7274)
 - [Bugfix] Changing permissions resets extended access rights flags (SFTP, FTP) (#3790)
-- [Bugfix] Remember browser column widths (#6034)
+- [Bugfix] Remember browser column widths (Mac) (#6034)
 - [Bugfix] Refresh list of thirdparty application bookmarks to import (#6141)
 - [Bugfix] PRET support not working anymore (#7427)
 
