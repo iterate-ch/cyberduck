@@ -30,7 +30,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconServic
             @"NSProgressFileOperationKind" : @"NSProgressFileOperationKindDownloading",
             @"NSProgressFileURL" : [NSURL fileURLWithPath:JNFJavaToNSString(env, file)]
         };
-        id progress = [NSClassFromString(@"NSProgress") currentProgress];
+        id progress = [NSClassFromString(@"NSProgress") performSelector:@selector(currentProgress)];
         if(nil == progress) {
             progress = [NSClassFromString(@"NSProgress") performSelector:@selector(alloc)];
         }
